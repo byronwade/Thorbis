@@ -1,0 +1,15 @@
+{
+	"name": "@supabase-cms/supabase-cms",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"start:ui": "cd packages/ui && npm run dev"
+	},
+	"workspaces": [
+		"packages/*"
+	],
+	"dependencies": {},
+	"devDependencies": {
+		"lerna": "^7.3.1"
+	}
+}

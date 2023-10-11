@@ -1,0 +1,12 @@
+{
+	"name": "@supabase-cms/core",
+	"version": "0.1.0",
+	"main": "src/index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node src/blog.js"
+	},
+	"dependencies": {
+		"@supabase/supabase-js": "^1.28.5"
+	}
+}
