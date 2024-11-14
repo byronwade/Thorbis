@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/thorbis/lib/utils";
+import { cn } from "@/lib/utils";
 
 const navigation = [
 	{ name: "Dashboard", href: "/dashboard" },

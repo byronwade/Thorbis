@@ -1,4 +1,4 @@
-import { SettingsForm } from "@/thorbis/components/dashboard/settings-form";
+import { SettingsForm } from "@/components/dashboard/settings-form";
 
 export default function SettingsPage() {
 	return (

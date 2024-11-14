@@ -1,8 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import VercelProvider from "@/thorbis/lib/providers/vercel";
+import VercelProvider from "@/lib/providers/vercel";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/thorbis/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prisma),

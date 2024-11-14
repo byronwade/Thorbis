@@ -1,5 +1,5 @@
-import { GitHubInfo } from "@/thorbis/components/GitHubInfo";
-import { GitHubRepos } from "@/thorbis/components/GitHubRepos";
+import { GitHubInfo } from "@/components/GitHubInfo";
+import { GitHubRepos } from "@/components/GitHubRepos";
 
 export default function AdminPage() {
 	return (

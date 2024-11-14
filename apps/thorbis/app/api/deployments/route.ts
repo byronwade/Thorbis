@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getFeatureFlag } from "@/thorbis/lib/edge-config";
+import { getFeatureFlag } from "@/lib/edge-config";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";

@@ -5,21 +5,12 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
+	"typings": "./dist/index.d.ts",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
 			"require": "./dist/index.js"
-		},
-		"./components": {
-			"types": "./dist/components/index.d.ts",
-			"import": "./dist/components/index.mjs",
-			"require": "./dist/components/index.js"
-		},
-		"./trackers": {
-			"types": "./dist/trackers/index.d.ts",
-			"import": "./dist/trackers/index.mjs",
-			"require": "./dist/trackers/index.js"
 		}
 	},
 	"files": [

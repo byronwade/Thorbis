@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { DashboardMetrics } from "@/thorbis/components/dashboard";
+import { DashboardMetrics } from "@/components/dashboard";
 
 export default function DashboardPage() {
 	return (

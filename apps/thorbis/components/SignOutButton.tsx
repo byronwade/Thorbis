@@ -1,6 +1,6 @@
 "use client";
 import { signOut } from "next-auth/react";
-import { Button } from "@/thorbis/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 
 export function SignOutButton() {

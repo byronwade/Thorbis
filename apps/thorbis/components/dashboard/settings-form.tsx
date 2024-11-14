@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemoizedFunction } from "@/thorbis/lib/utils/memoization";
+import { useMemoizedFunction } from "@/lib/utils/memoization";
 import { FormEvent } from "react";
 
 export function SettingsForm() {

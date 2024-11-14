@@ -1,6 +1,6 @@
 "use client";
 
-import { UserNav } from "@/thorbis/components/dashboard/user-nav";
+import { UserNav } from "@/components/dashboard/user-nav";
 
 export function TopNav() {
 	return (

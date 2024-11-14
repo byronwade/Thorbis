@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/thorbis/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/thorbis/components/ui/card";
-import { Input } from "@/thorbis/components/ui/input";
-import { Label } from "@/thorbis/components/ui/label";
-import { Textarea } from "@/thorbis/components/ui/textarea";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/thorbis/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/thorbis/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 
 type HostingProvider = "vercel" | "netlify" | null;

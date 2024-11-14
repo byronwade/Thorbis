@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { DeploymentsList } from "@/thorbis/components/dashboard/deployments-list";
+import { DeploymentsList } from "@/components/dashboard/deployments-list";
 
 export default function DeploymentsPage() {
 	return (

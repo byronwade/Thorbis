@@ -1,25 +1,16 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "../../packages/tsconfig/base.json",
 	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ESNext",
+		"jsx": "react-jsx",
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"composite": false,
-		"jsx": "react-jsx",
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["./src/*"]
-		},
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
 		"declaration": true,
 		"declarationDir": "./dist",
-		"skipLibCheck": true,
-		"incremental": false,
-		"allowJs": true,
-		"esModuleInterop": true,
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"types": ["react", "node"]
+		"composite": true
 	},
 	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+	"exclude": ["node_modules", "dist"]
 }

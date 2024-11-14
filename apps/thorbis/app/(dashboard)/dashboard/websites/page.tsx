@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { WebsitesList } from "@/thorbis/components/dashboard/websites-list";
+import { WebsitesList } from "@/components/dashboard/websites-list";
 
 export default function WebsitesPage() {
 	return (

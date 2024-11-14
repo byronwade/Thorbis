@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/thorbis/lib/auth";
-import { prisma } from "@/thorbis/lib/prisma";
-import { testVercelConnection } from "@/thorbis/lib/vercel";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { testVercelConnection } from "@/lib/vercel";
 import { NextResponse } from "next/server";
 
 export async function GET() {

@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"target": "es2017",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"baseUrl": ".",
+		"paths": {
+			"@thorbis/events": ["packages/events/src"],
+			"@thorbis/events/*": ["packages/events/src/*"]
+		}
+	},
+	"exclude": ["node_modules"],
+	"files": [],
+	"references": [{ "path": "packages/events" }, { "path": "apps/thorbis" }, { "path": "apps/thorbis-components" }]
+}

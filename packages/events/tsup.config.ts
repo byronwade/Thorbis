@@ -6,19 +6,17 @@ export default defineConfig({
 		"components/index": "src/components/index.ts",
 	},
 	format: ["esm", "cjs"],
-	dts: true,
+	dts: {
+		resolve: true,
+		entry: "./src/index.ts",
+	},
 	splitting: false,
 	sourcemap: true,
 	clean: true,
+	external: ["react", "next/script"],
+	outDir: "dist",
 	treeshake: true,
-	minify: true,
-	external: ["react", "next", "next/script", "react-dom"],
-	env: {
-		NODE_ENV: process.env.NODE_ENV || "development",
-	},
 	esbuildOptions(options) {
-		options.banner = {
-			js: '"use client";\n',
-		};
+		options.jsx = "automatic";
 	},
 });

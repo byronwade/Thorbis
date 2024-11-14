@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getFeatureFlag } from "@/thorbis/lib/edge-config";
+import { getFeatureFlag } from "@/lib/edge-config";
 
 export default async function NewFeaturePage() {
 	const isEnabled = await getFeatureFlag("new_feature");

@@ -2,11 +2,15 @@
 	"name": "@thorbis/cli",
 	"version": "0.1.0",
 	"private": true,
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"bin": {
+		"thorbis": "./dist/index.js"
+	},
+	"files": [
+		"dist"
+	],
 	"scripts": {
-		"build": "tsup src/index.ts --format cjs,esm --dts",
-		"dev": "tsup src/index.ts --format cjs,esm --watch --dts",
+		"build": "tsup src/index.ts --format cjs --dts",
+		"dev": "tsup src/index.ts --format cjs --watch --dts",
 		"lint": "eslint src/**/*.ts",
 		"clean": "rimraf dist"
 	},
@@ -22,8 +26,5 @@
 		"@types/node": "^20.11.19",
 		"typescript": "^5.3.3",
 		"rimraf": "^5.0.1"
-	},
-	"bin": {
-		"thorbis": "./dist/index.js"
 	}
 }

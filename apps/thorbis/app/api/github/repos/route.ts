@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchGitHubAPI } from "@/thorbis/lib/github";
+import { fetchGitHubAPI } from "@/lib/github";
 
 export async function GET() {
 	try {

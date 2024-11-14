@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/thorbis/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface GitHubData {
 	login: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemoizedValue } from "@/thorbis/lib/utils/memoization";
+import { useMemoizedValue } from "@/lib/utils/memoization";
 import { useCallback } from "react";
 
 export function DashboardMetrics() {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Integration } from "@prisma/client";
-import { Button } from "@/thorbis/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export function IntegrationsList() {
 	const [integrations, setIntegrations] = useState<Integration[]>([]);

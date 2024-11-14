@@ -1,7 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
-import { Button } from "@/thorbis/components/ui/button";
-import { Input } from "@/thorbis/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
