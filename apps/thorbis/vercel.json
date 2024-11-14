@@ -1,0 +1,9 @@
+{
+	"version": 2,
+	"buildCommand": "turbo run build",
+	"installCommand": "npm install --legacy-peer-deps",
+	"framework": "nextjs",
+	"env": {
+		"EDGE_CONFIG_ID": "@edge_config_id"
+	}
+}

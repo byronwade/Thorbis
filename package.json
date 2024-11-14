@@ -1,0 +1,20 @@
+{
+	"name": "thorbis-monorepo",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "turbo run lint",
+		"clean": "turbo run clean"
+	},
+	"devDependencies": {
+		"turbo": "^1.12.4",
+		"@types/node": "^20.11.19",
+		"typescript": "^5.3.3"
+	},
+	"packageManager": "bun@1.1.24"
+}
