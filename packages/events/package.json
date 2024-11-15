@@ -1,38 +1,70 @@
 {
 	"name": "@thorbis/events",
 	"version": "0.1.0",
-	"private": true,
+	"description": "Analytics and event tracking package for web applications",
+	"private": false,
+	"type": "module",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
-	"typings": "./dist/index.d.ts",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
 			"require": "./dist/index.js"
+		},
+		"./components": {
+			"types": "./dist/components/index.d.ts",
+			"import": "./dist/components/index.mjs",
+			"require": "./dist/components/index.js"
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"src"
 	],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
 		"clean": "rimraf dist",
-		"prebuild": "npm run clean"
+		"prebuild": "npm run clean",
+		"prepare": "npm run build",
+		"typecheck": "tsc --noEmit",
+		"dev:server": "node --loader ts-node/esm scripts/server.ts"
 	},
 	"peerDependencies": {
 		"react": "^18.0.0",
 		"react-dom": "^18.0.0",
 		"next": "^14.0.0"
 	},
+	"dependencies": {
+		"express": "^4.18.2",
+		"cors": "^2.8.5",
+		"chalk": "^5.3.0"
+	},
 	"devDependencies": {
 		"tsup": "^8.0.2",
 		"@types/node": "^20.11.19",
 		"@types/react": "^18.2.0",
 		"@types/react-dom": "^18.2.0",
+		"@types/express": "^4.17.21",
+		"@types/cors": "^2.8.17",
 		"typescript": "^5.3.3",
-		"rimraf": "^5.0.1"
+		"rimraf": "^5.0.1",
+		"ts-node": "^10.9.2"
+	},
+	"keywords": [
+		"analytics",
+		"tracking",
+		"events",
+		"nextjs",
+		"react"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yourusername/thorbis-events"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }

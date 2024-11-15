@@ -1,3 +1,5 @@
+import type { StorageAdapter } from "./storage/StorageManager";
+
 export interface ElementData {
 	tag: string;
 	id?: string;
@@ -114,26 +116,45 @@ export interface EventData {
 	timestamp: number;
 	sessionId: string;
 	userId: string;
-	element?: ElementData;
-	duration?: number;
-	formattedDuration?: string;
-	depth?: number;
-	total?: number;
 	url?: string;
+	name?: string;
+	score?: number;
+	query?: string;
+	position?: {
+		x: number;
+		y: number;
+	};
+	clicks?: number;
+	timespan?: number;
+	positions?: Array<{ x: number; y: number }>;
+	timing?: {
+		ttfb: { raw: number; formatted: string };
+		domInteractive: { raw: number; formatted: string };
+
+		domComplete: { raw: number; formatted: string };
+		loadComplete: { raw: number; formatted: string };
+	};
+	element?: ElementData;
+	duration?: {
+		raw: number;
+		formatted: string;
+	};
 	metadata?: {
-		url?: string;
-		path?: string;
+		elementType?: string;
+		elementContent?: string;
+		formatted?: string;
 		referrer?: string;
-		viewport?: {
-			width: number;
-			height: number;
+		path?: string;
+		from?: string;
+		to?: string;
+		category?: string;
+		interactable?: boolean;
+		attributes?: Record<string, string>;
+		summary?: {
+			totalLoadTime: string;
+			timeToInteractive: string;
+			timeToFirstByte: string;
 		};
-		performance?: {
-			loadTime?: number;
-			domReady?: number;
-			firstInteraction?: number;
-		};
-		[key: string]: any;
 	};
 }
 
@@ -145,6 +166,7 @@ export interface ThorbisEventOptions {
 	batchSize?: number;
 	batchInterval?: number;
 	userId?: string;
+	storageAdapter?: StorageAdapter;
 }
 
 export const DEFAULT_EVENT_OPTIONS: ThorbisEventOptions = {

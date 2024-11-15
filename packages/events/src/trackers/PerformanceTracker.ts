@@ -1,152 +1,124 @@
 import { BaseTracker } from "./BaseTracker";
+import type { ThorbisEventOptions } from "../types";
 
 export class PerformanceTracker extends BaseTracker {
-	private metrics = {
-		navigationStart: typeof performance !== "undefined" ? performance.timeOrigin : Date.now(),
-		loadComplete: 0,
-		firstPaint: 0,
-		firstContentfulPaint: 0,
-		domInteractive: 0,
-		domComplete: 0,
-		resources: new Map<string, PerformanceResourceTiming>(),
-		longTasks: [] as PerformanceEntry[],
-		layoutShifts: [] as any[],
-	};
-	private observers: PerformanceObserver[] = [];
-	private updateInterval: NodeJS.Timeout | null = null;
+	private hasTrackedInitialMetrics = false;
 
-	initialize() {
+	initialize(): void {
 		if (typeof window === "undefined") return;
-		this.trackNavigationTiming();
-		this.trackPaintTiming();
-		this.trackResourceTiming();
-		this.trackLongTasks();
-		this.trackLayoutShifts();
-		this.startPeriodicUpdates();
-	}
 
-	private trackNavigationTiming() {
-		const observer = new PerformanceObserver((list) => {
-			list.getEntries().forEach((entry) => {
-				if (entry.entryType === "navigation") {
-					const navEntry = entry as PerformanceNavigationTiming;
-					this.metrics.loadComplete = navEntry.loadEventEnd;
-					this.metrics.domInteractive = navEntry.domInteractive;
-					this.metrics.domComplete = navEntry.domComplete;
-
-					this.trackEvent("navigation_timing", {
-						type: navEntry.type,
-						timing: {
-							ttfb: navEntry.responseStart - navEntry.requestStart,
-							domInteractive: navEntry.domInteractive,
-							domComplete: navEntry.domComplete,
-							loadComplete: navEntry.loadEventEnd,
-						},
-					});
-				}
+		// Wait for load event to ensure all metrics are available
+		if (document.readyState === "complete") {
+			this.captureMetrics();
+		} else {
+			window.addEventListener("load", () => {
+				setTimeout(() => this.captureMetrics(), 0);
 			});
-		});
-
-		try {
-			observer.observe({ entryTypes: ["navigation"] });
-		} catch (e) {
-			console.warn("Navigation timing not supported");
 		}
 	}
 
-	private trackPaintTiming() {
-		const observer = new PerformanceObserver((list) => {
-			list.getEntries().forEach((entry) => {
-				const metric = entry.name === "first-paint" ? "firstPaint" : "firstContentfulPaint";
-				this.metrics[metric] = entry.startTime;
+	private captureMetrics(): void {
+		if (this.hasTrackedInitialMetrics) return;
 
-				this.trackEvent("paint_timing", {
-					type: entry.name,
-					startTime: entry.startTime,
-				});
-			});
-		});
-
-		try {
-			observer.observe({ entryTypes: ["paint"] });
-		} catch (e) {
-			console.warn("Paint timing not supported");
-		}
-	}
-
-	private trackResourceTiming() {
-		const observer = new PerformanceObserver((list) => {
-			list.getEntries().forEach((entry) => {
-				const resource = entry as PerformanceResourceTiming;
-				this.metrics.resources.set(resource.name, resource);
-
-				this.trackEvent("resource_timing", {
-					name: resource.name,
-					type: resource.initiatorType,
-					duration: resource.duration,
-					size: resource.transferSize,
-				});
-			});
-		});
-
-		try {
-			observer.observe({ entryTypes: ["resource"] });
-		} catch (e) {
-			console.warn("Resource timing not supported");
-		}
-	}
-
-	private trackLongTasks() {
-		const observer = new PerformanceObserver((list) => {
-			list.getEntries().forEach((entry) => {
-				this.metrics.longTasks.push(entry);
-				this.trackEvent("long_task", {
-					duration: entry.duration,
-					startTime: entry.startTime,
-				});
-			});
-		});
-
-		try {
-			observer.observe({ entryTypes: ["longtask"] });
-		} catch (e) {
-			console.warn("Long tasks not supported");
-		}
-	}
-
-	private trackLayoutShifts() {
-		const observer = new PerformanceObserver((list) => {
-			list.getEntries().forEach((entry) => {
-				this.metrics.layoutShifts.push(entry);
-				this.trackEvent("layout_shift", {
-					value: (entry as any).value,
-					startTime: entry.startTime,
-				});
-			});
-		});
-
-		try {
-			observer.observe({ entryTypes: ["layout-shift"] });
-		} catch (e) {
-			console.warn("Layout shifts not supported");
-		}
-	}
-
-	private startPeriodicUpdates() {
-		this.updateInterval = setInterval(() => {
-			this.trackEvent("performance_metrics", {
-				metrics: {
-					...this.metrics,
-					resources: Array.from(this.metrics.resources.values()),
+		// Track Navigation Timing
+		const entries = performance.getEntriesByType("navigation");
+		if (entries.length > 0) {
+			const navEntry = entries[0] as PerformanceNavigationTiming;
+			this.trackEvent("page_performance", {
+				type: "navigation",
+				timing: {
+					ttfb: {
+						raw: navEntry.responseStart - navEntry.requestStart,
+						formatted: this.formatTime(navEntry.responseStart - navEntry.requestStart),
+					},
+					domInteractive: {
+						raw: navEntry.domInteractive,
+						formatted: this.formatTime(navEntry.domInteractive),
+					},
+					domComplete: {
+						raw: navEntry.domComplete,
+						formatted: this.formatTime(navEntry.domComplete),
+					},
+					loadComplete: {
+						raw: navEntry.loadEventEnd,
+						formatted: this.formatTime(navEntry.loadEventEnd),
+					},
+				},
+				metadata: {
+					summary: {
+						totalLoadTime: this.formatTime(navEntry.loadEventEnd),
+						timeToInteractive: this.formatTime(navEntry.domInteractive),
+						timeToFirstByte: this.formatTime(navEntry.responseStart - navEntry.requestStart),
+					},
 				},
 			});
-		}, 10000);
+
+			if (this.options.debug) {
+				console.log("[Thorbis] Performance metrics captured:", {
+					ttfb: this.formatTime(navEntry.responseStart - navEntry.requestStart),
+					domInteractive: this.formatTime(navEntry.domInteractive),
+					domComplete: this.formatTime(navEntry.domComplete),
+					loadComplete: this.formatTime(navEntry.loadEventEnd),
+				});
+			}
+		}
+
+		// Track Paint Timing
+		const paintObserver = new PerformanceObserver((list) => {
+			const entries = list.getEntries();
+			entries.forEach((entry) => {
+				this.trackEvent("paint", {
+					name: entry.name,
+					duration: {
+						raw: entry.startTime,
+						formatted: this.formatTime(entry.startTime),
+					},
+				});
+			});
+			paintObserver.disconnect();
+		});
+
+		try {
+			paintObserver.observe({ entryTypes: ["paint"] });
+		} catch (e) {
+			if (this.options.debug) {
+				console.warn("[Thorbis] Paint timing not supported");
+			}
+		}
+
+		// Track Layout Shifts
+		let totalShiftScore = 0;
+		const clsObserver = new PerformanceObserver((list) => {
+			list.getEntries().forEach((entry: any) => {
+				totalShiftScore += entry.value;
+			});
+
+			this.trackEvent("cumulative_layout_shift", {
+				score: totalShiftScore,
+				metadata: {
+					formatted: totalShiftScore.toFixed(4),
+				},
+			});
+		});
+
+		try {
+			clsObserver.observe({ entryTypes: ["layout-shift"] });
+		} catch (e) {
+			if (this.options.debug) {
+				console.warn("[Thorbis] Layout Shift measurement not supported");
+			}
+		}
+
+		this.hasTrackedInitialMetrics = true;
+	}
+
+	private formatTime(ms: number): string {
+		if (ms < 1) return `${(ms * 1000).toFixed(2)}μs`;
+		if (ms < 1000) return `${ms.toFixed(2)}ms`;
+		return `${(ms / 1000).toFixed(2)}s`;
 	}
 
 	destroy(): void {
-		this.observers.forEach((observer) => observer.disconnect());
-		if (this.updateInterval) {
-			clearInterval(this.updateInterval);
-		}
+		// Cleanup if needed
 	}
 }

@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang="en">
 			<body className={inter.className}>
 				{children}
-				<ThorbisScript debug={true} />
+				<ThorbisScript debug={true} devServerUrl="http://localhost:3010" />
 			</body>
 		</html>
 	);

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useState } from "react";
 
 interface DebugDisplayProps {
 	data: any;
@@ -7,6 +9,16 @@ interface DebugDisplayProps {
 
 export const DebugDisplay: React.FC<DebugDisplayProps> = ({ data, position = "bottom-right" }) => {
 	const [isCollapsed, setIsCollapsed] = useState(false);
+
+	// Remove timestamps from display data to prevent hydration mismatch
+	const displayData = {
+		...data,
+		profile: {
+			...data.profile,
+			startTime: "TIMESTAMP",
+			lastActive: "TIMESTAMP",
+		},
+	};
 
 	const positionStyles = {
 		"top-left": { top: "1rem", left: "1rem" },
@@ -45,7 +57,7 @@ export const DebugDisplay: React.FC<DebugDisplayProps> = ({ data, position = "bo
 				<span>Thorbis Debug</span>
 				<span>{isCollapsed ? "▼" : "▲"}</span>
 			</div>
-			{!isCollapsed && <pre style={{ margin: 0 }}>{JSON.stringify(data, null, 2)}</pre>}
+			{!isCollapsed && <pre style={{ margin: 0 }}>{JSON.stringify(displayData, null, 2)}</pre>}
 		</div>
 	);
 };

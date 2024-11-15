@@ -2,25 +2,29 @@ import type { EventData, ThorbisEventOptions } from "../types";
 
 export abstract class BaseTracker {
 	protected options: ThorbisEventOptions;
-	protected isEnabled: boolean = true;
 	protected eventQueue: EventData[] = [];
+	protected isEnabled: boolean = true;
+	private lastEventTime: number = 0;
+	private readonly MIN_EVENT_INTERVAL = 100; // Minimum ms between events
 
 	constructor(options: ThorbisEventOptions) {
-		this.options = {
-			sampleRate: 1,
-			batchSize: 50,
-			...options,
-		};
+		this.options = options;
 	}
 
 	abstract initialize(): void;
 	abstract destroy(): void;
 
-	protected trackEvent(eventType: string, data?: any) {
-		if (!this.isEnabled || Math.random() > (this.options.sampleRate ?? 1)) return;
+	protected trackEvent(type: string, data: Partial<EventData>) {
+		const now = Date.now();
+		if (now - this.lastEventTime < this.MIN_EVENT_INTERVAL) {
+			return; // Skip if too soon
+		}
+		this.lastEventTime = now;
+
+		if (!this.isEnabled || typeof window === "undefined") return;
 
 		const event: EventData = {
-			type: eventType,
+			type,
 			timestamp: Date.now(),
 			sessionId: this.getSessionId(),
 			userId: this.getUserId(),
@@ -28,17 +32,34 @@ export abstract class BaseTracker {
 		};
 
 		this.eventQueue.push(event);
+
+		if (this.options.debug) {
+			console.log(`[Thorbis] Tracked ${type} event:`, event);
+		}
+
 		this.processQueue();
 	}
 
 	protected formatDuration(ms: number): string {
-		if (ms < 0) return "0ms";
-		if (ms < 1) return `${(ms * 1000).toFixed(2)}μs`;
-		if (ms < 1000) return `${ms.toFixed(2)}ms`;
-		if (ms < 60000) return `${(ms / 1000).toFixed(2)}s`;
-		const minutes = Math.floor(ms / 60000);
-		const seconds = ((ms % 60000) / 1000).toFixed(2);
-		return `${minutes}m ${seconds}s`;
+		if (ms < 1000) return `${ms.toFixed(0)}ms`;
+		if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+		if (ms < 3600000) {
+			const minutes = Math.floor(ms / 60000);
+			const seconds = ((ms % 60000) / 1000).toFixed(1);
+			return `${minutes}m ${seconds}s`;
+		}
+		const hours = Math.floor(ms / 3600000);
+		const minutes = Math.floor((ms % 3600000) / 60000);
+		return `${hours}h ${minutes}m`;
+	}
+
+	protected formatTimestamp(timestamp: number): string {
+		const date = new Date(timestamp);
+		const hours = date.getHours().toString().padStart(2, "0");
+		const minutes = date.getMinutes().toString().padStart(2, "0");
+		const seconds = date.getSeconds().toString().padStart(2, "0");
+		const ms = date.getMilliseconds().toString().padStart(3, "0");
+		return `${hours}:${minutes}:${seconds}.${ms}`;
 	}
 
 	public getElementData(element: HTMLElement) {
@@ -68,7 +89,11 @@ export abstract class BaseTracker {
 	}
 
 	private processQueue() {
-		if (this.eventQueue.length >= (this.options.batchSize ?? 50)) {
+		if (this.options.debug) {
+			console.log(`[Thorbis] Queue size: ${this.eventQueue.length}`);
+		}
+
+		if (this.eventQueue.length > 0) {
 			const batch = this.eventQueue.splice(0, this.options.batchSize ?? 50);
 			this.options.onEvent?.(batch);
 		}
