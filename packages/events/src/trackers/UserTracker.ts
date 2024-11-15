@@ -5,7 +5,7 @@ export class UserTracker extends BaseTracker {
 	private userId: string;
 	private userData: UserData = {};
 	private lastUpdate: number = Date.now();
-	private updateInterval: NodeJS.Timeout | null = null;
+	private updateInterval: number | null = null;
 	private readonly UPDATE_INTERVAL_MS = 5000; // 5 seconds
 
 	constructor(options: ThorbisEventOptions) {
@@ -64,7 +64,7 @@ export class UserTracker extends BaseTracker {
 	}
 
 	private startPeriodicUpdates() {
-		this.updateInterval = setInterval(() => {
+		this.updateInterval = window.setInterval(() => {
 			const now = Date.now();
 			if (this.userData[this.userId]) {
 				this.userData[this.userId].profile.lastSeen = now;
@@ -77,24 +77,32 @@ export class UserTracker extends BaseTracker {
 		const userData = this.userData[this.userId];
 		if (!userData) return;
 
-		// Update session duration
 		const sessionDuration = Date.now() - userData.profile.firstSeen;
+		const now = Date.now();
 
-		// Update metrics
 		this.trackEvent("user_metrics_update", {
+			type: "user_metrics_update",
+			timestamp: now,
 			userId: this.userId,
-			sessionDuration: this.formatDuration(sessionDuration),
 			metrics: {
 				interactions: userData.stats,
 				performance: userData.performance,
 				behavior: userData.behavior,
+			},
+			duration: {
+				raw: sessionDuration,
+				formatted: this.formatDuration(sessionDuration),
+			},
+			metadata: {
+				startTime: this.formatTimestamp(userData.profile.firstSeen),
+				eventTime: this.formatTimestamp(now),
 			},
 		});
 	}
 
 	destroy(): void {
 		if (this.updateInterval) {
-			clearInterval(this.updateInterval);
+			window.clearInterval(this.updateInterval);
 			this.updateInterval = null;
 		}
 	}

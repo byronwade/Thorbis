@@ -1,6 +1,6 @@
 import React from "react";
 import { Inter } from "next/font/google";
-import { ThorbisScript } from "@thorbis/events";
+import { ThorbisDashboard, ThorbisScript } from "@thorbis/events";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<body className={inter.className}>
 				{children}
 				<ThorbisScript debug={true} devServerUrl="http://localhost:3010" />
+				<ThorbisDashboard />
 			</body>
 		</html>
 	);

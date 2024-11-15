@@ -5,7 +5,7 @@ export class SessionTracker extends BaseTracker {
 	private userId: string;
 	private sessionId: string;
 	private lastActivityTime: number = Date.now();
-	private sessionTimeout: NodeJS.Timeout | null = null;
+	private sessionTimeout: number | null = null;
 
 	constructor(options: ThorbisEventOptions) {
 		super(options);
@@ -24,14 +24,19 @@ export class SessionTracker extends BaseTracker {
 	}
 
 	private trackSessionStart() {
+		const now = Date.now();
 		this.trackEvent("session_start", {
 			sessionId: this.sessionId,
-			startTime: Date.now(),
+			startTime: now,
 			referrer: document.referrer,
 			userAgent: navigator.userAgent,
 			viewport: {
 				width: window.innerWidth,
 				height: window.innerHeight,
+			},
+			metadata: {
+				eventTime: this.formatTimestamp(now),
+				startTime: this.formatTimestamp(now),
 			},
 		});
 	}
@@ -45,9 +50,16 @@ export class SessionTracker extends BaseTracker {
 					const timeSinceLastActivity = now - this.lastActivityTime;
 
 					if (timeSinceLastActivity > 30000) {
-						// 30 seconds
 						this.trackEvent("session_resume", {
 							inactivityDuration: timeSinceLastActivity,
+							duration: {
+								raw: timeSinceLastActivity,
+								formatted: this.formatDuration(timeSinceLastActivity),
+							},
+							metadata: {
+								eventTime: this.formatTimestamp(now),
+								startTime: this.formatTimestamp(this.lastActivityTime),
+							},
 						});
 					}
 
@@ -59,12 +71,15 @@ export class SessionTracker extends BaseTracker {
 	}
 
 	private setupSessionTimeout() {
-		setInterval(() => {
+		this.sessionTimeout = window.setInterval(() => {
 			const inactiveTime = Date.now() - this.lastActivityTime;
 			if (inactiveTime > 1800000) {
 				// 30 minutes
 				this.trackEvent("session_timeout", {
-					duration: inactiveTime,
+					duration: {
+						raw: inactiveTime,
+						formatted: this.formatDuration(inactiveTime),
+					},
 				});
 				this.sessionId = this.generateSessionId(); // Start new session
 				this.trackSessionStart();
@@ -97,11 +112,15 @@ export class SessionTracker extends BaseTracker {
 
 	destroy(): void {
 		if (this.sessionTimeout) {
-			clearInterval(this.sessionTimeout);
+			window.clearInterval(this.sessionTimeout);
+			this.sessionTimeout = null;
 		}
 		this.trackEvent("session_end", {
 			sessionId: this.sessionId,
-			duration: Date.now() - this.lastActivityTime,
+			duration: {
+				raw: Date.now() - this.lastActivityTime,
+				formatted: this.formatDuration(Date.now() - this.lastActivityTime),
+			},
 		});
 	}
 }

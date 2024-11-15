@@ -1,79 +1,47 @@
-import { StorageManager } from "./storage/StorageManager";
-import { LocalStorageAdapter } from "./storage/LocalStorageAdapter";
-import type { ThorbisEventOptions } from "./types";
 import { createTracker } from "./trackers";
+import type { ThorbisEventOptions, ThorbisInstance } from "./types";
 
-interface ThorbisInstance {
-	trackers: Map<string, any>;
-	storage: StorageManager | null;
-	destroy: () => Promise<void>;
-	getEvents: () => any[];
-}
-
-export function initializeTrackers(options: ThorbisEventOptions = {}): ThorbisInstance {
-	if (typeof window === "undefined") {
-		return {
-			trackers: new Map(),
-			storage: null,
-			destroy: async () => {},
-			getEvents: () => [],
-		};
-	}
-
-	if (window.__THORBIS_INITIALIZED__ && window.__THORBIS_INSTANCE__) {
-		return window.__THORBIS_INSTANCE__;
-	}
-
+export function initializeTrackers(options: ThorbisEventOptions): ThorbisInstance {
 	const trackers = new Map();
-	const storageManager = new StorageManager(options.storageAdapter || new LocalStorageAdapter());
 
-	// Initialize all trackers
-	const trackerTypes = ["click", "error", "form", "hover", "idle", "interaction", "navigation", "performance_metrics", "session", "user", "search"];
+	// Prioritize certain trackers that should start immediately
+	const priorityTrackers = [
+		"mouse", // Track mouse movement immediately
+		"hover", // Track hovers immediately
+		"click", // Track clicks immediately
+		"idle", // Start idle tracking immediately
+		"session", // Start session tracking immediately
+	];
 
-	if (options.debug) {
-		console.log("[Thorbis] Initializing trackers...");
-	}
-
-	trackerTypes.forEach((type) => {
-		try {
-			const tracker = createTracker(type, {
-				...options,
-				onEvent: async (events) => {
-					await storageManager.addEvents(events);
-					options.onEvent?.(events);
-				},
-			});
-
-			tracker.initialize();
-			trackers.set(type, tracker);
-		} catch (error) {
-			console.error(`[Thorbis] Failed to initialize ${type} tracker:`, error);
-		}
+	// Initialize priority trackers first
+	priorityTrackers.forEach((type) => {
+		const tracker = createTracker(type, options);
+		tracker.initialize();
+		trackers.set(type, tracker);
 	});
 
-	const instance = {
-		trackers,
-		storage: storageManager,
-		destroy: async () => {
-			trackers.forEach((tracker) => tracker.destroy());
-			await storageManager.destroy();
-			trackers.clear();
-			delete window.__THORBIS_INITIALIZED__;
-			delete window.__THORBIS_INSTANCE__;
-		},
-		getEvents: () => {
-			const allEvents: any[] = [];
-			trackers.forEach((tracker) => {
-				allEvents.push(...tracker.getEvents());
+	// Initialize remaining trackers
+	["error", "form", "interaction", "navigation", "performance_metrics", "user", "search"].forEach((type) => {
+		const tracker = createTracker(type, options);
+		// Use requestIdleCallback for non-priority trackers if available
+		if (window.requestIdleCallback) {
+			window.requestIdleCallback(() => {
+				tracker.initialize();
 			});
-			return allEvents;
+		} else {
+			// Fallback to setTimeout
+			setTimeout(() => tracker.initialize(), 0);
+		}
+		trackers.set(type, tracker);
+	});
+
+	return {
+		trackers,
+		destroy: () => {
+			trackers.forEach((tracker) => tracker.destroy());
+			trackers.clear();
 		},
 	};
-
-	window.__THORBIS_INITIALIZED__ = true;
-	window.__THORBIS_INSTANCE__ = instance;
-
-	return instance;
 }
 
 declare global {

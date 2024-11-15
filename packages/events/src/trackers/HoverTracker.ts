@@ -2,231 +2,309 @@ import { BaseTracker } from "./BaseTracker";
 import type { ThorbisEventOptions } from "../types";
 
 export class HoverTracker extends BaseTracker {
-	private hoverStartTimes: Map<string, number> = new Map();
-	private readonly HOVER_THRESHOLD = 100; // ms
+	private activeHovers: WeakMap<
+		HTMLElement,
+		{
+			startTime: number;
+			position: { x: number; y: number };
+			hoverCount: number;
+		}
+	> = new WeakMap();
+
+	private readonly HOVER_THRESHOLD = 100;
+	private readonly HOVER_RESET_DELAY = 2000;
+	private readonly PROCESS_BATCH_SIZE = 10;
+	private readonly THROTTLE_MS = 150;
+
 	private boundHoverStart: (e: MouseEvent) => void;
 	private boundHoverEnd: (e: MouseEvent) => void;
+	private lastProcessTime: number = 0;
+	private pendingHovers: Set<HTMLElement> = new Set();
+	private processingTimeout: number | null = null;
+
+	private readonly TRACKABLE_TAGS = new Set(["A", "BUTTON", "INPUT", "SELECT", "TEXTAREA", "IMG", "VIDEO", "AUDIO", "CANVAS", "SVG", "DETAILS", "SUMMARY"]);
 
 	constructor(options: ThorbisEventOptions) {
 		super(options);
-		this.boundHoverStart = this.handleHoverStart.bind(this);
-		this.boundHoverEnd = this.handleHoverEnd.bind(this);
+		this.boundHoverStart = this.throttle(this.handleHoverStart.bind(this), this.THROTTLE_MS);
+		this.boundHoverEnd = this.throttle(this.handleHoverEnd.bind(this), this.THROTTLE_MS);
 	}
 
 	initialize(): void {
 		if (typeof window === "undefined") return;
 
-		document.addEventListener("mouseover", this.boundHoverStart, true);
-		document.addEventListener("mouseout", this.boundHoverEnd, true);
+		document.addEventListener("mouseover", this.boundHoverStart, { passive: true });
+		document.addEventListener("mouseout", this.boundHoverEnd, { passive: true });
 
-		if (this.options.debug) {
-			console.log("[Thorbis] Hover tracking initialized at", this.formatTimestamp(Date.now()));
-			this.logInteractiveElements();
-		}
+		this.setupOptimizedObserver();
 	}
 
-	private logInteractiveElements(): void {
-		const elements = document.querySelectorAll('a, button, input, textarea, select, [role="button"], [role="link"], [onclick], [href]');
-		console.log("[Thorbis] Found interactive elements:", elements.length);
-		elements.forEach((el) => {
-			console.log("[Thorbis] Interactive element:", {
-				tag: el.tagName,
-				text: el.textContent?.trim(),
-				href: (el as HTMLAnchorElement).href,
-				role: el.getAttribute("role"),
-				isInteractive: this.isInteractiveElement(el as HTMLElement),
-			});
+	private throttle(func: Function, limit: number): any {
+		let inThrottle = false;
+		return function (this: any, ...args: any[]) {
+			if (!inThrottle) {
+				func.apply(this, args);
+				inThrottle = true;
+				setTimeout(() => (inThrottle = false), limit);
+			}
+		};
+	}
+
+	private setupOptimizedObserver(): void {
+		const observer = new MutationObserver(
+			this.throttle((mutations: MutationRecord[]) => {
+				let shouldUpdate = false;
+				for (const mutation of mutations) {
+					if (mutation.type === "childList" && Array.from(mutation.addedNodes).some((node) => node instanceof HTMLElement && this.TRACKABLE_TAGS.has(node.tagName))) {
+						shouldUpdate = true;
+						break;
+					}
+				}
+				if (shouldUpdate) {
+					this.detectAndObserveElements();
+				}
+			}, 1000)
+		);
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+			attributes: false,
+			characterData: false,
 		});
 	}
 
-	private handleHoverStart(event: MouseEvent): void {
-		const target = event.target as HTMLElement;
-		const now = Date.now();
+	private isTrackableElement(element: HTMLElement): boolean {
+		if (this.TRACKABLE_TAGS.has(element.tagName)) return true;
 
-		if (this.options.debug) {
-			console.log("[Thorbis] Mouse over event:", {
-				time: this.formatTimestamp(now),
-				target: target.tagName,
-				text: target.textContent?.trim(),
-				isInteractive: this.isInteractiveElement(target),
-			});
-		}
-
-		const interactiveElement = this.isInteractiveElement(target) ? target : this.findClosestInteractiveElement(target);
-
-		if (!interactiveElement) return;
-
-		const elementId = this.getElementIdentifier(interactiveElement);
-		if (!this.hoverStartTimes.has(elementId)) {
-			this.hoverStartTimes.set(elementId, now);
-			if (this.options.debug) {
-				console.log("[Thorbis] Started tracking hover:", {
-					time: this.formatTimestamp(now),
-					element: interactiveElement.tagName,
-					text: interactiveElement.textContent?.trim(),
-					id: elementId,
-				});
-			}
-		}
-	}
-
-	private handleHoverEnd(event: MouseEvent): void {
-		const target = event.target as HTMLElement;
-		const now = Date.now();
-		const interactiveElement = this.isInteractiveElement(target) ? target : this.findClosestInteractiveElement(target);
-
-		if (!interactiveElement) return;
-
-		const elementId = this.getElementIdentifier(interactiveElement);
-		const startTime = this.hoverStartTimes.get(elementId);
-
-		if (startTime) {
-			const duration = now - startTime;
-			if (this.options.debug) {
-				console.log("[Thorbis] Hover end detected:", {
-					time: this.formatTimestamp(now),
-					element: interactiveElement.tagName,
-					duration: this.formatDuration(duration),
-					threshold: this.formatDuration(this.HOVER_THRESHOLD),
-				});
-			}
-
-			if (duration >= this.HOVER_THRESHOLD) {
-				this.trackEvent("hover", {
-					element: this.getElementData(interactiveElement),
-					duration: {
-						raw: duration,
-						formatted: this.formatDuration(duration),
-					},
-					timestamp: now,
-					metadata: {
-						elementType: this.getElementType(interactiveElement),
-						elementContent: this.getElementContent(interactiveElement),
-						category: this.getElementCategory(interactiveElement),
-						interactable: true,
-						attributes: this.getRelevantAttributes(interactiveElement),
-					},
-				});
-
-				if (this.options.debug) {
-					console.log("[Thorbis] Hover event tracked:", {
-						time: this.formatTimestamp(now),
-						element: interactiveElement.tagName,
-						duration: this.formatDuration(duration),
-						content: this.getElementContent(interactiveElement),
-					});
-				}
-			}
-			this.hoverStartTimes.delete(elementId);
-		}
-	}
-
-	private isInteractiveElement(element: HTMLElement): boolean {
-		if (element.closest("a")) return true;
-
-		if (element.tagName === "A" || element.tagName === "BUTTON" || element.tagName === "INPUT" || element.tagName === "TEXTAREA" || element.tagName === "SELECT" || element.hasAttribute("href") || element.hasAttribute("onclick") || element.getAttribute("role") === "button" || element.getAttribute("role") === "link") {
+		if (element.hasAttribute("role") || element.onclick || element.hasAttribute("onclick")) {
 			return true;
 		}
 
 		const style = window.getComputedStyle(element);
-		if (style.cursor === "pointer") return true;
-
-		return false;
+		return style.cursor === "pointer";
 	}
 
-	private findClosestInteractiveElement(element: HTMLElement): HTMLElement | null {
-		if (this.isInteractiveElement(element)) {
-			return element;
+	private handleHoverStart(event: MouseEvent): void {
+		const target = event.target as HTMLElement;
+		if (!target || !(target instanceof HTMLElement)) return;
+
+		if (!this.isTrackableElement(target)) return;
+
+		const now = Date.now();
+		this.pendingHovers.add(target);
+
+		if (!this.processingTimeout && now - this.lastProcessTime > this.THROTTLE_MS) {
+			this.processingTimeout = window.setTimeout(() => this.processHoverBatch(), this.THROTTLE_MS);
 		}
-
-		let current = element.parentElement;
-		while (current) {
-			if (this.isInteractiveElement(current)) {
-				return current;
-			}
-			current = current.parentElement;
-		}
-
-		return null;
 	}
 
-	private isTrackableElement(element: HTMLElement): boolean {
-		const isNextLink = element.closest("a[href]") !== null;
+	private processHoverBatch(): void {
+		this.processingTimeout = null;
+		this.lastProcessTime = Date.now();
 
-		const isInteractive = element.tagName === "BUTTON" || element.tagName === "A" || element.tagName === "INPUT" || element.tagName === "TEXTAREA" || element.tagName === "SELECT" || element instanceof HTMLButtonElement || element.getAttribute("role") === "button" || element.getAttribute("role") === "link" || element.onclick !== null || getComputedStyle(element).cursor === "pointer";
-
-		const hasText = Boolean(element.textContent?.trim());
-
-		const isCode = element.tagName === "CODE" || element.closest("code") !== null;
-
-		const isImage = element.tagName === "IMG" || element instanceof HTMLImageElement;
-
-		return isNextLink || isInteractive || hasText || isCode || isImage;
-	}
-
-	private getElementCategory(element: HTMLElement): string {
-		if (element.tagName === "A" || element.closest("a[href]")) return "link";
-		if (element.tagName === "BUTTON" || element.getAttribute("role") === "button") return "button";
-		if (element.tagName === "CODE" || element.closest("code")) return "code";
-		if (element.tagName === "IMG" || element instanceof HTMLImageElement) return "image";
-		if (element.tagName === "INPUT" || element.tagName === "TEXTAREA" || element.tagName === "SELECT") return "form";
-		if (element.textContent?.trim()) return "text";
-		return "other";
-	}
-
-	private getRelevantAttributes(element: HTMLElement): Record<string, string> {
-		const attributes: Record<string, string> = {};
-		const relevantAttrs = ["id", "class", "name", "type", "role", "aria-label", "placeholder", "href", "title", "value"];
-
-		relevantAttrs.forEach((attr) => {
-			const value = element.getAttribute(attr);
-			if (value) attributes[attr] = value;
+		const elements = Array.from(this.pendingHovers).slice(0, this.PROCESS_BATCH_SIZE);
+		elements.forEach((element) => {
+			this.processHoverStart(element);
+			this.pendingHovers.delete(element);
 		});
 
-		return attributes;
+		if (this.pendingHovers.size > 0) {
+			this.processingTimeout = window.setTimeout(() => this.processHoverBatch(), this.THROTTLE_MS);
+		}
+	}
+
+	private processHoverStart(element: HTMLElement): void {
+		const now = Date.now();
+		const existing = this.activeHovers.get(element);
+
+		if (existing) {
+			existing.hoverCount++;
+			existing.startTime = now;
+		} else {
+			this.activeHovers.set(element, {
+				startTime: now,
+				position: { x: 0, y: 0 },
+				hoverCount: 1,
+			});
+		}
+	}
+
+	private handleHoverEnd = (event: MouseEvent): void => {
+		const target = event.target as HTMLElement;
+		if (!target || !(target instanceof HTMLElement)) return;
+
+		if (!this.isTrackableElement(target)) return;
+
+		const hoverData = this.activeHovers.get(target);
+		if (hoverData) {
+			const now = Date.now();
+			const duration = now - hoverData.startTime;
+
+			if (duration >= this.HOVER_THRESHOLD) {
+				this.trackEvent("hover", {
+					element: this.getElementData(target),
+					duration: {
+						raw: duration,
+						formatted: this.formatDuration(duration),
+					},
+					position: hoverData.position,
+					metadata: {
+						elementType: this.getElementType(target),
+						elementContent: this.getElementContent(target),
+						category: this.getElementCategory(target),
+						interactable: true,
+						attributes: this.getRelevantAttributes(target),
+						eventTime: this.formatTimestamp(now),
+						startTime: this.formatTimestamp(hoverData.startTime),
+						endTime: this.formatTimestamp(now),
+						hoverCount: hoverData.hoverCount.toString(),
+					},
+				});
+			}
+			this.activeHovers.delete(target);
+		}
+	};
+
+	private detectAndObserveElements(): void {
+		// Find all trackable elements
+		const elements = document.querySelectorAll("*");
+		elements.forEach((element) => {
+			if (element instanceof HTMLElement && this.isTrackableElement(element)) {
+				const elementId = this.getElementIdentifier(element);
+				if (!this.activeHovers.has(element)) {
+					this.activeHovers.set(element, {
+						startTime: Date.now(),
+						position: { x: 0, y: 0 },
+						hoverCount: 0,
+					});
+				}
+			}
+		});
+
+		// Set up observer for dynamic elements
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.type === "childList") {
+					mutation.addedNodes.forEach((node) => {
+						if (node instanceof HTMLElement && this.isTrackableElement(node)) {
+							const elementId = this.getElementIdentifier(node);
+							if (!this.activeHovers.has(node)) {
+								this.activeHovers.set(node, {
+									startTime: Date.now(),
+									position: { x: 0, y: 0 },
+									hoverCount: 0,
+								});
+							}
+						}
+					});
+				}
+			});
+		});
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+		});
 	}
 
 	private getElementIdentifier(element: HTMLElement): string {
 		return `${element.tagName}-${element.id || element.className || Date.now()}`;
 	}
 
+	destroy(): void {
+		document.removeEventListener("mouseover", this.boundHoverStart);
+		document.removeEventListener("mouseout", this.boundHoverEnd);
+		if (this.processingTimeout) {
+			window.clearTimeout(this.processingTimeout);
+		}
+		this.pendingHovers.clear();
+	}
+
 	private getElementType(element: HTMLElement): string {
-		if (element instanceof HTMLButtonElement) return "button";
-		if (element instanceof HTMLAnchorElement) return "link";
-		if (element instanceof HTMLInputElement) return `input-${element.type}`;
-		if (element instanceof HTMLTextAreaElement) return "textarea";
-		if (element instanceof HTMLSelectElement) return "select";
-		if (element.getAttribute("role")) return `role-${element.getAttribute("role")}`;
-		if (element.onclick !== null) return "clickable";
-		if (getComputedStyle(element).cursor === "pointer") return "interactive";
+		if (element instanceof HTMLInputElement) {
+			return `input-${element.type}`;
+		}
+		if (element instanceof HTMLButtonElement) {
+			return "button";
+		}
+		if (element instanceof HTMLAnchorElement) {
+			return "link";
+		}
+		if (element instanceof HTMLImageElement) {
+			return "image";
+		}
+		if (element instanceof HTMLVideoElement) {
+			return "video";
+		}
+		if (element instanceof HTMLAudioElement) {
+			return "audio";
+		}
+		if (element instanceof HTMLSelectElement) {
+			return "select";
+		}
+		if (element instanceof HTMLTextAreaElement) {
+			return "textarea";
+		}
+
+		const role = element.getAttribute("role");
+		if (role) return `role-${role}`;
+
 		return element.tagName.toLowerCase();
 	}
 
 	private getElementContent(element: HTMLElement): string {
-		const parentLink = element.closest("a[href]");
-		if (parentLink) {
-			return parentLink.textContent?.trim() || parentLink.getAttribute("href") || "";
-		}
-
-		const text = element.textContent?.trim() || "";
-
 		if (element instanceof HTMLImageElement) {
-			return element.alt || element.src || text;
+			return element.alt || element.title || "image";
+		}
+		if (element instanceof HTMLInputElement) {
+			return element.placeholder || element.value || element.type;
+		}
+		if (element instanceof HTMLAnchorElement) {
+			return element.textContent?.trim() || element.title || element.href;
+		}
+		if (element instanceof HTMLButtonElement) {
+			return element.textContent?.trim() || element.value || "button";
 		}
 
-		if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-			return element.placeholder || element.value || text;
-		}
-
-		return text.length > 50 ? text.substring(0, 47) + "..." : text;
+		return element.textContent?.trim() || "";
 	}
 
-	destroy(): void {
-		document.removeEventListener("mouseover", this.boundHoverStart, true);
-		document.removeEventListener("mouseout", this.boundHoverEnd, true);
-		this.hoverStartTimes.clear();
-		if (this.options.debug) {
-			console.log("[Thorbis] Hover tracking destroyed at", this.formatTimestamp(Date.now()));
+	private getElementCategory(element: HTMLElement): string {
+		if (element instanceof HTMLAnchorElement) {
+			return "navigation";
 		}
+		if (element instanceof HTMLButtonElement || element.getAttribute("role") === "button") {
+			return "interactive";
+		}
+		if (element instanceof HTMLInputElement || element instanceof HTMLSelectElement || element instanceof HTMLTextAreaElement) {
+			return "form";
+		}
+		if (element instanceof HTMLImageElement || element instanceof HTMLVideoElement || element instanceof HTMLAudioElement) {
+			return "media";
+		}
+		if (element.closest("nav")) {
+			return "navigation";
+		}
+		if (element.closest("form")) {
+			return "form";
+		}
+
+		return "other";
+	}
+
+	private getRelevantAttributes(element: HTMLElement): Record<string, string> {
+		const relevantAttrs = ["id", "class", "name", "type", "role", "aria-label", "aria-describedby", "title", "placeholder", "href", "src", "alt"];
+
+		const attributes: Record<string, string> = {};
+
+		relevantAttrs.forEach((attr) => {
+			const value = element.getAttribute(attr);
+			if (value) {
+				attributes[attr] = value;
+			}
+		});
+
+		return attributes;
 	}
 }

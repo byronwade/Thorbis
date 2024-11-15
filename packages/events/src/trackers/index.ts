@@ -10,10 +10,11 @@ import { PerformanceTracker } from "./PerformanceTracker";
 import { SessionTracker } from "./SessionTracker";
 import { UserTracker } from "./UserTracker";
 import { SearchTracker } from "./SearchTracker";
+import { MouseTracker } from "./MouseTracker";
 import type { ThorbisEventOptions } from "../types";
 
 // Export all trackers
-export { BaseTracker, ClickTracker, ErrorTracker, FormTracker, HoverTracker, IdleTracker, InteractionTracker, NavigationTracker, PerformanceTracker, SessionTracker, UserTracker, SearchTracker };
+export { BaseTracker, ClickTracker, ErrorTracker, FormTracker, HoverTracker, IdleTracker, InteractionTracker, NavigationTracker, PerformanceTracker, SessionTracker, UserTracker, SearchTracker, MouseTracker };
 
 /**
  * Factory function to create tracker instances based on type
@@ -45,6 +46,8 @@ export const createTracker = (type: string, options: ThorbisEventOptions): BaseT
 			return new UserTracker(options);
 		case "search":
 			return new SearchTracker(options);
+		case "mouse":
+			return new MouseTracker(options);
 		default:
 			throw new Error(`Unknown tracker type: ${type}`);
 	}

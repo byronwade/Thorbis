@@ -1,3 +1,4 @@
+import type { BaseTracker } from "./trackers/BaseTracker";
 import type { StorageAdapter } from "./storage/StorageManager";
 
 export interface ElementData {
@@ -116,46 +117,71 @@ export interface EventData {
 	timestamp: number;
 	sessionId: string;
 	userId: string;
-	url?: string;
-	name?: string;
-	score?: number;
-	query?: string;
-	position?: {
-		x: number;
-		y: number;
+	startTime?: number;
+	referrer?: string;
+	userAgent?: string;
+	viewport?: {
+		width: number;
+		height: number;
 	};
-	clicks?: number;
-	timespan?: number;
-	positions?: Array<{ x: number; y: number }>;
-	timing?: {
-		ttfb: { raw: number; formatted: string };
-		domInteractive: { raw: number; formatted: string };
-
-		domComplete: { raw: number; formatted: string };
-		loadComplete: { raw: number; formatted: string };
-	};
-	element?: ElementData;
+	inactivityDuration?: number;
 	duration?: {
 		raw: number;
 		formatted: string;
 	};
+	element?: ElementData;
+	timing?: {
+		ttfb?: {
+			raw: number;
+			formatted: string;
+		};
+		domInteractive?: {
+			raw: number;
+			formatted: string;
+		};
+		domComplete?: {
+			raw: number;
+			formatted: string;
+		};
+		loadComplete?: {
+			raw: number;
+			formatted: string;
+		};
+	};
+	metrics?: {
+		interactions?: any;
+		performance?: any;
+		behavior?: any;
+	};
 	metadata?: {
+		summary?: {
+			totalLoadTime?: string;
+			timeToInteractive?: string;
+			timeToFirstByte?: string;
+		};
+		formatted?: string;
 		elementType?: string;
 		elementContent?: string;
-		formatted?: string;
-		referrer?: string;
-		path?: string;
-		from?: string;
-		to?: string;
 		category?: string;
 		interactable?: boolean;
 		attributes?: Record<string, string>;
-		summary?: {
-			totalLoadTime: string;
-			timeToInteractive: string;
-			timeToFirstByte: string;
-		};
+		from?: string;
+		to?: string;
+		type?: string;
+		paintType?: string;
+		eventTime?: string;
+		startTime?: string;
+		endTime?: string;
+		hoverCount?: string;
+		count?: number;
 	};
+	score?: number;
+	url?: string;
+	position?: { x: number; y: number };
+	clicks?: number;
+	timespan?: number;
+	positions?: Array<{ x: number; y: number }>;
+	name?: string;
 }
 
 export interface ThorbisEventOptions {
@@ -228,4 +254,10 @@ export interface UserProfile {
 			previous: string[];
 		};
 	};
+}
+
+export interface ThorbisInstance {
+	trackers: Map<string, BaseTracker>;
+	destroy: () => void;
+	getEvents?: () => EventData[];
 }
