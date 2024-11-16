@@ -1,5 +1,6 @@
 import type { EventData, ThorbisEventOptions } from "../types";
 import { EventProcessor } from "../utils/EventProcessor";
+import { debounce, formatTimestamp } from "../utils/performance";
 
 export abstract class BaseTracker {
 	protected options: ThorbisEventOptions;
@@ -7,13 +8,26 @@ export abstract class BaseTracker {
 	protected isEnabled: boolean = true;
 	private lastEventTime: number = 0;
 	private readonly MIN_EVENT_INTERVAL = 10; // Minimum ms between events
+	private readonly QUEUE_PROCESS_DELAY = 1000; // 1 second delay for batching
+	private static readonly TIME_UNITS = {
+		ns: 1e-6,
+		μs: 0.001,
+		ms: 1,
+		s: 1000,
+		m: 60000,
+		h: 3600000,
+	};
+	private _elementDataCache: WeakMap<HTMLElement, any> = new WeakMap();
 
 	constructor(options: ThorbisEventOptions) {
 		this.options = options;
+		// Fix the debounce return type to match async function
+		this.processQueue = debounce(async (...args: Parameters<typeof this.processQueue>) => {
+			await this.processQueue.apply(this, args);
+		}, this.QUEUE_PROCESS_DELAY);
 	}
 
 	abstract initialize(): void;
-	abstract destroy(): void;
 
 	protected trackEvent(type: string, data: Partial<EventData>) {
 		const now = Date.now();
@@ -55,66 +69,55 @@ export abstract class BaseTracker {
 	}
 
 	protected formatDuration(ms: number): string {
-		// For nanoseconds (less than 1 microsecond)
-		if (ms < 0.001) {
-			return `${(ms * 1000000).toFixed(0)}ns`;
+		// More efficient duration formatting using lookup table
+		if (ms < BaseTracker.TIME_UNITS.μs) return `${(ms / BaseTracker.TIME_UNITS.ns).toFixed(0)}ns`;
+		if (ms < BaseTracker.TIME_UNITS.ms) return `${(ms / BaseTracker.TIME_UNITS.μs).toFixed(0)}μs`;
+		if (ms < BaseTracker.TIME_UNITS.s) return `${ms.toFixed(0)}ms`;
+		if (ms < BaseTracker.TIME_UNITS.m) {
+			return `${(ms / BaseTracker.TIME_UNITS.s).toFixed(1)}s`;
 		}
-
-		// For microseconds (less than 1ms)
-		if (ms < 1) {
-			return `${(ms * 1000).toFixed(0)}μs`;
-		}
-
-		// For milliseconds (less than 1 second)
-		if (ms < 1000) {
-			return `${ms.toFixed(0)}ms`;
-		}
-
-		// For seconds (less than 1 minute)
-		if (ms < 60000) {
-			const seconds = ms / 1000;
-			return `${seconds.toFixed(1)}s`;
-		}
-
-		// For minutes (less than 1 hour)
-		if (ms < 3600000) {
-			const minutes = Math.floor(ms / 60000);
-			const seconds = ((ms % 60000) / 1000).toFixed(1);
+		if (ms < BaseTracker.TIME_UNITS.h) {
+			const minutes = Math.floor(ms / BaseTracker.TIME_UNITS.m);
+			const seconds = ((ms % BaseTracker.TIME_UNITS.m) / BaseTracker.TIME_UNITS.s).toFixed(1);
 			return `${minutes}m ${seconds}s`;
 		}
-
-		// For hours
-		const hours = Math.floor(ms / 3600000);
-		const minutes = Math.floor((ms % 3600000) / 60000);
-		const seconds = ((ms % 60000) / 1000).toFixed(1);
+		const hours = Math.floor(ms / BaseTracker.TIME_UNITS.h);
+		const minutes = Math.floor((ms % BaseTracker.TIME_UNITS.h) / BaseTracker.TIME_UNITS.m);
+		const seconds = ((ms % BaseTracker.TIME_UNITS.m) / BaseTracker.TIME_UNITS.s).toFixed(1);
 		return `${hours}h ${minutes}m ${seconds}s`;
 	}
 
 	protected formatTimestamp(timestamp: number): string {
-		const date = new Date(timestamp);
-		const hours = date.getHours().toString().padStart(2, "0");
-		const minutes = date.getMinutes().toString().padStart(2, "0");
-		const seconds = date.getSeconds().toString().padStart(2, "0");
-		const ms = date.getMilliseconds().toString().padStart(3, "0");
-		return `${hours}:${minutes}:${seconds}.${ms}`;
+		return formatTimestamp(timestamp);
 	}
 
 	public getElementData(element: HTMLElement) {
+		// Use WeakMap to cache element data
+		if (!this._elementDataCache) {
+			this._elementDataCache = new WeakMap();
+		}
+
+		let cachedData = this._elementDataCache.get(element);
+		if (cachedData) return cachedData;
+
 		const rect = element.getBoundingClientRect();
-		return {
+		const data = {
 			tag: element.tagName.toLowerCase(),
 			id: element.id || undefined,
 			className: element.className || undefined,
-			text: element.textContent?.trim() || undefined,
-			href: (element as HTMLAnchorElement).href || undefined,
+			text: element.textContent?.slice(0, 100)?.trim() || undefined, // Limit text length
+			href: element instanceof HTMLAnchorElement ? element.href : undefined,
 			dimensions: {
-				width: rect.width,
-				height: rect.height,
-				x: rect.x,
-				y: rect.y,
+				width: Math.round(rect.width),
+				height: Math.round(rect.height),
+				x: Math.round(rect.x),
+				y: Math.round(rect.y),
 			},
 			attributes: this.getElementAttributes(element),
 		};
+
+		this._elementDataCache.set(element, data);
+		return data;
 	}
 
 	protected getElementAttributes(element: HTMLElement): Record<string, string> {
@@ -125,24 +128,26 @@ export abstract class BaseTracker {
 		return attributes;
 	}
 
-	private async processQueue() {
+	protected async processQueue(): Promise<void> {
+		if (!this.eventQueue.length) return;
+
+		const batch = this.eventQueue.splice(0, this.options.batchSize ?? 50);
+
 		if (this.options.debug) {
-			console.log(`[Thorbis] Queue size: ${this.eventQueue.length}`);
+			console.log(`[Thorbis] Processing batch of ${batch.length} events`);
 		}
 
-		if (this.eventQueue.length > 0) {
-			const batch = this.eventQueue.splice(0, this.options.batchSize ?? 50);
+		try {
+			await EventProcessor.processEvents(batch, undefined, this.options.debug);
 
-			try {
-				await EventProcessor.processEvents(batch, undefined, this.options.debug);
-
-				if (process.env.NODE_ENV !== "development") {
-					this.options.onEvent?.(batch);
-				}
-			} catch (error) {
-				if (this.options.debug) {
-					console.warn("[Thorbis] Failed to process events:", error);
-				}
+			if (process.env.NODE_ENV !== "development") {
+				this.options.onEvent?.(batch);
+			}
+		} catch (error) {
+			if (this.options.debug) {
+				console.warn("[Thorbis] Failed to process events:", error);
+				// Requeue failed events
+				this.eventQueue.unshift(...batch);
 			}
 		}
 	}
@@ -169,5 +174,10 @@ export abstract class BaseTracker {
 
 	getEvents(): EventData[] {
 		return [...this.eventQueue];
+	}
+
+	public destroy(): void {
+		this.clearEvents();
+		this._elementDataCache = new WeakMap();
 	}
 }

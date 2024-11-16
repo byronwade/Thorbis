@@ -2,44 +2,47 @@ import { BaseTracker } from "./BaseTracker";
 import type { ThorbisEventOptions } from "../types";
 
 export class MouseTracker extends BaseTracker {
-	private lastPosition: { x: number; y: number } = { x: 0, y: 0 };
-	private boundMouseMove: (e: MouseEvent) => void;
+	private lastPosition = { x: 0, y: 0 };
+	private readonly boundMouseMove: (e: MouseEvent) => void;
+	private readonly THROTTLE_MS = 50;
+	private lastThrottleTime = 0;
 
 	constructor(options: ThorbisEventOptions) {
 		super(options);
-		this.boundMouseMove = this.handleMouseMove.bind(this);
+		this.boundMouseMove = (e: MouseEvent): void => {
+			const now = Date.now();
+			if (now - this.lastThrottleTime < this.THROTTLE_MS) {
+				return;
+			}
+			this.lastThrottleTime = now;
+
+			this.lastPosition.x = e.clientX;
+			this.lastPosition.y = e.clientY;
+
+			if (this.options.debug) {
+				this.trackEvent("mouse_move", {
+					position: this.lastPosition,
+					metadata: {
+						eventTime: this.formatTimestamp(now),
+					},
+				});
+			}
+		};
 	}
 
 	initialize(): void {
 		if (typeof window === "undefined") return;
 
-		// Start tracking immediately
-		document.addEventListener("mousemove", this.boundMouseMove, { passive: true });
+		document.addEventListener("mousemove", this.boundMouseMove, {
+			passive: true,
+		});
 
 		if (this.options.debug) {
 			console.log("[Thorbis] Mouse tracking initialized at", this.formatTimestamp(Date.now()));
 		}
 	}
 
-	private handleMouseMove = (e: MouseEvent): void => {
-		const now = Date.now();
-		const newPosition = { x: e.clientX, y: e.clientY };
-
-		// Track position change
-		this.lastPosition = newPosition;
-
-		// Only track position in debug mode
-		if (this.options.debug) {
-			this.trackEvent("mouse_move", {
-				position: newPosition,
-				metadata: {
-					eventTime: this.formatTimestamp(now),
-				},
-			});
-		}
-	};
-
-	getLastPosition(): { x: number; y: number } {
+	getLastPosition(): Readonly<{ x: number; y: number }> {
 		return this.lastPosition;
 	}
 
