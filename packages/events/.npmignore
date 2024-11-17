@@ -1,0 +1,13 @@
+src/
+tests/
+*.test.*
+*.spec.*
+tsconfig.json
+tsup.config.ts
+.eslintrc
+.prettierrc
+*.log
+.turbo
+.git
+node_modules
+coverage 

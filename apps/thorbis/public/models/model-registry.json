@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "models": {
+    "behavior": {
+      "path": "/models/behavior/model.json",
+      "version": "1.0.0"
+    }
+  },
+  "data": {
+    "collectedSessions": 0,
+    "lastTraining": null,
+    "nextTrainingDue": null
+  },
+  "updatedAt": null
+} 

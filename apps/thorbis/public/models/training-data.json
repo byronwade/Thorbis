@@ -1,0 +1,42 @@
+{
+  "behaviorData": {
+    "mouseMovements": [
+      [0, 0, 0],
+      [1, 1, 1]
+    ],
+    "scrollPatterns": [
+      [0, 0],
+      [1, 1]
+    ],
+    "clickPatterns": [
+      [0, 0],
+      [1, 1]
+    ],
+    "timeOnPage": [
+      60,
+      120
+    ],
+    "interactions": [
+      [0, 0],
+      [1, 1]
+    ]
+  },
+  "labels": {
+    "userTypes": [
+      "browser",
+      "researcher"
+    ],
+    "expertiseLevels": [
+      "beginner",
+      "expert"
+    ],
+    "intents": [
+      "reading",
+      "buying"
+    ],
+    "engagementScores": [
+      0.5,
+      0.8
+    ]
+  }
+} 
