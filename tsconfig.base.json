@@ -16,10 +16,10 @@
 		"jsx": "preserve",
 		"incremental": true,
 		"paths": {
-			"@thorbis/events": ["./packages/events/src"],
-			"@thorbis/events/*": ["./packages/events/src/*"]
-		},
-		"typeRoots": ["./node_modules/@types", "./node_modules"]
+			"thorbis": ["../thorbis/dist"],
+			"thorbis/*": ["../thorbis/dist/*"]
+		}
 	},
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
+	"include": ["**/*.ts", "**/*.tsx"]
 }
