@@ -1,23 +1,27 @@
 {
 	"name": "thorbis-monorepo",
 	"private": true,
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
 	"scripts": {
 		"build": "turbo run build",
-		"dev": "turbo run dev",
+		"dev": "turbo run dev --parallel",
 		"lint": "turbo run lint",
-		"clean": "turbo run clean"
+		"clean": "rm -rf node_modules && rm -rf .turbo && rm -rf **/dist && rm -rf **/.next"
 	},
 	"devDependencies": {
-		"turbo": "^2.3.0",
-		"@types/node": "^20.11.19",
-		"typescript": "^5.3.3"
+		"@types/node": "^20.0.0",
+		"@types/react": "^18.2.0",
+		"@types/react-dom": "^18.2.0",
+		"prettier": "^3.0.0",
+		"tsup": "^8.0.0",
+		"typescript": "^5.0.0",
+		"turbo": "latest",
+		"@changesets/cli": "^2.27.1",
+		"eslint": "^8.56.0",
+		"eslint-config-next": "14.2.16"
 	},
-	"packageManager": "bun@1.1.24",
-	"dependencies": {
-		"critters": "^0.0.25"
-	}
+	"type": "module",
+	"packageManager": "bun@1.1.29",
+	"workspaces": [
+		"apps/*"
+	]
 }
