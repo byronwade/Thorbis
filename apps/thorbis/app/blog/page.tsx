@@ -24,7 +24,7 @@ export default function BlogPage() {
 					<div className="mb-8 text-sm text-muted-foreground">By John Doe | Published on June 15, 2023</div>
 
 					<div className="relative w-full h-[400px] mb-8">
-						<Image src="https://picsum.photos/800/400" alt="Futuristic web development concept" fill className="rounded-lg object-cover" />
+						<Image src="https://picsum.photos/800/400" alt="Futuristic web development concept" width={800} height={400} priority className="rounded-lg object-cover mb-8 w-full" />
 					</div>
 
 					<p>The landscape of web development is constantly evolving, with new technologies and methodologies emerging at a rapid pace. As we look towards the future, it&apos;s clear that the way we build and interact with websites will undergo significant changes.</p>
