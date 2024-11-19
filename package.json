@@ -12,5 +12,8 @@
 	"devDependencies": {
 		"turbo": "^2.3.0"
 	},
-	"packageManager": "bun@1.1.29"
+	"packageManager": "bun@1.1.29",
+	"dependencies": {
+		"next-auth": "^4.24.10"
+	}
 }
