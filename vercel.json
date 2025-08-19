@@ -1,5 +1,7 @@
 {
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build"
+  "buildCommand": "npm run build",
+  "env": {
+    "NPM_FLAGS": "--legacy-peer-deps"
+  }
 }
