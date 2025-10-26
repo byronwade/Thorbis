@@ -192,7 +192,7 @@ export default function JobDetailsPage() {
 
   usePageLayout({
     maxWidth: "7xl",
-    padding: "md",
+    paddingY: "lg",
     gap: "md",
     showToolbar: true,
     showSidebar: true,

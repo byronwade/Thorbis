@@ -2,10 +2,9 @@
 
 import { usePageLayout } from "@/hooks/use-page-layout";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { FileText, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { StatCard } from "@/components/work/stat-card";
 
 interface Estimate {
   id: string;
@@ -98,7 +97,7 @@ function getStatusBadge(status: string) {
 export default function EstimatesPage() {
   usePageLayout({
     maxWidth: "7xl",
-    padding: "md",
+    paddingY: "lg",
     gap: "md",
     showToolbar: true,
     showSidebar: true,
@@ -156,47 +155,11 @@ export default function EstimatesPage() {
       actionLabel="Create Estimate"
       actionHref="/dashboard/work/estimates/new"
     >
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Total Value</CardTitle>
-            <FileText className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$125,890.00</div>
-            <p className="text-muted-foreground text-xs">All active estimates</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Accepted</CardTitle>
-            <CheckCircle2 className="size-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$78,450.00</div>
-            <p className="text-muted-foreground text-xs">62% conversion rate</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Pending</CardTitle>
-            <Clock className="size-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$35,440.00</div>
-            <p className="text-muted-foreground text-xs">15 estimates</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Declined</CardTitle>
-            <XCircle className="size-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$12,000.00</div>
-            <p className="text-muted-foreground text-xs">5 estimates</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-3 md:grid-cols-4">
+        <StatCard label="Total Value" value="$125,890.00" subtext="All active estimates" />
+        <StatCard label="Accepted" value="$78,450.00" subtext="62% conversion rate" trend="up" />
+        <StatCard label="Pending" value="$35,440.00" subtext="15 estimates" />
+        <StatCard label="Declined" value="$12,000.00" subtext="5 estimates" trend="down" />
       </div>
 
       <DataTable

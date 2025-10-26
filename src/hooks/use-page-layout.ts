@@ -40,6 +40,8 @@ export function usePageLayout(config: PageLayoutConfig) {
       setConfig({
         maxWidth: "7xl",
         padding: "md",
+        paddingX: undefined,
+        paddingY: undefined,
         gap: "md",
         showToolbar: true,
         showSidebar: true,

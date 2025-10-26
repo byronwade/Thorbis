@@ -2,12 +2,11 @@
 
 import { usePageLayout } from "@/hooks/use-page-layout";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { Wrench, Users, Calendar, DollarSign } from "lucide-react";
+import { StatCard } from "@/components/work/stat-card";
 
-interface MaintenancePlan {
+interface MaintenancePlan extends Record<string, unknown> {
   id: string;
   planName: string;
   customer: string;
@@ -72,7 +71,7 @@ function getStatusBadge(status: string) {
 export default function MaintenancePlansPage() {
   usePageLayout({
     maxWidth: "7xl",
-    padding: "md",
+    paddingY: "lg",
     gap: "md",
     showToolbar: true,
     showSidebar: true,
@@ -130,47 +129,11 @@ export default function MaintenancePlansPage() {
       actionLabel="Create Plan"
       actionHref="/dashboard/work/maintenance-plans/new"
     >
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Active Plans</CardTitle>
-            <Wrench className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">247</div>
-            <p className="text-muted-foreground text-xs">+12 this month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Enrolled Customers</CardTitle>
-            <Users className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">189</div>
-            <p className="text-muted-foreground text-xs">76% of active customers</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">This Month</CardTitle>
-            <Calendar className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">45</div>
-            <p className="text-muted-foreground text-xs">Scheduled visits</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Monthly Revenue</CardTitle>
-            <DollarSign className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$28,450</div>
-            <p className="text-muted-foreground text-xs">Recurring revenue</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-3 md:grid-cols-4">
+        <StatCard label="Active Plans" value="247" subtext="+12 this month" trend="up" />
+        <StatCard label="Enrolled Customers" value="189" subtext="76% of active customers" />
+        <StatCard label="This Month" value="45" subtext="Scheduled visits" />
+        <StatCard label="Monthly Revenue" value="$28,450" subtext="Recurring revenue" trend="up" />
       </div>
 
       <DataTable

@@ -2,10 +2,9 @@
 
 import { usePageLayout } from "@/hooks/use-page-layout";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { FileText, DollarSign, Clock, CheckCircle2 } from "lucide-react";
+import { StatCard } from "@/components/work/stat-card";
 
 interface Invoice {
   id: string;
@@ -92,7 +91,7 @@ function getStatusBadge(status: string) {
 export default function InvoicesPage() {
   usePageLayout({
     maxWidth: "7xl",
-    padding: "md",
+    paddingY: "lg",
     gap: "md",
     showToolbar: true,
     showSidebar: true,
@@ -144,47 +143,11 @@ export default function InvoicesPage() {
       actionLabel="Create Invoice"
       actionHref="/dashboard/work/invoices/new"
     >
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Total Invoiced</CardTitle>
-            <DollarSign className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$45,231.89</div>
-            <p className="text-muted-foreground text-xs">+20.1% from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Paid</CardTitle>
-            <CheckCircle2 className="size-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$38,445.67</div>
-            <p className="text-muted-foreground text-xs">85% collection rate</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Pending</CardTitle>
-            <Clock className="size-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$5,786.22</div>
-            <p className="text-muted-foreground text-xs">12 invoices</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Overdue</CardTitle>
-            <FileText className="size-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$1,000.00</div>
-            <p className="text-muted-foreground text-xs">3 invoices</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-3 md:grid-cols-4">
+        <StatCard label="Total Invoiced" value="$45,231.89" subtext="+20.1% from last month" trend="up" />
+        <StatCard label="Paid" value="$38,445.67" subtext="85% collection rate" />
+        <StatCard label="Pending" value="$5,786.22" subtext="12 invoices" />
+        <StatCard label="Overdue" value="$1,000.00" subtext="3 invoices" trend="down" />
       </div>
 
       <DataTable

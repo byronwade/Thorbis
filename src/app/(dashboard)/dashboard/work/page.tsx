@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  AlertCircle,
-  CheckCircle2,
-  ClipboardList,
-  Clock,
-  Filter,
-  Plus,
-} from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 import Link from "next/link";
 import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { JobsTable } from "@/components/work/jobs-table";
 import { usePageLayout } from "@/hooks/use-page-layout";
 import type { Job } from "@/lib/db/schema";
@@ -138,7 +130,7 @@ const mockJobs: Job[] = [
 export default function JobsPage() {
   usePageLayout({
     maxWidth: "7xl",
-    padding: "md",
+    paddingY: "lg",
     gap: "md",
     showToolbar: true,
     showSidebar: true,
@@ -165,55 +157,6 @@ export default function JobsPage() {
             </Link>
           </Button>
         </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Total Jobs</CardTitle>
-            <ClipboardList className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">{mockJobs.length}</div>
-            <p className="text-muted-foreground text-xs">Active work orders</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">In Progress</CardTitle>
-            <Clock className="size-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">
-              {mockJobs.filter((j) => j.status === "in_progress").length}
-            </div>
-            <p className="text-muted-foreground text-xs">Currently working</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Scheduled</CardTitle>
-            <AlertCircle className="size-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">
-              {mockJobs.filter((j) => j.status === "scheduled").length}
-            </div>
-            <p className="text-muted-foreground text-xs">Upcoming jobs</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Completed</CardTitle>
-            <CheckCircle2 className="size-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">
-              {mockJobs.filter((j) => j.status === "completed").length}
-            </div>
-            <p className="text-muted-foreground text-xs">This month</p>
-          </CardContent>
-        </Card>
       </div>
 
       <JobStatusPipeline />

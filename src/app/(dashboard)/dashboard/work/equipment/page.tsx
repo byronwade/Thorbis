@@ -2,19 +2,123 @@
 
 import { usePageLayout } from "@/hooks/use-page-layout";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Package, Wrench, AlertCircle, CheckCircle2 } from "lucide-react";
+import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
+import { StatCard } from "@/components/work/stat-card";
+
+interface Equipment extends Record<string, unknown> {
+  id: string;
+  assetId: string;
+  name: string;
+  type: string;
+  assignedTo: string;
+  lastService: string;
+  nextService: string;
+  status: string;
+}
+
+const mockEquipment: Equipment[] = [
+  {
+    id: "1",
+    assetId: "EQP-001",
+    name: "2023 Ford F-150 (Truck #1)",
+    type: "Vehicle",
+    assignedTo: "John Smith",
+    lastService: "Jan 5, 2025",
+    nextService: "Apr 5, 2025",
+    status: "available",
+  },
+  {
+    id: "2",
+    assetId: "EQP-002",
+    name: "Pipe Threading Machine",
+    type: "Tool",
+    assignedTo: "Workshop",
+    lastService: "Dec 15, 2024",
+    nextService: "Mar 15, 2025",
+    status: "available",
+  },
+  {
+    id: "3",
+    assetId: "EQP-003",
+    name: "Ladder 32ft Extension",
+    type: "Equipment",
+    assignedTo: "Mike Johnson",
+    lastService: "Jan 10, 2025",
+    nextService: "—",
+    status: "in-use",
+  },
+  {
+    id: "4",
+    assetId: "EQP-004",
+    name: "Power Drill Set",
+    type: "Tool",
+    assignedTo: "Sarah Williams",
+    lastService: "Jan 1, 2025",
+    nextService: "—",
+    status: "maintenance",
+  },
+];
+
+function getStatusBadge(status: string) {
+  if (status === "available") return <Badge>Available</Badge>;
+  if (status === "in-use") return <Badge variant="secondary">In Use</Badge>;
+  return <Badge variant="destructive">Maintenance</Badge>;
+}
 
 export default function EquipmentPage() {
   usePageLayout({
     maxWidth: "7xl",
-    padding: "md",
+    paddingY: "lg",
     gap: "md",
     showToolbar: true,
     showSidebar: true,
   });
+
+  const columns: DataTableColumn<Equipment>[] = [
+    {
+      key: "assetId",
+      header: "Asset ID",
+      sortable: true,
+      filterable: true,
+      render: (equipment) => <span className="font-medium">{equipment.assetId}</span>,
+    },
+    {
+      key: "name",
+      header: "Name",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "type",
+      header: "Type",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "assignedTo",
+      header: "Assigned To",
+      sortable: true,
+      filterable: true,
+    },
+    {
+      key: "lastService",
+      header: "Last Service",
+      sortable: true,
+    },
+    {
+      key: "nextService",
+      header: "Next Service",
+      sortable: true,
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      filterable: true,
+      render: (equipment) => getStatusBadge(equipment.status),
+    },
+  ];
 
   return (
     <WorkPageLayout
@@ -23,116 +127,21 @@ export default function EquipmentPage() {
       actionLabel="Add Equipment"
       actionHref="/dashboard/work/equipment/new"
     >
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Total Equipment</CardTitle>
-            <Package className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">87</div>
-            <p className="text-muted-foreground text-xs">Company assets</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Available</CardTitle>
-            <CheckCircle2 className="size-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">72</div>
-            <p className="text-muted-foreground text-xs">Ready for use</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">In Maintenance</CardTitle>
-            <Wrench className="size-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">8</div>
-            <p className="text-muted-foreground text-xs">Under service</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Needs Attention</CardTitle>
-            <AlertCircle className="size-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">7</div>
-            <p className="text-muted-foreground text-xs">Requires service</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-3 md:grid-cols-4">
+        <StatCard label="Total Equipment" value="87" subtext="Company assets" />
+        <StatCard label="Available" value="72" subtext="Ready for use" trend="up" />
+        <StatCard label="In Maintenance" value="8" subtext="Under service" />
+        <StatCard label="Needs Attention" value="7" subtext="Requires service" trend="down" />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Equipment & Tools</CardTitle>
-          <CardDescription>Company equipment, tools, and vehicles inventory</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Asset ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Assigned To</TableHead>
-                <TableHead>Last Service</TableHead>
-                <TableHead>Next Service</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">EQP-001</TableCell>
-                <TableCell>2023 Ford F-150 (Truck #1)</TableCell>
-                <TableCell>Vehicle</TableCell>
-                <TableCell>John Smith</TableCell>
-                <TableCell>Jan 5, 2025</TableCell>
-                <TableCell>Apr 5, 2025</TableCell>
-                <TableCell>
-                  <Badge>Available</Badge>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">EQP-002</TableCell>
-                <TableCell>Pipe Threading Machine</TableCell>
-                <TableCell>Tool</TableCell>
-                <TableCell>Workshop</TableCell>
-                <TableCell>Dec 15, 2024</TableCell>
-                <TableCell>Mar 15, 2025</TableCell>
-                <TableCell>
-                  <Badge>Available</Badge>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">EQP-003</TableCell>
-                <TableCell>Ladder 32ft Extension</TableCell>
-                <TableCell>Equipment</TableCell>
-                <TableCell>Mike Johnson</TableCell>
-                <TableCell>Jan 10, 2025</TableCell>
-                <TableCell>—</TableCell>
-                <TableCell>
-                  <Badge variant="secondary">In Use</Badge>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">EQP-004</TableCell>
-                <TableCell>Power Drill Set</TableCell>
-                <TableCell>Tool</TableCell>
-                <TableCell>Sarah Williams</TableCell>
-                <TableCell>Jan 1, 2025</TableCell>
-                <TableCell>—</TableCell>
-                <TableCell>
-                  <Badge variant="destructive">Maintenance</Badge>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <DataTable
+        data={mockEquipment}
+        columns={columns}
+        keyField="id"
+        itemsPerPage={10}
+        searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
+        emptyMessage="No equipment found."
+      />
     </WorkPageLayout>
   );
 }

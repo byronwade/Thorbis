@@ -38,7 +38,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         <SidebarInset className="w-full">
           {config.showToolbar && <AppToolbar />}
           {isFullWidth ? (
-            <main className="flex w-full flex-1 flex-col">{children}</main>
+            <main className="flex w-full flex-1 flex-col py-6">{children}</main>
           ) : (
             <main
               className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}
