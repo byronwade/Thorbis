@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function FinancesPage() {

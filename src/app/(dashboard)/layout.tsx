@@ -39,7 +39,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
             <main
               className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}
             >
-              <div className={maxWidthClass}>{children}</div>
+              <div className={`w-full ${maxWidthClass}`}>{children}</div>
             </main>
           )}
         </SidebarInset>

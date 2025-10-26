@@ -62,9 +62,9 @@ type CallState = {
 
 /**
  * UI store state
+ * Note: Theme management moved to next-themes provider
  */
 type UIState = {
-  theme: "light" | "dark" | "system";
   sidebarOpen: boolean;
   modals: Record<string, ModalState>;
   notifications: Array<{
@@ -78,9 +78,9 @@ type UIState = {
 
 /**
  * UI store actions
+ * Note: setTheme removed - use next-themes' useTheme hook instead
  */
 type UIActions = {
-  setTheme: (theme: UIState["theme"]) => void;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
   openModal: (type: string, data?: unknown) => void;
@@ -122,7 +122,6 @@ export type UIStore = UIState & UIActions;
  * Initial state
  */
 const initialState: UIState = {
-  theme: "dark",
   sidebarOpen: true,
   modals: {},
   notifications: [],
@@ -152,10 +151,11 @@ const initialState: UIState = {
  * @example
  * ```tsx
  * import { useUIStore } from "@/lib/store/ui-store";
+ * import { useTheme } from "next-themes";
  *
  * function Header() {
- *   const { theme, sidebarOpen } = useUIStore();
- *   const { setTheme, toggleSidebar } = useUIStore();
+ *   const { sidebarOpen, toggleSidebar } = useUIStore();
+ *   const { theme, setTheme } = useTheme();
  *
  *   return (
  *     <header>
@@ -171,15 +171,6 @@ export const useUIStore = create<UIStore>()(
     persist(
       immer((set) => ({
         ...initialState,
-
-        setTheme: (theme) =>
-          set(
-            (state) => {
-              state.theme = theme;
-            },
-            false,
-            "setTheme"
-          ),
 
         toggleSidebar: () =>
           set(
@@ -590,7 +581,6 @@ export const useUIStore = create<UIStore>()(
       {
         name: "ui-store",
         partialize: (state) => ({
-          theme: state.theme,
           sidebarOpen: state.sidebarOpen,
         }),
       }
@@ -601,9 +591,9 @@ export const useUIStore = create<UIStore>()(
 
 /**
  * Selectors for optimized component re-renders
+ * Note: theme selector removed - use next-themes' useTheme hook instead
  */
 export const uiSelectors = {
-  theme: (state: UIStore) => state.theme,
   sidebarOpen: (state: UIStore) => state.sidebarOpen,
   modals: (state: UIStore) => state.modals,
   notifications: (state: UIStore) => state.notifications,

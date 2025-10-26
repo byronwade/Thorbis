@@ -26,26 +26,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const theme = localStorage.getItem('ui-store');
-                const parsedTheme = theme ? JSON.parse(theme).state.theme : 'dark';
-                if (parsedTheme === 'dark' || (!theme && parsedTheme !== 'light')) {
-                  document.documentElement.classList.add('dark');
-                } else if (parsedTheme === 'system') {
-                  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (isDark) document.documentElement.classList.add('dark');
-                }
-              } catch (e) {
-                document.documentElement.classList.add('dark');
-              }
-            `,
-          }}
-        />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

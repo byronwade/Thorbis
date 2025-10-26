@@ -3,9 +3,9 @@
 import { Menu, Settings, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { useUIStore } from "@/lib/store";
 import { IntegrationsDropdown } from "./integrations-dropdown";
 
 type NavItemStatus = "beta" | "new" | "updated" | null;
@@ -152,8 +152,7 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
 
 export function AppHeader() {
   const pathname = usePathname();
-  const theme = useUIStore((state) => state.theme);
-  const setTheme = useUIStore((state) => state.setTheme);
+  const { theme, setTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);

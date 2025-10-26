@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Card,
@@ -134,8 +136,8 @@ export default function SchedulePage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Calendar View</CardTitle>
             <CardDescription>
@@ -152,7 +154,7 @@ export default function SchedulePage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Common scheduling tasks</CardDescription>

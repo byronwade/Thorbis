@@ -2,12 +2,12 @@
 
 import { HeroSection } from "@/components/hero/hero-section";
 import { Footer } from "@/components/layout/footer";
-import {
-  ArchitectureSection,
-  ComplianceSection,
-  FeaturesSection,
-  IntegrationsSection,
-} from "./scroll-sections";
+// import {
+//   ArchitectureSection,
+//   ComplianceSection,
+//   IntegrationsSection,
+// } from "./scroll-sections";
+import { ImprovedFeaturesSection } from "./improved-features";
 import {
   CustomerSuccessSection,
   ROICalculatorSection,
@@ -28,7 +28,7 @@ export function ScrollExperience() {
       <TrustStatsSection />
 
       {/* Features Section */}
-      <FeaturesSection />
+      <ImprovedFeaturesSection />
 
       {/* Customer Success Stories - Real results */}
       <CustomerSuccessSection />
@@ -40,17 +40,17 @@ export function ScrollExperience() {
       <IndustrySolutionsSection />
 
       {/* Architecture Section */}
-      <section className="bg-black py-24">
+      {/* <section className="bg-black py-24">
         <ArchitectureSection />
-      </section>
+      </section> */}
 
       {/* Integrations Showcase Section */}
-      <section className="bg-black py-24">
+      {/* <section className="bg-black py-24">
         <IntegrationsSection />
-      </section>
+      </section> */}
 
       {/* Compliance Section */}
-      <ComplianceSection />
+      {/* <ComplianceSection /> */}
 
       {/* Pricing Preview - Clear next step */}
       <PricingPreviewSection />

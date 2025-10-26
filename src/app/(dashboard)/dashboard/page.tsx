@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { Calendar, DollarSign, Info, Phone, TrendingUp } from "lucide-react";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { CallActivityChart } from "@/components/dashboard/call-activity-chart";
