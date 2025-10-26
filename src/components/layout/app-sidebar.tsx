@@ -368,12 +368,47 @@ const navigationSections = {
       ],
     },
     {
-      label: "Operations",
+      label: "Communication",
       items: [
         {
-          title: "Booking",
-          url: "/dashboard/settings/booking",
+          title: "Communications",
+          url: "/dashboard/settings/communications",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/communications",
+            },
+            {
+              title: "Email",
+              url: "/dashboard/settings/communications/email",
+            },
+            {
+              title: "SMS & Text",
+              url: "/dashboard/settings/communications/sms",
+            },
+            {
+              title: "Phone & Voice",
+              url: "/dashboard/settings/communications/phone",
+            },
+            {
+              title: "Notifications",
+              url: "/dashboard/settings/communications/notifications",
+            },
+            {
+              title: "Templates",
+              url: "/dashboard/settings/communications/templates",
+            },
+          ],
         },
+        {
+          title: "Company Feed",
+          url: "/dashboard/settings/company-feed",
+        },
+      ],
+    },
+    {
+      label: "Work",
+      items: [
         {
           title: "Jobs",
           url: "/dashboard/settings/jobs",
@@ -383,13 +418,99 @@ const navigationSections = {
           url: "/dashboard/settings/customer-intake",
         },
         {
-          title: "Customer Portal",
-          url: "/dashboard/settings/customer-portal",
+          title: "Booking",
+          url: "/dashboard/settings/booking",
+        },
+        {
+          title: "Checklists",
+          url: "/dashboard/settings/checklists",
+        },
+        {
+          title: "Job Fields",
+          url: "/dashboard/settings/job-fields",
         },
       ],
     },
     {
-      label: "Financial",
+      label: "Schedule",
+      items: [
+        {
+          title: "Schedule Settings",
+          url: "/dashboard/settings/schedule",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/schedule",
+            },
+            {
+              title: "Calendar Settings",
+              url: "/dashboard/settings/schedule/calendar",
+            },
+            {
+              title: "Availability",
+              url: "/dashboard/settings/schedule/availability",
+            },
+            {
+              title: "Service Areas",
+              url: "/dashboard/settings/schedule/service-areas",
+            },
+            {
+              title: "Dispatch Rules",
+              url: "/dashboard/settings/schedule/dispatch",
+            },
+            {
+              title: "Team Scheduling",
+              url: "/dashboard/settings/schedule/team",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: "Customers",
+      items: [
+        {
+          title: "Customer Settings",
+          url: "/dashboard/settings/customers",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/customers",
+            },
+            {
+              title: "Preferences",
+              url: "/dashboard/settings/customers/preferences",
+            },
+            {
+              title: "Loyalty & Rewards",
+              url: "/dashboard/settings/customers/loyalty",
+            },
+            {
+              title: "Notifications",
+              url: "/dashboard/settings/customers/notifications",
+            },
+            {
+              title: "Privacy & Consent",
+              url: "/dashboard/settings/customers/privacy",
+            },
+            {
+              title: "Custom Fields",
+              url: "/dashboard/settings/customers/custom-fields",
+            },
+          ],
+        },
+        {
+          title: "Customer Portal",
+          url: "/dashboard/settings/customer-portal",
+        },
+        {
+          title: "Tags",
+          url: "/dashboard/settings/tags",
+        },
+      ],
+    },
+    {
+      label: "Finances",
       items: [
         {
           title: "Invoices",
@@ -445,6 +566,87 @@ const navigationSections = {
             },
           ],
         },
+        {
+          title: "Finance",
+          url: "/dashboard/settings/finance",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/finance",
+            },
+            {
+              title: "Bank Accounts",
+              url: "/dashboard/settings/finance/bank-accounts",
+            },
+            {
+              title: "Virtual Buckets",
+              url: "/dashboard/settings/finance/virtual-buckets",
+            },
+            {
+              title: "Consumer Financing",
+              url: "/dashboard/settings/finance/consumer-financing",
+            },
+            {
+              title: "Business Financing",
+              url: "/dashboard/settings/finance/business-financing",
+            },
+            {
+              title: "Bookkeeping",
+              url: "/dashboard/settings/finance/bookkeeping",
+            },
+            {
+              title: "Accounting",
+              url: "/dashboard/settings/finance/accounting",
+            },
+            {
+              title: "Debit Cards",
+              url: "/dashboard/settings/finance/debit-cards",
+            },
+            {
+              title: "Gas Cards",
+              url: "/dashboard/settings/finance/gas-cards",
+            },
+            {
+              title: "Gift Cards",
+              url: "/dashboard/settings/finance/gift-cards",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: "Reporting",
+      items: [
+        {
+          title: "Reporting Settings",
+          url: "/dashboard/settings/reporting",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/reporting",
+            },
+            {
+              title: "Report Templates",
+              url: "/dashboard/settings/reporting/templates",
+            },
+            {
+              title: "Scheduled Reports",
+              url: "/dashboard/settings/reporting/scheduled",
+            },
+            {
+              title: "Distribution",
+              url: "/dashboard/settings/reporting/distribution",
+            },
+            {
+              title: "Metrics & KPIs",
+              url: "/dashboard/settings/reporting/metrics",
+            },
+            {
+              title: "Dashboards",
+              url: "/dashboard/settings/reporting/dashboards",
+            },
+          ],
+        },
       ],
     },
     {
@@ -455,37 +657,55 @@ const navigationSections = {
           url: "/dashboard/settings/marketing",
         },
         {
-          title: "Communications",
-          url: "/dashboard/settings/communications",
-        },
-      ],
-    },
-    {
-      label: "Data & Tools",
-      items: [
-        {
-          title: "Checklists",
-          url: "/dashboard/settings/checklists",
-        },
-        {
-          title: "Job Fields",
-          url: "/dashboard/settings/job-fields",
-        },
-        {
-          title: "Tags",
-          url: "/dashboard/settings/tags",
-        },
-        {
           title: "Lead Sources",
           url: "/dashboard/settings/lead-sources",
         },
       ],
     },
     {
-      label: "Integrations",
+      label: "Automation",
       items: [
         {
-          title: "Integration Hub",
+          title: "Automation Settings",
+          url: "/dashboard/settings/automation",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/automation",
+            },
+            {
+              title: "Workflows",
+              url: "/dashboard/settings/automation/workflows",
+            },
+            {
+              title: "Triggers & Actions",
+              url: "/dashboard/settings/automation/triggers",
+            },
+            {
+              title: "AI Automation",
+              url: "/dashboard/settings/automation/ai",
+            },
+            {
+              title: "Conditional Logic",
+              url: "/dashboard/settings/automation/logic",
+            },
+            {
+              title: "Data Filters",
+              url: "/dashboard/settings/automation/filters",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: "System",
+      items: [
+        {
+          title: "Data Import/Export",
+          url: "/dashboard/settings/data-import-export",
+        },
+        {
+          title: "Integrations",
           url: "/dashboard/settings/integrations",
         },
         {

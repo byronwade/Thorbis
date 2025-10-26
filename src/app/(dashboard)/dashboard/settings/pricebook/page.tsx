@@ -8,8 +8,10 @@ import {
   Loader2,
   Package,
   Percent,
+  Plus,
   Receipt,
   Save,
+  Trash2,
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
@@ -39,6 +41,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -47,7 +58,37 @@ const DEFAULT_MAX_DISCOUNT = 20;
 const DEFAULT_LOW_STOCK_THRESHOLD = 10;
 const PERCENTAGE_MULTIPLIER = 100;
 
+interface LaborRate {
+  id: string;
+  description: string;
+  hourlyCost: number;
+  hourlyPrice: number;
+  defaultFlatRate: number;
+  isDefault: boolean;
+}
+
+interface MaterialMarkup {
+  id: string;
+  name: string;
+  costFrom: number;
+  costTo: number | null;
+  markupPercent: number;
+  profitPercent: number;
+}
+
+interface TaxRate {
+  id: string;
+  name: string;
+  rate: number;
+  applyToLabor: boolean;
+  applyToMaterials: boolean;
+  isDefault: boolean;
+}
+
 type PriceBookSettings = {
+  // Pricing Model
+  pricingModel: "flat_rate" | "hourly" | "both";
+
   // Pricing Strategy
   defaultMarkupPercent: number;
   useMarkupPricing: boolean;
@@ -87,7 +128,147 @@ export default function PriceBookSettingsPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [laborRates, setLaborRates] = useState<LaborRate[]>([
+    {
+      id: "1",
+      description: "Default",
+      hourlyCost: 278.0,
+      hourlyPrice: 350.0,
+      defaultFlatRate: 0,
+      isDefault: true,
+    },
+    {
+      id: "2",
+      description: "Overtime - Default",
+      hourlyCost: 0.0,
+      hourlyPrice: 609.0,
+      defaultFlatRate: 0,
+      isDefault: false,
+    },
+    {
+      id: "3",
+      description: "Overtime - Property Management",
+      hourlyCost: 0.0,
+      hourlyPrice: 277.5,
+      defaultFlatRate: 0,
+      isDefault: false,
+    },
+    {
+      id: "4",
+      description: "Property Management",
+      hourlyCost: 60.0,
+      hourlyPrice: 185.0,
+      defaultFlatRate: 0,
+      isDefault: false,
+    },
+    {
+      id: "5",
+      description: "Break Even - May 2025",
+      hourlyCost: 278.0,
+      hourlyPrice: 350.0,
+      defaultFlatRate: 0,
+      isDefault: false,
+    },
+  ]);
+
+  const [materialMarkups, setMaterialMarkups] = useState<MaterialMarkup[]>([
+    {
+      id: "1",
+      name: "Markup 1",
+      costFrom: 0.01,
+      costTo: 1.0,
+      markupPercent: 400.0,
+      profitPercent: 80.0,
+    },
+    {
+      id: "2",
+      name: "Markup 2",
+      costFrom: 1.01,
+      costTo: 5.0,
+      markupPercent: 300.0,
+      profitPercent: 75.0,
+    },
+    {
+      id: "3",
+      name: "Markup 3",
+      costFrom: 5.01,
+      costTo: 10.0,
+      markupPercent: 250.0,
+      profitPercent: 71.43,
+    },
+    {
+      id: "4",
+      name: "Markup 4",
+      costFrom: 10.01,
+      costTo: 25.0,
+      markupPercent: 200.0,
+      profitPercent: 66.67,
+    },
+    {
+      id: "5",
+      name: "Markup 5",
+      costFrom: 25.01,
+      costTo: 50.0,
+      markupPercent: 150.0,
+      profitPercent: 60.0,
+    },
+    {
+      id: "6",
+      name: "Markup 6",
+      costFrom: 50.01,
+      costTo: 75.0,
+      markupPercent: 125.0,
+      profitPercent: 55.56,
+    },
+    {
+      id: "7",
+      name: "Markup 7",
+      costFrom: 75.01,
+      costTo: 100.0,
+      markupPercent: 100.0,
+      profitPercent: 50.0,
+    },
+    {
+      id: "8",
+      name: "Markup 8",
+      costFrom: 100.01,
+      costTo: 300.0,
+      markupPercent: 75.0,
+      profitPercent: 42.86,
+    },
+    {
+      id: "9",
+      name: "Markup 9",
+      costFrom: 300.01,
+      costTo: 500.0,
+      markupPercent: 60.0,
+      profitPercent: 37.5,
+    },
+    {
+      id: "10",
+      name: "Markup 10",
+      costFrom: 500.01,
+      costTo: null,
+      markupPercent: 50.0,
+      profitPercent: 33.33,
+    },
+  ]);
+
+  const [taxRates, setTaxRates] = useState<TaxRate[]>([
+    {
+      id: "1",
+      name: "Sales Tax",
+      rate: 8.5,
+      applyToLabor: true,
+      applyToMaterials: true,
+      isDefault: true,
+    },
+  ]);
+
   const [settings, setSettings] = useState<PriceBookSettings>({
+    // Pricing Model
+    pricingModel: "both", // flat_rate, hourly, or both
+
     // Pricing Strategy
     defaultMarkupPercent: DEFAULT_MARKUP_PERCENT,
     useMarkupPricing: true,
@@ -123,6 +304,124 @@ export default function PriceBookSettingsPage() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Labor Rate handlers
+  const addLaborRate = () => {
+    const newRate: LaborRate = {
+      id: Math.random().toString(),
+      description: "",
+      hourlyCost: 0,
+      hourlyPrice: 0,
+      defaultFlatRate: 0,
+      isDefault: false,
+    };
+    setLaborRates((prev) => [...prev, newRate]);
+  };
+
+  const removeLaborRate = (id: string) => {
+    setLaborRates((prev) => prev.filter((rate) => rate.id !== id));
+  };
+
+  const updateLaborRate = (
+    id: string,
+    field: keyof LaborRate,
+    value: string | number | boolean
+  ) => {
+    setLaborRates((prev) =>
+      prev.map((rate) =>
+        rate.id === id ? { ...rate, [field]: value } : rate
+      )
+    );
+  };
+
+  // Material Markup handlers
+  const addMaterialMarkup = () => {
+    if (materialMarkups.length >= 100) {
+      return; // Max 100 tiers
+    }
+    const lastMarkup = materialMarkups[materialMarkups.length - 1];
+    const newMarkup: MaterialMarkup = {
+      id: Math.random().toString(),
+      name: `Markup ${materialMarkups.length + 1}`,
+      costFrom: lastMarkup?.costTo ? lastMarkup.costTo + 0.01 : 0.01,
+      costTo: null,
+      markupPercent: 50.0,
+      profitPercent: 33.33,
+    };
+    // Update previous last markup to have a costTo if it was null
+    if (lastMarkup && lastMarkup.costTo === null) {
+      setMaterialMarkups((prev) =>
+        prev.map((markup, index) =>
+          index === prev.length - 1
+            ? { ...markup, costTo: newMarkup.costFrom - 0.01 }
+            : markup
+        )
+      );
+    }
+    setMaterialMarkups((prev) => [...prev, newMarkup]);
+  };
+
+  const removeMaterialMarkup = (id: string) => {
+    setMaterialMarkups((prev) => {
+      const filtered = prev.filter((markup) => markup.id !== id);
+      // Update last markup to have null costTo
+      if (filtered.length > 0) {
+        filtered[filtered.length - 1].costTo = null;
+      }
+      return filtered;
+    });
+  };
+
+  const updateMaterialMarkup = (
+    id: string,
+    field: keyof MaterialMarkup,
+    value: string | number | null
+  ) => {
+    setMaterialMarkups((prev) =>
+      prev.map((markup) => {
+        if (markup.id === id) {
+          const updated = { ...markup, [field]: value };
+          // Auto-calculate profit percent when markup percent changes
+          if (field === "markupPercent" && typeof value === "number") {
+            updated.profitPercent = Number(
+              ((value / (100 + value)) * 100).toFixed(2)
+            );
+          }
+          return updated;
+        }
+        return markup;
+      })
+    );
+  };
+
+  // Tax Rate handlers
+  const addTaxRate = () => {
+    const newTaxRate: TaxRate = {
+      id: Math.random().toString(),
+      name: "",
+      rate: 0,
+      applyToLabor: true,
+      applyToMaterials: true,
+      isDefault: false,
+    };
+    setTaxRates((prev) => [...prev, newTaxRate]);
+  };
+
+  const removeTaxRate = (id: string) => {
+    setTaxRates((prev) => prev.filter((tax) => tax.id !== id));
+  };
+
+  const updateTaxRate = (
+    id: string,
+    field: keyof TaxRate,
+    value: string | number | boolean
+  ) => {
+    setTaxRates((prev) =>
+      prev.map((tax) =>
+        tax.id === id ? { ...tax, [field]: value } : tax
+      )
+    );
+  };
+
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => {
@@ -148,6 +447,357 @@ export default function PriceBookSettingsPage() {
         </div>
 
         <Separator />
+
+        {/* Pricing Model Selection */}
+        <Card className="border-primary/50 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <DollarSign className="h-4 w-4" />
+              Pricing Model
+              <Tooltip>
+                <TooltipTrigger>
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs">
+                    Choose how your shop prices services: flat rate, hourly, or both
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </CardTitle>
+            <CardDescription>
+              This determines which pricing sections are enabled and visible throughout the system
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <Label className="font-medium text-sm">
+                  How does your shop price services?
+                </Label>
+                <Select
+                  onValueChange={(value) =>
+                    updateSetting("pricingModel", value as "flat_rate" | "hourly" | "both")
+                  }
+                  value={settings.pricingModel}
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="flat_rate">
+                      Flat Rate Only - Fixed prices per service
+                    </SelectItem>
+                    <SelectItem value="hourly">
+                      Hourly Only - Time and materials
+                    </SelectItem>
+                    <SelectItem value="both">
+                      Both - Flat rate and hourly pricing
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="rounded-lg border bg-background p-4">
+                <p className="mb-2 font-medium text-sm">
+                  {settings.pricingModel === "flat_rate" && "Flat Rate Pricing"}
+                  {settings.pricingModel === "hourly" && "Hourly Pricing"}
+                  {settings.pricingModel === "both" && "Hybrid Pricing Model"}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {settings.pricingModel === "flat_rate" &&
+                    "Your shop uses fixed prices for services. Labor rates and hourly pricing will be hidden. Flat rate pricing provides predictable costs for customers and can increase profitability."}
+                  {settings.pricingModel === "hourly" &&
+                    "Your shop charges by the hour plus materials. Flat rate options will be hidden. Hourly pricing is ideal for unpredictable jobs or when customers prefer detailed time tracking."}
+                  {settings.pricingModel === "both" &&
+                    "Your shop offers both pricing models. All pricing options will be available. This gives you flexibility to choose the best pricing method for each type of job."}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Labor Rates - Only show if hourly or both */}
+        {(settings.pricingModel === "hourly" || settings.pricingModel === "both") && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <DollarSign className="h-4 w-4" />
+                  Labor Rates
+                </CardTitle>
+                <CardDescription>
+                  Set hourly costs and pricing for different labor types
+                </CardDescription>
+              </div>
+              <Button onClick={addLaborRate} size="sm" variant="outline">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Rate
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Hourly Cost</TableHead>
+                    <TableHead className="text-right">Hourly Price</TableHead>
+                    <TableHead className="text-right">
+                      Default Flat Rate
+                    </TableHead>
+                    <TableHead className="w-[100px]">Default</TableHead>
+                    <TableHead className="w-[80px]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {laborRates.map((rate) => (
+                    <TableRow key={rate.id}>
+                      <TableCell>
+                        <Input
+                          className="min-w-[200px]"
+                          onChange={(e) =>
+                            updateLaborRate(
+                              rate.id,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                          placeholder="e.g., Default"
+                          value={rate.description}
+                        />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground">$</span>
+                          <Input
+                            className="w-28 text-right"
+                            min="0"
+                            onChange={(e) =>
+                              updateLaborRate(
+                                rate.id,
+                                "hourlyCost",
+                                Number(e.target.value)
+                              )
+                            }
+                            step="0.01"
+                            type="number"
+                            value={rate.hourlyCost}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground">$</span>
+                          <Input
+                            className="w-28 text-right"
+                            min="0"
+                            onChange={(e) =>
+                              updateLaborRate(
+                                rate.id,
+                                "hourlyPrice",
+                                Number(e.target.value)
+                              )
+                            }
+                            step="0.01"
+                            type="number"
+                            value={rate.hourlyPrice}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground">$</span>
+                          <Input
+                            className="w-28 text-right"
+                            min="0"
+                            onChange={(e) =>
+                              updateLaborRate(
+                                rate.id,
+                                "defaultFlatRate",
+                                Number(e.target.value)
+                              )
+                            }
+                            step="0.01"
+                            type="number"
+                            value={rate.defaultFlatRate}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-center">
+                          {rate.isDefault && (
+                            <Badge variant="secondary">Default</Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => removeLaborRate(rate.id)}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+        )}
+
+        {/* Material Markups */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  Material Markups
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">
+                        Define markup percentages based on material cost ranges
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </CardTitle>
+                <CardDescription>
+                  Set tiered markup percentages based on material cost (up to
+                  100 tiers)
+                </CardDescription>
+              </div>
+              <Button
+                disabled={materialMarkups.length >= 100}
+                onClick={addMaterialMarkup}
+                size="sm"
+                variant="outline"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Tier ({materialMarkups.length}/100)
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Markups</TableHead>
+                    <TableHead className="text-right">Cost From</TableHead>
+                    <TableHead className="text-right">Cost To</TableHead>
+                    <TableHead className="text-right">Markup %</TableHead>
+                    <TableHead className="text-right">Profit %</TableHead>
+                    <TableHead className="w-[80px]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {materialMarkups.map((markup) => (
+                    <TableRow key={markup.id}>
+                      <TableCell>
+                        <span className="font-medium">{markup.name}</span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground">$</span>
+                          <Input
+                            className="w-28 text-right"
+                            min="0"
+                            onChange={(e) =>
+                              updateMaterialMarkup(
+                                markup.id,
+                                "costFrom",
+                                Number(e.target.value)
+                              )
+                            }
+                            step="0.01"
+                            type="number"
+                            value={markup.costFrom}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground">$</span>
+                          {markup.costTo !== null ? (
+                            <Input
+                              className="w-28 text-right"
+                              min="0"
+                              onChange={(e) =>
+                                updateMaterialMarkup(
+                                  markup.id,
+                                  "costTo",
+                                  Number(e.target.value)
+                                )
+                              }
+                              step="0.01"
+                              type="number"
+                              value={markup.costTo}
+                            />
+                          ) : (
+                            <span className="w-28 pr-3 text-right">—</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Input
+                            className="w-28 text-right"
+                            min="0"
+                            onChange={(e) =>
+                              updateMaterialMarkup(
+                                markup.id,
+                                "markupPercent",
+                                Number(e.target.value)
+                              )
+                            }
+                            step="0.01"
+                            type="number"
+                            value={markup.markupPercent}
+                          />
+                          <span className="text-muted-foreground">%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="text-muted-foreground">
+                          {markup.profitPercent.toFixed(2)}%
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => removeMaterialMarkup(markup.id)}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="mt-4 rounded-lg bg-muted p-4">
+              <p className="font-medium text-sm">Markup Calculation</p>
+              <p className="mt-1 text-muted-foreground text-xs">
+                Profit % = (Markup % ÷ (100 + Markup %)) × 100
+              </p>
+              <p className="mt-2 text-muted-foreground text-xs">
+                Example: A $10 item with 150% markup sells for $25 ($10 cost +
+                $15 markup), yielding 60% profit margin ($15 profit ÷ $25 sale
+                price).
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Pricing Strategy */}
         <Card>
@@ -395,7 +1045,8 @@ export default function PriceBookSettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Pricing Tiers */}
+        {/* Pricing Tiers - Only show if flat_rate or both */}
+        {(settings.pricingModel === "flat_rate" || settings.pricingModel === "both") && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -521,6 +1172,7 @@ export default function PriceBookSettingsPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
         {/* Item Management Settings */}
         <Card>

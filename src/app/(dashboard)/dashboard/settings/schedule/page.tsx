@@ -1,61 +1,61 @@
 "use client";
 
 import {
-  Bell,
-  Mail,
-  MessageSquare,
-  Phone,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  Zap,
   Settings,
-  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-const communicationsSections = [
+const scheduleSections = [
   {
-    title: "Email",
-    description: "Configure email addresses, signatures, and tracking",
-    icon: Mail,
-    href: "/dashboard/settings/communications/email",
+    title: "Calendar Settings",
+    description: "Configure calendar view, business hours, and time zones",
+    icon: Calendar,
+    href: "/dashboard/settings/schedule/calendar",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
   },
   {
-    title: "SMS & Text",
-    description: "Set up text messaging and auto-responses",
-    icon: MessageSquare,
-    href: "/dashboard/settings/communications/sms",
+    title: "Availability",
+    description: "Set technician availability and working hours",
+    icon: Clock,
+    href: "/dashboard/settings/schedule/availability",
     color: "text-green-500",
     bgColor: "bg-green-500/10",
   },
   {
-    title: "Phone & Voice",
-    description: "Manage phone system and voicemail settings",
-    icon: Phone,
-    href: "/dashboard/settings/communications/phone",
+    title: "Service Areas",
+    description: "Define service territories and travel time",
+    icon: MapPin,
+    href: "/dashboard/settings/schedule/service-areas",
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
   },
   {
-    title: "Notifications",
-    description: "Control customer and team notification preferences",
-    icon: Bell,
-    href: "/dashboard/settings/communications/notifications",
+    title: "Dispatch Rules",
+    description: "Automatic job assignment and routing",
+    icon: Zap,
+    href: "/dashboard/settings/schedule/dispatch",
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
   },
   {
-    title: "Templates",
-    description: "Create and manage message templates",
-    icon: FileText,
-    href: "/dashboard/settings/communications/templates",
+    title: "Team Scheduling",
+    description: "Manage crew assignments and capacity",
+    icon: Users,
+    href: "/dashboard/settings/schedule/team",
     color: "text-pink-500",
     bgColor: "bg-pink-500/10",
   },
 ];
 
-export default function CommunicationsSettingsPage() {
+export default function ScheduleSettingsPage() {
   usePageLayout({
     maxWidth: "7xl",
     padding: "md",
@@ -68,15 +68,15 @@ export default function CommunicationsSettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">
-          Communications Settings
+          Schedule Settings
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Configure how you communicate with customers and your team
+          Configure scheduling, dispatch, and availability settings
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {communicationsSections.map((section) => {
+        {scheduleSections.map((section) => {
           const Icon = section.icon;
           return (
             <Link href={section.href} key={section.title}>
@@ -110,14 +110,13 @@ export default function CommunicationsSettingsPage() {
             <Settings className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
             <div className="space-y-1">
               <p className="font-medium text-sm">
-                Communication Settings Overview
+                Schedule Settings Overview
               </p>
               <p className="text-muted-foreground text-sm">
-                These settings control how your business communicates with
-                customers and team members. Configure email addresses,
-                signatures, SMS auto-responses, phone greetings, and automated
-                notifications. Changes here affect how all outbound
-                communications are sent and displayed to recipients.
+                These settings control how appointments are scheduled, assigned,
+                and displayed. Configure your calendar view preferences, set
+                technician availability, define service areas, and establish
+                automatic dispatch rules to optimize your scheduling workflow.
               </p>
             </div>
           </div>

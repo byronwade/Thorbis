@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { HelpDropdown } from "./help-dropdown";
 import { IntegrationsDropdown } from "./integrations-dropdown";
+import { ToolsDropdown } from "./tools-dropdown";
 
 type NavItemStatus = "beta" | "new" | "updated" | null;
 
@@ -458,6 +460,12 @@ export function AppHeader() {
             </svg>
             <span className="sr-only">Notifications</span>
           </button>
+
+          {/* Tools */}
+          <ToolsDropdown />
+
+          {/* Help */}
+          <HelpDropdown />
 
           {/* Integrations */}
           <IntegrationsDropdown />

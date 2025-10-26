@@ -1,61 +1,61 @@
 "use client";
 
 import {
+  UserCircle,
+  Star,
   Bell,
-  Mail,
-  MessageSquare,
-  Phone,
+  Shield,
   Settings,
-  FileText,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-const communicationsSections = [
+const customerSections = [
   {
-    title: "Email",
-    description: "Configure email addresses, signatures, and tracking",
-    icon: Mail,
-    href: "/dashboard/settings/communications/email",
+    title: "Customer Preferences",
+    description: "Default settings for customer profiles and fields",
+    icon: UserCircle,
+    href: "/dashboard/settings/customers/preferences",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
   },
   {
-    title: "SMS & Text",
-    description: "Set up text messaging and auto-responses",
-    icon: MessageSquare,
-    href: "/dashboard/settings/communications/sms",
+    title: "Loyalty & Rewards",
+    description: "Customer loyalty programs and point systems",
+    icon: Star,
+    href: "/dashboard/settings/customers/loyalty",
+    color: "text-yellow-500",
+    bgColor: "bg-yellow-500/10",
+  },
+  {
+    title: "Customer Notifications",
+    description: "How customers receive updates and alerts",
+    icon: Bell,
+    href: "/dashboard/settings/customers/notifications",
     color: "text-green-500",
     bgColor: "bg-green-500/10",
   },
   {
-    title: "Phone & Voice",
-    description: "Manage phone system and voicemail settings",
-    icon: Phone,
-    href: "/dashboard/settings/communications/phone",
+    title: "Privacy & Consent",
+    description: "GDPR, data retention, and consent management",
+    icon: Shield,
+    href: "/dashboard/settings/customers/privacy",
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
   },
   {
-    title: "Notifications",
-    description: "Control customer and team notification preferences",
-    icon: Bell,
-    href: "/dashboard/settings/communications/notifications",
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10",
-  },
-  {
-    title: "Templates",
-    description: "Create and manage message templates",
-    icon: FileText,
-    href: "/dashboard/settings/communications/templates",
+    title: "Custom Fields",
+    description: "Add custom fields to customer profiles",
+    icon: Tag,
+    href: "/dashboard/settings/customers/custom-fields",
     color: "text-pink-500",
     bgColor: "bg-pink-500/10",
   },
 ];
 
-export default function CommunicationsSettingsPage() {
+export default function CustomersSettingsPage() {
   usePageLayout({
     maxWidth: "7xl",
     padding: "md",
@@ -68,15 +68,15 @@ export default function CommunicationsSettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">
-          Communications Settings
+          Customer Settings
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Configure how you communicate with customers and your team
+          Configure customer management preferences and features
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {communicationsSections.map((section) => {
+        {customerSections.map((section) => {
           const Icon = section.icon;
           return (
             <Link href={section.href} key={section.title}>
@@ -110,14 +110,14 @@ export default function CommunicationsSettingsPage() {
             <Settings className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
             <div className="space-y-1">
               <p className="font-medium text-sm">
-                Communication Settings Overview
+                Customer Settings Overview
               </p>
               <p className="text-muted-foreground text-sm">
-                These settings control how your business communicates with
-                customers and team members. Configure email addresses,
-                signatures, SMS auto-responses, phone greetings, and automated
-                notifications. Changes here affect how all outbound
-                communications are sent and displayed to recipients.
+                These settings control how customer data is managed, stored, and
+                used throughout the system. Configure default preferences, set
+                up loyalty programs, manage notifications, ensure privacy
+                compliance, and customize customer profile fields to match your
+                business needs.
               </p>
             </div>
           </div>
