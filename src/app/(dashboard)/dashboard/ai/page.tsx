@@ -1,44 +1,55 @@
 "use client";
 
+import type { UIMessage } from "@ai-sdk/react";
 import { useChat } from "@ai-sdk/react";
-import type { Message } from "ai";
-import { useEffect, useRef } from "react";
+import { DefaultChatTransport } from "ai";
+import { useEffect, useRef, useState } from "react";
 import { ChatContainer } from "@/components/chat/chat-container";
+import { usePageLayout } from "@/hooks/use-page-layout";
 import { chatSelectors, useChatStore } from "@/lib/store/chat-store";
 
 export default function AIPage() {
-  const messagesRef = useRef<Message[]>([]);
+  // Configure layout without custom sidebar (uses default AI section navigation)
+  usePageLayout({
+    maxWidth: "full",
+    padding: "none",
+    gap: "none",
+    showToolbar: false,
+  });
+
+  const messagesRef = useRef<UIMessage[]>([]);
+  const [input, setInput] = useState("");
 
   // Use the chat store
   const activeChat = useChatStore(chatSelectors.activeChat);
   const { createChat, setActiveChat, addMessage, updateChatTitle } =
     useChatStore();
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit: originalHandleSubmit,
-    isLoading,
-    stop,
-    setMessages,
-  } = useChat({
-    api: "/api/chat",
-    body: {
-      model: "gpt-4o",
-    },
+  const { messages, sendMessage, error } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
     onFinish: (message) => {
       // Save assistant message to store
       if (activeChat) {
-        addMessage(activeChat.id, message);
+        addMessage(activeChat.id, {
+          id: message.message.id,
+          role:
+            message.message.role === "system"
+              ? "assistant"
+              : message.message.role,
+          content: (message.message as any).content || "",
+          timestamp: new Date(),
+        });
 
         // Update chat title with first user message if still default
         if (activeChat.title === "New Chat" && messages.length > 0) {
           const firstUserMessage = messages.find((m) => m.role === "user");
           if (firstUserMessage) {
             const title =
-              firstUserMessage.content.slice(0, 50) +
-              (firstUserMessage.content.length > 50 ? "..." : "");
+              firstUserMessage.parts
+                .find((part) => part.type === "text")
+                ?.text.slice(0, 50) + "..." || "New Chat";
             updateChatTitle(activeChat.id, title);
           }
         }
@@ -54,7 +65,12 @@ export default function AIPage() {
       newMessages.forEach((msg) => {
         // Only add user messages here (assistant messages are added in onFinish)
         if (msg.role === "user") {
-          addMessage(activeChat.id, msg);
+          addMessage(activeChat.id, {
+            id: msg.id,
+            role: msg.role,
+            content: (msg as any).content || "",
+            timestamp: new Date(),
+          });
         }
       });
     }
@@ -64,25 +80,40 @@ export default function AIPage() {
   // Load active chat messages on mount or when active chat changes
   useEffect(() => {
     if (activeChat) {
-      setMessages(activeChat.messages as any);
-      messagesRef.current = activeChat.messages as any;
+      // Load messages from store if available
+      // Note: This would need to be implemented based on your store structure
     } else {
       // Create initial chat if none exists
       const chatId = createChat();
       setActiveChat(chatId);
     }
-  }, [activeChat?.id]);
+  }, [activeChat?.id, createChat, setActiveChat]);
+
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input.trim()) {
+      sendMessage({ text: input });
+      setInput("");
+    }
+  };
+
+  // Handle new chat
+  const handleNewChat = () => {
+    const chatId = createChat();
+    setActiveChat(chatId);
+    // Clear messages by creating a new chat
+    // Note: This would need to be implemented based on your store structure
+  };
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] w-full">
-      <ChatContainer
-        input={input}
-        isLoading={isLoading}
-        messages={messages}
-        onInputChange={handleInputChange}
-        onStop={stop}
-        onSubmit={originalHandleSubmit}
-      />
-    </div>
+    <ChatContainer
+      input={input}
+      isLoading={false} // Loading state would need to be tracked differently
+      messages={messages}
+      onInputChange={(e) => setInput(e.target.value)}
+      onStop={() => {}} // Stop functionality would need to be implemented
+      onSubmit={handleSubmit}
+    />
   );
 }

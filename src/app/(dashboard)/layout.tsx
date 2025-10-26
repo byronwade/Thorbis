@@ -1,11 +1,50 @@
-import type { Metadata } from "next";
+"use client";
+
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { AppToolbar } from "@/components/layout/app-toolbar";
+import { IncomingCallNotification } from "@/components/layout/incoming-call-notification";
+import {
+  getGapClass,
+  getMaxWidthClass,
+  getPaddingClass,
+  LayoutConfigProvider,
+  useLayoutConfig,
+} from "@/components/layout/layout-config-provider";
+import {
+  SidebarInset,
+  SidebarProvider as UISidebarProvider,
+} from "@/components/ui/sidebar";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Stratos",
-  description: "Manage your business with Stratos",
-};
+function DashboardContent({ children }: { children: React.ReactNode }) {
+  const { config } = useLayoutConfig();
+
+  const maxWidthClass = getMaxWidthClass(config.maxWidth);
+  const paddingClass = getPaddingClass(config.padding);
+  const gapClass = getGapClass(config.gap);
+  const isFullWidth = config.maxWidth === "full";
+  const showSidebar = config.showSidebar !== false;
+
+  return (
+    <UISidebarProvider>
+      <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
+        {showSidebar && <AppSidebar />}
+        <SidebarInset className="w-full">
+          {config.showToolbar && <AppToolbar />}
+          {isFullWidth ? (
+            <main className="flex w-full flex-1 flex-col">{children}</main>
+          ) : (
+            <main
+              className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}
+            >
+              <div className={maxWidthClass}>{children}</div>
+            </main>
+          )}
+        </SidebarInset>
+      </div>
+    </UISidebarProvider>
+  );
+}
 
 export default function DashboardLayout({
   children,
@@ -13,22 +52,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Header */}
+    <LayoutConfigProvider>
       <AppHeader />
-
-      {/* Main content area with sidebar */}
-      <div className="flex flex-1">
-        {/* Left-aligned sidebar */}
-        <AppSidebar />
-
-        {/* Main content */}
-        <main className="flex-1">
-          <div className="container-wrapper 3xl:fixed:px-0 py-2">
-            <div className="3xl:fixed:container w-full px-6">{children}</div>
-          </div>
-        </main>
-      </div>
-    </div>
+      <DashboardContent>{children}</DashboardContent>
+      <IncomingCallNotification />
+    </LayoutConfigProvider>
   );
 }

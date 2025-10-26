@@ -1,41 +1,196 @@
 "use client";
 
-import { Building2, ChevronDownIcon, User } from "lucide-react";
+import { Menu, Settings, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { useHoverGradient } from "@/hooks/use-mouse-position";
-import { useUIStore, useUserStore } from "@/lib/store";
+import { useUIStore } from "@/lib/store";
+import { IntegrationsDropdown } from "./integrations-dropdown";
+
+type NavItemStatus = "beta" | "new" | "updated" | null;
+
+type NavItem = {
+  label: string;
+  href: string;
+  status?: NavItemStatus;
+  isSpecial?: boolean; // For Ask Stratos gradient style
+};
+
+type NavItemWithMobile = NavItem & {
+  mobileIcon?: string;
+  mobileIconBg?: string;
+  mobileIconColor?: string;
+};
+
+const navigationItems: NavItemWithMobile[] = [
+  {
+    label: "Ask Stratos",
+    href: "/dashboard/ai",
+    status: "beta",
+    isSpecial: true,
+    mobileIcon: "S",
+    mobileIconBg: "bg-gradient-to-r from-blue-500 to-cyan-400",
+    mobileIconColor: "text-white",
+  },
+  {
+    label: "Today",
+    href: "/dashboard",
+    mobileIcon: "T",
+    mobileIconBg: "bg-primary/10",
+    mobileIconColor: "text-primary",
+  },
+  {
+    label: "Communication",
+    href: "/dashboard/communication",
+    mobileIcon: "C",
+    mobileIconBg: "bg-green-500/10",
+    mobileIconColor: "text-green-600",
+  },
+  {
+    label: "Work",
+    href: "/dashboard/work",
+    status: "new",
+    mobileIcon: "W",
+    mobileIconBg: "bg-teal-500/10",
+    mobileIconColor: "text-teal-600",
+  },
+  {
+    label: "Schedule",
+    href: "/dashboard/schedule",
+    mobileIcon: "S",
+    mobileIconBg: "bg-orange-500/10",
+    mobileIconColor: "text-orange-600",
+  },
+  {
+    label: "Customers",
+    href: "/dashboard/customers",
+    mobileIcon: "C",
+    mobileIconBg: "bg-purple-500/10",
+    mobileIconColor: "text-purple-600",
+  },
+  {
+    label: "Finances",
+    href: "/dashboard/finance",
+    status: "updated",
+    mobileIcon: "F",
+    mobileIconBg: "bg-emerald-500/10",
+    mobileIconColor: "text-emerald-600",
+  },
+  {
+    label: "Reporting",
+    href: "/dashboard/reports",
+    mobileIcon: "R",
+    mobileIconBg: "bg-blue-500/10",
+    mobileIconColor: "text-blue-600",
+  },
+  {
+    label: "Marketing",
+    href: "/dashboard/marketing",
+    mobileIcon: "M",
+    mobileIconBg: "bg-pink-500/10",
+    mobileIconColor: "text-pink-600",
+  },
+  {
+    label: "Automation",
+    href: "/dashboard/automation",
+    status: "beta",
+    mobileIcon: "A",
+    mobileIconBg: "bg-indigo-500/10",
+    mobileIconColor: "text-indigo-600",
+  },
+];
+
+function StatusIndicator({ status }: { status?: NavItemStatus }) {
+  if (!status) {
+    return null;
+  }
+
+  // For beta, show badge; for new/updated, show blue circle
+  if (status === "beta") {
+    return (
+      <span className="-top-1.5 absolute right-0 rounded border border-blue-600 bg-blue-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide">
+        Beta
+      </span>
+    );
+  }
+
+  // Small blue circle for "new" and "updated"
+  return (
+    <span
+      className="-top-1 absolute right-0 size-2 rounded-full bg-blue-500"
+      title={status === "new" ? "New" : "Updated"}
+    />
+  );
+}
+
+function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
+  if (!status) {
+    return null;
+  }
+
+  const styles = {
+    beta: "bg-blue-500 text-white",
+    new: "bg-green-500 text-white",
+    updated: "bg-orange-500 text-white",
+  };
+
+  const labels = {
+    beta: "Beta",
+    new: "New",
+    updated: "Updated",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 font-semibold text-[0.65rem] uppercase tracking-wide ${styles[status]}`}
+    >
+      {labels[status]}
+    </span>
+  );
+}
 
 export function AppHeader() {
   const pathname = usePathname();
   const theme = useUIStore((state) => state.theme);
   const setTheme = useUIStore((state) => state.setTheme);
-  const user = useUserStore((state) => state.user);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Mouse tracking refs for each button
-  const todayRef = useHoverGradient();
-  const communicationRef = useHoverGradient();
-  const scheduleRef = useHoverGradient();
-  const customersRef = useHoverGradient();
-  const financeRef = useHoverGradient();
-  const reportsRef = useHoverGradient();
-  const marketingRef = useHoverGradient();
-  const stratosRef = useHoverGradient();
-  const settingsRef = useHoverGradient();
-  const businessRef = useHoverGradient();
-  const themeRef = useHoverGradient();
-  const notificationsRef = useHoverGradient();
-  const profileRef = useHoverGradient();
-  const logoutRef = useHoverGradient();
+  // Handle closing animation
+  const ANIMATION_DURATION = 300; // Match the duration of the animation
+  const closeMobileMenu = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsMobileMenuOpen(false);
+      setIsClosing(false);
+    }, ANIMATION_DURATION);
+  }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        closeMobileMenu();
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobileMenuOpen, closeMobileMenu]);
+
+  const themeRef = useRef<HTMLButtonElement>(null);
+  const notificationsRef = useRef<HTMLButtonElement>(null);
+  const settingsCogRef = useRef<HTMLAnchorElement>(null);
 
   const toggleTheme = () => {
     if (theme === "light") {
@@ -48,33 +203,25 @@ export function AppHeader() {
   };
 
   return (
-    <div className="container-wrapper 3xl:fixed:px-0 px-6">
-      <div className="**:data-[slot=separator]:!h-4 3xl:fixed:container flex h-(--header-height) items-center gap-2">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-14 items-center gap-2 px-2">
         {/* Mobile menu button */}
         <button
-          aria-controls="mobile-menu"
-          aria-expanded="false"
-          aria-haspopup="dialog"
-          className="extend-touch-target !p-0 flex h-8 shrink-0 touch-manipulation items-center justify-start gap-2.5 whitespace-nowrap rounded-md px-4 py-2 font-medium text-sm outline-none transition-all hover:bg-transparent hover:text-accent-foreground focus-visible:border-ring focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-ring/50 active:bg-transparent disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-3 aria-invalid:border-destructive aria-invalid:ring-destructive/20 lg:hidden dark:aria-invalid:ring-destructive/40 dark:hover:bg-transparent [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-          data-slot="popover-trigger"
-          data-state="closed"
+          className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           type="button"
         >
-          <div className="relative flex h-8 w-4 items-center justify-center">
-            <div className="relative size-4">
-              <span className="absolute top-1 left-0 block h-0.5 w-4 bg-foreground transition-all duration-100" />
-              <span className="absolute top-2.5 left-0 block h-0.5 w-4 bg-foreground transition-all duration-100" />
-            </div>
-            <span className="sr-only">Toggle Menu</span>
-          </div>
-          <span className="flex h-8 items-center font-medium text-lg leading-none">
-            Menu
-          </span>
+          {isMobileMenuOpen ? (
+            <X className="size-4" />
+          ) : (
+            <Menu className="size-4" />
+          )}
+          <span className="sr-only">Toggle Menu</span>
         </button>
 
         {/* Logo */}
         <Link
-          className="hidden size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 lg:flex dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+          className="hidden size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 lg:flex dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
           data-slot="button"
           href="/"
         >
@@ -98,133 +245,169 @@ export function AppHeader() {
 
         {/* Main Navigation */}
         <nav className="hidden items-center gap-0.5 lg:flex">
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname === "/dashboard" ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard"
-            ref={todayRef}
-          >
-            Today
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/communication") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/communication"
-            ref={communicationRef}
-          >
-            Communication
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/schedule") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/schedule"
-            ref={scheduleRef}
-          >
-            Schedule
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/customers") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/customers"
-            ref={customersRef}
-          >
-            Customers
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/finance") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/finance"
-            ref={financeRef}
-          >
-            Finances
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/reports") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/reports"
-            ref={reportsRef}
-          >
-            Reporting
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/marketing") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/marketing"
-            ref={marketingRef}
-          >
-            Marketing
-          </Link>
-          <Link
-            className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/ai") ? "text-white shadow-lg" : "text-foreground"}`}
-            data-slot="button"
-            href="/dashboard/ai"
-            ref={stratosRef}
-          >
-            {pathname.startsWith("/dashboard/ai") && (
-              <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-600 opacity-80" />
-            )}
-            {!pathname.startsWith("/dashboard/ai") && (
-              <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-blue-500/20 via-cyan-400/20 to-blue-600/20 opacity-60" />
-            )}
-            <span className="relative z-10">Stratos</span>
-          </Link>
-          <Link
-            className={`hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${pathname.startsWith("/dashboard/settings") ? "text-primary" : ""}`}
-            data-slot="button"
-            href="/dashboard/settings"
-            ref={settingsRef}
-          >
-            Settings
-          </Link>
+          {navigationItems.map((item) => {
+            const isActive =
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.href);
+
+            if (item.isSpecial) {
+              return (
+                <div className="relative" key={item.href}>
+                  <Link
+                    className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${isActive ? "text-white shadow-lg" : "text-foreground"}`}
+                    data-slot="button"
+                    href={item.href}
+                  >
+                    {isActive && (
+                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary via-primary/80 to-primary/60 opacity-80" />
+                    )}
+                    {!isActive && (
+                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary/40 via-primary/60 to-primary/80 opacity-80" />
+                    )}
+                    <span className="relative z-10">{item.label}</span>
+                  </Link>
+                  <StatusIndicator status={item.status} />
+                </div>
+              );
+            }
+
+            return (
+              <div className="relative" key={item.href}>
+                <Link
+                  className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${isActive ? "bg-accent text-accent-foreground" : ""}`}
+                  data-slot="button"
+                  href={item.href}
+                >
+                  {item.label}
+                </Link>
+                <StatusIndicator status={item.status} />
+              </div>
+            );
+          })}
         </nav>
+
+        {/* Mobile Navigation Sheet */}
+        {isMobileMenuOpen && (
+          <>
+            {/* Overlay */}
+            <button
+              aria-label="Close mobile menu"
+              className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm duration-300 lg:hidden ${
+                isClosing ? "fade-out animate-out" : "fade-in animate-in"
+              }`}
+              onClick={closeMobileMenu}
+              type="button"
+            />
+
+            {/* Sidebar Sheet */}
+            <div
+              className={`fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-background shadow-2xl duration-300 lg:hidden ${
+                isClosing
+                  ? "slide-out-to-left animate-out"
+                  : "slide-in-from-left animate-in"
+              }`}
+              ref={mobileMenuRef}
+            >
+              {/* Header with close button */}
+              <div className="flex items-center justify-between border-b p-4">
+                <h2 className="font-semibold text-lg">Navigation</h2>
+                <button
+                  className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent"
+                  onClick={closeMobileMenu}
+                  type="button"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {/* Scrollable content */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="flex flex-col space-y-1 p-4">
+                  {/* AI Section */}
+                  <div className="mb-4">
+                    <h3 className="mb-2 px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+                      AI Assistant
+                    </h3>
+                    {navigationItems
+                      .filter((item) => item.isSpecial)
+                      .map((item) => {
+                        const isActive =
+                          item.href === "/dashboard"
+                            ? pathname === "/dashboard"
+                            : pathname.startsWith(item.href);
+                        return (
+                          <Link
+                            className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:shadow-sm ${isActive ? "bg-accent text-accent-foreground shadow-sm" : "text-foreground"}`}
+                            href={item.href}
+                            key={item.href}
+                            onClick={closeMobileMenu}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
+                              >
+                                <span
+                                  className={`font-bold text-xs ${item.mobileIconColor}`}
+                                >
+                                  {item.mobileIcon}
+                                </span>
+                              </div>
+                              <span>{item.label}</span>
+                            </div>
+                            <MobileStatusBadge status={item.status} />
+                          </Link>
+                        );
+                      })}
+                  </div>
+
+                  {/* Main Navigation */}
+                  <div className="mb-4">
+                    <h3 className="mb-2 px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+                      Main Navigation
+                    </h3>
+                    {navigationItems
+                      .filter((item) => !item.isSpecial)
+                      .map((item) => {
+                        const isActive =
+                          item.href === "/dashboard"
+                            ? pathname === "/dashboard"
+                            : pathname.startsWith(item.href);
+                        return (
+                          <Link
+                            className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:shadow-sm ${isActive ? "bg-accent text-accent-foreground shadow-sm" : "text-foreground"}`}
+                            href={item.href}
+                            key={item.href}
+                            onClick={closeMobileMenu}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
+                              >
+                                <span
+                                  className={`font-bold text-xs ${item.mobileIconColor}`}
+                                >
+                                  {item.mobileIcon}
+                                </span>
+                              </div>
+                              <span>{item.label}</span>
+                            </div>
+                            <MobileStatusBadge status={item.status} />
+                          </Link>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Right side controls */}
         <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
-          {/* Business Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 gap-2 whitespace-nowrap rounded-md rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-                data-slot="button"
-                ref={businessRef}
-                type="button"
-              >
-                <Building2 className="size-4" />
-                <span className="hidden sm:inline">Business</span>
-                <ChevronDownIcon className="size-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Switch Business</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Building2 className="mr-2 size-4" />
-                <span>Acme Corporation</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Building2 className="mr-2 size-4" />
-                <span>TechStart Inc</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <span>Create new business</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span>Manage businesses</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Separator
-            className="h-4"
-            data-orientation="vertical"
-            data-slot="separator"
-            orientation="vertical"
-          />
-
           {/* Theme Toggle */}
           <button
-            className="hover-gradient group/toggle extend-touch-target inline-flex size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+            className="hover-gradient group/toggle extend-touch-target inline-flex size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
             data-slot="button"
             onClick={toggleTheme}
             ref={themeRef}
@@ -256,7 +439,7 @@ export function AppHeader() {
 
           {/* Notifications */}
           <button
-            className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+            className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
             ref={notificationsRef}
             title="Notifications"
             type="button"
@@ -277,58 +460,28 @@ export function AppHeader() {
             <span className="sr-only">Notifications</span>
           </button>
 
+          {/* Integrations */}
+          <IntegrationsDropdown />
+
           <Separator
-            className="h-4"
+            className="h-4 bg-border"
             data-orientation="vertical"
             data-slot="separator"
             orientation="vertical"
           />
 
-          {/* Profile Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="hover-gradient inline-flex h-8 shrink-0 items-center justify-center gap-1.5 gap-2 whitespace-nowrap rounded-md rounded-md px-3 font-medium text-sm outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-                data-slot="button"
-                ref={profileRef}
-                type="button"
-              >
-                <User className="size-4" />
-                <span className="hidden sm:inline">
-                  {user?.name || "Guest"}
-                </span>
-                <ChevronDownIcon className="size-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>
-                <div className="flex flex-col space-y-1">
-                  <p className="font-medium text-sm leading-none">
-                    {user?.name || "Guest"}
-                  </p>
-                  <p className="text-muted-foreground text-xs leading-none">
-                    {user?.email || "Not logged in"}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/billing">Billing</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/settings">Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="logout-gradient" ref={logoutRef}>
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Settings */}
+          <Link
+            className={`hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${pathname.startsWith("/dashboard/settings") ? "bg-accent text-accent-foreground" : ""}`}
+            href="/dashboard/settings"
+            ref={settingsCogRef}
+            title="Settings"
+          >
+            <Settings className="size-4" />
+            <span className="sr-only">Settings</span>
+          </Link>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

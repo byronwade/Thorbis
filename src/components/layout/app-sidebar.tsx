@@ -1,246 +1,512 @@
 "use client";
 
-import { HelpCircle } from "lucide-react";
+import {
+  AudioWaveform,
+  BarChart,
+  Calendar,
+  Command,
+  DollarSign,
+  GalleryVerticalEnd,
+  Home,
+  Inbox,
+  Mail,
+  Megaphone,
+  MessageSquare,
+  Phone,
+  Settings,
+  Sparkles,
+  Ticket,
+  Users,
+  Wrench,
+  X,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useLayoutConfig } from "@/components/layout/layout-config-provider";
+import { NavChatHistory } from "@/components/layout/nav-chat-history";
+import { NavFlexible } from "@/components/layout/nav-flexible";
+import { NavGrouped } from "@/components/layout/nav-grouped";
+import { NavMain } from "@/components/layout/nav-main";
+import { NavUser } from "@/components/layout/nav-user";
+import { TeamSwitcher } from "@/components/layout/team-switcher";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useChatStore, chatSelectors } from "@/lib/store/chat-store";
-import { MessageIcon, PlusIcon, TrashIcon } from "@/components/chat/icons";
-import { Button } from "@/components/ui/button";
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { useChatStore } from "@/lib/store/chat-store";
 
-// Navigation configuration - focused on daily field service operations
+// Navigation sections for each route
 const navigationSections = {
-  dashboard: [
+  today: [
     {
-      title: "Today's Overview",
-      href: "/dashboard",
-    },
-    {
-      title: "Revenue Dashboard",
-      href: "/dashboard/revenue",
-    },
-    {
-      title: "Active Jobs",
-      href: "/dashboard/active-jobs",
-    },
-    {
-      title: "Technician Status",
-      href: "/dashboard/technician-status",
+      title: "Today",
+      url: "/dashboard",
+      icon: Home,
     },
   ],
   communication: [
     {
       title: "Unified Inbox",
-      href: "/dashboard/communication",
+      url: "/dashboard/communication",
+      icon: Inbox,
     },
     {
-      title: "Phone Calls",
-      href: "/dashboard/communication/calls",
+      title: "Company Email",
+      url: "/dashboard/communication/email",
+      icon: Mail,
+    },
+    {
+      title: "Phone System",
+      url: "/dashboard/communication/calls",
+      icon: Phone,
     },
     {
       title: "Text Messages",
-      href: "/dashboard/communication/sms",
+      url: "/dashboard/communication/sms",
+      icon: MessageSquare,
     },
     {
-      title: "Email Management",
-      href: "/dashboard/communication/email",
+      title: "Support Tickets",
+      url: "/dashboard/communication/tickets",
+      icon: Ticket,
+    },
+  ],
+  work: [
+    {
+      title: "Work Overview",
+      url: "/dashboard/work",
+      icon: Wrench,
+    },
+    {
+      title: "Jobs",
+      url: "/dashboard/work/jobs",
+    },
+    {
+      title: "Estimates",
+      url: "/dashboard/work/estimates",
+    },
+    {
+      title: "Service Tickets",
+      url: "/dashboard/work/tickets",
     },
   ],
   schedule: [
     {
       title: "Today's Schedule",
-      href: "/dashboard/schedule",
+      url: "/dashboard/schedule",
+      icon: Calendar,
     },
     {
       title: "Dispatch Board",
-      href: "/dashboard/schedule/dispatch",
+      url: "/dashboard/schedule/dispatch",
+    },
+    {
+      title: "Technicians",
+      url: "/dashboard/schedule/technicians",
     },
     {
       title: "Route Planning",
-      href: "/dashboard/schedule/routes",
+      url: "/dashboard/schedule/routes",
     },
     {
       title: "Time Tracking",
-      href: "/dashboard/schedule/time",
+      url: "/dashboard/schedule/time",
+    },
+    {
+      title: "Availability",
+      url: "/dashboard/schedule/availability",
     },
   ],
   customers: [
     {
       title: "Customer Database",
-      href: "/dashboard/customers",
+      url: "/dashboard/customers",
+      icon: Users,
+    },
+    {
+      title: "Profiles",
+      url: "/dashboard/customers/profiles",
     },
     {
       title: "Service History",
-      href: "/dashboard/customers/history",
+      url: "/dashboard/customers/history",
     },
     {
-      title: "Communications",
-      href: "/dashboard/customers/communication",
+      title: "Communication",
+      url: "/dashboard/customers/communication",
     },
     {
       title: "Reviews & Feedback",
-      href: "/dashboard/customers/feedback",
+      url: "/dashboard/customers/feedback",
+    },
+    {
+      title: "Portal",
+      url: "/dashboard/customers/portal",
     },
   ],
   finance: [
     {
       title: "Financial Dashboard",
-      href: "/dashboard/finance",
+      url: "/dashboard/finance",
+      icon: DollarSign,
     },
     {
-      title: "Create Invoice",
-      href: "/dashboard/finance/invoicing",
+      title: "Invoicing",
+      url: "/dashboard/finance/invoicing",
     },
     {
-      title: "Payment Processing",
-      href: "/dashboard/finance/payments",
+      title: "Payments",
+      url: "/dashboard/finance/payments",
+    },
+    {
+      title: "Expenses",
+      url: "/dashboard/finance/expenses",
     },
     {
       title: "Payroll",
-      href: "/dashboard/finance/payroll",
+      url: "/dashboard/finance/payroll",
+    },
+    {
+      title: "Chart of Accounts",
+      url: "/dashboard/finance/chart-of-accounts",
+    },
+    {
+      title: "General Ledger",
+      url: "/dashboard/finance/general-ledger",
+    },
+    {
+      title: "Accounts Receivable",
+      url: "/dashboard/finance/accounts-receivable",
+    },
+    {
+      title: "Accounts Payable",
+      url: "/dashboard/finance/accounts-payable",
+    },
+    {
+      title: "Bank Reconciliation",
+      url: "/dashboard/finance/bank-reconciliation",
+    },
+    {
+      title: "Journal Entries",
+      url: "/dashboard/finance/journal-entries",
+    },
+    {
+      title: "QuickBooks",
+      url: "/dashboard/finance/quickbooks",
+    },
+    {
+      title: "Tax",
+      url: "/dashboard/finance/tax",
+    },
+    {
+      title: "Budget",
+      url: "/dashboard/finance/budget",
     },
   ],
   reports: [
     {
       title: "Business Analytics",
-      href: "/dashboard/reports",
+      url: "/dashboard/reports",
+      icon: BarChart,
+    },
+    {
+      title: "Performance",
+      url: "/dashboard/reports/performance",
     },
     {
       title: "Financial Reports",
-      href: "/dashboard/reports/financial",
+      url: "/dashboard/reports/financial",
     },
     {
       title: "Operational Reports",
-      href: "/dashboard/reports/operational",
+      url: "/dashboard/reports/operational",
+    },
+    {
+      title: "Customer Reports",
+      url: "/dashboard/reports/customers",
+    },
+    {
+      title: "Technician Reports",
+      url: "/dashboard/reports/technicians",
     },
     {
       title: "Custom Reports",
-      href: "/dashboard/reports/custom",
+      url: "/dashboard/reports/custom",
     },
   ],
   marketing: [
     {
       title: "Lead Management",
-      href: "/dashboard/marketing",
+      url: "/dashboard/marketing",
+      icon: Megaphone,
     },
     {
       title: "Review Management",
-      href: "/dashboard/marketing/reviews",
+      url: "/dashboard/marketing/reviews",
     },
     {
       title: "Marketing Campaigns",
-      href: "/dashboard/marketing/campaigns",
+      url: "/dashboard/marketing/campaigns",
     },
     {
       title: "Customer Outreach",
-      href: "/dashboard/marketing/outreach",
+      url: "/dashboard/marketing/outreach",
     },
   ],
-  settings: [
+  automation: [
     {
-      title: "Company Profile",
-      href: "/dashboard/settings",
+      title: "Automation Overview",
+      url: "/dashboard/automation",
+      icon: Zap,
     },
     {
-      title: "Team Management",
-      href: "/dashboard/settings/users",
+      title: "Workflows",
+      url: "/dashboard/automation/workflows",
     },
     {
-      title: "Integrations",
-      href: "/dashboard/settings/integrations",
-      badge: true,
+      title: "Rules",
+      url: "/dashboard/automation/rules",
     },
     {
-      title: "System Settings",
-      href: "/dashboard/settings/system",
+      title: "Templates",
+      url: "/dashboard/automation/templates",
     },
   ],
   ai: [
     {
-      title: "Stratos Assistant",
-      href: "/dashboard/ai",
+      label: "AI Assistant",
+      items: [
+        {
+          title: "Stratos Assistant",
+          url: "/dashboard/ai",
+          icon: Sparkles,
+        },
+        {
+          title: "Search Chats",
+          url: "/dashboard/ai/search",
+        },
+        {
+          title: "AI Library",
+          url: "/dashboard/ai/library",
+        },
+        {
+          title: "Codex",
+          url: "/dashboard/ai/codex",
+        },
+      ],
     },
     {
-      title: "Smart Suggestions",
-      href: "/dashboard/ai/suggestions",
-    },
-    {
-      title: "Automation Rules",
-      href: "/dashboard/ai/automation",
-    },
-    {
-      title: "AI Analytics",
-      href: "/dashboard/ai/analytics",
-    },
-  ],
-  // Essential field service modules
-  pricebook: [
-    {
-      title: "Service Pricing",
-      href: "/dashboard/pricebook",
-    },
-    {
-      title: "Parts & Materials",
-      href: "/dashboard/pricebook/parts",
-    },
-    {
-      title: "Labor Rates",
-      href: "/dashboard/pricebook/labor",
-    },
-    {
-      title: "Service Packages",
-      href: "/dashboard/pricebook/packages",
-    },
-  ],
-  inventory: [
-    {
-      title: "Stock Levels",
-      href: "/dashboard/inventory",
-    },
-    {
-      title: "Parts Management",
-      href: "/dashboard/inventory/parts",
-    },
-    {
-      title: "Purchase Orders",
-      href: "/dashboard/inventory/purchase-orders",
-    },
-    {
-      title: "Vendor Management",
-      href: "/dashboard/inventory/vendors",
+      label: "AI Tools",
+      items: [
+        {
+          title: "Smart Suggestions",
+          url: "/dashboard/ai/suggestions",
+        },
+        {
+          title: "Automation Rules",
+          url: "/dashboard/ai/automation",
+        },
+        {
+          title: "AI Analytics",
+          url: "/dashboard/ai/analytics",
+        },
+      ],
     },
   ],
-  technicians: [
+  settings: [
     {
-      title: "Technician Roster",
-      href: "/dashboard/technicians",
+      label: undefined,
+      items: [
+        {
+          title: "Overview",
+          url: "/dashboard/settings",
+          icon: Settings,
+        },
+      ],
     },
     {
-      title: "Skills & Certifications",
-      href: "/dashboard/technicians/skills",
+      label: "Account",
+      items: [
+        {
+          title: "Personal Info",
+          url: "/dashboard/settings/profile/personal",
+        },
+        {
+          title: "Security",
+          url: "/dashboard/settings/profile/security",
+        },
+        {
+          title: "Notifications",
+          url: "/dashboard/settings/profile/notifications",
+        },
+        {
+          title: "Preferences",
+          url: "/dashboard/settings/profile/preferences",
+        },
+      ],
     },
     {
-      title: "Performance Tracking",
-      href: "/dashboard/technicians/performance",
+      label: "Company",
+      items: [
+        {
+          title: "Company Profile",
+          url: "/dashboard/settings/company",
+        },
+        {
+          title: "Billing",
+          url: "/dashboard/settings/billing",
+        },
+        {
+          title: "Team & Permissions",
+          url: "/dashboard/settings/team",
+        },
+      ],
     },
     {
-      title: "Time & Attendance",
-      href: "/dashboard/technicians/attendance",
+      label: "Operations",
+      items: [
+        {
+          title: "Booking",
+          url: "/dashboard/settings/booking",
+        },
+        {
+          title: "Jobs",
+          url: "/dashboard/settings/jobs",
+        },
+        {
+          title: "Customer Intake",
+          url: "/dashboard/settings/customer-intake",
+        },
+        {
+          title: "Customer Portal",
+          url: "/dashboard/settings/customer-portal",
+        },
+      ],
+    },
+    {
+      label: "Financial",
+      items: [
+        {
+          title: "Invoices",
+          url: "/dashboard/settings/invoices",
+        },
+        {
+          title: "Estimates",
+          url: "/dashboard/settings/estimates",
+        },
+        {
+          title: "Price Book",
+          url: "/dashboard/settings/pricebook",
+        },
+        {
+          title: "Service Plans",
+          url: "/dashboard/settings/service-plans",
+        },
+        {
+          title: "Payroll",
+          url: "/dashboard/settings/payroll",
+          items: [
+            {
+              title: "Overview",
+              url: "/dashboard/settings/payroll",
+            },
+            {
+              title: "Commission",
+              url: "/dashboard/settings/payroll/commission",
+            },
+            {
+              title: "Materials",
+              url: "/dashboard/settings/payroll/materials",
+            },
+            {
+              title: "Callbacks",
+              url: "/dashboard/settings/payroll/callbacks",
+            },
+            {
+              title: "Bonuses",
+              url: "/dashboard/settings/payroll/bonuses",
+            },
+            {
+              title: "Overtime",
+              url: "/dashboard/settings/payroll/overtime",
+            },
+            {
+              title: "Deductions",
+              url: "/dashboard/settings/payroll/deductions",
+            },
+            {
+              title: "Schedule",
+              url: "/dashboard/settings/payroll/schedule",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: "Marketing",
+      items: [
+        {
+          title: "Marketing Center",
+          url: "/dashboard/settings/marketing",
+        },
+        {
+          title: "Communications",
+          url: "/dashboard/settings/communications",
+        },
+      ],
+    },
+    {
+      label: "Data & Tools",
+      items: [
+        {
+          title: "Checklists",
+          url: "/dashboard/settings/checklists",
+        },
+        {
+          title: "Job Fields",
+          url: "/dashboard/settings/job-fields",
+        },
+        {
+          title: "Tags",
+          url: "/dashboard/settings/tags",
+        },
+        {
+          title: "Lead Sources",
+          url: "/dashboard/settings/lead-sources",
+        },
+      ],
+    },
+    {
+      label: "Integrations",
+      items: [
+        {
+          title: "Integration Hub",
+          url: "/dashboard/settings/integrations",
+        },
+        {
+          title: "QuickBooks",
+          url: "/dashboard/settings/quickbooks",
+        },
+      ],
     },
   ],
 };
 
-// Function to get current section based on pathname
+// Function to determine current section based on pathname
 function getCurrentSection(pathname: string): keyof typeof navigationSections {
+  if (pathname === "/dashboard") {
+    return "today";
+  }
   if (pathname.startsWith("/dashboard/communication")) {
     return "communication";
+  }
+  if (pathname.startsWith("/dashboard/work")) {
+    return "work";
   }
   if (pathname.startsWith("/dashboard/schedule")) {
     return "schedule";
@@ -257,151 +523,131 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   if (pathname.startsWith("/dashboard/marketing")) {
     return "marketing";
   }
+  if (pathname.startsWith("/dashboard/automation")) {
+    return "automation";
+  }
   if (pathname.startsWith("/dashboard/ai")) {
     return "ai";
   }
   if (pathname.startsWith("/dashboard/settings")) {
     return "settings";
   }
-  if (pathname.startsWith("/dashboard/pricebook")) {
-    return "pricebook";
-  }
-  if (pathname.startsWith("/dashboard/inventory")) {
-    return "inventory";
-  }
-  if (pathname.startsWith("/dashboard/technicians")) {
-    return "technicians";
-  }
-  if (pathname.startsWith("/dashboard/training")) {
-    return "training";
-  }
-  return "dashboard";
+
+  return "today";
 }
 
-export function AppSidebar() {
-	const pathname = usePathname();
-	const currentSection = getCurrentSection(pathname);
-	const currentNavigation = navigationSections[currentSection];
+// Sample data for team switcher and user
+const sampleData = {
+  user: {
+    name: "John Smith",
+    email: "john@example.com",
+    avatar: "/placeholder-avatar.jpg",
+  },
+  teams: [
+    {
+      name: "Stratos FSM",
+      logo: GalleryVerticalEnd,
+      plan: "Enterprise",
+    },
+    {
+      name: "Demo Company",
+      logo: AudioWaveform,
+      plan: "Pro",
+    },
+    {
+      name: "Test Business",
+      logo: Command,
+      plan: "Free",
+    },
+  ],
+};
 
-	// Get chat store for AI section
-	const chats = useChatStore(chatSelectors.chats);
-	const activeChatId = useChatStore(chatSelectors.activeChatId);
-	const { createChat, setActiveChat, deleteChat } = useChatStore();
-	const isAISection = currentSection === "ai";
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+  const currentSection = getCurrentSection(pathname);
+  const navItems = navigationSections[currentSection];
+  const [showWhatsNew, setShowWhatsNew] = useState(true);
+  const { config: layoutConfig } = useLayoutConfig();
 
-	const handleNewChat = () => {
-		const chatId = createChat();
-		setActiveChat(chatId);
-		// Navigate to AI chat
-		window.location.href = "/dashboard/ai";
-	};
+  // Chat store for AI section
+  const { cleanupDuplicateChats } = useChatStore();
 
-	const handleSelectChat = (chatId: string) => {
-		setActiveChat(chatId);
-	};
+  // Clean up any duplicate chats on mount
+  useEffect(() => {
+    cleanupDuplicateChats();
+  }, [cleanupDuplicateChats]);
 
-	const handleDeleteChat = (e: React.MouseEvent, chatId: string) => {
-		e.preventDefault();
-		e.stopPropagation();
-		deleteChat(chatId);
-	};
+  const isAISection = currentSection === "ai";
 
-	return (
-		<div className="hidden h-full w-48 flex-col bg-transparent text-sidebar-foreground lg:flex" data-slot="sidebar">
-			{/* Main Content */}
-			<div className="no-scrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-auto overflow-x-hidden group-data-[collapsible=icon]:overflow-hidden" data-sidebar="content" data-slot="sidebar-content">
-				<div className="relative flex w-full min-w-0 flex-col p-2" data-sidebar="group" data-slot="sidebar-group">
-					<div className="group-data-[collapsible=icon]:-mt-8 flex h-8 shrink-0 items-center justify-between rounded-md px-2 font-medium text-muted-foreground text-xs outline-hidden ring-sidebar-ring transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 group-data-[collapsible=icon]:opacity-0 [&>svg]:size-4 [&>svg]:shrink-0" data-sidebar="group-label" data-slot="sidebar-group-label">
-						<span>{currentSection.charAt(0).toUpperCase() + currentSection.slice(1)}</span>
-						{isAISection && (
-							<Button variant="ghost" size="icon" className="size-6" onClick={handleNewChat} title="New chat">
-								<PlusIcon size={12} />
-							</Button>
-						)}
-					</div>
+  // Use grouped navigation for settings and ai sections
+  const useGroupedNav =
+    currentSection === "settings" || currentSection === "ai";
 
-					<div className="w-full text-sm" data-sidebar="group-content" data-slot="sidebar-group-content">
-						<ul className="flex w-full min-w-0 flex-col items-start gap-0.5" data-sidebar="menu" data-slot="sidebar-menu">
-							{/* Regular navigation items */}
-							{currentNavigation.map((item) => {
-								const isActive = pathname === item.href;
+  // Check if page has custom sidebar config
+  const hasCustomConfig = layoutConfig.sidebar !== undefined;
+  const sidebarConfig = layoutConfig.sidebar;
 
-								return (
-									<li className="group/menu-item relative" data-sidebar="menu-item" data-slot="sidebar-menu-item" key={item.href}>
-										<Link className="peer/menu-button relative flex h-8 w-full items-center justify-start gap-2 overflow-visible rounded-md border border-transparent px-3 py-2 text-left font-medium text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:border-accent data-[active=true]:bg-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate" data-active={isActive} data-sidebar="menu-button" data-size="default" data-slot="sidebar-menu-button" href={item.href} title={item.title}>
-											<span className="truncate">{item.title}</span>
-											{item.badge && <span className="flex size-1.5 flex-shrink-0 rounded-full bg-blue-500" title="New" />}
-										</Link>
-									</li>
-								);
-							})}
+  return (
+    <Sidebar collapsible="offcanvas" {...props}>
+      <SidebarHeader>
+        <TeamSwitcher teams={sampleData.teams} />
+      </SidebarHeader>
+      <SidebarContent>
+        {hasCustomConfig ? (
+          // Use custom page configuration from layout
+          <NavFlexible
+            config={sidebarConfig}
+            groups={sidebarConfig?.groups}
+            items={sidebarConfig?.items}
+          />
+        ) : useGroupedNav ? (
+          // Use default grouped navigation
+          <NavGrouped groups={navItems as any} />
+        ) : (
+          // Use default main navigation
+          <NavMain items={navItems as any} />
+        )}
 
-							{/* Chat history for AI section */}
-							{isAISection && chats.length > 0 && (
-								<>
-									<li className="mt-2 w-full border-t pt-2">
-										<div className="px-3 py-1 text-xs font-medium text-muted-foreground">Recent Chats</div>
-									</li>
-									{chats.slice(0, 10).map((chat) => {
-										const isChatActive = activeChatId === chat.id;
-										return (
-											<li className="group/menu-item relative" data-sidebar="menu-item" data-slot="sidebar-menu-item" key={chat.id}>
-												<button type="button" onClick={() => handleSelectChat(chat.id)} className="peer/menu-button relative flex h-8 w-full items-center justify-start gap-2 overflow-visible rounded-md border border-transparent px-3 py-2 text-left font-medium text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:border-accent data-[active=true]:bg-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate" data-active={isChatActive} data-sidebar="menu-button" data-size="default" data-slot="sidebar-menu-button" title={chat.title}>
-													<MessageIcon size={14} />
-													<span className="truncate">{chat.title}</span>
-													<button type="button" onClick={(e) => handleDeleteChat(e, chat.id)} className="ml-auto size-5 shrink-0 opacity-0 transition-opacity hover:text-destructive group-hover/menu-item:opacity-100" title="Delete chat">
-														<TrashIcon size={12} />
-													</button>
-												</button>
-											</li>
-										);
-									})}
-								</>
-							)}
-						</ul>
-					</div>
-				</div>
-			</div>
-
-      {/* Sidebar Footer */}
-      <div className="flex-shrink-0 p-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
-              title="Help & Support"
-              type="button"
-            >
-              <HelpCircle className="size-4" />
-              <span className="sr-only">Help & Support</span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56" side="top">
-            <DropdownMenuLabel>Help & Support</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/help">Help Center</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/docs">Documentation</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/tutorials">Tutorials</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/feedback">Send Feedback</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/contact">Contact Support</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/keyboard-shortcuts">Keyboard Shortcuts</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+        {/* Chat History for AI section */}
+        {isAISection && !hasCustomConfig && <NavChatHistory />}
+      </SidebarContent>
+      <SidebarFooter>
+        {showWhatsNew && (
+          <div className="group relative flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 p-4 transition-all hover:border-primary/30 hover:shadow-md">
+            <Link className="absolute inset-0 z-0" href="/changelog" />
+            <div className="relative z-10 flex items-start justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm">What's New</span>
+                  <span className="text-muted-foreground text-xs">
+                    Version 2.1.0
+                  </span>
+                </div>
+              </div>
+              <button
+                aria-label="Dismiss"
+                className="relative z-20 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/50 hover:text-foreground"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowWhatsNew(false);
+                }}
+                type="button"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <p className="relative z-10 text-muted-foreground text-xs leading-relaxed">
+              Check out the latest features, improvements, and bug fixes.
+            </p>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+          </div>
+        )}
+        <NavUser user={sampleData.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
   );
 }

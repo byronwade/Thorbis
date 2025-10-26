@@ -1,4 +1,7 @@
+"use client";
+
 import {
+import { usePageLayout } from "@/hooks/use-page-layout";
   Card,
   CardContent,
   CardDescription,
@@ -7,6 +10,14 @@ import {
 } from "@/components/ui/card";
 
 export default function ServiceHistoryPage() {
+  usePageLayout({
+    maxWidth: "7xl",
+    padding: "md",
+    gap: "md",
+    showToolbar: true,
+    showSidebar: true,
+  });
+
   return (
     <div className="space-y-6">
       <div>

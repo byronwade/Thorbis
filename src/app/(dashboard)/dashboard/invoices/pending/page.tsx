@@ -1,4 +1,7 @@
+"use client";
+
 import {
+import { usePageLayout } from "@/hooks/use-page-layout";
   Card,
   CardContent,
   CardDescription,
@@ -7,6 +10,14 @@ import {
 } from "@/components/ui/card";
 
 export default function PendingInvoicesPage() {
+  usePageLayout({
+    maxWidth: "7xl",
+    padding: "md",
+    gap: "md",
+    showToolbar: true,
+    showSidebar: true,
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -196,7 +207,7 @@ export default function PendingInvoicesPage() {
                       >
                         {invoice.status}
                       </span>
-                      {invoice.daysOverdue > 0 && (
+                      {Number.parseInt(invoice.daysOverdue) > 0 && (
                         <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 font-medium text-red-800 text-xs">
                           {invoice.daysOverdue} days overdue
                         </span>

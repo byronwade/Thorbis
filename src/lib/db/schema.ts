@@ -1,4 +1,12 @@
-import { pgTable, text as pgText, timestamp, uuid, boolean as pgBoolean, json as pgJson } from "drizzle-orm/pg-core";
+import {
+  boolean as pgBoolean,
+  integer as pgInteger,
+  json as pgJson,
+  pgTable,
+  text as pgText,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -73,165 +81,402 @@ export const posts = isProduction
  * Chats table - AI chat conversations
  */
 export const chats = isProduction
-	? pgTable("chats", {
-			id: uuid("id").primaryKey().defaultRandom(),
-			createdAt: timestamp("created_at").defaultNow().notNull(),
-			title: pgText("title").notNull(),
-			userId: uuid("user_id")
-				.notNull()
-				.references(() => users.id as any, { onDelete: "cascade" }),
-			visibility: pgText("visibility").notNull().default("private"), // 'public' | 'private'
-		})
-	: sqliteTable("chats", {
-			id: text("id")
-				.primaryKey()
-				.$defaultFn(() => crypto.randomUUID()),
-			createdAt: integer("created_at", { mode: "timestamp" })
-				.notNull()
-				.$defaultFn(() => new Date()),
-			title: text("title").notNull(),
-			userId: text("user_id")
-				.notNull()
-				.references(() => users.id as any, { onDelete: "cascade" }),
-			visibility: text("visibility").notNull().default("private"),
-		});
+  ? pgTable("chats", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      title: pgText("title").notNull(),
+      userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      visibility: pgText("visibility").notNull().default("private"), // 'public' | 'private'
+    })
+  : sqliteTable("chats", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      title: text("title").notNull(),
+      userId: text("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      visibility: text("visibility").notNull().default("private"),
+    });
 
 /**
  * Messages table - chat messages with parts and attachments
  */
 export const messages = isProduction
-	? pgTable("messages_v2", {
-			id: uuid("id").primaryKey().defaultRandom(),
-			chatId: uuid("chat_id")
-				.notNull()
-				.references(() => chats.id as any, { onDelete: "cascade" }),
-			role: pgText("role").notNull(), // 'user' | 'assistant' | 'system'
-			parts: pgJson("parts").notNull(), // JSON array of message parts
-			attachments: pgJson("attachments").notNull(), // JSON array of attachments
-			createdAt: timestamp("created_at").defaultNow().notNull(),
-		})
-	: sqliteTable("messages_v2", {
-			id: text("id")
-				.primaryKey()
-				.$defaultFn(() => crypto.randomUUID()),
-			chatId: text("chat_id")
-				.notNull()
-				.references(() => chats.id as any, { onDelete: "cascade" }),
-			role: text("role").notNull(),
-			parts: text("parts").notNull(), // JSON string
-			attachments: text("attachments").notNull(), // JSON string
-			createdAt: integer("created_at", { mode: "timestamp" })
-				.notNull()
-				.$defaultFn(() => new Date()),
-		});
+  ? pgTable("messages_v2", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      chatId: uuid("chat_id")
+        .notNull()
+        .references(() => chats.id as any, { onDelete: "cascade" }),
+      role: pgText("role").notNull(), // 'user' | 'assistant' | 'system'
+      parts: pgJson("parts").notNull(), // JSON array of message parts
+      attachments: pgJson("attachments").notNull(), // JSON array of attachments
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("messages_v2", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      chatId: text("chat_id")
+        .notNull()
+        .references(() => chats.id as any, { onDelete: "cascade" }),
+      role: text("role").notNull(),
+      parts: text("parts").notNull(), // JSON string
+      attachments: text("attachments").notNull(), // JSON string
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
 
 /**
  * Documents table - artifacts (code, text, images, sheets)
  */
 export const documents = isProduction
-	? pgTable("documents", {
-			id: uuid("id").notNull(),
-			createdAt: timestamp("created_at").defaultNow().notNull(),
-			title: pgText("title").notNull(),
-			content: pgText("content"),
-			kind: pgText("kind").notNull().default("text"), // 'text' | 'code' | 'image' | 'sheet'
-			userId: uuid("user_id")
-				.notNull()
-				.references(() => users.id as any, { onDelete: "cascade" }),
-		})
-	: sqliteTable("documents", {
-			id: text("id").notNull(),
-			createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-			title: text("title").notNull(),
-			content: text("content"),
-			kind: text("kind").notNull().default("text"),
-			userId: text("user_id")
-				.notNull()
-				.references(() => users.id as any, { onDelete: "cascade" }),
-		});
+  ? pgTable("documents", {
+      id: uuid("id").notNull(),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      title: pgText("title").notNull(),
+      content: pgText("content"),
+      kind: pgText("kind").notNull().default("text"), // 'text' | 'code' | 'image' | 'sheet'
+      userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+    })
+  : sqliteTable("documents", {
+      id: text("id").notNull(),
+      createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+      title: text("title").notNull(),
+      content: text("content"),
+      kind: text("kind").notNull().default("text"),
+      userId: text("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+    });
 
 /**
  * Suggestions table - AI suggestions for documents
  */
 export const suggestions = isProduction
-	? pgTable("suggestions", {
-			id: uuid("id").primaryKey().defaultRandom(),
-			documentId: uuid("document_id")
-				.notNull()
-				.references(() => documents.id as any, { onDelete: "cascade" }),
-			originalText: pgText("original_text").notNull(),
-			suggestedText: pgText("suggested_text").notNull(),
-			description: pgText("description"),
-			isResolved: pgBoolean("is_resolved").notNull().default(false),
-			userId: uuid("user_id")
-				.notNull()
-				.references(() => users.id as any, { onDelete: "cascade" }),
-			createdAt: timestamp("created_at").defaultNow().notNull(),
-		})
-	: sqliteTable("suggestions", {
-			id: text("id")
-				.primaryKey()
-				.$defaultFn(() => crypto.randomUUID()),
-			documentId: text("document_id")
-				.notNull()
-				.references(() => documents.id as any, { onDelete: "cascade" }),
-			originalText: text("original_text").notNull(),
-			suggestedText: text("suggested_text").notNull(),
-			description: text("description"),
-			isResolved: integer("is_resolved", { mode: "boolean" }).notNull().default(false),
-			userId: text("user_id")
-				.notNull()
-				.references(() => users.id as any, { onDelete: "cascade" }),
-			createdAt: integer("created_at", { mode: "timestamp" })
-				.notNull()
-				.$defaultFn(() => new Date()),
-		});
+  ? pgTable("suggestions", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      documentId: uuid("document_id")
+        .notNull()
+        .references(() => documents.id as any, { onDelete: "cascade" }),
+      originalText: pgText("original_text").notNull(),
+      suggestedText: pgText("suggested_text").notNull(),
+      description: pgText("description"),
+      isResolved: pgBoolean("is_resolved").notNull().default(false),
+      userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("suggestions", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      documentId: text("document_id")
+        .notNull()
+        .references(() => documents.id as any, { onDelete: "cascade" }),
+      originalText: text("original_text").notNull(),
+      suggestedText: text("suggested_text").notNull(),
+      description: text("description"),
+      isResolved: integer("is_resolved", { mode: "boolean" })
+        .notNull()
+        .default(false),
+      userId: text("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
 
 /**
  * Votes table - message voting (upvote/downvote)
  */
 export const votes = isProduction
-	? pgTable("votes_v2", {
-			chatId: uuid("chat_id")
-				.notNull()
-				.references(() => chats.id as any, { onDelete: "cascade" }),
-			messageId: uuid("message_id")
-				.notNull()
-				.references(() => messages.id as any, { onDelete: "cascade" }),
-			isUpvoted: pgBoolean("is_upvoted").notNull(),
-		})
-	: sqliteTable("votes_v2", {
-			chatId: text("chat_id")
-				.notNull()
-				.references(() => chats.id as any, { onDelete: "cascade" }),
-			messageId: text("message_id")
-				.notNull()
-				.references(() => messages.id as any, { onDelete: "cascade" }),
-			isUpvoted: integer("is_upvoted", { mode: "boolean" }).notNull(),
-		});
+  ? pgTable("votes_v2", {
+      chatId: uuid("chat_id")
+        .notNull()
+        .references(() => chats.id as any, { onDelete: "cascade" }),
+      messageId: uuid("message_id")
+        .notNull()
+        .references(() => messages.id as any, { onDelete: "cascade" }),
+      isUpvoted: pgBoolean("is_upvoted").notNull(),
+    })
+  : sqliteTable("votes_v2", {
+      chatId: text("chat_id")
+        .notNull()
+        .references(() => chats.id as any, { onDelete: "cascade" }),
+      messageId: text("message_id")
+        .notNull()
+        .references(() => messages.id as any, { onDelete: "cascade" }),
+      isUpvoted: integer("is_upvoted", { mode: "boolean" }).notNull(),
+    });
 
 /**
  * Streams table - resumable streams for chat
  */
 export const streams = isProduction
-	? pgTable("streams", {
-			id: uuid("id").primaryKey().defaultRandom(),
-			chatId: uuid("chat_id")
-				.notNull()
-				.references(() => chats.id as any, { onDelete: "cascade" }),
-			createdAt: timestamp("created_at").defaultNow().notNull(),
-		})
-	: sqliteTable("streams", {
-			id: text("id")
-				.primaryKey()
-				.$defaultFn(() => crypto.randomUUID()),
-			chatId: text("chat_id")
-				.notNull()
-				.references(() => chats.id as any, { onDelete: "cascade" }),
-			createdAt: integer("created_at", { mode: "timestamp" })
-				.notNull()
-				.$defaultFn(() => new Date()),
-		});
+  ? pgTable("streams", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      chatId: uuid("chat_id")
+        .notNull()
+        .references(() => chats.id as any, { onDelete: "cascade" }),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("streams", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      chatId: text("chat_id")
+        .notNull()
+        .references(() => chats.id as any, { onDelete: "cascade" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
+
+/**
+ * Companies/Organizations table
+ */
+export const companies = isProduction
+  ? pgTable("companies", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      name: pgText("name").notNull(),
+      slug: pgText("slug").notNull().unique(),
+      logo: pgText("logo"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("companies", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      name: text("name").notNull(),
+      slug: text("slug").notNull().unique(),
+      logo: text("logo"),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Departments/Teams table
+ */
+export const departments = isProduction
+  ? pgTable("departments", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      name: pgText("name").notNull(),
+      description: pgText("description"),
+      color: pgText("color"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("departments", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      description: text("description"),
+      color: text("color"),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Custom Roles table - User-defined permission roles
+ */
+export const customRoles = isProduction
+  ? pgTable("custom_roles", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      name: pgText("name").notNull(),
+      description: pgText("description"),
+      permissions: pgJson("permissions").notNull(), // JSON object of permissions
+      color: pgText("color"),
+      isSystem: pgBoolean("is_system").notNull().default(false), // System roles cannot be deleted
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("custom_roles", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      description: text("description"),
+      permissions: text("permissions").notNull(), // JSON string
+      color: text("color"),
+      isSystem: integer("is_system", { mode: "boolean" })
+        .notNull()
+        .default(false),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Team Members table - Links users to companies with roles and departments
+ */
+export const teamMembers = isProduction
+  ? pgTable("team_members", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      roleId: uuid("role_id").references(() => customRoles.id as any, {
+        onDelete: "set null",
+      }),
+      departmentId: uuid("department_id").references(
+        () => departments.id as any,
+        { onDelete: "set null" }
+      ),
+      status: pgText("status").notNull().default("active"), // 'active' | 'invited' | 'suspended'
+      jobTitle: pgText("job_title"),
+      phone: pgText("phone"),
+      invitedBy: uuid("invited_by").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      invitedAt: timestamp("invited_at"),
+      joinedAt: timestamp("joined_at"),
+      lastActiveAt: timestamp("last_active_at"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("team_members", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      userId: text("user_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      roleId: text("role_id").references(() => customRoles.id as any, {
+        onDelete: "set null",
+      }),
+      departmentId: text("department_id").references(
+        () => departments.id as any,
+        { onDelete: "set null" }
+      ),
+      status: text("status").notNull().default("active"),
+      jobTitle: text("job_title"),
+      phone: text("phone"),
+      invitedBy: text("invited_by").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      invitedAt: integer("invited_at", { mode: "timestamp" }),
+      joinedAt: integer("joined_at", { mode: "timestamp" }),
+      lastActiveAt: integer("last_active_at", { mode: "timestamp" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Company Settings table - Stores company profile settings (hours, service area, etc.)
+ */
+export const companySettings = isProduction
+  ? pgTable("company_settings", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .unique()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      hoursOfOperation: pgJson("hours_of_operation").notNull(), // JSON object of weekly hours
+      serviceAreaType: pgText("service_area_type")
+        .notNull()
+        .default("locations"), // 'radius' | 'locations'
+      serviceRadius: pgInteger("service_radius").default(25), // Miles from business address
+      serviceAreas: pgJson("service_areas"), // JSON array of location strings
+      address: pgText("address"),
+      address2: pgText("address2"),
+      city: pgText("city"),
+      state: pgText("state"),
+      zipCode: pgText("zip_code"),
+      country: pgText("country"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("company_settings", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .unique()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      hoursOfOperation: text("hours_of_operation").notNull(), // JSON string
+      serviceAreaType: text("service_area_type").notNull().default("locations"),
+      serviceRadius: integer("service_radius").default(25),
+      serviceAreas: text("service_areas"), // JSON string
+      address: text("address"),
+      address2: text("address2"),
+      city: text("city"),
+      state: text("state"),
+      zipCode: text("zip_code"),
+      country: text("country"),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
 
 // Export types for use in your application
 export type User = typeof users.$inferSelect;
@@ -252,3 +497,15 @@ export type Vote = typeof votes.$inferSelect;
 export type NewVote = typeof votes.$inferInsert;
 export type Stream = typeof streams.$inferSelect;
 export type NewStream = typeof streams.$inferInsert;
+
+// Team management types
+export type Company = typeof companies.$inferSelect;
+export type NewCompany = typeof companies.$inferInsert;
+export type Department = typeof departments.$inferSelect;
+export type NewDepartment = typeof departments.$inferInsert;
+export type CustomRole = typeof customRoles.$inferSelect;
+export type NewCustomRole = typeof customRoles.$inferInsert;
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type NewTeamMember = typeof teamMembers.$inferInsert;
+export type CompanySettings = typeof companySettings.$inferSelect;
+export type NewCompanySettings = typeof companySettings.$inferInsert;

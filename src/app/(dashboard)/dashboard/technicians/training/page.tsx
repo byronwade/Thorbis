@@ -1,4 +1,16 @@
+"use client";
+
+import { usePageLayout } from "@/hooks/use-page-layout";
+
 export default function TrainingRecordsPage() {
+  usePageLayout({
+    maxWidth: "7xl",
+    padding: "md",
+    gap: "md",
+    showToolbar: true,
+    showSidebar: true,
+  });
+
   return (
     <div className="space-y-6">
       <div>
