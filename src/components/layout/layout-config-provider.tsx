@@ -41,7 +41,9 @@ const LayoutConfigContext = createContext<LayoutConfigContextType | undefined>(
 
 export function useLayoutConfig() {
   const context = useContext(LayoutConfigContext);
-  if (!context) {
+
+  // Return defaults when context is not available (e.g., during SSR)
+  if (typeof window === "undefined" || !context) {
     return {
       config: {
         maxWidth: "7xl" as const,
@@ -52,10 +54,11 @@ export function useLayoutConfig() {
         showHeader: true,
       },
       setConfig: () => {
-        // Default no-op when used outside provider
+        // No-op during SSR or outside provider
       },
     };
   }
+
   return context;
 }
 

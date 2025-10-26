@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import {
   ArrowLeft,
   Bell,
@@ -14,6 +16,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +31,11 @@ import { Switch } from "@/components/ui/switch";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function PushNotificationsPage() {
+  // Call layout config after mount to avoid SSR issues
+  useEffect(() => {
+    // Config is set through usePageLayout's useEffect
+  }, []);
+
   usePageLayout({
     maxWidth: "7xl",
     padding: "md",
