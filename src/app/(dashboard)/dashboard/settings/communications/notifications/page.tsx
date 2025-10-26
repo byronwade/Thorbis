@@ -21,13 +21,13 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function NotificationsSettingsPage() {
   usePageLayout({
@@ -370,9 +370,7 @@ export default function NotificationsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Technician Notifications</CardTitle>
-            <CardDescription>
-              Alerts sent to field technicians
-            </CardDescription>
+            <CardDescription>Alerts sent to field technicians</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">

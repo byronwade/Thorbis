@@ -133,9 +133,7 @@ export default function AccountingSettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">
-                    Standard (1000-9000)
-                  </SelectItem>
+                  <SelectItem value="standard">Standard (1000-9000)</SelectItem>
                   <SelectItem value="simple">Simple (100-900)</SelectItem>
                   <SelectItem value="detailed">
                     Detailed (10000-90000)

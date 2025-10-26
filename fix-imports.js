@@ -4,22 +4,23 @@
  * Script to fix broken import statements caused by linter
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function fixImports(filePath) {
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, "utf8");
   const original = content;
 
   // Pattern: import { followed by import { on next line
   // This happens when the linter breaks the import statement
-  const brokenPattern = /import\s*{\s*\nimport\s*\n{\s*\n\s*usePageLayout;\s*\n}\s*\nfrom;\s*\n\("@\/hooks\/use-page-layout"\);/g;
+  const brokenPattern =
+    /import\s*{\s*\nimport\s*\n{\s*\n\s*usePageLayout;\s*\n}\s*\nfrom;\s*\n\("@\/hooks\/use-page-layout"\);/g;
 
   if (brokenPattern.test(content)) {
     console.log(`Fixing: ${filePath}`);
 
     // Find all imports in the file
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     const fixed = [];
     let skipUntil = -1;
 
@@ -31,7 +32,11 @@ function fixImports(filePath) {
       const line = lines[i];
 
       // Check if this is the start of a broken import
-      if (line.trim() === 'import {' && i + 1 < lines.length && lines[i + 1].trim() === 'import') {
+      if (
+        line.trim() === "import {" &&
+        i + 1 < lines.length &&
+        lines[i + 1].trim() === "import"
+      ) {
         // Found broken import, reconstruct it
         console.log(`  Found broken import at line ${i + 1}`);
 
@@ -39,7 +44,7 @@ function fixImports(filePath) {
         let hasUsePageLayout = false;
         let j = i;
         while (j < lines.length && j < i + 10) {
-          if (lines[j].includes('usePageLayout')) {
+          if (lines[j].includes("usePageLayout")) {
             hasUsePageLayout = true;
             break;
           }
@@ -51,10 +56,10 @@ function fixImports(filePath) {
         let braceCount = 1;
         for (let k = i + 1; k < lines.length; k++) {
           const l = lines[k];
-          if (l.includes('{')) braceCount++;
-          if (l.includes('}')) braceCount--;
+          if (l.includes("{")) braceCount++;
+          if (l.includes("}")) braceCount--;
 
-          if (braceCount === 0 && l.includes('from')) {
+          if (braceCount === 0 && l.includes("from")) {
             endOfFirstImport = k;
             break;
           }
@@ -64,12 +69,23 @@ function fixImports(filePath) {
         skipUntil = endOfFirstImport + 10;
 
         // Add the corrected imports
-        fixed.push('import {');
+        fixed.push("import {");
 
         // Find the import items from the first import
         for (let k = i + 1; k <= endOfFirstImport; k++) {
           const l = lines[k].trim();
-          if (l && !l.startsWith('import') && !l.startsWith('from') && !l.startsWith('(') && !l.includes('usePageLayout') && l !== '{' && l !== '}' && l !== ';' && l !== 'from;' && l !== '("@/hooks/use-page-layout");') {
+          if (
+            l &&
+            !l.startsWith("import") &&
+            !l.startsWith("from") &&
+            !l.startsWith("(") &&
+            !l.includes("usePageLayout") &&
+            l !== "{" &&
+            l !== "}" &&
+            l !== ";" &&
+            l !== "from;" &&
+            l !== '("@/hooks/use-page-layout");'
+          ) {
             fixed.push(`  ${l}`);
           }
         }
@@ -77,7 +93,9 @@ function fixImports(filePath) {
         fixed.push('} from "@/components/ui/card";');
 
         if (hasUsePageLayout) {
-          fixed.push('import { usePageLayout } from "@/hooks/use-page-layout";');
+          fixed.push(
+            'import { usePageLayout } from "@/hooks/use-page-layout";'
+          );
         }
 
         continue;
@@ -87,11 +105,11 @@ function fixImports(filePath) {
       fixed.push(line);
     }
 
-    content = fixed.join('\n');
+    content = fixed.join("\n");
 
     // Write fixed content
-    fs.writeFileSync(filePath, content, 'utf8');
-    console.log(`  ✓ Fixed`);
+    fs.writeFileSync(filePath, content, "utf8");
+    console.log("  ✓ Fixed");
     return true;
   }
 
@@ -104,13 +122,13 @@ function findPageFiles(dir) {
   try {
     const list = fs.readdirSync(dir);
 
-    list.forEach(file => {
+    list.forEach((file) => {
       const filePath = path.join(dir, file);
       const stat = fs.statSync(filePath);
 
       if (stat && stat.isDirectory()) {
         results = results.concat(findPageFiles(filePath));
-      } else if (file === 'page.tsx') {
+      } else if (file === "page.tsx") {
         results.push(filePath);
       }
     });
@@ -122,18 +140,18 @@ function findPageFiles(dir) {
 }
 
 // Main execution
-console.log('Finding and fixing broken imports in dashboard pages...\n');
+console.log("Finding and fixing broken imports in dashboard pages...\n");
 
-const dashboardDir = 'src/app/(dashboard)/dashboard';
+const dashboardDir = "src/app/(dashboard)/dashboard";
 const pageFiles = findPageFiles(dashboardDir);
 
 let fixed = 0;
 
-pageFiles.forEach(file => {
+pageFiles.forEach((file) => {
   if (fixImports(file)) {
     fixed++;
   }
 });
 
 console.log(`\n✓ Fixed ${fixed} files with broken imports`);
-console.log('\nRunning linter to format...');
+console.log("\nRunning linter to format...");

@@ -2,9 +2,9 @@
 
 import {
   BarChart3,
+  Calendar,
   FileText,
   Mail,
-  Calendar,
   Settings,
   TrendingUp,
 } from "lucide-react";
@@ -80,7 +80,7 @@ export default function ReportingSettingsPage() {
           const Icon = section.icon;
           return (
             <Link href={section.href} key={section.title}>
-              <Card className="group transition-all hover:shadow-md hover:border-primary/50">
+              <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div
@@ -109,9 +109,7 @@ export default function ReportingSettingsPage() {
           <div className="flex items-start gap-3">
             <Settings className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
             <div className="space-y-1">
-              <p className="font-medium text-sm">
-                Reporting Settings Overview
-              </p>
+              <p className="font-medium text-sm">Reporting Settings Overview</p>
               <p className="text-muted-foreground text-sm">
                 Configure how reports are generated, scheduled, and delivered
                 across your organization. Create custom report templates, define

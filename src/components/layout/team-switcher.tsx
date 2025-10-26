@@ -40,10 +40,7 @@ export function TeamSwitcher({
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton
-            className="h-10"
-            size="lg"
-          >
+          <SidebarMenuButton className="h-10" size="lg">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <activeTeam.logo className="size-4" />
             </div>

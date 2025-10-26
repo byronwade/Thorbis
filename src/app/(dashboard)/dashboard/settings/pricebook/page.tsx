@@ -15,6 +15,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,13 +35,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   Table,
   TableBody,
@@ -49,7 +43,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -327,9 +327,7 @@ export default function PriceBookSettingsPage() {
     value: string | number | boolean
   ) => {
     setLaborRates((prev) =>
-      prev.map((rate) =>
-        rate.id === id ? { ...rate, [field]: value } : rate
-      )
+      prev.map((rate) => (rate.id === id ? { ...rate, [field]: value } : rate))
     );
   };
 
@@ -416,9 +414,7 @@ export default function PriceBookSettingsPage() {
     value: string | number | boolean
   ) => {
     setTaxRates((prev) =>
-      prev.map((tax) =>
-        tax.id === id ? { ...tax, [field]: value } : tax
-      )
+      prev.map((tax) => (tax.id === id ? { ...tax, [field]: value } : tax))
     );
   };
 
@@ -460,13 +456,15 @@ export default function PriceBookSettingsPage() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs">
-                    Choose how your shop prices services: flat rate, hourly, or both
+                    Choose how your shop prices services: flat rate, hourly, or
+                    both
                   </p>
                 </TooltipContent>
               </Tooltip>
             </CardTitle>
             <CardDescription>
-              This determines which pricing sections are enabled and visible throughout the system
+              This determines which pricing sections are enabled and visible
+              throughout the system
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -477,7 +475,10 @@ export default function PriceBookSettingsPage() {
                 </Label>
                 <Select
                   onValueChange={(value) =>
-                    updateSetting("pricingModel", value as "flat_rate" | "hourly" | "both")
+                    updateSetting(
+                      "pricingModel",
+                      value as "flat_rate" | "hourly" | "both"
+                    )
                   }
                   value={settings.pricingModel}
                 >
@@ -518,137 +519,138 @@ export default function PriceBookSettingsPage() {
         </Card>
 
         {/* Labor Rates - Only show if hourly or both */}
-        {(settings.pricingModel === "hourly" || settings.pricingModel === "both") && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <DollarSign className="h-4 w-4" />
-                  Labor Rates
-                </CardTitle>
-                <CardDescription>
-                  Set hourly costs and pricing for different labor types
-                </CardDescription>
+        {(settings.pricingModel === "hourly" ||
+          settings.pricingModel === "both") && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <DollarSign className="h-4 w-4" />
+                    Labor Rates
+                  </CardTitle>
+                  <CardDescription>
+                    Set hourly costs and pricing for different labor types
+                  </CardDescription>
+                </div>
+                <Button onClick={addLaborRate} size="sm" variant="outline">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Rate
+                </Button>
               </div>
-              <Button onClick={addLaborRate} size="sm" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Rate
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Hourly Cost</TableHead>
-                    <TableHead className="text-right">Hourly Price</TableHead>
-                    <TableHead className="text-right">
-                      Default Flat Rate
-                    </TableHead>
-                    <TableHead className="w-[100px]">Default</TableHead>
-                    <TableHead className="w-[80px]" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {laborRates.map((rate) => (
-                    <TableRow key={rate.id}>
-                      <TableCell>
-                        <Input
-                          className="min-w-[200px]"
-                          onChange={(e) =>
-                            updateLaborRate(
-                              rate.id,
-                              "description",
-                              e.target.value
-                            )
-                          }
-                          placeholder="e.g., Default"
-                          value={rate.description}
-                        />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <span className="text-muted-foreground">$</span>
-                          <Input
-                            className="w-28 text-right"
-                            min="0"
-                            onChange={(e) =>
-                              updateLaborRate(
-                                rate.id,
-                                "hourlyCost",
-                                Number(e.target.value)
-                              )
-                            }
-                            step="0.01"
-                            type="number"
-                            value={rate.hourlyCost}
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <span className="text-muted-foreground">$</span>
-                          <Input
-                            className="w-28 text-right"
-                            min="0"
-                            onChange={(e) =>
-                              updateLaborRate(
-                                rate.id,
-                                "hourlyPrice",
-                                Number(e.target.value)
-                              )
-                            }
-                            step="0.01"
-                            type="number"
-                            value={rate.hourlyPrice}
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <span className="text-muted-foreground">$</span>
-                          <Input
-                            className="w-28 text-right"
-                            min="0"
-                            onChange={(e) =>
-                              updateLaborRate(
-                                rate.id,
-                                "defaultFlatRate",
-                                Number(e.target.value)
-                              )
-                            }
-                            step="0.01"
-                            type="number"
-                            value={rate.defaultFlatRate}
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-center">
-                          {rate.isDefault && (
-                            <Badge variant="secondary">Default</Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() => removeLaborRate(rate.id)}
-                          size="sm"
-                          variant="ghost"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Hourly Cost</TableHead>
+                      <TableHead className="text-right">Hourly Price</TableHead>
+                      <TableHead className="text-right">
+                        Default Flat Rate
+                      </TableHead>
+                      <TableHead className="w-[100px]">Default</TableHead>
+                      <TableHead className="w-[80px]" />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {laborRates.map((rate) => (
+                      <TableRow key={rate.id}>
+                        <TableCell>
+                          <Input
+                            className="min-w-[200px]"
+                            onChange={(e) =>
+                              updateLaborRate(
+                                rate.id,
+                                "description",
+                                e.target.value
+                              )
+                            }
+                            placeholder="e.g., Default"
+                            value={rate.description}
+                          />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <span className="text-muted-foreground">$</span>
+                            <Input
+                              className="w-28 text-right"
+                              min="0"
+                              onChange={(e) =>
+                                updateLaborRate(
+                                  rate.id,
+                                  "hourlyCost",
+                                  Number(e.target.value)
+                                )
+                              }
+                              step="0.01"
+                              type="number"
+                              value={rate.hourlyCost}
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <span className="text-muted-foreground">$</span>
+                            <Input
+                              className="w-28 text-right"
+                              min="0"
+                              onChange={(e) =>
+                                updateLaborRate(
+                                  rate.id,
+                                  "hourlyPrice",
+                                  Number(e.target.value)
+                                )
+                              }
+                              step="0.01"
+                              type="number"
+                              value={rate.hourlyPrice}
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <span className="text-muted-foreground">$</span>
+                            <Input
+                              className="w-28 text-right"
+                              min="0"
+                              onChange={(e) =>
+                                updateLaborRate(
+                                  rate.id,
+                                  "defaultFlatRate",
+                                  Number(e.target.value)
+                                )
+                              }
+                              step="0.01"
+                              type="number"
+                              value={rate.defaultFlatRate}
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-center">
+                            {rate.isDefault && (
+                              <Badge variant="secondary">Default</Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => removeLaborRate(rate.id)}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Material Markups */}
@@ -1046,132 +1048,139 @@ export default function PriceBookSettingsPage() {
         </Card>
 
         {/* Pricing Tiers - Only show if flat_rate or both */}
-        {(settings.pricingModel === "flat_rate" || settings.pricingModel === "both") && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4" />
-              Pricing Tiers
-              <Tooltip>
-                <TooltipTrigger>
-                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs">
-                    Offer different price levels (standard, emergency, premium)
+        {(settings.pricingModel === "flat_rate" ||
+          settings.pricingModel === "both") && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <TrendingUp className="h-4 w-4" />
+                Pricing Tiers
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">
+                      Offer different price levels (standard, emergency,
+                      premium)
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </CardTitle>
+              <CardDescription>
+                Different price levels for different service situations
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Label className="flex items-center gap-2 font-medium text-sm">
+                    Enable Tiered Pricing
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">
+                          Charge different prices for regular vs emergency work
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <p className="text-muted-foreground text-xs">
+                    Different prices for different service levels
                   </p>
-                </TooltipContent>
-              </Tooltip>
-            </CardTitle>
-            <CardDescription>
-              Different price levels for different service situations
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <Label className="flex items-center gap-2 font-medium text-sm">
-                  Enable Tiered Pricing
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">
-                        Charge different prices for regular vs emergency work
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Label>
-                <p className="text-muted-foreground text-xs">
-                  Different prices for different service levels
-                </p>
+                </div>
+                <Switch
+                  checked={settings.enableTieredPricing}
+                  onCheckedChange={(checked) =>
+                    updateSetting("enableTieredPricing", checked)
+                  }
+                />
               </div>
-              <Switch
-                checked={settings.enableTieredPricing}
-                onCheckedChange={(checked) =>
-                  updateSetting("enableTieredPricing", checked)
-                }
-              />
-            </div>
 
-            {settings.enableTieredPricing && (
-              <>
-                <Separator />
-                <div className="space-y-3">
-                  {settings.tierNames.map((tierName, index) => (
-                    <div className="grid grid-cols-2 gap-4" key={tierName}>
-                      <div>
-                        <Label className="text-sm">Tier {index + 1} Name</Label>
-                        <Input
-                          className="mt-2"
-                          onChange={(e) => {
-                            const newNames = [...settings.tierNames];
-                            newNames[index] = e.target.value;
-                            updateSetting("tierNames", newNames);
-                          }}
-                          placeholder="Standard"
-                          value={tierName}
-                        />
-                      </div>
-                      <div>
-                        <Label className="flex items-center gap-2 text-sm">
-                          Price Multiplier
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-3 w-3 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs">
-                                Multiply base price by this number
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </Label>
-                        <div className="relative mt-2">
+              {settings.enableTieredPricing && (
+                <>
+                  <Separator />
+                  <div className="space-y-3">
+                    {settings.tierNames.map((tierName, index) => (
+                      <div className="grid grid-cols-2 gap-4" key={tierName}>
+                        <div>
+                          <Label className="text-sm">
+                            Tier {index + 1} Name
+                          </Label>
                           <Input
+                            className="mt-2"
                             onChange={(e) => {
-                              const newMultipliers = [
-                                ...settings.tierMultipliers,
-                              ];
-                              newMultipliers[index] =
-                                Number.parseFloat(e.target.value) || 1.0;
-                              updateSetting("tierMultipliers", newMultipliers);
+                              const newNames = [...settings.tierNames];
+                              newNames[index] = e.target.value;
+                              updateSetting("tierNames", newNames);
                             }}
-                            placeholder="1.0"
-                            step="0.05"
-                            type="number"
-                            value={settings.tierMultipliers[index]}
+                            placeholder="Standard"
+                            value={tierName}
                           />
-                          <span className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground text-sm">
-                            ×
-                          </span>
+                        </div>
+                        <div>
+                          <Label className="flex items-center gap-2 text-sm">
+                            Price Multiplier
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">
+                                  Multiply base price by this number
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </Label>
+                          <div className="relative mt-2">
+                            <Input
+                              onChange={(e) => {
+                                const newMultipliers = [
+                                  ...settings.tierMultipliers,
+                                ];
+                                newMultipliers[index] =
+                                  Number.parseFloat(e.target.value) || 1.0;
+                                updateSetting(
+                                  "tierMultipliers",
+                                  newMultipliers
+                                );
+                              }}
+                              placeholder="1.0"
+                              step="0.05"
+                              type="number"
+                              value={settings.tierMultipliers[index]}
+                            />
+                            <span className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground text-sm">
+                              ×
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="rounded-lg border bg-muted/50 p-4">
-                  <p className="mb-2 font-medium text-sm">Pricing Example:</p>
-                  <div className="space-y-1 text-sm">
-                    <p className="text-muted-foreground">
-                      Base price: ${examplePrice}.00
-                    </p>
-                    {settings.tierNames.map((tierName, index) => (
-                      <p key={tierName}>
-                        {tierName}: $
-                        {(
-                          examplePrice * settings.tierMultipliers[index]
-                        ).toFixed(2)}
-                      </p>
                     ))}
                   </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+
+                  <div className="rounded-lg border bg-muted/50 p-4">
+                    <p className="mb-2 font-medium text-sm">Pricing Example:</p>
+                    <div className="space-y-1 text-sm">
+                      <p className="text-muted-foreground">
+                        Base price: ${examplePrice}.00
+                      </p>
+                      {settings.tierNames.map((tierName, index) => (
+                        <p key={tierName}>
+                          {tierName}: $
+                          {(
+                            examplePrice * settings.tierMultipliers[index]
+                          ).toFixed(2)}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Item Management Settings */}

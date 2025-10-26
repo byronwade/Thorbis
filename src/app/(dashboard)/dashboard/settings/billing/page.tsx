@@ -26,13 +26,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Pricing Constants
 const BASE_FEE = 100;

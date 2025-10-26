@@ -37,12 +37,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   type IntegrationCategory,
   integrations,
 } from "@/lib/data/integrations";
 import { cn } from "@/lib/utils";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Constants
 const MAX_DISPLAYED_FEATURES = 3;

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Save,
-  TrendingUp,
-} from "lucide-react";
+import { Save, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -135,10 +132,7 @@ export default function BonusesSettingsPage() {
                     }
                     value={settings.performanceBonusType}
                   >
-                    <SelectTrigger
-                      className="max-w-xs"
-                      id="bonus-frequency"
-                    >
+                    <SelectTrigger className="max-w-xs" id="bonus-frequency">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -164,10 +158,7 @@ export default function BonusesSettingsPage() {
                 <Switch
                   checked={settings.customerSatisfactionBonus}
                   onCheckedChange={(checked) =>
-                    handleSettingChange(
-                      "customerSatisfactionBonus",
-                      checked
-                    )
+                    handleSettingChange("customerSatisfactionBonus", checked)
                   }
                 />
               </div>
@@ -239,9 +230,7 @@ export default function BonusesSettingsPage() {
 
               {settings.safetyBonusEnabled && (
                 <div className="ml-6 space-y-2 border-l-2 pl-4">
-                  <Label htmlFor="safety-amount">
-                    Safety Bonus Amount ($)
-                  </Label>
+                  <Label htmlFor="safety-amount">Safety Bonus Amount ($)</Label>
                   <Input
                     className="max-w-xs"
                     id="safety-amount"

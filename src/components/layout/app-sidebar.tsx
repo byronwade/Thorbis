@@ -3,17 +3,24 @@
 import {
   AudioWaveform,
   BarChart,
+  BookOpen,
+  Box,
   Calendar,
+  ClipboardList,
   Command,
   DollarSign,
+  FileText,
   GalleryVerticalEnd,
+  Hash,
   Home,
   Inbox,
   Mail,
   Megaphone,
   MessageSquare,
+  Package,
   Phone,
   Settings,
+  ShieldCheck,
   Sparkles,
   Ticket,
   Users,
@@ -75,24 +82,77 @@ const navigationSections = {
       url: "/dashboard/communication/tickets",
       icon: Ticket,
     },
+    {
+      title: "Company Feed",
+      url: "/dashboard/communication/feed",
+      icon: Hash,
+    },
   ],
   work: [
     {
-      title: "Work Overview",
-      url: "/dashboard/work",
-      icon: Wrench,
+      label: "Work Management",
+      items: [
+        {
+          title: "Jobs",
+          url: "/dashboard/work",
+          icon: ClipboardList,
+        },
+      ],
     },
     {
-      title: "Jobs",
-      url: "/dashboard/work/jobs",
+      label: "Financial Documents",
+      items: [
+        {
+          title: "Invoices",
+          url: "/dashboard/work/invoices",
+          icon: FileText,
+        },
+        {
+          title: "Estimates",
+          url: "/dashboard/work/estimates",
+          icon: FileText,
+        },
+      ],
     },
     {
-      title: "Estimates",
-      url: "/dashboard/work/estimates",
+      label: "Service Management",
+      items: [
+        {
+          title: "Maintenance Plans",
+          url: "/dashboard/work/maintenance-plans",
+          icon: Wrench,
+        },
+        {
+          title: "Service Agreements",
+          url: "/dashboard/work/service-agreements",
+          icon: ShieldCheck,
+        },
+        {
+          title: "Service Tickets",
+          url: "/dashboard/work/tickets",
+          icon: Ticket,
+        },
+      ],
     },
     {
-      title: "Service Tickets",
-      url: "/dashboard/work/tickets",
+      label: "Company Resources",
+      items: [
+        {
+          title: "Price Book",
+          url: "/dashboard/work/pricebook",
+          icon: BookOpen,
+        },
+        {
+          title: "Materials Inventory",
+          url: "/dashboard/work/materials",
+          icon: Box,
+        },
+        {
+          title: "Equipment & Tools",
+          url: "/dashboard/work/equipment",
+          icon: Package,
+        },
+      ],
     },
   ],
   schedule: [
@@ -799,9 +859,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const isAISection = currentSection === "ai";
 
-  // Use grouped navigation for settings and ai sections
+  // Use grouped navigation for settings, ai, and work sections
   const useGroupedNav =
-    currentSection === "settings" || currentSection === "ai";
+    currentSection === "settings" || currentSection === "ai" || currentSection === "work";
 
   // Check if page has custom sidebar config
   const hasCustomConfig = layoutConfig.sidebar !== undefined;

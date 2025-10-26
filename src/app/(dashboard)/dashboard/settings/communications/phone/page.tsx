@@ -15,13 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function PhoneSettingsPage() {
   usePageLayout({
@@ -162,8 +162,8 @@ export default function PhoneSettingsPage() {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className="max-w-xs">
-                            Play "This call may be recorded" message (required by
-                            law in most states)
+                            Play "This call may be recorded" message (required
+                            by law in most states)
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -282,7 +282,9 @@ export default function PhoneSettingsPage() {
               <>
                 <Separator />
                 <div>
-                  <Label className="font-medium text-sm">Forward To Number</Label>
+                  <Label className="font-medium text-sm">
+                    Forward To Number
+                  </Label>
                   <Input
                     className="mt-2"
                     onChange={(e) =>

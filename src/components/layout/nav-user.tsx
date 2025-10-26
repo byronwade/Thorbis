@@ -47,10 +47,7 @@ export function NavUser({
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton
-            className="h-10"
-            size="lg"
-          >
+          <SidebarMenuButton className="h-10" size="lg">
             <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage alt={user.name} src={user.avatar} />
               <AvatarFallback className="rounded-lg">

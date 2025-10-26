@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Zap,
-  Workflow,
-  Bot,
-  Filter,
-  Settings,
-  GitBranch,
-} from "lucide-react";
+import { Bot, Filter, GitBranch, Settings, Workflow, Zap } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -106,7 +99,7 @@ export default function AutomationSettingsPage() {
           const Icon = section.icon;
           return (
             <Link href={section.href} key={section.title}>
-              <Card className="group transition-all hover:shadow-md hover:border-primary/50">
+              <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div
@@ -173,9 +166,7 @@ export default function AutomationSettingsPage() {
             </div>
 
             <div className="rounded-lg border p-4">
-              <h4 className="mb-1 font-medium text-sm">
-                Follow-up reminders
-              </h4>
+              <h4 className="mb-1 font-medium text-sm">Follow-up reminders</h4>
               <p className="text-muted-foreground text-xs">
                 Send automatic follow-up messages to customers 3 days after job
                 completion
@@ -193,9 +184,7 @@ export default function AutomationSettingsPage() {
             </div>
 
             <div className="rounded-lg border p-4">
-              <h4 className="mb-1 font-medium text-sm">
-                Update job status
-              </h4>
+              <h4 className="mb-1 font-medium text-sm">Update job status</h4>
               <p className="text-muted-foreground text-xs">
                 Change job status to "Complete" when technician marks all tasks
                 as done and customer signature is received

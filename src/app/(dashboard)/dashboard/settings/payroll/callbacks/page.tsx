@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  AlertCircle,
-  Save,
-} from "lucide-react";
+import { AlertCircle, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -164,9 +161,7 @@ export default function CallbacksSettingsPage() {
                           Number.parseFloat(e.target.value)
                         )
                       }
-                      step={
-                        settings.callbackDeductionType === "flat" ? 5 : 1
-                      }
+                      step={settings.callbackDeductionType === "flat" ? 5 : 1}
                       type="number"
                       value={settings.callbackDeductionAmount}
                     />
@@ -241,9 +236,7 @@ export default function CallbacksSettingsPage() {
 
               {settings.chargebackEnabled && (
                 <div className="ml-6 space-y-2 border-l-2 pl-4">
-                  <Label htmlFor="chargeback-max">
-                    Maximum Chargeback ($)
-                  </Label>
+                  <Label htmlFor="chargeback-max">Maximum Chargeback ($)</Label>
                   <Input
                     className="max-w-xs"
                     id="chargeback-max"

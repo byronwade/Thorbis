@@ -1,34 +1,36 @@
 "use client";
 
 import {
+  Bookmark,
+  Calendar,
+  Edit,
+  FileText,
+  Filter,
+  Flag,
   Hash,
   Heart,
-  MessageCircle,
-  Share2,
-  Send,
   Image as ImageIcon,
-  Video,
-  FileText,
-  Calendar,
-  TrendingUp,
-  Smile,
+  MessageCircle,
   MoreHorizontal,
   Pin,
-  Bookmark,
-  Flag,
-  Edit,
-  Trash2,
-  Filter,
   Search,
+  Send,
+  Share2,
+  Smile,
+  Trash2,
+  TrendingUp,
+  Video,
 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +38,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -43,6 +46,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 type PostType = "announcement" | "discussion" | "poll" | "event" | "content";
 type ReactionType = "like" | "celebrate" | "support" | "insightful";
@@ -142,9 +147,7 @@ const MOCK_POSTS: Post[] = [
     timestamp: new Date(Date.now() - MS_PER_MINUTE * 240),
     category: "Team",
     tags: ["poll", "meeting"],
-    reactions: [
-      { type: "like", count: 12, userReacted: true },
-    ],
+    reactions: [{ type: "like", count: 12, userReacted: true }],
     comments: 24,
     shares: 0,
     views: 76,
@@ -208,7 +211,15 @@ const CATEGORIES = [
   "Events",
 ];
 
-export function CompanyFeed() {
+type CompanyFeedProps = {
+  channel?: string;
+  channelType?: "channel" | "dm";
+};
+
+export function CompanyFeed({
+  channel = "company-feed",
+  channelType = "channel",
+}: CompanyFeedProps = {}) {
   const [posts] = useState<Post[]>(MOCK_POSTS);
   const [newPostContent, setNewPostContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Posts");
@@ -314,7 +325,7 @@ export function CompanyFeed() {
                   {post.category && (
                     <>
                       <span>•</span>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge className="text-xs" variant="secondary">
                         {getPostTypeIcon(post.type)}
                         <span className="ml-1">{post.category}</span>
                       </Badge>
@@ -326,7 +337,7 @@ export function CompanyFeed() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button size="icon" variant="ghost">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -374,7 +385,7 @@ export function CompanyFeed() {
                       <FileText className="h-5 w-5" />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-sm">
                       {attachment.name}
                     </p>
@@ -393,7 +404,7 @@ export function CompanyFeed() {
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
+                <Badge className="text-xs" key={tag} variant="outline">
                   #{tag}
                 </Badge>
               ))}
@@ -411,7 +422,7 @@ export function CompanyFeed() {
                   className="flex items-center gap-1 hover:text-foreground"
                   type="button"
                 >
-                  <div className="flex -space-x-1">
+                  <div className="-space-x-1 flex">
                     {post.reactions.map((reaction, index) => (
                       <span
                         className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs"
@@ -436,26 +447,26 @@ export function CompanyFeed() {
           <Separator />
 
           <div className="grid w-full grid-cols-4 gap-2">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button className="gap-2" size="sm" variant="ghost">
               <Heart className="h-4 w-4" />
               Like
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
               className="gap-2"
               onClick={() =>
                 setShowComments(showComments === post.id ? null : post.id)
               }
+              size="sm"
+              variant="ghost"
             >
               <MessageCircle className="h-4 w-4" />
               Comment
             </Button>
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button className="gap-2" size="sm" variant="ghost">
               <Share2 className="h-4 w-4" />
               Share
             </Button>
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button className="gap-2" size="sm" variant="ghost">
               <Bookmark className="h-4 w-4" />
               Save
             </Button>
@@ -471,11 +482,11 @@ export function CompanyFeed() {
                   </Avatar>
                   <div className="flex-1">
                     <Textarea
-                      placeholder="Write a comment..."
                       className="min-h-[60px] resize-none"
+                      placeholder="Write a comment..."
                     />
                     <div className="mt-2 flex justify-between">
-                      <Button variant="ghost" size="sm">
+                      <Button size="sm" variant="ghost">
                         <Smile className="mr-2 h-4 w-4" />
                         Emoji
                       </Button>
@@ -500,7 +511,7 @@ export function CompanyFeed() {
       <div className="border-b bg-background p-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-1 items-center gap-3">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative max-w-md flex-1">
               <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
               <Input
                 className="pl-8"
@@ -510,7 +521,10 @@ export function CompanyFeed() {
               />
             </div>
 
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              onValueChange={setSelectedCategory}
+              value={selectedCategory}
+            >
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
@@ -523,7 +537,7 @@ export function CompanyFeed() {
               </SelectContent>
             </Select>
 
-            <Button variant="outline" size="icon">
+            <Button size="icon" variant="outline">
               <Filter className="h-4 w-4" />
             </Button>
           </div>
@@ -550,23 +564,23 @@ export function CompanyFeed() {
                     />
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <ImageIcon className="mr-2 h-4 w-4" />
                           Photo
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Video className="mr-2 h-4 w-4" />
                           Video
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <FileText className="mr-2 h-4 w-4" />
                           Document
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <TrendingUp className="mr-2 h-4 w-4" />
                           Poll
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Calendar className="mr-2 h-4 w-4" />
                           Event
                         </Button>

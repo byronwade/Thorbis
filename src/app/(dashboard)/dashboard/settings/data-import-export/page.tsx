@@ -27,13 +27,13 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 type DataCategory = {
   id: string;
@@ -53,7 +53,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 1247,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Name", "Email", "Phone", "Address", "Tags", "Notes", "Created Date"],
+    fields: [
+      "Name",
+      "Email",
+      "Phone",
+      "Address",
+      "Tags",
+      "Notes",
+      "Created Date",
+    ],
   },
   {
     id: "jobs",
@@ -62,7 +70,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 3892,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Job Number", "Customer", "Status", "Technician", "Scheduled Date", "Total", "Notes"],
+    fields: [
+      "Job Number",
+      "Customer",
+      "Status",
+      "Technician",
+      "Scheduled Date",
+      "Total",
+      "Notes",
+    ],
   },
   {
     id: "invoices",
@@ -71,7 +87,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 2156,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Invoice Number", "Customer", "Date", "Due Date", "Amount", "Status", "Payment Method"],
+    fields: [
+      "Invoice Number",
+      "Customer",
+      "Date",
+      "Due Date",
+      "Amount",
+      "Status",
+      "Payment Method",
+    ],
   },
   {
     id: "estimates",
@@ -80,7 +104,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 892,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Estimate Number", "Customer", "Date", "Valid Until", "Total", "Status", "Notes"],
+    fields: [
+      "Estimate Number",
+      "Customer",
+      "Date",
+      "Valid Until",
+      "Total",
+      "Status",
+      "Notes",
+    ],
   },
   {
     id: "products",
@@ -89,7 +121,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 456,
     supportsImport: true,
     supportsExport: true,
-    fields: ["SKU", "Name", "Category", "Description", "Price", "Cost", "In Stock"],
+    fields: [
+      "SKU",
+      "Name",
+      "Category",
+      "Description",
+      "Price",
+      "Cost",
+      "In Stock",
+    ],
   },
   {
     id: "inventory",
@@ -98,7 +138,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 1234,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Item", "SKU", "Location", "Quantity", "Reorder Point", "Supplier", "Last Updated"],
+    fields: [
+      "Item",
+      "SKU",
+      "Location",
+      "Quantity",
+      "Reorder Point",
+      "Supplier",
+      "Last Updated",
+    ],
   },
   {
     id: "team",
@@ -107,7 +155,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 28,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Name", "Email", "Phone", "Role", "Hourly Rate", "Hire Date", "Status"],
+    fields: [
+      "Name",
+      "Email",
+      "Phone",
+      "Role",
+      "Hourly Rate",
+      "Hire Date",
+      "Status",
+    ],
   },
   {
     id: "schedule",
@@ -116,7 +172,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 4521,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Date", "Time", "Duration", "Customer", "Technician", "Job Type", "Status"],
+    fields: [
+      "Date",
+      "Time",
+      "Duration",
+      "Customer",
+      "Technician",
+      "Job Type",
+      "Status",
+    ],
   },
   {
     id: "payments",
@@ -125,7 +189,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 1987,
     supportsImport: false,
     supportsExport: true,
-    fields: ["Date", "Customer", "Invoice", "Amount", "Method", "Status", "Reference"],
+    fields: [
+      "Date",
+      "Customer",
+      "Invoice",
+      "Amount",
+      "Method",
+      "Status",
+      "Reference",
+    ],
   },
   {
     id: "expenses",
@@ -134,7 +206,15 @@ const dataCategories: DataCategory[] = [
     recordCount: 743,
     supportsImport: true,
     supportsExport: true,
-    fields: ["Date", "Category", "Vendor", "Amount", "Payment Method", "Receipt", "Notes"],
+    fields: [
+      "Date",
+      "Category",
+      "Vendor",
+      "Amount",
+      "Payment Method",
+      "Receipt",
+      "Notes",
+    ],
   },
   {
     id: "reports",
@@ -170,7 +250,9 @@ export default function DataImportExportPage() {
   const [dateRange, setDateRange] = useState<string>("all");
   const [fileFormat, setFileFormat] = useState<string>("xlsx");
 
-  const currentCategory = dataCategories.find((cat) => cat.id === selectedCategory);
+  const currentCategory = dataCategories.find(
+    (cat) => cat.id === selectedCategory
+  );
 
   return (
     <TooltipProvider>
@@ -204,7 +286,9 @@ export default function DataImportExportPage() {
                       <HelpCircle className="h-3 w-3 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">Select what type of data to import</p>
+                      <p className="max-w-xs">
+                        Select what type of data to import
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </Label>
@@ -420,34 +504,36 @@ export default function DataImportExportPage() {
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                   <span>
-                    Always download and use the provided Excel template to ensure
-                    correct formatting
+                    Always download and use the provided Excel template to
+                    ensure correct formatting
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                   <span>
-                    Backup your existing data before importing to prevent data loss
+                    Backup your existing data before importing to prevent data
+                    loss
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                   <span>
-                    Duplicate records will be updated based on unique identifiers
-                    (email, phone, or ID)
+                    Duplicate records will be updated based on unique
+                    identifiers (email, phone, or ID)
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                   <span>
-                    Large imports (over 1,000 records) may take several minutes to
-                    process
+                    Large imports (over 1,000 records) may take several minutes
+                    to process
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                   <span>
-                    You'll receive an email notification when the import completes
+                    You'll receive an email notification when the import
+                    completes
                   </span>
                 </li>
               </ul>
@@ -464,10 +550,10 @@ export default function DataImportExportPage() {
               </p>
               <p className="text-muted-foreground text-sm">
                 Mass deletion of data is not possible through the import/export
-                system. This is a safety feature to prevent accidental data loss.
-                Records must be deleted individually through their respective
-                management pages. If you need to archive or delete large amounts
-                of data, please contact support for assistance.
+                system. This is a safety feature to prevent accidental data
+                loss. Records must be deleted individually through their
+                respective management pages. If you need to archive or delete
+                large amounts of data, please contact support for assistance.
               </p>
             </div>
           </CardContent>
@@ -476,9 +562,7 @@ export default function DataImportExportPage() {
         <Card>
           <CardHeader>
             <CardTitle>Data Export History</CardTitle>
-            <CardDescription>
-              Recent exports and downloads
-            </CardDescription>
+            <CardDescription>Recent exports and downloads</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

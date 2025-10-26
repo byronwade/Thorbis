@@ -13,13 +13,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function TemplatesSettingsPage() {
   usePageLayout({
@@ -165,7 +165,8 @@ export default function TemplatesSettingsPage() {
                       Sent when job is scheduled
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Variables: customer_name, job_date, job_time, technician_name
+                      Variables: customer_name, job_date, job_time,
+                      technician_name
                     </p>
                   </div>
                   <Button size="sm" variant="outline">
@@ -182,7 +183,8 @@ export default function TemplatesSettingsPage() {
                       Sent 24 hours before appointment
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Variables: customer_name, appointment_date, appointment_time
+                      Variables: customer_name, appointment_date,
+                      appointment_time
                     </p>
                   </div>
                   <Button size="sm" variant="outline">
@@ -199,7 +201,8 @@ export default function TemplatesSettingsPage() {
                       Sent with invoice after job completion
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Variables: customer_name, invoice_number, total_amount, due_date
+                      Variables: customer_name, invoice_number, total_amount,
+                      due_date
                     </p>
                   </div>
                   <Button size="sm" variant="outline">
@@ -216,7 +219,8 @@ export default function TemplatesSettingsPage() {
                       Sent when payment is received
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Variables: customer_name, payment_amount, payment_method, invoice_number
+                      Variables: customer_name, payment_amount, payment_method,
+                      invoice_number
                     </p>
                   </div>
                   <Button size="sm" variant="outline">
@@ -245,7 +249,8 @@ export default function TemplatesSettingsPage() {
                       Sent when technician is en route
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Example: "Hi customer_name! technician_name is on the way and will arrive in eta_minutes minutes."
+                      Example: "Hi customer_name! technician_name is on the way
+                      and will arrive in eta_minutes minutes."
                     </p>
                   </div>
                   <Button size="sm" variant="outline">
@@ -262,7 +267,8 @@ export default function TemplatesSettingsPage() {
                       Sent when job is finished
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Example: "Your service is complete! Thank you for choosing us. Invoice #invoice_number sent to your email."
+                      Example: "Your service is complete! Thank you for choosing
+                      us. Invoice #invoice_number sent to your email."
                     </p>
                   </div>
                   <Button size="sm" variant="outline">
@@ -279,7 +285,9 @@ export default function TemplatesSettingsPage() {
                       Confirmation after scheduling
                     </p>
                     <p className="mt-2 text-muted-foreground text-xs">
-                      Example: "Your appointment is confirmed for appointment_date at appointment_time. Reply CANCEL to reschedule."
+                      Example: "Your appointment is confirmed for
+                      appointment_date at appointment_time. Reply CANCEL to
+                      reschedule."
                     </p>
                   </div>
                   <Button size="sm" variant="outline">

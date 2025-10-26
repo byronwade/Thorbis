@@ -478,6 +478,300 @@ export const companySettings = isProduction
         .$onUpdate(() => new Date()),
     });
 
+/**
+ * Properties table - Customer properties/locations
+ */
+export const properties = isProduction
+  ? pgTable("properties", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      customerId: uuid("customer_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      name: pgText("name").notNull(),
+      address: pgText("address").notNull(),
+      address2: pgText("address2"),
+      city: pgText("city").notNull(),
+      state: pgText("state").notNull(),
+      zipCode: pgText("zip_code").notNull(),
+      country: pgText("country").notNull().default("USA"),
+      propertyType: pgText("property_type"), // 'residential' | 'commercial' | 'industrial'
+      squareFootage: pgInteger("square_footage"),
+      yearBuilt: pgInteger("year_built"),
+      notes: pgText("notes"),
+      metadata: pgJson("metadata"), // Additional property-specific data
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("properties", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      customerId: text("customer_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      name: text("name").notNull(),
+      address: text("address").notNull(),
+      address2: text("address2"),
+      city: text("city").notNull(),
+      state: text("state").notNull(),
+      zipCode: text("zip_code").notNull(),
+      country: text("country").notNull().default("USA"),
+      propertyType: text("property_type"),
+      squareFootage: integer("square_footage"),
+      yearBuilt: integer("year_built"),
+      notes: text("notes"),
+      metadata: text("metadata"), // JSON string
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Jobs table - Work orders/projects
+ */
+export const jobs = isProduction
+  ? pgTable("jobs", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      propertyId: uuid("property_id")
+        .notNull()
+        .references(() => properties.id as any, { onDelete: "cascade" }),
+      customerId: uuid("customer_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      assignedTo: uuid("assigned_to").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      jobNumber: pgText("job_number").notNull().unique(),
+      title: pgText("title").notNull(),
+      description: pgText("description"),
+      status: pgText("status").notNull().default("quoted"), // 'quoted' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled'
+      priority: pgText("priority").notNull().default("medium"), // 'low' | 'medium' | 'high' | 'urgent'
+      jobType: pgText("job_type"), // 'service' | 'installation' | 'repair' | 'maintenance'
+      scheduledStart: timestamp("scheduled_start"),
+      scheduledEnd: timestamp("scheduled_end"),
+      actualStart: timestamp("actual_start"),
+      actualEnd: timestamp("actual_end"),
+      totalAmount: pgInteger("total_amount").default(0), // In cents
+      paidAmount: pgInteger("paid_amount").default(0), // In cents
+      notes: pgText("notes"),
+      metadata: pgJson("metadata"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("jobs", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      propertyId: text("property_id")
+        .notNull()
+        .references(() => properties.id as any, { onDelete: "cascade" }),
+      customerId: text("customer_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      assignedTo: text("assigned_to").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      jobNumber: text("job_number").notNull().unique(),
+      title: text("title").notNull(),
+      description: text("description"),
+      status: text("status").notNull().default("quoted"),
+      priority: text("priority").notNull().default("medium"),
+      jobType: text("job_type"),
+      scheduledStart: integer("scheduled_start", { mode: "timestamp" }),
+      scheduledEnd: integer("scheduled_end", { mode: "timestamp" }),
+      actualStart: integer("actual_start", { mode: "timestamp" }),
+      actualEnd: integer("actual_end", { mode: "timestamp" }),
+      totalAmount: integer("total_amount").default(0),
+      paidAmount: integer("paid_amount").default(0),
+      notes: text("notes"),
+      metadata: text("metadata"), // JSON string
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Estimates table - Job quotes/proposals
+ */
+export const estimates = isProduction
+  ? pgTable("estimates", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      jobId: uuid("job_id").references(() => jobs.id as any, {
+        onDelete: "set null",
+      }),
+      propertyId: uuid("property_id").references(() => properties.id as any, {
+        onDelete: "set null",
+      }),
+      customerId: uuid("customer_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      estimateNumber: pgText("estimate_number").notNull().unique(),
+      title: pgText("title").notNull(),
+      description: pgText("description"),
+      status: pgText("status").notNull().default("draft"), // 'draft' | 'sent' | 'viewed' | 'accepted' | 'rejected' | 'expired'
+      subtotal: pgInteger("subtotal").notNull().default(0), // In cents
+      taxAmount: pgInteger("tax_amount").notNull().default(0), // In cents
+      discountAmount: pgInteger("discount_amount").notNull().default(0), // In cents
+      totalAmount: pgInteger("total_amount").notNull().default(0), // In cents
+      validUntil: timestamp("valid_until"),
+      lineItems: pgJson("line_items").notNull(), // Array of line items
+      terms: pgText("terms"),
+      notes: pgText("notes"),
+      sentAt: timestamp("sent_at"),
+      viewedAt: timestamp("viewed_at"),
+      respondedAt: timestamp("responded_at"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("estimates", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      jobId: text("job_id").references(() => jobs.id as any, {
+        onDelete: "set null",
+      }),
+      propertyId: text("property_id").references(() => properties.id as any, {
+        onDelete: "set null",
+      }),
+      customerId: text("customer_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      estimateNumber: text("estimate_number").notNull().unique(),
+      title: text("title").notNull(),
+      description: text("description"),
+      status: text("status").notNull().default("draft"),
+      subtotal: integer("subtotal").notNull().default(0),
+      taxAmount: integer("tax_amount").notNull().default(0),
+      discountAmount: integer("discount_amount").notNull().default(0),
+      totalAmount: integer("total_amount").notNull().default(0),
+      validUntil: integer("valid_until", { mode: "timestamp" }),
+      lineItems: text("line_items").notNull(), // JSON string
+      terms: text("terms"),
+      notes: text("notes"),
+      sentAt: integer("sent_at", { mode: "timestamp" }),
+      viewedAt: integer("viewed_at", { mode: "timestamp" }),
+      respondedAt: integer("responded_at", { mode: "timestamp" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Invoices table - Billing documents
+ */
+export const invoices = isProduction
+  ? pgTable("invoices", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      jobId: uuid("job_id").references(() => jobs.id as any, {
+        onDelete: "set null",
+      }),
+      customerId: uuid("customer_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      invoiceNumber: pgText("invoice_number").notNull().unique(),
+      title: pgText("title").notNull(),
+      description: pgText("description"),
+      status: pgText("status").notNull().default("draft"), // 'draft' | 'sent' | 'viewed' | 'partial' | 'paid' | 'overdue' | 'cancelled'
+      subtotal: pgInteger("subtotal").notNull().default(0), // In cents
+      taxAmount: pgInteger("tax_amount").notNull().default(0), // In cents
+      discountAmount: pgInteger("discount_amount").notNull().default(0), // In cents
+      totalAmount: pgInteger("total_amount").notNull().default(0), // In cents
+      paidAmount: pgInteger("paid_amount").notNull().default(0), // In cents
+      balanceAmount: pgInteger("balance_amount").notNull().default(0), // In cents
+      dueDate: timestamp("due_date"),
+      lineItems: pgJson("line_items").notNull(), // Array of line items
+      terms: pgText("terms"),
+      notes: pgText("notes"),
+      sentAt: timestamp("sent_at"),
+      viewedAt: timestamp("viewed_at"),
+      paidAt: timestamp("paid_at"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("invoices", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      jobId: text("job_id").references(() => jobs.id as any, {
+        onDelete: "set null",
+      }),
+      customerId: text("customer_id")
+        .notNull()
+        .references(() => users.id as any, { onDelete: "cascade" }),
+      invoiceNumber: text("invoice_number").notNull().unique(),
+      title: text("title").notNull(),
+      description: text("description"),
+      status: text("status").notNull().default("draft"),
+      subtotal: integer("subtotal").notNull().default(0),
+      taxAmount: integer("tax_amount").notNull().default(0),
+      discountAmount: integer("discount_amount").notNull().default(0),
+      totalAmount: integer("total_amount").notNull().default(0),
+      paidAmount: integer("paid_amount").notNull().default(0),
+      balanceAmount: integer("balance_amount").notNull().default(0),
+      dueDate: integer("due_date", { mode: "timestamp" }),
+      lineItems: text("line_items").notNull(), // JSON string
+      terms: text("terms"),
+      notes: text("notes"),
+      sentAt: integer("sent_at", { mode: "timestamp" }),
+      viewedAt: integer("viewed_at", { mode: "timestamp" }),
+      paidAt: integer("paid_at", { mode: "timestamp" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
 // Export types for use in your application
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -509,3 +803,13 @@ export type TeamMember = typeof teamMembers.$inferSelect;
 export type NewTeamMember = typeof teamMembers.$inferInsert;
 export type CompanySettings = typeof companySettings.$inferSelect;
 export type NewCompanySettings = typeof companySettings.$inferInsert;
+
+// Work management types
+export type Property = typeof properties.$inferSelect;
+export type NewProperty = typeof properties.$inferInsert;
+export type Job = typeof jobs.$inferSelect;
+export type NewJob = typeof jobs.$inferInsert;
+export type Estimate = typeof estimates.$inferSelect;
+export type NewEstimate = typeof estimates.$inferInsert;
+export type Invoice = typeof invoices.$inferSelect;
+export type NewInvoice = typeof invoices.$inferInsert;

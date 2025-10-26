@@ -39,8 +39,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useUIStore } from "@/lib/store";
 import { usePageLayout } from "@/hooks/use-page-layout";
+import { useUIStore } from "@/lib/store";
 
 type SettingCategory = {
   title: string;

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Calendar,
-  Save,
-} from "lucide-react";
+import { Calendar, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -158,9 +155,7 @@ export default function ScheduleSettingsPage() {
                 settings.payrollFrequency === "biweekly") && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="period-start">
-                      Pay Period Start Day
-                    </Label>
+                    <Label htmlFor="period-start">Pay Period Start Day</Label>
                     <Select
                       onValueChange={(value) =>
                         handleSettingChange(
@@ -296,9 +291,7 @@ export default function ScheduleSettingsPage() {
 
               {settings.requirePayrollApproval && (
                 <div className="ml-6 space-y-2 border-l-2 pl-4">
-                  <Label htmlFor="approval-workflow">
-                    Approval Workflow
-                  </Label>
+                  <Label htmlFor="approval-workflow">Approval Workflow</Label>
                   <Select
                     onValueChange={(value) =>
                       handleSettingChange(
@@ -308,16 +301,11 @@ export default function ScheduleSettingsPage() {
                     }
                     value={settings.payrollApprovalWorkflow}
                   >
-                    <SelectTrigger
-                      className="max-w-xs"
-                      id="approval-workflow"
-                    >
+                    <SelectTrigger className="max-w-xs" id="approval-workflow">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="single">
-                        Single Approver
-                      </SelectItem>
+                      <SelectItem value="single">Single Approver</SelectItem>
                       <SelectItem value="dual">
                         Dual Approval (Any Order)
                       </SelectItem>
@@ -367,9 +355,7 @@ export default function ScheduleSettingsPage() {
                   <SelectContent>
                     <SelectItem value="email">Email Only</SelectItem>
                     <SelectItem value="print">Print Only</SelectItem>
-                    <SelectItem value="portal">
-                      Employee Portal Only
-                    </SelectItem>
+                    <SelectItem value="portal">Employee Portal Only</SelectItem>
                     <SelectItem value="all">All Methods</SelectItem>
                   </SelectContent>
                 </Select>
@@ -385,10 +371,7 @@ export default function ScheduleSettingsPage() {
                 <Switch
                   checked={settings.detailedCommissionBreakdown}
                   onCheckedChange={(checked) =>
-                    handleSettingChange(
-                      "detailedCommissionBreakdown",
-                      checked
-                    )
+                    handleSettingChange("detailedCommissionBreakdown", checked)
                   }
                 />
               </div>

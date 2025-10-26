@@ -75,7 +75,7 @@ const mockNotifications: Notification[] = [
     message: "Emergency service call assigned to you at 123 Main St.",
     timestamp: new Date(Date.now() - FIFTEEN_MINUTES),
     read: false,
-    actionUrl: "/dashboard/work/jobs/job-456",
+    actionUrl: "/dashboard/work/job-456",
     actionLabel: "View",
   },
   {

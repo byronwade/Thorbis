@@ -10,13 +10,11 @@ import {
   Fuel,
   Gift,
   Layers,
-  PiggyBank,
   Settings,
   TrendingUp,
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Card,
   CardContent,
@@ -24,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 const financeSections = [
   {
@@ -113,9 +112,7 @@ export default function FinanceSettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">
-          Finance Settings
-        </h1>
+        <h1 className="font-bold text-3xl tracking-tight">Finance Settings</h1>
         <p className="mt-2 text-muted-foreground">
           Manage banking, financing, cards, and financial integrations
         </p>
@@ -151,9 +148,7 @@ export default function FinanceSettingsPage() {
               <p className="font-semibold">2 Accounts</p>
             </div>
             <div className="space-y-1">
-              <p className="text-muted-foreground text-sm">
-                Virtual Buckets
-              </p>
+              <p className="text-muted-foreground text-sm">Virtual Buckets</p>
               <p className="font-semibold">5 Active</p>
             </div>
             <div className="space-y-1">
@@ -177,7 +172,9 @@ export default function FinanceSettingsPage() {
               <Card className="transition-all hover:border-primary/50 hover:shadow-md">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className={`flex size-10 items-center justify-center rounded-lg ${section.bgColor}`}>
+                    <div
+                      className={`flex size-10 items-center justify-center rounded-lg ${section.bgColor}`}
+                    >
                       <Icon className={`size-5 ${section.color}`} />
                     </div>
                     <div>
@@ -243,9 +240,7 @@ export default function FinanceSettingsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-sm">Stripe</p>
-                  <p className="text-muted-foreground text-xs">
-                    Not connected
-                  </p>
+                  <p className="text-muted-foreground text-xs">Not connected</p>
                 </div>
               </div>
               <Link href="/dashboard/settings/integrations">

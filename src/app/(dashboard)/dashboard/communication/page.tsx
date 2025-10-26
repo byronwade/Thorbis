@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import {
   Archive,
   Forward,
+  Hash,
   Inbox,
   Mail,
   MessageSquare,
@@ -17,8 +18,6 @@ import {
   Tag,
   Ticket,
   Trash2,
-  Users,
-  Hash,
 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -28,7 +27,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { usePageLayout } from "@/hooks/use-page-layout";
-import { CompanyFeed } from "@/components/communication/company-feed";
 
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
@@ -142,10 +140,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
   },
 ];
 
-type CommunicationMode = "inbox" | "feed";
-
 export default function CommunicationPage() {
-  const [communicationMode, setCommunicationMode] = useState<CommunicationMode>("inbox");
   const [selectedMessage, setSelectedMessage] = useState<UnifiedMessage | null>(
     null
   );
@@ -184,32 +179,30 @@ export default function CommunicationPage() {
   // Configure layout with sidebar filters
   usePageLayout({
     maxWidth: "full",
-    padding: "md",
+    paddingX: "none",
+    paddingY: "none",
     gap: "none",
     showToolbar: true,
     sidebar: {
       groups: [
-        // Communication Mode Selector (always visible)
+        // Communication Navigation (always visible)
         {
           label: undefined,
           items: [
             {
-              mode: "filter" as const,
+              mode: "link" as const,
               title: "Inbox",
-              value: "mode:inbox",
+              url: "/dashboard/communication",
               icon: Inbox,
-              count: statusCounts.unread,
             },
             {
-              mode: "filter" as const,
+              mode: "link" as const,
               title: "Company Feed",
-              value: "mode:feed",
+              url: "/dashboard/communication/feed",
               icon: Hash,
             },
           ],
         },
-        // Inbox filters (only show in inbox mode)
-        ...(communicationMode === "inbox" ? [
         {
           label: "Status",
           items: [
@@ -323,80 +316,9 @@ export default function CommunicationPage() {
             },
           ],
         },
-        ] : [
-          // Feed Mode - Show Channels
-          {
-            label: "Channels",
-            items: [
-              {
-                mode: "filter" as const,
-                title: "# company-feed",
-                value: "channel:company-feed",
-                icon: Hash,
-                count: 127,
-              },
-              {
-                mode: "filter" as const,
-                title: "# announcements",
-                value: "channel:announcements",
-                icon: Hash,
-                count: 45,
-              },
-              {
-                mode: "filter" as const,
-                title: "# general",
-                value: "channel:general",
-                icon: Hash,
-                count: 89,
-              },
-              {
-                mode: "filter" as const,
-                title: "# training",
-                value: "channel:training",
-                icon: Hash,
-                count: 34,
-              },
-              {
-                mode: "filter" as const,
-                title: "# field-tips",
-                value: "channel:field-tips",
-                icon: Hash,
-                count: 56,
-              },
-            ],
-          },
-          {
-            label: "Direct Messages",
-            items: [
-              {
-                mode: "filter" as const,
-                title: "Sarah Johnson",
-                value: "dm:sarah",
-                icon: Users,
-                count: 3,
-              },
-              {
-                mode: "filter" as const,
-                title: "Mike Chen",
-                value: "dm:mike",
-                icon: Users,
-              },
-              {
-                mode: "filter" as const,
-                title: "David Martinez",
-                value: "dm:david",
-                icon: Users,
-                count: 1,
-              },
-            ],
-          },
-        ]),
       ],
-      defaultValue: communicationMode === "inbox" ? "status:all" : "channel:company-feed",
+      defaultValue: "status:all",
       activeValue: (() => {
-        if (communicationMode === "feed") {
-          return "mode:feed";
-        }
         if (tagFilter) {
           return `tag:${tagFilter}`;
         }
@@ -407,10 +329,7 @@ export default function CommunicationPage() {
       })(),
       onValueChange: (value) => {
         // Parse filter type from value
-        if (value.startsWith("mode:")) {
-          const mode = value.replace("mode:", "") as CommunicationMode;
-          setCommunicationMode(mode);
-        } else if (value.startsWith("status:")) {
+        if (value.startsWith("status:")) {
           const status = value.replace("status:", "") as MessageStatus | "all";
           setStatusFilter(status);
           setTypeFilter("all");
@@ -496,9 +415,7 @@ export default function CommunicationPage() {
 
   return (
     <div className="flex h-full flex-col">
-      {communicationMode === "inbox" ? (
-        // Inbox View
-        <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         <div className="flex w-96 flex-col border-r">
           <div className="border-b p-4">
             <div className="relative">
@@ -748,10 +665,6 @@ export default function CommunicationPage() {
           )}
         </div>
       </div>
-      ) : (
-        // Company Feed View
-        <CompanyFeed />
-      )}
     </div>
   );
 }

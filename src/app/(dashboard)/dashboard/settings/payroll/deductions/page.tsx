@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Save,
-  Wallet,
-} from "lucide-react";
+import { Save, Wallet } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -150,10 +147,7 @@ export default function DeductionsSettingsPage() {
                       <Switch
                         checked={settings.toolRentalDeduction}
                         onCheckedChange={(checked) =>
-                          handleSettingChange(
-                            "toolRentalDeduction",
-                            checked
-                          )
+                          handleSettingChange("toolRentalDeduction", checked)
                         }
                       />
                     </div>
@@ -182,10 +176,7 @@ export default function DeductionsSettingsPage() {
                       <Switch
                         checked={settings.vehicleUseDeduction}
                         onCheckedChange={(checked) =>
-                          handleSettingChange(
-                            "vehicleUseDeduction",
-                            checked
-                          )
+                          handleSettingChange("vehicleUseDeduction", checked)
                         }
                       />
                     </div>
@@ -261,9 +252,7 @@ export default function DeductionsSettingsPage() {
 
                 {settings.mileageReimbursement && (
                   <div className="ml-6 space-y-2 border-l-2 pl-4">
-                    <Label htmlFor="mileage-rate">
-                      Mileage Rate ($/mile)
-                    </Label>
+                    <Label htmlFor="mileage-rate">Mileage Rate ($/mile)</Label>
                     <Input
                       className="max-w-xs"
                       id="mileage-rate"
@@ -294,10 +283,7 @@ export default function DeductionsSettingsPage() {
                   <Switch
                     checked={settings.toolPurchaseReimbursement}
                     onCheckedChange={(checked) =>
-                      handleSettingChange(
-                        "toolPurchaseReimbursement",
-                        checked
-                      )
+                      handleSettingChange("toolPurchaseReimbursement", checked)
                     }
                   />
                 </div>
@@ -339,9 +325,7 @@ export default function DeductionsSettingsPage() {
 
                 {settings.cellPhoneStipend && (
                   <div className="ml-6 space-y-2 border-l-2 pl-4">
-                    <Label htmlFor="phone-stipend">
-                      Monthly Amount ($)
-                    </Label>
+                    <Label htmlFor="phone-stipend">Monthly Amount ($)</Label>
                     <Input
                       className="max-w-xs"
                       id="phone-stipend"

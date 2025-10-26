@@ -10,10 +10,10 @@ import { Footer } from "@/components/layout/footer";
 import { ImprovedFeaturesSection } from "./improved-features";
 import {
   CustomerSuccessSection,
-  ROICalculatorSection,
   IndustrySolutionsSection,
-  TrustStatsSection,
   PricingPreviewSection,
+  ROICalculatorSection,
+  TrustStatsSection,
 } from "./new-sections";
 
 export function ScrollExperience() {

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Calculator,
-  CreditCard,
-  DollarSign,
-  Percent,
-  Save,
-} from "lucide-react";
+import { Calculator, CreditCard, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +38,7 @@ export default function ConsumerFinancingSettingsPage() {
     enabled: true,
     provider: "affirm",
     minimumAmount: 500,
-    maximumAmount: 25000,
+    maximumAmount: 25_000,
     defaultTerm: 12,
     showOnInvoices: true,
     showOnEstimates: true,
@@ -127,9 +121,7 @@ export default function ConsumerFinancingSettingsPage() {
                       <SelectItem value="affirm">Affirm</SelectItem>
                       <SelectItem value="klarna">Klarna</SelectItem>
                       <SelectItem value="afterpay">Afterpay</SelectItem>
-                      <SelectItem value="paypal">
-                        PayPal Pay in 4
-                      </SelectItem>
+                      <SelectItem value="paypal">PayPal Pay in 4</SelectItem>
                       <SelectItem value="greensky">GreenSky</SelectItem>
                     </SelectContent>
                   </Select>
@@ -271,9 +263,7 @@ export default function ConsumerFinancingSettingsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="auto-approve">
-                    Auto-Approve Under ($)
-                  </Label>
+                  <Label htmlFor="auto-approve">Auto-Approve Under ($)</Label>
                   <Input
                     id="auto-approve"
                     min={0}
@@ -402,8 +392,7 @@ export default function ConsumerFinancingSettingsPage() {
                         Down Payment ({settings.downPaymentPercent}%):
                       </span>
                       <span className="font-medium">
-                        $
-                        {(10000 * settings.downPaymentPercent) / 100}.00
+                        ${(10_000 * settings.downPaymentPercent) / 100}.00
                       </span>
                     </div>
                   )}
@@ -413,7 +402,7 @@ export default function ConsumerFinancingSettingsPage() {
                         Service Fee ({settings.serviceFeePercent}%):
                       </span>
                       <span className="font-medium">
-                        ${(10000 * settings.serviceFeePercent) / 100}.00
+                        ${(10_000 * settings.serviceFeePercent) / 100}.00
                       </span>
                     </div>
                   )}
@@ -423,7 +412,7 @@ export default function ConsumerFinancingSettingsPage() {
                     <span className="font-bold">
                       $
                       {(
-                        10000 *
+                        10_000 *
                         (1 -
                           (settings.requireDownPayment
                             ? settings.downPaymentPercent / 100
@@ -442,7 +431,7 @@ export default function ConsumerFinancingSettingsPage() {
                     <span className="font-bold">
                       $
                       {(
-                        (10000 *
+                        (10_000 *
                           (1 -
                             (settings.requireDownPayment
                               ? settings.downPaymentPercent / 100

@@ -2,11 +2,11 @@
 
 import {
   Bell,
+  FileText,
   Mail,
   MessageSquare,
   Phone,
   Settings,
-  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -80,7 +80,7 @@ export default function CommunicationsSettingsPage() {
           const Icon = section.icon;
           return (
             <Link href={section.href} key={section.title}>
-              <Card className="group transition-all hover:shadow-md hover:border-primary/50">
+              <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div

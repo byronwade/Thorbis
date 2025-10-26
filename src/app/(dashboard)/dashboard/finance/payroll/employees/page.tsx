@@ -31,7 +31,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Table,
   TableBody,
@@ -40,6 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Mock employee data
 const employees = [

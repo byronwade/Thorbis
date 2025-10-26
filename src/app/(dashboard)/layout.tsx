@@ -22,7 +22,11 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const { config } = useLayoutConfig();
 
   const maxWidthClass = getMaxWidthClass(config.maxWidth);
-  const paddingClass = getPaddingClass(config.padding);
+  const paddingClass = getPaddingClass(
+    config.padding,
+    config.paddingX,
+    config.paddingY
+  );
   const gapClass = getGapClass(config.gap);
   const isFullWidth = config.maxWidth === "full";
   const showSidebar = config.showSidebar !== false;

@@ -14,7 +14,6 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Card,
   CardContent,
@@ -22,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 const settingsSections = [
   {

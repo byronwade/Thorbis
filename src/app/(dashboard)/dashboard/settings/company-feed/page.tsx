@@ -3,30 +3,25 @@
 export const dynamic = "force-dynamic";
 
 import {
-  Users,
-  MessageSquare,
-  FileText,
-  Shield,
-  Bell,
-  Image as ImageIcon,
-  Video,
-  Hash,
-  TrendingUp,
-  Eye,
-  ThumbsUp,
-  Share2,
   Archive,
-  HelpCircle,
-  Loader2,
-  Save,
-  Globe,
-  Lock,
   Award,
+  Bell,
   Calendar,
-  Clock,
+  Eye,
+  FileText,
+  Globe,
+  HelpCircle,
+  Image as ImageIcon,
+  Loader2,
+  MessageSquare,
+  Save,
+  Share2,
+  Shield,
   Tag,
-  Filter,
-  Search,
+  ThumbsUp,
+  TrendingUp,
+  Users,
+  Video,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -48,14 +43,14 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Textarea } from "@/components/ui/textarea";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -180,7 +175,15 @@ export default function CompanyFeedSettingsPage() {
     maxDocumentSize: 25,
     allowedImageFormats: ["jpg", "jpeg", "png", "gif", "webp"],
     allowedVideoFormats: ["mp4", "mov", "avi", "webm"],
-    allowedDocumentFormats: ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"],
+    allowedDocumentFormats: [
+      "pdf",
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+    ],
 
     // Moderation
     enableModeration: true,
@@ -262,8 +265,8 @@ export default function CompanyFeedSettingsPage() {
             Company Feed Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Configure your internal social platform for company-wide communication
-            and content sharing
+            Configure your internal social platform for company-wide
+            communication and content sharing
           </p>
         </div>
 
@@ -419,7 +422,9 @@ export default function CompanyFeedSettingsPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Label className="font-medium text-sm">Allow Comments</Label>
+                    <Label className="font-medium text-sm">
+                      Allow Comments
+                    </Label>
                     <p className="text-muted-foreground text-xs">
                       Users can comment on posts
                     </p>
@@ -716,7 +721,10 @@ export default function CompanyFeedSettingsPage() {
                       <Input
                         min="1"
                         onChange={(e) =>
-                          updateSetting("maxDocumentSize", Number(e.target.value))
+                          updateSetting(
+                            "maxDocumentSize",
+                            Number(e.target.value)
+                          )
                         }
                         type="number"
                         value={settings.maxDocumentSize}
@@ -798,7 +806,9 @@ export default function CompanyFeedSettingsPage() {
                   </div>
 
                   <div>
-                    <Label className="font-medium text-sm">Flag Threshold</Label>
+                    <Label className="font-medium text-sm">
+                      Flag Threshold
+                    </Label>
                     <Input
                       className="mt-2"
                       min="1"
@@ -904,9 +914,7 @@ export default function CompanyFeedSettingsPage() {
               <Separator />
 
               <div>
-                <Label className="font-medium text-sm">
-                  Digest Frequency
-                </Label>
+                <Label className="font-medium text-sm">Digest Frequency</Label>
                 <Select
                   onValueChange={(value) =>
                     updateSetting(
@@ -959,7 +967,8 @@ export default function CompanyFeedSettingsPage() {
                 </Tooltip>
               </CardTitle>
               <CardDescription>
-                Structured content library for company resources and knowledge base
+                Structured content library for company resources and knowledge
+                base
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1100,7 +1109,8 @@ export default function CompanyFeedSettingsPage() {
                 </Tooltip>
               </CardTitle>
               <CardDescription>
-                Share company-approved content with customers through your portal
+                Share company-approved content with customers through your
+                portal
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1372,7 +1382,10 @@ export default function CompanyFeedSettingsPage() {
                     <Input
                       min="30"
                       onChange={(e) =>
-                        updateSetting("archiveAfterDays", Number(e.target.value))
+                        updateSetting(
+                          "archiveAfterDays",
+                          Number(e.target.value)
+                        )
                       }
                       type="number"
                       value={settings.archiveAfterDays}
@@ -1488,7 +1501,8 @@ export default function CompanyFeedSettingsPage() {
                         </span>
                       </div>
                       <p className="mt-1 text-muted-foreground text-xs">
-                        Keep deleted posts for this long before permanent removal
+                        Keep deleted posts for this long before permanent
+                        removal
                       </p>
                     </div>
                   )}

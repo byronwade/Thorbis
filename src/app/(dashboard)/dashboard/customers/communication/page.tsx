@@ -2,7 +2,6 @@
 
 export const dynamic = "force-dynamic";
 
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Card,
   CardContent,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function CommunicationPage() {
   usePageLayout({

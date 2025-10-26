@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Calculator,
-  Layers,
-  Save,
-} from "lucide-react";
+import { Calculator, Layers, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -125,9 +121,7 @@ export default function MaterialsSettingsPage() {
                 <>
                   <div className="ml-6 space-y-4 border-l-2 pl-4">
                     <div className="space-y-2">
-                      <Label htmlFor="deduction-type">
-                        Deduction Method
-                      </Label>
+                      <Label htmlFor="deduction-type">Deduction Method</Label>
                       <Select
                         onValueChange={(value) =>
                           handleSettingChange(
@@ -155,8 +149,7 @@ export default function MaterialsSettingsPage() {
                       <p className="text-muted-foreground text-xs">
                         {settings.materialDeductionType === "gross" &&
                           "Materials deducted before any calculations"}
-                        {settings.materialDeductionType ===
-                          "commission-only" &&
+                        {settings.materialDeductionType === "commission-only" &&
                           "Commission calculated on (revenue - materials)"}
                         {settings.materialDeductionType === "net" &&
                           "Materials deducted after commission calculated"}
@@ -213,9 +206,7 @@ export default function MaterialsSettingsPage() {
                             <SelectItem value="deduct">
                               Full Deduction
                             </SelectItem>
-                            <SelectItem value="split">
-                              Split Cost
-                            </SelectItem>
+                            <SelectItem value="split">Split Cost</SelectItem>
                             <SelectItem value="company-covers">
                               Company Covers
                             </SelectItem>
@@ -245,9 +236,8 @@ export default function MaterialsSettingsPage() {
                           value={settings.materialSplitPercentage}
                         />
                         <p className="text-muted-foreground text-xs">
-                          Tech pays {settings.materialSplitPercentage}%,
-                          company pays{" "}
-                          {100 - settings.materialSplitPercentage}%
+                          Tech pays {settings.materialSplitPercentage}%, company
+                          pays {100 - settings.materialSplitPercentage}%
                         </p>
                       </div>
                     )}

@@ -23,6 +23,8 @@ type LayoutConfig = {
     | "md"
     | "sm";
   padding?: "none" | "sm" | "md" | "lg";
+  paddingX?: "none" | "sm" | "md" | "lg";
+  paddingY?: "none" | "sm" | "md" | "lg";
   gap?: "none" | "sm" | "md" | "lg";
   showToolbar?: boolean;
   showSidebar?: boolean;
@@ -48,6 +50,8 @@ export function useLayoutConfig() {
       config: {
         maxWidth: "7xl" as const,
         padding: "md" as const,
+        paddingX: undefined,
+        paddingY: undefined,
         gap: "md" as const,
         showToolbar: true,
         showSidebar: true,
@@ -66,6 +70,8 @@ export function LayoutConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfigState] = useState<LayoutConfig>({
     maxWidth: "7xl",
     padding: "md",
+    paddingX: undefined,
+    paddingY: undefined,
     gap: "md",
     showToolbar: true,
     showSidebar: true,
@@ -112,18 +118,64 @@ export function getMaxWidthClass(maxWidth: LayoutConfig["maxWidth"]): string {
   }
 }
 
-export function getPaddingClass(padding: LayoutConfig["padding"]): string {
+export function getPaddingClass(
+  padding: LayoutConfig["padding"],
+  paddingX?: LayoutConfig["paddingX"],
+  paddingY?: LayoutConfig["paddingY"]
+): string {
+  // If specific paddingX or paddingY are provided, use those
+  if (paddingX !== undefined || paddingY !== undefined) {
+    const px = getPaddingXClass(paddingX ?? padding);
+    const py = getPaddingYClass(paddingY ?? padding);
+    return `${px} ${py}`;
+  }
+
+  // Otherwise use the combined padding value
   switch (padding) {
     case "none":
       return "p-0";
     case "sm":
-      return "p-2";
+      return "px-2 py-4";
     case "md":
-      return "p-4";
+      return "px-4 py-6";
     case "lg":
-      return "p-6";
+      return "px-6 py-8";
     default:
-      return "p-4";
+      return "px-4 py-6";
+  }
+}
+
+function getPaddingXClass(
+  padding: LayoutConfig["paddingX"] | LayoutConfig["padding"]
+): string {
+  switch (padding) {
+    case "none":
+      return "px-0";
+    case "sm":
+      return "px-2";
+    case "md":
+      return "px-4";
+    case "lg":
+      return "px-6";
+    default:
+      return "px-4";
+  }
+}
+
+function getPaddingYClass(
+  padding: LayoutConfig["paddingY"] | LayoutConfig["padding"]
+): string {
+  switch (padding) {
+    case "none":
+      return "py-0";
+    case "sm":
+      return "py-4";
+    case "md":
+      return "py-6";
+    case "lg":
+      return "py-8";
+    default:
+      return "py-6";
   }
 }
 

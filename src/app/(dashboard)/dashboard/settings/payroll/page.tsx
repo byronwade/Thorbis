@@ -11,7 +11,6 @@ import {
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Card,
   CardContent,
@@ -19,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 const payrollSections = [
   {
@@ -92,9 +92,7 @@ export default function PayrollSettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">
-          Payroll Settings
-        </h1>
+        <h1 className="font-bold text-3xl tracking-tight">Payroll Settings</h1>
         <p className="mt-2 text-muted-foreground">
           Configure commission structures, deductions, bonuses, and payroll
           policies
@@ -157,7 +155,9 @@ export default function PayrollSettingsPage() {
               <Card className="transition-all hover:border-primary/50 hover:shadow-md">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className={`flex size-10 items-center justify-center rounded-lg ${section.bgColor}`}>
+                    <div
+                      className={`flex size-10 items-center justify-center rounded-lg ${section.bgColor}`}
+                    >
                       <Icon className={`size-5 ${section.color}`} />
                     </div>
                     <div>

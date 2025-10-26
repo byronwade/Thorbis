@@ -15,13 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 const MAX_SIGNATURE_LENGTH = 300;
 
@@ -103,7 +103,9 @@ export default function EmailSettingsPage() {
                 </Label>
                 <Input
                   className="mt-2"
-                  onChange={(e) => updateSetting("companyEmail", e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("companyEmail", e.target.value)
+                  }
                   placeholder="info@yourcompany.com"
                   type="email"
                   value={settings.companyEmail}
@@ -127,7 +129,9 @@ export default function EmailSettingsPage() {
                 </Label>
                 <Input
                   className="mt-2"
-                  onChange={(e) => updateSetting("replyToEmail", e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("replyToEmail", e.target.value)
+                  }
                   placeholder="support@yourcompany.com"
                   type="email"
                   value={settings.replyToEmail}
@@ -187,7 +191,9 @@ export default function EmailSettingsPage() {
               </Label>
               <Textarea
                 className="mt-2 min-h-[120px] resize-none font-mono text-sm"
-                onChange={(e) => updateSetting("emailSignature", e.target.value)}
+                onChange={(e) =>
+                  updateSetting("emailSignature", e.target.value)
+                }
                 placeholder="Thank you for your business!..."
                 value={settings.emailSignature}
               />

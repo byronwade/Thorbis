@@ -15,13 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function SMSSettingsPage() {
   usePageLayout({
@@ -57,7 +57,9 @@ export default function SMSSettingsPage() {
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">SMS & Text Settings</h1>
+            <h1 className="font-bold text-3xl tracking-tight">
+              SMS & Text Settings
+            </h1>
             <p className="mt-2 text-muted-foreground">
               Configure text message communications
             </p>
@@ -100,7 +102,9 @@ export default function SMSSettingsPage() {
               </div>
               <Switch
                 checked={settings.smsEnabled}
-                onCheckedChange={(checked) => updateSetting("smsEnabled", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("smsEnabled", checked)
+                }
               />
             </div>
 
@@ -144,7 +148,8 @@ export default function SMSSettingsPage() {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className="max-w-xs">
-                            Short name shown in text messages (max 11 characters)
+                            Short name shown in text messages (max 11
+                            characters)
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -152,7 +157,9 @@ export default function SMSSettingsPage() {
                     <Input
                       className="mt-2"
                       maxLength={11}
-                      onChange={(e) => updateSetting("smsFromName", e.target.value)}
+                      onChange={(e) =>
+                        updateSetting("smsFromName", e.target.value)
+                      }
                       placeholder="YourCo"
                       value={settings.smsFromName}
                     />
@@ -213,7 +220,10 @@ export default function SMSSettingsPage() {
                       <Textarea
                         className="mt-2 min-h-[80px] resize-none"
                         onChange={(e) =>
-                          updateSetting("smsAutoResponseMessage", e.target.value)
+                          updateSetting(
+                            "smsAutoResponseMessage",
+                            e.target.value
+                          )
                         }
                         placeholder="Thanks for texting! We'll respond during business hours..."
                         value={settings.smsAutoResponseMessage}

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Clock,
-  Save,
-} from "lucide-react";
+import { Clock, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -134,9 +131,7 @@ export default function OvertimeSettingsPage() {
                 <SelectContent>
                   <SelectItem value="daily">Daily Overtime</SelectItem>
                   <SelectItem value="weekly">Weekly Overtime</SelectItem>
-                  <SelectItem value="both">
-                    Both (California Rule)
-                  </SelectItem>
+                  <SelectItem value="both">Both (California Rule)</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-muted-foreground text-xs">
@@ -384,9 +379,7 @@ export default function OvertimeSettingsPage() {
 
                 {settings.onCallPay && (
                   <div className="ml-6 space-y-2 border-l-2 pl-4">
-                    <Label htmlFor="oncall-rate">
-                      On-Call Rate ($/hour)
-                    </Label>
+                    <Label htmlFor="oncall-rate">On-Call Rate ($/hour)</Label>
                     <Input
                       className="max-w-xs"
                       id="oncall-rate"

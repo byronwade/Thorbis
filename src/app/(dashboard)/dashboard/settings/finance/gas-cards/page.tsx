@@ -85,9 +85,7 @@ export default function GasCardsSettingsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="shell">Shell Fleet Plus</SelectItem>
-                  <SelectItem value="exxon">
-                    ExxonMobil Fleet Card
-                  </SelectItem>
+                  <SelectItem value="exxon">ExxonMobil Fleet Card</SelectItem>
                   <SelectItem value="bp">BP Business Solutions</SelectItem>
                   <SelectItem value="wex">WEX Fleet Card</SelectItem>
                   <SelectItem value="fleet">Fleetcor</SelectItem>

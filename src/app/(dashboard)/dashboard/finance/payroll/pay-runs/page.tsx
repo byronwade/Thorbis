@@ -19,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Table,
   TableBody,
@@ -28,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Mock pay run data
 const payRuns = [

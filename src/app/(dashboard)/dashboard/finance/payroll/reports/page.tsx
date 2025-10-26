@@ -10,7 +10,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Card,
   CardContent,
@@ -18,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 const reportCategories = [
   {

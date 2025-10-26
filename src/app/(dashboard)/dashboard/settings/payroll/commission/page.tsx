@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  BadgeDollarSign,
-  Info,
-  Save,
-} from "lucide-react";
+import { BadgeDollarSign, Info, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -197,12 +193,8 @@ export default function CommissionSettingsPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="flat">
-                          Flat Percentage
-                        </SelectItem>
-                        <SelectItem value="tiered">
-                          Tiered Structure
-                        </SelectItem>
+                        <SelectItem value="flat">Flat Percentage</SelectItem>
+                        <SelectItem value="tiered">Tiered Structure</SelectItem>
                         <SelectItem value="performance">
                           Performance Based
                         </SelectItem>
@@ -383,9 +375,7 @@ export default function CommissionSettingsPage() {
                         <SelectItem value="next-period">
                           Next Pay Period
                         </SelectItem>
-                        <SelectItem value="monthly">
-                          Monthly Payout
-                        </SelectItem>
+                        <SelectItem value="monthly">Monthly Payout</SelectItem>
                       </SelectContent>
                     </Select>
                     <p className="text-muted-foreground text-xs">
@@ -394,9 +384,7 @@ export default function CommissionSettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="min-threshold">
-                      Minimum Threshold ($)
-                    </Label>
+                    <Label htmlFor="min-threshold">Minimum Threshold ($)</Label>
                     <Input
                       id="min-threshold"
                       min={0}
@@ -439,9 +427,7 @@ export default function CommissionSettingsPage() {
 
                   {settings.commissionCapEnabled && (
                     <div className="ml-6 space-y-2 border-l-2 pl-4">
-                      <Label htmlFor="cap-amount">
-                        Maximum Commission ($)
-                      </Label>
+                      <Label htmlFor="cap-amount">Maximum Commission ($)</Label>
                       <Input
                         id="cap-amount"
                         min={0}
@@ -476,10 +462,7 @@ export default function CommissionSettingsPage() {
                     <Switch
                       checked={settings.commissionOnServicePlans}
                       onCheckedChange={(checked) =>
-                        handleSettingChange(
-                          "commissionOnServicePlans",
-                          checked
-                        )
+                        handleSettingChange("commissionOnServicePlans", checked)
                       }
                     />
                   </div>

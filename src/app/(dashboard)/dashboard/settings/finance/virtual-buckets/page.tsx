@@ -61,8 +61,8 @@ export default function VirtualBucketsSettingsPage() {
       name: "Tax Reserve",
       description: "Quarterly tax payments",
       color: "blue",
-      currentBalance: 15000,
-      targetAmount: 25000,
+      currentBalance: 15_000,
+      targetAmount: 25_000,
       autoAllocate: true,
       allocationType: "percentage",
       allocationValue: 25,
@@ -73,8 +73,8 @@ export default function VirtualBucketsSettingsPage() {
       name: "Emergency Fund",
       description: "3 months operating expenses",
       color: "green",
-      currentBalance: 45000,
-      targetAmount: 75000,
+      currentBalance: 45_000,
+      targetAmount: 75_000,
       autoAllocate: true,
       allocationType: "percentage",
       allocationValue: 10,
@@ -86,7 +86,7 @@ export default function VirtualBucketsSettingsPage() {
       description: "Vehicle and tool replacement",
       color: "orange",
       currentBalance: 8500,
-      targetAmount: 20000,
+      targetAmount: 20_000,
       autoAllocate: false,
       allocationType: "fixed",
       allocationValue: 500,
@@ -267,9 +267,7 @@ export default function VirtualBucketsSettingsPage() {
                             <SelectItem value="percentage">
                               Percentage
                             </SelectItem>
-                            <SelectItem value="fixed">
-                              Fixed Amount
-                            </SelectItem>
+                            <SelectItem value="fixed">Fixed Amount</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -357,9 +355,7 @@ export default function VirtualBucketsSettingsPage() {
             <Separator />
 
             <div className="space-y-2">
-              <Label htmlFor="allocation-frequency">
-                Allocation Frequency
-              </Label>
+              <Label htmlFor="allocation-frequency">Allocation Frequency</Label>
               <Select defaultValue="daily">
                 <SelectTrigger id="allocation-frequency">
                   <SelectValue />
@@ -398,8 +394,8 @@ export default function VirtualBucketsSettingsPage() {
               <p className="text-muted-foreground text-sm">
                 Virtual buckets don't move money between accounts. They simply
                 track and allocate portions of your existing balance toward
-                specific goals, helping you manage cash flow and save for
-                future expenses.
+                specific goals, helping you manage cash flow and save for future
+                expenses.
               </p>
             </div>
           </CardContent>

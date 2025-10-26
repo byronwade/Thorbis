@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Zap,
-  Settings,
-} from "lucide-react";
+import { Calendar, Clock, MapPin, Settings, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageLayout } from "@/hooks/use-page-layout";
@@ -67,9 +60,7 @@ export default function ScheduleSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">
-          Schedule Settings
-        </h1>
+        <h1 className="font-bold text-3xl tracking-tight">Schedule Settings</h1>
         <p className="mt-2 text-muted-foreground">
           Configure scheduling, dispatch, and availability settings
         </p>
@@ -80,7 +71,7 @@ export default function ScheduleSettingsPage() {
           const Icon = section.icon;
           return (
             <Link href={section.href} key={section.title}>
-              <Card className="group transition-all hover:shadow-md hover:border-primary/50">
+              <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div
@@ -109,9 +100,7 @@ export default function ScheduleSettingsPage() {
           <div className="flex items-start gap-3">
             <Settings className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
             <div className="space-y-1">
-              <p className="font-medium text-sm">
-                Schedule Settings Overview
-              </p>
+              <p className="font-medium text-sm">Schedule Settings Overview</p>
               <p className="text-muted-foreground text-sm">
                 These settings control how appointments are scheduled, assigned,
                 and displayed. Configure your calendar view preferences, set

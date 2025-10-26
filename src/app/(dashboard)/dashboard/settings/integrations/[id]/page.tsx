@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { usePageLayout } from "@/hooks/use-page-layout";
 import { integrations } from "@/lib/data/integrations";
 import { cn } from "@/lib/utils";
 import { GoogleCalendarSettings } from "./settings/google-calendar";
@@ -39,7 +40,6 @@ import { SlackSettings } from "./settings/slack";
 import { StripeSettings } from "./settings/stripe";
 import { TwilioSettings } from "./settings/twilio";
 import { ZapierSettings } from "./settings/zapier";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Map integration IDs to their settings components
 const integrationSettingsMap: Record<string, React.ComponentType> = {

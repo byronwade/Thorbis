@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { Calendar, DollarSign, Info, Phone, TrendingUp } from "lucide-react";
+import { RecentCompanyPosts } from "@/components/communication/recent-company-posts";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { CallActivityChart } from "@/components/dashboard/call-activity-chart";
 import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
@@ -136,6 +137,9 @@ export default function DashboardPage() {
           <ActivityFeed />
         </div>
       </div>
+
+      {/* Recent Company Posts - Full width */}
+      <RecentCompanyPosts limit={3} />
 
       {/* Bottom row - 3 equal columns */}
       <div className="grid gap-6 lg:grid-cols-3">

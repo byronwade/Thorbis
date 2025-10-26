@@ -4,8 +4,6 @@ import {
   AlertTriangle,
   Building2,
   DollarSign,
-  FileText,
-  Percent,
   Plus,
   Save,
   TrendingUp,
@@ -71,8 +69,8 @@ export default function BusinessFinancingSettingsPage() {
       lender: "Wells Fargo Business",
       type: "line-of-credit",
       accountNumber: "****4532",
-      originalAmount: 100000,
-      currentBalance: 35000,
+      originalAmount: 100_000,
+      currentBalance: 35_000,
       interestRate: 7.5,
       monthlyPayment: 0,
       maturityDate: "2026-12-31",
@@ -83,8 +81,8 @@ export default function BusinessFinancingSettingsPage() {
       lender: "Bank of America",
       type: "term-loan",
       accountNumber: "****8921",
-      originalAmount: 250000,
-      currentBalance: 187500,
+      originalAmount: 250_000,
+      currentBalance: 187_500,
       interestRate: 5.25,
       monthlyPayment: 4167,
       maturityDate: "2028-06-15",
@@ -159,9 +157,7 @@ export default function BusinessFinancingSettingsPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium text-sm">
-                Total Debt
-              </CardTitle>
+              <CardTitle className="font-medium text-sm">Total Debt</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -185,9 +181,7 @@ export default function BusinessFinancingSettingsPage() {
               <div className="font-bold text-2xl">
                 ${totalCreditAvailable.toLocaleString()}
               </div>
-              <p className="text-muted-foreground text-xs">
-                Ready to access
-              </p>
+              <p className="text-muted-foreground text-xs">Ready to access</p>
             </CardContent>
           </Card>
 
@@ -362,7 +356,7 @@ export default function BusinessFinancingSettingsPage() {
 
             <div className="space-y-2">
               <Label>Low Credit Alert Threshold (%)</Label>
-              <Input defaultValue="20" min={0} max={100} type="number" />
+              <Input defaultValue="20" max={100} min={0} type="number" />
               <p className="text-muted-foreground text-xs">
                 Get notified when available credit falls below this percentage
               </p>

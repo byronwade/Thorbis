@@ -9,7 +9,7 @@ import {
   Video,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type HelpItem = {
   label: string;
@@ -88,7 +88,7 @@ export function HelpDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-lg border bg-popover p-2 text-popover-foreground shadow-lg">
+        <div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border bg-popover p-2 text-popover-foreground shadow-lg">
           <div className="mb-2 border-b px-3 py-2">
             <h3 className="font-semibold text-sm">Help &amp; Support</h3>
             <p className="text-muted-foreground text-xs">

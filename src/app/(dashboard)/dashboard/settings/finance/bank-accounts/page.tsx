@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  AlertCircle,
   AlertTriangle,
   Building2,
   CheckCircle2,
@@ -71,7 +70,7 @@ const getBankLogo = (bankName: string) => {
       url: "https://logo.clearbit.com/wellsfargo.com",
       color: "#D71E28",
     },
-    "Citibank": {
+    Citibank: {
       url: "https://logo.clearbit.com/citi.com",
       color: "#003B71",
     },
@@ -95,7 +94,7 @@ const getBankLogo = (bankName: string) => {
       url: "https://logo.clearbit.com/td.com",
       color: "#5DBB46",
     },
-    "Truist": {
+    Truist: {
       url: "https://logo.clearbit.com/truist.com",
       color: "#340084",
     },
@@ -209,7 +208,7 @@ export default function BankAccountsSettingsPage() {
         return (
           <div className="flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1">
             <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
-            <span className="text-green-700 text-xs font-medium dark:text-green-400">
+            <span className="font-medium text-green-700 text-xs dark:text-green-400">
               Connected
             </span>
           </div>
@@ -218,7 +217,7 @@ export default function BankAccountsSettingsPage() {
         return (
           <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1">
             <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-            <span className="text-amber-700 text-xs font-medium dark:text-amber-400">
+            <span className="font-medium text-amber-700 text-xs dark:text-amber-400">
               Reconnect Needed
             </span>
           </div>
@@ -227,7 +226,7 @@ export default function BankAccountsSettingsPage() {
         return (
           <div className="flex items-center gap-1.5 rounded-full bg-red-500/10 px-2.5 py-1">
             <AlertTriangle className="h-3 w-3 text-red-600 dark:text-red-400" />
-            <span className="text-red-700 text-xs font-medium dark:text-red-400">
+            <span className="font-medium text-red-700 text-xs dark:text-red-400">
               Error
             </span>
           </div>
@@ -696,9 +695,7 @@ export default function BankAccountsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Advanced Settings</CardTitle>
-            <CardDescription>
-              Additional configuration options
-            </CardDescription>
+            <CardDescription>Additional configuration options</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">

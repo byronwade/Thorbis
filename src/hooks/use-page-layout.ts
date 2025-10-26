@@ -18,6 +18,8 @@ type PageLayoutConfig = {
     | "md"
     | "sm";
   padding?: "none" | "sm" | "md" | "lg";
+  paddingX?: "none" | "sm" | "md" | "lg";
+  paddingY?: "none" | "sm" | "md" | "lg";
   gap?: "none" | "sm" | "md" | "lg";
   showToolbar?: boolean;
   showSidebar?: boolean;

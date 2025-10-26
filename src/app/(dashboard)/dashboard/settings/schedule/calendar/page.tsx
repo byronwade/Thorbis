@@ -21,13 +21,13 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 export default function CalendarSettingsPage() {
   usePageLayout({
@@ -116,13 +116,25 @@ export default function CalendarSettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                  <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                  <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                  <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                  <SelectItem value="America/New_York">
+                    Eastern Time (ET)
+                  </SelectItem>
+                  <SelectItem value="America/Chicago">
+                    Central Time (CT)
+                  </SelectItem>
+                  <SelectItem value="America/Denver">
+                    Mountain Time (MT)
+                  </SelectItem>
+                  <SelectItem value="America/Los_Angeles">
+                    Pacific Time (PT)
+                  </SelectItem>
                   <SelectItem value="America/Phoenix">Arizona (MST)</SelectItem>
-                  <SelectItem value="America/Anchorage">Alaska Time (AKT)</SelectItem>
-                  <SelectItem value="Pacific/Honolulu">Hawaii Time (HST)</SelectItem>
+                  <SelectItem value="America/Anchorage">
+                    Alaska Time (AKT)
+                  </SelectItem>
+                  <SelectItem value="Pacific/Honolulu">
+                    Hawaii Time (HST)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -133,7 +145,9 @@ export default function CalendarSettingsPage() {
               <div>
                 <Label>First Day of Week</Label>
                 <Select
-                  onValueChange={(value) => updateSetting("firstDayOfWeek", value)}
+                  onValueChange={(value) =>
+                    updateSetting("firstDayOfWeek", value)
+                  }
                   value={settings.firstDayOfWeek}
                 >
                   <SelectTrigger className="mt-2">
@@ -175,9 +189,15 @@ export default function CalendarSettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="MM/DD/YYYY">MM/DD/YYYY (12/31/2024)</SelectItem>
-                  <SelectItem value="DD/MM/YYYY">DD/MM/YYYY (31/12/2024)</SelectItem>
-                  <SelectItem value="YYYY-MM-DD">YYYY-MM-DD (2024-12-31)</SelectItem>
+                  <SelectItem value="MM/DD/YYYY">
+                    MM/DD/YYYY (12/31/2024)
+                  </SelectItem>
+                  <SelectItem value="DD/MM/YYYY">
+                    DD/MM/YYYY (31/12/2024)
+                  </SelectItem>
+                  <SelectItem value="YYYY-MM-DD">
+                    YYYY-MM-DD (2024-12-31)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -197,7 +217,9 @@ export default function CalendarSettingsPage() {
                 <Label>Start Time</Label>
                 <Input
                   className="mt-2"
-                  onChange={(e) => updateSetting("businessHoursStart", e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("businessHoursStart", e.target.value)
+                  }
                   type="time"
                   value={settings.businessHoursStart}
                 />
@@ -207,7 +229,9 @@ export default function CalendarSettingsPage() {
                 <Label>End Time</Label>
                 <Input
                   className="mt-2"
-                  onChange={(e) => updateSetting("businessHoursEnd", e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("businessHoursEnd", e.target.value)
+                  }
                   type="time"
                   value={settings.businessHoursEnd}
                 />
@@ -215,7 +239,8 @@ export default function CalendarSettingsPage() {
             </div>
 
             <p className="text-muted-foreground text-xs">
-              These are default hours - individual technicians can have different schedules
+              These are default hours - individual technicians can have
+              different schedules
             </p>
           </CardContent>
         </Card>
@@ -232,7 +257,12 @@ export default function CalendarSettingsPage() {
               <div>
                 <Label>Default Duration (minutes)</Label>
                 <Select
-                  onValueChange={(value) => updateSetting("defaultAppointmentDuration", Number.parseInt(value))}
+                  onValueChange={(value) =>
+                    updateSetting(
+                      "defaultAppointmentDuration",
+                      Number.parseInt(value)
+                    )
+                  }
                   value={settings.defaultAppointmentDuration.toString()}
                 >
                   <SelectTrigger className="mt-2">
@@ -252,7 +282,9 @@ export default function CalendarSettingsPage() {
               <div>
                 <Label>Time Slot Interval</Label>
                 <Select
-                  onValueChange={(value) => updateSetting("timeSlotInterval", Number.parseInt(value))}
+                  onValueChange={(value) =>
+                    updateSetting("timeSlotInterval", Number.parseInt(value))
+                  }
                   value={settings.timeSlotInterval.toString()}
                 >
                   <SelectTrigger className="mt-2">
@@ -275,9 +307,7 @@ export default function CalendarSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Display Options</CardTitle>
-            <CardDescription>
-              Customize calendar appearance
-            </CardDescription>
+            <CardDescription>Customize calendar appearance</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -289,7 +319,9 @@ export default function CalendarSettingsPage() {
               </div>
               <Switch
                 checked={settings.showWeekends}
-                onCheckedChange={(checked) => updateSetting("showWeekends", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("showWeekends", checked)
+                }
               />
             </div>
 
@@ -304,7 +336,9 @@ export default function CalendarSettingsPage() {
               </div>
               <Switch
                 checked={settings.showCanceledJobs}
-                onCheckedChange={(checked) => updateSetting("showCanceledJobs", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("showCanceledJobs", checked)
+                }
               />
             </div>
 
@@ -319,7 +353,9 @@ export default function CalendarSettingsPage() {
               </div>
               <Switch
                 checked={settings.colorCodeByStatus}
-                onCheckedChange={(checked) => updateSetting("colorCodeByStatus", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("colorCodeByStatus", checked)
+                }
               />
             </div>
 
@@ -334,7 +370,9 @@ export default function CalendarSettingsPage() {
               </div>
               <Switch
                 checked={settings.colorCodeByTechnician}
-                onCheckedChange={(checked) => updateSetting("colorCodeByTechnician", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("colorCodeByTechnician", checked)
+                }
               />
             </div>
           </CardContent>
