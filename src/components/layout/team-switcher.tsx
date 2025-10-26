@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsUpDown, type LucideIcon, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,36 @@ export function TeamSwitcher({
 }) {
   const { isMobile } = useSidebar();
   const [activeTeam, setActiveTeam] = useState(teams[0]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent SSR hydration mismatch with Radix UI IDs
+  if (!mounted) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            className="h-10"
+            size="lg"
+          >
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <activeTeam.logo className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left leading-[1.2]">
+              <span className="truncate font-semibold text-sm">
+                {activeTeam.name}
+              </span>
+              <span className="truncate text-xs">{activeTeam.plan}</span>
+            </div>
+            <ChevronsUpDown className="ml-auto" />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>

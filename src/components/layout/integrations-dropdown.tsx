@@ -2,7 +2,7 @@
 
 import { Grid3x3, Plug, Search, Settings, Zap } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,11 @@ import { cn } from "@/lib/utils";
 export function IntegrationsDropdown() {
   const [searchQuery, setSearchQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredIntegrations = integrations.filter(
     (integration) =>
@@ -30,6 +35,22 @@ export function IntegrationsDropdown() {
   const availableIntegrations = filteredIntegrations.filter(
     (integration) => !integration.isConnected
   );
+
+  // Prevent SSR hydration mismatch with Radix UI IDs
+  if (!mounted) {
+    return (
+      <button
+        aria-label="Integrations"
+        className="hover-gradient group/integrations extend-touch-target inline-flex size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+        data-slot="button"
+        title="Integrations"
+        type="button"
+      >
+        <Grid3x3 className="size-4.5" />
+        <span className="sr-only">Integrations</span>
+      </button>
+    );
+  }
 
   return (
     <DropdownMenu onOpenChange={setOpen} open={open}>

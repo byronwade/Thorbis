@@ -17,6 +17,8 @@ import {
   Tag,
   Ticket,
   Trash2,
+  Users,
+  Hash,
 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -26,6 +28,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { usePageLayout } from "@/hooks/use-page-layout";
+import { CompanyFeed } from "@/components/communication/company-feed";
 
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
@@ -139,7 +142,10 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
   },
 ];
 
+type CommunicationMode = "inbox" | "feed";
+
 export default function CommunicationPage() {
+  const [communicationMode, setCommunicationMode] = useState<CommunicationMode>("inbox");
   const [selectedMessage, setSelectedMessage] = useState<UnifiedMessage | null>(
     null
   );
@@ -183,39 +189,60 @@ export default function CommunicationPage() {
     showToolbar: true,
     sidebar: {
       groups: [
+        // Communication Mode Selector (always visible)
+        {
+          label: undefined,
+          items: [
+            {
+              mode: "filter" as const,
+              title: "Inbox",
+              value: "mode:inbox",
+              icon: Inbox,
+              count: statusCounts.unread,
+            },
+            {
+              mode: "filter" as const,
+              title: "Company Feed",
+              value: "mode:feed",
+              icon: Hash,
+            },
+          ],
+        },
+        // Inbox filters (only show in inbox mode)
+        ...(communicationMode === "inbox" ? [
         {
           label: "Status",
           items: [
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "All Messages",
               value: "status:all",
               icon: Inbox,
               count: statusCounts.all,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Unread",
               value: "status:unread",
               icon: Mail,
               count: statusCounts.unread,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Read",
               value: "status:read",
               icon: Mail,
               count: statusCounts.read,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Replied",
               value: "status:replied",
               icon: Send,
               count: statusCounts.replied,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Archived",
               value: "status:archived",
               icon: Archive,
@@ -227,35 +254,35 @@ export default function CommunicationPage() {
           label: "Message Type",
           items: [
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "All Types",
               value: "type:all",
               icon: MessageSquare,
               count: typeCounts.all,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Email",
               value: "type:email",
               icon: Mail,
               count: typeCounts.email,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "SMS",
               value: "type:sms",
               icon: MessageSquare,
               count: typeCounts.sms,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Calls",
               value: "type:phone",
               icon: Phone,
               count: typeCounts.phone,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Tickets",
               value: "type:ticket",
               icon: Ticket,
@@ -267,28 +294,28 @@ export default function CommunicationPage() {
           label: "Tags",
           items: [
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Customer",
               value: "tag:customer",
               icon: Tag,
               count: tagCounts.customer,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Sales",
               value: "tag:sales",
               icon: Tag,
               count: tagCounts.sales,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Billing",
               value: "tag:billing",
               icon: Tag,
               count: tagCounts.billing,
             },
             {
-              mode: "filter",
+              mode: "filter" as const,
               title: "Technical",
               value: "tag:technical",
               icon: Tag,
@@ -296,9 +323,80 @@ export default function CommunicationPage() {
             },
           ],
         },
+        ] : [
+          // Feed Mode - Show Channels
+          {
+            label: "Channels",
+            items: [
+              {
+                mode: "filter" as const,
+                title: "# company-feed",
+                value: "channel:company-feed",
+                icon: Hash,
+                count: 127,
+              },
+              {
+                mode: "filter" as const,
+                title: "# announcements",
+                value: "channel:announcements",
+                icon: Hash,
+                count: 45,
+              },
+              {
+                mode: "filter" as const,
+                title: "# general",
+                value: "channel:general",
+                icon: Hash,
+                count: 89,
+              },
+              {
+                mode: "filter" as const,
+                title: "# training",
+                value: "channel:training",
+                icon: Hash,
+                count: 34,
+              },
+              {
+                mode: "filter" as const,
+                title: "# field-tips",
+                value: "channel:field-tips",
+                icon: Hash,
+                count: 56,
+              },
+            ],
+          },
+          {
+            label: "Direct Messages",
+            items: [
+              {
+                mode: "filter" as const,
+                title: "Sarah Johnson",
+                value: "dm:sarah",
+                icon: Users,
+                count: 3,
+              },
+              {
+                mode: "filter" as const,
+                title: "Mike Chen",
+                value: "dm:mike",
+                icon: Users,
+              },
+              {
+                mode: "filter" as const,
+                title: "David Martinez",
+                value: "dm:david",
+                icon: Users,
+                count: 1,
+              },
+            ],
+          },
+        ]),
       ],
-      defaultValue: "status:all",
+      defaultValue: communicationMode === "inbox" ? "status:all" : "channel:company-feed",
       activeValue: (() => {
+        if (communicationMode === "feed") {
+          return "mode:feed";
+        }
         if (tagFilter) {
           return `tag:${tagFilter}`;
         }
@@ -309,7 +407,10 @@ export default function CommunicationPage() {
       })(),
       onValueChange: (value) => {
         // Parse filter type from value
-        if (value.startsWith("status:")) {
+        if (value.startsWith("mode:")) {
+          const mode = value.replace("mode:", "") as CommunicationMode;
+          setCommunicationMode(mode);
+        } else if (value.startsWith("status:")) {
           const status = value.replace("status:", "") as MessageStatus | "all";
           setStatusFilter(status);
           setTypeFilter("all");
@@ -395,7 +496,9 @@ export default function CommunicationPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex flex-1 overflow-hidden">
+      {communicationMode === "inbox" ? (
+        // Inbox View
+        <div className="flex flex-1 overflow-hidden">
         <div className="flex w-96 flex-col border-r">
           <div className="border-b p-4">
             <div className="relative">
@@ -645,6 +748,10 @@ export default function CommunicationPage() {
           )}
         </div>
       </div>
+      ) : (
+        // Company Feed View
+        <CompanyFeed />
+      )}
     </div>
   );
 }

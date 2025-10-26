@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { HelpDropdown } from "./help-dropdown";
 import { IntegrationsDropdown } from "./integrations-dropdown";
+import { NotificationsDropdown } from "./notifications-dropdown";
 import { ToolsDropdown } from "./tools-dropdown";
 
 type NavItemStatus = "beta" | "new" | "updated" | null;
@@ -190,7 +191,6 @@ export function AppHeader() {
   }, [isMobileMenuOpen, closeMobileMenu]);
 
   const themeRef = useRef<HTMLButtonElement>(null);
-  const notificationsRef = useRef<HTMLButtonElement>(null);
   const settingsCogRef = useRef<HTMLAnchorElement>(null);
 
   const toggleTheme = () => {
@@ -439,27 +439,7 @@ export function AppHeader() {
           </button>
 
           {/* Notifications */}
-          <button
-            className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
-            ref={notificationsRef}
-            title="Notifications"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="size-4"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-            </svg>
-            <span className="sr-only">Notifications</span>
-          </button>
+          <NotificationsDropdown />
 
           {/* Tools */}
           <ToolsDropdown />
