@@ -195,6 +195,10 @@ const PERMISSION_CATEGORIES: PermissionCategory[] = [
 ];
 
 export default function RoleDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   usePageLayout({
     maxWidth: "7xl",
     padding: "md",
@@ -203,10 +207,6 @@ export default function RoleDetailPage({
     showSidebar: true,
   });
 
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
   const resolvedParams = use(params);
   const isNewRole = resolvedParams.id === "new";
 

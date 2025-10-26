@@ -8,6 +8,13 @@ import {
   FeaturesSection,
   IntegrationsSection,
 } from "./scroll-sections";
+import {
+  CustomerSuccessSection,
+  ROICalculatorSection,
+  IndustrySolutionsSection,
+  TrustStatsSection,
+  PricingPreviewSection,
+} from "./new-sections";
 
 export function ScrollExperience() {
   return (
@@ -17,8 +24,20 @@ export function ScrollExperience() {
         <HeroSection />
       </section>
 
+      {/* Trust & Stats Section - Early social proof */}
+      <TrustStatsSection />
+
       {/* Features Section */}
       <FeaturesSection />
+
+      {/* Customer Success Stories - Real results */}
+      <CustomerSuccessSection />
+
+      {/* ROI Calculator - Interactive value prop */}
+      <ROICalculatorSection />
+
+      {/* Industry Solutions - Targeted messaging */}
+      <IndustrySolutionsSection />
 
       {/* Architecture Section */}
       <section className="bg-black py-24">
@@ -32,6 +51,9 @@ export function ScrollExperience() {
 
       {/* Compliance Section */}
       <ComplianceSection />
+
+      {/* Pricing Preview - Clear next step */}
+      <PricingPreviewSection />
 
       <Footer />
     </div>

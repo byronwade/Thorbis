@@ -5,16 +5,16 @@
  * that don't already have it configured.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // Pages to skip (already configured)
 const SKIP_PAGES = [
-  'src/app/(dashboard)/dashboard/page.tsx',
-  'src/app/(dashboard)/dashboard/communication/page.tsx',
-  'src/app/(dashboard)/dashboard/ai/page.tsx',
-  'src/app/(dashboard)/dashboard/test-full-width/page.tsx',
-  'src/app/(dashboard)/dashboard/test-layout/page.tsx',
+  "src/app/(dashboard)/dashboard/page.tsx",
+  "src/app/(dashboard)/dashboard/communication/page.tsx",
+  "src/app/(dashboard)/dashboard/ai/page.tsx",
+  "src/app/(dashboard)/dashboard/test-full-width/page.tsx",
+  "src/app/(dashboard)/dashboard/test-layout/page.tsx",
 ];
 
 // Default configuration to add
@@ -27,20 +27,21 @@ const USE_PAGE_LAYOUT_CONFIG = `  usePageLayout({
   });
 `;
 
-const USE_PAGE_LAYOUT_IMPORT = 'import { usePageLayout } from "@/hooks/use-page-layout";';
+const USE_PAGE_LAYOUT_IMPORT =
+  'import { usePageLayout } from "@/hooks/use-page-layout";';
 
 /**
  * Check if file should be skipped
  */
 function shouldSkip(filePath) {
-  return SKIP_PAGES.some(skip => filePath.includes(skip));
+  return SKIP_PAGES.some((skip) => filePath.includes(skip));
 }
 
 /**
  * Check if file already has usePageLayout
  */
 function hasUsePageLayout(content) {
-  return content.includes('usePageLayout');
+  return content.includes("usePageLayout");
 }
 
 /**
@@ -56,11 +57,11 @@ function hasUseClient(content) {
 function addLayoutConfig(filePath) {
   console.log(`Processing: ${filePath}`);
 
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, "utf8");
 
   // Check if already has usePageLayout
   if (hasUsePageLayout(content)) {
-    console.log('  ✓ Already has usePageLayout');
+    console.log("  ✓ Already has usePageLayout");
     return false;
   }
 
@@ -72,11 +73,11 @@ function addLayoutConfig(filePath) {
   // Step 2: Add import if not present
   if (!content.includes(USE_PAGE_LAYOUT_IMPORT)) {
     // Find the last import statement
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     let lastImportIndex = -1;
 
     for (let i = 0; i < lines.length; i++) {
-      if (lines[i].trim().startsWith('import ')) {
+      if (lines[i].trim().startsWith("import ")) {
         lastImportIndex = i;
       }
     }
@@ -84,13 +85,15 @@ function addLayoutConfig(filePath) {
     if (lastImportIndex >= 0) {
       // Add after last import
       lines.splice(lastImportIndex + 1, 0, USE_PAGE_LAYOUT_IMPORT);
-      content = lines.join('\n');
+      content = lines.join("\n");
     } else {
       // No imports found, add after "use client"
-      const useClientIndex = lines.findIndex(line => line.includes('use client'));
+      const useClientIndex = lines.findIndex((line) =>
+        line.includes("use client")
+      );
       if (useClientIndex >= 0) {
-        lines.splice(useClientIndex + 1, 0, '', USE_PAGE_LAYOUT_IMPORT);
-        content = lines.join('\n');
+        lines.splice(useClientIndex + 1, 0, "", USE_PAGE_LAYOUT_IMPORT);
+        content = lines.join("\n");
       }
     }
   }
@@ -101,17 +104,22 @@ function addLayoutConfig(filePath) {
   const match = content.match(exportDefaultRegex);
 
   if (!match) {
-    console.log('  ✗ Could not find export default function');
+    console.log("  ✗ Could not find export default function");
     return false;
   }
 
   // Insert usePageLayout after the opening brace
   const insertPosition = match.index + match[0].length;
-  content = content.slice(0, insertPosition) + '\n' + USE_PAGE_LAYOUT_CONFIG + '\n' + content.slice(insertPosition);
+  content =
+    content.slice(0, insertPosition) +
+    "\n" +
+    USE_PAGE_LAYOUT_CONFIG +
+    "\n" +
+    content.slice(insertPosition);
 
   // Write back to file
-  fs.writeFileSync(filePath, content, 'utf8');
-  console.log('  ✓ Added usePageLayout configuration');
+  fs.writeFileSync(filePath, content, "utf8");
+  console.log("  ✓ Added usePageLayout configuration");
   return true;
 }
 
@@ -122,13 +130,13 @@ function findPageFiles(dir) {
   let results = [];
   const list = fs.readdirSync(dir);
 
-  list.forEach(file => {
+  list.forEach((file) => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
 
     if (stat && stat.isDirectory()) {
       results = results.concat(findPageFiles(filePath));
-    } else if (file === 'page.tsx') {
+    } else if (file === "page.tsx") {
       results.push(filePath);
     }
   });
@@ -137,9 +145,9 @@ function findPageFiles(dir) {
 }
 
 // Main execution
-console.log('Finding all dashboard pages...\n');
+console.log("Finding all dashboard pages...\n");
 
-const dashboardDir = 'src/app/(dashboard)/dashboard';
+const dashboardDir = "src/app/(dashboard)/dashboard";
 if (!fs.existsSync(dashboardDir)) {
   console.error(`Error: Directory not found: ${dashboardDir}`);
   process.exit(1);
@@ -150,7 +158,7 @@ let processed = 0;
 let skipped = 0;
 let modified = 0;
 
-pageFiles.forEach(file => {
+pageFiles.forEach((file) => {
   if (shouldSkip(file)) {
     console.log(`Skipping: ${file} (already configured)`);
     skipped++;
@@ -168,10 +176,10 @@ pageFiles.forEach(file => {
   }
 });
 
-console.log('\n' + '='.repeat(60));
-console.log('Summary:');
+console.log("\n" + "=".repeat(60));
+console.log("Summary:");
 console.log(`  Total pages found: ${pageFiles.length}`);
 console.log(`  Pages processed: ${processed}`);
 console.log(`  Pages modified: ${modified}`);
 console.log(`  Pages skipped: ${skipped}`);
-console.log('='.repeat(60));
+console.log("=".repeat(60));
