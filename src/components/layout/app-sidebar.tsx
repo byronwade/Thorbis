@@ -431,6 +431,21 @@ const navigationSections = {
         },
       ],
     },
+    ...(process.env.NODE_ENV === "development"
+      ? [
+          {
+            label: "Development",
+            items: [
+              {
+                title: "Developer Settings",
+                url: "/dashboard/settings/development",
+                icon: Bug,
+                highlight: "yellow" as const,
+              },
+            ],
+          },
+        ]
+      : []),
     {
       label: "Account",
       items: [
@@ -816,21 +831,6 @@ const navigationSections = {
         },
       ],
     },
-    ...(process.env.NODE_ENV === "development"
-      ? [
-          {
-            label: "Development",
-            items: [
-              {
-                title: "Developer Settings",
-                url: "/dashboard/settings/development",
-                icon: Bug,
-                highlight: "yellow" as const,
-              },
-            ],
-          },
-        ]
-      : []),
   ],
   jobDetails: [
     {

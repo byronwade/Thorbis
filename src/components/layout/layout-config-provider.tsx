@@ -30,6 +30,7 @@ type LayoutConfig = {
   showSidebar?: boolean;
   showHeader?: boolean;
   sidebar?: SidebarConfig;
+  fixedHeight?: boolean; // Prevents page scrolling, uses exact viewport height
 };
 
 type LayoutConfigContextType = {

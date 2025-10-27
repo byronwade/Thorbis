@@ -18,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
 
 type ToolbarConfig = {
   title: string;
@@ -106,6 +107,7 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
   },
   "/dashboard/schedule": {
     title: "Schedule",
+    actions: <ScheduleToolbarActions />,
   },
   "/dashboard/customers": {
     title: "Customers",

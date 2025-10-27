@@ -30,15 +30,18 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const gapClass = getGapClass(config.gap);
   const isFullWidth = config.maxWidth === "full";
   const showSidebar = config.showSidebar !== false;
+  const heightClass = config.fixedHeight
+    ? "h-[calc(100vh-3.5rem)]"
+    : "min-h-[calc(100vh-3.5rem)]";
 
   return (
     <UISidebarProvider>
-      <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
+      <div className={`flex ${heightClass} w-full`}>
         {showSidebar && <AppSidebar />}
         <SidebarInset className="w-full">
           {config.showToolbar && <AppToolbar />}
           {isFullWidth ? (
-            <main className="flex w-full flex-1 flex-col py-6">{children}</main>
+            <main className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}>{children}</main>
           ) : (
             <main
               className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}

@@ -25,6 +25,7 @@ type PageLayoutConfig = {
   showSidebar?: boolean;
   showHeader?: boolean;
   sidebar?: SidebarConfig;
+  fixedHeight?: boolean;
 };
 
 export function usePageLayout(config: PageLayoutConfig) {
@@ -45,6 +46,7 @@ export function usePageLayout(config: PageLayoutConfig) {
         showSidebar: true,
         showHeader: true,
         sidebar: undefined, // Clear custom sidebar config
+        fixedHeight: false, // Reset to scrollable layout
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

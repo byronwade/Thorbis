@@ -1,0 +1,568 @@
+"use client"
+
+import { useRef, useEffect } from "react"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+
+interface Job {
+  id: string
+  title: string
+  customer: string
+  startTime: string
+  endTime: string
+  status: "scheduled" | "in-progress" | "completed" | "cancelled"
+  priority: "low" | "medium" | "high" | "urgent"
+  location: string
+}
+
+interface Technician {
+  id: string
+  name: string
+  role: string
+  status: "available" | "on-job" | "on-break" | "offline"
+  jobs: Job[]
+}
+
+const HOUR_WIDTH = 120 // Width of each hour column in pixels
+const HOURS = Array.from({ length: 13 }, (_, i) => i + 7) // 7 AM to 7 PM
+
+const mockTechnicians: Technician[] = [
+  {
+    id: "1",
+    name: "John Doe",
+    role: "Senior Technician",
+    status: "on-job",
+    jobs: [
+      {
+        id: "j1",
+        title: "HVAC Maintenance",
+        customer: "ABC Corp",
+        startTime: "08:00",
+        endTime: "10:30",
+        status: "completed",
+        priority: "medium",
+        location: "123 Main St",
+      },
+      {
+        id: "j2",
+        title: "Emergency Repair",
+        customer: "XYZ Inc",
+        startTime: "11:00",
+        endTime: "14:00",
+        status: "in-progress",
+        priority: "urgent",
+        location: "456 Oak Ave",
+      },
+      {
+        id: "j3",
+        title: "Installation",
+        customer: "Tech Solutions",
+        startTime: "15:00",
+        endTime: "17:30",
+        status: "scheduled",
+        priority: "high",
+        location: "789 Pine Rd",
+      },
+    ],
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    role: "Field Technician",
+    status: "available",
+    jobs: [
+      {
+        id: "j4",
+        title: "System Inspection",
+        customer: "Global Systems",
+        startTime: "09:00",
+        endTime: "11:00",
+        status: "completed",
+        priority: "low",
+        location: "321 Elm St",
+      },
+      {
+        id: "j5",
+        title: "Preventive Maintenance",
+        customer: "Local Business",
+        startTime: "13:00",
+        endTime: "15:00",
+        status: "scheduled",
+        priority: "medium",
+        location: "654 Maple Dr",
+      },
+    ],
+  },
+  {
+    id: "3",
+    name: "Mike Johnson",
+    role: "Senior Technician",
+    status: "on-job",
+    jobs: [
+      {
+        id: "j6",
+        title: "Equipment Replacement",
+        customer: "Manufacturing Co",
+        startTime: "07:30",
+        endTime: "12:00",
+        status: "in-progress",
+        priority: "high",
+        location: "987 Industrial Pkwy",
+      },
+      {
+        id: "j7",
+        title: "Follow-up Service",
+        customer: "Retail Store",
+        startTime: "13:30",
+        endTime: "15:30",
+        status: "scheduled",
+        priority: "low",
+        location: "147 Commerce Blvd",
+      },
+    ],
+  },
+  {
+    id: "4",
+    name: "Sarah Williams",
+    role: "Field Technician",
+    status: "on-break",
+    jobs: [
+      {
+        id: "j8",
+        title: "Diagnostic Service",
+        customer: "Healthcare Facility",
+        startTime: "08:00",
+        endTime: "10:00",
+        status: "completed",
+        priority: "medium",
+        location: "258 Medical Center Dr",
+      },
+      {
+        id: "j9",
+        title: "Repair Work",
+        customer: "Office Complex",
+        startTime: "14:00",
+        endTime: "16:00",
+        status: "scheduled",
+        priority: "medium",
+        location: "369 Corporate Way",
+      },
+    ],
+  },
+  {
+    id: "5",
+    name: "David Brown",
+    role: "Lead Technician",
+    status: "available",
+    jobs: [
+      {
+        id: "j10",
+        title: "Emergency Call",
+        customer: "Restaurant Chain",
+        startTime: "10:00",
+        endTime: "12:30",
+        status: "completed",
+        priority: "urgent",
+        location: "741 Restaurant Row",
+      },
+    ],
+  },
+  {
+    id: "6",
+    name: "Emily Davis",
+    role: "Field Technician",
+    status: "on-job",
+    jobs: [
+      {
+        id: "j11",
+        title: "Annual Inspection",
+        customer: "Office Building",
+        startTime: "07:00",
+        endTime: "09:00",
+        status: "completed",
+        priority: "low",
+        location: "852 Business Park",
+      },
+      {
+        id: "j12",
+        title: "System Upgrade",
+        customer: "Tech Startup",
+        startTime: "10:00",
+        endTime: "13:00",
+        status: "in-progress",
+        priority: "high",
+        location: "963 Innovation Dr",
+      },
+    ],
+  },
+  {
+    id: "7",
+    name: "Robert Martinez",
+    role: "Senior Technician",
+    status: "on-job",
+    jobs: [
+      {
+        id: "j13",
+        title: "Equipment Installation",
+        customer: "Factory",
+        startTime: "08:30",
+        endTime: "11:30",
+        status: "in-progress",
+        priority: "high",
+        location: "159 Industrial Ave",
+      },
+      {
+        id: "j14",
+        title: "Maintenance Check",
+        customer: "Warehouse",
+        startTime: "14:00",
+        endTime: "16:30",
+        status: "scheduled",
+        priority: "medium",
+        location: "357 Storage Rd",
+      },
+    ],
+  },
+  {
+    id: "8",
+    name: "Lisa Anderson",
+    role: "Field Technician",
+    status: "available",
+    jobs: [
+      {
+        id: "j15",
+        title: "Consultation",
+        customer: "New Client",
+        startTime: "09:00",
+        endTime: "10:00",
+        status: "scheduled",
+        priority: "low",
+        location: "246 Prospect St",
+      },
+      {
+        id: "j16",
+        title: "Installation Project",
+        customer: "Retail Chain",
+        startTime: "11:00",
+        endTime: "15:00",
+        status: "scheduled",
+        priority: "high",
+        location: "468 Commerce Center",
+      },
+    ],
+  },
+  {
+    id: "9",
+    name: "James Wilson",
+    role: "Lead Technician",
+    status: "on-job",
+    jobs: [
+      {
+        id: "j17",
+        title: "Emergency Service",
+        customer: "Hospital",
+        startTime: "07:00",
+        endTime: "10:00",
+        status: "completed",
+        priority: "urgent",
+        location: "579 Medical Plaza",
+      },
+      {
+        id: "j18",
+        title: "Follow-up Visit",
+        customer: "Clinic",
+        startTime: "11:30",
+        endTime: "13:00",
+        status: "in-progress",
+        priority: "medium",
+        location: "680 Health Center",
+      },
+    ],
+  },
+  {
+    id: "10",
+    name: "Patricia Taylor",
+    role: "Field Technician",
+    status: "on-break",
+    jobs: [
+      {
+        id: "j19",
+        title: "Routine Maintenance",
+        customer: "School District",
+        startTime: "08:00",
+        endTime: "11:00",
+        status: "completed",
+        priority: "medium",
+        location: "791 Education Way",
+      },
+    ],
+  },
+  {
+    id: "11",
+    name: "Christopher Moore",
+    role: "Senior Technician",
+    status: "on-job",
+    jobs: [
+      {
+        id: "j20",
+        title: "System Repair",
+        customer: "Data Center",
+        startTime: "09:30",
+        endTime: "14:00",
+        status: "in-progress",
+        priority: "urgent",
+        location: "802 Server Farm Rd",
+      },
+      {
+        id: "j21",
+        title: "Testing",
+        customer: "Data Center",
+        startTime: "14:30",
+        endTime: "16:00",
+        status: "scheduled",
+        priority: "high",
+        location: "802 Server Farm Rd",
+      },
+    ],
+  },
+  {
+    id: "12",
+    name: "Jennifer Garcia",
+    role: "Field Technician",
+    status: "available",
+    jobs: [
+      {
+        id: "j22",
+        title: "Initial Assessment",
+        customer: "Shopping Mall",
+        startTime: "10:00",
+        endTime: "12:00",
+        status: "scheduled",
+        priority: "low",
+        location: "913 Retail Plaza",
+      },
+      {
+        id: "j23",
+        title: "Repair Work",
+        customer: "Restaurant",
+        startTime: "13:00",
+        endTime: "15:00",
+        status: "scheduled",
+        priority: "medium",
+        location: "024 Dining District",
+      },
+    ],
+  },
+]
+
+const statusColors = {
+  scheduled: "bg-blue-500/20 border-blue-500 text-blue-700 dark:text-blue-300",
+  "in-progress": "bg-yellow-500/20 border-yellow-500 text-yellow-700 dark:text-yellow-300",
+  completed: "bg-green-500/20 border-green-500 text-green-700 dark:text-green-300",
+  cancelled: "bg-red-500/20 border-red-500 text-red-700 dark:text-red-300",
+}
+
+const priorityColors = {
+  low: "bg-gray-500",
+  medium: "bg-blue-500",
+  high: "bg-orange-500",
+  urgent: "bg-red-500",
+}
+
+const technicianStatusColors = {
+  available: "bg-green-500",
+  "on-job": "bg-yellow-500",
+  "on-break": "bg-orange-500",
+  offline: "bg-gray-500",
+}
+
+function timeToPosition(time: string): number {
+  const [hours, minutes] = time.split(":").map(Number)
+  const totalMinutes = (hours - 7) * 60 + minutes
+  return (totalMinutes / 60) * HOUR_WIDTH
+}
+
+function calculateWidth(startTime: string, endTime: string): number {
+  const [startHours, startMinutes] = startTime.split(":").map(Number)
+  const [endHours, endMinutes] = endTime.split(":").map(Number)
+  const durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes)
+  return (durationMinutes / 60) * HOUR_WIDTH
+}
+
+export function TechnicianScheduleChart() {
+  const headerScrollRef = useRef<HTMLDivElement>(null)
+  const bodyScrollRef = useRef<HTMLDivElement>(null)
+
+  // Sync horizontal scrolling between header and body
+  useEffect(() => {
+    const headerScroll = headerScrollRef.current
+    const bodyScroll = bodyScrollRef.current
+
+    if (!headerScroll || !bodyScroll) return
+
+    const syncScroll = (source: HTMLDivElement, target: HTMLDivElement) => {
+      return () => {
+        target.scrollLeft = source.scrollLeft
+      }
+    }
+
+    const headerListener = syncScroll(headerScroll, bodyScroll)
+    const bodyListener = syncScroll(bodyScroll, headerScroll)
+
+    headerScroll.addEventListener("scroll", headerListener)
+    bodyScroll.addEventListener("scroll", bodyListener)
+
+    return () => {
+      headerScroll.removeEventListener("scroll", headerListener)
+      bodyScroll.removeEventListener("scroll", bodyListener)
+    }
+  }, [])
+
+  return (
+    <div className="flex h-full w-full flex-col overflow-hidden border-y">
+      {/* Header with time slots - Fixed at top */}
+      <div className="z-20 flex h-14 shrink-0 border-b bg-background">
+        <div className="flex w-[250px] shrink-0 items-center border-r bg-background px-4">
+          <h3 className="font-semibold text-sm">Technicians</h3>
+        </div>
+        <div ref={headerScrollRef} className="scrollbar-hide flex flex-1 overflow-x-auto">
+          <div className="flex min-w-max">
+            {HOURS.map((hour) => (
+              <div
+                key={hour}
+                className="flex items-center justify-center border-r font-medium text-muted-foreground text-xs"
+                style={{ width: HOUR_WIDTH }}
+              >
+                {hour === 12 ? "12 PM" : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Scrollable technician rows */}
+      <div ref={bodyScrollRef} className="min-h-0 flex-1 overflow-auto">
+        <div className="min-w-max divide-y">
+          {mockTechnicians.map((technician) => (
+            <div key={technician.id} className="flex min-h-[100px]">
+              {/* Technician info */}
+              <div className="sticky left-0 z-10 w-[250px] shrink-0 border-r bg-background p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-sm">{technician.name}</h4>
+                      <div
+                        className={cn(
+                          "size-2 rounded-full",
+                          technicianStatusColors[technician.status]
+                        )}
+                      />
+                    </div>
+                    <p className="text-muted-foreground text-xs">{technician.role}</p>
+                    <Badge variant="outline" className="mt-1 text-xs">
+                      {technician.jobs.length} jobs
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Schedule timeline */}
+              <div className="relative flex-1 bg-muted/20">
+                {/* Hour markers */}
+                {HOURS.map((hour, index) => (
+                  <div
+                    key={hour}
+                    className={cn(
+                      "absolute top-0 bottom-0 border-r",
+                      hour === 12 ? "border-muted-foreground/30" : "border-muted-foreground/10"
+                    )}
+                    style={{ left: index * HOUR_WIDTH }}
+                  />
+                ))}
+
+                {/* Jobs */}
+                {technician.jobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className={cn(
+                      "absolute top-2 m-1 rounded-md border-2 p-2 transition-all hover:shadow-md hover:scale-105",
+                      statusColors[job.status]
+                    )}
+                    style={{
+                      left: timeToPosition(job.startTime),
+                      width: calculateWidth(job.startTime, job.endTime),
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 overflow-hidden">
+                        <div className="flex items-center gap-1">
+                          <div
+                            className={cn(
+                              "size-2 shrink-0 rounded-full",
+                              priorityColors[job.priority]
+                            )}
+                          />
+                          <h5 className="truncate font-semibold text-xs">{job.title}</h5>
+                        </div>
+                        <p className="truncate text-[10px] text-muted-foreground">
+                          {job.customer}
+                        </p>
+                        <p className="mt-1 text-[10px] font-medium">
+                          {job.startTime} - {job.endTime}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Legend - Fixed at bottom */}
+      <div className="z-20 h-16 shrink-0 border-t bg-background p-4">
+        <div className="flex flex-wrap gap-6 text-xs">
+          <div>
+            <span className="mb-2 font-semibold text-muted-foreground">Status:</span>
+            <div className="mt-1 flex gap-3">
+              <div className="flex items-center gap-1">
+                <div className="size-3 rounded border-2 border-blue-500 bg-blue-500/20" />
+                <span>Scheduled</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="size-3 rounded border-2 border-yellow-500 bg-yellow-500/20" />
+                <span>In Progress</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="size-3 rounded border-2 border-green-500 bg-green-500/20" />
+                <span>Completed</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <span className="mb-2 font-semibold text-muted-foreground">Priority:</span>
+            <div className="mt-1 flex gap-3">
+              <div className="flex items-center gap-1">
+                <div className="size-2 rounded-full bg-gray-500" />
+                <span>Low</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="size-2 rounded-full bg-blue-500" />
+                <span>Medium</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="size-2 rounded-full bg-orange-500" />
+                <span>High</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="size-2 rounded-full bg-red-500" />
+                <span>Urgent</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
