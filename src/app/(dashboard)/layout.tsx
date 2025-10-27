@@ -2,6 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
+import { usePathname } from "next/navigation";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppToolbar } from "@/components/layout/app-toolbar";
@@ -17,9 +18,11 @@ import {
   SidebarInset,
   SidebarProvider as UISidebarProvider,
 } from "@/components/ui/sidebar";
+import { ScheduleViewProvider } from "@/components/schedule/schedule-view-provider";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { config } = useLayoutConfig();
+  const pathname = usePathname();
 
   const maxWidthClass = getMaxWidthClass(config.maxWidth);
   const paddingClass = getPaddingClass(
@@ -34,7 +37,9 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     ? "h-[calc(100vh-3.5rem)]"
     : "min-h-[calc(100vh-3.5rem)]";
 
-  return (
+  const isSchedulePage = pathname.startsWith("/dashboard/schedule");
+
+  const content = (
     <UISidebarProvider>
       <div className={`flex ${heightClass} w-full`}>
         {showSidebar && <AppSidebar />}
@@ -53,6 +58,13 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       </div>
     </UISidebarProvider>
   );
+
+  // Wrap schedule pages with ScheduleViewProvider
+  if (isSchedulePage) {
+    return <ScheduleViewProvider>{content}</ScheduleViewProvider>;
+  }
+
+  return content;
 }
 
 export default function DashboardLayout({

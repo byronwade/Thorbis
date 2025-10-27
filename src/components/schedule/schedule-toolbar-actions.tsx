@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -9,11 +8,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Filter, Plus } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon, Plus, SlidersHorizontal } from "lucide-react"
+import { ScheduleViewToggle } from "./schedule-view-toggle"
+import { useScheduleView } from "./schedule-view-provider"
+import { cn } from "@/lib/utils"
+import { format } from "date-fns"
 
 export function ScheduleToolbarActions() {
   const [mounted, setMounted] = useState(false)
+  const [date, setDate] = useState<Date>(new Date())
+  const { view, setView } = useScheduleView()
 
   // Prevent hydration mismatch by only rendering selects after mount
   useEffect(() => {
@@ -21,61 +31,129 @@ export function ScheduleToolbarActions() {
   }, [])
 
   return (
-    <>
-      {/* Date Picker */}
-      <Input
-        type="date"
-        className="h-8 w-[140px] border-0 bg-transparent px-2 text-xs shadow-none focus-visible:ring-1"
-        onChange={(e) => console.log("Date changed:", e.target.value)}
-      />
+    <div className="flex items-center gap-3">
+      {/* Left Group: View Toggle */}
+      <ScheduleViewToggle view={view} onViewChange={setView} />
 
-      {mounted && (
-        <>
-          {/* Technician Filter */}
-          <Select onValueChange={(id) => console.log("Technician filter:", id)}>
-            <SelectTrigger className="h-8 w-[160px] border-0 bg-transparent px-2 text-xs shadow-none focus-visible:ring-1">
-              <SelectValue placeholder="All Technicians" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Technicians</SelectItem>
-              <SelectItem value="john-doe">John Doe</SelectItem>
-              <SelectItem value="jane-smith">Jane Smith</SelectItem>
-              <SelectItem value="mike-johnson">Mike Johnson</SelectItem>
-              <SelectItem value="sarah-williams">Sarah Williams</SelectItem>
-              <SelectItem value="david-brown">David Brown</SelectItem>
-            </SelectContent>
-          </Select>
+      {/* Middle Group: Date Picker with Calendar (Priority Control) */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm transition-colors",
+              "hover:bg-accent hover:text-accent-foreground"
+            )}
+          >
+            <CalendarIcon className="size-4" />
+            <span className="font-medium">{format(date, "MMM dd, yyyy")}</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(newDate) => {
+              if (newDate) {
+                setDate(newDate)
+                console.log("Date changed:", newDate)
+              }
+            }}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
 
-          {/* Status Filter */}
-          <Select onValueChange={(status) => console.log("Status filter:", status)}>
-            <SelectTrigger className="h-8 w-[140px] border-0 bg-transparent px-2 text-xs shadow-none focus-visible:ring-1">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
-        </>
-      )}
+      {/* Right Group: Filters in Popover + New Job */}
+      <div className="ml-auto flex items-center gap-2">
+        {/* Condensed Filters Popover */}
+        {mounted && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  "flex h-8 items-center gap-1.5 rounded-md border bg-background px-3 text-sm transition-colors",
+                  "hover:bg-accent hover:text-accent-foreground"
+                )}
+              >
+                <SlidersHorizontal className="size-4" />
+                <span>Filters</span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[280px] p-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Technician
+                  </label>
+                  <Select defaultValue="all" onValueChange={(id) => console.log("Technician filter:", id)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Technicians</SelectItem>
+                      <SelectItem value="john-doe">John Doe</SelectItem>
+                      <SelectItem value="jane-smith">Jane Smith</SelectItem>
+                      <SelectItem value="mike-johnson">Mike Johnson</SelectItem>
+                      <SelectItem value="sarah-williams">Sarah Williams</SelectItem>
+                      <SelectItem value="david-brown">David Brown</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* More Filters Button */}
-      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-        <Filter className="mr-1.5 size-3.5" />
-        Filters
-      </Button>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Status
+                  </label>
+                  <Select defaultValue="all" onValueChange={(status) => console.log("Status filter:", status)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="scheduled">Scheduled</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Divider */}
-      <div className="h-4 w-px bg-border/50" />
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    type="button"
+                    className="text-sm text-muted-foreground hover:text-foreground"
+                    onClick={() => console.log("Clear filters")}
+                  >
+                    Clear all
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background hover:opacity-90"
+                    onClick={() => console.log("Apply filters")}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
 
-      {/* Action Buttons */}
-      <Button size="sm" className="h-8 px-3 text-xs" onClick={() => console.log("Add job")}>
-        <Plus className="mr-1.5 size-3.5" />
-        New Job
-      </Button>
-    </>
+        {/* Primary Action: New Job */}
+        <button
+          type="button"
+          className={cn(
+            "flex h-8 items-center gap-1.5 rounded-md bg-foreground px-3 text-sm font-medium text-background transition-all",
+            "hover:opacity-90 active:scale-[0.97]"
+          )}
+          onClick={() => console.log("Add job")}
+        >
+          <Plus className="size-4" />
+          <span>New Job</span>
+        </button>
+      </div>
+    </div>
   )
 }

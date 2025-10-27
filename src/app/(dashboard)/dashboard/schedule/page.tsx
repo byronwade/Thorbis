@@ -3,28 +3,17 @@
 export const dynamic = "force-dynamic"
 
 import { usePageLayout } from "@/hooks/use-page-layout"
-import { TechnicianScheduleChart } from "@/components/schedule/technician-schedule-chart"
-import { useEffect, useState, createContext, useContext } from "react"
+import { TimelineView } from "@/components/schedule/timeline-view"
+import { ListView } from "@/components/schedule/list-view"
+import { CalendarView } from "@/components/schedule/calendar-view"
+import { MapView } from "@/components/schedule/map-view"
+import { useScheduleView } from "@/components/schedule/schedule-view-provider"
+import { useEffect } from "react"
 import { useSidebar } from "@/components/ui/sidebar"
-import type { ScheduleView } from "@/components/schedule/schedule-view-toggle"
-
-// Create context for schedule view
-const ScheduleViewContext = createContext<{
-  view: ScheduleView
-  setView: (view: ScheduleView) => void
-} | null>(null)
-
-export function useScheduleView() {
-  const context = useContext(ScheduleViewContext)
-  if (!context) {
-    throw new Error("useScheduleView must be used within ScheduleViewProvider")
-  }
-  return context
-}
 
 export default function SchedulePage() {
   const { setOpen } = useSidebar()
-  const [view, setView] = useState<ScheduleView>("timeline")
+  const { view } = useScheduleView()
 
   // Auto-close sidebar on mount
   useEffect(() => {
@@ -41,10 +30,11 @@ export default function SchedulePage() {
   })
 
   return (
-    <ScheduleViewContext.Provider value={{ view, setView }}>
-      <div className="h-full w-full overflow-hidden">
-        <TechnicianScheduleChart />
-      </div>
-    </ScheduleViewContext.Provider>
+    <div className="h-full w-full overflow-hidden">
+      {view === "timeline" && <TimelineView />}
+      {view === "list" && <ListView />}
+      {view === "calendar" && <CalendarView />}
+      {view === "map" && <MapView />}
+    </div>
   )
 }

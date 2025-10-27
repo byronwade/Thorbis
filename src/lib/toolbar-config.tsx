@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
+import { ScheduleViewProvider } from "@/components/schedule/schedule-view-provider";
 
 type ToolbarConfig = {
   title: string;

@@ -520,42 +520,87 @@ export function TechnicianScheduleChart() {
         </div>
       </div>
 
-      {/* Legend - Fixed at bottom */}
-      <div className="z-20 h-16 shrink-0 border-t bg-background p-4">
-        <div className="flex flex-wrap gap-6 text-xs">
-          <div>
-            <span className="mb-2 font-semibold text-muted-foreground">Status:</span>
-            <div className="mt-1 flex gap-3">
-              <div className="flex items-center gap-1">
-                <div className="size-3 rounded border-2 border-blue-500 bg-blue-500/20" />
-                <span>Scheduled</span>
+      {/* Enhanced Footer with Stats and Legend */}
+      <div className="z-20 shrink-0 border-t bg-background">
+        <div className="flex items-center justify-between gap-8 px-6 py-3">
+          {/* Statistics Section */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 border-r pr-6">
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 items-center justify-center rounded-md bg-blue-500/10">
+                  <span className="font-semibold text-blue-600 text-sm dark:text-blue-400">
+                    {mockTechnicians.reduce((acc, tech) => acc + tech.jobs.filter(j => j.status === "scheduled").length, 0)}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-xs leading-none">Scheduled</p>
+                  <p className="text-[10px] text-muted-foreground">jobs today</p>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="size-3 rounded border-2 border-yellow-500 bg-yellow-500/20" />
-                <span>In Progress</span>
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 items-center justify-center rounded-md bg-yellow-500/10">
+                  <span className="font-semibold text-yellow-600 text-sm dark:text-yellow-400">
+                    {mockTechnicians.reduce((acc, tech) => acc + tech.jobs.filter(j => j.status === "in-progress").length, 0)}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-xs leading-none">Active</p>
+                  <p className="text-[10px] text-muted-foreground">in progress</p>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="size-3 rounded border-2 border-green-500 bg-green-500/20" />
-                <span>Completed</span>
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 items-center justify-center rounded-md bg-green-500/10">
+                  <span className="font-semibold text-green-600 text-sm dark:text-green-400">
+                    {mockTechnicians.reduce((acc, tech) => acc + tech.jobs.filter(j => j.status === "completed").length, 0)}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-xs leading-none">Completed</p>
+                  <p className="text-[10px] text-muted-foreground">finished</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Technician Status */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className="size-2 rounded-full bg-green-500" />
+                <span className="text-xs">
+                  {mockTechnicians.filter(t => t.status === "available").length} Available
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="size-2 rounded-full bg-yellow-500" />
+                <span className="text-xs">
+                  {mockTechnicians.filter(t => t.status === "on-job").length} On Job
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="size-2 rounded-full bg-orange-500" />
+                <span className="text-xs">
+                  {mockTechnicians.filter(t => t.status === "on-break").length} On Break
+                </span>
               </div>
             </div>
           </div>
-          <div>
-            <span className="mb-2 font-semibold text-muted-foreground">Priority:</span>
-            <div className="mt-1 flex gap-3">
-              <div className="flex items-center gap-1">
+
+          {/* Priority Legend */}
+          <div className="flex items-center gap-4 text-xs">
+            <span className="font-semibold text-muted-foreground">Priority:</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-gray-500" />
                 <span>Low</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-blue-500" />
-                <span>Medium</span>
+                <span>Med</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-orange-500" />
                 <span>High</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-red-500" />
                 <span>Urgent</span>
               </div>
