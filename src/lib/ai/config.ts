@@ -57,7 +57,7 @@ export function createAIProvider(config?: Partial<AIConfig>) {
   const { provider, gatewayUrl, gatewayToken } = fullConfig;
 
   // Base configuration for gateway
-  const baseConfig =
+  const _baseConfig =
     gatewayUrl && gatewayToken
       ? {
           baseURL: `${gatewayUrl}/v1`,

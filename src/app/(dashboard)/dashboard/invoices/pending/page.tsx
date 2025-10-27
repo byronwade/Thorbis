@@ -209,7 +209,7 @@ export default function PendingInvoicesPage() {
                       >
                         {invoice.status}
                       </span>
-                      {Number.parseInt(invoice.daysOverdue) > 0 && (
+                      {Number.parseInt(invoice.daysOverdue, 10) > 0 && (
                         <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 font-medium text-red-800 text-xs">
                           {invoice.daysOverdue} days overdue
                         </span>

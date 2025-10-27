@@ -204,7 +204,6 @@ export default function MarketingCenterPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Marketing settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -397,7 +396,7 @@ export default function MarketingCenterPage() {
                       onChange={(e) =>
                         updateSetting(
                           "reviewRequestDelayDays",
-                          Number.parseInt(e.target.value) ||
+                          Number.parseInt(e.target.value, 10) ||
                             DEFAULT_REVIEW_DELAY_DAYS
                         )
                       }
@@ -913,7 +912,7 @@ export default function MarketingCenterPage() {
                         onValueChange={(value) =>
                           updateSetting(
                             "maintenanceReminderMonths",
-                            Number.parseInt(value)
+                            Number.parseInt(value, 10)
                           )
                         }
                         value={settings.maintenanceReminderMonths.toString()}
@@ -955,7 +954,7 @@ export default function MarketingCenterPage() {
                           onChange={(e) =>
                             updateSetting(
                               "birthdayDiscountPercent",
-                              Number.parseInt(e.target.value) || 10
+                              Number.parseInt(e.target.value, 10) || 10
                             )
                           }
                           placeholder="10"
@@ -1013,7 +1012,7 @@ export default function MarketingCenterPage() {
                         onChange={(e) =>
                           updateSetting(
                             "winbackInactiveDays",
-                            Number.parseInt(e.target.value) || 365
+                            Number.parseInt(e.target.value, 10) || 365
                           )
                         }
                         placeholder="365"
@@ -1106,7 +1105,7 @@ export default function MarketingCenterPage() {
                       onChange={(e) =>
                         updateSetting(
                           "appointmentReminderHours",
-                          Number.parseInt(e.target.value) || 24
+                          Number.parseInt(e.target.value, 10) || 24
                         )
                       }
                       placeholder="24"
@@ -1195,7 +1194,7 @@ export default function MarketingCenterPage() {
                     onChange={(e) =>
                       updateSetting(
                         "smsFrequencyLimit",
-                        Number.parseInt(e.target.value) || 4
+                        Number.parseInt(e.target.value, 10) || 4
                       )
                     }
                     placeholder="4"

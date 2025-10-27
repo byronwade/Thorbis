@@ -18,14 +18,14 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
-interface Activity {
+type Activity = {
   id: string;
   type: "job-completed" | "payment" | "booking" | "review" | "alert";
   title: string;
   description: string;
   time: string;
   metadata?: string;
-}
+};
 
 const activities: Activity[] = [
   {

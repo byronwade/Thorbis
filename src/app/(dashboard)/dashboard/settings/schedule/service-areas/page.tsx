@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-interface ServiceArea {
+type ServiceArea = {
   id: string;
   name: string;
   zipCodes: string;
@@ -37,7 +37,7 @@ interface ServiceArea {
   travelFeeAmount: number;
   minimumJobAmount: number;
   enabled: boolean;
-}
+};
 
 export default function ServiceAreasSettingsPage() {
   usePageLayout({

@@ -212,7 +212,6 @@ export default function InvoiceSettingsPage() {
     setIsSubmitting(true);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Invoice settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -332,7 +331,7 @@ export default function InvoiceSettingsPage() {
                   onChange={(e) =>
                     updateSetting(
                       "nextInvoiceNumber",
-                      Number.parseInt(e.target.value) || DEFAULT_NEXT_NUMBER
+                      Number.parseInt(e.target.value, 10) || DEFAULT_NEXT_NUMBER
                     )
                   }
                   placeholder="1001"
@@ -489,7 +488,7 @@ export default function InvoiceSettingsPage() {
                   onChange={(e) =>
                     updateSetting(
                       "customTermsDays",
-                      Number.parseInt(e.target.value) || 30
+                      Number.parseInt(e.target.value, 10) || 30
                     )
                   }
                   placeholder="30"
@@ -589,7 +588,7 @@ export default function InvoiceSettingsPage() {
                       onChange={(e) =>
                         updateSetting(
                           "lateFeeGracePeriodDays",
-                          Number.parseInt(e.target.value) || 3
+                          Number.parseInt(e.target.value, 10) || 3
                         )
                       }
                       placeholder="3"
@@ -799,7 +798,7 @@ export default function InvoiceSettingsPage() {
                     onChange={(e) =>
                       updateSetting(
                         "requireDepositPercent",
-                        Number.parseInt(e.target.value) || 50
+                        Number.parseInt(e.target.value, 10) || 50
                       )
                     }
                     placeholder="50"
@@ -1228,7 +1227,7 @@ export default function InvoiceSettingsPage() {
                   onChange={(e) =>
                     updateSetting(
                       "reminderDaysBeforeDue",
-                      Number.parseInt(e.target.value) || 3
+                      Number.parseInt(e.target.value, 10) || 3
                     )
                   }
                   placeholder="3"
@@ -1280,7 +1279,7 @@ export default function InvoiceSettingsPage() {
                   onChange={(e) =>
                     updateSetting(
                       "overdueReminderIntervalDays",
-                      Number.parseInt(e.target.value) || 7
+                      Number.parseInt(e.target.value, 10) || 7
                     )
                   }
                   placeholder="7"

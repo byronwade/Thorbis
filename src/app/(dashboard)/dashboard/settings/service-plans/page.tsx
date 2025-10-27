@@ -43,7 +43,7 @@ import { usePageLayout } from "@/hooks/use-page-layout";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
-const MAX_DESCRIPTION_LENGTH = 500;
+const _MAX_DESCRIPTION_LENGTH = 500;
 const DEFAULT_BILLING_DAY = 1;
 
 type ServicePlan = {
@@ -108,7 +108,7 @@ export default function ServicePlansPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAddPlan, setShowAddPlan] = useState(false);
+  const [_showAddPlan, setShowAddPlan] = useState(false);
 
   const [settings, setSettings] = useState<ServicePlanSettings>({
     // General Settings
@@ -225,7 +225,7 @@ export default function ServicePlansPage() {
     return labels[interval] || interval;
   };
 
-  const totalSubscribers = plans.reduce(
+  const _totalSubscribers = plans.reduce(
     (sum, plan) => sum + plan.subscribers,
     0
   );
@@ -245,7 +245,6 @@ export default function ServicePlansPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Service plan settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -489,7 +488,7 @@ export default function ServicePlansPage() {
                       onChange={(e) =>
                         updateSetting(
                           "reminderDaysBeforeRenewal",
-                          Number.parseInt(e.target.value) || 30
+                          Number.parseInt(e.target.value, 10) || 30
                         )
                       }
                       placeholder="30"
@@ -547,7 +546,7 @@ export default function ServicePlansPage() {
                 onChange={(e) =>
                   updateSetting(
                     "billingDay",
-                    Number.parseInt(e.target.value) || DEFAULT_BILLING_DAY
+                    Number.parseInt(e.target.value, 10) || DEFAULT_BILLING_DAY
                   )
                 }
                 placeholder="1"
@@ -607,7 +606,7 @@ export default function ServicePlansPage() {
                 onChange={(e) =>
                   updateSetting(
                     "gracePeriodDays",
-                    Number.parseInt(e.target.value) || 7
+                    Number.parseInt(e.target.value, 10) || 7
                   )
                 }
                 placeholder="7"
@@ -657,7 +656,7 @@ export default function ServicePlansPage() {
                     onChange={(e) =>
                       updateSetting(
                         "retryAttempts",
-                        Number.parseInt(e.target.value) || 3
+                        Number.parseInt(e.target.value, 10) || 3
                       )
                     }
                     placeholder="3"
@@ -678,7 +677,7 @@ export default function ServicePlansPage() {
                     onChange={(e) =>
                       updateSetting(
                         "retryIntervalDays",
-                        Number.parseInt(e.target.value) || 3
+                        Number.parseInt(e.target.value, 10) || 3
                       )
                     }
                     placeholder="3"
@@ -788,7 +787,7 @@ export default function ServicePlansPage() {
                   onChange={(e) =>
                     updateSetting(
                       "maxRolloverVisits",
-                      Number.parseInt(e.target.value) || 2
+                      Number.parseInt(e.target.value, 10) || 2
                     )
                   }
                   placeholder="2"
@@ -1133,7 +1132,7 @@ export default function ServicePlansPage() {
                     onChange={(e) =>
                       updateSetting(
                         "noticePeriodDays",
-                        Number.parseInt(e.target.value) || 30
+                        Number.parseInt(e.target.value, 10) || 30
                       )
                     }
                     placeholder="30"

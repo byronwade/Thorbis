@@ -160,7 +160,7 @@ export default function ScheduleSettingsPage() {
                       onValueChange={(value) =>
                         handleSettingChange(
                           "payPeriodStartDay",
-                          Number.parseInt(value)
+                          Number.parseInt(value, 10)
                         )
                       }
                       value={settings.payPeriodStartDay.toString()}
@@ -184,7 +184,7 @@ export default function ScheduleSettingsPage() {
                       onValueChange={(value) =>
                         handleSettingChange(
                           "payDayOfWeek",
-                          Number.parseInt(value)
+                          Number.parseInt(value, 10)
                         )
                       }
                       value={settings.payDayOfWeek.toString()}
@@ -222,7 +222,7 @@ export default function ScheduleSettingsPage() {
                     onValueChange={(value) =>
                       handleSettingChange(
                         "payDayOfMonth",
-                        Number.parseInt(value)
+                        Number.parseInt(value, 10)
                       )
                     }
                     value={settings.payDayOfMonth.toString()}
@@ -259,7 +259,7 @@ export default function ScheduleSettingsPage() {
                   onChange={(e) =>
                     handleSettingChange(
                       "processingDaysBeforePayday",
-                      Number.parseInt(e.target.value)
+                      Number.parseInt(e.target.value, 10)
                     )
                   }
                   type="number"

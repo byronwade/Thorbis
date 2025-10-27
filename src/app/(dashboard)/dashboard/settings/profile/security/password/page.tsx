@@ -153,11 +153,7 @@ export default function PasswordPage() {
 
   const strength = getPasswordStrength(newPassword);
 
-  function onSubmit(values: PasswordFormData) {
-    // Handle form submission - update password in database
-    // TODO: Implement password update API call
-    console.log("Password update request:", values);
-  }
+  function onSubmit(_values: PasswordFormData) {}
 
   return (
     <div className="space-y-8">

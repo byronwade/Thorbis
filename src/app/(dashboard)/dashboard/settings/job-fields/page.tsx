@@ -334,7 +334,6 @@ export default function JobFieldsPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Job field settings update request:", settings);
     setIsSubmitting(false);
   }
 

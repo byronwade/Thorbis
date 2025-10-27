@@ -1,12 +1,13 @@
 "use client";
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { ArrowLeft, FileText, Package, Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
+import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
-interface Estimate {
+type Estimate = {
   id: string;
   estimateNumber: string;
   customer: string;
@@ -15,7 +16,7 @@ interface Estimate {
   validUntil: string;
   amount: number;
   status: string;
-}
+};
 
 const mockEstimates: Estimate[] = [
   {
@@ -25,7 +26,7 @@ const mockEstimates: Estimate[] = [
     project: "HVAC Installation",
     date: "Jan 10, 2025",
     validUntil: "Feb 10, 2025",
-    amount: 1250000,
+    amount: 1_250_000,
     status: "accepted",
   },
   {
@@ -35,7 +36,7 @@ const mockEstimates: Estimate[] = [
     project: "Electrical Upgrade",
     date: "Jan 12, 2025",
     validUntil: "Feb 12, 2025",
-    amount: 875000,
+    amount: 875_000,
     status: "sent",
   },
   {
@@ -45,7 +46,7 @@ const mockEstimates: Estimate[] = [
     project: "Plumbing Repair",
     date: "Jan 15, 2025",
     validUntil: "Feb 15, 2025",
-    amount: 320000,
+    amount: 320_000,
     status: "draft",
   },
   {
@@ -55,7 +56,7 @@ const mockEstimates: Estimate[] = [
     project: "Roof Replacement",
     date: "Jan 18, 2025",
     validUntil: "Feb 18, 2025",
-    amount: 2500000,
+    amount: 2_500_000,
     status: "sent",
   },
   {
@@ -65,7 +66,7 @@ const mockEstimates: Estimate[] = [
     project: "Generator Installation",
     date: "Jan 20, 2025",
     validUntil: "Feb 20, 2025",
-    amount: 450000,
+    amount: 450_000,
     status: "declined",
   },
 ];
@@ -78,7 +79,10 @@ function formatCurrency(cents: number): string {
 }
 
 function getStatusBadge(status: string) {
-  const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  const variants: Record<
+    string,
+    { variant: "default" | "secondary" | "destructive" | "outline" }
+  > = {
     accepted: { variant: "default" },
     sent: { variant: "secondary" },
     draft: { variant: "outline" },
@@ -88,7 +92,10 @@ function getStatusBadge(status: string) {
   const config = variants[status] || { variant: "outline" };
 
   return (
-    <Badge variant={config.variant} className={status === "accepted" ? "bg-green-500 hover:bg-green-600" : ""}>
+    <Badge
+      className={status === "accepted" ? "bg-green-500 hover:bg-green-600" : ""}
+      variant={config.variant}
+    >
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </Badge>
   );
@@ -101,6 +108,44 @@ export default function EstimatesPage() {
     gap: "md",
     showToolbar: true,
     showSidebar: true,
+    sidebar: {
+      groups: [
+        {
+          label: undefined,
+          items: [
+            {
+              mode: "link" as const,
+              title: "Back to Work",
+              url: "/dashboard/work",
+              icon: ArrowLeft,
+            },
+          ],
+        },
+        {
+          label: "Financial Documents",
+          items: [
+            {
+              mode: "link" as const,
+              title: "Invoices",
+              url: "/dashboard/work/invoices",
+              icon: FileText,
+            },
+            {
+              mode: "link" as const,
+              title: "Estimates",
+              url: "/dashboard/work/estimates",
+              icon: FileText,
+            },
+            {
+              mode: "link" as const,
+              title: "Purchase Orders",
+              url: "/dashboard/work/purchase-orders",
+              icon: Receipt,
+            },
+          ],
+        },
+      ],
+    },
   });
 
   const columns: DataTableColumn<Estimate>[] = [
@@ -109,7 +154,9 @@ export default function EstimatesPage() {
       header: "Estimate #",
       sortable: true,
       filterable: true,
-      render: (estimate) => <span className="font-medium">{estimate.estimateNumber}</span>,
+      render: (estimate) => (
+        <span className="font-medium">{estimate.estimateNumber}</span>
+      ),
     },
     {
       key: "customer",
@@ -137,7 +184,9 @@ export default function EstimatesPage() {
       key: "amount",
       header: "Amount",
       sortable: true,
-      render: (estimate) => <span className="font-medium">{formatCurrency(estimate.amount)}</span>,
+      render: (estimate) => (
+        <span className="font-medium">{formatCurrency(estimate.amount)}</span>
+      ),
     },
     {
       key: "status",
@@ -150,25 +199,48 @@ export default function EstimatesPage() {
 
   return (
     <WorkPageLayout
-      title="Estimates"
-      description="Create and manage project estimates and quotes"
-      actionLabel="Create Estimate"
       actionHref="/dashboard/work/estimates/new"
+      actionLabel="Create Estimate"
+      description="Create and manage project estimates and quotes"
+      secondaryActions={[
+        {
+          label: "Create PO",
+          href: "/dashboard/work/purchase-orders/new",
+          icon: Package,
+        },
+      ]}
+      title="Estimates"
     >
       <div className="grid gap-3 md:grid-cols-4">
-        <StatCard label="Total Value" value="$125,890.00" subtext="All active estimates" />
-        <StatCard label="Accepted" value="$78,450.00" subtext="62% conversion rate" trend="up" />
-        <StatCard label="Pending" value="$35,440.00" subtext="15 estimates" />
-        <StatCard label="Declined" value="$12,000.00" subtext="5 estimates" trend="down" />
+        <StatCard
+          label="Total Value"
+          subtext="All active estimates"
+          value="$125,890.00"
+        />
+        <StatCard
+          label="Accepted"
+          subtext="62% conversion rate"
+          trend="up"
+          value="$78,450.00"
+        />
+        <StatCard label="Pending" subtext="15 estimates" value="$35,440.00" />
+        <StatCard
+          label="Declined"
+          subtext="5 estimates"
+          trend="down"
+          value="$12,000.00"
+        />
       </div>
 
       <DataTable
+        columns={
+          columns as unknown as DataTableColumn<Record<string, unknown>>[]
+        }
         data={mockEstimates as unknown as Record<string, unknown>[]}
-        columns={columns as unknown as DataTableColumn<Record<string, unknown>>[]}
-        keyField="id"
-        itemsPerPage={10}
-        searchPlaceholder="Search estimates by number, customer, project, or status..."
         emptyMessage="No estimates found."
+        itemsPerPage={10}
+        keyField="id"
+        searchPlaceholder="Search estimates by number, customer, project, or status..."
       />
     </WorkPageLayout>
   );

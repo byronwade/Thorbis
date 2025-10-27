@@ -19,18 +19,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
+interface PayRun extends Record<string, unknown> {
+  id: string;
+  period: string;
+  payDate: string;
+  employees: number;
+  grossPay: number;
+  netPay: number;
+  status: string;
+}
+
 // Mock pay run data
-const payRuns = [
+const payRuns: PayRun[] = [
   {
     id: "1",
     period: "Oct 16-31, 2024",
@@ -77,6 +80,71 @@ export default function PayRunsPage() {
     showToolbar: true,
     showSidebar: true,
   });
+
+  const columns: DataTableColumn<PayRun>[] = [
+    {
+      key: "period",
+      header: "Period",
+      sortable: true,
+      filterable: true,
+      render: (payRun) => <span className="font-medium">{payRun.period}</span>,
+    },
+    {
+      key: "payDate",
+      header: "Pay Date",
+      sortable: true,
+      render: (payRun) => new Date(payRun.payDate).toLocaleDateString(),
+    },
+    {
+      key: "employees",
+      header: "Employees",
+      sortable: true,
+    },
+    {
+      key: "grossPay",
+      header: "Gross Pay",
+      sortable: true,
+      render: (payRun) => `$${payRun.grossPay.toLocaleString()}`,
+    },
+    {
+      key: "netPay",
+      header: "Net Pay",
+      sortable: true,
+      render: (payRun) => `$${payRun.netPay.toLocaleString()}`,
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      filterable: true,
+      render: (payRun) => (
+        <Badge
+          variant={payRun.status === "completed" ? "default" : "secondary"}
+        >
+          {payRun.status === "completed" ? (
+            <CheckCircle2 className="mr-1 h-3 w-3" />
+          ) : (
+            <Clock className="mr-1 h-3 w-3" />
+          )}
+          {payRun.status}
+        </Badge>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      className: "text-right",
+      render: (payRun) =>
+        payRun.status === "completed" ? (
+          <Button size="sm" variant="outline">
+            <Download className="h-4 w-4" />
+            <span className="sr-only">Download</span>
+          </Button>
+        ) : (
+          <Button size="sm">Preview</Button>
+        ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -190,56 +258,14 @@ export default function PayRunsPage() {
           <CardDescription>View past and upcoming payroll runs</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Period</TableHead>
-                <TableHead>Pay Date</TableHead>
-                <TableHead>Employees</TableHead>
-                <TableHead>Gross Pay</TableHead>
-                <TableHead>Net Pay</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {payRuns.map((payRun) => (
-                <TableRow key={payRun.id}>
-                  <TableCell className="font-medium">{payRun.period}</TableCell>
-                  <TableCell>
-                    {new Date(payRun.payDate).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>{payRun.employees}</TableCell>
-                  <TableCell>${payRun.grossPay.toLocaleString()}</TableCell>
-                  <TableCell>${payRun.netPay.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        payRun.status === "completed" ? "default" : "secondary"
-                      }
-                    >
-                      {payRun.status === "completed" ? (
-                        <CheckCircle2 className="mr-1 h-3 w-3" />
-                      ) : (
-                        <Clock className="mr-1 h-3 w-3" />
-                      )}
-                      {payRun.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {payRun.status === "completed" ? (
-                      <Button size="sm" variant="outline">
-                        <Download className="h-4 w-4" />
-                        <span className="sr-only">Download</span>
-                      </Button>
-                    ) : (
-                      <Button size="sm">Preview</Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable
+            columns={columns}
+            data={payRuns}
+            emptyMessage="No pay runs found."
+            itemsPerPage={10}
+            keyField="id"
+            searchPlaceholder="Search by period or status..."
+          />
         </CardContent>
       </Card>
     </div>

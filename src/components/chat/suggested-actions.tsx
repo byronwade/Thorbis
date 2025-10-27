@@ -1,8 +1,8 @@
 "use client";
 
-interface SuggestedActionsProps {
+type SuggestedActionsProps = {
   onSelect: (prompt: string) => void;
-}
+};
 
 const suggestions = [
   "What are the advantages of using Next.js?",

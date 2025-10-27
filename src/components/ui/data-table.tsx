@@ -1,29 +1,43 @@
 "use client";
 
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  ChevronUp,
+  Search,
+  X,
+} from "lucide-react";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, ChevronsUpDown, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-export interface DataTableColumn<T> {
+export type DataTableColumn<T> = {
   key: string;
   header: string;
   sortable?: boolean;
   filterable?: boolean;
   render?: (item: T) => React.ReactNode;
   className?: string;
-}
+};
 
-interface DataTableProps<T> {
+type DataTableProps<T> = {
   data: T[];
   columns: DataTableColumn<T>[];
   keyField: keyof T;
   itemsPerPage?: number;
   searchPlaceholder?: string;
   emptyMessage?: string;
-}
+};
 
 type SortDirection = "asc" | "desc" | null;
 
@@ -42,25 +56,35 @@ export function DataTable<T extends Record<string, unknown>>({
 
   // Filter data based on search term
   const filteredData = searchTerm
-    ? data.filter((item) => {
-        return columns.some((col) => {
-          if (!col.filterable) return false;
+    ? data.filter((item) =>
+        columns.some((col) => {
+          if (!col.filterable) {
+            return false;
+          }
           const value = item[col.key];
-          if (value === null || value === undefined) return false;
+          if (value === null || value === undefined) {
+            return false;
+          }
           return String(value).toLowerCase().includes(searchTerm.toLowerCase());
-        });
-      })
+        })
+      )
     : data;
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortColumn || !sortDirection) return 0;
+    if (!(sortColumn && sortDirection)) {
+      return 0;
+    }
 
     const aVal = a[sortColumn];
     const bVal = b[sortColumn];
 
-    if (aVal === null || aVal === undefined) return 1;
-    if (bVal === null || bVal === undefined) return -1;
+    if (aVal === null || aVal === undefined) {
+      return 1;
+    }
+    if (bVal === null || bVal === undefined) {
+      return -1;
+    }
 
     const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
     return sortDirection === "asc" ? comparison : -comparison;
@@ -74,7 +98,9 @@ export function DataTable<T extends Record<string, unknown>>({
 
   const handleSort = (columnKey: string) => {
     const column = columns.find((col) => col.key === columnKey);
-    if (!column?.sortable) return;
+    if (!column?.sortable) {
+      return;
+    }
 
     if (sortColumn === columnKey) {
       if (sortDirection === "asc") {
@@ -108,22 +134,22 @@ export function DataTable<T extends Record<string, unknown>>({
       {/* Search Bar */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
-            placeholder={searchPlaceholder}
-            value={searchTerm}
+            className="pl-9"
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="pl-9"
+            placeholder={searchPlaceholder}
+            value={searchTerm}
           />
           {searchTerm && (
             <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-1/2 right-1 size-7 -translate-y-1/2"
+              className="-translate-y-1/2 absolute top-1/2 right-1 size-7"
               onClick={() => setSearchTerm("")}
+              size="icon"
+              variant="ghost"
             >
               <X className="size-3.5" />
             </Button>
@@ -137,12 +163,12 @@ export function DataTable<T extends Record<string, unknown>>({
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
-                <TableHead key={column.key} className={column.className}>
+                <TableHead className={column.className} key={column.key}>
                   {column.sortable ? (
                     <button
-                      type="button"
                       className="flex items-center font-medium transition-colors hover:text-foreground"
                       onClick={() => handleSort(column.key)}
+                      type="button"
                     >
                       {column.header}
                       {getSortIcon(column.key)}
@@ -157,7 +183,10 @@ export function DataTable<T extends Record<string, unknown>>({
           <TableBody>
             {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                <TableCell
+                  className="h-24 text-center text-muted-foreground"
+                  colSpan={columns.length}
+                >
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -165,8 +194,10 @@ export function DataTable<T extends Record<string, unknown>>({
               paginatedData.map((item) => (
                 <TableRow key={String(item[keyField])}>
                   {columns.map((column) => (
-                    <TableCell key={column.key} className={column.className}>
-                      {column.render ? column.render(item) : String(item[column.key] ?? "")}
+                    <TableCell className={column.className} key={column.key}>
+                      {column.render
+                        ? column.render(item)
+                        : String(item[column.key] ?? "")}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -180,14 +211,15 @@ export function DataTable<T extends Record<string, unknown>>({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-muted-foreground text-sm">
-            Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
+            Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)}{" "}
+            of {sortedData.length} results
           </div>
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
+              onClick={() => goToPage(currentPage - 1)}
+              size="sm"
+              variant="outline"
             >
               <ChevronLeft className="size-4" />
               Previous
@@ -196,10 +228,10 @@ export function DataTable<T extends Record<string, unknown>>({
               Page {currentPage} of {totalPages}
             </div>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
+              onClick={() => goToPage(currentPage + 1)}
+              size="sm"
+              variant="outline"
             >
               Next
               <ChevronRight className="size-4" />

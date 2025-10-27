@@ -345,7 +345,7 @@ export default function EmployeeProfilePage() {
     setHasUnsavedChanges(false);
   };
 
-  const getEmploymentStatusColor = (status: EmploymentStatus) => {
+  const _getEmploymentStatusColor = (status: EmploymentStatus) => {
     switch (status) {
       case "active":
         return "bg-green-500";
@@ -476,8 +476,7 @@ export default function EmployeeProfilePage() {
                 <p className="text-muted-foreground text-xs">Tenure</p>
                 <p className="font-semibold">
                   {Math.floor(
-                    (new Date().getTime() -
-                      new Date(employee.hireDate).getTime()) /
+                    (Date.now() - new Date(employee.hireDate).getTime()) /
                       (1000 * 60 * 60 * 24 * 365)
                   )}{" "}
                   years
@@ -1161,7 +1160,7 @@ export default function EmployeeProfilePage() {
                       onChange={(e) =>
                         handleFieldChange(
                           "federalAllowances",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       type="number"
@@ -1231,7 +1230,7 @@ export default function EmployeeProfilePage() {
                       onChange={(e) =>
                         handleFieldChange(
                           "stateAllowances",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       type="number"

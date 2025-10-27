@@ -1,10 +1,11 @@
 "use client";
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { ArrowLeft, ShieldCheck, Ticket, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
+import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 interface ServiceAgreement extends Record<string, unknown> {
   id: string;
@@ -61,7 +62,11 @@ const mockAgreements: ServiceAgreement[] = [
 ];
 
 function getStatusBadge(status: string) {
-  return status === "active" ? <Badge>Active</Badge> : <Badge variant="secondary">Pending</Badge>;
+  return status === "active" ? (
+    <Badge>Active</Badge>
+  ) : (
+    <Badge variant="secondary">Pending</Badge>
+  );
 }
 
 export default function ServiceAgreementsPage() {
@@ -71,6 +76,44 @@ export default function ServiceAgreementsPage() {
     gap: "md",
     showToolbar: true,
     showSidebar: true,
+    sidebar: {
+      groups: [
+        {
+          label: undefined,
+          items: [
+            {
+              mode: "link" as const,
+              title: "Back to Work",
+              url: "/dashboard/work",
+              icon: ArrowLeft,
+            },
+          ],
+        },
+        {
+          label: "Service Management",
+          items: [
+            {
+              mode: "link" as const,
+              title: "Maintenance Plans",
+              url: "/dashboard/work/maintenance-plans",
+              icon: Wrench,
+            },
+            {
+              mode: "link" as const,
+              title: "Service Agreements",
+              url: "/dashboard/work/service-agreements",
+              icon: ShieldCheck,
+            },
+            {
+              mode: "link" as const,
+              title: "Service Tickets",
+              url: "/dashboard/work/tickets",
+              icon: Ticket,
+            },
+          ],
+        },
+      ],
+    },
   });
 
   const columns: DataTableColumn<ServiceAgreement>[] = [
@@ -79,7 +122,9 @@ export default function ServiceAgreementsPage() {
       header: "Agreement #",
       sortable: true,
       filterable: true,
-      render: (agreement) => <span className="font-medium">{agreement.agreementNumber}</span>,
+      render: (agreement) => (
+        <span className="font-medium">{agreement.agreementNumber}</span>
+      ),
     },
     {
       key: "customer",
@@ -119,25 +164,44 @@ export default function ServiceAgreementsPage() {
 
   return (
     <WorkPageLayout
-      title="Service Agreements"
-      description="Manage customer service contracts and warranties"
-      actionLabel="Create Agreement"
       actionHref="/dashboard/work/service-agreements/new"
+      actionLabel="Create Agreement"
+      description="Manage customer service contracts and warranties"
+      title="Service Agreements"
     >
       <div className="grid gap-3 md:grid-cols-4">
-        <StatCard label="Active Agreements" value="156" subtext="+8 this month" trend="up" />
-        <StatCard label="Pending Signatures" value="12" subtext="Awaiting customer" />
-        <StatCard label="Expiring Soon" value="8" subtext="Within 30 days" trend="down" />
-        <StatCard label="Total Value" value="$485,200" subtext="Annual contract value" trend="up" />
+        <StatCard
+          label="Active Agreements"
+          subtext="+8 this month"
+          trend="up"
+          value="156"
+        />
+        <StatCard
+          label="Pending Signatures"
+          subtext="Awaiting customer"
+          value="12"
+        />
+        <StatCard
+          label="Expiring Soon"
+          subtext="Within 30 days"
+          trend="down"
+          value="8"
+        />
+        <StatCard
+          label="Total Value"
+          subtext="Annual contract value"
+          trend="up"
+          value="$485,200"
+        />
       </div>
 
       <DataTable
-        data={mockAgreements}
         columns={columns}
-        keyField="id"
-        itemsPerPage={10}
-        searchPlaceholder="Search agreements by number, customer, type, or status..."
+        data={mockAgreements}
         emptyMessage="No service agreements found."
+        itemsPerPage={10}
+        keyField="id"
+        searchPlaceholder="Search agreements by number, customer, type, or status..."
       />
     </WorkPageLayout>
   );

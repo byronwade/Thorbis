@@ -29,11 +29,9 @@ type PageLayoutConfig = {
 
 export function usePageLayout(config: PageLayoutConfig) {
   const { setConfig } = useLayoutConfig();
-  const configRef = useRef(config);
-  configRef.current = config;
 
   useEffect(() => {
-    setConfig(configRef.current);
+    setConfig(config);
 
     // Reset to defaults when component unmounts (including sidebar!)
     return () => {
@@ -49,5 +47,6 @@ export function usePageLayout(config: PageLayoutConfig) {
         sidebar: undefined, // Clear custom sidebar config
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setConfig]);
 }

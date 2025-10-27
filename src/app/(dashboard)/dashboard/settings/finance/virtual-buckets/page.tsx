@@ -55,7 +55,7 @@ export default function VirtualBucketsSettingsPage() {
   });
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [buckets, setBuckets] = useState<VirtualBucket[]>([
+  const [buckets, _setBuckets] = useState<VirtualBucket[]>([
     {
       id: "1",
       name: "Tax Reserve",

@@ -1,10 +1,11 @@
 "use client";
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { ArrowLeft, BookOpen, Box, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
+import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 interface Material extends Record<string, unknown> {
   id: string;
@@ -21,7 +22,7 @@ const mockMaterials: Material[] = [
   {
     id: "1",
     itemCode: "MAT-001",
-    description: "Copper Pipe 3/4\"",
+    description: 'Copper Pipe 3/4"',
     category: "Plumbing",
     quantity: "250 ft",
     unitCost: "$2.50/ft",
@@ -51,7 +52,7 @@ const mockMaterials: Material[] = [
   {
     id: "4",
     itemCode: "MAT-004",
-    description: "PVC Pipe 2\"",
+    description: 'PVC Pipe 2"',
     category: "Plumbing",
     quantity: "0 ft",
     unitCost: "$1.75/ft",
@@ -61,8 +62,12 @@ const mockMaterials: Material[] = [
 ];
 
 function getStatusBadge(status: string) {
-  if (status === "in-stock") return <Badge>In Stock</Badge>;
-  if (status === "low-stock") return <Badge variant="destructive">Low Stock</Badge>;
+  if (status === "in-stock") {
+    return <Badge>In Stock</Badge>;
+  }
+  if (status === "low-stock") {
+    return <Badge variant="destructive">Low Stock</Badge>;
+  }
   return <Badge variant="outline">Out of Stock</Badge>;
 }
 
@@ -73,6 +78,44 @@ export default function MaterialsPage() {
     gap: "md",
     showToolbar: true,
     showSidebar: true,
+    sidebar: {
+      groups: [
+        {
+          label: undefined,
+          items: [
+            {
+              mode: "link" as const,
+              title: "Back to Work",
+              url: "/dashboard/work",
+              icon: ArrowLeft,
+            },
+          ],
+        },
+        {
+          label: "Company Resources",
+          items: [
+            {
+              mode: "link" as const,
+              title: "Price Book",
+              url: "/dashboard/work/pricebook",
+              icon: BookOpen,
+            },
+            {
+              mode: "link" as const,
+              title: "Materials Inventory",
+              url: "/dashboard/work/materials",
+              icon: Box,
+            },
+            {
+              mode: "link" as const,
+              title: "Equipment & Tools",
+              url: "/dashboard/work/equipment",
+              icon: Package,
+            },
+          ],
+        },
+      ],
+    },
   });
 
   const columns: DataTableColumn<Material>[] = [
@@ -81,7 +124,9 @@ export default function MaterialsPage() {
       header: "Item Code",
       sortable: true,
       filterable: true,
-      render: (material) => <span className="font-medium">{material.itemCode}</span>,
+      render: (material) => (
+        <span className="font-medium">{material.itemCode}</span>
+      ),
     },
     {
       key: "description",
@@ -121,25 +166,43 @@ export default function MaterialsPage() {
 
   return (
     <WorkPageLayout
-      title="Materials Inventory"
-      description="Track and manage company materials, parts, and supplies"
-      actionLabel="Add Material"
       actionHref="/dashboard/work/materials/new"
+      actionLabel="Add Material"
+      description="Track and manage company materials, parts, and supplies"
+      title="Materials Inventory"
     >
       <div className="grid gap-3 md:grid-cols-4">
-        <StatCard label="Total Items" value="1,284" subtext="Across all categories" />
-        <StatCard label="In Stock" value="1,156" subtext="90% availability" trend="up" />
-        <StatCard label="Low Stock" value="45" subtext="Needs reorder" trend="down" />
-        <StatCard label="Inventory Value" value="$145,890" subtext="Current stock value" />
+        <StatCard
+          label="Total Items"
+          subtext="Across all categories"
+          value="1,284"
+        />
+        <StatCard
+          label="In Stock"
+          subtext="90% availability"
+          trend="up"
+          value="1,156"
+        />
+        <StatCard
+          label="Low Stock"
+          subtext="Needs reorder"
+          trend="down"
+          value="45"
+        />
+        <StatCard
+          label="Inventory Value"
+          subtext="Current stock value"
+          value="$145,890"
+        />
       </div>
 
       <DataTable
-        data={mockMaterials}
         columns={columns}
-        keyField="id"
-        itemsPerPage={10}
-        searchPlaceholder="Search materials by code, description, category, or status..."
+        data={mockMaterials}
         emptyMessage="No materials found."
+        itemsPerPage={10}
+        keyField="id"
+        searchPlaceholder="Search materials by code, description, category, or status..."
       />
     </WorkPageLayout>
   );

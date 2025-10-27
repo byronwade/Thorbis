@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-interface KPICardProps {
+type KPICardProps = {
   title: string;
   value: string;
   change?: string;
@@ -17,7 +17,7 @@ interface KPICardProps {
   icon: LucideIcon;
   description?: string;
   tooltip?: string;
-}
+};
 
 export function KPICard({
   title,

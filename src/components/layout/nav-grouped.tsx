@@ -18,6 +18,7 @@ type NavItem = {
   title: string;
   url: string;
   icon?: LucideIcon;
+  highlight?: "yellow";
   items?: {
     title: string;
     url: string;
@@ -76,17 +77,30 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
               }
 
               // Regular menu item without sub-items
+              const isAnchorLink = item.url.startsWith("#");
+              const highlightClass =
+                item.highlight === "yellow"
+                  ? "ring-2 ring-yellow-500/50 hover:ring-yellow-500/70 dark:ring-yellow-500/50 dark:hover:ring-yellow-500/70"
+                  : "";
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
+                    className={highlightClass}
                     isActive={isActive}
                     tooltip={item.title}
                   >
-                    <Link href={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </Link>
+                    {isAnchorLink ? (
+                      <a href={item.url}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </a>
+                    ) : (
+                      <Link href={item.url}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </Link>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );

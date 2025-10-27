@@ -614,29 +614,27 @@ export default function PrivacyConsentPage() {
             </div>
 
             {settings.maskSensitiveData && (
-              <>
-                <div className="ml-6 space-y-3 border-l-2 pl-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm">Mask Credit Card Numbers</Label>
-                    <Switch
-                      checked={settings.maskCreditCards}
-                      onCheckedChange={(checked) =>
-                        updateSetting("maskCreditCards", checked)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm">Mask SSN/Tax ID</Label>
-                    <Switch
-                      checked={settings.maskSSN}
-                      onCheckedChange={(checked) =>
-                        updateSetting("maskSSN", checked)
-                      }
-                    />
-                  </div>
+              <div className="ml-6 space-y-3 border-l-2 pl-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Mask Credit Card Numbers</Label>
+                  <Switch
+                    checked={settings.maskCreditCards}
+                    onCheckedChange={(checked) =>
+                      updateSetting("maskCreditCards", checked)
+                    }
+                  />
                 </div>
-              </>
+
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Mask SSN/Tax ID</Label>
+                  <Switch
+                    checked={settings.maskSSN}
+                    onCheckedChange={(checked) =>
+                      updateSetting("maskSSN", checked)
+                    }
+                  />
+                </div>
+              </div>
             )}
 
             <Separator />

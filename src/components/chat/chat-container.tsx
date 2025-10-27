@@ -6,7 +6,7 @@ import { ChatMessage, ThinkingMessage } from "./message";
 import { MultimodalInput } from "./multimodal-input";
 import { SuggestedActions } from "./suggested-actions";
 
-interface ChatContainerProps {
+type ChatContainerProps = {
   messages: UIMessage[];
   input: string;
   onInputChange: (
@@ -20,7 +20,7 @@ interface ChatContainerProps {
   ) => void;
   isLoading: boolean;
   onStop: () => void;
-}
+};
 
 export function ChatContainer({
   messages,

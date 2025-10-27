@@ -1,10 +1,10 @@
 "use client";
 
+import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
-import type { Job } from "@/lib/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,16 +13,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
+import type { Job } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 
-interface JobsTableProps {
+type JobsTableProps = {
   jobs: Job[];
   itemsPerPage?: number;
-}
+};
 
 function formatCurrency(cents: number | null): string {
-  if (cents === null) return "$0.00";
+  if (cents === null) {
+    return "$0.00";
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -30,7 +32,9 @@ function formatCurrency(cents: number | null): string {
 }
 
 function formatDate(date: Date | number | null): string {
-  if (!date) return "—";
+  if (!date) {
+    return "—";
+  }
   const d = typeof date === "number" ? new Date(date) : date;
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -40,7 +44,13 @@ function formatDate(date: Date | number | null): string {
 }
 
 function getStatusBadge(status: string) {
-  const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; label: string }> = {
+  const variants: Record<
+    string,
+    {
+      variant: "default" | "secondary" | "destructive" | "outline";
+      label: string;
+    }
+  > = {
     quoted: { variant: "outline", label: "Quoted" },
     scheduled: { variant: "secondary", label: "Scheduled" },
     in_progress: { variant: "default", label: "In Progress" },
@@ -48,10 +58,18 @@ function getStatusBadge(status: string) {
     cancelled: { variant: "destructive", label: "Cancelled" },
   };
 
-  const config = variants[status] || { variant: "outline" as const, label: status };
+  const config = variants[status] || {
+    variant: "outline" as const,
+    label: status,
+  };
 
   return (
-    <Badge variant={config.variant} className={cn(status === "completed" && "bg-green-500 hover:bg-green-600")}>
+    <Badge
+      className={cn(
+        status === "completed" && "bg-green-500 hover:bg-green-600"
+      )}
+      variant={config.variant}
+    >
       {config.label}
     </Badge>
   );
@@ -59,16 +77,32 @@ function getStatusBadge(status: string) {
 
 function getPriorityBadge(priority: string) {
   const variants: Record<string, { className: string; label: string }> = {
-    low: { className: "bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20", label: "Low" },
-    medium: { className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20", label: "Medium" },
-    high: { className: "bg-orange-500/10 text-orange-700 dark:text-orange-400 hover:bg-orange-500/20", label: "High" },
-    urgent: { className: "bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-500/20", label: "Urgent" },
+    low: {
+      className:
+        "bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20",
+      label: "Low",
+    },
+    medium: {
+      className:
+        "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20",
+      label: "Medium",
+    },
+    high: {
+      className:
+        "bg-orange-500/10 text-orange-700 dark:text-orange-400 hover:bg-orange-500/20",
+      label: "High",
+    },
+    urgent: {
+      className:
+        "bg-red-500/10 text-red-700 dark:text-red-400 hover:bg-red-500/20",
+      label: "Urgent",
+    },
   };
 
   const config = variants[priority] || { className: "", label: priority };
 
   return (
-    <Badge variant="outline" className={config.className}>
+    <Badge className={config.className} variant="outline">
       {config.label}
     </Badge>
   );
@@ -82,7 +116,10 @@ export function JobsTable({ jobs, itemsPerPage = 10 }: JobsTableProps) {
       sortable: true,
       filterable: true,
       render: (job) => (
-        <Link href={`/dashboard/work/${job.id}`} className="font-medium hover:underline">
+        <Link
+          className="font-medium hover:underline"
+          href={`/dashboard/work/${job.id}`}
+        >
           {job.jobNumber}
         </Link>
       ),
@@ -93,7 +130,7 @@ export function JobsTable({ jobs, itemsPerPage = 10 }: JobsTableProps) {
       sortable: true,
       filterable: true,
       render: (job) => (
-        <Link href={`/dashboard/work/${job.id}`} className="hover:underline">
+        <Link className="hover:underline" href={`/dashboard/work/${job.id}`}>
           {job.title}
         </Link>
       ),
@@ -122,7 +159,9 @@ export function JobsTable({ jobs, itemsPerPage = 10 }: JobsTableProps) {
       key: "totalAmount",
       header: "Total Amount",
       sortable: true,
-      render: (job) => <span className="font-medium">{formatCurrency(job.totalAmount)}</span>,
+      render: (job) => (
+        <span className="font-medium">{formatCurrency(job.totalAmount)}</span>
+      ),
     },
     {
       key: "actions",
@@ -130,7 +169,7 @@ export function JobsTable({ jobs, itemsPerPage = 10 }: JobsTableProps) {
       render: (job) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <MoreHorizontal className="size-4" />
               <span className="sr-only">Open menu</span>
             </Button>
@@ -163,12 +202,12 @@ export function JobsTable({ jobs, itemsPerPage = 10 }: JobsTableProps) {
 
   return (
     <DataTable
-      data={jobs}
       columns={columns}
-      keyField="id"
-      itemsPerPage={itemsPerPage}
-      searchPlaceholder="Search jobs by number, title, status, or priority..."
+      data={jobs}
       emptyMessage="No jobs found."
+      itemsPerPage={itemsPerPage}
+      keyField="id"
+      searchPlaceholder="Search jobs by number, title, status, or priority..."
     />
   );
 }

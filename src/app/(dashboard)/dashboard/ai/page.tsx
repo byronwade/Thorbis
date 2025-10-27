@@ -49,9 +49,9 @@ export default function AIPage() {
           const firstUserMessage = messages.find((m) => m.role === "user");
           if (firstUserMessage) {
             const title =
-              firstUserMessage.parts
+              `${firstUserMessage.parts
                 .find((part) => part.type === "text")
-                ?.text.slice(0, 50) + "..." || "New Chat";
+                ?.text.slice(0, 50)}...` || "New Chat";
             updateChatTitle(activeChat.id, title);
           }
         }
@@ -77,7 +77,7 @@ export default function AIPage() {
       });
     }
     messagesRef.current = messages;
-  }, [messages, activeChat?.id, addMessage]);
+  }, [messages, activeChat?.id, addMessage, activeChat]);
 
   // Load active chat messages on mount or when active chat changes
   useEffect(() => {
@@ -89,7 +89,7 @@ export default function AIPage() {
       const chatId = createChat();
       setActiveChat(chatId);
     }
-  }, [activeChat?.id, createChat, setActiveChat]);
+  }, [activeChat?.id, createChat, setActiveChat, activeChat]);
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,7 +101,7 @@ export default function AIPage() {
   };
 
   // Handle new chat
-  const handleNewChat = () => {
+  const _handleNewChat = () => {
     const chatId = createChat();
     setActiveChat(chatId);
     // Clear messages by creating a new chat

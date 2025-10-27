@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 import { BotIcon, SparklesIcon, UserIcon } from "./icons";
 import { Weather } from "./weather";
 
-interface MessageProps {
+type MessageProps = {
   message: UIMessage;
   isLoading?: boolean;
-}
+};
 
 export function ChatMessage({ message, isLoading = false }: MessageProps) {
   const isUser = message.role === "user";

@@ -30,13 +30,13 @@ import {
 } from "@/components/ui/tooltip";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-interface Tier {
+type Tier = {
   id: string;
   name: string;
   minSpend: number;
   discountPercent: number;
   color: string;
-}
+};
 
 export default function LoyaltyRewardsPage() {
   usePageLayout({
@@ -77,7 +77,7 @@ export default function LoyaltyRewardsPage() {
     allowPointsTransfer: false,
   });
 
-  const [tiers, setTiers] = useState<Tier[]>([
+  const [tiers, _setTiers] = useState<Tier[]>([
     {
       id: "1",
       name: "Bronze",

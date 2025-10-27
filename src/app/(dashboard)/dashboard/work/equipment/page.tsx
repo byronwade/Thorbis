@@ -1,10 +1,11 @@
 "use client";
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { ArrowLeft, BookOpen, Box, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
+import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 interface Equipment extends Record<string, unknown> {
   id: string;
@@ -61,8 +62,12 @@ const mockEquipment: Equipment[] = [
 ];
 
 function getStatusBadge(status: string) {
-  if (status === "available") return <Badge>Available</Badge>;
-  if (status === "in-use") return <Badge variant="secondary">In Use</Badge>;
+  if (status === "available") {
+    return <Badge>Available</Badge>;
+  }
+  if (status === "in-use") {
+    return <Badge variant="secondary">In Use</Badge>;
+  }
   return <Badge variant="destructive">Maintenance</Badge>;
 }
 
@@ -73,6 +78,44 @@ export default function EquipmentPage() {
     gap: "md",
     showToolbar: true,
     showSidebar: true,
+    sidebar: {
+      groups: [
+        {
+          label: undefined,
+          items: [
+            {
+              mode: "link" as const,
+              title: "Back to Work",
+              url: "/dashboard/work",
+              icon: ArrowLeft,
+            },
+          ],
+        },
+        {
+          label: "Company Resources",
+          items: [
+            {
+              mode: "link" as const,
+              title: "Price Book",
+              url: "/dashboard/work/pricebook",
+              icon: BookOpen,
+            },
+            {
+              mode: "link" as const,
+              title: "Materials Inventory",
+              url: "/dashboard/work/materials",
+              icon: Box,
+            },
+            {
+              mode: "link" as const,
+              title: "Equipment & Tools",
+              url: "/dashboard/work/equipment",
+              icon: Package,
+            },
+          ],
+        },
+      ],
+    },
   });
 
   const columns: DataTableColumn<Equipment>[] = [
@@ -81,7 +124,9 @@ export default function EquipmentPage() {
       header: "Asset ID",
       sortable: true,
       filterable: true,
-      render: (equipment) => <span className="font-medium">{equipment.assetId}</span>,
+      render: (equipment) => (
+        <span className="font-medium">{equipment.assetId}</span>
+      ),
     },
     {
       key: "name",
@@ -122,25 +167,35 @@ export default function EquipmentPage() {
 
   return (
     <WorkPageLayout
-      title="Equipment & Tools"
-      description="Track company equipment, tools, and vehicles"
-      actionLabel="Add Equipment"
       actionHref="/dashboard/work/equipment/new"
+      actionLabel="Add Equipment"
+      description="Track company equipment, tools, and vehicles"
+      title="Equipment & Tools"
     >
       <div className="grid gap-3 md:grid-cols-4">
-        <StatCard label="Total Equipment" value="87" subtext="Company assets" />
-        <StatCard label="Available" value="72" subtext="Ready for use" trend="up" />
-        <StatCard label="In Maintenance" value="8" subtext="Under service" />
-        <StatCard label="Needs Attention" value="7" subtext="Requires service" trend="down" />
+        <StatCard label="Total Equipment" subtext="Company assets" value="87" />
+        <StatCard
+          label="Available"
+          subtext="Ready for use"
+          trend="up"
+          value="72"
+        />
+        <StatCard label="In Maintenance" subtext="Under service" value="8" />
+        <StatCard
+          label="Needs Attention"
+          subtext="Requires service"
+          trend="down"
+          value="7"
+        />
       </div>
 
       <DataTable
-        data={mockEquipment}
         columns={columns}
-        keyField="id"
-        itemsPerPage={10}
-        searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
+        data={mockEquipment}
         emptyMessage="No equipment found."
+        itemsPerPage={10}
+        keyField="id"
+        searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
       />
     </WorkPageLayout>
   );

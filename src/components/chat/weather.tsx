@@ -1,13 +1,13 @@
-interface WeatherData {
+type WeatherData = {
   location: string;
   temperature: number;
   conditions: string;
   humidity: number;
-}
+};
 
-interface WeatherProps {
+type WeatherProps = {
   data: WeatherData;
-}
+};
 
 export function Weather({ data }: WeatherProps) {
   return (

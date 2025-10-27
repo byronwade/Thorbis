@@ -5,8 +5,8 @@
  * that don't already have it configured.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Pages to skip (already configured)
 const SKIP_PAGES = [
@@ -55,19 +55,16 @@ function hasUseClient(content) {
  * Add usePageLayout to a file
  */
 function addLayoutConfig(filePath) {
-  console.log(`Processing: ${filePath}`);
-
   let content = fs.readFileSync(filePath, "utf8");
 
   // Check if already has usePageLayout
   if (hasUsePageLayout(content)) {
-    console.log("  ✓ Already has usePageLayout");
     return false;
   }
 
   // Step 1: Add "use client" if not present
   if (!hasUseClient(content)) {
-    content = '"use client";\n\n' + content;
+    content = `"use client";\n\n${content}`;
   }
 
   // Step 2: Add import if not present
@@ -104,7 +101,6 @@ function addLayoutConfig(filePath) {
   const match = content.match(exportDefaultRegex);
 
   if (!match) {
-    console.log("  ✗ Could not find export default function");
     return false;
   }
 
@@ -119,7 +115,6 @@ function addLayoutConfig(filePath) {
 
   // Write back to file
   fs.writeFileSync(filePath, content, "utf8");
-  console.log("  ✓ Added usePageLayout configuration");
   return true;
 }
 
@@ -134,7 +129,7 @@ function findPageFiles(dir) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
 
-    if (stat && stat.isDirectory()) {
+    if (stat?.isDirectory()) {
       results = results.concat(findPageFiles(filePath));
     } else if (file === "page.tsx") {
       results.push(filePath);
@@ -144,42 +139,27 @@ function findPageFiles(dir) {
   return results;
 }
 
-// Main execution
-console.log("Finding all dashboard pages...\n");
-
 const dashboardDir = "src/app/(dashboard)/dashboard";
 if (!fs.existsSync(dashboardDir)) {
-  console.error(`Error: Directory not found: ${dashboardDir}`);
   process.exit(1);
 }
 
 const pageFiles = findPageFiles(dashboardDir);
-let processed = 0;
-let skipped = 0;
-let modified = 0;
+let _processed = 0;
+let _skipped = 0;
+let _modified = 0;
 
 pageFiles.forEach((file) => {
   if (shouldSkip(file)) {
-    console.log(`Skipping: ${file} (already configured)`);
-    skipped++;
+    _skipped++;
     return;
   }
 
   try {
     const wasModified = addLayoutConfig(file);
-    processed++;
+    _processed++;
     if (wasModified) {
-      modified++;
+      _modified++;
     }
-  } catch (error) {
-    console.error(`  ✗ Error processing ${file}:`, error.message);
-  }
+  } catch (_error) {}
 });
-
-console.log("\n" + "=".repeat(60));
-console.log("Summary:");
-console.log(`  Total pages found: ${pageFiles.length}`);
-console.log(`  Pages processed: ${processed}`);
-console.log(`  Pages modified: ${modified}`);
-console.log(`  Pages skipped: ${skipped}`);
-console.log("=".repeat(60));

@@ -4,12 +4,12 @@
  * Script to fix broken import statements caused by linter
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 function fixImports(filePath) {
   let content = fs.readFileSync(filePath, "utf8");
-  const original = content;
+  const _original = content;
 
   // Pattern: import { followed by import { on next line
   // This happens when the linter breaks the import statement
@@ -17,8 +17,6 @@ function fixImports(filePath) {
     /import\s*{\s*\nimport\s*\n{\s*\n\s*usePageLayout;\s*\n}\s*\nfrom;\s*\n\("@\/hooks\/use-page-layout"\);/g;
 
   if (brokenPattern.test(content)) {
-    console.log(`Fixing: ${filePath}`);
-
     // Find all imports in the file
     const lines = content.split("\n");
     const fixed = [];
@@ -37,9 +35,6 @@ function fixImports(filePath) {
         i + 1 < lines.length &&
         lines[i + 1].trim() === "import"
       ) {
-        // Found broken import, reconstruct it
-        console.log(`  Found broken import at line ${i + 1}`);
-
         // Find the usePageLayout import
         let hasUsePageLayout = false;
         let j = i;
@@ -56,8 +51,12 @@ function fixImports(filePath) {
         let braceCount = 1;
         for (let k = i + 1; k < lines.length; k++) {
           const l = lines[k];
-          if (l.includes("{")) braceCount++;
-          if (l.includes("}")) braceCount--;
+          if (l.includes("{")) {
+            braceCount++;
+          }
+          if (l.includes("}")) {
+            braceCount--;
+          }
 
           if (braceCount === 0 && l.includes("from")) {
             endOfFirstImport = k;
@@ -109,7 +108,6 @@ function fixImports(filePath) {
 
     // Write fixed content
     fs.writeFileSync(filePath, content, "utf8");
-    console.log("  ✓ Fixed");
     return true;
   }
 
@@ -126,32 +124,24 @@ function findPageFiles(dir) {
       const filePath = path.join(dir, file);
       const stat = fs.statSync(filePath);
 
-      if (stat && stat.isDirectory()) {
+      if (stat?.isDirectory()) {
         results = results.concat(findPageFiles(filePath));
       } else if (file === "page.tsx") {
         results.push(filePath);
       }
     });
-  } catch (error) {
-    console.error(`Error reading directory ${dir}:`, error.message);
-  }
+  } catch (_error) {}
 
   return results;
 }
 
-// Main execution
-console.log("Finding and fixing broken imports in dashboard pages...\n");
-
 const dashboardDir = "src/app/(dashboard)/dashboard";
 const pageFiles = findPageFiles(dashboardDir);
 
-let fixed = 0;
+let _fixed = 0;
 
 pageFiles.forEach((file) => {
   if (fixImports(file)) {
-    fixed++;
+    _fixed++;
   }
 });
-
-console.log(`\n✓ Fixed ${fixed} files with broken imports`);
-console.log("\nRunning linter to format...");

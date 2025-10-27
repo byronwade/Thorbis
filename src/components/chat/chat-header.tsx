@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "./icons";
 import { ModelSelector } from "./model-selector";
 
-interface ChatHeaderProps {
+type ChatHeaderProps = {
   onNewChat?: () => void;
   onModelChange?: (modelId: string) => void;
   selectedModel?: string;
-}
+};
 
 export function ChatHeader({
   onNewChat,

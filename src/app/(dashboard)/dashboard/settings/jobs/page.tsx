@@ -155,8 +155,6 @@ export default function JobsSettingsPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    // eslint-disable-next-line no-console
-    console.log("Jobs settings update:", settings);
     setIsSubmitting(false);
   }
 

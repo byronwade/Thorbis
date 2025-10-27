@@ -10,6 +10,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -29,18 +31,10 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-type LoanAccount = {
+interface LoanAccount extends Record<string, unknown> {
   id: string;
   lender: string;
   type: "line-of-credit" | "term-loan" | "sba-loan" | "equipment-loan";
@@ -51,7 +45,7 @@ type LoanAccount = {
   monthlyPayment: number;
   maturityDate: string;
   status: "active" | "paid-off" | "delinquent";
-};
+}
 
 export default function BusinessFinancingSettingsPage() {
   usePageLayout({
@@ -95,12 +89,13 @@ export default function BusinessFinancingSettingsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const badges = {
-      active: "bg-green-500/10 text-green-700 dark:text-green-400",
-      "paid-off": "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-      delinquent: "bg-red-500/10 text-red-700 dark:text-red-400",
+    const config = {
+      active: { variant: "default" as const, label: "Active" },
+      "paid-off": { variant: "secondary" as const, label: "Paid Off" },
+      delinquent: { variant: "destructive" as const, label: "Delinquent" },
     };
-    return badges[status as keyof typeof badges] || badges.active;
+    const badge = config[status as keyof typeof config] || config.active;
+    return <Badge variant={badge.variant}>{badge.label}</Badge>;
   };
 
   const getLoanTypeName = (type: string) => {
@@ -127,6 +122,67 @@ export default function BusinessFinancingSettingsPage() {
     (sum, loan) => sum + loan.monthlyPayment,
     0
   );
+
+  const columns: DataTableColumn<LoanAccount>[] = [
+    {
+      key: "lender",
+      header: "Lender",
+      sortable: true,
+      filterable: true,
+      render: (loan) => (
+        <div className="space-y-1">
+          <div className="font-medium">{loan.lender}</div>
+          <div className="text-muted-foreground text-xs">
+            {loan.accountNumber}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "type",
+      header: "Type",
+      sortable: true,
+      filterable: true,
+      render: (loan) => getLoanTypeName(loan.type),
+    },
+    {
+      key: "currentBalance",
+      header: "Balance",
+      sortable: true,
+      render: (loan) => (
+        <div className="space-y-1">
+          <div className="font-medium">
+            ${loan.currentBalance.toLocaleString()}
+          </div>
+          <div className="text-muted-foreground text-xs">
+            of ${loan.originalAmount.toLocaleString()}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "interestRate",
+      header: "Rate",
+      sortable: true,
+      render: (loan) => `${loan.interestRate}%`,
+    },
+    {
+      key: "monthlyPayment",
+      header: "Payment",
+      sortable: true,
+      render: (loan) =>
+        loan.monthlyPayment > 0
+          ? `$${loan.monthlyPayment.toLocaleString()}/mo`
+          : "As needed",
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      filterable: true,
+      render: (loan) => getStatusBadge(loan.status),
+    },
+  ];
 
   return (
     <TooltipProvider>
@@ -211,56 +267,14 @@ export default function BusinessFinancingSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Lender</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Rate</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loanAccounts.map((loan) => (
-                  <TableRow key={loan.id}>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="font-medium">{loan.lender}</div>
-                        <div className="text-muted-foreground text-xs">
-                          {loan.accountNumber}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{getLoanTypeName(loan.type)}</TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="font-medium">
-                          ${loan.currentBalance.toLocaleString()}
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          of ${loan.originalAmount.toLocaleString()}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{loan.interestRate}%</TableCell>
-                    <TableCell>
-                      {loan.monthlyPayment > 0
-                        ? `$${loan.monthlyPayment.toLocaleString()}/mo`
-                        : "As needed"}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex rounded-full px-2 py-1 font-medium text-xs ${getStatusBadge(loan.status)}`}
-                      >
-                        {loan.status.replace("-", " ")}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable
+              columns={columns}
+              data={loanAccounts}
+              emptyMessage="No financing accounts found."
+              itemsPerPage={10}
+              keyField="id"
+              searchPlaceholder="Search by lender, type, or status..."
+            />
           </CardContent>
         </Card>
 

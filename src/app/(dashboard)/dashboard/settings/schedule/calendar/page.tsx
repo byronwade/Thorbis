@@ -260,7 +260,7 @@ export default function CalendarSettingsPage() {
                   onValueChange={(value) =>
                     updateSetting(
                       "defaultAppointmentDuration",
-                      Number.parseInt(value)
+                      Number.parseInt(value, 10)
                     )
                   }
                   value={settings.defaultAppointmentDuration.toString()}
@@ -283,7 +283,10 @@ export default function CalendarSettingsPage() {
                 <Label>Time Slot Interval</Label>
                 <Select
                   onValueChange={(value) =>
-                    updateSetting("timeSlotInterval", Number.parseInt(value))
+                    updateSetting(
+                      "timeSlotInterval",
+                      Number.parseInt(value, 10)
+                    )
                   }
                   value={settings.timeSlotInterval.toString()}
                 >

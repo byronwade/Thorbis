@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-interface CustomField {
+type CustomField = {
   id: string;
   name: string;
   type: "text" | "number" | "date" | "dropdown" | "checkbox" | "multiselect";
@@ -39,7 +39,7 @@ interface CustomField {
   showOnPortal: boolean;
   options?: string[];
   placeholder?: string;
-}
+};
 
 export default function CustomFieldsPage() {
   usePageLayout({
@@ -131,7 +131,7 @@ export default function CustomFieldsPage() {
     setHasUnsavedChanges(false);
   };
 
-  const getFieldTypeIcon = (type: CustomField["type"]) => {
+  const _getFieldTypeIcon = (type: CustomField["type"]) => {
     const icons = {
       text: "T",
       number: "#",

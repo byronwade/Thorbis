@@ -349,7 +349,6 @@ export default function LeadSourcesPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Lead source settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -842,7 +841,7 @@ export default function LeadSourcesPage() {
                 onChange={(e) =>
                   updateSetting(
                     "attributionWindow",
-                    Number.parseInt(e.target.value) || 30
+                    Number.parseInt(e.target.value, 10) || 30
                   )
                 }
                 placeholder="30"
@@ -1044,7 +1043,7 @@ export default function LeadSourcesPage() {
             ) : (
               filteredSources.map((source) => {
                 const CategoryIcon = getCategoryIcon(source.category);
-                const costPerLead =
+                const _costPerLead =
                   source.leads > 0 ? source.cost / source.leads : 0;
 
                 return (

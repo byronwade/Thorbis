@@ -96,8 +96,12 @@ const AI_MAX_CALL_HISTORY_DISPLAY = 3;
 
 // Helper function to get priority color class
 const getPriorityColorClass = (priority: "low" | "medium" | "high"): string => {
-  if (priority === "high") return "bg-red-600 text-white";
-  if (priority === "medium") return "bg-amber-600 text-white";
+  if (priority === "high") {
+    return "bg-red-600 text-white";
+  }
+  if (priority === "medium") {
+    return "bg-amber-600 text-white";
+  }
   return "bg-green-600 text-white";
 };
 
@@ -105,15 +109,23 @@ const getPriorityColorClass = (priority: "low" | "medium" | "high"): string => {
 const getPriorityTextColorClass = (
   priority: "low" | "medium" | "high"
 ): string => {
-  if (priority === "high") return "text-red-400";
-  if (priority === "medium") return "text-amber-400";
+  if (priority === "high") {
+    return "text-red-400";
+  }
+  if (priority === "medium") {
+    return "text-amber-400";
+  }
   return "text-green-400";
 };
 
 // Helper function to get trust score color class
 const getTrustScoreColorClass = (score: number): string => {
-  if (score >= AI_TRUST_HIGH_THRESHOLD) return "bg-green-500";
-  if (score >= AI_TRUST_MEDIUM_THRESHOLD) return "bg-amber-500";
+  if (score >= AI_TRUST_HIGH_THRESHOLD) {
+    return "bg-green-500";
+  }
+  if (score >= AI_TRUST_MEDIUM_THRESHOLD) {
+    return "bg-amber-500";
+  }
   return "bg-red-500";
 };
 
@@ -121,15 +133,23 @@ const getTrustScoreColorClass = (score: number): string => {
 const getRiskLevelColorClass = (
   riskLevel: "low" | "medium" | "high"
 ): string => {
-  if (riskLevel === "high") return "bg-red-900 text-red-400";
-  if (riskLevel === "medium") return "bg-amber-900 text-amber-400";
+  if (riskLevel === "high") {
+    return "bg-red-900 text-red-400";
+  }
+  if (riskLevel === "medium") {
+    return "bg-amber-900 text-amber-400";
+  }
   return "bg-green-900 text-green-400";
 };
 
 // Helper function to get AI note indicator color
 const getAINoteDotColor = (aiData: CallerAIData): string => {
-  if (aiData.isSpam) return "bg-red-500";
-  if (aiData.isKnownCustomer) return "bg-green-500";
+  if (aiData.isSpam) {
+    return "bg-red-500";
+  }
+  if (aiData.isKnownCustomer) {
+    return "bg-green-500";
+  }
   return "bg-amber-500";
 };
 
@@ -735,9 +755,9 @@ function ActiveCallView({
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [showAIAnalysis, setShowAIAnalysis] = useState(true);
   const [isEditingCustomer, setIsEditingCustomer] = useState(false);
-  const [selectedScript, setSelectedScript] = useState("");
+  const [_selectedScript, setSelectedScript] = useState("");
 
-  const handleCustomerSave = (data: Partial<CustomerData>) => {
+  const handleCustomerSave = (_data: Partial<CustomerData>) => {
     // Save to backend
   };
 

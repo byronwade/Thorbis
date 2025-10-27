@@ -198,7 +198,7 @@ export default function BankAccountsSettingsPage() {
     setHasUnsavedChanges(true);
   };
 
-  const handleSync = (accountId: string) => {
+  const handleSync = (_accountId: string) => {
     // TODO: Implement sync logic
   };
 
@@ -439,7 +439,10 @@ export default function BankAccountsSettingsPage() {
                   </Label>
                   <Select
                     onValueChange={(value) =>
-                      handleChange("transactionHistory", Number.parseInt(value))
+                      handleChange(
+                        "transactionHistory",
+                        Number.parseInt(value, 10)
+                      )
                     }
                     value={settings.transactionHistory.toString()}
                   >
@@ -652,7 +655,7 @@ export default function BankAccountsSettingsPage() {
                       onChange={(e) =>
                         handleChange(
                           "lowBalanceThreshold",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       step={100}
@@ -674,7 +677,7 @@ export default function BankAccountsSettingsPage() {
                       onChange={(e) =>
                         handleChange(
                           "largeTransactionThreshold",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       step={100}

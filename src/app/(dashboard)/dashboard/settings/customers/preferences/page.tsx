@@ -444,44 +444,39 @@ export default function CustomerPreferencesPage() {
             </div>
 
             {settings.allowCustomerDocuments && (
-              <>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label className="font-medium text-sm">
-                      Max Document Size
-                    </Label>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Input
-                        className="w-24"
-                        min="1"
-                        onChange={(e) =>
-                          updateSetting(
-                            "maxDocumentSize",
-                            Number(e.target.value)
-                          )
-                        }
-                        type="number"
-                        value={settings.maxDocumentSize}
-                      />
-                      <span className="text-muted-foreground text-sm">MB</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="font-medium text-sm">
-                      Allowed File Types
-                    </Label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label className="font-medium text-sm">
+                    Max Document Size
+                  </Label>
+                  <div className="mt-2 flex items-center gap-2">
                     <Input
-                      className="mt-2"
+                      className="w-24"
+                      min="1"
                       onChange={(e) =>
-                        updateSetting("allowedDocumentTypes", e.target.value)
+                        updateSetting("maxDocumentSize", Number(e.target.value))
                       }
-                      placeholder=".pdf,.jpg,.png"
-                      value={settings.allowedDocumentTypes}
+                      type="number"
+                      value={settings.maxDocumentSize}
                     />
+                    <span className="text-muted-foreground text-sm">MB</span>
                   </div>
                 </div>
-              </>
+
+                <div>
+                  <Label className="font-medium text-sm">
+                    Allowed File Types
+                  </Label>
+                  <Input
+                    className="mt-2"
+                    onChange={(e) =>
+                      updateSetting("allowedDocumentTypes", e.target.value)
+                    }
+                    placeholder=".pdf,.jpg,.png"
+                    value={settings.allowedDocumentTypes}
+                  />
+                </div>
+              </div>
             )}
 
             <Separator />

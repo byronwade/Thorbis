@@ -98,8 +98,6 @@ export default function PreferencesPage() {
     setIsSubmitting(true);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    // eslint-disable-next-line no-console
-    console.log("Preferences update request:", settings);
     setIsSubmitting(false);
   }
 

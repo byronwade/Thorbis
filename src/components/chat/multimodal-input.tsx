@@ -4,7 +4,7 @@ import { type ChangeEvent, type KeyboardEvent, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
 
-interface MultimodalInputProps {
+type MultimodalInputProps = {
   value?: string;
   onChange?: (value: string) => void;
   onSubmit: (message: string) => void;
@@ -12,7 +12,7 @@ interface MultimodalInputProps {
   isLoading?: boolean;
   placeholder?: string;
   disabled?: boolean;
-}
+};
 
 export function MultimodalInput({
   value: controlledValue,
@@ -32,7 +32,9 @@ export function MultimodalInput({
     controlledValue !== undefined && onChange ? onChange : setInternalInput;
 
   const handleSubmit = () => {
-    if (!input.trim() || disabled) return;
+    if (!input.trim() || disabled) {
+      return;
+    }
 
     onSubmit(input);
     setInput("");

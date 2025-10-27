@@ -101,7 +101,7 @@ export function VideoConferenceView({
   const [showParticipants, setShowParticipants] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [_showSettings, _setShowSettings] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [viewMode, setViewMode] = useState<"speaker" | "gallery">("gallery");
   const [chatInput, setChatInput] = useState("");
@@ -109,17 +109,25 @@ export function VideoConferenceView({
 
   // Helper functions
   const getConnectionIcon = () => {
-    if (call.connectionQuality === "excellent")
+    if (call.connectionQuality === "excellent") {
       return <SignalHigh className="size-3.5 text-emerald-500" />;
-    if (call.connectionQuality === "good")
+    }
+    if (call.connectionQuality === "good") {
       return <SignalMedium className="size-3.5 text-amber-500" />;
+    }
     return <SignalLow className="size-3.5 text-red-500" />;
   };
 
   const getReactionIcon = (type: string) => {
-    if (type === "thumbs-up") return <ThumbsUp className="size-6" />;
-    if (type === "heart") return <Heart className="size-6 fill-current" />;
-    if (type === "tada") return <PartyPopper className="size-6" />;
+    if (type === "thumbs-up") {
+      return <ThumbsUp className="size-6" />;
+    }
+    if (type === "heart") {
+      return <Heart className="size-6 fill-current" />;
+    }
+    if (type === "tada") {
+      return <PartyPopper className="size-6" />;
+    }
     return <Sparkles className="size-6" />;
   };
 
@@ -135,10 +143,7 @@ export function VideoConferenceView({
       await navigator.clipboard.writeText(call.meetingLink);
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
-    } catch (err) {
-      // Fallback for browsers that don't support clipboard API
-      console.error("Failed to copy link");
-    }
+    } catch (_err) {}
   };
 
   // Minimized floating window - Vercel-inspired
@@ -681,7 +686,9 @@ export function VideoConferenceView({
                     className="flex-1 rounded-md border border-white/10 bg-black px-3 py-2 font-medium text-sm text-white placeholder:text-zinc-600 focus:border-white/20 focus:outline-none"
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSendMessage();
+                      if (e.key === "Enter") {
+                        handleSendMessage();
+                      }
                     }}
                     placeholder="Type a message..."
                     type="text"

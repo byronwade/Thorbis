@@ -66,13 +66,6 @@ const navigationItems: NavItemWithMobile[] = [
     mobileIconColor: "text-orange-600",
   },
   {
-    label: "Customers",
-    href: "/dashboard/customers",
-    mobileIcon: "C",
-    mobileIconBg: "bg-purple-500/10",
-    mobileIconColor: "text-purple-600",
-  },
-  {
     label: "Finances",
     href: "/dashboard/finance",
     status: "updated",
@@ -204,7 +197,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-header-bg">
       <div className="flex h-14 items-center gap-2 px-2">
         {/* Mobile menu button */}
         <button
@@ -256,15 +249,15 @@ export function AppHeader() {
               return (
                 <div className="relative" key={item.href}>
                   <Link
-                    className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${isActive ? "text-white shadow-lg" : "text-foreground"}`}
+                    className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${isActive ? "text-white shadow-lg" : "text-muted-foreground hover:text-white"}`}
                     data-slot="button"
                     href={item.href}
                   >
                     {isActive && (
-                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary via-primary/80 to-primary/60 opacity-80" />
+                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary via-primary/80 to-primary/60 opacity-90" />
                     )}
                     {!isActive && (
-                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary/40 via-primary/60 to-primary/80 opacity-80" />
+                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary/40 via-primary/60 to-primary/80 opacity-0 transition-opacity hover:opacity-90" />
                     )}
                     <span className="relative z-10">{item.label}</span>
                   </Link>
@@ -276,7 +269,11 @@ export function AppHeader() {
             return (
               <div className="relative" key={item.href}>
                 <Link
-                  className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${isActive ? "bg-accent text-accent-foreground" : ""}`}
+                  className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${
+                    isActive
+                      ? "bg-white/10 text-white"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
                   data-slot="button"
                   href={item.href}
                 >

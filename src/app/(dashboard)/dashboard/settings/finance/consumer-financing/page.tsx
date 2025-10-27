@@ -154,7 +154,7 @@ export default function ConsumerFinancingSettingsPage() {
                       onChange={(e) =>
                         handleChange(
                           "minimumAmount",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       type="number"
@@ -173,7 +173,7 @@ export default function ConsumerFinancingSettingsPage() {
                       onChange={(e) =>
                         handleChange(
                           "maximumAmount",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       type="number"
@@ -191,7 +191,7 @@ export default function ConsumerFinancingSettingsPage() {
                   <Label htmlFor="default-term">Default Term (months)</Label>
                   <Select
                     onValueChange={(value) =>
-                      handleChange("defaultTerm", Number.parseInt(value))
+                      handleChange("defaultTerm", Number.parseInt(value, 10))
                     }
                     value={settings.defaultTerm.toString()}
                   >
@@ -270,7 +270,7 @@ export default function ConsumerFinancingSettingsPage() {
                     onChange={(e) =>
                       handleChange(
                         "autoApproveUnder",
-                        Number.parseInt(e.target.value)
+                        Number.parseInt(e.target.value, 10)
                       )
                     }
                     type="number"
@@ -308,7 +308,7 @@ export default function ConsumerFinancingSettingsPage() {
                       onChange={(e) =>
                         handleChange(
                           "downPaymentPercent",
-                          Number.parseInt(e.target.value)
+                          Number.parseInt(e.target.value, 10)
                         )
                       }
                       type="number"

@@ -1,10 +1,11 @@
 "use client";
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { ArrowLeft, ShieldCheck, Ticket, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
+import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { usePageLayout } from "@/hooks/use-page-layout";
 
 interface MaintenancePlan extends Record<string, unknown> {
   id: string;
@@ -75,6 +76,44 @@ export default function MaintenancePlansPage() {
     gap: "md",
     showToolbar: true,
     showSidebar: true,
+    sidebar: {
+      groups: [
+        {
+          label: undefined,
+          items: [
+            {
+              mode: "link" as const,
+              title: "Back to Work",
+              url: "/dashboard/work",
+              icon: ArrowLeft,
+            },
+          ],
+        },
+        {
+          label: "Service Management",
+          items: [
+            {
+              mode: "link" as const,
+              title: "Maintenance Plans",
+              url: "/dashboard/work/maintenance-plans",
+              icon: Wrench,
+            },
+            {
+              mode: "link" as const,
+              title: "Service Agreements",
+              url: "/dashboard/work/service-agreements",
+              icon: ShieldCheck,
+            },
+            {
+              mode: "link" as const,
+              title: "Service Tickets",
+              url: "/dashboard/work/tickets",
+              icon: Ticket,
+            },
+          ],
+        },
+      ],
+    },
   });
 
   const columns: DataTableColumn<MaintenancePlan>[] = [
@@ -124,25 +163,41 @@ export default function MaintenancePlansPage() {
 
   return (
     <WorkPageLayout
-      title="Maintenance Plans"
-      description="Manage recurring maintenance contracts and schedules"
-      actionLabel="Create Plan"
       actionHref="/dashboard/work/maintenance-plans/new"
+      actionLabel="Create Plan"
+      description="Manage recurring maintenance contracts and schedules"
+      title="Maintenance Plans"
     >
       <div className="grid gap-3 md:grid-cols-4">
-        <StatCard label="Active Plans" value="247" subtext="+12 this month" trend="up" />
-        <StatCard label="Enrolled Customers" value="189" subtext="76% of active customers" />
-        <StatCard label="This Month" value="45" subtext="Scheduled visits" />
-        <StatCard label="Monthly Revenue" value="$28,450" subtext="Recurring revenue" trend="up" />
+        <StatCard
+          label="Active Plans"
+          subtext="+12 this month"
+          trend="up"
+          value="247"
+        />
+        <StatCard
+          label="Enrolled Customers"
+          subtext="76% of active customers"
+          value="189"
+        />
+        <StatCard label="This Month" subtext="Scheduled visits" value="45" />
+        <StatCard
+          label="Monthly Revenue"
+          subtext="Recurring revenue"
+          trend="up"
+          value="$28,450"
+        />
       </div>
 
       <DataTable
+        columns={
+          columns as unknown as DataTableColumn<Record<string, unknown>>[]
+        }
         data={mockPlans as unknown as Record<string, unknown>[]}
-        columns={columns as unknown as DataTableColumn<Record<string, unknown>>[]}
-        keyField="id"
-        itemsPerPage={10}
-        searchPlaceholder="Search plans by name, customer, service type, or status..."
         emptyMessage="No maintenance plans found."
+        itemsPerPage={10}
+        keyField="id"
+        searchPlaceholder="Search plans by name, customer, service type, or status..."
       />
     </WorkPageLayout>
   );

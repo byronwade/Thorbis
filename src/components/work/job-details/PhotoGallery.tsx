@@ -1,0 +1,396 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Camera,
+  Download,
+  ExternalLink,
+  MapPin,
+  Maximize2,
+  Trash2,
+  User,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { PhotoUploader } from "./PhotoUploader";
+
+export type PhotoCategory = "before" | "during" | "after" | "other";
+
+export interface JobPhoto {
+  id: string;
+  url: string;
+  thumbnailUrl?: string;
+  category: PhotoCategory;
+  caption?: string;
+  uploadedBy: string;
+  uploadedByName: string;
+  uploadedAt: Date;
+  gpsCoords?: {
+    lat: number;
+    lng: number;
+  };
+  metadata?: {
+    fileSize: number;
+    mimeType: string;
+    width: number;
+    height: number;
+  };
+}
+
+interface PhotoGalleryProps {
+  photos: JobPhoto[];
+  onUpload?: () => void;
+  onDelete?: (photoId: string) => void;
+  onDownloadAll?: () => void;
+  className?: string;
+}
+
+export function PhotoGallery({
+  photos,
+  onUpload,
+  onDelete,
+  onDownloadAll,
+  className,
+}: PhotoGalleryProps) {
+  const [selectedPhoto, setSelectedPhoto] = useState<JobPhoto | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<PhotoCategory | "all">("all");
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showUploader, setShowUploader] = useState(false);
+
+  const categories: { value: PhotoCategory | "all"; label: string }[] = [
+    { value: "all", label: "All Photos" },
+    { value: "before", label: "Before" },
+    { value: "during", label: "During" },
+    { value: "after", label: "After" },
+    { value: "other", label: "Other" },
+  ];
+
+  const filteredPhotos =
+    selectedCategory === "all"
+      ? photos
+      : photos.filter((photo) => photo.category === selectedCategory);
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const formatDate = (date: Date): string => {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  const getCategoryColor = (category: PhotoCategory): string => {
+    switch (category) {
+      case "before":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
+      case "during":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+      case "after":
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+    }
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(prev - 0.25, 0.5));
+  };
+
+  const handleDownloadPhoto = (photo: JobPhoto) => {
+    const link = document.createElement("a");
+    link.href = photo.url;
+    link.download = `job-photo-${photo.id}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="size-5" />
+              Photo Gallery ({photos.length})
+            </CardTitle>
+            <CardDescription>Job site photos organized by stage</CardDescription>
+          </div>
+          <div className="flex gap-2">
+            {onDownloadAll && photos.length > 0 && (
+              <Button size="sm" variant="outline" onClick={onDownloadAll}>
+                <Download className="mr-2 size-4" />
+                Download All
+              </Button>
+            )}
+            {onUpload && (
+              <Button size="sm" onClick={() => setShowUploader(true)}>
+                <Camera className="mr-2 size-4" />
+                Upload Photos
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Category Filter */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category.value}
+              size="sm"
+              variant={
+                selectedCategory === category.value ? "default" : "outline"
+              }
+              onClick={() => setSelectedCategory(category.value)}
+            >
+              {category.label}
+              {category.value !== "all" && (
+                <Badge className="ml-2" variant="secondary">
+                  {
+                    photos.filter((p) => p.category === category.value).length
+                  }
+                </Badge>
+              )}
+            </Button>
+          ))}
+        </div>
+
+        {/* Photo Grid */}
+        {filteredPhotos.length === 0 ? (
+          <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+            <Camera className="mb-2 size-8 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">
+              No photos {selectedCategory !== "all" && `in ${selectedCategory}`}{" "}
+              category
+            </p>
+            {onUpload && (
+              <Button className="mt-4" size="sm" variant="outline" onClick={() => setShowUploader(true)}>
+                <Camera className="mr-2 size-4" />
+                Upload Photos
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {filteredPhotos.map((photo) => (
+              <div
+                key={photo.id}
+                className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg border bg-muted transition-all hover:scale-105 hover:shadow-md"
+                onClick={() => setSelectedPhoto(photo)}
+              >
+                <Image
+                  src={photo.thumbnailUrl || photo.url}
+                  alt={photo.caption || "Job photo"}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex h-full flex-col justify-between p-3">
+                    <div className="flex justify-between">
+                      <Badge className={cn("text-xs", getCategoryColor(photo.category))}>
+                        {photo.category}
+                      </Badge>
+                      {photo.gpsCoords && (
+                        <MapPin className="size-4 text-white" />
+                      )}
+                    </div>
+                    <div className="text-xs text-white">
+                      <div className="flex items-center gap-1">
+                        <User className="size-3" />
+                        <span className="truncate">
+                          {photo.uploadedByName}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        {formatDate(photo.uploadedAt)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Lightbox Dialog */}
+        <Dialog
+          open={selectedPhoto !== null}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedPhoto(null);
+              setZoomLevel(1);
+            }
+          }}
+        >
+          <DialogContent className="max-w-5xl">
+            {selectedPhoto && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge className={getCategoryColor(selectedPhoto.category)}>
+                        {selectedPhoto.category}
+                      </Badge>
+                      {selectedPhoto.caption && (
+                        <span className="text-sm font-normal text-muted-foreground">
+                          {selectedPhoto.caption}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleZoomOut}
+                        disabled={zoomLevel <= 0.5}
+                      >
+                        <ZoomOut className="size-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleZoomIn}
+                        disabled={zoomLevel >= 3}
+                      >
+                        <ZoomIn className="size-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDownloadPhoto(selectedPhoto)}
+                      >
+                        <Download className="size-4" />
+                      </Button>
+                      {onDelete && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            onDelete(selectedPhoto.id);
+                            setSelectedPhoto(null);
+                          }}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="relative h-[60vh] overflow-auto bg-muted">
+                  <div
+                    className="flex items-center justify-center"
+                    style={{
+                      transform: `scale(${zoomLevel})`,
+                      transition: "transform 0.2s",
+                    }}
+                  >
+                    <Image
+                      src={selectedPhoto.url}
+                      alt={selectedPhoto.caption || "Job photo"}
+                      width={selectedPhoto.metadata?.width || 1200}
+                      height={selectedPhoto.metadata?.height || 800}
+                      className="max-w-full"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <User className="size-4" />
+                      <span>Uploaded by</span>
+                    </div>
+                    <p className="mt-1 font-medium">
+                      {selectedPhoto.uploadedByName}
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Camera className="size-4" />
+                      <span>Date & Time</span>
+                    </div>
+                    <p className="mt-1 font-medium">
+                      {formatDate(selectedPhoto.uploadedAt)}
+                    </p>
+                  </div>
+                  {selectedPhoto.gpsCoords && (
+                    <div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="size-4" />
+                        <span>Location</span>
+                      </div>
+                      <p className="mt-1 font-medium">
+                        {selectedPhoto.gpsCoords.lat.toFixed(6)},{" "}
+                        {selectedPhoto.gpsCoords.lng.toFixed(6)}
+                      </p>
+                    </div>
+                  )}
+                  {selectedPhoto.metadata && (
+                    <div>
+                      <div className="text-muted-foreground">File Info</div>
+                      <p className="mt-1 font-medium">
+                        {formatFileSize(selectedPhoto.metadata.fileSize)} •{" "}
+                        {selectedPhoto.metadata.width}x
+                        {selectedPhoto.metadata.height}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Upload Dialog */}
+        <Dialog open={showUploader} onOpenChange={setShowUploader}>
+          <DialogContent className="max-w-3xl">
+            <PhotoUploader
+              onCancel={() => setShowUploader(false)}
+              onUpload={async (files) => {
+                // In a real app, this would upload to a server
+                // For now, we'll just close the dialog
+                setShowUploader(false);
+                // Call the onUpload prop if provided
+                onUpload?.();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
+}

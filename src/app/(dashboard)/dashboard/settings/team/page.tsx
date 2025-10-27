@@ -203,9 +203,15 @@ export default function TeamMembersPage() {
         break;
     }
 
-    if (!(aVal || bVal)) return 0;
-    if (!aVal) return 1;
-    if (!bVal) return -1;
+    if (!(aVal || bVal)) {
+      return 0;
+    }
+    if (!aVal) {
+      return 1;
+    }
+    if (!bVal) {
+      return -1;
+    }
 
     const comparison = aVal.localeCompare(bVal);
     return sortOrder === "asc" ? comparison : -comparison;
@@ -256,7 +262,7 @@ export default function TeamMembersPage() {
     setSelectedMembers(newSelected);
   };
 
-  const handleBulkAction = (action: string) => {
+  const handleBulkAction = (_action: string) => {
     setSelectedMembers(new Set());
   };
 
@@ -661,7 +667,7 @@ export default function TeamMembersPage() {
               <span className="text-muted-foreground">Show</span>
               <Select
                 onValueChange={(value) => {
-                  setItemsPerPage(Number.parseInt(value));
+                  setItemsPerPage(Number.parseInt(value, 10));
                   setCurrentPage(1);
                 }}
                 value={itemsPerPage.toString()}

@@ -3,7 +3,7 @@
 import { AlertCircle, ArrowRight, Clock, PhoneOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Alert {
+type Alert = {
   id: string;
   type: "critical" | "warning";
   category: "overdue" | "running-late" | "callback";
@@ -11,7 +11,7 @@ interface Alert {
   description: string;
   count?: number;
   action?: string;
-}
+};
 
 const alerts: Alert[] = [
   {

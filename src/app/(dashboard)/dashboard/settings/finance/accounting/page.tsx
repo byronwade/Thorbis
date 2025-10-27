@@ -32,7 +32,7 @@ export default function AccountingSettingsPage() {
     showSidebar: true,
   });
 
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [hasUnsavedChanges, _setHasUnsavedChanges] = useState(false);
 
   return (
     <TooltipProvider>

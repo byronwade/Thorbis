@@ -16,12 +16,12 @@ import {
   LogoOpenAI,
 } from "./icons";
 
-interface Model {
+type Model = {
   id: string;
   name: string;
   provider: string;
   icon: React.ReactNode;
-}
+};
 
 const models: Model[] = [
   {
@@ -56,10 +56,10 @@ const models: Model[] = [
   },
 ];
 
-interface ModelSelectorProps {
+type ModelSelectorProps = {
   value?: string;
   onValueChange?: (modelId: string) => void;
-}
+};
 
 export function ModelSelector({
   value = "gpt-4o",

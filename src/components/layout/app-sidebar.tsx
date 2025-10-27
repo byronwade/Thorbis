@@ -1,11 +1,14 @@
 "use client";
 
 import {
+  ArrowLeft,
   AudioWaveform,
   BarChart,
   BookOpen,
   Box,
+  Bug,
   Calendar,
+  Camera,
   ClipboardList,
   Command,
   DollarSign,
@@ -15,14 +18,18 @@ import {
   Home,
   Inbox,
   Mail,
+  MapPin,
   Megaphone,
   MessageSquare,
   Package,
+  Paperclip,
   Phone,
+  Receipt,
   Settings,
   ShieldCheck,
   Sparkles,
   Ticket,
+  User,
   Users,
   Wrench,
   X,
@@ -97,6 +104,11 @@ const navigationSections = {
           url: "/dashboard/work",
           icon: ClipboardList,
         },
+        {
+          title: "Customers",
+          url: "/dashboard/customers",
+          icon: Users,
+        },
       ],
     },
     {
@@ -111,6 +123,11 @@ const navigationSections = {
           title: "Estimates",
           url: "/dashboard/work/estimates",
           icon: FileText,
+        },
+        {
+          title: "Purchase Orders",
+          url: "/dashboard/work/purchase-orders",
+          icon: Receipt,
         },
       ],
     },
@@ -141,6 +158,16 @@ const navigationSections = {
           title: "Price Book",
           url: "/dashboard/work/pricebook",
           icon: BookOpen,
+          items: [
+            {
+              title: "Services",
+              url: "/dashboard/work/pricebook?tab=services",
+            },
+            {
+              title: "Materials",
+              url: "/dashboard/work/pricebook?tab=materials",
+            },
+          ],
         },
         {
           title: "Materials Inventory",
@@ -184,29 +211,44 @@ const navigationSections = {
   ],
   customers: [
     {
-      title: "Customer Database",
-      url: "/dashboard/customers",
-      icon: Users,
+      label: undefined,
+      items: [
+        {
+          title: "Back to Work",
+          url: "/dashboard/work",
+          icon: ArrowLeft,
+        },
+      ],
     },
     {
-      title: "Profiles",
-      url: "/dashboard/customers/profiles",
-    },
-    {
-      title: "Service History",
-      url: "/dashboard/customers/history",
-    },
-    {
-      title: "Communication",
-      url: "/dashboard/customers/communication",
-    },
-    {
-      title: "Reviews & Feedback",
-      url: "/dashboard/customers/feedback",
-    },
-    {
-      title: "Portal",
-      url: "/dashboard/customers/portal",
+      label: "Customers",
+      items: [
+        {
+          title: "Customer Database",
+          url: "/dashboard/customers",
+          icon: Users,
+        },
+        {
+          title: "Profiles",
+          url: "/dashboard/customers/profiles",
+        },
+        {
+          title: "Service History",
+          url: "/dashboard/customers/history",
+        },
+        {
+          title: "Communication",
+          url: "/dashboard/customers/communication",
+        },
+        {
+          title: "Reviews & Feedback",
+          url: "/dashboard/customers/feedback",
+        },
+        {
+          title: "Portal",
+          url: "/dashboard/customers/portal",
+        },
+      ],
     },
   ],
   finance: [
@@ -774,8 +816,113 @@ const navigationSections = {
         },
       ],
     },
+    ...(process.env.NODE_ENV === "development"
+      ? [
+          {
+            label: "Development",
+            items: [
+              {
+                title: "Developer Settings",
+                url: "/dashboard/settings/development",
+                icon: Bug,
+                highlight: "yellow" as const,
+              },
+            ],
+          },
+        ]
+      : []),
+  ],
+  jobDetails: [
+    {
+      label: undefined,
+      items: [
+        {
+          title: "Back to Jobs",
+          url: "/dashboard/work",
+          icon: ArrowLeft,
+        },
+      ],
+    },
+    {
+      label: "Overview",
+      items: [
+        {
+          title: "Job Details",
+          url: "#job-details",
+          icon: ClipboardList,
+        },
+        {
+          title: "Timeline",
+          url: "#timeline",
+          icon: Calendar,
+        },
+      ],
+    },
+    {
+      label: "Related",
+      items: [
+        {
+          title: "Property",
+          url: "#property",
+          icon: MapPin,
+        },
+        {
+          title: "Customer",
+          url: "#customer",
+          icon: User,
+        },
+      ],
+    },
+    {
+      label: "Financials",
+      items: [
+        {
+          title: "Job Costing",
+          url: "#costing",
+          icon: DollarSign,
+        },
+        {
+          title: "Profitability",
+          url: "#profitability",
+          icon: BarChart,
+        },
+        {
+          title: "Invoices",
+          url: "#invoices",
+          icon: Receipt,
+        },
+        {
+          title: "Estimates",
+          url: "#estimates",
+          icon: FileText,
+        },
+      ],
+    },
+    {
+      label: "Activity",
+      items: [
+        {
+          title: "Communications",
+          url: "#communications",
+          icon: MessageSquare,
+        },
+        {
+          title: "Photo Gallery",
+          url: "#photo-gallery",
+          icon: Camera,
+        },
+        {
+          title: "Documentation",
+          url: "#documents",
+          icon: Paperclip,
+        },
+      ],
+    },
   ],
 };
+
+// Regex patterns for route matching
+const JOB_DETAILS_PATTERN = /^\/dashboard\/work\/[^/]+$/;
 
 // Function to determine current section based on pathname
 function getCurrentSection(pathname: string): keyof typeof navigationSections {
@@ -784,6 +931,10 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   }
   if (pathname.startsWith("/dashboard/communication")) {
     return "communication";
+  }
+  // Check for job details page pattern: /dashboard/work/[id]
+  if (pathname.match(JOB_DETAILS_PATTERN)) {
+    return "jobDetails";
   }
   if (pathname.startsWith("/dashboard/work")) {
     return "work";
@@ -859,9 +1010,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const isAISection = currentSection === "ai";
 
-  // Use grouped navigation for settings, ai, and work sections
+  // Use grouped navigation for settings, ai, work, customers, and jobDetails sections
   const useGroupedNav =
-    currentSection === "settings" || currentSection === "ai" || currentSection === "work";
+    currentSection === "settings" ||
+    currentSection === "ai" ||
+    currentSection === "work" ||
+    currentSection === "customers" ||
+    currentSection === "jobDetails";
 
   // Check if page has custom sidebar config
   const hasCustomConfig = layoutConfig.sidebar !== undefined;

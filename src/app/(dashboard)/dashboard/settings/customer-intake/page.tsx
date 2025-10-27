@@ -160,8 +160,6 @@ export default function CustomerIntakePage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    // eslint-disable-next-line no-console
-    console.log("Customer intake settings update:", settings);
     setIsSubmitting(false);
   }
 

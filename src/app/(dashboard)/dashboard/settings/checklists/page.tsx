@@ -302,7 +302,6 @@ export default function ChecklistsPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Checklist settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -592,7 +591,7 @@ export default function ChecklistsPage() {
                     onChange={(e) =>
                       updateSetting(
                         "minimumPhotosPerJob",
-                        Number.parseInt(e.target.value) || 2
+                        Number.parseInt(e.target.value, 10) || 2
                       )
                     }
                     placeholder="2"

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import { usePageLayout } from "@/hooks/use-page-layout";
 
-interface DayAvailability {
+type DayAvailability = {
   day: string;
   enabled: boolean;
   startTime: string;
@@ -37,7 +37,7 @@ interface DayAvailability {
   breakStart: string;
   breakEnd: string;
   hasBreak: boolean;
-}
+};
 
 const defaultWeek: DayAvailability[] = [
   {
@@ -105,14 +105,14 @@ const defaultWeek: DayAvailability[] = [
   },
 ];
 
-interface Exception {
+type Exception = {
   id: string;
   date: string;
   name: string;
   type: "closed" | "modified";
   startTime?: string;
   endTime?: string;
-}
+};
 
 export default function AvailabilitySettingsPage() {
   usePageLayout({

@@ -360,7 +360,6 @@ export default function TagsPage() {
   async function handleSave() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Tag settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -872,7 +871,7 @@ export default function TagsPage() {
                     onChange={(e) =>
                       updateSetting(
                         "highValueThreshold",
-                        Number.parseInt(e.target.value) || 1000
+                        Number.parseInt(e.target.value, 10) || 1000
                       )
                     }
                     placeholder="1000"

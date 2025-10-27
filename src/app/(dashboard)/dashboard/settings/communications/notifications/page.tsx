@@ -175,7 +175,10 @@ export default function NotificationsSettingsPage() {
                   <Label className="text-sm">Send alert when tech is:</Label>
                   <Select
                     onValueChange={(value) =>
-                      updateSetting("onTheWayMinutes", Number.parseInt(value))
+                      updateSetting(
+                        "onTheWayMinutes",
+                        Number.parseInt(value, 10)
+                      )
                     }
                     value={settings.onTheWayMinutes.toString()}
                   >

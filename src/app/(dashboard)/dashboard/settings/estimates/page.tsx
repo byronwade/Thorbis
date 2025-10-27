@@ -186,7 +186,6 @@ export default function EstimatesSettingsPage() {
     setIsSubmitting(true);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    console.log("Estimate settings update request:", settings);
     setIsSubmitting(false);
   }
 
@@ -309,7 +308,7 @@ export default function EstimatesSettingsPage() {
                   onChange={(e) =>
                     updateSetting(
                       "nextEstimateNumber",
-                      Number.parseInt(e.target.value) || DEFAULT_NEXT_NUMBER
+                      Number.parseInt(e.target.value, 10) || DEFAULT_NEXT_NUMBER
                     )
                   }
                   placeholder="2001"
@@ -425,7 +424,7 @@ export default function EstimatesSettingsPage() {
                 onChange={(e) =>
                   updateSetting(
                     "defaultValidityDays",
-                    Number.parseInt(e.target.value) || 30
+                    Number.parseInt(e.target.value, 10) || 30
                   )
                 }
                 placeholder="30"
@@ -534,7 +533,7 @@ export default function EstimatesSettingsPage() {
                   onChange={(e) =>
                     updateSetting(
                       "reminderDaysBeforeExpiration",
-                      Number.parseInt(e.target.value) || 3
+                      Number.parseInt(e.target.value, 10) || 3
                     )
                   }
                   placeholder="3"
@@ -694,7 +693,7 @@ export default function EstimatesSettingsPage() {
                         onChange={(e) =>
                           updateSetting(
                             "approvalDepositPercent",
-                            Number.parseInt(e.target.value) || 25
+                            Number.parseInt(e.target.value, 10) || 25
                           )
                         }
                         placeholder="25"
@@ -974,61 +973,59 @@ export default function EstimatesSettingsPage() {
             </div>
 
             {settings.autoSendFollowup && (
-              <>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label className="font-medium text-sm">
-                      Follow-up Every How Many Days?
-                    </Label>
-                    <Input
-                      className="mt-2"
-                      onChange={(e) =>
-                        updateSetting(
-                          "followupIntervalDays",
-                          Number.parseInt(e.target.value) || 7
-                        )
-                      }
-                      placeholder="7"
-                      type="number"
-                      value={settings.followupIntervalDays}
-                    />
-                    <p className="mt-1 text-muted-foreground text-xs">
-                      Days between follow-up emails
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label className="flex items-center gap-2 font-medium text-sm">
-                      Maximum Follow-up Attempts
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-3 w-3 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            Stop following up after this many tries
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </Label>
-                    <Input
-                      className="mt-2"
-                      onChange={(e) =>
-                        updateSetting(
-                          "maxFollowupAttempts",
-                          Number.parseInt(e.target.value) || 3
-                        )
-                      }
-                      placeholder="3"
-                      type="number"
-                      value={settings.maxFollowupAttempts}
-                    />
-                    <p className="mt-1 text-muted-foreground text-xs">
-                      Stop after this many follow-ups
-                    </p>
-                  </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label className="font-medium text-sm">
+                    Follow-up Every How Many Days?
+                  </Label>
+                  <Input
+                    className="mt-2"
+                    onChange={(e) =>
+                      updateSetting(
+                        "followupIntervalDays",
+                        Number.parseInt(e.target.value, 10) || 7
+                      )
+                    }
+                    placeholder="7"
+                    type="number"
+                    value={settings.followupIntervalDays}
+                  />
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    Days between follow-up emails
+                  </p>
                 </div>
-              </>
+
+                <div>
+                  <Label className="flex items-center gap-2 font-medium text-sm">
+                    Maximum Follow-up Attempts
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">
+                          Stop following up after this many tries
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <Input
+                    className="mt-2"
+                    onChange={(e) =>
+                      updateSetting(
+                        "maxFollowupAttempts",
+                        Number.parseInt(e.target.value, 10) || 3
+                      )
+                    }
+                    placeholder="3"
+                    type="number"
+                    value={settings.maxFollowupAttempts}
+                  />
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    Stop after this many follow-ups
+                  </p>
+                </div>
+              </div>
             )}
 
             <Separator />

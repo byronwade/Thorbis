@@ -58,32 +58,32 @@ const DEFAULT_MAX_DISCOUNT = 20;
 const DEFAULT_LOW_STOCK_THRESHOLD = 10;
 const PERCENTAGE_MULTIPLIER = 100;
 
-interface LaborRate {
+type LaborRate = {
   id: string;
   description: string;
   hourlyCost: number;
   hourlyPrice: number;
   defaultFlatRate: number;
   isDefault: boolean;
-}
+};
 
-interface MaterialMarkup {
+type MaterialMarkup = {
   id: string;
   name: string;
   costFrom: number;
   costTo: number | null;
   markupPercent: number;
   profitPercent: number;
-}
+};
 
-interface TaxRate {
+type TaxRate = {
   id: string;
   name: string;
   rate: number;
   applyToLabor: boolean;
   applyToMaterials: boolean;
   isDefault: boolean;
-}
+};
 
 type PriceBookSettings = {
   // Pricing Model
@@ -254,7 +254,7 @@ export default function PriceBookSettingsPage() {
     },
   ]);
 
-  const [taxRates, setTaxRates] = useState<TaxRate[]>([
+  const [_taxRates, setTaxRates] = useState<TaxRate[]>([
     {
       id: "1",
       name: "Sales Tax",
@@ -336,7 +336,7 @@ export default function PriceBookSettingsPage() {
     if (materialMarkups.length >= 100) {
       return; // Max 100 tiers
     }
-    const lastMarkup = materialMarkups[materialMarkups.length - 1];
+    const lastMarkup = materialMarkups.at(-1);
     const newMarkup: MaterialMarkup = {
       id: Math.random().toString(),
       name: `Markup ${materialMarkups.length + 1}`,
@@ -362,8 +362,9 @@ export default function PriceBookSettingsPage() {
     setMaterialMarkups((prev) => {
       const filtered = prev.filter((markup) => markup.id !== id);
       // Update last markup to have null costTo
-      if (filtered.length > 0) {
-        filtered[filtered.length - 1].costTo = null;
+      const lastMarkup = filtered.at(-1);
+      if (lastMarkup) {
+        lastMarkup.costTo = null;
       }
       return filtered;
     });
@@ -392,7 +393,7 @@ export default function PriceBookSettingsPage() {
   };
 
   // Tax Rate handlers
-  const addTaxRate = () => {
+  const _addTaxRate = () => {
     const newTaxRate: TaxRate = {
       id: Math.random().toString(),
       name: "",
@@ -404,11 +405,11 @@ export default function PriceBookSettingsPage() {
     setTaxRates((prev) => [...prev, newTaxRate]);
   };
 
-  const removeTaxRate = (id: string) => {
+  const _removeTaxRate = (id: string) => {
     setTaxRates((prev) => prev.filter((tax) => tax.id !== id));
   };
 
-  const updateTaxRate = (
+  const _updateTaxRate = (
     id: string,
     field: keyof TaxRate,
     value: string | number | boolean

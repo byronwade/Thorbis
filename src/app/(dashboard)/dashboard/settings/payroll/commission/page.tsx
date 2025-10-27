@@ -98,10 +98,9 @@ export default function CommissionSettingsPage() {
   };
 
   const addCommissionTier = () => {
-    const lastTier =
-      settings.tieredCommissions[settings.tieredCommissions.length - 1];
+    const lastTier = settings.tieredCommissions.at(-1);
     const newTier: CommissionTier = {
-      min: lastTier.max || 0,
+      min: lastTier?.max || 0,
       max: null,
       rate: 0,
     };

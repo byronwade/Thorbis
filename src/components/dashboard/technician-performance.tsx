@@ -56,7 +56,7 @@ const technicianData: Array<{
   },
 ];
 
-const chartConfig = {
+const _chartConfig = {
   revenue: {
     label: "Revenue",
     color: "var(--chart-1)",
