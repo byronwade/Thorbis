@@ -1,33 +1,42 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Communication Page - Client Component
+ * Gmail-style table layout
+ *
+ * Client-side features:
+ * - Gmail-style table view with checkboxes
+ * - Bulk actions toolbar
+ * - Message selection and filtering
+ */
 
 import {
   Archive,
-  Forward,
-  Hash,
-  Inbox,
+  ChevronLeft,
+  ChevronRight,
   Mail,
   MessageSquare,
   MoreVertical,
   Phone,
-  Reply,
+  RefreshCw,
   Search,
-  Send,
   Star,
-  Tag,
   Ticket,
   Trash2,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
 
@@ -58,6 +67,9 @@ const MINUTES_AGO_180 = 180;
 const MINUTES_AGO_240 = 240;
 const MINUTES_AGO_300 = 300;
 
+// Calculate timestamps once at module load time to prevent re-renders
+const NOW = Date.now();
+
 const MOCK_MESSAGES: UnifiedMessage[] = [
   {
     id: "1",
@@ -67,7 +79,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
     subject: "Question about invoice #1234",
     preview:
       "Hi, I have a question regarding the invoice I received yesterday. The total seems to be higher than expected...",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * MINUTES_AGO_15),
+    timestamp: new Date(NOW - MS_PER_MINUTE * MINUTES_AGO_15),
     status: "unread",
     priority: "normal",
     tags: ["billing", "customer"],
@@ -81,7 +93,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
     subject: "Voicemail - Service Inquiry",
     preview:
       "Left voicemail asking about availability for AC installation next week. Mentioned they were referred by Mike Thompson.",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * MINUTES_AGO_45),
+    timestamp: new Date(NOW - MS_PER_MINUTE * MINUTES_AGO_45),
     status: "unread",
     priority: "high",
     tags: ["sales", "new-lead"],
@@ -94,7 +106,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
     subject: "Work order not showing up",
     preview:
       "I scheduled a service for tomorrow but I can't see it in my customer portal. Can you help me confirm the appointment?",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * MINUTES_AGO_120),
+    timestamp: new Date(NOW - MS_PER_MINUTE * MINUTES_AGO_120),
     status: "read",
     priority: "urgent",
     assignedTo: "Support Team",
@@ -107,7 +119,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
     fromPhone: "(555) 987-6543",
     preview:
       "Thanks for the great service yesterday! The technician was very professional. Do you offer annual maintenance plans?",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * MINUTES_AGO_180),
+    timestamp: new Date(NOW - MS_PER_MINUTE * MINUTES_AGO_180),
     status: "replied",
     priority: "normal",
     tags: ["customer", "upsell"],
@@ -120,7 +132,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
     subject: "Reschedule request for Friday appointment",
     preview:
       "I need to reschedule my Friday 2pm appointment due to a work conflict. Would Monday or Tuesday work instead?",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * MINUTES_AGO_240),
+    timestamp: new Date(NOW - MS_PER_MINUTE * MINUTES_AGO_240),
     status: "read",
     priority: "normal",
     tags: ["scheduling"],
@@ -133,7 +145,7 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
     subject: "Missed Call",
     preview:
       "Missed call - no voicemail left. Number shows previous customer from 3 months ago.",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * MINUTES_AGO_300),
+    timestamp: new Date(NOW - MS_PER_MINUTE * MINUTES_AGO_300),
     status: "unread",
     priority: "low",
     tags: ["follow-up"],
@@ -144,218 +156,43 @@ export default function CommunicationPage() {
   const [selectedMessage, setSelectedMessage] = useState<UnifiedMessage | null>(
     null
   );
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<MessageStatus | "all">(
-    "all"
-  );
-  const [typeFilter, setTypeFilter] = useState<MessageType | "all">("all");
-  const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
 
-  // Calculate counts for filters
-  const statusCounts = {
-    all: MOCK_MESSAGES.length,
-    unread: MOCK_MESSAGES.filter((m) => m.status === "unread").length,
-    read: MOCK_MESSAGES.filter((m) => m.status === "read").length,
-    replied: MOCK_MESSAGES.filter((m) => m.status === "replied").length,
-    archived: MOCK_MESSAGES.filter((m) => m.status === "archived").length,
-  };
-
-  const typeCounts = {
-    all: MOCK_MESSAGES.length,
-    email: MOCK_MESSAGES.filter((m) => m.type === "email").length,
-    sms: MOCK_MESSAGES.filter((m) => m.type === "sms").length,
-    phone: MOCK_MESSAGES.filter((m) => m.type === "phone").length,
-    ticket: MOCK_MESSAGES.filter((m) => m.type === "ticket").length,
-  };
-
-  const tagCounts = {
-    customer: MOCK_MESSAGES.filter((m) => m.tags?.includes("customer")).length,
-    sales: MOCK_MESSAGES.filter((m) => m.tags?.includes("sales")).length,
-    billing: MOCK_MESSAGES.filter((m) => m.tags?.includes("billing")).length,
-    technical: MOCK_MESSAGES.filter((m) => m.tags?.includes("technical"))
-      .length,
-  };
-
-  // Configure layout with sidebar filters
-  usePageLayout({
-    maxWidth: "full",
-    paddingX: "none",
-    paddingY: "none",
-    gap: "none",
-    showToolbar: true,
-    sidebar: {
-      groups: [
-        // Communication Navigation (always visible)
-        {
-          label: undefined,
-          items: [
-            {
-              mode: "link" as const,
-              title: "Inbox",
-              url: "/dashboard/communication",
-              icon: Inbox,
-            },
-            {
-              mode: "link" as const,
-              title: "Company Feed",
-              url: "/dashboard/communication/feed",
-              icon: Hash,
-            },
-          ],
-        },
-        {
-          label: "Status",
-          items: [
-            {
-              mode: "filter" as const,
-              title: "All Messages",
-              value: "status:all",
-              icon: Inbox,
-              count: statusCounts.all,
-            },
-            {
-              mode: "filter" as const,
-              title: "Unread",
-              value: "status:unread",
-              icon: Mail,
-              count: statusCounts.unread,
-            },
-            {
-              mode: "filter" as const,
-              title: "Read",
-              value: "status:read",
-              icon: Mail,
-              count: statusCounts.read,
-            },
-            {
-              mode: "filter" as const,
-              title: "Replied",
-              value: "status:replied",
-              icon: Send,
-              count: statusCounts.replied,
-            },
-            {
-              mode: "filter" as const,
-              title: "Archived",
-              value: "status:archived",
-              icon: Archive,
-              count: statusCounts.archived,
-            },
-          ],
-        },
-        {
-          label: "Message Type",
-          items: [
-            {
-              mode: "filter" as const,
-              title: "All Types",
-              value: "type:all",
-              icon: MessageSquare,
-              count: typeCounts.all,
-            },
-            {
-              mode: "filter" as const,
-              title: "Email",
-              value: "type:email",
-              icon: Mail,
-              count: typeCounts.email,
-            },
-            {
-              mode: "filter" as const,
-              title: "SMS",
-              value: "type:sms",
-              icon: MessageSquare,
-              count: typeCounts.sms,
-            },
-            {
-              mode: "filter" as const,
-              title: "Calls",
-              value: "type:phone",
-              icon: Phone,
-              count: typeCounts.phone,
-            },
-            {
-              mode: "filter" as const,
-              title: "Tickets",
-              value: "type:ticket",
-              icon: Ticket,
-              count: typeCounts.ticket,
-            },
-          ],
-        },
-        {
-          label: "Tags",
-          items: [
-            {
-              mode: "filter" as const,
-              title: "Customer",
-              value: "tag:customer",
-              icon: Tag,
-              count: tagCounts.customer,
-            },
-            {
-              mode: "filter" as const,
-              title: "Sales",
-              value: "tag:sales",
-              icon: Tag,
-              count: tagCounts.sales,
-            },
-            {
-              mode: "filter" as const,
-              title: "Billing",
-              value: "tag:billing",
-              icon: Tag,
-              count: tagCounts.billing,
-            },
-            {
-              mode: "filter" as const,
-              title: "Technical",
-              value: "tag:technical",
-              icon: Tag,
-              count: tagCounts.technical,
-            },
-          ],
-        },
-      ],
-      defaultValue: "status:all",
-      activeValue: (() => {
-        if (tagFilter) {
-          return `tag:${tagFilter}`;
-        }
-        if (typeFilter !== "all") {
-          return `type:${typeFilter}`;
-        }
-        return `status:${statusFilter}`;
-      })(),
-      onValueChange: (value) => {
-        // Parse filter type from value
-        if (value.startsWith("status:")) {
-          const status = value.replace("status:", "") as MessageStatus | "all";
-          setStatusFilter(status);
-          setTypeFilter("all");
-          setTagFilter(null);
-        } else if (value.startsWith("type:")) {
-          const type = value.replace("type:", "") as MessageType | "all";
-          setTypeFilter(type);
-          setTagFilter(null);
-        } else if (value.startsWith("tag:")) {
-          setTagFilter(value.replace("tag:", ""));
-        }
-      },
-    },
-  });
-
+  // Filter messages
   const filteredMessages = MOCK_MESSAGES.filter((msg) => {
-    const searchMatch =
-      searchQuery === "" ||
-      msg.from.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      msg.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      msg.preview.toLowerCase().includes(searchQuery.toLowerCase());
-    const statusMatch = statusFilter === "all" || msg.status === statusFilter;
-    const typeMatch = typeFilter === "all" || msg.type === typeFilter;
-    const tagMatch = tagFilter === null || msg.tags?.includes(tagFilter);
-    return searchMatch && statusMatch && typeMatch && tagMatch;
+    if (searchQuery === "") return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      msg.from.toLowerCase().includes(query) ||
+      msg.subject?.toLowerCase().includes(query) ||
+      msg.preview.toLowerCase().includes(query)
+    );
   });
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === filteredMessages.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredMessages.map((m) => m.id)));
+    }
+  };
+
+  const handleSelectMessage = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleOpenMessage = (message: UnifiedMessage) => {
+    setSelectedMessage(message);
+    setIsMessageOpen(true);
+  };
 
   const getMessageIcon = (type: MessageType) => {
     switch (type) {
@@ -414,43 +251,105 @@ export default function CommunicationPage() {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex w-96 flex-col border-r">
-          <div className="border-b p-4">
+    <>
+      <div className="flex h-full flex-col">
+        {/* Toolbar */}
+        <div className="flex items-center gap-2 border-b px-4 py-2">
+          <Checkbox
+            checked={
+              selectedIds.size === filteredMessages.length &&
+              filteredMessages.length > 0
+            }
+            onCheckedChange={handleSelectAll}
+          />
+          <Button size="icon" variant="ghost">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+
+          {selectedIds.size > 0 && (
+            <>
+              <div className="mx-2 h-4 w-px bg-border" />
+              <Button size="sm" variant="ghost">
+                <Archive className="mr-2 h-4 w-4" />
+                Archive
+              </Button>
+              <Button size="sm" variant="ghost">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+              <Button size="sm" variant="ghost">
+                <Star className="mr-2 h-4 w-4" />
+                Star
+              </Button>
+              <span className="ml-2 text-muted-foreground text-sm">
+                {selectedIds.size} selected
+              </span>
+            </>
+          )}
+
+          <div className="ml-auto flex items-center gap-2">
             <div className="relative">
               <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
               <Input
-                className="pl-8"
+                className="h-9 w-64 pl-8"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search messages..."
                 value={searchQuery}
               />
             </div>
+            <Button size="icon" variant="ghost">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm">1-{filteredMessages.length}</span>
+            <Button size="icon" variant="ghost">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
+        </div>
 
-          <div className="flex-1 overflow-y-auto">
-            {filteredMessages.length === 0 ? (
-              <div className="flex h-full items-center justify-center p-8 text-center">
-                <div className="space-y-2">
-                  <MessageSquare className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="font-medium text-sm">No messages found</p>
-                  <p className="text-muted-foreground text-xs">
-                    Try adjusting your filters
-                  </p>
-                </div>
+        {/* Message Table */}
+        <div className="flex-1 overflow-auto">
+          {filteredMessages.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="space-y-2 text-center">
+                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+                <p className="font-medium">No messages found</p>
+                <p className="text-muted-foreground text-sm">
+                  Try adjusting your search
+                </p>
               </div>
-            ) : (
-              <div className="divide-y">
-                {filteredMessages.map((message) => (
-                  <button
-                    className={`w-full p-4 text-left transition-colors hover:bg-muted/50 ${selectedMessage?.id === message.id ? "bg-muted" : ""} ${message.status === "unread" ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}
-                    key={message.id}
-                    onClick={() => setSelectedMessage(message)}
-                    type="button"
+            </div>
+          ) : (
+            <div className="divide-y">
+              {filteredMessages.map((message) => (
+                <div
+                  className={`group flex cursor-pointer items-center gap-4 px-4 py-2 transition-colors hover:bg-muted/50 ${
+                    message.status === "unread"
+                      ? "bg-blue-50/30 dark:bg-blue-950/10"
+                      : ""
+                  } ${selectedIds.has(message.id) ? "bg-muted/50" : ""}`}
+                  key={message.id}
+                  onClick={() => handleOpenMessage(message)}
+                >
+                  <div
+                    className="flex items-center gap-3"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="flex items-start gap-3">
-                      <Avatar className="h-8 w-8">
+                    <Checkbox
+                      checked={selectedIds.has(message.id)}
+                      onCheckedChange={() => handleSelectMessage(message.id)}
+                    />
+                    <button
+                      className="opacity-0 transition-opacity group-hover:opacity-100"
+                      type="button"
+                    >
+                      <Star className="h-4 w-4 text-muted-foreground hover:text-yellow-500" />
+                    </button>
+                  </div>
+
+                  <div className="flex min-w-0 flex-1 items-center gap-4">
+                    <div className="flex w-48 shrink-0 items-center gap-2">
+                      <Avatar className="h-6 w-6">
                         <AvatarFallback className="text-xs">
                           {message.from
                             .split(" ")
@@ -458,75 +357,68 @@ export default function CommunicationPage() {
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
+                      <span
+                        className={`truncate text-sm ${
+                          message.status === "unread" ? "font-semibold" : ""
+                        }`}
+                      >
+                        {message.from}
+                      </span>
+                    </div>
 
-                      <div className="min-w-0 flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          {getMessageIcon(message.type)}
-                          <span
-                            className={`truncate font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
-                          >
-                            {message.from}
-                          </span>
-                          <span className="ml-auto whitespace-nowrap text-muted-foreground text-xs">
-                            {formatTimestamp(message.timestamp)}
-                          </span>
-                        </div>
-
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        {getMessageIcon(message.type)}
                         {message.subject && (
-                          <p
-                            className={`truncate text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+                          <span
+                            className={`text-sm ${
+                              message.status === "unread" ? "font-semibold" : ""
+                            }`}
                           >
                             {message.subject}
-                          </p>
+                          </span>
                         )}
-
-                        <p className="line-clamp-2 text-muted-foreground text-xs">
-                          {message.preview}
-                        </p>
-
-                        <div className="flex flex-wrap items-center gap-1 pt-1">
-                          <Badge
-                            className="text-xs"
-                            variant={getPriorityColor(message.priority)}
-                          >
-                            {message.priority}
-                          </Badge>
-                          {message.tags?.map((tag) => (
-                            <Badge
-                              className="text-xs"
-                              key={tag}
-                              variant="outline"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                          {message.attachments && (
-                            <span className="ml-auto text-muted-foreground text-xs">
-                              📎 {message.attachments}
-                            </span>
-                          )}
-                        </div>
+                        <span className="text-muted-foreground text-sm">
+                          - {message.preview.substring(0, 80)}...
+                        </span>
                       </div>
                     </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="flex flex-1 flex-col bg-background">
-          {selectedMessage ? (
+                    <div className="flex shrink-0 items-center gap-2">
+                      {message.tags?.slice(0, 2).map((tag) => (
+                        <Badge className="text-xs" key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {message.attachments && (
+                        <span className="text-muted-foreground text-xs">📎</span>
+                      )}
+                      <span className="w-20 text-right text-muted-foreground text-xs">
+                        {formatTimestamp(message.timestamp)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Message Detail Sheet */}
+      <Sheet onOpenChange={setIsMessageOpen} open={isMessageOpen}>
+        <SheetContent className="w-full sm:max-w-2xl">
+          {selectedMessage && (
             <>
-              <div className="border-b p-4">
+              <SheetHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       {getMessageIcon(selectedMessage.type)}
-                      <h2 className="font-semibold text-lg">
+                      <SheetTitle>
                         {selectedMessage.subject ||
                           `${selectedMessage.type.charAt(0).toUpperCase() + selectedMessage.type.slice(1)} from ${selectedMessage.from}`}
-                      </h2>
+                      </SheetTitle>
                       <Badge
                         variant={getPriorityColor(selectedMessage.priority)}
                       >
@@ -549,122 +441,55 @@ export default function CommunicationPage() {
                             ({selectedMessage.fromEmail})
                           </span>
                         )}
-                        {selectedMessage.fromPhone && (
-                          <span className="text-xs">
-                            ({selectedMessage.fromPhone})
-                          </span>
-                        )}
                       </div>
                       <span>•</span>
                       <span>{selectedMessage.timestamp.toLocaleString()}</span>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-1">
-                    <Button size="icon" variant="ghost">
-                      <Star className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost">
-                      <Archive className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
-              </div>
+              </SheetHeader>
 
-              <div className="flex-1 overflow-y-auto p-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <p className="leading-relaxed">{selectedMessage.preview}</p>
-                    <p className="mt-4 text-muted-foreground leading-relaxed">
-                      This is additional message content that would typically
-                      contain the full message body. In a real application, this
-                      would display the complete email, SMS message, voicemail
-                      transcription, or ticket details based on the message
-                      type.
-                    </p>
-
-                    {selectedMessage.attachments && (
-                      <div className="mt-6">
-                        <Separator className="mb-4" />
-                        <h3 className="mb-2 font-medium text-sm">
-                          Attachments ({selectedMessage.attachments})
-                        </h3>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 rounded-md border p-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded bg-muted">
-                              📄
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">
-                                invoice-1234.pdf
-                              </p>
-                              <p className="text-muted-foreground text-xs">
-                                245 KB
-                              </p>
-                            </div>
-                            <Button size="sm" variant="ghost">
-                              Download
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {selectedMessage.tags &&
-                      selectedMessage.tags.length > 0 && (
-                        <div className="mt-6">
-                          <Separator className="mb-4" />
-                          <h3 className="mb-2 font-medium text-sm">Tags</h3>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedMessage.tags.map((tag) => (
-                              <Badge key={tag} variant="outline">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="border-t p-4">
+              <div className="mt-6 space-y-4">
                 <div className="flex gap-2">
-                  <Button className="flex-1">
-                    <Reply className="mr-2 h-4 w-4" />
-                    Reply
+                  <Button size="sm" variant="outline">
+                    <Star className="mr-2 h-4 w-4" />
+                    Star
                   </Button>
-                  <Button className="flex-1" variant="outline">
-                    <Forward className="mr-2 h-4 w-4" />
-                    Forward
+                  <Button size="sm" variant="outline">
+                    <Archive className="mr-2 h-4 w-4" />
+                    Archive
                   </Button>
-                  <Button variant="outline">
-                    <MoreVertical className="h-4 w-4" />
+                  <Button size="sm" variant="outline">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
                   </Button>
                 </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex h-full items-center justify-center p-8 text-center">
-              <div className="space-y-4">
-                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-lg">No message selected</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Select a message from the list to view its contents
+
+                <div className="prose dark:prose-invert">
+                  <p>{selectedMessage.preview}</p>
+                  <p className="text-muted-foreground">
+                    This is additional message content that would display the
+                    full message body in a real application.
                   </p>
                 </div>
+
+                {selectedMessage.tags && selectedMessage.tags.length > 0 && (
+                  <div>
+                    <h3 className="mb-2 font-medium text-sm">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedMessage.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            </>
           )}
-        </div>
-      </div>
-    </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }

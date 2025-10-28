@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Integrations Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Building2,
@@ -37,7 +44,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import {
   type IntegrationCategory,
   integrations,
@@ -62,16 +68,7 @@ const categories: {
   { value: "analytics", label: "Analytics", icon: TrendingUp },
 ];
 
-export default function IntegrationsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [searchQuery, setSearchQuery] = useState("");
+export default function IntegrationsPage() {  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<IntegrationCategory>("all");
   const [viewMode, setViewMode] = useState<"connected" | "available" | "all">(

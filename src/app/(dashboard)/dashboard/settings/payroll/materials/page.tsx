@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Payroll > Materials Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { Calculator, Layers, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,8 +31,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type MaterialSettings = {
   deductMaterialsFromPay: boolean;
   materialDeductionType: "gross" | "commission-only" | "net";
@@ -33,16 +40,7 @@ type MaterialSettings = {
   subcontractorCostsDeducted: boolean;
 };
 
-export default function MaterialsSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function MaterialsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<MaterialSettings>({
     deductMaterialsFromPay: true,

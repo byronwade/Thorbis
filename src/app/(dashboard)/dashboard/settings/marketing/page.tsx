@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Marketing Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   BarChart3,
@@ -43,8 +50,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const MAX_MESSAGE_LENGTH = 500;
@@ -111,16 +116,7 @@ type MarketingSettings = {
   facebookPixelId: string;
 };
 
-export default function MarketingCenterPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function MarketingCenterPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [settings, setSettings] = useState<MarketingSettings>({
     // Review Requests

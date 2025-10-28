@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Checklists Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   CheckCircle2,
@@ -36,8 +43,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -82,16 +87,7 @@ type ChecklistSettings = {
   customerCanViewInPortal: boolean;
 };
 
-export default function ChecklistsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function ChecklistsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedChecklist, setExpandedChecklist] = useState<string | null>(
     null
   );

@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Team > [Id] Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   ArrowLeft,
@@ -48,8 +55,6 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type EmploymentType = "full-time" | "part-time" | "contractor" | "intern";
 type PayType = "hourly" | "salary" | "commission" | "hybrid";
 type EmploymentStatus = "active" | "on-leave" | "suspended" | "terminated";
@@ -172,16 +177,7 @@ type EmployeeProfile = {
   notes: string;
 };
 
-export default function EmployeeProfilePage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const params = useParams();
+export default function EmployeeProfilePage() {  const params = useParams();
   const employeeId = params.id as string;
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);

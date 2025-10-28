@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Job Fields Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   CalendarDays,
@@ -42,8 +49,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -83,16 +88,7 @@ type JobFieldSettings = {
   requireGateCode: boolean;
 };
 
-export default function JobFieldsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function JobFieldsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const [settings, setSettings] = useState<JobFieldSettings>({

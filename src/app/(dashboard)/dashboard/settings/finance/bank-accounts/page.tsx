@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Finance > Bank Accounts Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import {
   AlertTriangle,
   Building2,
@@ -41,8 +50,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type BankAccount = {
   id: string;
   bankName: string;
@@ -108,16 +115,7 @@ const getBankLogo = (bankName: string) => {
   );
 };
 
-export default function BankAccountsSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function BankAccountsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [accounts, setAccounts] = useState<BankAccount[]>([
     {
       id: "1",

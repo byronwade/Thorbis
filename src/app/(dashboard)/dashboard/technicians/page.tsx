@@ -1,19 +1,17 @@
-"use client";
+/**
+ * Technicians Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ * - ISR revalidation every 5 minutes
+ */
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // Revalidate every 5 minutes
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function TechnicianManagementPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function TechnicianManagementPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Technician Management</h1>

@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Schedule > Availability Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { Clock, HelpCircle, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,8 +36,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type DayAvailability = {
   day: string;
   enabled: boolean;
@@ -114,16 +121,7 @@ type Exception = {
   endTime?: string;
 };
 
-export default function AvailabilitySettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function AvailabilitySettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [availability, setAvailability] = useState(defaultWeek);
   const [settings, setSettings] = useState({
     allowOnlineBooking: true,

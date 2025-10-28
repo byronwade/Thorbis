@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Work > Pricebook Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import {
   ArrowLeft,
   BookOpen,
@@ -23,8 +32,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { StatCard } from "@/components/work/stat-card";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type Service = {
   id: string;
   serviceCode: string;
@@ -291,54 +298,7 @@ function MaterialCard({ material }: { material: Material }) {
   );
 }
 
-function PriceBookPageContent() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "lg",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-    sidebar: {
-      groups: [
-        {
-          label: undefined,
-          items: [
-            {
-              mode: "link" as const,
-              title: "Back to Work",
-              url: "/dashboard/work",
-              icon: ArrowLeft,
-            },
-          ],
-        },
-        {
-          label: "Company Resources",
-          items: [
-            {
-              mode: "link" as const,
-              title: "Price Book",
-              url: "/dashboard/work/pricebook",
-              icon: BookOpen,
-            },
-            {
-              mode: "link" as const,
-              title: "Materials Inventory",
-              url: "/dashboard/work/materials",
-              icon: Box,
-            },
-            {
-              mode: "link" as const,
-              title: "Equipment & Tools",
-              url: "/dashboard/work/equipment",
-              icon: Package,
-            },
-          ],
-        },
-      ],
-    },
-  });
-
-  const searchParams = useSearchParams();
+function PriceBookPageContent() {  const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState("services");
   const [searchQuery, setSearchQuery] = useState("");

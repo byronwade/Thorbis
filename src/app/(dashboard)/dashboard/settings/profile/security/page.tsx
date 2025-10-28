@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Security Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -22,14 +27,14 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+export const revalidate = 3600; // Revalidate every 1 hour
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type SecurityFeature = {
   title: string;
   description: string;
@@ -164,16 +169,7 @@ function getDeviceIcon(type: string) {
   }
 }
 
-export default function SecurityPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function SecurityPage() {  return (
     <TooltipProvider>
       <div className="space-y-8 py-8">
         {/* Header */}

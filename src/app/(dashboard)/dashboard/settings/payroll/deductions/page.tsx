@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Payroll > Deductions Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { Save, Wallet } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,8 +24,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type DeductionSettings = {
   uniformDeduction: boolean;
   uniformDeductionAmount: number;
@@ -34,16 +41,7 @@ type DeductionSettings = {
   cellPhoneStipendAmount: number;
 };
 
-export default function DeductionsSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function DeductionsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<DeductionSettings>({
     uniformDeduction: false,

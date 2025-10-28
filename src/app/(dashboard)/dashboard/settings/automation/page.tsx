@@ -1,11 +1,18 @@
-"use client";
+/**
+ * Settings > Automation Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { Bot, Filter, GitBranch, Settings, Workflow, Zap } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 3600; // Revalidate every 1 hour
 const automationSections = [
   {
     title: "Workflow Automation",
@@ -54,16 +61,7 @@ const automationSections = [
   },
 ];
 
-export default function AutomationSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function AutomationSettingsPage() {  return (
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-3">

@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Preferences Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Check,
@@ -40,8 +47,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -60,16 +65,7 @@ type PreferenceSettings = {
   tableView: "default" | "compact";
 };
 
-export default function PreferencesPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function PreferencesPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<PreferenceSettings>({
     theme: "dark",
     language: "en-US",

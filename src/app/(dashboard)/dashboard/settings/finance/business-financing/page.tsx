@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Finance > Business Financing Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import {
   AlertTriangle,
   Building2,
@@ -32,8 +41,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 interface LoanAccount extends Record<string, unknown> {
   id: string;
   lender: string;
@@ -47,16 +54,7 @@ interface LoanAccount extends Record<string, unknown> {
   status: "active" | "paid-off" | "delinquent";
 }
 
-export default function BusinessFinancingSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function BusinessFinancingSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [loanAccounts] = useState<LoanAccount[]>([
     {
       id: "1",

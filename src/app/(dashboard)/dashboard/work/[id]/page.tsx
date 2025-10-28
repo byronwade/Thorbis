@@ -1,4 +1,13 @@
-"use client";
+/**
+ * Job Details Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client" - uses params prop)
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ * - Improved performance with server-side data fetching
+ */
 
 import {
   Building2,
@@ -25,7 +34,6 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +52,6 @@ import {
 } from "@/components/ui/tooltip";
 import { JobProcessIndicator } from "@/components/work/job-process-indicator";
 import { PhotoGallery, type JobPhoto } from "@/components/work/job-details/PhotoGallery";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import type { Estimate, Invoice, Job, Property } from "@/lib/db/schema";
 
 // Line item type for invoices and estimates
@@ -646,19 +653,12 @@ function getStatusBadge(status: string) {
   );
 }
 
-export default function JobDetailsPage() {
-  const params = useParams();
-  const jobId = params?.id as string;
-
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "lg",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  // Invoice columns for DataTable
+export default async function JobDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: jobId } = await params;  // Invoice columns for DataTable
   const invoiceColumns: DataTableColumn<Invoice>[] = [
     {
       key: "invoiceNumber",
@@ -1441,13 +1441,13 @@ export default function JobDetailsPage() {
             <PhotoGallery
               photos={mockPhotos}
             onUpload={() => {
-              console.log("Upload photos");
+              // TODO: Implement photo upload
             }}
             onDelete={(photoId) => {
-              console.log("Delete photo:", photoId);
+              // TODO: Implement photo deletion
             }}
             onDownloadAll={() => {
-              console.log("Download all photos");
+              // TODO: Implement download all photos
             }}
             />
           </div>

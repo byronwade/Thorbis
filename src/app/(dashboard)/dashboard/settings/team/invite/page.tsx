@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Team > Invite Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { ArrowLeft, Mail, Plus, Send, Trash2, UserPlus } from "lucide-react";
 import Link from "next/link";
@@ -31,8 +38,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type InviteForm = {
   email: string;
   roleId: string;
@@ -50,16 +55,7 @@ type Department = {
   name: string;
 };
 
-export default function InviteMemberPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [invites, setInvites] = useState<InviteForm[]>([
+export default function InviteMemberPage() {  const [invites, setInvites] = useState<InviteForm[]>([
     { email: "", roleId: "", departmentId: "", jobTitle: "" },
   ]);
 

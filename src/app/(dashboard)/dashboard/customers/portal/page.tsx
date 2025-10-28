@@ -1,6 +1,12 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Customers > Portal Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - ISR revalidation every 15 minutes
+ * - Reduced JavaScript bundle size
+ */
 
 import {
   Card,
@@ -9,18 +15,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
-export default function CustomerPortalPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
+export const revalidate = 900; // Revalidate every 15 minutes
 
-  return (
+export default function CustomerPortalPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Customer Portal</h1>

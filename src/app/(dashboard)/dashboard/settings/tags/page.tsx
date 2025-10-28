@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Tags Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Briefcase,
@@ -46,8 +53,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -96,16 +101,7 @@ type TagSettings = {
   trackRevenueByTag: boolean;
 };
 
-export default function TagsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function TagsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const [settings, setSettings] = useState<TagSettings>({

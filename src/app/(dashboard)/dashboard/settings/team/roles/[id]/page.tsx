@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Team > Roles > [Id] Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { ArrowLeft, Palette, Save } from "lucide-react";
 import Link from "next/link";
@@ -26,8 +33,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type PermissionCategory = {
   id: string;
   label: string;
@@ -200,16 +205,7 @@ export default function RoleDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const resolvedParams = use(params);
+}) {  const resolvedParams = use(params);
   const isNewRole = resolvedParams.id === "new";
 
   const [roleForm, setRoleForm] = useState({

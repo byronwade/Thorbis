@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Job Status Pipeline - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static pipeline visualization rendered on server
+ * - CSS transitions work without JavaScript
+ * - Reduced JavaScript bundle size
+ */
 
 import { cn } from "@/lib/utils";
 

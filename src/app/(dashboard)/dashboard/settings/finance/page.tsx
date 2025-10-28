@@ -1,4 +1,11 @@
-"use client";
+/**
+ * Settings > Finance Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -15,6 +22,8 @@ import {
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
+
+export const revalidate = 3600; // Revalidate every 1 hour
 import {
   Card,
   CardContent,
@@ -22,8 +31,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 const financeSections = [
   {
     title: "Bank Accounts",
@@ -99,16 +106,7 @@ const financeSections = [
   },
 ];
 
-export default function FinanceSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function FinanceSettingsPage() {  return (
     <div className="space-y-6">
       {/* Header */}
       <div>

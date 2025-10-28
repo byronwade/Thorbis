@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Finance > Virtual Buckets Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import {
   ArrowLeftRight,
   Layers,
@@ -30,8 +39,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type VirtualBucket = {
   id: string;
   name: string;
@@ -45,16 +52,7 @@ type VirtualBucket = {
   linkedAccount: string;
 };
 
-export default function VirtualBucketsSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function VirtualBucketsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [buckets, _setBuckets] = useState<VirtualBucket[]>([
     {
       id: "1",

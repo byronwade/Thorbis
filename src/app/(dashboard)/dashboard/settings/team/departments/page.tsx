@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Team > Departments Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   ArrowLeft,
@@ -39,8 +46,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type Department = {
   id: string;
   name: string;
@@ -49,16 +54,7 @@ type Department = {
   memberCount: number;
 };
 
-export default function DepartmentsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [showNewForm, setShowNewForm] = useState(false);
+export default function DepartmentsPage() {  const [showNewForm, setShowNewForm] = useState(false);
   const [newDepartment, setNewDepartment] = useState({
     name: "",
     description: "",

@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Payroll > Overtime Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { Clock, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,8 +31,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type OvertimeSettings = {
   overtimeCalculationMethod: "daily" | "weekly" | "both";
   dailyOvertimeThreshold: number;
@@ -40,16 +47,7 @@ type OvertimeSettings = {
   onCallPayRate: number;
 };
 
-export default function OvertimeSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function OvertimeSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<OvertimeSettings>({
     overtimeCalculationMethod: "weekly",

@@ -1,12 +1,19 @@
-"use client";
+/**
+ * Work > Service Agreements Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { ArrowLeft, ShieldCheck, Ticket, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 300; // Revalidate every 5 minutes
 interface ServiceAgreement extends Record<string, unknown> {
   id: string;
   agreementNumber: string;
@@ -69,54 +76,7 @@ function getStatusBadge(status: string) {
   );
 }
 
-export default function ServiceAgreementsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    paddingY: "lg",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-    sidebar: {
-      groups: [
-        {
-          label: undefined,
-          items: [
-            {
-              mode: "link" as const,
-              title: "Back to Work",
-              url: "/dashboard/work",
-              icon: ArrowLeft,
-            },
-          ],
-        },
-        {
-          label: "Service Management",
-          items: [
-            {
-              mode: "link" as const,
-              title: "Maintenance Plans",
-              url: "/dashboard/work/maintenance-plans",
-              icon: Wrench,
-            },
-            {
-              mode: "link" as const,
-              title: "Service Agreements",
-              url: "/dashboard/work/service-agreements",
-              icon: ShieldCheck,
-            },
-            {
-              mode: "link" as const,
-              title: "Service Tickets",
-              url: "/dashboard/work/tickets",
-              icon: Ticket,
-            },
-          ],
-        },
-      ],
-    },
-  });
-
-  const columns: DataTableColumn<ServiceAgreement>[] = [
+export default function ServiceAgreementsPage() {  const columns: DataTableColumn<ServiceAgreement>[] = [
     {
       key: "agreementNumber",
       header: "Agreement #",

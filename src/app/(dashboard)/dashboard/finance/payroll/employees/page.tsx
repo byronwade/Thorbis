@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Finance > Payroll > Employees Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Calendar,
@@ -31,6 +36,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+
+export const revalidate = 900; // Revalidate every 15 minutes
 import {
   Table,
   TableBody,
@@ -39,8 +46,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Mock employee data
 const employees = [
   {
@@ -95,16 +100,7 @@ const employees = [
   },
 ];
 
-export default function PayrollEmployeesPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function PayrollEmployeesPage() {  return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

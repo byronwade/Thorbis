@@ -1,9 +1,9 @@
 "use client"
 
-import { LayoutGrid, List, Calendar, MapPin } from "lucide-react"
+import { LayoutGrid, List, Calendar, MapPin, Bug } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export type ScheduleView = "timeline" | "list" | "calendar" | "map"
+export type ScheduleView = "timeline" | "list" | "calendar" | "map" | "test"
 
 interface ScheduleViewToggleProps {
   view: ScheduleView
@@ -13,9 +13,11 @@ interface ScheduleViewToggleProps {
 export function ScheduleViewToggle({ view, onViewChange }: ScheduleViewToggleProps) {
   const views = [
     { value: "timeline" as const, icon: LayoutGrid, label: "Timeline" },
-    { value: "list" as const, icon: List, label: "List" },
-    { value: "calendar" as const, icon: Calendar, label: "Calendar" },
-    { value: "map" as const, icon: MapPin, label: "Map" },
+    { value: "test" as const, icon: Bug, label: "Debug" },
+    // Temporarily disabled old views
+    // { value: "list" as const, icon: List, label: "List" },
+    // { value: "calendar" as const, icon: Calendar, label: "Calendar" },
+    // { value: "map" as const, icon: MapPin, label: "Map" },
   ]
 
   return (

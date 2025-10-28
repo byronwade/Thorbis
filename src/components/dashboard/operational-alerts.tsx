@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Operational Alerts - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static alerts rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ */
 
 import { AlertCircle, ArrowRight, Clock, PhoneOff } from "lucide-react";
 import { cn } from "@/lib/utils";

@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Activity Feed - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static activity data rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better initial page load performance
+ */
 
 import {
   AlertCircle,

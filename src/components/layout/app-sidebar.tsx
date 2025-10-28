@@ -3,9 +3,11 @@
 import {
   ArrowLeft,
   AudioWaveform,
+  BadgeCheck,
   BarChart,
   BookOpen,
   Box,
+  Briefcase,
   Bug,
   Calendar,
   Camera,
@@ -14,6 +16,7 @@ import {
   DollarSign,
   FileText,
   GalleryVerticalEnd,
+  GraduationCap,
   Hash,
   Home,
   Inbox,
@@ -25,7 +28,9 @@ import {
   Paperclip,
   Phone,
   Receipt,
+  Search,
   Settings,
+  Shield,
   ShieldCheck,
   Sparkles,
   Ticket,
@@ -38,7 +43,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLayoutConfig } from "@/components/layout/layout-config-provider";
 import { NavChatHistory } from "@/components/layout/nav-chat-history";
 import { NavFlexible } from "@/components/layout/nav-flexible";
 import { NavGrouped } from "@/components/layout/nav-grouped";
@@ -65,34 +69,89 @@ const navigationSections = {
   ],
   communication: [
     {
-      title: "Unified Inbox",
-      url: "/dashboard/communication",
-      icon: Inbox,
+      label: "Inbox",
+      items: [
+        {
+          title: "All Messages",
+          url: "/dashboard/communication",
+          icon: Inbox,
+        },
+        {
+          title: "Unread",
+          url: "/dashboard/communication/unread",
+        },
+        {
+          title: "Starred",
+          url: "/dashboard/communication/starred",
+        },
+        {
+          title: "Archive",
+          url: "/dashboard/communication/archive",
+        },
+        {
+          title: "Trash",
+          url: "/dashboard/communication/trash",
+        },
+        {
+          title: "Spam",
+          url: "/dashboard/communication/spam",
+        },
+      ],
     },
     {
-      title: "Company Email",
-      url: "/dashboard/communication/email",
-      icon: Mail,
+      label: "Teams",
+      items: [
+        {
+          title: "General",
+          url: "/dashboard/communication/teams/general",
+          icon: Hash,
+        },
+        {
+          title: "Sales",
+          url: "/dashboard/communication/teams/sales",
+          icon: Hash,
+        },
+        {
+          title: "Support",
+          url: "/dashboard/communication/teams/support",
+          icon: Hash,
+        },
+        {
+          title: "Technicians",
+          url: "/dashboard/communication/teams/technicians",
+          icon: Hash,
+        },
+        {
+          title: "Management",
+          url: "/dashboard/communication/teams/management",
+          icon: Hash,
+        },
+      ],
     },
     {
-      title: "Phone System",
-      url: "/dashboard/communication/calls",
-      icon: Phone,
-    },
-    {
-      title: "Text Messages",
-      url: "/dashboard/communication/sms",
-      icon: MessageSquare,
-    },
-    {
-      title: "Support Tickets",
-      url: "/dashboard/communication/tickets",
-      icon: Ticket,
-    },
-    {
-      title: "Company Feed",
-      url: "/dashboard/communication/feed",
-      icon: Hash,
+      label: "Channels",
+      items: [
+        {
+          title: "Email",
+          url: "/dashboard/communication/email",
+          icon: Mail,
+        },
+        {
+          title: "Phone & VoIP",
+          url: "/dashboard/communication/calls",
+          icon: Phone,
+        },
+        {
+          title: "SMS & Text",
+          url: "/dashboard/communication/sms",
+          icon: MessageSquare,
+        },
+        {
+          title: "Support Tickets",
+          url: "/dashboard/communication/tickets",
+          icon: Ticket,
+        },
+      ],
     },
   ],
   work: [
@@ -397,8 +456,8 @@ const navigationSections = {
           url: "/dashboard/ai/library",
         },
         {
-          title: "Codex",
-          url: "/dashboard/ai/codex",
+          title: "Automation",
+          url: "/dashboard/ai/automation",
         },
       ],
     },
@@ -408,10 +467,6 @@ const navigationSections = {
         {
           title: "Smart Suggestions",
           url: "/dashboard/ai/suggestions",
-        },
-        {
-          title: "Automation Rules",
-          url: "/dashboard/ai/automation",
         },
         {
           title: "AI Analytics",
@@ -518,8 +573,8 @@ const navigationSections = {
           ],
         },
         {
-          title: "Company Feed",
-          url: "/dashboard/settings/company-feed",
+          title: "Teams & Channels",
+          url: "/dashboard/settings/teams-channels",
         },
       ],
     },
@@ -832,6 +887,183 @@ const navigationSections = {
       ],
     },
   ],
+  tools: [
+    {
+      label: "Marketing & Social",
+      items: [
+        {
+          title: "Google Business Profile",
+          url: "/dashboard/tools/marketing/google-business",
+          icon: Search,
+        },
+        {
+          title: "Local Services Ads",
+          url: "/dashboard/tools/marketing/local-services",
+          icon: BadgeCheck,
+        },
+        {
+          title: "Social Media Setup",
+          url: "/dashboard/tools/marketing/social-media",
+          icon: Megaphone,
+        },
+        {
+          title: "Facebook Business",
+          url: "/dashboard/tools/marketing/facebook",
+          icon: MessageSquare,
+        },
+        {
+          title: "Instagram for Business",
+          url: "/dashboard/tools/marketing/instagram",
+          icon: Camera,
+        },
+        {
+          title: "X (Twitter) Business",
+          url: "/dashboard/tools/marketing/twitter",
+          icon: Hash,
+        },
+        {
+          title: "LinkedIn Company Page",
+          url: "/dashboard/tools/marketing/linkedin",
+          icon: Users,
+        },
+      ],
+    },
+    {
+      label: "Business Setup",
+      items: [
+        {
+          title: "Business Registration",
+          url: "/dashboard/tools/business/registration",
+          icon: Briefcase,
+        },
+        {
+          title: "Licensing & Permits",
+          url: "/dashboard/tools/business/licensing",
+          icon: FileText,
+        },
+        {
+          title: "Insurance Providers",
+          url: "/dashboard/tools/business/insurance",
+          icon: Shield,
+        },
+        {
+          title: "Banking & Payroll",
+          url: "/dashboard/tools/business/banking",
+          icon: DollarSign,
+        },
+        {
+          title: "Legal Resources",
+          url: "/dashboard/tools/business/legal",
+          icon: ShieldCheck,
+        },
+      ],
+    },
+    {
+      label: "Financing & Growth",
+      items: [
+        {
+          title: "Consumer Financing",
+          url: "/dashboard/tools/financing/consumer",
+          icon: Receipt,
+        },
+        {
+          title: "Business Loans",
+          url: "/dashboard/tools/financing/business-loans",
+          icon: DollarSign,
+        },
+        {
+          title: "Equipment Financing",
+          url: "/dashboard/tools/financing/equipment",
+          icon: Wrench,
+        },
+        {
+          title: "Credit Card Processing",
+          url: "/dashboard/tools/financing/credit-card",
+          icon: Receipt,
+        },
+      ],
+    },
+    {
+      label: "Industry Networks",
+      items: [
+        {
+          title: "Nexstar Network",
+          url: "/dashboard/tools/networks/nexstar",
+          icon: Users,
+        },
+        {
+          title: "Service Nation Alliance",
+          url: "/dashboard/tools/networks/service-nation",
+          icon: Users,
+        },
+        {
+          title: "ACCA (HVAC)",
+          url: "/dashboard/tools/networks/acca",
+          icon: Zap,
+        },
+        {
+          title: "PHCC (Plumbing)",
+          url: "/dashboard/tools/networks/phcc",
+          icon: Wrench,
+        },
+        {
+          title: "NECA (Electrical)",
+          url: "/dashboard/tools/networks/neca",
+          icon: Zap,
+        },
+      ],
+    },
+    {
+      label: "Training & Certification",
+      items: [
+        {
+          title: "Trade Certifications",
+          url: "/dashboard/tools/training/certifications",
+          icon: BadgeCheck,
+        },
+        {
+          title: "OSHA Training",
+          url: "/dashboard/tools/training/osha",
+          icon: ShieldCheck,
+        },
+        {
+          title: "EPA Certification",
+          url: "/dashboard/tools/training/epa",
+          icon: Shield,
+        },
+        {
+          title: "Business Management",
+          url: "/dashboard/tools/training/business",
+          icon: GraduationCap,
+        },
+      ],
+    },
+    {
+      label: "Resources & Tools",
+      items: [
+        {
+          title: "Industry News",
+          url: "/dashboard/tools/resources/news",
+          icon: BookOpen,
+        },
+        {
+          title: "Calculators & Estimators",
+          url: "/dashboard/tools/resources/calculators",
+          icon: Wrench,
+        },
+        {
+          title: "Vendor Directories",
+          url: "/dashboard/tools/resources/vendors",
+          icon: Package,
+        },
+        {
+          title: "Emergency Services",
+          url: "/dashboard/tools/resources/emergency",
+          icon: Phone,
+        },
+      ],
+    },
+  ],
   jobDetails: [
     {
       label: undefined,
@@ -963,6 +1195,9 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   if (pathname.startsWith("/dashboard/settings")) {
     return "settings";
   }
+  if (pathname.startsWith("/dashboard/tools")) {
+    return "tools";
+  }
 
   return "today";
 }
@@ -998,7 +1233,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const currentSection = getCurrentSection(pathname);
   const navItems = navigationSections[currentSection];
   const [showWhatsNew, setShowWhatsNew] = useState(true);
-  const { config: layoutConfig } = useLayoutConfig();
 
   // Chat store for AI section
   const { cleanupDuplicateChats } = useChatStore();
@@ -1010,17 +1244,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const isAISection = currentSection === "ai";
 
-  // Use grouped navigation for settings, ai, work, customers, and jobDetails sections
+  // Use grouped navigation for settings, ai, work, customers, communication, tools, and jobDetails sections
   const useGroupedNav =
     currentSection === "settings" ||
     currentSection === "ai" ||
     currentSection === "work" ||
     currentSection === "customers" ||
+    currentSection === "communication" ||
+    currentSection === "tools" ||
     currentSection === "jobDetails";
 
   // Check if page has custom sidebar config
-  const hasCustomConfig = layoutConfig.sidebar !== undefined;
-  const sidebarConfig = layoutConfig.sidebar;
+  // Custom sidebar config is no longer used - removed with layout refactor
+  const hasCustomConfig = false;
+  const sidebarConfig: any = undefined;
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>

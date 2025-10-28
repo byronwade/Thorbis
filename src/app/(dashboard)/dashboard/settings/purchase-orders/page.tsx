@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Purchase Orders Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { ChevronLeft, DollarSign, Mail, Package, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -17,18 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function PurchaseOrderSettingsPage() {
-  usePageLayout({
-    maxWidth: "4xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [requireApproval, setRequireApproval] = useState(true);
+export default function PurchaseOrderSettingsPage() {  const [requireApproval, setRequireApproval] = useState(true);
   const [approvalThreshold, setApprovalThreshold] = useState("500");
   const [autoGenerateEnabled, setAutoGenerateEnabled] = useState(false);
   const [autoGenerateThreshold, setAutoGenerateThreshold] = useState("100");

@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Revenue Chart - Client Component
+ *
+ * Client-side features:
+ * - Interactive chart visualization with Recharts
+ * - ChartContainer requires client-side rendering
+ * - Tooltip interactions require browser APIs
+ */
+
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,

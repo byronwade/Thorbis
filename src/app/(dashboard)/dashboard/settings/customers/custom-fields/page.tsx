@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Customers > Custom Fields Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { HelpCircle, Plus, Save, Tag, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +37,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type CustomField = {
   id: string;
   name: string;
@@ -41,16 +48,7 @@ type CustomField = {
   placeholder?: string;
 };
 
-export default function CustomFieldsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function CustomFieldsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [customFields, setCustomFields] = useState<CustomField[]>([
     {
       id: "1",

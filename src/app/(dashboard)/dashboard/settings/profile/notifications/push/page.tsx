@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Notifications > Push Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   ArrowLeft,
@@ -28,23 +35,11 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 export default function PushNotificationsPage() {
   // Call layout config after mount to avoid SSR issues
   useEffect(() => {
     // Config is set through usePageLayout's useEffect
-  }, []);
-
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+  }, []);  return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">

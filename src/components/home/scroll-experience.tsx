@@ -1,59 +1,60 @@
-"use client";
+/**
+ * Scroll Experience - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Composes multiple sections rendered on server
+ * - Reduced JavaScript bundle size
+ */
 
 import { HeroSection } from "@/components/hero/hero-section";
 import { Footer } from "@/components/layout/footer";
-// import {
-//   ArchitectureSection,
-//   ComplianceSection,
-//   IntegrationsSection,
-// } from "./scroll-sections";
-import { ImprovedFeaturesSection } from "./improved-features";
+import { CleanFeaturesSection } from "./clean-features";
+import { CleanTestimonialsSection } from "./clean-testimonials";
+import { DemoShowcaseSection } from "./demo-showcase";
+import { IntegrationsSection } from "./integrations-section";
+import { ComparisonSection } from "./comparison-section";
+import { FAQSection } from "./faq-section";
+import { FinalCTASection } from "./final-cta-section";
 import {
-  CustomerSuccessSection,
   IndustrySolutionsSection,
-  PricingPreviewSection,
   ROICalculatorSection,
-  TrustStatsSection,
 } from "./new-sections";
 
 export function ScrollExperience() {
   return (
-    <div className="relative">
-      {/* Hero Section */}
-      <section className="relative min-h-screen bg-black">
+    <div className="relative space-y-8">
+      {/* Hero Section - Clean dashboard aesthetic */}
+      <section className="relative min-h-screen">
         <HeroSection />
       </section>
 
-      {/* Trust & Stats Section - Early social proof */}
-      <TrustStatsSection />
+      {/* Features - Dashboard layout style */}
+      <CleanFeaturesSection />
 
-      {/* Features Section */}
-      <ImprovedFeaturesSection />
+      {/* Demo Showcase */}
+      <DemoShowcaseSection />
 
-      {/* Customer Success Stories - Real results */}
-      <CustomerSuccessSection />
+      {/* Customer Testimonials - Clean cards with metrics */}
+      <CleanTestimonialsSection />
 
-      {/* ROI Calculator - Interactive value prop */}
+      {/* Integrations */}
+      <IntegrationsSection />
+
+      {/* ROI Calculator */}
       <ROICalculatorSection />
 
-      {/* Industry Solutions - Targeted messaging */}
+      {/* Comparison Table */}
+      <ComparisonSection />
+
+      {/* Industry Solutions */}
       <IndustrySolutionsSection />
 
-      {/* Architecture Section */}
-      {/* <section className="bg-black py-24">
-        <ArchitectureSection />
-      </section> */}
+      {/* FAQ */}
+      <FAQSection />
 
-      {/* Integrations Showcase Section */}
-      {/* <section className="bg-black py-24">
-        <IntegrationsSection />
-      </section> */}
-
-      {/* Compliance Section */}
-      {/* <ComplianceSection /> */}
-
-      {/* Pricing Preview - Clear next step */}
-      <PricingPreviewSection />
+      {/* Final CTA */}
+      <FinalCTASection />
 
       <Footer />
     </div>

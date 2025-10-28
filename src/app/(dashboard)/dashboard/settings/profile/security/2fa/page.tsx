@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Security > 2Fa Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -27,18 +34,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function TwoFactorAuthPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [setupStep, setSetupStep] = useState<"setup" | "verify" | "complete">(
+export default function TwoFactorAuthPage() {  const [setupStep, setSetupStep] = useState<"setup" | "verify" | "complete">(
     "setup"
   );
   const [verificationCode, setVerificationCode] = useState("");

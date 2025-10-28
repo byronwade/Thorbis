@@ -1,3 +1,135 @@
+# Stratos Project Guidelines
+
+## 🚀 NEXT.JS 16+ REQUIREMENTS
+
+**This project uses Next.js 16.0.0 with React 19. ALL code must follow Next.js 16+ patterns.**
+
+### Breaking Changes from Next.js 14/15
+1. **Async Request APIs** - `cookies()`, `headers()`, `params`, `searchParams` are now async
+2. **Dynamic Route Segments** - All route params must be awaited
+3. **React 19 Features** - Use latest React patterns (ref as prop, actions)
+
+### Required Patterns
+
+#### ✅ Async cookies() - REQUIRED
+```typescript
+// ✅ CORRECT - Next.js 16+
+import { cookies } from "next/headers";
+
+export async function myFunction() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+}
+
+// ❌ WRONG - Next.js 14/15 pattern
+const cookieStore = cookies(); // This will fail in Next.js 16
+```
+
+#### ✅ Async headers() - REQUIRED
+```typescript
+// ✅ CORRECT - Next.js 16+
+import { headers } from "next/headers";
+
+export async function myFunction() {
+  const headersList = await headers();
+  const referer = headersList.get("referer");
+}
+
+// ❌ WRONG - Next.js 14/15 pattern
+const headersList = headers(); // This will fail in Next.js 16
+```
+
+#### ✅ Async params - REQUIRED
+```typescript
+// ✅ CORRECT - Next.js 16+
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <div>ID: {id}</div>;
+}
+
+// ❌ WRONG - Next.js 14/15 pattern
+export default function Page({ params }: { params: { id: string } }) {
+  return <div>ID: {params.id}</div>; // This will fail in Next.js 16
+}
+```
+
+#### ✅ Async searchParams - REQUIRED
+```typescript
+// ✅ CORRECT - Next.js 16+
+export default async function Page({
+  searchParams
+}: {
+  searchParams: Promise<{ query?: string }>
+}) {
+  const { query } = await searchParams;
+  return <div>Search: {query}</div>;
+}
+
+// ❌ WRONG - Next.js 14/15 pattern
+export default function Page({ searchParams }: { searchParams: { query?: string } }) {
+  return <div>Search: {searchParams.query}</div>; // This will fail in Next.js 16
+}
+```
+
+#### ✅ React 19 - ref as prop
+```typescript
+// ✅ CORRECT - React 19
+function MyInput({ ref }: { ref: React.Ref<HTMLInputElement> }) {
+  return <input ref={ref} />;
+}
+
+// ❌ WRONG - React 18 pattern
+const MyInput = React.forwardRef<HTMLInputElement>((props, ref) => {
+  return <input ref={ref} />;
+});
+```
+
+---
+
+## 📚 REQUIRED CONTEXT
+
+**IMPORTANT: ALWAYS reference and apply the complete linting rules from [AGENTS.md](../AGENTS.md) before writing any code.**
+
+The AGENTS.md file contains 407 comprehensive linting rules covering:
+- Accessibility (ARIA, WCAG compliance)
+- TypeScript/JavaScript best practices
+- React/Next.js patterns
+- Security guidelines
+- Performance optimization
+- Testing standards
+- CSS/Styling conventions
+
+**Never skip this reference.** All code must comply with these rules in addition to the critical rules below.
+
+---
+
+## 🎯 CRITICAL RULES (NEVER BREAK)
+
+1. **SERVER COMPONENTS FIRST - ALWAYS**
+   - Default to Server Components for ALL new components
+   - Only add `"use client"` when absolutely necessary (hooks, events, browser APIs)
+   - Extract minimal interactive parts to separate client components
+   - Question: "Can this be a Server Component?" before using client
+   - Target: 65%+ Server Components (currently achieved)
+
+2. **PERFORMANCE IS NON-NEGOTIABLE**
+   - Core Web Vitals targets: LCP < 2.5s, FID < 100ms, CLS < 0.1
+   - Keep client bundles under 200KB gzipped
+   - Zero tolerance for unnecessary JavaScript to client
+   - Use dynamic imports for code splitting
+   - Run `pnpm analyze:bundle` regularly to track bundle sizes
+   - Wrap slow components in `<Suspense>` for streaming
+   - Use ISR (`export const revalidate = N`) for static pages
+
+3. **SECURITY BY DEFAULT**
+   - Supabase RLS on ALL tables - no exceptions
+   - Validate all input server-side with Zod
+   - Never trust client input
+   - Use parameterized queries only
+   - Use Server Actions for form submissions (not client-side state)
+
+## 📋 Linting Rules
+
 Avoid `accessKey` attr and distracting els
 No `aria-hidden="true"` on focusable els
 No ARIA roles, states, props on unsupported els
@@ -237,3 +369,307 @@ Use Next.js `<Image>` comp vs `<img>` el
 Use Next.js `next/head` or App Router metadata API vs `<head>` el
 No importing `next/document` in page files
 No importing `next/head` in `_document.tsx`. Use `<Head>` from `next/document` instead
+
+---
+
+## 🚀 PERFORMANCE PATTERNS (REQUIRED)
+
+### 1. Server Components Pattern
+```typescript
+// ✅ GOOD - Server Component (default)
+import { KPICard } from "@/components/dashboard/kpi-card";
+
+export default function DashboardPage() {
+  return <KPICard title="Revenue" value="$10k" />;
+}
+
+// ❌ BAD - Unnecessary Client Component
+"use client";
+export default function DashboardPage() { /* ... */ }
+```
+
+### 2. Client Component Extraction
+```typescript
+// ✅ GOOD - Extract only interactive part
+// tooltip-wrapper.tsx
+"use client";
+export function TooltipWrapper({ children, content }: Props) {
+  return <Tooltip>{children}</Tooltip>;
+}
+
+// kpi-card.tsx (Server Component)
+export function KPICard() {
+  return (
+    <Card>
+      <TooltipWrapper content="Info">
+        <Icon />
+      </TooltipWrapper>
+    </Card>
+  );
+}
+```
+
+### 3. Streaming with Suspense
+```typescript
+// ✅ GOOD - Wrap slow components in Suspense
+import { Suspense } from "react";
+import { ChartSkeleton } from "@/components/ui/skeletons";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<ChartSkeleton />}>
+      <SlowChart />
+    </Suspense>
+  );
+}
+```
+
+### 4. Server Actions for Forms
+```typescript
+// ✅ GOOD - Server Action
+// actions/settings.ts
+"use server";
+export async function updateSettings(formData: FormData) {
+  const data = settingsSchema.parse({
+    name: formData.get("name"),
+  });
+  // Save to DB
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+// page.tsx
+import { updateSettings } from "@/actions/settings";
+
+<form action={updateSettings}>
+  <input name="name" />
+  <button type="submit">Save</button>
+</form>
+
+// ❌ BAD - Client-side state
+"use client";
+const [data, setData] = useState({});
+<form onSubmit={(e) => { /* manual fetch */ }}>
+```
+
+### 5. ISR for Static Content
+```typescript
+// ✅ GOOD - Revalidate every 5 minutes
+export const revalidate = 300;
+
+export default function ReportsPage() {
+  // Static page regenerated every 5 minutes
+  return <Reports />;
+}
+```
+
+### 6. Loading States
+```typescript
+// ✅ GOOD - Create loading.tsx for automatic streaming
+// app/dashboard/loading.tsx
+export default function Loading() {
+  return <DashboardSkeleton />;
+}
+```
+
+---
+
+## 📦 PROJECT STRUCTURE
+
+### Current Architecture Stats
+- **Total Pages**: 206
+- **Server Components**: 134 (65%)
+- **Client Components**: 72 (35% - only where needed)
+- **Build Time**: ~10 seconds
+- **Bundle Analysis**: Configured with `@next/bundle-analyzer`
+
+### Component Organization
+```
+src/
+├── actions/              # Server Actions (form handling)
+│   ├── settings.ts
+│   └── customers.ts
+├── app/
+│   └── (dashboard)/
+│       └── dashboard/
+│           ├── page.tsx       # Server Component
+│           ├── loading.tsx    # Streaming UI
+│           └── [...]/
+├── components/
+│   ├── ui/
+│   │   ├── skeletons.tsx     # Loading states
+│   │   └── client-timestamp.tsx  # Client wrapper
+│   └── dashboard/
+│       ├── kpi-card.tsx          # Server Component
+│       └── kpi-card-client.tsx   # Client wrapper
+```
+
+---
+
+## 🛠️ DEVELOPMENT COMMANDS
+
+### Performance Analysis
+```bash
+# Analyze bundle sizes (shows in build logs)
+pnpm analyze:bundle
+
+# Run all code analysis
+pnpm analyze
+
+# Check dependencies
+pnpm analyze:deps
+
+# Find circular dependencies
+pnpm analyze:circular
+```
+
+### Development
+```bash
+# Start dev server (Turbopack enabled)
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Lint and fix code
+pnpm lint:fix
+```
+
+---
+
+## ✅ CODE REVIEW CHECKLIST
+
+Before committing code, verify:
+
+- [ ] Is this a Server Component? (if yes, no `"use client"`)
+- [ ] If Client Component, is it absolutely necessary?
+- [ ] Are slow components wrapped in `<Suspense>`?
+- [ ] Does the form use Server Actions instead of client state?
+- [ ] Is static content using ISR (`export const revalidate`)?
+- [ ] Are images using `next/image` (not `<img>`)?
+- [ ] Is bundle size monitored (`pnpm analyze:bundle`)?
+- [ ] Does JSDoc explain the component type and optimizations?
+- [ ] Are all hooks dependencies specified correctly?
+- [ ] Is input validated server-side with Zod?
+
+---
+
+## 🎨 COMPONENT TEMPLATES
+
+### Server Component Template
+```typescript
+/**
+ * [Component Name] - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ */
+
+export default function ComponentName() {
+  // Server-side data fetching
+  const data = await fetchData();
+
+  return (
+    <div>
+      {/* Static content */}
+    </div>
+  );
+}
+```
+
+### Client Component Template
+```typescript
+"use client";
+
+/**
+ * [Component Name] - Client Component
+ *
+ * Client-side features:
+ * - [List specific reasons for client component]
+ * - Example: Interactive tooltips, state management
+ */
+
+import { useState } from "react";
+
+export function ComponentName() {
+  const [state, setState] = useState();
+
+  return (
+    <div>
+      {/* Interactive content */}
+    </div>
+  );
+}
+```
+
+### Server Action Template
+```typescript
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const schema = z.object({
+  // Define schema
+});
+
+export async function actionName(formData: FormData) {
+  try {
+    const data = schema.parse({
+      field: formData.get("field"),
+    });
+
+    // Save to database
+
+    revalidatePath("/path");
+    return { success: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error"
+      };
+    }
+    return { success: false, error: "Operation failed" };
+  }
+}
+```
+
+---
+
+## 📈 PERFORMANCE MONITORING
+
+### Metrics to Track
+1. **Bundle Size**: Run `pnpm analyze:bundle` before major releases
+2. **Build Time**: Should stay under 15 seconds
+3. **Server Components %**: Target 65%+ (currently achieved)
+4. **Core Web Vitals**: Monitor in production
+   - LCP (Largest Contentful Paint) < 2.5s
+   - FID (First Input Delay) < 100ms
+   - CLS (Cumulative Layout Shift) < 0.1
+
+### Bundle Analysis
+- Reports saved to `.next/analyze/client.html` and `.next/analyze/server.html`
+- Check for unexpected large dependencies
+- Look for duplicate code across chunks
+- Verify tree-shaking is working
+
+---
+
+## 🔄 VERSION HISTORY
+
+- **v2.0** - Advanced Performance Optimizations (2025-01-XX)
+  - Converted 65% of pages to Server Components
+  - Added Server Actions for forms
+  - Implemented Streaming with Suspense
+  - Added ISR for static pages
+  - Configured bundle analysis
+  - Created skeleton loading states
+
+- **v1.0** - Initial comprehensive configuration (2025-10-07)
+  - Established core rules and standards
+  - Defined Next.js and Supabase best practices
+  - Added coding conventions and testing standards

@@ -1,23 +1,29 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Ai Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import type { UIMessage } from "@ai-sdk/react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
+import { AIComingSoon } from "@/components/ai/ai-coming-soon";
 import { ChatContainer } from "@/components/chat/chat-container";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import { chatSelectors, useChatStore } from "@/lib/store/chat-store";
 
 export default function AIPage() {
-  // Configure layout without custom sidebar (uses default AI section navigation)
-  usePageLayout({
-    maxWidth: "full",
-    padding: "none",
-    gap: "none",
-    showToolbar: false,
-  });
+  // Show coming soon page in production
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
+
+  if (isProduction) {
+    return <AIComingSoon />;
+  }
 
   const messagesRef = useRef<UIMessage[]>([]);
   const [input, setInput] = useState("");

@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Booking Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Calendar,
@@ -42,8 +49,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const MIN_BOOKING_WINDOW = 1;
 const MAX_BOOKING_WINDOW = 365;
@@ -94,16 +99,7 @@ type CompanyProfile = {
   state: string;
 };
 
-export default function BookingSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function BookingSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mock company profile settings (would come from API/database)
   const companyProfile: CompanyProfile = {

@@ -1,12 +1,19 @@
-"use client";
+/**
+ * Work > Invoices Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { ArrowLeft, FileText, Package, Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 300; // Revalidate every 5 minutes
 type Invoice = {
   id: string;
   invoiceNumber: string;
@@ -95,54 +102,7 @@ function getStatusBadge(status: string) {
   );
 }
 
-export default function InvoicesPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    paddingY: "lg",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-    sidebar: {
-      groups: [
-        {
-          label: undefined,
-          items: [
-            {
-              mode: "link" as const,
-              title: "Back to Work",
-              url: "/dashboard/work",
-              icon: ArrowLeft,
-            },
-          ],
-        },
-        {
-          label: "Financial Documents",
-          items: [
-            {
-              mode: "link" as const,
-              title: "Invoices",
-              url: "/dashboard/work/invoices",
-              icon: FileText,
-            },
-            {
-              mode: "link" as const,
-              title: "Estimates",
-              url: "/dashboard/work/estimates",
-              icon: FileText,
-            },
-            {
-              mode: "link" as const,
-              title: "Purchase Orders",
-              url: "/dashboard/work/purchase-orders",
-              icon: Receipt,
-            },
-          ],
-        },
-      ],
-    },
-  });
-
-  const columns: DataTableColumn<Invoice>[] = [
+export default function InvoicesPage() {  const columns: DataTableColumn<Invoice>[] = [
     {
       key: "invoiceNumber",
       header: "Invoice #",

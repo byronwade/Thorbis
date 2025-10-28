@@ -1,18 +1,16 @@
-"use client";
+/**
+ * Test Full Width Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - ISR revalidation configured
+ * - Reduced JavaScript bundle size
+ */
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900; // Revalidate every 15 minutes
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function TestFullWidthPage() {
-  usePageLayout({
-    maxWidth: "full",
-    padding: "none",
-    gap: "none",
-    showToolbar: false,
-  });
-
-  return (
+export default function TestFullWidthPage() {  return (
     <div className="flex h-full flex-col">
       {/* Custom header */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Work > Purchase Orders Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import {
   CheckCircle2,
   Clock,
@@ -48,8 +57,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type POStatus =
   | "draft"
   | "pending_approval"
@@ -150,16 +157,7 @@ const priorityConfig: Record<
   urgent: { label: "Urgent", color: "text-red-600" },
 };
 
-export default function PurchaseOrdersPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [searchQuery, setSearchQuery] = useState("");
+export default function PurchaseOrdersPage() {  const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
 

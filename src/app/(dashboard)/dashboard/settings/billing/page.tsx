@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Billing Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Activity,
@@ -26,14 +31,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+
+export const revalidate = 3600; // Revalidate every 1 hour
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Pricing Constants
 const BASE_FEE = 100;
 const PRICING = {
@@ -105,16 +110,7 @@ type UsageCategory = {
   example: string;
 };
 
-export default function BillingPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const categories: UsageCategory[] = [
+export default function BillingPage() {  const categories: UsageCategory[] = [
     {
       name: "Team Members",
       icon: Users,

@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Jobs Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -42,8 +49,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const MIN_JOB_NUMBER = 1000;
 const MAX_JOB_NUMBER = 999_999;
@@ -94,16 +99,7 @@ type JobSettings = {
   sendOnTheWayNotification: boolean;
 };
 
-export default function JobsSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function JobsSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<JobSettings>({
     // Job Numbers
     autoGenerateJobNumbers: true,

@@ -1,12 +1,19 @@
-"use client";
+/**
+ * Work > Equipment Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { ArrowLeft, BookOpen, Box, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { StatCard } from "@/components/work/stat-card";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 300; // Revalidate every 5 minutes
 interface Equipment extends Record<string, unknown> {
   id: string;
   assetId: string;
@@ -71,54 +78,7 @@ function getStatusBadge(status: string) {
   return <Badge variant="destructive">Maintenance</Badge>;
 }
 
-export default function EquipmentPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    paddingY: "lg",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-    sidebar: {
-      groups: [
-        {
-          label: undefined,
-          items: [
-            {
-              mode: "link" as const,
-              title: "Back to Work",
-              url: "/dashboard/work",
-              icon: ArrowLeft,
-            },
-          ],
-        },
-        {
-          label: "Company Resources",
-          items: [
-            {
-              mode: "link" as const,
-              title: "Price Book",
-              url: "/dashboard/work/pricebook",
-              icon: BookOpen,
-            },
-            {
-              mode: "link" as const,
-              title: "Materials Inventory",
-              url: "/dashboard/work/materials",
-              icon: Box,
-            },
-            {
-              mode: "link" as const,
-              title: "Equipment & Tools",
-              url: "/dashboard/work/equipment",
-              icon: Package,
-            },
-          ],
-        },
-      ],
-    },
-  });
-
-  const columns: DataTableColumn<Equipment>[] = [
+export default function EquipmentPage() {  const columns: DataTableColumn<Equipment>[] = [
     {
       key: "assetId",
       header: "Asset ID",

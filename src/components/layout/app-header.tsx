@@ -1,17 +1,18 @@
 "use client";
 
-import { Menu, Settings, X } from "lucide-react";
+import { Menu, Settings, X, Tv } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { HelpDropdown } from "./help-dropdown";
 import { IntegrationsDropdown } from "./integrations-dropdown";
 import { NotificationsDropdown } from "./notifications-dropdown";
 import { ToolsDropdown } from "./tools-dropdown";
 
-type NavItemStatus = "beta" | "new" | "updated" | null;
+type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
 
 type NavItem = {
   label: string;
@@ -30,7 +31,7 @@ const navigationItems: NavItemWithMobile[] = [
   {
     label: "Ask Stratos",
     href: "/dashboard/ai",
-    status: "beta",
+    status: "coming-soon",
     isSpecial: true,
     mobileIcon: "S",
     mobileIconBg: "bg-gradient-to-r from-blue-500 to-cyan-400",
@@ -88,12 +89,12 @@ const navigationItems: NavItemWithMobile[] = [
     mobileIconColor: "text-pink-600",
   },
   {
-    label: "Automation",
-    href: "/dashboard/automation",
-    status: "beta",
-    mobileIcon: "A",
-    mobileIconBg: "bg-indigo-500/10",
-    mobileIconColor: "text-indigo-600",
+    label: "Training",
+    href: "/dashboard/training",
+    status: "coming-soon",
+    mobileIcon: "T",
+    mobileIconBg: "bg-purple-500/10",
+    mobileIconColor: "text-purple-600",
   },
 ];
 
@@ -102,11 +103,19 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
     return null;
   }
 
-  // For beta, show badge; for new/updated, show blue circle
+  // For beta and coming-soon, show badge
   if (status === "beta") {
     return (
       <span className="-top-1.5 absolute right-0 rounded border border-blue-600 bg-blue-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide">
         Beta
+      </span>
+    );
+  }
+
+  if (status === "coming-soon") {
+    return (
+      <span className="-top-1.5 absolute right-0 whitespace-nowrap rounded border border-purple-600 bg-purple-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide">
+        Soon
       </span>
     );
   }
@@ -129,12 +138,14 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
     beta: "bg-blue-500 text-white",
     new: "bg-green-500 text-white",
     updated: "bg-orange-500 text-white",
+    "coming-soon": "bg-purple-500 text-white",
   };
 
   const labels = {
     beta: "Beta",
     new: "New",
     updated: "Updated",
+    "coming-soon": "Soon",
   };
 
   return (
@@ -446,6 +457,16 @@ export function AppHeader() {
 
           {/* Integrations */}
           <IntegrationsDropdown />
+
+          {/* TV Leaderboard */}
+          <Link
+            className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+            href="/dashboard/tv-leaderboard"
+            title="TV Leaderboard"
+          >
+            <Tv className="size-4" />
+            <span className="sr-only">TV Leaderboard</span>
+          </Link>
 
           <Separator
             className="h-4 bg-border"

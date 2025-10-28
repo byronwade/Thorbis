@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Team Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   ArrowUpDown,
@@ -47,8 +54,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type UserStatus = "active" | "invited" | "suspended";
 type SortField =
   | "name"
@@ -89,16 +94,7 @@ type Department = {
   memberCount: number;
 };
 
-export default function TeamMembersPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [searchQuery, setSearchQuery] = useState("");
+export default function TeamMembersPage() {  const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");

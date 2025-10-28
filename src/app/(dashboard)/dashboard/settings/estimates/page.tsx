@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Estimates Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Calendar,
@@ -36,8 +43,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const DEFAULT_ESTIMATE_PREFIX = "EST";
@@ -98,16 +103,7 @@ type EstimateSettings = {
   approvalThankYouMessage: string;
 };
 
-export default function EstimatesSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function EstimatesSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<EstimateSettings>({
     // Estimate Numbering
     autoGenerateNumbers: true,

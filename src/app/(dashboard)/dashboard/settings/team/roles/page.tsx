@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Team > Roles Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   ArrowLeft,
@@ -24,6 +29,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+
+export const revalidate = 3600; // Revalidate every 1 hour
 import {
   Card,
   CardContent,
@@ -38,8 +45,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type CustomRole = {
   id: string;
   name: string;
@@ -49,16 +54,7 @@ type CustomRole = {
   memberCount: number;
 };
 
-export default function RolesPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const customRoles: CustomRole[] = [
+export default function RolesPage() {  const customRoles: CustomRole[] = [
     {
       id: "1",
       name: "Owner",

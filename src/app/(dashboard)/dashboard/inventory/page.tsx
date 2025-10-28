@@ -1,19 +1,17 @@
-"use client";
+/**
+ * Inventory Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ * - ISR revalidation every 1 hour
+ */
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // Revalidate every 1 hour
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function InventoryDashboardPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function InventoryDashboardPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Inventory Dashboard</h1>

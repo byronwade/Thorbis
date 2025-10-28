@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Job Process Indicator - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static status visualization rendered on server
+ * - CSS animations (animate-pulse, animate-ping) work without JavaScript
+ * - Reduced JavaScript bundle size
+ */
 
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";

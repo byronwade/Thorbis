@@ -1,12 +1,20 @@
 "use client"
 
-export const dynamic = "force-dynamic"
 
-import { usePageLayout } from "@/hooks/use-page-layout"
-import { TimelineView } from "@/components/schedule/timeline-view"
-import { ListView } from "@/components/schedule/list-view"
-import { CalendarView } from "@/components/schedule/calendar-view"
-import { MapView } from "@/components/schedule/map-view"
+/**
+ * Schedule Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
+import { TimelineViewV2 } from "@/components/schedule/timeline-view-v2"
+import { TestSchedule } from "./test-schedule"
+// import { ListView } from "@/components/schedule/list-view"
+// import { CalendarView } from "@/components/schedule/calendar-view"
+// import { MapView } from "@/components/schedule/map-view"
 import { useScheduleView } from "@/components/schedule/schedule-view-provider"
 import { useEffect } from "react"
 import { useSidebar } from "@/components/ui/sidebar"
@@ -20,21 +28,14 @@ export default function SchedulePage() {
     setOpen(false)
   }, [setOpen])
 
-  usePageLayout({
-    maxWidth: "full",
-    padding: "none",
-    gap: "none",
-    showToolbar: true,
-    showSidebar: true,
-    fixedHeight: true,
-  })
-
   return (
     <div className="h-full w-full overflow-hidden">
-      {view === "timeline" && <TimelineView />}
-      {view === "list" && <ListView />}
-      {view === "calendar" && <CalendarView />}
-      {view === "map" && <MapView />}
+      {view === "timeline" && <TimelineViewV2 />}
+      {view === "test" && <TestSchedule />}
+      {/* Temporarily disabled old views that use deprecated data model */}
+      {/* {view === "list" && <ListView />} */}
+      {/* {view === "calendar" && <CalendarView />} */}
+      {/* {view === "map" && <MapView />} */}
     </div>
   )
 }

@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -38,7 +45,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import { useUIStore } from "@/lib/store";
 
 type SettingCategory = {
@@ -246,16 +252,7 @@ const settingCategories: SettingCategory[] = [
   },
 ];
 
-export default function SettingsOverviewPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [poSystemEnabled, setPoSystemEnabled] = useState(false);
+export default function SettingsOverviewPage() {  const [poSystemEnabled, setPoSystemEnabled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter settings based on search query

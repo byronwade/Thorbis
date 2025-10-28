@@ -1,4 +1,12 @@
-"use client"
+/**
+ * Schedule Calendar View - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static calendar grid rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better initial page load performance
+ */
 
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"

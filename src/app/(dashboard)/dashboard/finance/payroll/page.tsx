@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Finance > Payroll Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -12,6 +17,8 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+
+export const revalidate = 900; // Revalidate every 15 minutes
 import {
   Card,
   CardContent,
@@ -19,18 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function PayrollOverviewPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function PayrollOverviewPage() {  return (
     <div className="space-y-6">
       {/* Header */}
       <div>

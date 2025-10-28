@@ -1,6 +1,13 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Jobs Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ * - ISR revalidation every 5 minutes for job updates
+ */
 
 import {
   Card,
@@ -9,18 +16,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
-export default function JobsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
+export const revalidate = 300; // Revalidate every 5 minutes
 
-  return (
+export default function JobsPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Active Jobs</h1>

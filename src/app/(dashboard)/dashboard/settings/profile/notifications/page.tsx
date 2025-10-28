@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Notifications Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Bell,
@@ -26,8 +33,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type NotificationSettings = {
   email: {
     marketing: boolean;
@@ -56,16 +61,7 @@ type NotificationSettings = {
   };
 };
 
-export default function NotificationsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [settings, setSettings] = useState<NotificationSettings>({
+export default function NotificationsPage() {  const [settings, setSettings] = useState<NotificationSettings>({
     email: {
       marketing: false,
       updates: true,

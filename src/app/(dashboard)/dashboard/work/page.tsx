@@ -1,12 +1,20 @@
-"use client";
+/**
+ * Work Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { Filter, Plus } from "lucide-react";
 import Link from "next/link";
 import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
 import { Button } from "@/components/ui/button";
 import { JobsTable } from "@/components/work/jobs-table";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import type { Job } from "@/lib/db/schema";
+
+export const revalidate = 300; // Revalidate every 5 minutes
 
 // Extended mock data for demonstration - replace with real data from database
 const mockJobs: Job[] = [
@@ -127,16 +135,7 @@ const mockJobs: Job[] = [
   },
 ];
 
-export default function JobsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    paddingY: "lg",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function JobsPage() {  return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>

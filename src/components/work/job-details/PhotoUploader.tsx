@@ -111,8 +111,7 @@ export function PhotoUploader({
     });
 
     if (errors.length > 0) {
-      // In a real app, show toast notifications
-      console.error("Upload errors:", errors);
+      // TODO: Show toast notifications for upload errors
     }
 
     setFiles((prev) => [...prev, ...newFiles]);
@@ -216,7 +215,7 @@ export function PhotoUploader({
         setUploadProgress(0);
       }, 500);
     } catch (error) {
-      console.error("Upload failed:", error);
+      // TODO: Show error toast notification
       setIsUploading(false);
       setUploadProgress(0);
     }

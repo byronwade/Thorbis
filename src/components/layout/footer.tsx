@@ -1,4 +1,11 @@
-"use client";
+/**
+ * Footer - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static footer content rendered on server
+ * - Reduced JavaScript bundle size
+ */
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

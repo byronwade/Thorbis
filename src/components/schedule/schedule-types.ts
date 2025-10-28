@@ -1,9 +1,138 @@
+// ============================================
+// CORE DATA TYPES
+// ============================================
+
+export interface Address {
+  street: string
+  city: string
+  state: string
+  zip: string
+  country: string
+}
+
+export interface Location {
+  address: Address
+  coordinates: {
+    lat: number
+    lng: number
+  }
+  placeId?: string // Google Places ID
+}
+
+export interface Customer {
+  id: string
+  name: string
+  email?: string
+  phone?: string
+  company?: string
+  location: Location
+  notes?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface RecurrenceRule {
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  interval: number // Every N days/weeks/months/years
+  endDate?: Date
+  count?: number // Stop after N occurrences
+  daysOfWeek?: number[] // 0-6 (Sunday-Saturday)
+  dayOfMonth?: number // 1-31
+  monthOfYear?: number // 1-12
+}
+
+export interface JobMetadata {
+  estimatedDuration?: number // minutes
+  actualDuration?: number // minutes
+  materials?: string[]
+  notes?: string
+  internalNotes?: string
+  attachments?: string[] // URLs
+  tags?: string[]
+  customFields?: Record<string, any>
+}
+
 export interface Job {
+  id: string
+  technicianId: string // Which technician is assigned
+
+  // Job details
+  title: string
+  description?: string
+  customer: Customer
+  location: Location
+
+  // Scheduling
+  startTime: Date
+  endTime: Date
+  allDay?: boolean // For meetings, events
+
+  // Status
+  status: "scheduled" | "in-progress" | "completed" | "cancelled"
+  priority: "low" | "medium" | "high" | "urgent"
+
+  // Recurrence
+  recurrence?: RecurrenceRule
+  parentJobId?: string // For recurring job instances
+
+  // Metadata
+  metadata: JobMetadata
+
+  // Audit
+  createdAt: Date
+  updatedAt: Date
+  createdBy?: string
+  updatedBy?: string
+}
+
+export interface TechnicianSchedule {
+  availableHours: {
+    start: number // 0-23
+    end: number   // 0-23
+  }
+  daysOff: Date[]
+  breakTimes?: Array<{
+    start: number // minutes from day start
+    end: number
+  }>
+}
+
+export interface Technician {
+  id: string
+  name: string
+  email?: string
+  phone?: string
+  avatar?: string
+
+  // Employment
+  role: string
+  department?: string
+  skills?: string[]
+  certifications?: string[]
+
+  // Status
+  status: "available" | "on-job" | "on-break" | "offline"
+  currentLocation?: Location
+
+  // Schedule
+  schedule: TechnicianSchedule
+
+  // Audit
+  createdAt: Date
+  updatedAt: Date
+}
+
+// ============================================
+// LEGACY COMPATIBILITY (for migration)
+// ============================================
+
+/** @deprecated Use Job with Date objects instead */
+export interface LegacyJob {
   id: string
   title: string
   customer: string
-  startTime: string
-  endTime: string
+  startTime: string // HH:MM format
+  endTime: string   // HH:MM format
   status: "scheduled" | "in-progress" | "completed" | "cancelled"
   priority: "low" | "medium" | "high" | "urgent"
   location: string
@@ -14,18 +143,12 @@ export interface Job {
   estimatedDuration?: string
 }
 
-export interface Technician {
-  id: string
-  name: string
-  role: string
-  status: "available" | "on-job" | "on-break" | "offline"
-  avatar?: string
-  phone?: string
-  email?: string
-  jobs: Job[]
-}
+// ============================================
+// MOCK DATA (Legacy - use generateMockScheduleData instead)
+// ============================================
 
-export const mockTechnicians: Technician[] = [
+/** @deprecated Use generateMockScheduleData from @/lib/mock-schedule-data instead */
+export const mockTechnicians: any[] = [
   {
     id: "1",
     name: "John Doe",
@@ -533,6 +656,430 @@ export const mockTechnicians: Technician[] = [
         lng: -74.0134,
         description: "Replace HVAC filters",
         estimatedDuration: "1 hour",
+      },
+    ],
+  },
+  {
+    id: "13",
+    name: "Thomas Martinez",
+    role: "Senior Technician",
+    status: "on-job",
+    email: "thomas.martinez@company.com",
+    phone: "(555) 345-6780",
+    jobs: [
+      {
+        id: "j27",
+        title: "Major Installation",
+        customer: "New Construction Site",
+        startTime: "07:00",
+        endTime: "12:00",
+        status: "in-progress",
+        priority: "urgent",
+        location: "1024 Builder's Ave",
+        address: "1024 Builder's Ave, Construction Zone",
+        lat: 40.7456,
+        lng: -73.9889,
+        description: "Full HVAC system installation for new building",
+        estimatedDuration: "5 hours",
+      },
+      {
+        id: "j28",
+        title: "Quick Inspection",
+        customer: "Retail Store",
+        startTime: "13:00",
+        endTime: "13:30",
+        status: "scheduled",
+        priority: "low",
+        location: "789 Shop Street",
+        address: "789 Shop Street, Downtown",
+        lat: 40.7334,
+        lng: -73.9956,
+        description: "Quick system check",
+        estimatedDuration: "30 minutes",
+      },
+      {
+        id: "j29",
+        title: "Afternoon Service",
+        customer: "Office Building",
+        startTime: "14:00",
+        endTime: "16:30",
+        status: "scheduled",
+        priority: "medium",
+        location: "445 Business Plaza",
+        address: "445 Business Plaza, Financial District",
+        lat: 40.7167,
+        lng: -73.9890,
+        description: "Routine maintenance",
+        estimatedDuration: "2.5 hours",
+      },
+    ],
+  },
+  {
+    id: "14",
+    name: "Nicole Thompson",
+    role: "Field Technician",
+    status: "available",
+    email: "nicole.thompson@company.com",
+    phone: "(555) 456-7891",
+    jobs: [
+      {
+        id: "j30",
+        title: "Emergency Repair",
+        customer: "Hospital Wing",
+        startTime: "08:00",
+        endTime: "09:30",
+        status: "completed",
+        priority: "urgent",
+        location: "890 Medical Center",
+        address: "890 Medical Center, Healthcare District",
+        lat: 40.7623,
+        lng: -73.9734,
+        description: "Critical AC failure in patient wing",
+        estimatedDuration: "1.5 hours",
+      },
+      {
+        id: "j31",
+        title: "Overlapping Job 1",
+        customer: "Mall Complex",
+        startTime: "11:00",
+        endTime: "13:00",
+        status: "scheduled",
+        priority: "medium",
+        location: "123 Shopping Way",
+        address: "123 Shopping Way, Retail District",
+        lat: 40.7245,
+        lng: -73.9967,
+        description: "Zone 1 maintenance",
+        estimatedDuration: "2 hours",
+      },
+      {
+        id: "j32",
+        title: "Overlapping Job 2",
+        customer: "Mall Complex",
+        startTime: "11:30",
+        endTime: "12:30",
+        status: "scheduled",
+        priority: "high",
+        location: "123 Shopping Way",
+        address: "123 Shopping Way, Retail District",
+        lat: 40.7245,
+        lng: -73.9967,
+        description: "Zone 2 maintenance (concurrent)",
+        estimatedDuration: "1 hour",
+      },
+      {
+        id: "j33",
+        title: "Late Afternoon Call",
+        customer: "Restaurant",
+        startTime: "16:30",
+        endTime: "18:30",
+        status: "scheduled",
+        priority: "medium",
+        location: "567 Dining Ave",
+        address: "567 Dining Ave, Restaurant Row",
+        lat: 40.7312,
+        lng: -73.9945,
+        description: "Kitchen ventilation service",
+        estimatedDuration: "2 hours",
+      },
+    ],
+  },
+  {
+    id: "15",
+    name: "Kevin Rodriguez",
+    role: "Lead Technician",
+    status: "on-break",
+    email: "kevin.rodriguez@company.com",
+    phone: "(555) 567-8902",
+    jobs: [
+      {
+        id: "j34",
+        title: "Morning Consultation",
+        customer: "Tech Startup",
+        startTime: "09:00",
+        endTime: "10:00",
+        status: "completed",
+        priority: "low",
+        location: "234 Innovation Dr",
+        address: "234 Innovation Dr, Tech Park",
+        lat: 40.7489,
+        lng: -73.9712,
+        description: "System upgrade consultation",
+        estimatedDuration: "1 hour",
+      },
+      {
+        id: "j35",
+        title: "Complex Installation",
+        customer: "Corporate HQ",
+        startTime: "10:30",
+        endTime: "15:30",
+        status: "in-progress",
+        priority: "high",
+        location: "890 Corporate Way",
+        address: "890 Corporate Way, Business District",
+        lat: 40.7556,
+        lng: -73.9801,
+        description: "Multi-zone HVAC installation",
+        estimatedDuration: "5 hours",
+      },
+    ],
+  },
+  {
+    id: "16",
+    name: "Amanda Lee",
+    role: "Field Technician",
+    status: "available",
+    email: "amanda.lee@company.com",
+    phone: "(555) 678-9013",
+    jobs: [
+      {
+        id: "j36",
+        title: "Quick Fix",
+        customer: "Coffee Shop",
+        startTime: "07:30",
+        endTime: "08:15",
+        status: "completed",
+        priority: "medium",
+        location: "345 Cafe Street",
+        address: "345 Cafe Street, Downtown",
+        lat: 40.7423,
+        lng: -73.9889,
+        description: "Thermostat adjustment",
+        estimatedDuration: "45 minutes",
+      },
+      {
+        id: "j37",
+        title: "Back-to-Back 1",
+        customer: "Office A",
+        startTime: "09:00",
+        endTime: "11:00",
+        status: "completed",
+        priority: "medium",
+        location: "456 Office Park",
+        address: "456 Office Park, Business Center",
+        lat: 40.7334,
+        lng: -73.9923,
+        description: "Scheduled maintenance",
+        estimatedDuration: "2 hours",
+      },
+      {
+        id: "j38",
+        title: "Back-to-Back 2",
+        customer: "Office B",
+        startTime: "11:00",
+        endTime: "13:00",
+        status: "in-progress",
+        priority: "medium",
+        location: "457 Office Park",
+        address: "457 Office Park, Business Center",
+        lat: 40.7335,
+        lng: -73.9924,
+        description: "Scheduled maintenance",
+        estimatedDuration: "2 hours",
+      },
+      {
+        id: "j39",
+        title: "Afternoon Emergency",
+        customer: "Grocery Store",
+        startTime: "14:30",
+        endTime: "17:00",
+        status: "scheduled",
+        priority: "urgent",
+        location: "678 Market Street",
+        address: "678 Market Street, Shopping District",
+        lat: 40.7267,
+        lng: -73.9978,
+        description: "Refrigeration system failure",
+        estimatedDuration: "2.5 hours",
+      },
+    ],
+  },
+  {
+    id: "17",
+    name: "Brian Clark",
+    role: "Senior Technician",
+    status: "on-job",
+    email: "brian.clark@company.com",
+    phone: "(555) 789-0124",
+    jobs: [
+      {
+        id: "j40",
+        title: "All Day Project",
+        customer: "Industrial Facility",
+        startTime: "07:00",
+        endTime: "18:00",
+        status: "in-progress",
+        priority: "high",
+        location: "1200 Factory Blvd",
+        address: "1200 Factory Blvd, Industrial Zone",
+        lat: 40.6956,
+        lng: -73.9412,
+        description: "Complete system overhaul",
+        estimatedDuration: "11 hours",
+      },
+    ],
+  },
+  {
+    id: "18",
+    name: "Rachel White",
+    role: "Field Technician",
+    status: "available",
+    email: "rachel.white@company.com",
+    phone: "(555) 890-1235",
+    jobs: [
+      {
+        id: "j41",
+        title: "Short Call",
+        customer: "Apartment Complex",
+        startTime: "08:30",
+        endTime: "09:00",
+        status: "completed",
+        priority: "low",
+        location: "789 Resident Dr",
+        address: "789 Resident Dr, Residential Area",
+        lat: 40.7189,
+        lng: -73.9956,
+        description: "Quick filter check",
+        estimatedDuration: "30 minutes",
+      },
+      {
+        id: "j42",
+        title: "Mid-Morning Service",
+        customer: "Dental Office",
+        startTime: "10:00",
+        endTime: "11:30",
+        status: "completed",
+        priority: "medium",
+        location: "234 Health Plaza",
+        address: "234 Health Plaza, Medical District",
+        lat: 40.7723,
+        lng: -73.9634,
+        description: "AC maintenance",
+        estimatedDuration: "1.5 hours",
+      },
+      {
+        id: "j43",
+        title: "Gap Before Lunch",
+        customer: "Law Office",
+        startTime: "13:30",
+        endTime: "15:00",
+        status: "scheduled",
+        priority: "low",
+        location: "890 Legal Way",
+        address: "890 Legal Way, Professional Center",
+        lat: 40.7445,
+        lng: -73.9867,
+        description: "Routine inspection",
+        estimatedDuration: "1.5 hours",
+      },
+      {
+        id: "j44",
+        title: "End of Day",
+        customer: "Retail Chain",
+        startTime: "17:00",
+        endTime: "18:30",
+        status: "scheduled",
+        priority: "medium",
+        location: "456 Store Front",
+        address: "456 Store Front, Shopping Mall",
+        lat: 40.7378,
+        lng: -73.9934,
+        description: "Post-hours maintenance",
+        estimatedDuration: "1.5 hours",
+      },
+    ],
+  },
+  {
+    id: "19",
+    name: "Daniel Harris",
+    role: "Lead Technician",
+    status: "offline",
+    email: "daniel.harris@company.com",
+    phone: "(555) 901-2346",
+    jobs: [],
+  },
+  {
+    id: "20",
+    name: "Michelle Young",
+    role: "Field Technician",
+    status: "available",
+    email: "michelle.young@company.com",
+    phone: "(555) 012-3457",
+    jobs: [
+      {
+        id: "j45",
+        title: "Early Bird Special",
+        customer: "Bakery",
+        startTime: "07:00",
+        endTime: "08:00",
+        status: "completed",
+        priority: "high",
+        location: "123 Bread Street",
+        address: "123 Bread Street, Downtown",
+        lat: 40.7312,
+        lng: -73.9912,
+        description: "Urgent AC repair before opening",
+        estimatedDuration: "1 hour",
+      },
+      {
+        id: "j46",
+        title: "Triple Overlap 1",
+        customer: "School District",
+        startTime: "09:00",
+        endTime: "12:00",
+        status: "in-progress",
+        priority: "medium",
+        location: "567 Education Way",
+        address: "567 Education Way, School Campus",
+        lat: 40.7634,
+        lng: -73.9845,
+        description: "Building A maintenance",
+        estimatedDuration: "3 hours",
+      },
+      {
+        id: "j47",
+        title: "Triple Overlap 2",
+        customer: "School District",
+        startTime: "10:00",
+        endTime: "11:00",
+        status: "in-progress",
+        priority: "high",
+        location: "567 Education Way",
+        address: "567 Education Way, School Campus",
+        lat: 40.7634,
+        lng: -73.9845,
+        description: "Building B urgent fix",
+        estimatedDuration: "1 hour",
+      },
+      {
+        id: "j48",
+        title: "Triple Overlap 3",
+        customer: "School District",
+        startTime: "10:30",
+        endTime: "12:30",
+        status: "scheduled",
+        priority: "medium",
+        location: "567 Education Way",
+        address: "567 Education Way, School Campus",
+        lat: 40.7634,
+        lng: -73.9845,
+        description: "Building C inspection",
+        estimatedDuration: "2 hours",
+      },
+      {
+        id: "j49",
+        title: "Late Afternoon",
+        customer: "Gym Chain",
+        startTime: "15:00",
+        endTime: "17:30",
+        status: "scheduled",
+        priority: "low",
+        location: "890 Fitness Center",
+        address: "890 Fitness Center, Recreation Complex",
+        lat: 40.7201,
+        lng: -73.9967,
+        description: "Annual maintenance",
+        estimatedDuration: "2.5 hours",
       },
     ],
   },

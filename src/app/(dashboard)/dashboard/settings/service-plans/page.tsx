@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Service Plans Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Calendar,
@@ -39,8 +46,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const _MAX_DESCRIPTION_LENGTH = 500;
@@ -98,16 +103,7 @@ type ServicePlanSettings = {
   cancellationFee: number;
 };
 
-export default function ServicePlansPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function ServicePlansPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [_showAddPlan, setShowAddPlan] = useState(false);
 
   const [settings, setSettings] = useState<ServicePlanSettings>({

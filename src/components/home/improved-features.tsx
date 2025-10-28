@@ -149,14 +149,18 @@ export function ImprovedFeaturesSection() {
             variant="outline"
           >
             <span className="size-1.5 rounded-full bg-primary" />
-            Features
+            Complete Platform
           </Badge>
           <h1 className="mb-4 font-bold text-4xl text-white md:text-5xl lg:text-6xl">
-            Discover Our Powerful Features
+            Everything You Need to
+            <br />
+            <span className="bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">
+              Run & Grow Your Business
+            </span>
           </h1>
           <p className="mx-auto max-w-2xl text-foreground text-lg md:text-xl">
-            Everything you need to run a successful field service business, all
-            in one platform
+            From scheduling to payments, manage every aspect of your field
+            service operations in one powerful platform
           </p>
         </div>
         <div className="relative gap-8 pb-72 md:grid md:grid-cols-5 md:pb-0">

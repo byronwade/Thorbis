@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Company Feed Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Archive,
@@ -50,8 +57,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const DEFAULT_POST_LENGTH = 5000;
@@ -133,16 +138,7 @@ type CompanyFeedSettings = {
   retentionPeriod: number; // days
 };
 
-export default function CompanyFeedSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function CompanyFeedSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [settings, setSettings] = useState<CompanyFeedSettings>({
     // General Settings

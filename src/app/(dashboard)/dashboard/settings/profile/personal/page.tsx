@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Personal Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -37,8 +44,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const MIN_NAME_LENGTH = 2;
 const MIN_PHONE_LENGTH = 10;
@@ -79,16 +84,7 @@ const personalInfoSchema = z.object({
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
-export default function PersonalInformationPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function PersonalInformationPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   const form = useForm<PersonalInfoFormData>({

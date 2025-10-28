@@ -1,10 +1,17 @@
-"use client";
+/**
+ * Settings > Schedule Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { Calendar, Clock, MapPin, Settings, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 3600; // Revalidate every 1 hour
 const scheduleSections = [
   {
     title: "Calendar Settings",
@@ -48,16 +55,7 @@ const scheduleSections = [
   },
 ];
 
-export default function ScheduleSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function ScheduleSettingsPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Schedule Settings</h1>

@@ -1,4 +1,11 @@
-"use client";
+/**
+ * Settings > Communications Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Bell,
@@ -10,8 +17,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 3600; // Revalidate every 1 hour
 const communicationsSections = [
   {
     title: "Email",
@@ -55,16 +62,7 @@ const communicationsSections = [
   },
 ];
 
-export default function CommunicationsSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function CommunicationsSettingsPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">

@@ -1,19 +1,18 @@
-"use client";
+/**
+ * Reports Page - Server Component with ISR
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ * - ISR with 5-minute revalidation for fresh data
+ */
 
-export const dynamic = "force-dynamic";
+// Revalidate every 5 minutes (ISR - Incremental Static Regeneration)
+export const revalidate = 300;
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function BusinessIntelligencePage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function BusinessIntelligencePage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Business Intelligence</h1>

@@ -237,3 +237,171 @@ Use Next.js `<Image>` comp vs `<img>` el
 Use Next.js `next/head` or App Router metadata API vs `<head>` el
 No importing `next/document` in page files
 No importing `next/head` in `_document.tsx`. Use `<Head>` from `next/document` instead
+Add `"use client"` only when absolutely necessary (interactivity, hooks, browser APIs)
+Minimize client bundle size - extract smallest possible interactive parts to client comps
+Use Server Components for all data fetching by default
+Use Server Actions for mutations vs API routes when possible
+Implement streaming with Suspense boundaries for slow data
+Use dynamic imports for code splitting heavy client comps
+Always use `next/image` with width, height, and proper optimization
+Implement proper error boundaries in app directory
+Use `force-cache` or `revalidate` strategies appropriately in fetch calls
+Keep client bundles under 200KB gzipped
+Prefetch critical resources and optimize fonts
+Use edge runtime for API routes when possible
+Never fetch data in useEffect - use Server Components or React Query
+Memoize expensive computations with useMemo
+Memoize callbacks with useCallback when passed to child comps
+Use React.memo for comps that render frequently with same props
+Implement progressive rendering with nested Suspense boundaries
+Use Tailwind @apply sparingly - prefer utility classes
+Always support dark mode with dark: prefixes
+Validate all user input server-side with Zod schemas
+Enable RLS policies on ALL Supabase tables
+Never trust client input - validate and sanitize server-side
+Use parameterized queries only - no string concatenation
+Implement rate limiting on all API routes
+Store secrets in env vars, never commit .env files
+Use NEXT_PUBLIC_ prefix only for truly public env vars
+Use HTTP-only secure cookies for session management
+Implement CSRF protection for forms
+Sanitize all user-generated content before rendering
+Log security events but never expose sensitive info in errors
+Use service role key only in secure server environments
+Validate session server-side for protected routes
+Use middleware for auth protection and redirects
+Enable CSP headers in next.config.js
+Hash passwords with bcrypt, never store plain text
+Implement email confirmation for new users
+Use secure password reset flows with time-limited tokens
+Never expose database errors to client
+Validate file uploads (type, size, content)
+Implement proper CORS policies
+Use HTTPS in production always
+Audit dependencies regularly for vulnerabilities
+Follow principle of least privilege for database access
+Enable SQL injection protection with RLS and parameterized queries
+Implement XSS protection by escaping HTML
+Use proper authentication flow with Supabase auth.getUser()
+Never use auth.getSession() alone for server-side auth
+Validate JWT tokens server-side
+Implement proper session refresh logic
+Use secure, random tokens for sensitive operations
+Add proper TypeScript types to all functions and components
+Use strict TypeScript mode always
+Avoid any type - use unknown if type truly unknown
+Define interfaces for all props and API responses
+Use type inference where possible to reduce verbosity
+Export types separately with export type
+Use discriminated unions for complex state
+Prefer composition over inheritance
+Keep functions small and focused (single responsibility)
+Use Zod for runtime validation and type inference
+Add JSDoc comments for public APIs
+Structure imports: React/Next → 3rd party → internal → relative → types
+Keep files under 300 lines - split when larger
+Use kebab-case for file names except components (PascalCase)
+Name files descriptively - avoid generic names like utils.ts
+Colocate related files (component + test + types)
+Use barrel exports (index.ts) sparingly to avoid bundle bloat
+Extract magic numbers and strings to constants
+Use descriptive variable names - avoid abbreviations
+Write self-documenting code - comments explain why not what
+Test all critical paths with unit and integration tests
+Use React Testing Library for component tests
+Use Playwright for E2E tests
+Aim for 80% code coverage minimum
+Test error states and edge cases
+Mock external dependencies in tests
+Write tests that test behavior not implementation
+Use descriptive test names that explain expected behavior
+Implement proper loading states with skeletons
+Show optimistic updates for better perceived performance
+Implement proper error handling with user-friendly messages
+Use semantic HTML elements for accessibility
+Maintain proper heading hierarchy (h1 → h6)
+Add alt text to all images
+Include ARIA labels where needed
+Support keyboard navigation
+Ensure 4.5:1 color contrast ratio
+Add focus indicators to interactive elements
+Test with screen readers
+Support reduced motion preferences
+Make forms accessible with proper labels and error messages
+Use proper button types (button, submit, reset)
+Add loading and disabled states to buttons
+Implement proper form validation with clear error messages
+Use React Hook Form for complex forms
+Validate forms on both client and server
+Show validation errors inline
+Prevent double submissions with disabled state
+Use proper input types (email, tel, url, etc.)
+Implement autocomplete attributes
+Add proper CSRF protection to forms
+Use Server Actions for form submissions
+Monitor Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
+Use Vercel Analytics and Speed Insights
+Implement error tracking (Sentry, LogRocket, etc.)
+Log performance metrics
+Monitor API response times
+Track conversion funnels
+Implement proper observability
+Use Next.js built-in performance profiling
+Optimize images with blur placeholders
+Implement lazy loading for below-fold content
+Use proper cache headers
+Minimize CLS with proper image dimensions
+Optimize LCP by prioritizing hero images
+Reduce JavaScript execution time
+Minimize main thread work
+Use web workers for heavy computations
+Implement service workers for offline support
+Use proper loading strategies (eager, lazy, prefetch)
+Minimize bundle size by tree-shaking unused code
+Use compression (gzip, brotli)
+Implement CDN for static assets
+Use proper database indexes
+Optimize database queries (avoid N+1 problems)
+Use connection pooling
+Implement caching strategies (Redis, in-memory)
+Use proper pagination for large datasets
+Implement infinite scroll or load more patterns
+Avoid over-fetching data - fetch only what's needed
+Use proper SQL query optimization
+Implement database query monitoring
+Use read replicas for read-heavy workloads
+Implement proper backup strategies
+Use database migrations for schema changes
+Never run dev servers or builds without explicit permission
+Ask before executing destructive operations
+Follow existing project patterns and conventions
+Use consistent code formatting with Prettier
+Use ESLint for code quality
+Set up Git hooks with Husky for pre-commit checks
+Use conventional commits for commit messages
+Keep commits small and focused
+Write descriptive commit messages
+Use feature branches and pull requests
+Require code reviews before merging
+Use proper Git workflow (main, develop, feature branches)
+Tag releases with semantic versioning
+Keep main branch always deployable
+Use CI/CD for automated testing and deployment
+Run linting and tests in CI pipeline
+Implement preview deployments for PRs
+Use environment-specific configs
+Implement proper rollback strategies
+Monitor deployments for errors
+Use feature flags for gradual rollouts
+Implement blue-green deployments
+Use proper logging and monitoring in production
+Set up alerts for critical errors
+Implement health checks and readiness probes
+Use proper resource limits and autoscaling
+Implement proper database backup and recovery
+Use proper security headers in production
+Implement rate limiting and DDoS protection
+Use WAF for additional security
+Regularly update dependencies
+Monitor for security vulnerabilities
+Implement proper incident response procedures

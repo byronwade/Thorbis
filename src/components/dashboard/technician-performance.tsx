@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Technician Performance - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static team performance data rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better initial page load performance
+ */
 
 import { Badge } from "@/components/ui/badge";
 import {

@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Customers > Preferences Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { HelpCircle, Save, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,18 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function CustomerPreferencesPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function CustomerPreferencesPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     requireCustomerApproval: true,
     allowCustomerNotes: true,

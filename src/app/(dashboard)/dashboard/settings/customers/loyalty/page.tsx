@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Customers > Loyalty Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { Crown, Gift, HelpCircle, Save, Star, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +37,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type Tier = {
   id: string;
   name: string;
@@ -38,16 +45,7 @@ type Tier = {
   color: string;
 };
 
-export default function LoyaltyRewardsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function LoyaltyRewardsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     enableLoyaltyProgram: true,
     programName: "Rewards Program",

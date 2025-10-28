@@ -1,19 +1,17 @@
-"use client";
+/**
+ * Marketing Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better SEO and initial page load
+ * - ISR revalidation every 15 minutes
+ */
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900; // Revalidate every 15 minutes
 
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function MarketingPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export default function MarketingPage() {  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Unified Inbox</h1>

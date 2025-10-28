@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Finance > Payroll > Pay Runs Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Calendar,
@@ -20,8 +25,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
+export const revalidate = 900; // Revalidate every 15 minutes
 interface PayRun extends Record<string, unknown> {
   id: string;
   period: string;
@@ -72,16 +77,7 @@ const payRuns: PayRun[] = [
   },
 ];
 
-export default function PayRunsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const columns: DataTableColumn<PayRun>[] = [
+export default function PayRunsPage() {  const columns: DataTableColumn<PayRun>[] = [
     {
       key: "period",
       header: "Period",

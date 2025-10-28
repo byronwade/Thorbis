@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Development Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   AlertCircle,
@@ -20,19 +27,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePageLayout } from "@/hooks/use-page-layout";
 import { useUIStore } from "@/lib/store";
 
-export default function DevelopmentSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [testResults, setTestResults] = useState<
+export default function DevelopmentSettingsPage() {  const [testResults, setTestResults] = useState<
     Array<{ type: string; message: string; timestamp: Date }>
   >([]);
   const { setIncomingCall, addNotification, openModal } = useUIStore();

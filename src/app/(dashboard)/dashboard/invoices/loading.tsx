@@ -1,0 +1,30 @@
+/**
+ * Invoices Page Loading State
+ *
+ * Provides skeleton UI while invoice data loads
+ */
+
+export default function InvoicesLoading() {
+  return (
+    <div className="space-y-6">
+      {/* Header Skeleton */}
+      <div className="space-y-2">
+        <div className="h-9 w-40 animate-pulse rounded bg-muted" />
+        <div className="h-5 w-80 animate-pulse rounded bg-muted" />
+      </div>
+
+      {/* Stats Skeleton */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-32 animate-pulse rounded-lg border bg-muted" />
+        ))}
+      </div>
+
+      {/* Invoice List Skeleton */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4 h-[600px] animate-pulse rounded-lg border bg-muted" />
+        <div className="col-span-3 h-[600px] animate-pulse rounded-lg border bg-muted" />
+      </div>
+    </div>
+  );
+}

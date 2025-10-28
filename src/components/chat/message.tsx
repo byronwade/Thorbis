@@ -1,4 +1,11 @@
-"use client";
+/**
+ * Chat Message - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static message rendering on server
+ * - Reduced JavaScript bundle size
+ */
 
 import type { UIMessage } from "@ai-sdk/react";
 import { cn } from "@/lib/utils";

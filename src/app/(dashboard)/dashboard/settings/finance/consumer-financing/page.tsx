@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Finance > Consumer Financing Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import { Calculator, CreditCard, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,18 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
-export default function ConsumerFinancingSettingsPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function ConsumerFinancingSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     enabled: true,
     provider: "affirm",

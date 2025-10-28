@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Recent Company Posts - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static post data rendered on server
+ * - ClientTimestamp component handles time formatting on client
+ * - Reduced JavaScript bundle size
+ */
 
 import {
   Calendar,
@@ -17,6 +25,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { ClientTimestamp } from "@/components/ui/client-timestamp";
 import { Separator } from "@/components/ui/separator";
 
 type PostType = "announcement" | "discussion" | "poll" | "event" | "content";
@@ -121,28 +130,6 @@ type RecentCompanyPostsProps = {
 export function RecentCompanyPosts({ limit = 3 }: RecentCompanyPostsProps) {
   const recentPosts = MOCK_POSTS.slice(0, limit);
 
-  const formatTimestamp = (date: Date) => {
-    const MINUTES_PER_HOUR = 60;
-    const HOURS_PER_DAY = 24;
-
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / MS_PER_MINUTE);
-    const hours = Math.floor(minutes / MINUTES_PER_HOUR);
-    const days = Math.floor(hours / HOURS_PER_DAY);
-
-    if (minutes < MINUTES_PER_HOUR) {
-      return `${minutes}m ago`;
-    }
-    if (hours < HOURS_PER_DAY) {
-      return `${hours}h ago`;
-    }
-    if (days < 7) {
-      return `${days}d ago`;
-    }
-    return date.toLocaleDateString();
-  };
-
   const getReactionIcon = (type: ReactionType) => {
     switch (type) {
       case "like":
@@ -213,9 +200,10 @@ export function RecentCompanyPosts({ limit = 3 }: RecentCompanyPostsProps) {
                           {post.author.name}
                         </p>
                         <span className="text-muted-foreground text-xs">•</span>
-                        <span className="text-muted-foreground text-xs">
-                          {formatTimestamp(post.timestamp)}
-                        </span>
+                        <ClientTimestamp
+                          className="text-muted-foreground text-xs"
+                          date={post.timestamp}
+                        />
                       </div>
                     </div>
 

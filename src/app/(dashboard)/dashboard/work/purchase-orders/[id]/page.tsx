@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Work > Purchase Orders > [Id] Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - ISR revalidation every 5 minutes
+ * - Next.js 16+ async params pattern
+ */
 
 import {
   Calendar,
@@ -30,6 +38,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+
+export const revalidate = 300; // Revalidate every 5 minutes
 import {
   Table,
   TableBody,
@@ -38,8 +48,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type LineItem = {
   id: string;
   description: string;
@@ -50,22 +58,17 @@ type LineItem = {
 
 type POStatus = "draft" | "pending_approval" | "approved" | "ordered" | "partially_received" | "received" | "cancelled";
 
-export default function PurchaseOrderDetailPage({
+export default async function PurchaseOrderDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  usePageLayout({
-    maxWidth: "5xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
+  // Await params (Next.js 16+ requirement)
+  const { id } = await params;
 
   // Mock data - would come from database
   const po = {
-    id: params.id,
+    id,
     poNumber: "PO-001",
     vendor: {
       name: "Home Depot",

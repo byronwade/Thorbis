@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Settings > Data Import Export Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
+
 import {
   AlertCircle,
   CheckCircle,
@@ -33,8 +42,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 type DataCategory = {
   id: string;
   name: string;
@@ -236,16 +243,7 @@ const dataCategories: DataCategory[] = [
   },
 ];
 
-export default function DataImportExportPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [selectedCategory, setSelectedCategory] = useState<string>("customers");
+export default function DataImportExportPage() {  const [selectedCategory, setSelectedCategory] = useState<string>("customers");
   const [includeArchived, setIncludeArchived] = useState(false);
   const [dateRange, setDateRange] = useState<string>("all");
   const [fileFormat, setFileFormat] = useState<string>("xlsx");

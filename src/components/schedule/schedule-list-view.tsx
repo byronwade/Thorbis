@@ -1,4 +1,12 @@
-"use client"
+/**
+ * Schedule List View - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static schedule list rendered on server
+ * - Reduced JavaScript bundle size
+ * - Better initial page load performance
+ */
 
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"

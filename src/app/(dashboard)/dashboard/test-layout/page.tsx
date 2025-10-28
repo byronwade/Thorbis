@@ -1,6 +1,12 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Test Layout Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component by default (no "use client")
+ * - Static content rendered on server
+ * - ISR revalidation configured
+ * - Reduced JavaScript bundle size
+ */
 
 import {
   Card,
@@ -9,6 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+export const revalidate = 900; // Revalidate every 15 minutes
 
 export default function TestLayoutPage() {
   return (

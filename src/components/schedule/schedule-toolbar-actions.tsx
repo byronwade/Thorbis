@@ -56,7 +56,7 @@ export function ScheduleToolbarActions() {
             onSelect={(newDate) => {
               if (newDate) {
                 setDate(newDate)
-                console.log("Date changed:", newDate)
+                // TODO: Apply date filter to schedule
               }
             }}
             initialFocus
@@ -87,7 +87,9 @@ export function ScheduleToolbarActions() {
                   <label className="mb-2 block text-sm font-medium">
                     Technician
                   </label>
-                  <Select defaultValue="all" onValueChange={(id) => console.log("Technician filter:", id)}>
+                  <Select defaultValue="all" onValueChange={(id) => {
+                    // TODO: Apply technician filter to schedule
+                  }}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
@@ -106,7 +108,9 @@ export function ScheduleToolbarActions() {
                   <label className="mb-2 block text-sm font-medium">
                     Status
                   </label>
-                  <Select defaultValue="all" onValueChange={(status) => console.log("Status filter:", status)}>
+                  <Select defaultValue="all" onValueChange={(status) => {
+                    // TODO: Apply status filter to schedule
+                  }}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
@@ -124,14 +128,18 @@ export function ScheduleToolbarActions() {
                   <button
                     type="button"
                     className="text-sm text-muted-foreground hover:text-foreground"
-                    onClick={() => console.log("Clear filters")}
+                    onClick={() => {
+                      // TODO: Clear all filters
+                    }}
                   >
                     Clear all
                   </button>
                   <button
                     type="button"
                     className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background hover:opacity-90"
-                    onClick={() => console.log("Apply filters")}
+                    onClick={() => {
+                      // TODO: Apply filters to schedule
+                    }}
                   >
                     Apply
                   </button>
@@ -148,7 +156,9 @@ export function ScheduleToolbarActions() {
             "flex h-8 items-center gap-1.5 rounded-md bg-foreground px-3 text-sm font-medium text-background transition-all",
             "hover:opacity-90 active:scale-[0.97]"
           )}
-          onClick={() => console.log("Add job")}
+          onClick={() => {
+            // TODO: Open new job dialog
+          }}
         >
           <Plus className="size-4" />
           <span>New Job</span>

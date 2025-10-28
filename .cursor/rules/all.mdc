@@ -1,0 +1,676 @@
+---
+alwaysApply: true
+---
+
+# Stratos - AI Coding Guidelines
+
+## 🎯 Core Philosophy
+
+**SERVER-FIRST. PERFORMANCE-OBSESSED. SECURITY-HARDENED.**
+
+---
+
+## 🚨 CRITICAL RULES (NEVER BREAK)
+
+### 1. SERVER COMPONENTS FIRST - ALWAYS
+
+```typescript
+// ❌ BAD: Unnecessary client component
+"use client"
+export default function Page() {
+  return <div>Static content</div>
+}
+
+// ✅ GOOD: Server component by default
+export default function Page() {
+  return <div>Static content</div>
+}
+```
+
+**Decision Tree:**
+- Does it need interactivity (onClick, onChange)? → Client Component
+- Does it use React hooks (useState, useEffect)? → Client Component
+- Does it use browser APIs (window, localStorage)? → Client Component
+- **Everything else** → Server Component
+
+**Extract minimal client parts:**
+```typescript
+// ✅ BEST PRACTICE: Server component with client island
+export default async function Page() {
+  const data = await fetchData() // Server-side
+
+  return (
+    <main>
+      <Header /> {/* Server */}
+      <StaticContent data={data} /> {/* Server */}
+      <InteractiveWidget /> {/* ONLY this is client */}
+      <Footer /> {/* Server */}
+    </main>
+  )
+}
+```
+
+### 2. PERFORMANCE IS NON-NEGOTIABLE
+
+**Core Web Vitals Targets:**
+- LCP (Largest Contentful Paint): < 2.5s
+- FID (First Input Delay): < 100ms
+- CLS (Cumulative Layout Shift): < 0.1
+
+**Bundle Size:**
+- Client bundles MUST be < 200KB gzipped
+- Use dynamic imports for code splitting
+- Analyze bundle with `@next/bundle-analyzer`
+
+**Required Optimizations:**
+```typescript
+// ✅ Image Optimization
+import Image from "next/image"
+
+<Image
+  src="/hero.jpg"
+  alt="Hero"
+  width={1200}
+  height={600}
+  priority // Above fold
+  placeholder="blur"
+/>
+
+// ✅ Code Splitting
+import dynamic from "next/dynamic"
+
+const HeavyChart = dynamic(() => import("@/components/heavy-chart"), {
+  loading: () => <Skeleton />,
+  ssr: false
+})
+
+// ✅ Streaming with Suspense
+<Suspense fallback={<Skeleton />}>
+  <SlowData />
+</Suspense>
+```
+
+### 3. SECURITY BY DEFAULT
+
+**Supabase RLS - NO EXCEPTIONS:**
+```sql
+-- REQUIRED on ALL tables
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own todos"
+ON todos FOR SELECT
+USING (auth.uid() = user_id);
+```
+
+**Server-Side Validation - ALWAYS:**
+```typescript
+import { z } from "zod"
+
+const schema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100)
+})
+
+export async function POST(request: Request) {
+  // 1. Authenticate
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  // 2. Validate input
+  const body = await request.json()
+  const validated = schema.parse(body)
+
+  // 3. Use RLS-protected query
+  const { data, error } = await supabase.from("table").insert(validated)
+
+  return NextResponse.json({ data })
+}
+```
+
+---
+
+## 🏗️ Architecture Patterns
+
+### Data Fetching Hierarchy
+
+1. **Server Components** (PREFERRED)
+```typescript
+export default async function Page() {
+  const data = await fetchData() // Runs on server
+  return <Display data={data} />
+}
+```
+
+2. **Server Actions** (For mutations)
+```typescript
+// actions/todos.ts
+"use server"
+
+export async function createTodo(formData: FormData) {
+  const supabase = await createClient()
+  const todo = { title: formData.get("title") as string }
+  await supabase.from("todos").insert(todo)
+  revalidatePath("/todos")
+}
+```
+
+3. **React Query** (Only for client components)
+```typescript
+"use client"
+
+export function ClientData() {
+  const { data } = useQuery({
+    queryKey: ["key"],
+    queryFn: fetchData
+  })
+  return <Display data={data} />
+}
+```
+
+### Component Structure
+
+```
+/components
+  /ui              # shadcn/ui primitives (mostly server)
+  /features        # Feature-specific (server by default)
+    /todos
+      todo-list.tsx        # Server Component
+      todo-form.tsx        # Client Component (form interaction)
+      use-todos.ts         # Client hook (if needed)
+```
+
+---
+
+## ⚡ Performance Best Practices
+
+### Caching Strategy
+
+```typescript
+// Static data (revalidate every hour)
+fetch(url, { next: { revalidate: 3600 } })
+
+// Dynamic data (no cache)
+fetch(url, { cache: "no-store" })
+
+// Cached until manually invalidated
+fetch(url, { cache: "force-cache" })
+```
+
+### React Optimization
+
+```typescript
+// ✅ Memoize expensive computations
+const value = useMemo(() => expensiveCalc(a, b), [a, b])
+
+// ✅ Memoize callbacks
+const onClick = useCallback(() => doSomething(id), [id])
+
+// ✅ Memoize components
+export const Heavy = memo(({ data }) => <div>{/* ... */}</div>)
+```
+
+### Never Fetch in useEffect
+
+```typescript
+// ❌ ANTI-PATTERN
+"use client"
+export function Bad() {
+  const [data, setData] = useState(null)
+  useEffect(() => {
+    fetch("/api/data").then(r => r.json()).then(setData)
+  }, [])
+  return <div>{data}</div>
+}
+
+// ✅ CORRECT: Server Component
+export async function Good() {
+  const data = await fetchData()
+  return <div>{data}</div>
+}
+
+// ✅ OR: React Query in client component
+"use client"
+export function GoodClient() {
+  const { data } = useQuery({ queryKey: ["data"], queryFn: fetchData })
+  return <div>{data}</div>
+}
+```
+
+---
+
+## 🔒 Security Checklist
+
+### API Routes - Required Security
+
+- [ ] Authenticate user session
+- [ ] Validate inputs with Zod
+- [ ] Use Supabase RLS policies
+- [ ] Rate limit requests
+- [ ] Sanitize outputs
+- [ ] Log security events
+- [ ] Handle errors safely
+- [ ] Use try-catch blocks
+
+### Authentication
+
+```typescript
+// ✅ CORRECT: auth.getUser() on server
+const supabase = await createClient()
+const { data: { user }, error } = await supabase.auth.getUser()
+
+// ❌ WRONG: auth.getSession() alone (not secure)
+const { data: { session } } = await supabase.auth.getSession()
+```
+
+### Environment Variables
+
+```typescript
+// ✅ Public (safe for client)
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+
+// ✅ Private (server only)
+SUPABASE_SERVICE_ROLE_KEY=...
+DATABASE_URL=...
+```
+
+---
+
+## 📝 TypeScript Standards
+
+```typescript
+// ✅ Proper typing
+interface TodoProps {
+  id: string
+  title: string
+  completed: boolean
+}
+
+export function Todo({ id, title, completed }: TodoProps) {
+  return <div>{title}</div>
+}
+
+// ✅ Export types separately
+export type { TodoProps }
+
+// ❌ Never use any
+const bad: any = {} // NO
+
+// ✅ Use unknown if type is truly unknown
+const good: unknown = {}
+```
+
+---
+
+## 🎨 Styling with Tailwind
+
+```typescript
+import { cn } from "@/lib/utils"
+
+// ✅ Use cn() for conditional classes
+<div className={cn(
+  "base-classes",
+  variant === "primary" && "primary-classes",
+  disabled && "opacity-50 cursor-not-allowed"
+)} />
+
+// ✅ Always support dark mode
+<div className="bg-white dark:bg-gray-900 text-black dark:text-white">
+  Content
+</div>
+
+// ✅ Mobile-first responsive design
+<div className="text-sm md:text-base lg:text-lg">
+  Responsive text
+</div>
+```
+
+---
+
+## 🧪 Testing Requirements
+
+### Coverage Targets
+- Unit Tests: 80% minimum
+- Integration Tests: All user flows
+- E2E Tests: Critical paths
+
+### Test Pattern
+
+```typescript
+import { render, screen } from "@testing-library/react"
+import { Button } from "./button"
+
+describe("Button", () => {
+  it("renders with correct text", () => {
+    render(<Button>Click me</Button>)
+    expect(screen.getByRole("button")).toHaveTextContent("Click me")
+  })
+
+  it("calls onClick when clicked", () => {
+    const onClick = jest.fn()
+    render(<Button onClick={onClick}>Click</Button>)
+    screen.getByRole("button").click()
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it("shows disabled state", () => {
+    render(<Button disabled>Click</Button>)
+    expect(screen.getByRole("button")).toBeDisabled()
+  })
+})
+```
+
+---
+
+## ♿ Accessibility (WCAG AA)
+
+```typescript
+// ✅ Semantic HTML
+<button type="button" onClick={onClick}>
+  Click me
+</button>
+
+// ✅ Proper alt text
+<Image src="/hero.jpg" alt="Team collaborating in office" />
+
+// ✅ Keyboard navigation
+<div
+  role="button"
+  tabIndex={0}
+  onClick={onClick}
+  onKeyDown={(e) => e.key === "Enter" && onClick()}
+>
+  Custom button
+</div>
+
+// ✅ ARIA labels
+<button aria-label="Close dialog" onClick={onClose}>
+  <X />
+</button>
+
+// ✅ Focus indicators (never remove!)
+/* globals.css */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+```
+
+---
+
+## 📦 File Organization
+
+```
+/src
+  /app
+    /(auth)          # Route groups
+    /dashboard
+    /api
+    layout.tsx       # Root layout (Server Component)
+    page.tsx         # Home page (Server Component)
+    error.tsx        # Error boundary (Client Component)
+    loading.tsx      # Loading UI (Server Component)
+
+  /components
+    /ui              # shadcn/ui components
+    /features        # Feature components
+    /layouts         # Layout components
+
+  /lib
+    /supabase        # Supabase utilities
+    /utils.ts        # Utility functions
+    /constants.ts    # Constants
+    /validations.ts  # Zod schemas
+
+  /hooks             # Custom React hooks (client only)
+  /actions           # Server Actions
+  /types             # TypeScript types
+```
+
+### File Naming
+
+- Components: `PascalCase.tsx` or `kebab-case.tsx`
+- Utilities: `kebab-case.ts`
+- Types: `kebab-case.types.ts`
+- Tests: `component.test.tsx`
+- Hooks: `use-hook-name.ts`
+- Actions: `action-name.ts`
+
+---
+
+## 🚫 Anti-Patterns to AVOID
+
+### ❌ Over-using Client Components
+
+```typescript
+// ❌ BAD: Entire page is client
+"use client"
+export default function Page() {
+  return (
+    <div>
+      <Header />        {/* Doesn't need client */}
+      <Content />       {/* Doesn't need client */}
+      <Footer />        {/* Doesn't need client */}
+    </div>
+  )
+}
+
+// ✅ GOOD: Only interactive part is client
+export default function Page() {
+  return (
+    <div>
+      <Header />
+      <Content />
+      <InteractiveWidget /> {/* Only this needs "use client" */}
+      <Footer />
+    </div>
+  )
+}
+```
+
+### ❌ Fetching in useEffect
+
+```typescript
+// ❌ BAD
+"use client"
+export function Bad() {
+  const [data, setData] = useState(null)
+  useEffect(() => {
+    fetch("/api/data").then(r => r.json()).then(setData)
+  }, [])
+  return <div>{data}</div>
+}
+
+// ✅ GOOD: Server Component
+export async function Good() {
+  const data = await fetchData()
+  return <div>{data}</div>
+}
+```
+
+### ❌ Missing Error Handling
+
+```typescript
+// ❌ BAD: No error handling
+export async function POST(request: Request) {
+  const body = await request.json()
+  await db.insert(body)
+  return NextResponse.json({ success: true })
+}
+
+// ✅ GOOD: Proper error handling
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    const validated = schema.parse(body)
+    await db.insert(validated)
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("API Error:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+```
+
+### ❌ Client-side Auth Checks
+
+```typescript
+// ❌ BAD: Client-side only
+"use client"
+export default function ProtectedPage() {
+  const { user } = useAuth()
+  if (!user) redirect("/login")
+  return <div>Protected content</div>
+}
+
+// ✅ GOOD: Server-side protection
+export default async function ProtectedPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect("/login")
+  return <div>Protected content</div>
+}
+```
+
+---
+
+## 📊 Monitoring & Observability
+
+### Required Monitoring
+
+```typescript
+// app/layout.tsx
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
+  )
+}
+```
+
+### Error Boundaries
+
+```typescript
+// app/error.tsx
+"use client"
+
+export default function Error({ error, reset }) {
+  useEffect(() => {
+    console.error("Error:", error)
+    // Log to error tracking service
+  }, [error])
+
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  )
+}
+```
+
+---
+
+## 🚀 Deployment Checklist
+
+Before deploying to production:
+
+- [ ] Run `pnpm build` locally - no errors
+- [ ] Check bundle size with analyzer
+- [ ] Verify all environment variables
+- [ ] Test authentication flows
+- [ ] Verify RLS policies on all tables
+- [ ] Check Core Web Vitals in Lighthouse
+- [ ] Review security headers
+- [ ] Test error scenarios
+- [ ] Verify image optimization
+- [ ] Test mobile responsiveness
+- [ ] Run accessibility audit
+- [ ] Test with screen reader
+- [ ] Verify dark mode works
+- [ ] Check loading states
+- [ ] Test form validation
+- [ ] Verify rate limiting
+- [ ] Check error logging
+- [ ] Test database backups
+- [ ] Verify monitoring alerts
+
+---
+
+## 📚 Quick Reference
+
+### When to use Server Components (DEFAULT):
+- Static content ✅
+- Data fetching ✅
+- Database queries ✅
+- SEO-critical content ✅
+- Initial page load ✅
+- Layouts ✅
+- Loading states ✅
+
+### When to use Client Components (ONLY WHEN NECESSARY):
+- User interactions (onClick, onChange) ⚠️
+- React hooks (useState, useEffect) ⚠️
+- Browser APIs (window, localStorage) ⚠️
+- Third-party client libraries ⚠️
+- Real-time features ⚠️
+- Forms with complex validation ⚠️
+
+### When to use Server Actions:
+- Form submissions ✅
+- Mutations ✅
+- Database updates ✅
+- Revalidation ✅
+
+### When to use API Routes:
+- Webhooks ✅
+- Third-party integrations ✅
+- Complex business logic ✅
+- Non-form POST requests ✅
+
+---
+
+## 💡 Pro Tips
+
+1. **Start with Server Components** - Add `"use client"` only when you hit a wall
+2. **Extract client islands** - Keep interactive parts as small as possible
+3. **Use Server Actions** - They're simpler than API routes for mutations
+4. **Streaming is powerful** - Use Suspense boundaries liberally
+5. **Validate everywhere** - Client validation for UX, server validation for security
+6. **RLS is mandatory** - Never skip Row Level Security
+7. **Monitor everything** - You can't improve what you don't measure
+8. **Test the unhappy path** - Error states are where bugs hide
+9. **Accessibility first** - It's easier to build it in than bolt it on
+10. **Performance budget** - 200KB client bundle is the limit
+
+---
+
+## 🎓 Learning Resources
+
+- [Next.js Docs](https://nextjs.org/docs) - Official documentation
+- [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023) - Deep dive
+- [Supabase Auth](https://supabase.com/docs/guides/auth) - Authentication guide
+- [Supabase RLS](https://supabase.com/docs/guides/auth/row-level-security) - Security guide
+- [Web.dev](https://web.dev) - Performance best practices
+- [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/) - Accessibility standards
+
+---
+
+**Remember:** Every client component adds JavaScript. Every Server Component is free. Choose wisely.
+
+**Default:** Server Component
+**Exception:** Client Component (with good reason)
+**Goal:** Maximum performance, minimum JavaScript, bulletproof security
+

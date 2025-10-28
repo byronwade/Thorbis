@@ -1,6 +1,13 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Security > Password Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -37,8 +44,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { usePageLayout } from "@/hooks/use-page-layout";
-
 // Constants
 const MIN_PASSWORD_LENGTH = 8;
 const VERY_WEAK_PASSWORD_LENGTH = 4;
@@ -82,16 +87,7 @@ const passwordSchema = z
 
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
-export default function PasswordPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+export default function PasswordPage() {  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 

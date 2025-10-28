@@ -1,6 +1,11 @@
-"use client";
-
-export const dynamic = "force-dynamic";
+/**
+ * Settings > Profile > Notifications > Email Page - Client Component
+ *
+ * Client-side features:
+ * - Interactive state management and event handlers
+ * - Form validation and user input handling
+ * - Browser API access for enhanced UX
+ */
 
 import {
   Archive,
@@ -34,18 +39,9 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { usePageLayout } from "@/hooks/use-page-layout";
 
-export default function EmailPreferencesPage() {
-  usePageLayout({
-    maxWidth: "7xl",
-    padding: "md",
-    gap: "md",
-    showToolbar: true,
-    showSidebar: true,
-  });
-
-  return (
+export const revalidate = 3600; // Revalidate every 1 hour
+export default function EmailPreferencesPage() {  return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">

@@ -1,4 +1,12 @@
-"use client";
+/**
+ * Work Page Layout - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Pure layout wrapper rendered on server
+ * - Links use Next.js routing (no JavaScript required)
+ * - Reduced JavaScript bundle size
+ */
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
