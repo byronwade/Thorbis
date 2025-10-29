@@ -1,13 +1,22 @@
 /**
- * Top Performer Widget - Server Component
+ * Top Performer Widget - Fully Responsive
  *
- * Performance optimizations:
- * - Server Component (no "use client")
- * - Static data visualization rendered on server
- * - Reduced JavaScript bundle size for TV displays
+ * Responsive stages:
+ * - FULL (>400px): Avatar, name, rank, all 3 metrics with trend
+ * - COMFORTABLE (200-400px): Smaller avatar, name, revenue + jobs
+ * - COMPACT (120-200px): Avatar + revenue only
+ * - TINY (<120px): Just the revenue number
  */
 
-import { Trophy, TrendingUp } from "lucide-react";
+import { Trophy, TrendingUp, Briefcase, Star } from "lucide-react";
+import {
+  ResponsiveWidgetWrapper,
+  ResponsiveContent,
+  ResponsiveText,
+  ResponsiveIcon,
+  ShowAt,
+} from "../responsive-widget-wrapper";
+import { formatCurrency, formatNumber, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
 
 type TopPerformerWidgetProps = {
   data: {
@@ -21,40 +30,147 @@ type TopPerformerWidgetProps = {
 };
 
 export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
+  const isPositive = data.revenueChange >= 0;
+
   return (
-    <div className="h-full overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 p-4 backdrop-blur-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <Trophy className="size-6 text-yellow-500" />
-        <h3 className="font-bold text-lg">Top Performer</h3>
-      </div>
+    <ResponsiveWidgetWrapper className="bg-gradient-to-br from-yellow-500/10 to-orange-500/5">
+      <ResponsiveContent className="flex flex-col gap-3">
+        {/* Header - adapts across stages */}
+        <div className="flex items-center gap-2">
+          <ResponsiveIcon>
+            <Trophy className="text-yellow-500" />
+          </ResponsiveIcon>
+          <ShowAt stage="full">
+            <ResponsiveText variant="title">Top Performer</ResponsiveText>
+          </ShowAt>
+          <ShowAt stage="comfortable">
+            <ResponsiveText variant="body" className="font-semibold">
+              Top
+            </ResponsiveText>
+          </ShowAt>
+        </div>
 
-      <div className="flex flex-col items-center gap-3 text-center">
-        <div className="flex size-20 items-center justify-center rounded-full border-4 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-2xl text-yellow-600">
-          {data.avatar}
-        </div>
-        <div>
-          <h4 className="font-bold text-xl">{data.name}</h4>
-          <p className="text-muted-foreground text-sm">Rank #1</p>
-        </div>
+        {/* FULL Stage: Avatar, name, rank, all metrics */}
+        <ShowAt stage="full">
+          <div className="flex flex-col items-center gap-2 text-center">
+            {/* Avatar */}
+            <div className="flex size-16 items-center justify-center rounded-full border-4 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-xl text-yellow-600">
+              {data.avatar}
+            </div>
 
-        <div className="grid w-full gap-2 sm:grid-cols-3">
-          <div className="rounded-lg bg-background/50 p-2">
-            <p className="text-muted-foreground text-xs">Revenue</p>
-            <p className="font-bold text-lg">${data.revenue.toLocaleString()}</p>
-            <span className="inline-flex items-center gap-1 text-green-500 text-xs">
-              <TrendingUp className="size-3" />+{data.revenueChange.toFixed(1)}%
-            </span>
+            {/* Name and rank */}
+            <div>
+              <ResponsiveText variant="title" className="font-bold">
+                {data.name}
+              </ResponsiveText>
+              <ResponsiveText variant="caption" className="text-muted-foreground">
+                Rank #1
+              </ResponsiveText>
+            </div>
+
+            {/* Metrics grid */}
+            <div className="grid w-full grid-cols-3 gap-2">
+              {/* Revenue */}
+              <div className="rounded-lg bg-background/50 p-2">
+                <ResponsiveText variant="caption" className="text-muted-foreground">
+                  Revenue
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="font-bold">
+                  {formatCurrency(data.revenue, "comfortable")}
+                </ResponsiveText>
+                <span className={`inline-flex items-center gap-0.5 text-xs ${getTrendClass(data.revenueChange)}`}>
+                  <TrendingUp className="size-3" />
+                  {isPositive ? "+" : ""}
+                  {formatPercentage(data.revenueChange, "full")}
+                </span>
+              </div>
+
+              {/* Jobs */}
+              <div className="rounded-lg bg-background/50 p-2">
+                <ResponsiveText variant="caption" className="text-muted-foreground">
+                  Jobs
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="font-bold">
+                  {formatNumber(data.jobsCompleted, "comfortable")}
+                </ResponsiveText>
+              </div>
+
+              {/* Rating */}
+              <div className="rounded-lg bg-background/50 p-2">
+                <ResponsiveText variant="caption" className="text-muted-foreground">
+                  Rating
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="font-bold">
+                  {data.customerRating.toFixed(1)}
+                </ResponsiveText>
+              </div>
+            </div>
           </div>
-          <div className="rounded-lg bg-background/50 p-2">
-            <p className="text-muted-foreground text-xs">Jobs</p>
-            <p className="font-bold text-lg">{data.jobsCompleted}</p>
+        </ShowAt>
+
+        {/* COMFORTABLE Stage: Smaller avatar, name, top 2 metrics */}
+        <ShowAt stage="comfortable">
+          <div className="flex flex-col gap-2">
+            {/* Avatar + Name */}
+            <div className="flex items-center gap-2">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-sm text-yellow-600">
+                {data.avatar}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <ResponsiveText variant="body" className="truncate font-bold">
+                  {data.name}
+                </ResponsiveText>
+                <ResponsiveText variant="caption" className="text-muted-foreground">
+                  #1
+                </ResponsiveText>
+              </div>
+            </div>
+
+            {/* Top 2 metrics */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="size-3 text-green-500" />
+                  <ResponsiveText variant="caption">Revenue</ResponsiveText>
+                </div>
+                <ResponsiveText variant="body" className="font-bold">
+                  {formatCurrency(data.revenue, "comfortable")}
+                </ResponsiveText>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Briefcase className="size-3 text-blue-500" />
+                  <ResponsiveText variant="caption">Jobs</ResponsiveText>
+                </div>
+                <ResponsiveText variant="body" className="font-bold">
+                  {formatNumber(data.jobsCompleted, "comfortable")}
+                </ResponsiveText>
+              </div>
+            </div>
           </div>
-          <div className="rounded-lg bg-background/50 p-2">
-            <p className="text-muted-foreground text-xs">Rating</p>
-            <p className="font-bold text-lg">{data.customerRating}</p>
+        </ShowAt>
+
+        {/* COMPACT Stage: Avatar + Revenue only */}
+        <ShowAt stage="compact">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-full border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-xs text-yellow-600">
+              {data.avatar}
+            </div>
+            <ResponsiveText variant="display" className="font-bold text-yellow-500">
+              {formatCurrency(data.revenue, "compact")}
+            </ResponsiveText>
           </div>
-        </div>
-      </div>
-    </div>
+        </ShowAt>
+
+        {/* TINY Stage: Just the revenue number */}
+        <ShowAt stage="tiny">
+          <div className="flex h-full items-center justify-center">
+            <ResponsiveText variant="display" className="font-bold text-yellow-500">
+              {formatCurrency(data.revenue, "tiny")}
+            </ResponsiveText>
+          </div>
+        </ShowAt>
+      </ResponsiveContent>
+    </ResponsiveWidgetWrapper>
   );
 }

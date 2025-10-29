@@ -43,7 +43,7 @@ export function QuickBooksSettings() {
             Sync Settings
           </CardTitle>
           <CardDescription>
-            Configure what data syncs between Stratos and QuickBooks Online
+            Configure what data syncs between Thorbis and QuickBooks Online
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -121,7 +121,7 @@ export function QuickBooksSettings() {
             Account Mapping
           </CardTitle>
           <CardDescription>
-            Map Stratos accounts to QuickBooks accounts
+            Map Thorbis accounts to QuickBooks accounts
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

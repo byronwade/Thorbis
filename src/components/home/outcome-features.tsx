@@ -147,7 +147,7 @@ export function OutcomeFeaturesSection() {
             Everything You Need to Succeed
           </h2>
           <p className="mx-auto max-w-2xl text-foreground text-lg">
-            Choose your goal. We&apos;ll show you how Stratos helps you achieve
+            Choose your goal. We&apos;ll show you how Thorbis helps you achieve
             it.
           </p>
         </div>

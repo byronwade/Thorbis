@@ -1,40 +1,62 @@
 "use client";
 
 import {
+  Archive,
+  ArrowDownToLine,
   ArrowLeft,
-  AudioWaveform,
+  ArrowUpFromLine,
   BadgeCheck,
   BarChart,
+  Book,
   BookOpen,
   Box,
   Briefcase,
   Bug,
+  Building2,
+  Calculator,
   Calendar,
   Camera,
+  CheckCircle2,
+  Clock,
   ClipboardList,
-  Command,
+  CreditCard,
   DollarSign,
+  FileEdit,
+  FileSpreadsheet,
   FileText,
-  GalleryVerticalEnd,
+  Globe,
   GraduationCap,
   Hash,
   Home,
   Inbox,
+  List,
   Mail,
+  MailOpen,
   MapPin,
   Megaphone,
   MessageSquare,
   Package,
+  Palette,
   Paperclip,
   Phone,
+  QrCode,
   Receipt,
   Search,
   Settings,
   Shield,
+  ShieldAlert,
   ShieldCheck,
+  ShoppingCart,
   Sparkles,
+  Star,
+  Tag,
+  Target,
   Ticket,
+  Trash,
+  TrendingUp,
+  Trophy,
   User,
+  UserPlus,
   Users,
   Wrench,
   X,
@@ -47,13 +69,11 @@ import { NavChatHistory } from "@/components/layout/nav-chat-history";
 import { NavFlexible } from "@/components/layout/nav-flexible";
 import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
-import { NavUser } from "@/components/layout/nav-user";
-import { TeamSwitcher } from "@/components/layout/team-switcher";
+import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav-v2";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useChatStore } from "@/lib/store/chat-store";
@@ -79,22 +99,27 @@ const navigationSections = {
         {
           title: "Unread",
           url: "/dashboard/communication/unread",
+          icon: MailOpen,
         },
         {
           title: "Starred",
           url: "/dashboard/communication/starred",
+          icon: Star,
         },
         {
           title: "Archive",
           url: "/dashboard/communication/archive",
+          icon: Archive,
         },
         {
           title: "Trash",
           url: "/dashboard/communication/trash",
+          icon: Trash,
         },
         {
           title: "Spam",
           url: "/dashboard/communication/spam",
+          icon: ShieldAlert,
         },
       ],
     },
@@ -162,6 +187,11 @@ const navigationSections = {
           title: "Jobs",
           url: "/dashboard/work",
           icon: ClipboardList,
+        },
+        {
+          title: "Schedule",
+          url: "/dashboard/work/schedule",
+          icon: Calendar,
         },
         {
           title: "Customers",
@@ -241,33 +271,6 @@ const navigationSections = {
       ],
     },
   ],
-  schedule: [
-    {
-      title: "Today's Schedule",
-      url: "/dashboard/schedule",
-      icon: Calendar,
-    },
-    {
-      title: "Dispatch Board",
-      url: "/dashboard/schedule/dispatch",
-    },
-    {
-      title: "Technicians",
-      url: "/dashboard/schedule/technicians",
-    },
-    {
-      title: "Route Planning",
-      url: "/dashboard/schedule/routes",
-    },
-    {
-      title: "Time Tracking",
-      url: "/dashboard/schedule/time",
-    },
-    {
-      title: "Availability",
-      url: "/dashboard/schedule/availability",
-    },
-  ],
   customers: [
     {
       label: undefined,
@@ -312,111 +315,1175 @@ const navigationSections = {
   ],
   finance: [
     {
-      title: "Financial Dashboard",
-      url: "/dashboard/finance",
-      icon: DollarSign,
+      label: "Overview",
+      items: [
+        {
+          title: "Banking",
+          url: "/dashboard/finance",
+          icon: Building2,
+        },
+        {
+          title: "Cash Flow",
+          url: "/dashboard/finance/cash-flow",
+          icon: TrendingUp,
+        },
+        {
+          title: "Payments",
+          url: "/dashboard/finance/payments",
+          icon: CreditCard,
+        },
+        {
+          title: "Reports",
+          url: "/dashboard/finance/reports",
+          icon: FileText,
+        },
+      ],
     },
     {
-      title: "Invoicing",
-      url: "/dashboard/finance/invoicing",
+      label: "Expenses",
+      items: [
+        {
+          title: "Expenses",
+          url: "/dashboard/finance/expenses",
+          icon: Receipt,
+        },
+        {
+          title: "Debit Cards",
+          url: "/dashboard/finance/debit-cards",
+          icon: CreditCard,
+        },
+        {
+          title: "Credit Cards",
+          url: "/dashboard/finance/credit-cards",
+          icon: CreditCard,
+        },
+      ],
     },
     {
-      title: "Payments",
-      url: "/dashboard/finance/payments",
+      label: "Bookkeeping",
+      items: [
+        {
+          title: "Bookkeeping",
+          url: "/dashboard/finance/bookkeeping",
+          icon: Book,
+        },
+        {
+          title: "Bank Reconciliation",
+          url: "/dashboard/finance/bank-reconciliation",
+          icon: CheckCircle2,
+        },
+        {
+          title: "Journal Entries",
+          url: "/dashboard/finance/journal-entries",
+          icon: FileEdit,
+        },
+      ],
     },
     {
-      title: "Expenses",
-      url: "/dashboard/finance/expenses",
+      label: "Accounting",
+      items: [
+        {
+          title: "Accounting",
+          url: "/dashboard/finance/accounting",
+          icon: Calculator,
+        },
+        {
+          title: "Chart of Accounts",
+          url: "/dashboard/finance/chart-of-accounts",
+          icon: List,
+        },
+        {
+          title: "General Ledger",
+          url: "/dashboard/finance/general-ledger",
+          icon: BookOpen,
+        },
+        {
+          title: "Accounts Receivable",
+          url: "/dashboard/finance/accounts-receivable",
+          icon: ArrowDownToLine,
+        },
+        {
+          title: "Accounts Payable",
+          url: "/dashboard/finance/accounts-payable",
+          icon: ArrowUpFromLine,
+        },
+        {
+          title: "QuickBooks",
+          url: "/dashboard/finance/quickbooks",
+          icon: Building2,
+        },
+      ],
     },
     {
-      title: "Payroll",
-      url: "/dashboard/finance/payroll",
+      label: "Payroll & Taxes",
+      items: [
+        {
+          title: "Payroll",
+          url: "/dashboard/finance/payroll",
+          icon: Users,
+        },
+        {
+          title: "Taxes",
+          url: "/dashboard/finance/tax",
+          icon: FileText,
+        },
+      ],
     },
     {
-      title: "Chart of Accounts",
-      url: "/dashboard/finance/chart-of-accounts",
+      label: "Financing",
+      items: [
+        {
+          title: "Business Financing",
+          url: "/dashboard/finance/business-financing",
+          icon: Building2,
+        },
+        {
+          title: "Consumer Financing",
+          url: "/dashboard/finance/consumer-financing",
+          icon: Users,
+        },
+      ],
     },
     {
-      title: "General Ledger",
-      url: "/dashboard/finance/general-ledger",
-    },
-    {
-      title: "Accounts Receivable",
-      url: "/dashboard/finance/accounts-receivable",
-    },
-    {
-      title: "Accounts Payable",
-      url: "/dashboard/finance/accounts-payable",
-    },
-    {
-      title: "Bank Reconciliation",
-      url: "/dashboard/finance/bank-reconciliation",
-    },
-    {
-      title: "Journal Entries",
-      url: "/dashboard/finance/journal-entries",
-    },
-    {
-      title: "QuickBooks",
-      url: "/dashboard/finance/quickbooks",
-    },
-    {
-      title: "Tax",
-      url: "/dashboard/finance/tax",
-    },
-    {
-      title: "Budget",
-      url: "/dashboard/finance/budget",
+      label: "Planning",
+      items: [
+        {
+          title: "Budget",
+          url: "/dashboard/finance/budget",
+          icon: Target,
+        },
+      ],
     },
   ],
-  reports: [
+  reporting: [
     {
-      title: "Business Analytics",
-      url: "/dashboard/reports",
-      icon: BarChart,
+      label: "Sections",
+      items: [
+        {
+          title: "Overview",
+          url: "/dashboard/reporting",
+          icon: BarChart,
+        },
+        {
+          title: "Executive Dashboard",
+          url: "/dashboard/reporting/executive",
+          icon: TrendingUp,
+        },
+        {
+          title: "AI Insights",
+          url: "/dashboard/reporting/ai",
+          icon: Sparkles,
+        },
+        {
+          title: "Communication",
+          url: "/dashboard/reporting/communication",
+          icon: MessageSquare,
+        },
+        {
+          title: "Finance",
+          url: "/dashboard/reporting/finance",
+          icon: DollarSign,
+        },
+        {
+          title: "Operations",
+          url: "/dashboard/reporting/operations",
+          icon: Wrench,
+        },
+        {
+          title: "Team Performance",
+          url: "/dashboard/reporting/team",
+          icon: Users,
+        },
+        {
+          title: "Custom Reports",
+          url: "/dashboard/reporting/custom",
+          icon: FileEdit,
+        },
+      ],
     },
     {
-      title: "Performance",
-      url: "/dashboard/reports/performance",
+      label: "AI & Intelligence",
+      items: [
+        {
+          title: "AI Performance Metrics",
+          url: "/dashboard/reporting/ai/performance",
+          icon: Sparkles,
+        },
+        {
+          title: "Conversation Analytics",
+          url: "/dashboard/reporting/ai/conversations",
+          icon: MessageSquare,
+        },
+        {
+          title: "Sentiment Analysis",
+          url: "/dashboard/reporting/ai/sentiment",
+          icon: Target,
+        },
+        {
+          title: "AI Response Quality",
+          url: "/dashboard/reporting/ai/quality",
+          icon: BadgeCheck,
+        },
+        {
+          title: "Training Data Insights",
+          url: "/dashboard/reporting/ai/training",
+          icon: BookOpen,
+        },
+        {
+          title: "AI Cost Analysis",
+          url: "/dashboard/reporting/ai/costs",
+          icon: DollarSign,
+        },
+        {
+          title: "Automation Success Rate",
+          url: "/dashboard/reporting/ai/automation",
+          icon: Zap,
+        },
+      ],
     },
     {
-      title: "Financial Reports",
-      url: "/dashboard/reports/financial",
+      label: "Communication Analytics",
+      items: [
+        {
+          title: "Phone Call Reports",
+          url: "/dashboard/reporting/communication/calls",
+          icon: Phone,
+        },
+        {
+          title: "Call Duration & Volume",
+          url: "/dashboard/reporting/communication/call-metrics",
+          icon: BarChart,
+        },
+        {
+          title: "Call Recordings",
+          url: "/dashboard/reporting/communication/call-recordings",
+          icon: Archive,
+        },
+        {
+          title: "Text Message Analytics",
+          url: "/dashboard/reporting/communication/sms",
+          icon: MessageSquare,
+        },
+        {
+          title: "Email Campaigns",
+          url: "/dashboard/reporting/communication/email",
+          icon: Mail,
+        },
+        {
+          title: "Email Open & Click Rates",
+          url: "/dashboard/reporting/communication/email-metrics",
+          icon: BarChart,
+        },
+        {
+          title: "Support Ticket Analysis",
+          url: "/dashboard/reporting/communication/tickets",
+          icon: Ticket,
+        },
+        {
+          title: "Response Time Metrics",
+          url: "/dashboard/reporting/communication/response-time",
+          icon: Clock,
+        },
+        {
+          title: "Customer Satisfaction",
+          url: "/dashboard/reporting/communication/satisfaction",
+          icon: Star,
+        },
+        {
+          title: "Channel Performance",
+          url: "/dashboard/reporting/communication/channels",
+          icon: TrendingUp,
+        },
+      ],
     },
     {
-      title: "Operational Reports",
-      url: "/dashboard/reports/operational",
+      label: "Financial Reports",
+      items: [
+        {
+          title: "Profit & Loss",
+          url: "/dashboard/reporting/finance/profit-loss",
+          icon: DollarSign,
+        },
+        {
+          title: "Revenue Analysis",
+          url: "/dashboard/reporting/finance/revenue",
+          icon: TrendingUp,
+        },
+        {
+          title: "Expense Breakdown",
+          url: "/dashboard/reporting/finance/expenses",
+          icon: Receipt,
+        },
+        {
+          title: "Cash Flow Reports",
+          url: "/dashboard/reporting/finance/cash-flow",
+          icon: ArrowUpFromLine,
+        },
+        {
+          title: "Invoice Aging",
+          url: "/dashboard/reporting/finance/invoice-aging",
+          icon: FileText,
+        },
+        {
+          title: "Payment Analytics",
+          url: "/dashboard/reporting/finance/payments",
+          icon: CreditCard,
+        },
+        {
+          title: "Tax Reports",
+          url: "/dashboard/reporting/finance/tax",
+          icon: FileSpreadsheet,
+        },
+        {
+          title: "Budget vs Actual",
+          url: "/dashboard/reporting/finance/budget",
+          icon: Target,
+        },
+        {
+          title: "Job Profitability",
+          url: "/dashboard/reporting/finance/job-profitability",
+          icon: BarChart,
+        },
+        {
+          title: "Customer Lifetime Value",
+          url: "/dashboard/reporting/finance/ltv",
+          icon: Users,
+        },
+        {
+          title: "Accounts Receivable",
+          url: "/dashboard/reporting/finance/ar",
+          icon: ArrowDownToLine,
+        },
+        {
+          title: "Accounts Payable",
+          url: "/dashboard/reporting/finance/ap",
+          icon: ArrowUpFromLine,
+        },
+      ],
     },
     {
-      title: "Customer Reports",
-      url: "/dashboard/reports/customers",
+      label: "Operations & Jobs",
+      items: [
+        {
+          title: "Job Performance",
+          url: "/dashboard/reporting/operations/jobs",
+          icon: ClipboardList,
+        },
+        {
+          title: "Service Type Analysis",
+          url: "/dashboard/reporting/operations/service-types",
+          icon: Wrench,
+        },
+        {
+          title: "Completion Rates",
+          url: "/dashboard/reporting/operations/completion",
+          icon: CheckCircle2,
+        },
+        {
+          title: "Schedule Efficiency",
+          url: "/dashboard/reporting/operations/schedule",
+          icon: Calendar,
+        },
+        {
+          title: "Dispatch Analytics",
+          url: "/dashboard/reporting/operations/dispatch",
+          icon: MapPin,
+        },
+        {
+          title: "Route Optimization",
+          url: "/dashboard/reporting/operations/routes",
+          icon: MapPin,
+        },
+        {
+          title: "Equipment Utilization",
+          url: "/dashboard/reporting/operations/equipment",
+          icon: Box,
+        },
+        {
+          title: "Materials Usage",
+          url: "/dashboard/reporting/operations/materials",
+          icon: Package,
+        },
+        {
+          title: "Inventory Turnover",
+          url: "/dashboard/reporting/operations/inventory",
+          icon: Archive,
+        },
+        {
+          title: "Warranty Claims",
+          url: "/dashboard/reporting/operations/warranty",
+          icon: ShieldCheck,
+        },
+      ],
     },
     {
-      title: "Technician Reports",
-      url: "/dashboard/reports/technicians",
+      label: "Team Performance",
+      items: [
+        {
+          title: "Technician Leaderboard",
+          url: "/dashboard/reporting/team/leaderboard",
+          icon: Trophy,
+        },
+        {
+          title: "Individual Performance",
+          url: "/dashboard/reporting/team/individual",
+          icon: User,
+        },
+        {
+          title: "Team Productivity",
+          url: "/dashboard/reporting/team/productivity",
+          icon: TrendingUp,
+        },
+        {
+          title: "Revenue Per Technician",
+          url: "/dashboard/reporting/team/revenue",
+          icon: DollarSign,
+        },
+        {
+          title: "Jobs Completed",
+          url: "/dashboard/reporting/team/jobs-completed",
+          icon: CheckCircle2,
+        },
+        {
+          title: "Customer Ratings",
+          url: "/dashboard/reporting/team/ratings",
+          icon: Star,
+        },
+        {
+          title: "Time Tracking",
+          url: "/dashboard/reporting/team/time-tracking",
+          icon: Clock,
+        },
+        {
+          title: "Attendance & Availability",
+          url: "/dashboard/reporting/team/attendance",
+          icon: Calendar,
+        },
+        {
+          title: "Training Completion",
+          url: "/dashboard/reporting/team/training",
+          icon: GraduationCap,
+        },
+        {
+          title: "Certifications",
+          url: "/dashboard/reporting/team/certifications",
+          icon: BadgeCheck,
+        },
+        {
+          title: "Commission Reports",
+          url: "/dashboard/reporting/team/commission",
+          icon: DollarSign,
+        },
+        {
+          title: "Bonus Tracking",
+          url: "/dashboard/reporting/team/bonus",
+          icon: Star,
+        },
+      ],
     },
     {
-      title: "Custom Reports",
-      url: "/dashboard/reports/custom",
+      label: "Customer Analytics",
+      items: [
+        {
+          title: "Customer Acquisition",
+          url: "/dashboard/reporting/customers/acquisition",
+          icon: Users,
+        },
+        {
+          title: "Retention Rates",
+          url: "/dashboard/reporting/customers/retention",
+          icon: TrendingUp,
+        },
+        {
+          title: "Churn Analysis",
+          url: "/dashboard/reporting/customers/churn",
+          icon: ArrowDownToLine,
+        },
+        {
+          title: "Customer Segments",
+          url: "/dashboard/reporting/customers/segments",
+          icon: List,
+        },
+        {
+          title: "Service History",
+          url: "/dashboard/reporting/customers/service-history",
+          icon: ClipboardList,
+        },
+        {
+          title: "Repeat Business",
+          url: "/dashboard/reporting/customers/repeat",
+          icon: TrendingUp,
+        },
+        {
+          title: "Referral Sources",
+          url: "/dashboard/reporting/customers/referrals",
+          icon: Users,
+        },
+        {
+          title: "Customer Geography",
+          url: "/dashboard/reporting/customers/geography",
+          icon: MapPin,
+        },
+        {
+          title: "Demographics",
+          url: "/dashboard/reporting/customers/demographics",
+          icon: BarChart,
+        },
+      ],
+    },
+    {
+      label: "Marketing & Growth",
+      items: [
+        {
+          title: "Campaign Performance",
+          url: "/dashboard/reporting/marketing/campaigns",
+          icon: Megaphone,
+        },
+        {
+          title: "Lead Generation",
+          url: "/dashboard/reporting/marketing/leads",
+          icon: Target,
+        },
+        {
+          title: "Lead Conversion",
+          url: "/dashboard/reporting/marketing/conversion",
+          icon: TrendingUp,
+        },
+        {
+          title: "ROI Analysis",
+          url: "/dashboard/reporting/marketing/roi",
+          icon: DollarSign,
+        },
+        {
+          title: "Website Analytics",
+          url: "/dashboard/reporting/marketing/website",
+          icon: BarChart,
+        },
+        {
+          title: "Social Media Metrics",
+          url: "/dashboard/reporting/marketing/social",
+          icon: MessageSquare,
+        },
+        {
+          title: "Review Analysis",
+          url: "/dashboard/reporting/marketing/reviews",
+          icon: Star,
+        },
+        {
+          title: "Ad Performance",
+          url: "/dashboard/reporting/marketing/ads",
+          icon: Megaphone,
+        },
+        {
+          title: "SEO Rankings",
+          url: "/dashboard/reporting/marketing/seo",
+          icon: TrendingUp,
+        },
+      ],
+    },
+    {
+      label: "Scheduling & Dispatch",
+      items: [
+        {
+          title: "Schedule Utilization",
+          url: "/dashboard/reporting/schedule/utilization",
+          icon: Calendar,
+        },
+        {
+          title: "First-Time Fix Rate",
+          url: "/dashboard/reporting/schedule/first-time-fix",
+          icon: CheckCircle2,
+        },
+        {
+          title: "Callback Analysis",
+          url: "/dashboard/reporting/schedule/callbacks",
+          icon: Phone,
+        },
+        {
+          title: "Travel Time Analysis",
+          url: "/dashboard/reporting/schedule/travel-time",
+          icon: MapPin,
+        },
+        {
+          title: "Same-Day Bookings",
+          url: "/dashboard/reporting/schedule/same-day",
+          icon: Calendar,
+        },
+        {
+          title: "Appointment Types",
+          url: "/dashboard/reporting/schedule/appointment-types",
+          icon: ClipboardList,
+        },
+        {
+          title: "No-Show Rate",
+          url: "/dashboard/reporting/schedule/no-shows",
+          icon: X,
+        },
+        {
+          title: "Rescheduling Trends",
+          url: "/dashboard/reporting/schedule/rescheduling",
+          icon: Calendar,
+        },
+      ],
+    },
+    {
+      label: "Maintenance & Agreements",
+      items: [
+        {
+          title: "Active Agreements",
+          url: "/dashboard/reporting/maintenance/active",
+          icon: FileText,
+        },
+        {
+          title: "Renewal Rates",
+          url: "/dashboard/reporting/maintenance/renewals",
+          icon: TrendingUp,
+        },
+        {
+          title: "Service Plan Revenue",
+          url: "/dashboard/reporting/maintenance/revenue",
+          icon: DollarSign,
+        },
+        {
+          title: "Maintenance Schedule",
+          url: "/dashboard/reporting/maintenance/schedule",
+          icon: Calendar,
+        },
+        {
+          title: "Preventive Maintenance",
+          url: "/dashboard/reporting/maintenance/preventive",
+          icon: Shield,
+        },
+        {
+          title: "Agreement Profitability",
+          url: "/dashboard/reporting/maintenance/profitability",
+          icon: BarChart,
+        },
+      ],
+    },
+    {
+      label: "Inventory & Materials",
+      items: [
+        {
+          title: "Stock Levels",
+          url: "/dashboard/reporting/inventory/stock",
+          icon: Package,
+        },
+        {
+          title: "Material Costs",
+          url: "/dashboard/reporting/inventory/costs",
+          icon: DollarSign,
+        },
+        {
+          title: "Reorder Trends",
+          url: "/dashboard/reporting/inventory/reorder",
+          icon: TrendingUp,
+        },
+        {
+          title: "Supplier Performance",
+          url: "/dashboard/reporting/inventory/suppliers",
+          icon: Building2,
+        },
+        {
+          title: "Part Usage",
+          url: "/dashboard/reporting/inventory/usage",
+          icon: BarChart,
+        },
+        {
+          title: "Dead Stock Analysis",
+          url: "/dashboard/reporting/inventory/dead-stock",
+          icon: Trash,
+        },
+      ],
+    },
+    {
+      label: "Compliance & Safety",
+      items: [
+        {
+          title: "Licensing Status",
+          url: "/dashboard/reporting/compliance/licensing",
+          icon: BadgeCheck,
+        },
+        {
+          title: "Insurance Coverage",
+          url: "/dashboard/reporting/compliance/insurance",
+          icon: Shield,
+        },
+        {
+          title: "Certification Tracking",
+          url: "/dashboard/reporting/compliance/certifications",
+          icon: GraduationCap,
+        },
+        {
+          title: "Safety Incidents",
+          url: "/dashboard/reporting/compliance/safety",
+          icon: ShieldAlert,
+        },
+        {
+          title: "OSHA Compliance",
+          url: "/dashboard/reporting/compliance/osha",
+          icon: ShieldCheck,
+        },
+        {
+          title: "Audit Reports",
+          url: "/dashboard/reporting/compliance/audits",
+          icon: FileText,
+        },
+      ],
+    },
+    {
+      label: "Advanced Analytics",
+      items: [
+        {
+          title: "Predictive Insights",
+          url: "/dashboard/reporting/analytics/predictive",
+          icon: Sparkles,
+        },
+        {
+          title: "Trend Analysis",
+          url: "/dashboard/reporting/analytics/trends",
+          icon: TrendingUp,
+        },
+        {
+          title: "Seasonality Reports",
+          url: "/dashboard/reporting/analytics/seasonality",
+          icon: Calendar,
+        },
+        {
+          title: "Forecasting",
+          url: "/dashboard/reporting/analytics/forecasting",
+          icon: BarChart,
+        },
+        {
+          title: "Benchmark Comparisons",
+          url: "/dashboard/reporting/analytics/benchmarks",
+          icon: Target,
+        },
+        {
+          title: "What-If Analysis",
+          url: "/dashboard/reporting/analytics/what-if",
+          icon: Calculator,
+        },
+      ],
+    },
+    {
+      label: "Export & Sharing",
+      items: [
+        {
+          title: "Scheduled Reports",
+          url: "/dashboard/reporting/export/scheduled",
+          icon: Calendar,
+        },
+        {
+          title: "Report Templates",
+          url: "/dashboard/reporting/export/templates",
+          icon: FileText,
+        },
+        {
+          title: "Data Export",
+          url: "/dashboard/reporting/export/data",
+          icon: ArrowDownToLine,
+        },
+        {
+          title: "Share Reports",
+          url: "/dashboard/reporting/export/share",
+          icon: Users,
+        },
+        {
+          title: "Report History",
+          url: "/dashboard/reporting/export/history",
+          icon: Archive,
+        },
+      ],
     },
   ],
   marketing: [
     {
-      title: "Lead Management",
-      url: "/dashboard/marketing",
-      icon: Megaphone,
+      label: "Overview",
+      items: [
+        {
+          title: "Marketing Dashboard",
+          url: "/dashboard/marketing",
+          icon: Megaphone,
+        },
+        {
+          title: "Campaign Performance",
+          url: "/dashboard/marketing/performance",
+          icon: TrendingUp,
+        },
+        {
+          title: "Lead Analytics",
+          url: "/dashboard/marketing/analytics",
+          icon: BarChart,
+        },
+      ],
     },
     {
-      title: "Review Management",
-      url: "/dashboard/marketing/reviews",
+      label: "Lead Sources",
+      items: [
+        {
+          title: "All Leads",
+          url: "/dashboard/marketing/leads",
+          icon: Users,
+        },
+        {
+          title: "Thumbtack",
+          url: "/dashboard/marketing/leads/thumbtack",
+          icon: Target,
+        },
+        {
+          title: "Angi (Angie's List)",
+          url: "/dashboard/marketing/leads/angi",
+          icon: CheckCircle2,
+        },
+        {
+          title: "Google Local Services",
+          url: "/dashboard/marketing/leads/google-local",
+          icon: Search,
+        },
+        {
+          title: "Yelp",
+          url: "/dashboard/marketing/leads/yelp",
+          icon: Star,
+        },
+        {
+          title: "HomeAdvisor",
+          url: "/dashboard/marketing/leads/homeadvisor",
+          icon: Home,
+        },
+        {
+          title: "Website Leads",
+          url: "/dashboard/marketing/leads/website",
+          icon: Globe,
+        },
+      ],
     },
     {
-      title: "Marketing Campaigns",
-      url: "/dashboard/marketing/campaigns",
+      label: "Paid Advertising",
+      items: [
+        {
+          title: "Google Ads",
+          url: "/dashboard/marketing/ads/google",
+          icon: Search,
+          items: [
+            {
+              title: "Campaigns",
+              url: "/dashboard/marketing/ads/google/campaigns",
+            },
+            {
+              title: "Performance Max",
+              url: "/dashboard/marketing/ads/google/performance-max",
+            },
+            {
+              title: "Search Ads",
+              url: "/dashboard/marketing/ads/google/search",
+            },
+            {
+              title: "Local Services Ads",
+              url: "/dashboard/marketing/ads/google/local-services",
+            },
+            {
+              title: "Analytics & Reports",
+              url: "/dashboard/marketing/ads/google/analytics",
+            },
+          ],
+        },
+        {
+          title: "Facebook & Instagram Ads",
+          url: "/dashboard/marketing/ads/facebook",
+          icon: Camera,
+          items: [
+            {
+              title: "Campaigns",
+              url: "/dashboard/marketing/ads/facebook/campaigns",
+            },
+            {
+              title: "Ad Sets",
+              url: "/dashboard/marketing/ads/facebook/ad-sets",
+            },
+            {
+              title: "Creative Library",
+              url: "/dashboard/marketing/ads/facebook/creative",
+            },
+            {
+              title: "Audience Targeting",
+              url: "/dashboard/marketing/ads/facebook/audiences",
+            },
+            {
+              title: "Performance",
+              url: "/dashboard/marketing/ads/facebook/performance",
+            },
+          ],
+        },
+        {
+          title: "Nextdoor Ads",
+          url: "/dashboard/marketing/ads/nextdoor",
+          icon: MapPin,
+        },
+        {
+          title: "Bing Ads",
+          url: "/dashboard/marketing/ads/bing",
+          icon: Search,
+        },
+      ],
     },
     {
-      title: "Customer Outreach",
-      url: "/dashboard/marketing/outreach",
+      label: "Organic Marketing",
+      items: [
+        {
+          title: "Google Business Profile",
+          url: "/dashboard/marketing/organic/google-business",
+          icon: Search,
+        },
+        {
+          title: "SEO Management",
+          url: "/dashboard/marketing/organic/seo",
+          icon: TrendingUp,
+        },
+        {
+          title: "Content Marketing",
+          url: "/dashboard/marketing/organic/content",
+          icon: FileText,
+        },
+        {
+          title: "Blog Posts",
+          url: "/dashboard/marketing/organic/blog",
+          icon: BookOpen,
+        },
+      ],
+    },
+    {
+      label: "Social Media",
+      items: [
+        {
+          title: "Social Hub",
+          url: "/dashboard/marketing/social",
+          icon: MessageSquare,
+        },
+        {
+          title: "Facebook",
+          url: "/dashboard/marketing/social/facebook",
+          icon: MessageSquare,
+        },
+        {
+          title: "Instagram",
+          url: "/dashboard/marketing/social/instagram",
+          icon: Camera,
+        },
+        {
+          title: "LinkedIn",
+          url: "/dashboard/marketing/social/linkedin",
+          icon: Briefcase,
+        },
+        {
+          title: "X (Twitter)",
+          url: "/dashboard/marketing/social/twitter",
+          icon: Hash,
+        },
+        {
+          title: "Post Scheduler",
+          url: "/dashboard/marketing/social/scheduler",
+          icon: Calendar,
+        },
+      ],
+    },
+    {
+      label: "Review Management",
+      items: [
+        {
+          title: "All Reviews",
+          url: "/dashboard/marketing/reviews",
+          icon: Star,
+        },
+        {
+          title: "Google Reviews",
+          url: "/dashboard/marketing/reviews/google",
+          icon: Search,
+        },
+        {
+          title: "Yelp Reviews",
+          url: "/dashboard/marketing/reviews/yelp",
+          icon: Star,
+        },
+        {
+          title: "Facebook Reviews",
+          url: "/dashboard/marketing/reviews/facebook",
+          icon: MessageSquare,
+        },
+        {
+          title: "Angi Reviews",
+          url: "/dashboard/marketing/reviews/angi",
+          icon: CheckCircle2,
+        },
+        {
+          title: "Thumbtack Reviews",
+          url: "/dashboard/marketing/reviews/thumbtack",
+          icon: Target,
+        },
+        {
+          title: "Review Requests",
+          url: "/dashboard/marketing/reviews/requests",
+          icon: Mail,
+        },
+        {
+          title: "Review Responses",
+          url: "/dashboard/marketing/reviews/responses",
+          icon: MessageSquare,
+        },
+      ],
+    },
+    {
+      label: "Email Marketing",
+      items: [
+        {
+          title: "Email Campaigns",
+          url: "/dashboard/marketing/email/campaigns",
+          icon: Mail,
+        },
+        {
+          title: "Newsletters",
+          url: "/dashboard/marketing/email/newsletters",
+          icon: MailOpen,
+        },
+        {
+          title: "Email Templates",
+          url: "/dashboard/marketing/email/templates",
+          icon: FileText,
+        },
+        {
+          title: "Subscriber Lists",
+          url: "/dashboard/marketing/email/lists",
+          icon: List,
+        },
+        {
+          title: "Automation Workflows",
+          url: "/dashboard/marketing/email/automation",
+          icon: Zap,
+        },
+      ],
+    },
+    {
+      label: "Customer Outreach",
+      items: [
+        {
+          title: "Outreach Dashboard",
+          url: "/dashboard/marketing/outreach",
+          icon: Megaphone,
+        },
+        {
+          title: "Seasonal Campaigns",
+          url: "/dashboard/marketing/outreach/seasonal",
+          icon: Calendar,
+        },
+        {
+          title: "Referral Program",
+          url: "/dashboard/marketing/outreach/referrals",
+          icon: Users,
+        },
+        {
+          title: "Loyalty Program",
+          url: "/dashboard/marketing/outreach/loyalty",
+          icon: Trophy,
+        },
+        {
+          title: "Promotions & Offers",
+          url: "/dashboard/marketing/outreach/promotions",
+          icon: Tag,
+        },
+      ],
+    },
+    {
+      label: "Lead Management",
+      items: [
+        {
+          title: "Lead Pipeline",
+          url: "/dashboard/marketing/lead-pipeline",
+          icon: ClipboardList,
+        },
+        {
+          title: "Lead Scoring",
+          url: "/dashboard/marketing/lead-scoring",
+          icon: Target,
+        },
+        {
+          title: "Lead Assignment",
+          url: "/dashboard/marketing/lead-assignment",
+          icon: UserPlus,
+        },
+        {
+          title: "Lead Nurturing",
+          url: "/dashboard/marketing/lead-nurturing",
+          icon: TrendingUp,
+        },
+      ],
+    },
+    {
+      label: "Marketing Tools",
+      items: [
+        {
+          title: "Landing Pages",
+          url: "/dashboard/marketing/tools/landing-pages",
+          icon: FileText,
+        },
+        {
+          title: "QR Codes",
+          url: "/dashboard/marketing/tools/qr-codes",
+          icon: QrCode,
+        },
+        {
+          title: "Marketing Materials",
+          url: "/dashboard/marketing/tools/materials",
+          icon: Package,
+        },
+        {
+          title: "Brand Assets",
+          url: "/dashboard/marketing/tools/brand-assets",
+          icon: Palette,
+        },
+      ],
+    },
+  ],
+  shop: [
+    {
+      label: "Categories",
+      items: [
+        {
+          title: "All Products",
+          url: "/dashboard/shop",
+          icon: ShoppingCart,
+          badge: "8",
+        },
+        {
+          title: "Payment Hardware",
+          url: "/dashboard/shop?category=hardware",
+          icon: CreditCard,
+          badge: "3",
+        },
+        {
+          title: "Uniforms & Apparel",
+          url: "/dashboard/shop?category=apparel",
+          icon: User,
+          badge: "1",
+        },
+        {
+          title: "Tools & Equipment",
+          url: "/dashboard/shop?category=tools",
+          icon: Wrench,
+          badge: "1",
+        },
+        {
+          title: "Office Supplies",
+          url: "/dashboard/shop?category=supplies",
+          icon: Paperclip,
+          badge: "1",
+        },
+        {
+          title: "Marketing Materials",
+          url: "/dashboard/shop?category=marketing",
+          icon: Megaphone,
+          badge: "2",
+        },
+      ],
     },
   ],
   automation: [
@@ -443,7 +1510,7 @@ const navigationSections = {
       label: "AI Assistant",
       items: [
         {
-          title: "Stratos Assistant",
+          title: "Thorbis Assistant",
           url: "/dashboard/ai",
           icon: Sparkles,
         },
@@ -893,37 +1960,37 @@ const navigationSections = {
       items: [
         {
           title: "Google Business Profile",
-          url: "/dashboard/tools/marketing/google-business",
+          url: "/tools/marketing/google-business",
           icon: Search,
         },
         {
           title: "Local Services Ads",
-          url: "/dashboard/tools/marketing/local-services",
+          url: "/tools/marketing/local-services",
           icon: BadgeCheck,
         },
         {
           title: "Social Media Setup",
-          url: "/dashboard/tools/marketing/social-media",
+          url: "/tools/marketing/social-media",
           icon: Megaphone,
         },
         {
           title: "Facebook Business",
-          url: "/dashboard/tools/marketing/facebook",
+          url: "/tools/marketing/facebook",
           icon: MessageSquare,
         },
         {
           title: "Instagram for Business",
-          url: "/dashboard/tools/marketing/instagram",
+          url: "/tools/marketing/instagram",
           icon: Camera,
         },
         {
           title: "X (Twitter) Business",
-          url: "/dashboard/tools/marketing/twitter",
+          url: "/tools/marketing/twitter",
           icon: Hash,
         },
         {
           title: "LinkedIn Company Page",
-          url: "/dashboard/tools/marketing/linkedin",
+          url: "/tools/marketing/linkedin",
           icon: Users,
         },
       ],
@@ -933,27 +2000,27 @@ const navigationSections = {
       items: [
         {
           title: "Business Registration",
-          url: "/dashboard/tools/business/registration",
+          url: "/tools/business/registration",
           icon: Briefcase,
         },
         {
           title: "Licensing & Permits",
-          url: "/dashboard/tools/business/licensing",
+          url: "/tools/business/licensing",
           icon: FileText,
         },
         {
           title: "Insurance Providers",
-          url: "/dashboard/tools/business/insurance",
+          url: "/tools/business/insurance",
           icon: Shield,
         },
         {
           title: "Banking & Payroll",
-          url: "/dashboard/tools/business/banking",
+          url: "/tools/business/banking",
           icon: DollarSign,
         },
         {
           title: "Legal Resources",
-          url: "/dashboard/tools/business/legal",
+          url: "/tools/business/legal",
           icon: ShieldCheck,
         },
       ],
@@ -963,22 +2030,22 @@ const navigationSections = {
       items: [
         {
           title: "Consumer Financing",
-          url: "/dashboard/tools/financing/consumer",
+          url: "/tools/financing/consumer",
           icon: Receipt,
         },
         {
           title: "Business Loans",
-          url: "/dashboard/tools/financing/business-loans",
+          url: "/tools/financing/business-loans",
           icon: DollarSign,
         },
         {
           title: "Equipment Financing",
-          url: "/dashboard/tools/financing/equipment",
+          url: "/tools/financing/equipment",
           icon: Wrench,
         },
         {
           title: "Credit Card Processing",
-          url: "/dashboard/tools/financing/credit-card",
+          url: "/tools/financing/credit-card",
           icon: Receipt,
         },
       ],
@@ -988,27 +2055,27 @@ const navigationSections = {
       items: [
         {
           title: "Nexstar Network",
-          url: "/dashboard/tools/networks/nexstar",
+          url: "/tools/networks/nexstar",
           icon: Users,
         },
         {
           title: "Service Nation Alliance",
-          url: "/dashboard/tools/networks/service-nation",
+          url: "/tools/networks/service-nation",
           icon: Users,
         },
         {
           title: "ACCA (HVAC)",
-          url: "/dashboard/tools/networks/acca",
+          url: "/tools/networks/acca",
           icon: Zap,
         },
         {
           title: "PHCC (Plumbing)",
-          url: "/dashboard/tools/networks/phcc",
+          url: "/tools/networks/phcc",
           icon: Wrench,
         },
         {
           title: "NECA (Electrical)",
-          url: "/dashboard/tools/networks/neca",
+          url: "/tools/networks/neca",
           icon: Zap,
         },
       ],
@@ -1018,22 +2085,22 @@ const navigationSections = {
       items: [
         {
           title: "Trade Certifications",
-          url: "/dashboard/tools/training/certifications",
+          url: "/tools/training/certifications",
           icon: BadgeCheck,
         },
         {
           title: "OSHA Training",
-          url: "/dashboard/tools/training/osha",
+          url: "/tools/training/osha",
           icon: ShieldCheck,
         },
         {
           title: "EPA Certification",
-          url: "/dashboard/tools/training/epa",
+          url: "/tools/training/epa",
           icon: Shield,
         },
         {
           title: "Business Management",
-          url: "/dashboard/tools/training/business",
+          url: "/tools/training/business",
           icon: GraduationCap,
         },
       ],
@@ -1043,22 +2110,22 @@ const navigationSections = {
       items: [
         {
           title: "Industry News",
-          url: "/dashboard/tools/resources/news",
+          url: "/tools/resources/news",
           icon: BookOpen,
         },
         {
           title: "Calculators & Estimators",
-          url: "/dashboard/tools/resources/calculators",
+          url: "/tools/resources/calculators",
           icon: Wrench,
         },
         {
           title: "Vendor Directories",
-          url: "/dashboard/tools/resources/vendors",
+          url: "/tools/resources/vendors",
           icon: Package,
         },
         {
           title: "Emergency Services",
-          url: "/dashboard/tools/resources/emergency",
+          url: "/tools/resources/emergency",
           icon: Phone,
         },
       ],
@@ -1171,20 +2238,20 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   if (pathname.startsWith("/dashboard/work")) {
     return "work";
   }
-  if (pathname.startsWith("/dashboard/schedule")) {
-    return "schedule";
-  }
   if (pathname.startsWith("/dashboard/customers")) {
     return "customers";
   }
   if (pathname.startsWith("/dashboard/finance")) {
     return "finance";
   }
-  if (pathname.startsWith("/dashboard/reports")) {
-    return "reports";
+  if (pathname.startsWith("/dashboard/reporting")) {
+    return "reporting";
   }
   if (pathname.startsWith("/dashboard/marketing")) {
     return "marketing";
+  }
+  if (pathname.startsWith("/dashboard/shop")) {
+    return "shop";
   }
   if (pathname.startsWith("/dashboard/automation")) {
     return "automation";
@@ -1195,38 +2262,13 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   if (pathname.startsWith("/dashboard/settings")) {
     return "settings";
   }
-  if (pathname.startsWith("/dashboard/tools")) {
+  if (pathname.startsWith("/tools")) {
     return "tools";
   }
 
   return "today";
 }
 
-// Sample data for team switcher and user
-const sampleData = {
-  user: {
-    name: "John Smith",
-    email: "john@example.com",
-    avatar: "/placeholder-avatar.jpg",
-  },
-  teams: [
-    {
-      name: "Stratos FSM",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Demo Company",
-      logo: AudioWaveform,
-      plan: "Pro",
-    },
-    {
-      name: "Test Business",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
@@ -1243,14 +2285,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [cleanupDuplicateChats]);
 
   const isAISection = currentSection === "ai";
+  const isReportingSection = currentSection === "reporting";
 
-  // Use grouped navigation for settings, ai, work, customers, communication, tools, and jobDetails sections
+  // Use grouped navigation for settings, ai, work, customers, communication, finance, marketing, shop, tools, and jobDetails sections
   const useGroupedNav =
     currentSection === "settings" ||
     currentSection === "ai" ||
     currentSection === "work" ||
     currentSection === "customers" ||
     currentSection === "communication" ||
+    currentSection === "finance" ||
+    currentSection === "marketing" ||
+    currentSection === "shop" ||
     currentSection === "tools" ||
     currentSection === "jobDetails";
 
@@ -1260,12 +2306,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebarConfig: any = undefined;
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={sampleData.teams} />
-      </SidebarHeader>
+    <Sidebar collapsible="offcanvas" variant="inset" {...props}>
       <SidebarContent>
-        {hasCustomConfig ? (
+        {isReportingSection ? (
+          // Use custom collapsible navigation for reporting
+          <ReportingSidebarNav />
+        ) : hasCustomConfig ? (
           // Use custom page configuration from layout
           <NavFlexible
             config={sidebarConfig}
@@ -1317,7 +2363,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
         )}
-        <NavUser user={sampleData.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

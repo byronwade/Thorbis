@@ -77,7 +77,7 @@ export function DashboardHero() {
           </h1>
 
           <p className="max-w-3xl text-lg text-muted-foreground">
-            See how Stratos gives you complete visibility and control over every
+            See how Thorbis gives you complete visibility and control over every
             aspect of your field service operations—from scheduling to payments.
           </p>
         </div>
@@ -168,7 +168,7 @@ export function DashboardHero() {
                     See Your Business in Action
                   </h3>
                   <p className="text-muted-foreground">
-                    Schedule a personalized demo to see how Stratos works
+                    Schedule a personalized demo to see how Thorbis works
                     <br />
                     for businesses like yours
                   </p>

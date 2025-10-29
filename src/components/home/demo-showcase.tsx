@@ -49,7 +49,7 @@ export function DemoShowcaseSection() {
               See It In Action
             </Badge>
             <h2 className="mb-6 font-bold text-4xl text-white md:text-5xl">
-              Watch Stratos
+              Watch Thorbis
               <br />
               <span className="bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">
                 Transform Your Business
@@ -120,7 +120,7 @@ export function DemoShowcaseSection() {
                     Watch 2-Minute Demo
                   </p>
                   <p className="text-center text-foreground text-sm">
-                    See how Stratos helps field service businesses
+                    See how Thorbis helps field service businesses
                     <br />
                     save time and increase revenue
                   </p>

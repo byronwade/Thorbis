@@ -16,7 +16,7 @@ export function DashboardTestimonialsSection() {
   const testimonials = [
     {
       quote:
-        "Stratos transformed our operations. We went from chaos to complete visibility in 30 days.",
+        "Thorbis transformed our operations. We went from chaos to complete visibility in 30 days.",
       author: "Michael Rodriguez",
       role: "Owner",
       company: "Rodriguez HVAC",
@@ -76,7 +76,7 @@ export function DashboardTestimonialsSection() {
             <span className="text-muted-foreground">From Real Businesses</span>
           </h2>
           <p className="max-w-2xl text-lg text-muted-foreground">
-            See the metrics that matter from field service pros using Stratos
+            See the metrics that matter from field service pros using Thorbis
           </p>
         </div>
 

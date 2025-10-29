@@ -331,7 +331,7 @@ export const integrations: Integration[] = [
     id: "zapier",
     name: "Zapier",
     description:
-      "Connect Stratos with 5,000+ apps and automate workflows without code.",
+      "Connect Thorbis with 5,000+ apps and automate workflows without code.",
     category: "all",
     icon: "https://logo.clearbit.com/zapier.com",
     color: "bg-orange-500",

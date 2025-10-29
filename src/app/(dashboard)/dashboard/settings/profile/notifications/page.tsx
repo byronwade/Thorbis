@@ -128,7 +128,7 @@ export default function NotificationsPage() {  const [settings, setSettings] = u
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs">
-                    Control which emails you receive from Stratos
+                    Control which emails you receive from Thorbis
                   </p>
                 </TooltipContent>
               </Tooltip>

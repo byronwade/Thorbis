@@ -9,7 +9,7 @@
  * - Browser API access for enhanced UX
  */
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Edit3, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -141,7 +141,7 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
   // Slide navigation with keyboard support
   const { currentSlide, goToSlide, setCurrentSlide } = useSlideNavigation({
     slideCount: slides.length,
-    onInteraction: handleUserInteraction,
+    onInteraction: () => {},
   });
 
   // Auto-rotation with progress
@@ -153,34 +153,36 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
     isEditMode,
   });
 
-  // Load saved widgets
+  // Load saved widgets only once
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        setWidgets(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setWidgets(parsed);
       } catch (e) {
         // Failed to load saved widgets - using defaults
       }
     }
   }, []);
 
-  function handleUserInteraction() {
-    setShowEscReminder(true);
+  // Memoized interaction handler (no ESC reminder on click)
+  const handleUserInteraction = useCallback(() => {
     handleInteraction();
-    setTimeout(() => {
-      setShowEscReminder(false);
-    }, 2000);
-  }
+  }, [handleInteraction]);
 
-  // ESC key handler
+  // ESC key handler - only show reminder on keyboard events
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         window.history.back();
-      } else if (!event.key.startsWith("Arrow")) {
-        // Show reminder on any key press except ESC and arrow keys
-        handleUserInteraction();
+      } else if (!event.key.startsWith("Arrow") && !event.key.startsWith("F") && event.key !== "Tab") {
+        // Show ESC reminder ONLY on keyboard interaction
+        setShowEscReminder(true);
+        handleInteraction();
+        setTimeout(() => {
+          setShowEscReminder(false);
+        }, 2000);
       }
     }
 
@@ -188,8 +190,7 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleInteraction]);
 
   const handleSlideWidgetsChange = useCallback(
     (slideId: string, updatedWidgets: Widget[]) => {
@@ -210,19 +211,58 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
     [slides]
   );
 
-  function handleSave() {
+  const handleSave = useCallback(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(widgets));
     localStorage.setItem(STORAGE_KEY_SLIDES, JSON.stringify(slides));
     setHasUnsavedChanges(false);
     setIsEditMode(false);
-  }
+  }, [widgets, slides]);
 
-  function handleAddWidget(widget: Widget) {
-    setWidgets([...widgets, widget]);
+  const handleAddWidget = useCallback((widget: Widget) => {
+    setWidgets((prev) => [...prev, widget]);
     setHasUnsavedChanges(true);
-  }
+  }, []);
 
-  const widgetData = {
+  // Slide management handlers
+  const handleAddSlide = useCallback(() => {
+    // Adding a new empty slide will be handled automatically by useSlideDistribution
+    setHasUnsavedChanges(true);
+  }, []);
+
+  const handleRemoveSlide = useCallback((index: number) => {
+    if (slides.length <= 1) return; // Can't remove the last slide
+
+    // Remove all widgets from the slide at this index
+    const slideToRemove = slides[index];
+    const newWidgets = widgets.filter(
+      (w) => !slideToRemove.widgets.some((sw) => sw.id === w.id)
+    );
+
+    setWidgets(newWidgets);
+    setHasUnsavedChanges(true);
+
+    // If we removed the current slide, go to the previous one
+    if (index === currentSlide && currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    } else if (index < currentSlide) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  }, [slides, widgets, currentSlide, setCurrentSlide]);
+
+  const handleDuplicateSlide = useCallback((index: number) => {
+    const slideToDuplicate = slides[index];
+
+    // Create new widgets with new IDs
+    const newWidgets = slideToDuplicate.widgets.map((widget) => ({
+      ...widget,
+      id: `${widget.type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    }));
+
+    setWidgets((prev) => [...prev, ...newWidgets]);
+    setHasUnsavedChanges(true);
+  }, [slides]);
+
+  const widgetData = useMemo(() => ({
     technicians: mockTechnicians,
     companyGoals: {
       monthlyRevenue: 500000,
@@ -289,11 +329,11 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
       avgTicket: 872,
       rating: 4.78,
     },
-  };
+  }), []);
 
   return (
     <div
-      className="fixed inset-0 flex overflow-hidden bg-background"
+      className="fixed inset-0 z-40 flex overflow-hidden bg-background"
       onClick={handleUserInteraction}
     >
       {/* Background gradient blobs */}
@@ -309,15 +349,18 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
           onSlideClick={(index) => {
             goToSlide(index);
           }}
+          onAddSlide={handleAddSlide}
+          onRemoveSlide={handleRemoveSlide}
+          onDuplicateSlide={handleDuplicateSlide}
           slides={slides}
         />
       )}
 
       {/* Main content area */}
-      <div className="relative flex flex-1 flex-col">
+      <div className="relative flex flex-1 flex-col overflow-hidden">
         {/* Floating controls */}
         {!isEditMode ? (
-          <div className="absolute top-4 right-4 z-50">
+          <div className="absolute top-6 right-6 z-50">
             <Button
               onClick={(e) => {
                 e.stopPropagation();
@@ -331,7 +374,7 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
             </Button>
           </div>
         ) : (
-          <div className="absolute top-4 right-4 z-50 flex items-center gap-4">
+          <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
             <WidgetManager onAddWidget={handleAddWidget} />
             <Button
               onClick={(e) => {
@@ -363,24 +406,28 @@ export default function TVLeaderboardPage() {  const [widgets, setWidgets] = use
         )}
 
         {/* Carousel */}
-        <div className="relative flex-1">
-          <SlideCarousel
-            currentSlide={currentSlide}
-            data={widgetData}
-            isEditMode={isEditMode}
-            onSlideChange={setCurrentSlide}
-            onWidgetsChange={handleSlideWidgetsChange}
-            slides={slides}
-          />
+        <div className="relative flex-1 overflow-hidden pb-20">
+          <div className="h-full">
+            <SlideCarousel
+              currentSlide={currentSlide}
+              data={widgetData}
+              isEditMode={isEditMode}
+              onSlideChange={setCurrentSlide}
+              onWidgetsChange={handleSlideWidgetsChange}
+              slides={slides}
+            />
+          </div>
         </div>
 
         {/* Slide indicators */}
         {!isEditMode && (
-          <SlideIndicators
-            currentSlide={currentSlide}
-            onSlideClick={goToSlide}
-            slideCount={slides.length}
-          />
+          <div className="absolute bottom-6 left-0 right-0">
+            <SlideIndicators
+              currentSlide={currentSlide}
+              onSlideClick={goToSlide}
+              slideCount={slides.length}
+            />
+          </div>
         )}
 
         {/* Progress ring */}

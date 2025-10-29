@@ -10,22 +10,22 @@ export function FAQSection() {
 
   const faqs = [
     {
-      question: "How quickly can we get started with Stratos?",
+      question: "How quickly can we get started with Thorbis?",
       answer:
         "Most teams are up and running within 24 hours. We provide white-glove onboarding with a dedicated specialist who handles data migration, team training, and system customization. Your first call with our onboarding team happens within 2 hours of signing up.",
     },
     {
       question: "Do we need to sign a long-term contract?",
       answer:
-        "No contracts required. Stratos operates on a month-to-month basis with no long-term commitment. You can cancel anytime, though 98% of our customers stay with us because we deliver results. We're confident you'll love Stratos.",
+        "No contracts required. Thorbis operates on a month-to-month basis with no long-term commitment. You can cancel anytime, though 98% of our customers stay with us because we deliver results. We're confident you'll love Thorbis.",
     },
     {
-      question: "Will Stratos work offline in the field?",
+      question: "Will Thorbis work offline in the field?",
       answer:
         "Yes! Our mobile app is built offline-first. Technicians can access job details, take photos, capture signatures, and process payments without internet. Everything syncs automatically when they're back online. This is perfect for basements, rural areas, or anywhere with spotty coverage.",
     },
     {
-      question: "How much does Stratos cost?",
+      question: "How much does Thorbis cost?",
       answer:
         "Pricing starts at $99/month for small teams and scales based on your needs. We offer transparent pricing with no hidden fees, and our payment processing fees (2.3%) are the lowest in the industry. Most customers see ROI within 30 days through increased efficiency and faster payments.",
     },
@@ -40,14 +40,14 @@ export function FAQSection() {
         "We offer 24/7 phone, chat, and email support with an average response time under 2 minutes. Every customer gets a dedicated success manager, unlimited training sessions, and access to our comprehensive knowledge base. Unlike competitors, support is included in your subscription—no extra charges.",
     },
     {
-      question: "Does Stratos integrate with QuickBooks?",
+      question: "Does Thorbis integrate with QuickBooks?",
       answer:
         "Yes, we have deep two-way integration with both QuickBooks Online and QuickBooks Desktop. Invoices, payments, expenses, and customers sync automatically in real-time. No manual entry, no export/import, no accounting headaches. Set it up once and forget about it.",
     },
     {
       question: "Is my data secure?",
       answer:
-        "Security is our top priority. Stratos is SOC 2 Type II certified with bank-level 256-bit encryption for all data. We perform regular security audits, maintain 99.9% uptime SLA, and backup your data every hour. Your data is hosted on AWS in secure, redundant data centers with automatic failover.",
+        "Security is our top priority. Thorbis is SOC 2 Type II certified with bank-level 256-bit encryption for all data. We perform regular security audits, maintain 99.9% uptime SLA, and backup your data every hour. Your data is hosted on AWS in secure, redundant data centers with automatic failover.",
     },
   ];
 
@@ -71,7 +71,7 @@ export function FAQSection() {
             </span>
           </h2>
           <p className="mx-auto max-w-2xl text-foreground text-lg">
-            Everything you need to know about Stratos. Can&apos;t find what
+            Everything you need to know about Thorbis. Can&apos;t find what
             you&apos;re looking for? Chat with our team.
           </p>
         </div>

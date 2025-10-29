@@ -176,7 +176,7 @@ export default function IntegrationSettingsPage() {  const params = useParams();
               General Settings
             </CardTitle>
             <CardDescription>
-              Configure how {integration.name} integrates with Stratos
+              Configure how {integration.name} integrates with Thorbis
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

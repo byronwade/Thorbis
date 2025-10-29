@@ -95,7 +95,7 @@ export default function PersonalInformationPage() {  const [isSubmitting, setIsS
       email: "john@example.com",
       phone: "+1 (555) 123-4567",
       jobTitle: "Field Service Technician",
-      company: "Stratos Field Services",
+      company: "Thorbis Field Services",
       bio: "Experienced field service technician with over 5 years in HVAC repair and maintenance.",
       address: "123 Main Street",
       city: "Anytown",
@@ -454,7 +454,7 @@ export default function PersonalInformationPage() {  const [isSubmitting, setIsS
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Stratos Field Services"
+                            placeholder="Thorbis Field Services"
                             {...field}
                           />
                         </FormControl>

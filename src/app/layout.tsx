@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stratos | Modern Business Platform",
+  title: "Thorbis | Modern Business Platform",
   description:
-    "Manage your business with Stratos - a modern, dark-first platform",
+    "Manage your business with Thorbis - a modern, dark-first platform",
 };
 
 export default function RootLayout({

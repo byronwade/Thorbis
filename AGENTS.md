@@ -405,3 +405,29 @@ Use WAF for additional security
 Regularly update dependencies
 Monitor for security vulnerabilities
 Implement proper incident response procedures
+**NEVER use React Context for state management - ALWAYS use Zustand**
+Store all Zustand stores in `/src/lib/stores/` directory
+Name stores by feature domain: `[feature]-store.ts` (e.g., `communication-store.ts`, `schedule-store.ts`)
+One store per feature - keep stores focused and small
+Use TypeScript types for all store state and actions
+Use shallow selectors to prevent unnecessary re-renders: `const value = useStore((state) => state.value)`
+No provider wrappers needed - import stores directly in components
+Keep store files under 100 lines when possible
+Document store purpose and state shape with JSDoc comments
+Use `set` and `get` functions for state updates
+Use immer middleware for complex nested state updates
+Use persist middleware for localStorage persistence when needed
+Use devtools middleware in development for debugging
+Group related actions together in the store
+Use descriptive action names that indicate what they do
+Avoid circular dependencies between stores
+Use computed values with selectors, not stored derived state
+Reset store state on logout or session end
+Test stores independently from components
+Use Zustand for: UI state, form state, filters, view preferences, cached data
+Exception: Built-in Next.js contexts (ThemeProvider, etc.) are allowed
+Exception: Third-party library contexts are allowed when no alternative exists
+Benefits: Smaller bundle size, better performance, no provider hell, simpler code
+Anti-pattern: Creating Context + Provider when Zustand would work better
+Anti-pattern: Props drilling when state should be in a store
+Anti-pattern: Multiple useState calls that should be unified in a store

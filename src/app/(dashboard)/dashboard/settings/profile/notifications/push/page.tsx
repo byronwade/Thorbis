@@ -79,7 +79,7 @@ export default function PushNotificationsPage() {
                 <div>
                   <div className="font-medium">iPhone 13</div>
                   <div className="text-muted-foreground text-sm">
-                    Stratos Mobile App
+                    Thorbis Mobile App
                   </div>
                   <div className="text-muted-foreground text-xs">
                     Last active 2 hours ago

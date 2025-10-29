@@ -1007,10 +1007,16 @@ export const GanttFeatureRow: FC<GanttFeatureRowProps> = ({
   children,
   className,
 }) => {
-  // Sort features by start date to handle potential overlaps
-  const sortedFeatures = [...features].sort((a, b) => 
-    a.startAt.getTime() - b.startAt.getTime()
-  );
+  // Ensure all dates are Date objects and sort features by start date
+  const sortedFeatures = [...features]
+    .map(feature => ({
+      ...feature,
+      startAt: feature.startAt instanceof Date ? feature.startAt : new Date(feature.startAt),
+      endAt: feature.endAt instanceof Date ? feature.endAt : new Date(feature.endAt),
+    }))
+    .sort((a, b) =>
+      a.startAt.getTime() - b.startAt.getTime()
+    );
 
   // Calculate sub-row positions for overlapping features using a proper algorithm
   const featureWithPositions = [];

@@ -1,16 +1,21 @@
 "use client";
 
-import { Menu, Settings, X, Tv } from "lucide-react";
+import {
+  AudioWaveform,
+  Command,
+  GalleryVerticalEnd,
+  Menu,
+  Tv,
+  X,
+} from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { HelpDropdown } from "./help-dropdown";
-import { IntegrationsDropdown } from "./integrations-dropdown";
 import { NotificationsDropdown } from "./notifications-dropdown";
-import { ToolsDropdown } from "./tools-dropdown";
+import { UserMenu } from "./user-menu";
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
 
@@ -18,7 +23,7 @@ type NavItem = {
   label: string;
   href: string;
   status?: NavItemStatus;
-  isSpecial?: boolean; // For Ask Stratos gradient style
+  isSpecial?: boolean; // For Ask Thorbis gradient style
 };
 
 type NavItemWithMobile = NavItem & {
@@ -29,11 +34,11 @@ type NavItemWithMobile = NavItem & {
 
 const navigationItems: NavItemWithMobile[] = [
   {
-    label: "Ask Stratos",
+    label: "Ask Thorbis",
     href: "/dashboard/ai",
     status: "coming-soon",
     isSpecial: true,
-    mobileIcon: "S",
+    mobileIcon: "T",
     mobileIconBg: "bg-gradient-to-r from-blue-500 to-cyan-400",
     mobileIconColor: "text-white",
   },
@@ -60,13 +65,6 @@ const navigationItems: NavItemWithMobile[] = [
     mobileIconColor: "text-teal-600",
   },
   {
-    label: "Schedule",
-    href: "/dashboard/schedule",
-    mobileIcon: "S",
-    mobileIconBg: "bg-orange-500/10",
-    mobileIconColor: "text-orange-600",
-  },
-  {
     label: "Finances",
     href: "/dashboard/finance",
     status: "updated",
@@ -76,7 +74,7 @@ const navigationItems: NavItemWithMobile[] = [
   },
   {
     label: "Reporting",
-    href: "/dashboard/reports",
+    href: "/dashboard/reporting",
     mobileIcon: "R",
     mobileIconBg: "bg-blue-500/10",
     mobileIconColor: "text-blue-600",
@@ -84,6 +82,7 @@ const navigationItems: NavItemWithMobile[] = [
   {
     label: "Marketing",
     href: "/dashboard/marketing",
+    status: "coming-soon",
     mobileIcon: "M",
     mobileIconBg: "bg-pink-500/10",
     mobileIconColor: "text-pink-600",
@@ -157,12 +156,42 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
   );
 }
 
+// Sample user data
+const sampleUser = {
+  name: "John Smith",
+  email: "john@example.com",
+  avatar: "/placeholder-avatar.jpg",
+};
+
+// Sample teams data
+const sampleTeams = [
+  {
+    name: "Thorbis FSM",
+    logo: GalleryVerticalEnd,
+    plan: "Enterprise",
+  },
+  {
+    name: "Demo Company",
+    logo: AudioWaveform,
+    plan: "Pro",
+  },
+  {
+    name: "Test Business",
+    logo: Command,
+    plan: "Free",
+  },
+];
+
 export function AppHeader() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Hide header completely on TV routes
+  if (pathname.includes("/tv-leaderboard")) {
+    return null;
+  }
 
   // Handle closing animation
   const ANIMATION_DURATION = 300; // Match the duration of the animation
@@ -194,22 +223,9 @@ export function AppHeader() {
     };
   }, [isMobileMenuOpen, closeMobileMenu]);
 
-  const themeRef = useRef<HTMLButtonElement>(null);
-  const settingsCogRef = useRef<HTMLAnchorElement>(null);
-
-  const toggleTheme = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else if (theme === "dark") {
-      setTheme("system");
-    } else {
-      setTheme("light");
-    }
-  };
-
   return (
     <header className="sticky top-0 z-50 w-full bg-header-bg">
-      <div className="flex h-14 items-center gap-2 px-2">
+      <div className="flex h-14 items-center gap-2 px-4">
         {/* Mobile menu button */}
         <button
           className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
@@ -230,22 +246,14 @@ export function AppHeader() {
           data-slot="button"
           href="/"
         >
-          <svg
+          <Image
+            src="/ThorbisLogo.webp"
+            alt="Thorbis"
+            width={20}
+            height={20}
             className="size-5"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Stratos</title>
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
-          <span className="sr-only">Stratos</span>
+          />
+          <span className="sr-only">Thorbis</span>
         </Link>
 
         {/* Main Navigation */}
@@ -260,15 +268,21 @@ export function AppHeader() {
               return (
                 <div className="relative" key={item.href}>
                   <Link
-                    className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${isActive ? "text-white shadow-lg" : "text-muted-foreground hover:text-white"}`}
+                    className={`hover-gradient group relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${
+                      isActive
+                        ? "text-white dark:text-white"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                     data-slot="button"
                     href={item.href}
                   >
+                    {/* Active state - gradient background */}
                     {isActive && (
-                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary via-primary/80 to-primary/60 opacity-90" />
+                      <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary via-primary/90 to-primary/80 opacity-100 dark:from-primary dark:via-primary/80 dark:to-primary/60" />
                     )}
+                    {/* Hover state - gradient background (only when not active) */}
                     {!isActive && (
-                      <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-primary/40 via-primary/60 to-primary/80 opacity-0 transition-opacity hover:opacity-90" />
+                      <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/60 via-primary/50 to-primary/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:from-primary/50 dark:via-primary/40 dark:to-primary/30" />
                     )}
                     <span className="relative z-10">{item.label}</span>
                   </Link>
@@ -282,8 +296,8 @@ export function AppHeader() {
                 <Link
                   className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${
                     isActive
-                      ? "bg-white/10 text-white"
-                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                      ? "bg-primary/10 text-primary dark:bg-white/10 dark:text-white"
+                      : "text-muted-foreground hover:bg-primary/5 hover:text-foreground dark:hover:bg-white/5"
                   }`}
                   data-slot="button"
                   href={item.href}
@@ -413,78 +427,25 @@ export function AppHeader() {
         )}
 
         {/* Right side controls */}
-        <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
-          {/* Theme Toggle */}
-          <button
-            className="hover-gradient group/toggle extend-touch-target inline-flex size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-            data-slot="button"
-            onClick={toggleTheme}
-            ref={themeRef}
-            title="Toggle theme"
-            type="button"
-          >
-            <svg
-              className="size-4.5"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Theme</title>
-              <path d="M0 0h24v24H0z" fill="none" stroke="none" />
-              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-              <path d="M12 3l0 18" />
-              <path d="M12 9l4.65 -4.65" />
-              <path d="M12 14.3l7.37 -7.37" />
-              <path d="M12 19.6l8.85 -8.85" />
-            </svg>
-            <span className="sr-only">Toggle theme</span>
-          </button>
-
-          {/* Notifications */}
-          <NotificationsDropdown />
-
-          {/* Tools */}
-          <ToolsDropdown />
-
-          {/* Help */}
-          <HelpDropdown />
-
-          {/* Integrations */}
-          <IntegrationsDropdown />
-
+        <div className="ml-auto flex items-center gap-2 overflow-visible md:flex-1 md:justify-end">
           {/* TV Leaderboard */}
           <Link
             className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
-            href="/dashboard/tv-leaderboard"
+            href="/tv-leaderboard"
             title="TV Leaderboard"
           >
             <Tv className="size-4" />
             <span className="sr-only">TV Leaderboard</span>
           </Link>
 
-          <Separator
-            className="h-4 bg-border"
-            data-orientation="vertical"
-            data-slot="separator"
-            orientation="vertical"
-          />
+          {/* Notifications */}
+          <NotificationsDropdown />
 
-          {/* Settings */}
-          <Link
-            className={`hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${pathname.startsWith("/dashboard/settings") ? "bg-accent text-accent-foreground" : ""}`}
-            href="/dashboard/settings"
-            ref={settingsCogRef}
-            title="Settings"
-          >
-            <Settings className="size-4" />
-            <span className="sr-only">Settings</span>
-          </Link>
+          {/* Help */}
+          <HelpDropdown />
+
+          {/* User Menu */}
+          <UserMenu teams={sampleTeams} user={sampleUser} />
         </div>
       </div>
     </header>

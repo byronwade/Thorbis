@@ -1,164 +1,171 @@
+"use client";
+
 /**
- * Work > Maintenance Plans Page - Client Component
- *
- * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * Maintenance Plans Page - Seamless Datatable Layout
  */
 
-import { ArrowLeft, ShieldCheck, Ticket, Wrench } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { StatCard } from "@/components/work/stat-card";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { Calendar, Download, Plus, Upload } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
+import { MaintenancePlansTable, type MaintenancePlan } from "@/components/work/maintenance-plans-table";
 
-export const revalidate = 300; // Revalidate every 5 minutes
-interface MaintenancePlan extends Record<string, unknown> {
-  id: string;
-  planName: string;
-  customer: string;
-  serviceType: string;
-  frequency: string;
-  nextVisit: string;
-  monthlyFee: string;
-  status: string;
-}
-
+// Mock data - replace with real data from database
 const mockPlans: MaintenancePlan[] = [
-  {
-    id: "1",
-    planName: "HVAC Premium",
-    customer: "Acme Corp",
-    serviceType: "HVAC Maintenance",
-    frequency: "Quarterly",
-    nextVisit: "Feb 15, 2025",
-    monthlyFee: "$199/mo",
-    status: "active",
-  },
-  {
-    id: "2",
-    planName: "Electrical Plus",
-    customer: "Tech Solutions",
-    serviceType: "Electrical Inspection",
-    frequency: "Monthly",
-    nextVisit: "Feb 1, 2025",
-    monthlyFee: "$149/mo",
-    status: "active",
-  },
-  {
-    id: "3",
-    planName: "Plumbing Basic",
-    customer: "Global Industries",
-    serviceType: "Plumbing Check",
-    frequency: "Bi-Annual",
-    nextVisit: "Mar 10, 2025",
-    monthlyFee: "$79/mo",
-    status: "pending",
-  },
-  {
-    id: "4",
-    planName: "Fire Safety Pro",
-    customer: "Summit LLC",
-    serviceType: "Fire System Inspection",
-    frequency: "Annual",
-    nextVisit: "Apr 5, 2025",
-    monthlyFee: "$249/mo",
-    status: "active",
-  },
+	{
+		id: "1",
+		planName: "HVAC Premium",
+		customer: "Acme Corp",
+		serviceType: "HVAC Maintenance",
+		frequency: "Quarterly",
+		nextVisit: "Feb 15, 2025",
+		monthlyFee: 19900,
+		status: "active",
+	},
+	{
+		id: "2",
+		planName: "Electrical Plus",
+		customer: "Tech Solutions",
+		serviceType: "Electrical Inspection",
+		frequency: "Monthly",
+		nextVisit: "Feb 1, 2025",
+		monthlyFee: 14900,
+		status: "active",
+	},
+	{
+		id: "3",
+		planName: "Plumbing Basic",
+		customer: "Global Industries",
+		serviceType: "Plumbing Check",
+		frequency: "Bi-Annual",
+		nextVisit: "Mar 10, 2025",
+		monthlyFee: 7900,
+		status: "pending",
+	},
+	{
+		id: "4",
+		planName: "Fire Safety Pro",
+		customer: "Summit LLC",
+		serviceType: "Fire System Inspection",
+		frequency: "Annual",
+		nextVisit: "Apr 5, 2025",
+		monthlyFee: 24900,
+		status: "active",
+	},
+	{
+		id: "5",
+		planName: "Comprehensive Care",
+		customer: "Downtown Retail LLC",
+		serviceType: "Multi-System Maintenance",
+		frequency: "Monthly",
+		nextVisit: "Feb 10, 2025",
+		monthlyFee: 39900,
+		status: "active",
+	},
+	{
+		id: "6",
+		planName: "Seasonal Check",
+		customer: "Medical Plaza Group",
+		serviceType: "HVAC Seasonal Service",
+		frequency: "Bi-Annual",
+		nextVisit: "Mar 1, 2025",
+		monthlyFee: 12900,
+		status: "active",
+	},
 ];
 
-function getStatusBadge(status: string) {
-  return status === "active" ? (
-    <Badge>Active</Badge>
-  ) : (
-    <Badge variant="secondary">Pending</Badge>
-  );
+function formatCurrency(cents: number): string {
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+	}).format(cents / 100);
 }
 
-export default function MaintenancePlansPage() {  const columns: DataTableColumn<MaintenancePlan>[] = [
-    {
-      key: "planName",
-      header: "Plan Name",
-      sortable: true,
-      filterable: true,
-      render: (plan) => <span className="font-medium">{plan.planName}</span>,
-    },
-    {
-      key: "customer",
-      header: "Customer",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "serviceType",
-      header: "Service Type",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "frequency",
-      header: "Frequency",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "nextVisit",
-      header: "Next Visit",
-      sortable: true,
-    },
-    {
-      key: "monthlyFee",
-      header: "Monthly Fee",
-      sortable: true,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (plan) => getStatusBadge(plan.status),
-    },
-  ];
+export default function MaintenancePlansPage() {
+	// Calculate stats from data
+	const totalPlans = mockPlans.length;
+	const activePlans = mockPlans.filter((p) => p.status === "active").length;
+	const enrolledCustomers = 189; // Mock value
+	const monthlyRevenue = mockPlans
+		.filter((p) => p.status === "active")
+		.reduce((sum, p) => sum + p.monthlyFee, 0);
 
-  return (
-    <WorkPageLayout
-      actionHref="/dashboard/work/maintenance-plans/new"
-      actionLabel="Create Plan"
-      description="Manage recurring maintenance contracts and schedules"
-      title="Maintenance Plans"
-    >
-      <div className="grid gap-3 md:grid-cols-4">
-        <StatCard
-          label="Active Plans"
-          subtext="+12 this month"
-          trend="up"
-          value="247"
-        />
-        <StatCard
-          label="Enrolled Customers"
-          subtext="76% of active customers"
-          value="189"
-        />
-        <StatCard label="This Month" subtext="Scheduled visits" value="45" />
-        <StatCard
-          label="Monthly Revenue"
-          subtext="Recurring revenue"
-          trend="up"
-          value="$28,450"
-        />
-      </div>
+	// Count visits this month (mock calculation)
+	const visitsThisMonth = 45; // Mock value
 
-      <DataTable
-        columns={
-          columns as unknown as DataTableColumn<Record<string, unknown>>[]
-        }
-        data={mockPlans as unknown as Record<string, unknown>[]}
-        emptyMessage="No maintenance plans found."
-        itemsPerPage={10}
-        keyField="id"
-        searchPlaceholder="Search plans by name, customer, service type, or status..."
-      />
-    </WorkPageLayout>
-  );
+	return (
+		<div className="flex h-full flex-col">
+			<DataTablePageHeader
+				title="Maintenance Plans"
+				description="Manage recurring maintenance contracts and schedules"
+				actions={
+					<>
+						<Button size="sm" variant="outline">
+							<Upload className="mr-2 size-4" />
+							Import
+						</Button>
+						<Button size="sm" variant="outline">
+							<Download className="mr-2 size-4" />
+							Export
+						</Button>
+						<Button asChild size="sm">
+							<Link href="/dashboard/work/maintenance-plans/new">
+								<Plus className="mr-2 size-4" />
+								Create Plan
+							</Link>
+						</Button>
+					</>
+				}
+				stats={
+					<div className="mt-4 grid gap-3 md:grid-cols-4">
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Active Plans</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{activePlans}</div>
+								<p className="text-xs text-muted-foreground">
+									{totalPlans - activePlans} pending
+								</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Enrolled Customers</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{enrolledCustomers}</div>
+								<p className="text-xs text-muted-foreground">
+									76% of active customers
+								</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">This Month</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{visitsThisMonth}</div>
+								<p className="text-xs text-muted-foreground">Scheduled visits</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{formatCurrency(monthlyRevenue)}</div>
+								<p className="text-xs text-muted-foreground">Recurring revenue</p>
+							</CardContent>
+						</Card>
+					</div>
+				}
+			/>
+
+			<div className="flex-1 overflow-hidden">
+				<MaintenancePlansTable plans={mockPlans} itemsPerPage={50} />
+			</div>
+		</div>
+	);
 }

@@ -563,6 +563,13 @@ export const jobs = isProduction
       status: pgText("status").notNull().default("quoted"), // 'quoted' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled'
       priority: pgText("priority").notNull().default("medium"), // 'low' | 'medium' | 'high' | 'urgent'
       jobType: pgText("job_type"), // 'service' | 'installation' | 'repair' | 'maintenance'
+      // AI-powered auto-tagging fields
+      aiCategories: pgJson("ai_categories"), // AI-extracted categories: ["HVAC", "Plumbing", "Electrical"]
+      aiEquipment: pgJson("ai_equipment"), // AI-extracted equipment: ["Furnace", "Water Heater"]
+      aiServiceType: pgText("ai_service_type"), // AI-detected: 'emergency' | 'routine' | 'preventive' | 'warranty'
+      aiPriorityScore: pgInteger("ai_priority_score"), // AI-calculated priority score (0-100)
+      aiTags: pgJson("ai_tags"), // AI-generated tags for search/filtering
+      aiProcessedAt: timestamp("ai_processed_at"), // When AI last analyzed this job
       scheduledStart: timestamp("scheduled_start"),
       scheduledEnd: timestamp("scheduled_end"),
       actualStart: timestamp("actual_start"),
@@ -599,6 +606,13 @@ export const jobs = isProduction
       status: text("status").notNull().default("quoted"),
       priority: text("priority").notNull().default("medium"),
       jobType: text("job_type"),
+      // AI-powered auto-tagging fields
+      aiCategories: text("ai_categories"), // JSON string: AI-extracted categories
+      aiEquipment: text("ai_equipment"), // JSON string: AI-extracted equipment
+      aiServiceType: text("ai_service_type"), // AI-detected service type
+      aiPriorityScore: integer("ai_priority_score"), // AI-calculated priority score (0-100)
+      aiTags: text("ai_tags"), // JSON string: AI-generated tags
+      aiProcessedAt: integer("ai_processed_at", { mode: "timestamp" }), // When AI last analyzed
       scheduledStart: integer("scheduled_start", { mode: "timestamp" }),
       scheduledEnd: integer("scheduled_end", { mode: "timestamp" }),
       actualStart: integer("actual_start", { mode: "timestamp" }),

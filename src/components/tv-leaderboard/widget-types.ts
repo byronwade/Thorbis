@@ -8,7 +8,12 @@ export type WidgetType =
   | "customer-rating"
   | "daily-stats"
   | "weekly-stats"
-  | "monthly-stats";
+  | "monthly-stats"
+  | "inspirational-quote"
+  | "bonus-tracker"
+  | "prize-wheel"
+  | "performance-scale"
+  | "company-randomizer";
 
 export type WidgetSize = "1x1" | "2x2" | "3x3" | "full" | "small" | "medium" | "large";
 
@@ -106,6 +111,46 @@ export const WIDGET_CONFIGS: Record<WidgetType, WidgetConfig> = {
     type: "monthly-stats",
     title: "Monthly Stats",
     description: "This month's performance summary",
+    defaultSize: "medium",
+    minSize: "small",
+    maxSize: "large",
+  },
+  "inspirational-quote": {
+    type: "inspirational-quote",
+    title: "Inspirational Quote",
+    description: "Motivational quotes for team inspiration",
+    defaultSize: "medium",
+    minSize: "small",
+    maxSize: "large",
+  },
+  "bonus-tracker": {
+    type: "bonus-tracker",
+    title: "Bonus Tracker",
+    description: "Team bonus pool progress",
+    defaultSize: "medium",
+    minSize: "small",
+    maxSize: "large",
+  },
+  "prize-wheel": {
+    type: "prize-wheel",
+    title: "Prize Wheel",
+    description: "Interactive prize wheel for raffles",
+    defaultSize: "medium",
+    minSize: "small",
+    maxSize: "large",
+  },
+  "performance-scale": {
+    type: "performance-scale",
+    title: "Performance Scale",
+    description: "Visual performance gauge (1-100)",
+    defaultSize: "medium",
+    minSize: "small",
+    maxSize: "large",
+  },
+  "company-randomizer": {
+    type: "company-randomizer",
+    title: "Company Randomizer",
+    description: "Random selection tool for team activities",
     defaultSize: "medium",
     minSize: "small",
     maxSize: "large",

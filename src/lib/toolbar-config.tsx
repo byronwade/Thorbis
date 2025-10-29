@@ -18,11 +18,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CommunicationToolbarActions } from "@/components/communication/communication-toolbar-actions";
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
-import { ScheduleViewProvider } from "@/components/schedule/schedule-view-provider";
+import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
+import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 
 type ToolbarConfig = {
   title: string;
+  subtitle?: string;
   actions?: ReactNode;
   showSearch?: boolean;
 };
@@ -32,69 +35,10 @@ type ToolbarConfig = {
  * Match the most specific route first
  */
 export const toolbarConfigs: Record<string, ToolbarConfig> = {
-  // Communication routes
+  // Communication routes - uses Zustand store for context-aware actions
   "/dashboard/communication": {
     title: "Communications",
-    actions: (
-      <>
-        <Button size="sm" variant="ghost">
-          <Filter className="mr-2 h-4 w-4" />
-          Filters
-        </Button>
-        <Button size="sm" variant="ghost">
-          <Mail className="mr-2 h-4 w-4" />
-          Compose
-        </Button>
-      </>
-    ),
-  },
-  "/dashboard/communication/email": {
-    title: "Company Email",
-    actions: (
-      <>
-        <Button size="sm" variant="ghost">
-          <Filter className="mr-2 h-4 w-4" />
-          Filters
-        </Button>
-        <Button size="sm" variant="ghost">
-          <Mail className="mr-2 h-4 w-4" />
-          Compose
-        </Button>
-      </>
-    ),
-  },
-  "/dashboard/communication/calls": {
-    title: "Phone System",
-    actions: (
-      <Button size="sm" variant="ghost">
-        <Plus className="mr-2 h-4 w-4" />
-        New Call
-      </Button>
-    ),
-  },
-  "/dashboard/communication/sms": {
-    title: "Text Messages",
-    actions: (
-      <>
-        <Button size="sm" variant="ghost">
-          <Search className="mr-2 h-4 w-4" />
-          Search
-        </Button>
-        <Button size="sm" variant="ghost">
-          <Plus className="mr-2 h-4 w-4" />
-          New Message
-        </Button>
-      </>
-    ),
-  },
-  "/dashboard/communication/tickets": {
-    title: "Support Tickets",
-    actions: (
-      <Button size="sm" variant="ghost">
-        <Plus className="mr-2 h-4 w-4" />
-        New Ticket
-      </Button>
-    ),
+    actions: <CommunicationToolbarActions />,
   },
 
   // Default dashboard
@@ -104,9 +48,11 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
 
   // Add more route configs as needed
   "/dashboard/work": {
-    title: "Work",
+    title: "Job Flow",
+    subtitle: "81 total jobs today",
+    actions: <WorkToolbarActions />,
   },
-  "/dashboard/schedule": {
+  "/dashboard/work/schedule": {
     title: "Schedule",
     actions: <ScheduleToolbarActions />,
   },
@@ -131,16 +77,42 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
   "/dashboard/settings": {
     title: "Settings",
   },
+  "/dashboard/shop": {
+    title: "Thorbis Shop",
+    subtitle: "Essential tools and supplies for your business",
+    actions: <ShopToolbarActions />,
+  },
 };
 
 // Regex patterns for route matching
 const JOB_DETAILS_PATTERN = /^\/dashboard\/work\/([^/]+)$/;
+const PRODUCT_DETAILS_PATTERN = /^\/dashboard\/shop\/([^/]+)$/;
 
 /**
  * Get toolbar config for a given route path
  * Returns undefined if no config found (toolbar will show default layout)
  */
 export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
+  // Check for product details page pattern: /dashboard/shop/[id]
+  const productDetailsMatch = pathname.match(PRODUCT_DETAILS_PATTERN);
+  if (productDetailsMatch) {
+    const productId = productDetailsMatch[1];
+    return {
+      title: "Product Details",
+      actions: (
+        <>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/dashboard/shop">
+              <ArrowLeft className="mr-2 size-4" />
+              Back to Shop
+            </Link>
+          </Button>
+          <ShopToolbarActions />
+        </>
+      ),
+    };
+  }
+
   // Check for job details page pattern: /dashboard/work/[id]
   const jobDetailsMatch = pathname.match(JOB_DETAILS_PATTERN);
   if (jobDetailsMatch) {

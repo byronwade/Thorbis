@@ -1,27 +1,28 @@
 /**
  * Work Page Loading State
- *
- * Provides skeleton UI while work order data loads
+ * Displays a centered, non-scrollable loading state
+ * Mobile-friendly design
  */
 
+import { Loader2 } from "lucide-react";
+
 export default function WorkLoading() {
-  return (
-    <div className="space-y-6">
-      {/* Header Skeleton */}
-      <div className="space-y-2">
-        <div className="h-9 w-48 animate-pulse rounded bg-muted" />
-        <div className="h-5 w-96 animate-pulse rounded bg-muted" />
-      </div>
+	return (
+		<div className="flex h-full min-h-[60vh] items-center justify-center px-4 py-12">
+			<div className="mx-auto w-full max-w-md space-y-6 text-center">
+				{/* Loading Spinner */}
+				<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+					<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+				</div>
 
-      {/* Stats Skeleton */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-32 animate-pulse rounded-lg border bg-muted" />
-        ))}
-      </div>
-
-      {/* Content Skeleton */}
-      <div className="h-[600px] animate-pulse rounded-lg border bg-muted" />
-    </div>
-  );
+				{/* Loading Message */}
+				<div className="space-y-2">
+					<h2 className="font-semibold text-xl">Loading jobs...</h2>
+					<p className="text-muted-foreground text-sm">
+						Please wait while we fetch your job data.
+					</p>
+				</div>
+			</div>
+		</div>
+	);
 }

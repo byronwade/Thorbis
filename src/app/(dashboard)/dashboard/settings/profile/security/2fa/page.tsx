@@ -263,7 +263,7 @@ export default function TwoFactorAuthPage() {  const [setupStep, setSetupStep] =
 
               <div className="space-y-2 text-center">
                 <p className="rounded bg-gray-100 px-3 py-1 font-mono text-sm dark:bg-gray-800">
-                  Stratos:john@example.com
+                  Thorbis:john@example.com
                 </p>
                 <Button size="sm" variant="outline">
                   <RefreshCw className="mr-2 h-4 w-4" />

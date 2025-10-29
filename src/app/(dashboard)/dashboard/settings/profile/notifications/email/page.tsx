@@ -415,7 +415,7 @@ export default function EmailPreferencesPage() {  return (
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex items-center gap-2">
-                    <span className="font-medium text-sm">Stratos</span>
+                    <span className="font-medium text-sm">Thorbis</span>
                     <Badge className="text-xs" variant="secondary">
                       Job Update
                     </Badge>

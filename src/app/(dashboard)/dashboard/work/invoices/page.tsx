@@ -1,195 +1,123 @@
+"use client";
+
 /**
- * Work > Invoices Page - Client Component
- *
- * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * Invoices Page - Seamless Datatable Layout with inline statistics
  */
 
-import { ArrowLeft, FileText, Package, Receipt } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { StatCard } from "@/components/work/stat-card";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { InvoicesTable, type Invoice } from "@/components/work/invoices-table";
+import { StatsCards, type StatCard } from "@/components/ui/stats-cards";
 
-export const revalidate = 300; // Revalidate every 5 minutes
-type Invoice = {
-  id: string;
-  invoiceNumber: string;
-  customer: string;
-  date: string;
-  dueDate: string;
-  amount: number;
-  status: string;
-};
-
+// Mock data - replace with real data from database
 const mockInvoices: Invoice[] = [
-  {
-    id: "1",
-    invoiceNumber: "INV-2025-001",
-    customer: "Acme Corp",
-    date: "Jan 15, 2025",
-    dueDate: "Feb 14, 2025",
-    amount: 250_000,
-    status: "paid",
-  },
-  {
-    id: "2",
-    invoiceNumber: "INV-2025-002",
-    customer: "Tech Solutions",
-    date: "Jan 18, 2025",
-    dueDate: "Feb 17, 2025",
-    amount: 375_000,
-    status: "pending",
-  },
-  {
-    id: "3",
-    invoiceNumber: "INV-2025-003",
-    customer: "Global Industries",
-    date: "Jan 20, 2025",
-    dueDate: "Feb 19, 2025",
-    amount: 120_000,
-    status: "draft",
-  },
-  {
-    id: "4",
-    invoiceNumber: "INV-2025-004",
-    customer: "Summit LLC",
-    date: "Jan 22, 2025",
-    dueDate: "Feb 21, 2025",
-    amount: 580_000,
-    status: "pending",
-  },
-  {
-    id: "5",
-    invoiceNumber: "INV-2025-005",
-    customer: "Mountain View Co",
-    date: "Jan 10, 2025",
-    dueDate: "Feb 9, 2025",
-    amount: 100_000,
-    status: "overdue",
-  },
+	{
+		id: "1",
+		invoiceNumber: "INV-2025-001",
+		customer: "Acme Corp",
+		date: "Jan 15, 2025",
+		dueDate: "Feb 14, 2025",
+		amount: 250_000,
+		status: "paid",
+	},
+	{
+		id: "2",
+		invoiceNumber: "INV-2025-002",
+		customer: "Tech Solutions",
+		date: "Jan 18, 2025",
+		dueDate: "Feb 17, 2025",
+		amount: 375_000,
+		status: "pending",
+	},
+	{
+		id: "3",
+		invoiceNumber: "INV-2025-003",
+		customer: "Global Industries",
+		date: "Jan 20, 2025",
+		dueDate: "Feb 19, 2025",
+		amount: 120_000,
+		status: "draft",
+	},
+	{
+		id: "4",
+		invoiceNumber: "INV-2025-004",
+		customer: "Summit LLC",
+		date: "Jan 22, 2025",
+		dueDate: "Feb 21, 2025",
+		amount: 580_000,
+		status: "pending",
+	},
+	{
+		id: "5",
+		invoiceNumber: "INV-2025-005",
+		customer: "Mountain View Co",
+		date: "Jan 10, 2025",
+		dueDate: "Feb 9, 2025",
+		amount: 100_000,
+		status: "overdue",
+	},
+	{
+		id: "6",
+		invoiceNumber: "INV-2025-006",
+		customer: "Pacific Corp",
+		date: "Jan 25, 2025",
+		dueDate: "Feb 24, 2025",
+		amount: 425_000,
+		status: "paid",
+	},
+	{
+		id: "7",
+		invoiceNumber: "INV-2025-007",
+		customer: "Downtown Services",
+		date: "Jan 28, 2025",
+		dueDate: "Feb 27, 2025",
+		amount: 195_000,
+		status: "pending",
+	},
 ];
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
+// Invoice statistics data
+const invoiceStats: StatCard[] = [
+	{
+		label: "Total Invoiced",
+		value: "$20.45M",
+		change: 8.2,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Paid",
+		value: "$6.75M",
+		change: 12.5,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Pending",
+		value: "$11.8M",
+		change: 3.4,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Overdue",
+		value: "$1.0M",
+		change: -15.3,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "This Month",
+		value: 7,
+		change: 16.7,
+		changeLabel: "vs last month",
+	},
+];
 
-function getStatusBadge(status: string) {
-  const variants: Record<
-    string,
-    { variant: "default" | "secondary" | "destructive" | "outline" }
-  > = {
-    paid: { variant: "default" },
-    pending: { variant: "secondary" },
-    draft: { variant: "outline" },
-    overdue: { variant: "destructive" },
-  };
+export default function InvoicesPage() {
+	return (
+		<>
+			{/* Statistics - Full width, no padding */}
+			<StatsCards stats={invoiceStats} />
 
-  const config = variants[status] || { variant: "outline" };
-
-  return (
-    <Badge
-      className={status === "paid" ? "bg-green-500 hover:bg-green-600" : ""}
-      variant={config.variant}
-    >
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </Badge>
-  );
-}
-
-export default function InvoicesPage() {  const columns: DataTableColumn<Invoice>[] = [
-    {
-      key: "invoiceNumber",
-      header: "Invoice #",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => (
-        <span className="font-medium">{invoice.invoiceNumber}</span>
-      ),
-    },
-    {
-      key: "customer",
-      header: "Customer",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "date",
-      header: "Date",
-      sortable: true,
-    },
-    {
-      key: "dueDate",
-      header: "Due Date",
-      sortable: true,
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      sortable: true,
-      render: (invoice) => (
-        <span className="font-medium">{formatCurrency(invoice.amount)}</span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => getStatusBadge(invoice.status),
-    },
-  ];
-
-  return (
-    <WorkPageLayout
-      actionHref="/dashboard/work/invoices/new"
-      actionLabel="Create Invoice"
-      description="Manage and track all customer invoices and billing"
-      secondaryActions={[
-        {
-          label: "Create PO",
-          href: "/dashboard/work/purchase-orders/new",
-          icon: Package,
-        },
-      ]}
-      title="Invoices"
-    >
-      <div className="grid gap-3 md:grid-cols-4">
-        <StatCard
-          label="Total Invoiced"
-          subtext="+20.1% from last month"
-          trend="up"
-          value="$45,231.89"
-        />
-        <StatCard
-          label="Paid"
-          subtext="85% collection rate"
-          value="$38,445.67"
-        />
-        <StatCard label="Pending" subtext="12 invoices" value="$5,786.22" />
-        <StatCard
-          label="Overdue"
-          subtext="3 invoices"
-          trend="down"
-          value="$1,000.00"
-        />
-      </div>
-
-      <DataTable
-        columns={
-          columns as unknown as DataTableColumn<Record<string, unknown>>[]
-        }
-        data={mockInvoices as unknown as Record<string, unknown>[]}
-        emptyMessage="No invoices found."
-        itemsPerPage={10}
-        keyField="id"
-        searchPlaceholder="Search invoices by number, customer, or status..."
-      />
-    </WorkPageLayout>
-  );
+			{/* Full-width seamless table (no padding) */}
+			<div>
+				<InvoicesTable invoices={mockInvoices} itemsPerPage={50} />
+			</div>
+		</>
+	);
 }

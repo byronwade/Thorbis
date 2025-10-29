@@ -100,7 +100,7 @@ export default function IntegrationsPage() {  const [searchQuery, setSearchQuery
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Integrations</h1>
         <p className="text-muted-foreground">
-          Connect Stratos with your favorite tools and services
+          Connect Thorbis with your favorite tools and services
         </p>
       </div>
 

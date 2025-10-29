@@ -167,8 +167,8 @@ export default function CompanyProfilePage() {  const [isSubmitting, setIsSubmit
   const form = useForm<CompanyProfileFormData>({
     resolver: zodResolver(companyProfileSchema),
     defaultValues: {
-      companyName: "Stratos Field Services",
-      legalName: "Stratos Field Services LLC",
+      companyName: "Thorbis Field Services",
+      legalName: "Thorbis Field Services LLC",
       industry: "Field Service Management",
       email: "contact@stratos.com",
       phone: "+1 (555) 123-4567",

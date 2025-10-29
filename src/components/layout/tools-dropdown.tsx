@@ -9,29 +9,37 @@ type Tool = {
   description: string;
   href: string;
   external?: boolean;
+  badge?: string;
 };
 
 const tools: Tool[] = [
   {
-    label: "Pricing Calculator",
-    description: "Calculate your company's pricing and margins",
-    href: "/dashboard/tools/pricing-calculator",
+    label: "Job Pricing Calculator",
+    description: "Price jobs with materials, labor, and overhead",
+    href: "/tools/calculators/job-pricing",
+    badge: "Essential",
   },
   {
-    label: "NextStar Portal",
-    description: "Access NextStar features and integrations",
-    href: "https://nextstar.com",
-    external: true,
+    label: "Hourly Rate Calculator",
+    description: "Calculate your ideal hourly billing rate",
+    href: "/tools/calculators/hourly-rate",
+    badge: "Popular",
   },
   {
-    label: "ROI Calculator",
-    description: "Calculate return on investment for projects",
-    href: "/dashboard/tools/roi-calculator",
+    label: "Profit & Loss Calculator",
+    description: "Track revenue and calculate profit margins",
+    href: "/tools/calculators/profit-loss",
+    badge: "Popular",
   },
   {
-    label: "Time Estimator",
-    description: "Estimate job duration and resource needs",
-    href: "/dashboard/tools/time-estimator",
+    label: "Google Business Profile",
+    description: "Get found in local searches",
+    href: "/tools/marketing/google-business",
+  },
+  {
+    label: "Consumer Financing",
+    description: "Offer customer financing options",
+    href: "/tools/financing/consumer",
   },
 ];
 
@@ -73,9 +81,9 @@ export function ToolsDropdown() {
       {isOpen && (
         <div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border bg-popover p-2 text-popover-foreground shadow-lg">
           <div className="mb-2 border-b px-3 py-2">
-            <h3 className="font-semibold text-sm">Tools</h3>
+            <h3 className="font-semibold text-sm">Tools & Resources</h3>
             <p className="text-muted-foreground text-xs">
-              Helpful calculators and utilities
+              Everything you need to grow your business
             </p>
           </div>
           <div className="space-y-1">
@@ -91,6 +99,11 @@ export function ToolsDropdown() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{tool.label}</p>
+                    {tool.badge && (
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary text-[10px]">
+                        {tool.badge}
+                      </span>
+                    )}
                     {tool.external && (
                       <ExternalLink className="size-3 text-muted-foreground" />
                     )}
@@ -105,7 +118,7 @@ export function ToolsDropdown() {
           <div className="mt-2 border-t pt-2">
             <Link
               className="flex items-center justify-center gap-2 rounded-md px-3 py-2 font-medium text-primary text-xs transition-colors hover:bg-accent"
-              href="/dashboard/tools"
+              href="/tools"
               onClick={() => setIsOpen(false)}
             >
               View all tools

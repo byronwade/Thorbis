@@ -96,7 +96,7 @@ export function IntegrationsSection() {
             </span>
           </h2>
           <p className="mx-auto max-w-2xl text-foreground text-lg">
-            Stratos integrates seamlessly with the tools you already use. No
+            Thorbis integrates seamlessly with the tools you already use. No
             migration headaches, just better workflow.
           </p>
         </div>

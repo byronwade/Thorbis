@@ -43,15 +43,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { Separator } from "@/components/ui/separator";
+import { JobInvoicesTable } from "@/components/work/job-invoices-table";
+import { JobLineItemsTable } from "@/components/work/job-line-items-table";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { JobProcessIndicator } from "@/components/work/job-process-indicator";
-import { PhotoGallery, type JobPhoto } from "@/components/work/job-details/PhotoGallery";
+import { type JobPhoto } from "@/components/work/job-details/PhotoGallery";
+import { JobPhotoGalleryWrapper } from "@/components/work/job-photo-gallery-wrapper";
 import type { Estimate, Invoice, Job, Property } from "@/lib/db/schema";
 
 // Line item type for invoices and estimates
@@ -138,6 +140,13 @@ const mockJob: Job = {
   metadata: null,
   createdAt: new Date("2025-01-15"),
   updatedAt: new Date("2025-01-20"),
+  // AI fields
+  aiCategories: null,
+  aiEquipment: null,
+  aiServiceType: null,
+  aiPriorityScore: null,
+  aiTags: null,
+  aiProcessedAt: null,
 };
 
 const mockCustomer: Customer = {
@@ -658,70 +667,7 @@ export default async function JobDetailsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: jobId } = await params;  // Invoice columns for DataTable
-  const invoiceColumns: DataTableColumn<Invoice>[] = [
-    {
-      key: "invoiceNumber",
-      header: "Invoice Number",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => (
-        <span className="font-medium">{invoice.invoiceNumber}</span>
-      ),
-    },
-    {
-      key: "title",
-      header: "Title",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => getStatusBadge(invoice.status),
-    },
-    {
-      key: "totalAmount",
-      header: "Amount",
-      sortable: true,
-      render: (invoice) => formatCurrency(invoice.totalAmount),
-    },
-    {
-      key: "dueDate",
-      header: "Due Date",
-      sortable: true,
-      render: (invoice) => formatDate(invoice.dueDate),
-    },
-  ];
-
-  // Line item columns for DataTable
-  const lineItemColumns: DataTableColumn<LineItem>[] = [
-    {
-      key: "description",
-      header: "Description",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "quantity",
-      header: "Quantity",
-      sortable: true,
-    },
-    {
-      key: "unitPrice",
-      header: "Unit Price",
-      sortable: true,
-      render: (item) => formatCurrency(item.unitPrice),
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      sortable: true,
-      render: (item) => formatCurrency(item.amount),
-    },
-  ];
+  const { id: jobId } = await params;
 
   // Parse line items and add IDs for DataTable
   const lineItems: LineItem[] = (
@@ -972,14 +918,7 @@ export default async function JobDetailsPage({
               </div>
             </CardHeader>
             <CardContent>
-              <DataTable
-                columns={invoiceColumns}
-                data={mockInvoices}
-                emptyMessage="No invoices found for this job."
-                itemsPerPage={5}
-                keyField="id"
-                searchPlaceholder="Search invoices..."
-              />
+              <JobInvoicesTable invoices={mockInvoices} itemsPerPage={5} />
             </CardContent>
           </Card>
 
@@ -1023,14 +962,7 @@ export default async function JobDetailsPage({
               <Separator />
               <div>
                 <div className="mb-2 font-medium text-sm">Line Items</div>
-                <DataTable
-                  columns={lineItemColumns}
-                  data={lineItems}
-                  emptyMessage="No line items found."
-                  itemsPerPage={5}
-                  keyField="id"
-                  searchPlaceholder="Search line items..."
-                />
+                <JobLineItemsTable lineItems={lineItems} itemsPerPage={5} />
               </div>
             </CardContent>
           </Card>
@@ -1438,18 +1370,7 @@ export default async function JobDetailsPage({
 
           {/* Photo Gallery */}
           <div id="photo-gallery">
-            <PhotoGallery
-              photos={mockPhotos}
-            onUpload={() => {
-              // TODO: Implement photo upload
-            }}
-            onDelete={(photoId) => {
-              // TODO: Implement photo deletion
-            }}
-            onDownloadAll={() => {
-              // TODO: Implement download all photos
-            }}
-            />
+            <JobPhotoGalleryWrapper photos={mockPhotos} />
           </div>
 
           {/* Property Details */}

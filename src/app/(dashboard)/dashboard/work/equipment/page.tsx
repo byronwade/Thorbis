@@ -1,162 +1,172 @@
+"use client";
+
 /**
- * Work > Equipment Page - Client Component
- *
- * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * Equipment Page - Seamless Datatable Layout
  */
 
-import { ArrowLeft, BookOpen, Box, Package } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { StatCard } from "@/components/work/stat-card";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
+import { Download, Plus, Upload, Wrench } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
+import { EquipmentTable, type Equipment } from "@/components/work/equipment-table";
 
-export const revalidate = 300; // Revalidate every 5 minutes
-interface Equipment extends Record<string, unknown> {
-  id: string;
-  assetId: string;
-  name: string;
-  type: string;
-  assignedTo: string;
-  lastService: string;
-  nextService: string;
-  status: string;
-}
-
+// Mock data - replace with real data from database
 const mockEquipment: Equipment[] = [
-  {
-    id: "1",
-    assetId: "EQP-001",
-    name: "2023 Ford F-150 (Truck #1)",
-    type: "Vehicle",
-    assignedTo: "John Smith",
-    lastService: "Jan 5, 2025",
-    nextService: "Apr 5, 2025",
-    status: "available",
-  },
-  {
-    id: "2",
-    assetId: "EQP-002",
-    name: "Pipe Threading Machine",
-    type: "Tool",
-    assignedTo: "Workshop",
-    lastService: "Dec 15, 2024",
-    nextService: "Mar 15, 2025",
-    status: "available",
-  },
-  {
-    id: "3",
-    assetId: "EQP-003",
-    name: "Ladder 32ft Extension",
-    type: "Equipment",
-    assignedTo: "Mike Johnson",
-    lastService: "Jan 10, 2025",
-    nextService: "—",
-    status: "in-use",
-  },
-  {
-    id: "4",
-    assetId: "EQP-004",
-    name: "Power Drill Set",
-    type: "Tool",
-    assignedTo: "Sarah Williams",
-    lastService: "Jan 1, 2025",
-    nextService: "—",
-    status: "maintenance",
-  },
+	{
+		id: "1",
+		assetId: "EQP-001",
+		name: "2023 Ford F-150 (Truck #1)",
+		type: "Vehicle",
+		assignedTo: "John Smith",
+		lastService: "Jan 5, 2025",
+		nextService: "Apr 5, 2025",
+		status: "available",
+	},
+	{
+		id: "2",
+		assetId: "EQP-002",
+		name: "Pipe Threading Machine",
+		type: "Tool",
+		assignedTo: "Workshop",
+		lastService: "Dec 15, 2024",
+		nextService: "Mar 15, 2025",
+		status: "available",
+	},
+	{
+		id: "3",
+		assetId: "EQP-003",
+		name: "Ladder 32ft Extension",
+		type: "Equipment",
+		assignedTo: "Mike Johnson",
+		lastService: "Jan 10, 2025",
+		nextService: "—",
+		status: "in-use",
+	},
+	{
+		id: "4",
+		assetId: "EQP-004",
+		name: "Power Drill Set",
+		type: "Tool",
+		assignedTo: "Sarah Williams",
+		lastService: "Jan 1, 2025",
+		nextService: "—",
+		status: "maintenance",
+	},
+	{
+		id: "5",
+		assetId: "EQP-005",
+		name: "2022 Chevy Silverado (Truck #2)",
+		type: "Vehicle",
+		assignedTo: "Tom Brown",
+		lastService: "Jan 8, 2025",
+		nextService: "Apr 8, 2025",
+		status: "in-use",
+	},
+	{
+		id: "6",
+		assetId: "EQP-006",
+		name: "Hydraulic Pipe Bender",
+		type: "Tool",
+		assignedTo: "Workshop",
+		lastService: "Dec 20, 2024",
+		nextService: "Mar 20, 2025",
+		status: "available",
+	},
+	{
+		id: "7",
+		assetId: "EQP-007",
+		name: "Portable Generator 5000W",
+		type: "Equipment",
+		assignedTo: "Mobile Storage",
+		lastService: "Jan 3, 2025",
+		nextService: "Apr 3, 2025",
+		status: "available",
+	},
 ];
 
-function getStatusBadge(status: string) {
-  if (status === "available") {
-    return <Badge>Available</Badge>;
-  }
-  if (status === "in-use") {
-    return <Badge variant="secondary">In Use</Badge>;
-  }
-  return <Badge variant="destructive">Maintenance</Badge>;
-}
+export default function EquipmentPage() {
+	// Calculate stats from data
+	const totalEquipment = mockEquipment.length;
+	const available = mockEquipment.filter((e) => e.status === "available").length;
+	const inUse = mockEquipment.filter((e) => e.status === "in-use").length;
+	const maintenance = mockEquipment.filter((e) => e.status === "maintenance").length;
 
-export default function EquipmentPage() {  const columns: DataTableColumn<Equipment>[] = [
-    {
-      key: "assetId",
-      header: "Asset ID",
-      sortable: true,
-      filterable: true,
-      render: (equipment) => (
-        <span className="font-medium">{equipment.assetId}</span>
-      ),
-    },
-    {
-      key: "name",
-      header: "Name",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "type",
-      header: "Type",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "assignedTo",
-      header: "Assigned To",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "lastService",
-      header: "Last Service",
-      sortable: true,
-    },
-    {
-      key: "nextService",
-      header: "Next Service",
-      sortable: true,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (equipment) => getStatusBadge(equipment.status),
-    },
-  ];
+	// Calculate equipment needing service (next service in the next 30 days)
+	const needsAttention = 7; // Mock value
 
-  return (
-    <WorkPageLayout
-      actionHref="/dashboard/work/equipment/new"
-      actionLabel="Add Equipment"
-      description="Track company equipment, tools, and vehicles"
-      title="Equipment & Tools"
-    >
-      <div className="grid gap-3 md:grid-cols-4">
-        <StatCard label="Total Equipment" subtext="Company assets" value="87" />
-        <StatCard
-          label="Available"
-          subtext="Ready for use"
-          trend="up"
-          value="72"
-        />
-        <StatCard label="In Maintenance" subtext="Under service" value="8" />
-        <StatCard
-          label="Needs Attention"
-          subtext="Requires service"
-          trend="down"
-          value="7"
-        />
-      </div>
+	return (
+		<div className="flex h-full flex-col">
+			<DataTablePageHeader
+				title="Equipment & Tools"
+				description="Track company equipment, tools, and vehicles"
+				actions={
+					<>
+						<Button size="sm" variant="outline">
+							<Upload className="mr-2 size-4" />
+							Import
+						</Button>
+						<Button size="sm" variant="outline">
+							<Download className="mr-2 size-4" />
+							Export
+						</Button>
+						<Button asChild size="sm">
+							<Link href="/dashboard/work/equipment/new">
+								<Plus className="mr-2 size-4" />
+								Add Equipment
+							</Link>
+						</Button>
+					</>
+				}
+				stats={
+					<div className="mt-4 grid gap-3 md:grid-cols-4">
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Total Equipment</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{totalEquipment}</div>
+								<p className="text-xs text-muted-foreground">Company assets</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Available</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{available}</div>
+								<p className="text-xs text-muted-foreground">
+									{Math.round((available / totalEquipment) * 100)}% ready for use
+								</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">In Maintenance</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{maintenance}</div>
+								<p className="text-xs text-muted-foreground">
+									{inUse} currently in use
+								</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Needs Attention</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{needsAttention}</div>
+								<p className="text-xs text-muted-foreground">Requires service</p>
+							</CardContent>
+						</Card>
+					</div>
+				}
+			/>
 
-      <DataTable
-        columns={columns}
-        data={mockEquipment}
-        emptyMessage="No equipment found."
-        itemsPerPage={10}
-        keyField="id"
-        searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
-      />
-    </WorkPageLayout>
-  );
+			<div className="flex-1 overflow-hidden">
+				<EquipmentTable equipment={mockEquipment} itemsPerPage={50} />
+			</div>
+		</div>
+	);
 }

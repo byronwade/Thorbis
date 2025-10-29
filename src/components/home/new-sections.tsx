@@ -32,7 +32,7 @@ export function CustomerSuccessSection() {
         "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2070&auto=format&fit=crop",
       logo: "🔧",
       quote:
-        "Stratos transformed our business. We doubled revenue and cut admin time by 70%.",
+        "Thorbis transformed our business. We doubled revenue and cut admin time by 70%.",
       author: "Michael Torres",
       role: "Owner",
       metrics: [
@@ -103,7 +103,7 @@ export function CustomerSuccessSection() {
           </h2>
           <p className="mx-auto max-w-2xl text-foreground text-lg md:text-xl">
             Join thousands of field service companies growing faster with
-            Stratos
+            Thorbis
           </p>
         </div>
 
@@ -226,7 +226,7 @@ export function ROICalculatorSection() {
               Calculate Your Business Impact
             </h2>
             <p className="mb-8 text-foreground">
-              See how much Stratos could save and earn for your business
+              See how much Thorbis could save and earn for your business
             </p>
 
             {/* Inputs */}

@@ -87,7 +87,7 @@ export default function TrainingDashboardPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">System Training</h3>
                 <p className="text-muted-foreground text-sm">
-                  Master every feature of the Stratos platform with step-by-step video tutorials and guides
+                  Master every feature of the Thorbis platform with step-by-step video tutorials and guides
                 </p>
               </div>
 
@@ -272,7 +272,7 @@ export default function TrainingDashboardPage() {  return (
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Stratos System Training:</span> Master every feature with video tutorials, interactive guides, and hands-on exercises
+                  <span className="font-medium text-foreground">Thorbis System Training:</span> Master every feature with video tutorials, interactive guides, and hands-on exercises
                 </p>
               </div>
               <div className="flex items-start gap-3">

@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "thorbis",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -120,6 +120,7 @@
     "streamdown": "^1.4.0",
     "swr": "^2.3.6",
     "tailwind-merge": "^3.3.1",
+    "three": "^0.180.0",
     "use-stick-to-bottom": "^1.1.1",
     "usehooks-ts": "^3.1.1",
     "vaul": "^1.1.2",
@@ -136,6 +137,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.180.0",
     "better-sqlite3": "^12.4.1",
     "depcheck": "^1.4.7",
     "drizzle-kit": "^0.31.5",

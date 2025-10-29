@@ -53,7 +53,7 @@ Click "Cancel" to discard unsaved changes and revert to the last saved layout.
 ## File Structure
 
 ```
-src/components/tv-leaderboard/
+src/components/dashboard/tv-leaderboard/
 ├── README.md                          # This file
 ├── widget-types.ts                    # Widget type definitions and configurations
 ├── widget-renderer.tsx                # Routes widget types to their components

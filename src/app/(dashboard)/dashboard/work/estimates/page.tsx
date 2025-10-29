@@ -1,207 +1,167 @@
+"use client";
+
 /**
- * Work > Estimates Page - Client Component
- *
- * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * Estimates Page - Seamless Datatable Layout
  */
 
-import { ArrowLeft, FileText, Package, Receipt } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
-import { StatCard } from "@/components/work/stat-card";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
-
-export const revalidate = 300; // Revalidate every 5 minutes
-type Estimate = {
-  id: string;
-  estimateNumber: string;
-  customer: string;
-  project: string;
-  date: string;
-  validUntil: string;
-  amount: number;
-  status: string;
-};
+import { Download, Package, Plus } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
+import { EstimatesTable, type Estimate } from "@/components/work/estimates-table";
 
 const mockEstimates: Estimate[] = [
-  {
-    id: "1",
-    estimateNumber: "EST-2025-045",
-    customer: "Acme Corp",
-    project: "HVAC Installation",
-    date: "Jan 10, 2025",
-    validUntil: "Feb 10, 2025",
-    amount: 1_250_000,
-    status: "accepted",
-  },
-  {
-    id: "2",
-    estimateNumber: "EST-2025-046",
-    customer: "Tech Solutions",
-    project: "Electrical Upgrade",
-    date: "Jan 12, 2025",
-    validUntil: "Feb 12, 2025",
-    amount: 875_000,
-    status: "sent",
-  },
-  {
-    id: "3",
-    estimateNumber: "EST-2025-047",
-    customer: "Global Industries",
-    project: "Plumbing Repair",
-    date: "Jan 15, 2025",
-    validUntil: "Feb 15, 2025",
-    amount: 320_000,
-    status: "draft",
-  },
-  {
-    id: "4",
-    estimateNumber: "EST-2025-048",
-    customer: "Summit LLC",
-    project: "Roof Replacement",
-    date: "Jan 18, 2025",
-    validUntil: "Feb 18, 2025",
-    amount: 2_500_000,
-    status: "sent",
-  },
-  {
-    id: "5",
-    estimateNumber: "EST-2025-049",
-    customer: "Peak Industries",
-    project: "Generator Installation",
-    date: "Jan 20, 2025",
-    validUntil: "Feb 20, 2025",
-    amount: 450_000,
-    status: "declined",
-  },
+	{
+		id: "1",
+		estimateNumber: "EST-2025-045",
+		customer: "Acme Corp",
+		project: "HVAC Installation",
+		date: "Jan 10, 2025",
+		validUntil: "Feb 10, 2025",
+		amount: 1_250_000,
+		status: "accepted",
+	},
+	{
+		id: "2",
+		estimateNumber: "EST-2025-046",
+		customer: "Tech Solutions",
+		project: "Electrical Upgrade",
+		date: "Jan 12, 2025",
+		validUntil: "Feb 12, 2025",
+		amount: 875_000,
+		status: "sent",
+	},
+	{
+		id: "3",
+		estimateNumber: "EST-2025-047",
+		customer: "Global Industries",
+		project: "Plumbing Repair",
+		date: "Jan 15, 2025",
+		validUntil: "Feb 15, 2025",
+		amount: 320_000,
+		status: "draft",
+	},
+	{
+		id: "4",
+		estimateNumber: "EST-2025-048",
+		customer: "Summit LLC",
+		project: "Roof Replacement",
+		date: "Jan 18, 2025",
+		validUntil: "Feb 18, 2025",
+		amount: 2_500_000,
+		status: "sent",
+	},
+	{
+		id: "5",
+		estimateNumber: "EST-2025-049",
+		customer: "Peak Industries",
+		project: "Generator Installation",
+		date: "Jan 20, 2025",
+		validUntil: "Feb 20, 2025",
+		amount: 450_000,
+		status: "declined",
+	},
 ];
 
 function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+	}).format(cents / 100);
 }
 
-function getStatusBadge(status: string) {
-  const variants: Record<
-    string,
-    { variant: "default" | "secondary" | "destructive" | "outline" }
-  > = {
-    accepted: { variant: "default" },
-    sent: { variant: "secondary" },
-    draft: { variant: "outline" },
-    declined: { variant: "destructive" },
-  };
+export default function EstimatesPage() {
+	const totalValue = mockEstimates.reduce((sum, est) => sum + est.amount, 0);
+	const accepted = mockEstimates
+		.filter((est) => est.status === "accepted")
+		.reduce((sum, est) => sum + est.amount, 0);
+	const pending = mockEstimates
+		.filter((est) => est.status === "sent")
+		.reduce((sum, est) => sum + est.amount, 0);
+	const declined = mockEstimates
+		.filter((est) => est.status === "declined")
+		.reduce((sum, est) => sum + est.amount, 0);
 
-  const config = variants[status] || { variant: "outline" };
+	const pendingCount = mockEstimates.filter((est) => est.status === "sent").length;
+	const declinedCount = mockEstimates.filter((est) => est.status === "declined").length;
 
-  return (
-    <Badge
-      className={status === "accepted" ? "bg-green-500 hover:bg-green-600" : ""}
-      variant={config.variant}
-    >
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </Badge>
-  );
-}
+	return (
+		<div className="flex h-full flex-col">
+			<DataTablePageHeader
+				title="Estimates"
+				description="Create and manage project estimates and quotes"
+				actions={
+					<>
+						<Button size="sm" variant="outline" asChild>
+							<Link href="/dashboard/work/purchase-orders/new">
+								<Package className="mr-2 size-4" />
+								Create PO
+							</Link>
+						</Button>
+						<Button size="sm" variant="outline">
+							<Download className="mr-2 size-4" />
+							Export
+						</Button>
+						<Button asChild size="sm">
+							<Link href="/dashboard/work/estimates/new">
+								<Plus className="mr-2 size-4" />
+								New Estimate
+							</Link>
+						</Button>
+					</>
+				}
+				stats={
+					<div className="mt-4 grid gap-3 md:grid-cols-4">
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Total Value</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{formatCurrency(totalValue)}</div>
+								<p className="text-xs text-muted-foreground">All active estimates</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Accepted</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{formatCurrency(accepted)}</div>
+								<p className="text-xs text-muted-foreground">
+									{Math.round((accepted / totalValue) * 100)}% conversion rate
+								</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Pending</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{formatCurrency(pending)}</div>
+								<p className="text-xs text-muted-foreground">
+									{pendingCount} estimates
+								</p>
+							</CardContent>
+						</Card>
+						<Card>
+							<CardHeader className="pb-2">
+								<CardTitle className="text-sm font-medium">Declined</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{formatCurrency(declined)}</div>
+								<p className="text-xs text-muted-foreground">
+									{declinedCount} estimates
+								</p>
+							</CardContent>
+						</Card>
+					</div>
+				}
+			/>
 
-export default function EstimatesPage() {  const columns: DataTableColumn<Estimate>[] = [
-    {
-      key: "estimateNumber",
-      header: "Estimate #",
-      sortable: true,
-      filterable: true,
-      render: (estimate) => (
-        <span className="font-medium">{estimate.estimateNumber}</span>
-      ),
-    },
-    {
-      key: "customer",
-      header: "Customer",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "project",
-      header: "Project",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "date",
-      header: "Date",
-      sortable: true,
-    },
-    {
-      key: "validUntil",
-      header: "Valid Until",
-      sortable: true,
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      sortable: true,
-      render: (estimate) => (
-        <span className="font-medium">{formatCurrency(estimate.amount)}</span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (estimate) => getStatusBadge(estimate.status),
-    },
-  ];
-
-  return (
-    <WorkPageLayout
-      actionHref="/dashboard/work/estimates/new"
-      actionLabel="Create Estimate"
-      description="Create and manage project estimates and quotes"
-      secondaryActions={[
-        {
-          label: "Create PO",
-          href: "/dashboard/work/purchase-orders/new",
-          icon: Package,
-        },
-      ]}
-      title="Estimates"
-    >
-      <div className="grid gap-3 md:grid-cols-4">
-        <StatCard
-          label="Total Value"
-          subtext="All active estimates"
-          value="$125,890.00"
-        />
-        <StatCard
-          label="Accepted"
-          subtext="62% conversion rate"
-          trend="up"
-          value="$78,450.00"
-        />
-        <StatCard label="Pending" subtext="15 estimates" value="$35,440.00" />
-        <StatCard
-          label="Declined"
-          subtext="5 estimates"
-          trend="down"
-          value="$12,000.00"
-        />
-      </div>
-
-      <DataTable
-        columns={
-          columns as unknown as DataTableColumn<Record<string, unknown>>[]
-        }
-        data={mockEstimates as unknown as Record<string, unknown>[]}
-        emptyMessage="No estimates found."
-        itemsPerPage={10}
-        keyField="id"
-        searchPlaceholder="Search estimates by number, customer, project, or status..."
-      />
-    </WorkPageLayout>
-  );
+			<div className="flex-1 overflow-hidden">
+				<EstimatesTable estimates={mockEstimates} itemsPerPage={50} />
+			</div>
+		</div>
+	);
 }

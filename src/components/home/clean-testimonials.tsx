@@ -20,7 +20,7 @@ export function CleanTestimonialsSection() {
   const testimonials = [
     {
       quote:
-        "Stratos transformed our operations. We went from chaos to complete visibility in 30 days.",
+        "Thorbis transformed our operations. We went from chaos to complete visibility in 30 days.",
       author: "Michael Rodriguez",
       role: "Owner",
       company: "Rodriguez HVAC",
@@ -65,7 +65,7 @@ export function CleanTestimonialsSection() {
         </div>
         <h2 className="font-bold text-3xl tracking-tight">Real Results</h2>
         <p className="text-lg text-muted-foreground">
-          From real businesses using Stratos
+          From real businesses using Thorbis
         </p>
       </div>
 

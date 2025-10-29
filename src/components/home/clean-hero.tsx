@@ -139,7 +139,7 @@ export function CleanHero() {
                   See Your Business in Action
                 </h3>
                 <p className="text-muted-foreground">
-                  Schedule a personalized demo to see how Stratos works
+                  Schedule a personalized demo to see how Thorbis works
                 </p>
               </div>
             </div>

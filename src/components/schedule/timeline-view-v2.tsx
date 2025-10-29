@@ -63,11 +63,20 @@ function jobToGanttFeature(job: Job): GanttFeature {
     color: statusColorMap[job.status],
   }
 
+  // Ensure dates are Date objects (handle string dates from API)
+  const startAt = job.startTime instanceof Date
+    ? job.startTime
+    : new Date(job.startTime)
+
+  const endAt = job.endTime instanceof Date
+    ? job.endTime
+    : new Date(job.endTime)
+
   return {
     id: job.id,
     name: job.title,
-    startAt: job.startTime,
-    endAt: job.endTime,
+    startAt,
+    endAt,
     status,
   }
 }
@@ -275,7 +284,7 @@ export function TimelineViewV2() {
   return (
     <div className="flex h-full w-full flex-col">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b bg-background p-3">
+      <div className="flex items-center justify-between border-border/50 border-b bg-background/90 p-3 backdrop-blur-md">
         <div className="flex items-center gap-4">
           <ZoomControls />
         </div>

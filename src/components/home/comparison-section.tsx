@@ -147,7 +147,7 @@ export function ComparisonSection() {
             variant="outline"
           >
             <span className="size-1.5 rounded-full bg-primary" />
-            Why Stratos
+            Why Thorbis
           </Badge>
           <h2 className="mb-4 font-bold text-4xl text-white md:text-5xl">
             Better Than The
@@ -157,7 +157,7 @@ export function ComparisonSection() {
             </span>
           </h2>
           <p className="mx-auto max-w-2xl text-foreground text-lg">
-            See how Stratos compares to other field service software. More
+            See how Thorbis compares to other field service software. More
             features, better support, lower cost.
           </p>
         </div>
@@ -171,7 +171,7 @@ export function ComparisonSection() {
             </div>
             <div className="text-center">
               <div className="mb-2 inline-flex rounded-full bg-primary px-4 py-2">
-                <span className="font-bold text-white">Stratos</span>
+                <span className="font-bold text-white">Thorbis</span>
               </div>
             </div>
             <div className="text-center">

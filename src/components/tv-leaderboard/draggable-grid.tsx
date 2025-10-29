@@ -103,7 +103,7 @@ export function DraggableGrid({ widgets, onWidgetsChange, data, isEditMode }: Dr
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
       <SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
-        <div className="grid h-full auto-rows-[minmax(180px,1fr)] grid-cols-4 gap-4 overflow-hidden">
+        <div className="grid h-full w-full auto-rows-[minmax(80px,1fr)] grid-cols-4 gap-6 p-6">
           {widgets.map((widget) => (
             <SortableWidget
               data={data}

@@ -28,6 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useUIStore } from "@/lib/store";
+import { RoleSwitcher } from "@/components/settings/role-switcher";
 
 export default function DevelopmentSettingsPage() {  const [testResults, setTestResults] = useState<
     Array<{ type: string; message: string; timestamp: Date }>
@@ -142,6 +143,19 @@ export default function DevelopmentSettingsPage() {  const [testResults, setTest
             These tools are only available when running the application in
             development mode and will not be visible in production.
           </p>
+        </CardContent>
+      </Card>
+
+      {/* Role Switcher */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Role-Based Dashboard Testing</CardTitle>
+          <CardDescription>
+            Switch between user roles to test different dashboard views and permissions
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RoleSwitcher />
         </CardContent>
       </Card>
 

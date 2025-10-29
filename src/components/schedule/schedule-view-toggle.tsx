@@ -2,8 +2,7 @@
 
 import { LayoutGrid, List, Calendar, MapPin, Bug } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-export type ScheduleView = "timeline" | "list" | "calendar" | "map" | "test"
+import type { ScheduleView } from "@/types/schedule"
 
 interface ScheduleViewToggleProps {
   view: ScheduleView

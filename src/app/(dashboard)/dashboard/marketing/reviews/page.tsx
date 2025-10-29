@@ -1,28 +1,26 @@
+"use client";
+
 /**
- * Marketing > Reviews Page - Server Component
+ * Reviews Page - Review Management
  *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * Full-width seamless datatable layout for managing reviews
  */
 
-export const revalidate = 3600; // Revalidate every 1 hour
+import { Star } from "lucide-react";
 
-export default function ReviewManagementPage() {  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Review Management</h1>
-        <p className="text-muted-foreground">
-          Monitor and respond to customer reviews
-        </p>
-      </div>
-      <div className="rounded-lg border p-6">
-        <p className="text-muted-foreground">
-          Review Management system coming soon...
-        </p>
-      </div>
-    </div>
-  );
+export default function ReviewsPage() {
+	return (
+		<div className="flex h-full items-center justify-center">
+			<div className="text-center">
+				<Star className="mx-auto mb-4 h-16 w-16 text-yellow-500" />
+				<h2 className="mb-2 font-semibold text-2xl">Review Management</h2>
+				<p className="text-muted-foreground">
+					Monitor and respond to reviews across Google, Facebook, and Yelp
+				</p>
+				<p className="mt-4 text-muted-foreground text-sm">
+					Coming soon - Datatable for review management
+				</p>
+			</div>
+		</div>
+	);
 }

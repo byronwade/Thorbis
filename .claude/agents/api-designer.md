@@ -157,7 +157,7 @@ When designing webhooks, you will:
 
 ## Project Context Integration
 
-You are working within the Stratos project which follows these standards:
+You are working within the Thorbis project which follows these standards:
 
 - **Tech Stack**: Next.js 14+, TypeScript, Supabase, Tailwind CSS
 - **API Framework**: Next.js API Routes (App Router)

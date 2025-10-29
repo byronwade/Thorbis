@@ -75,7 +75,7 @@ export function HeroContent() {
 
         <p className="mx-auto mb-8 max-w-2xl text-foreground text-xl leading-relaxed">
           Save time, increase revenue by 40%, and build a top reputation—all
-          with Stratos field management software.
+          with Thorbis field management software.
         </p>
 
         {/* Trust stats */}
@@ -161,7 +161,7 @@ export function HeroContent() {
             gradientOpacity={0.5}
           >
             <img
-              alt="Stratos Dashboard"
+              alt="Thorbis Dashboard"
               className="h-full w-full rounded-lg object-cover object-top shadow-lg"
               src="/hero.png"
               style={{ position: "relative", zIndex: 10 }}

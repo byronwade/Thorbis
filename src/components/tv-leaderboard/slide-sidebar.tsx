@@ -1,7 +1,6 @@
 "use client";
 
-import { Plus, GripVertical } from "lucide-react";
-import { motion } from "framer-motion";
+import { Plus, Trash2, Copy, MonitorPlay } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -12,6 +11,8 @@ type SlideSidebarProps = {
   currentSlide: number;
   onSlideClick: (index: number) => void;
   onAddSlide?: () => void;
+  onRemoveSlide?: (index: number) => void;
+  onDuplicateSlide?: (index: number) => void;
   className?: string;
 };
 
@@ -20,98 +21,130 @@ export function SlideSidebar({
   currentSlide,
   onSlideClick,
   onAddSlide,
+  onRemoveSlide,
+  onDuplicateSlide,
   className,
 }: SlideSidebarProps) {
   return (
-    <div className={cn("flex h-full w-64 flex-col border-r border-primary/20 bg-background/50 backdrop-blur-sm", className)}>
+    <div className={cn("flex h-full w-64 flex-col border-r bg-sidebar", className)}>
       {/* Header */}
-      <div className="border-b border-primary/20 p-4">
-        <h3 className="font-semibold text-lg">Slides</h3>
-        <p className="text-muted-foreground text-xs">{slides.length} slide{slides.length !== 1 ? "s" : ""}</p>
+      <div className="flex h-14 items-center justify-between border-b px-4">
+        <div>
+          <h3 className="font-semibold text-sm">Views</h3>
+          <p className="text-muted-foreground text-xs">{slides.length} {slides.length !== 1 ? "views" : "view"}</p>
+        </div>
       </div>
 
       {/* Slide list */}
-      <ScrollArea className="flex-1 p-2">
-        <div className="space-y-2">
+      <ScrollArea className="flex-1 px-3 py-2">
+        <div className="space-y-1">
           {slides.map((slide, index) => {
             const isActive = index === currentSlide;
             return (
-              <motion.button
-                animate={{
-                  scale: isActive ? 1 : 0.98,
-                  borderColor: isActive ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.2)",
-                }}
-                className={cn(
-                  "group relative w-full overflow-hidden rounded-lg border-2 p-3 text-left transition-all",
-                  isActive
-                    ? "bg-primary/10 shadow-lg"
-                    : "bg-background/80 hover:bg-primary/5"
-                )}
+              <div
                 key={slide.id}
-                onClick={() => {
-                  onSlideClick(index);
-                }}
-                transition={{ duration: 0.2 }}
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className={cn(
+                  "group relative rounded-md transition-all",
+                  isActive ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/50"
+                )}
               >
-                {/* Drag handle */}
-                <div className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <GripVertical className="size-4 text-muted-foreground" />
-                </div>
-
-                {/* Slide info */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-sm">
-                      Slide {index + 1}
-                    </span>
-                    {isActive && (
-                      <span className="rounded-full bg-primary px-2 py-0.5 font-medium text-[10px] text-primary-foreground">
-                        Active
-                      </span>
-                    )}
+                <button
+                  className="flex w-full items-start gap-3 p-2 text-left"
+                  onClick={() => {
+                    onSlideClick(index);
+                  }}
+                  type="button"
+                >
+                  {/* Icon */}
+                  <div className={cn(
+                    "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-sidebar-accent"
+                  )}>
+                    <MonitorPlay className="size-4" />
                   </div>
-                  <p className="text-muted-foreground text-xs">
-                    {slide.widgets.length} widget{slide.widgets.length !== 1 ? "s" : ""}
-                  </p>
-                </div>
 
-                {/* Mini preview */}
-                <div className="mt-2 grid grid-cols-4 gap-1">
-                  {slide.widgets.slice(0, 8).map((widget, idx) => (
-                    <div
-                      className="aspect-square rounded-sm bg-primary/20"
-                      key={widget.id}
-                    />
-                  ))}
-                  {slide.widgets.length > 8 && (
-                    <div className="flex aspect-square items-center justify-center rounded-sm bg-primary/10 text-[10px] text-muted-foreground">
-                      +{slide.widgets.length - 8}
+                  {/* Content */}
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className={cn(
+                        "font-medium text-sm",
+                        isActive ? "text-sidebar-accent-foreground" : "text-sidebar-foreground"
+                      )}>
+                        View {index + 1}
+                      </span>
+                      {isActive && (
+                        <span className="rounded-md bg-primary/20 px-1.5 py-0.5 text-[10px] text-primary">
+                          Active
+                        </span>
+                      )}
                     </div>
+                    <p className="text-muted-foreground text-xs">
+                      {slide.widgets.length} {slide.widgets.length !== 1 ? "widgets" : "widget"}
+                    </p>
+
+                    {/* Mini widget preview grid */}
+                    <div className="mt-2 grid grid-cols-4 gap-0.5">
+                      {slide.widgets.slice(0, 8).map((widget) => (
+                        <div
+                          className={cn(
+                            "aspect-square rounded-sm",
+                            isActive ? "bg-primary/20" : "bg-sidebar-accent"
+                          )}
+                          key={widget.id}
+                        />
+                      ))}
+                      {slide.widgets.length > 8 && (
+                        <div className="flex aspect-square items-center justify-center rounded-sm bg-muted text-[9px] text-muted-foreground">
+                          +{slide.widgets.length - 8}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </button>
+
+                {/* Action buttons - show on hover */}
+                <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                  {onDuplicateSlide && (
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDuplicateSlide(index);
+                      }}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0"
+                      title="Duplicate view"
+                    >
+                      <Copy className="size-3" />
+                    </Button>
+                  )}
+                  {onRemoveSlide && slides.length > 1 && (
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveSlide(index);
+                      }}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-destructive hover:bg-destructive/10"
+                      title="Delete view"
+                    >
+                      <Trash2 className="size-3" />
+                    </Button>
                   )}
                 </div>
-              </motion.button>
+              </div>
             );
           })}
         </div>
       </ScrollArea>
 
-      {/* Add slide button */}
-      {onAddSlide && (
-        <div className="border-t border-primary/20 p-2">
-          <Button
-            className="w-full"
-            onClick={onAddSlide}
-            size="sm"
-            variant="outline"
-          >
-            <Plus className="mr-2 size-4" />
-            New Slide
-          </Button>
-        </div>
-      )}
+      {/* Footer info */}
+      <div className="border-t p-3">
+        <p className="text-muted-foreground text-xs text-center">
+          Views are created automatically when you add more widgets
+        </p>
+      </div>
     </div>
   );
 }

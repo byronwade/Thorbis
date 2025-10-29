@@ -8,12 +8,14 @@
  * - Gmail-style table view with checkboxes
  * - Bulk actions toolbar
  * - Message selection and filtering
+ * - Context provider for toolbar integration
  */
 
 import {
   Archive,
   ChevronLeft,
   ChevronRight,
+  Inbox,
   Mail,
   MessageSquare,
   MoreVertical,
@@ -37,6 +39,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useCommunicationStore } from "@/lib/stores/communication-store";
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
 
@@ -160,8 +163,18 @@ export default function CommunicationPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMessageOpen, setIsMessageOpen] = useState(false);
 
-  // Filter messages
+  // Use Zustand store for active filter (shared with toolbar)
+  const activeFilter = useCommunicationStore((state) => state.activeFilter);
+  const setActiveFilter = useCommunicationStore((state) => state.setActiveFilter);
+
+  // Filter messages by type and search query
   const filteredMessages = MOCK_MESSAGES.filter((msg) => {
+    // Filter by type
+    if (activeFilter !== "all" && msg.type !== activeFilter) {
+      return false;
+    }
+
+    // Filter by search query
     if (searchQuery === "") return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -170,6 +183,15 @@ export default function CommunicationPage() {
       msg.preview.toLowerCase().includes(query)
     );
   });
+
+  // Get message counts by type
+  const messageCounts = {
+    all: MOCK_MESSAGES.length,
+    email: MOCK_MESSAGES.filter((m) => m.type === "email").length,
+    sms: MOCK_MESSAGES.filter((m) => m.type === "sms").length,
+    phone: MOCK_MESSAGES.filter((m) => m.type === "phone").length,
+    ticket: MOCK_MESSAGES.filter((m) => m.type === "ticket").length,
+  };
 
   const handleSelectAll = () => {
     if (selectedIds.size === filteredMessages.length) {
@@ -250,11 +272,113 @@ export default function CommunicationPage() {
     return date.toLocaleDateString();
   };
 
+
   return (
     <>
       <div className="flex h-full flex-col">
+        {/* Filter Tabs */}
+        <div className="border-b bg-background">
+          <div className="grid grid-cols-5 divide-x">
+            <button
+              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+                activeFilter === "all"
+                  ? "bg-muted/30 text-foreground"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => setActiveFilter("all")}
+              type="button"
+            >
+              <Inbox className="h-4 w-4" />
+              All Messages
+              <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
+                {messageCounts.all}
+              </span>
+              {activeFilter === "all" && (
+                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+              )}
+            </button>
+
+            <button
+              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+                activeFilter === "email"
+                  ? "bg-muted/30 text-foreground"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => setActiveFilter("email")}
+              type="button"
+            >
+              <Mail className="h-4 w-4" />
+              Email
+              <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
+                {messageCounts.email}
+              </span>
+              {activeFilter === "email" && (
+                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+              )}
+            </button>
+
+            <button
+              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+                activeFilter === "sms"
+                  ? "bg-muted/30 text-foreground"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => setActiveFilter("sms")}
+              type="button"
+            >
+              <MessageSquare className="h-4 w-4" />
+              Texts
+              <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
+                {messageCounts.sms}
+              </span>
+              {activeFilter === "sms" && (
+                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+              )}
+            </button>
+
+            <button
+              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+                activeFilter === "phone"
+                  ? "bg-muted/30 text-foreground"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => setActiveFilter("phone")}
+              type="button"
+            >
+              <Phone className="h-4 w-4" />
+              Calls
+              <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
+                {messageCounts.phone}
+              </span>
+              {activeFilter === "phone" && (
+                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+              )}
+            </button>
+
+            <button
+              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+                activeFilter === "ticket"
+                  ? "bg-muted/30 text-foreground"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => setActiveFilter("ticket")}
+              type="button"
+            >
+              <Ticket className="h-4 w-4" />
+              Support
+              <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
+                {messageCounts.ticket}
+              </span>
+              {activeFilter === "ticket" && (
+                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+              )}
+            </button>
+          </div>
+        </div>
+
         {/* Toolbar */}
         <div className="flex items-center gap-2 border-b px-4 py-2">
+
           <Checkbox
             checked={
               selectedIds.size === filteredMessages.length &&

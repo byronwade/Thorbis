@@ -83,7 +83,7 @@ The TV Leaderboard now features a sophisticated iOS-style slide system with auto
 ### Components Created
 
 ```
-src/components/tv-leaderboard/
+src/components/dashboard/tv-leaderboard/
 ├── slide-types.ts                    # Type definitions
 ├── slide-distributor.ts              # Auto-pagination algorithm
 ├── slide-carousel.tsx                # Embla wrapper

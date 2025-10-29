@@ -1,4 +1,4 @@
-# Stratos Project Guidelines
+# Thorbis Project Guidelines
 
 ## 🚀 NEXT.JS 16+ REQUIREMENTS
 
@@ -90,7 +90,7 @@ const MyInput = React.forwardRef<HTMLInputElement>((props, ref) => {
 
 **IMPORTANT: ALWAYS reference and apply the complete linting rules from [AGENTS.md](../AGENTS.md) before writing any code.**
 
-The AGENTS.md file contains 407 comprehensive linting rules covering:
+The AGENTS.md file contains 436 comprehensive linting rules covering:
 - Accessibility (ARIA, WCAG compliance)
 - TypeScript/JavaScript best practices
 - React/Next.js patterns
@@ -127,6 +127,15 @@ The AGENTS.md file contains 407 comprehensive linting rules covering:
    - Never trust client input
    - Use parameterized queries only
    - Use Server Actions for form submissions (not client-side state)
+
+4. **STATE MANAGEMENT - ZUSTAND ONLY**
+   - **NEVER use React Context** - always use Zustand for state management
+   - Keep stores extremely well organized in `/src/lib/stores/`
+   - One store per feature domain (e.g., `communication-store.ts`, `schedule-store.ts`)
+   - Use shallow selectors to prevent unnecessary re-renders
+   - No provider wrappers needed - direct imports only
+   - Benefits: Lighter bundle, better performance, cleaner code
+   - Exception: Built-in Next.js contexts (ThemeProvider, etc.) are allowed
 
 ## 📋 Linting Rules
 
@@ -424,7 +433,52 @@ export default function Page() {
 }
 ```
 
-### 4. Server Actions for Forms
+### 4. Zustand State Management Pattern
+```typescript
+// ✅ GOOD - Zustand Store
+// src/lib/stores/communication-store.ts
+import { create } from "zustand";
+
+type CommunicationStore = {
+  activeFilter: "all" | "email" | "sms";
+  setActiveFilter: (filter: "all" | "email" | "sms") => void;
+  messages: Message[];
+  addMessage: (message: Message) => void;
+};
+
+export const useCommunicationStore = create<CommunicationStore>((set) => ({
+  activeFilter: "all",
+  setActiveFilter: (filter) => set({ activeFilter: filter }),
+  messages: [],
+  addMessage: (message) => set((state) => ({
+    messages: [...state.messages, message]
+  })),
+}));
+
+// Usage in component (automatic re-render only when activeFilter changes)
+"use client";
+import { useCommunicationStore } from "@/lib/stores/communication-store";
+
+export function CommunicationToolbar() {
+  const activeFilter = useCommunicationStore((state) => state.activeFilter);
+  const setActiveFilter = useCommunicationStore((state) => state.setActiveFilter);
+
+  return <button onClick={() => setActiveFilter("email")}>Email</button>;
+}
+
+// ❌ BAD - React Context (NEVER USE)
+const CommunicationContext = createContext();
+export function CommunicationProvider({ children }) {
+  const [activeFilter, setActiveFilter] = useState("all");
+  return (
+    <CommunicationContext.Provider value={{ activeFilter, setActiveFilter }}>
+      {children}
+    </CommunicationContext.Provider>
+  );
+}
+```
+
+### 5. Server Actions for Forms
 ```typescript
 // ✅ GOOD - Server Action
 // actions/settings.ts
@@ -452,7 +506,7 @@ const [data, setData] = useState({});
 <form onSubmit={(e) => { /* manual fetch */ }}>
 ```
 
-### 5. ISR for Static Content
+### 6. ISR for Static Content
 ```typescript
 // ✅ GOOD - Revalidate every 5 minutes
 export const revalidate = 300;
@@ -463,7 +517,7 @@ export default function ReportsPage() {
 }
 ```
 
-### 6. Loading States
+### 7. Loading States
 ```typescript
 // ✅ GOOD - Create loading.tsx for automatic streaming
 // app/dashboard/loading.tsx
@@ -502,6 +556,14 @@ src/
 │   └── dashboard/
 │       ├── kpi-card.tsx          # Server Component
 │       └── kpi-card-client.tsx   # Client wrapper
+├── lib/
+│   ├── stores/           # Zustand stores (ORGANIZED BY FEATURE)
+│   │   ├── communication-store.ts
+│   │   ├── schedule-store.ts
+│   │   ├── work-store.ts
+│   │   └── user-store.ts
+│   ├── hooks/            # Custom React hooks
+│   └── utils/            # Utility functions
 ```
 
 ---
@@ -545,6 +607,9 @@ Before committing code, verify:
 - [ ] If Client Component, is it absolutely necessary?
 - [ ] Are slow components wrapped in `<Suspense>`?
 - [ ] Does the form use Server Actions instead of client state?
+- [ ] **Is state management using Zustand (NOT React Context)?**
+- [ ] Are Zustand stores organized in `/src/lib/stores/`?
+- [ ] Are shallow selectors used to prevent unnecessary re-renders?
 - [ ] Is static content using ISR (`export const revalidate`)?
 - [ ] Are images using `next/image` (not `<img>`)?
 - [ ] Is bundle size monitored (`pnpm analyze:bundle`)?
@@ -635,6 +700,89 @@ export async function actionName(formData: FormData) {
     }
     return { success: false, error: "Operation failed" };
   }
+}
+```
+
+### Zustand Store Template
+```typescript
+/**
+ * [Feature] Store - Zustand State Management
+ *
+ * Performance optimizations:
+ * - Lightweight state management with Zustand
+ * - No provider wrapper needed
+ * - Selective subscriptions prevent unnecessary re-renders
+ * - Organized in /src/lib/stores/ directory
+ */
+
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+
+// Define store state type
+type FeatureStore = {
+  // State
+  items: Item[];
+  selectedId: string | null;
+  isLoading: boolean;
+
+  // Actions
+  setItems: (items: Item[]) => void;
+  selectItem: (id: string) => void;
+  clearSelection: () => void;
+  addItem: (item: Item) => void;
+  removeItem: (id: string) => void;
+  reset: () => void;
+};
+
+// Initial state
+const initialState = {
+  items: [],
+  selectedId: null,
+  isLoading: false,
+};
+
+// Create store
+export const useFeatureStore = create<FeatureStore>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        ...initialState,
+
+        setItems: (items) => set({ items }),
+
+        selectItem: (id) => set({ selectedId: id }),
+
+        clearSelection: () => set({ selectedId: null }),
+
+        addItem: (item) => set((state) => ({
+          items: [...state.items, item]
+        })),
+
+        removeItem: (id) => set((state) => ({
+          items: state.items.filter((item) => item.id !== id)
+        })),
+
+        reset: () => set(initialState),
+      }),
+      {
+        name: "feature-storage", // localStorage key
+        partialize: (state) => ({ items: state.items }), // Only persist items
+      }
+    ),
+    { name: "FeatureStore" } // DevTools name
+  )
+);
+
+// Usage in component
+"use client";
+import { useFeatureStore } from "@/lib/stores/feature-store";
+
+export function MyComponent() {
+  // Selective subscription - only re-renders when selectedId changes
+  const selectedId = useFeatureStore((state) => state.selectedId);
+  const selectItem = useFeatureStore((state) => state.selectItem);
+
+  return <button onClick={() => selectItem("123")}>Select</button>;
 }
 ```
 

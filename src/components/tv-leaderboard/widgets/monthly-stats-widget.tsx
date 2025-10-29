@@ -1,13 +1,22 @@
 /**
- * Monthly Stats Widget - Server Component
+ * Monthly Stats Widget - Fully Responsive
  *
- * Performance optimizations:
- * - Server Component (no "use client")
- * - Static data visualization rendered on server
- * - Reduced JavaScript bundle size for TV displays
+ * Responsive stages:
+ * - FULL (>400px): All 4 metrics in 2x2 grid with icons and labels
+ * - COMFORTABLE (200-400px): Top 2 metrics (Revenue + Jobs) with icons
+ * - COMPACT (120-200px): Revenue only with label
+ * - TINY (<120px): Just the revenue number
  */
 
 import { Calendar, DollarSign, Briefcase, Star } from "lucide-react";
+import {
+  ResponsiveWidgetWrapper,
+  ResponsiveContent,
+  ResponsiveText,
+  ResponsiveIcon,
+  ShowAt,
+} from "../responsive-widget-wrapper";
+import { formatCurrency, formatNumber } from "@/lib/utils/responsive-utils";
 
 type MonthlyStatsWidgetProps = {
   data: {
@@ -20,42 +29,120 @@ type MonthlyStatsWidgetProps = {
 
 export function MonthlyStatsWidget({ data }: MonthlyStatsWidgetProps) {
   return (
-    <div className="h-full overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-background/90 to-background/70 p-4 backdrop-blur-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <Calendar className="size-5 text-primary" />
-        <h3 className="font-bold text-lg">This Month's Performance</h3>
-      </div>
+    <ResponsiveWidgetWrapper className="bg-gradient-to-br from-orange-500/10 to-orange-500/5">
+      <ResponsiveContent className="flex flex-col gap-3">
+        {/* Header - adapts across stages */}
+        <div className="flex items-center gap-2">
+          <ResponsiveIcon>
+            <Calendar className="text-orange-500" />
+          </ResponsiveIcon>
+          <ShowAt stage="full">
+            <ResponsiveText variant="title">This Month's Performance</ResponsiveText>
+          </ShowAt>
+          <ShowAt stage="comfortable">
+            <ResponsiveText variant="body" className="font-semibold">
+              This Month
+            </ResponsiveText>
+          </ShowAt>
+        </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-lg border border-primary/10 bg-primary/5 p-3">
-          <div className="flex items-center gap-2 text-muted-foreground text-xs">
-            <DollarSign className="size-4" />
-            Revenue
+        {/* FULL Stage: All 4 metrics in 2x2 grid */}
+        <ShowAt stage="full">
+          <div className="grid flex-1 grid-cols-2 gap-2">
+            {/* Revenue */}
+            <div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                <DollarSign className="size-3.5" />
+                Revenue
+              </div>
+              <ResponsiveText variant="display" className="mt-1 font-bold">
+                {formatCurrency(data.revenue, "comfortable")}
+              </ResponsiveText>
+            </div>
+
+            {/* Jobs */}
+            <div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                <Briefcase className="size-3.5" />
+                Jobs
+              </div>
+              <ResponsiveText variant="display" className="mt-1 font-bold">
+                {formatNumber(data.jobs, "comfortable")}
+              </ResponsiveText>
+            </div>
+
+            {/* Avg Ticket */}
+            <div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                <DollarSign className="size-3.5" />
+                Avg Ticket
+              </div>
+              <ResponsiveText variant="display" className="mt-1 font-bold">
+                {formatCurrency(data.avgTicket, "comfortable")}
+              </ResponsiveText>
+            </div>
+
+            {/* Rating */}
+            <div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                <Star className="size-3.5" />
+                Rating
+              </div>
+              <ResponsiveText variant="display" className="mt-1 font-bold">
+                {data.rating.toFixed(1)}
+              </ResponsiveText>
+            </div>
           </div>
-          <p className="mt-1 font-bold text-2xl">${data.revenue.toLocaleString()}</p>
-        </div>
-        <div className="rounded-lg border border-primary/10 bg-primary/5 p-3">
-          <div className="flex items-center gap-2 text-muted-foreground text-xs">
-            <Briefcase className="size-4" />
-            Jobs
+        </ShowAt>
+
+        {/* COMFORTABLE Stage: Top 2 metrics only */}
+        <ShowAt stage="comfortable">
+          <div className="space-y-2">
+            {/* Revenue */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <DollarSign className="size-3.5 text-orange-500" />
+                <ResponsiveText variant="caption">Revenue</ResponsiveText>
+              </div>
+              <ResponsiveText variant="body" className="font-bold">
+                {formatCurrency(data.revenue, "comfortable")}
+              </ResponsiveText>
+            </div>
+
+            {/* Jobs */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Briefcase className="size-3.5 text-blue-500" />
+                <ResponsiveText variant="caption">Jobs</ResponsiveText>
+              </div>
+              <ResponsiveText variant="body" className="font-bold">
+                {formatNumber(data.jobs, "comfortable")}
+              </ResponsiveText>
+            </div>
           </div>
-          <p className="mt-1 font-bold text-2xl">{data.jobs}</p>
-        </div>
-        <div className="rounded-lg border border-primary/10 bg-primary/5 p-3">
-          <div className="flex items-center gap-2 text-muted-foreground text-xs">
-            <DollarSign className="size-4" />
-            Avg Ticket
+        </ShowAt>
+
+        {/* COMPACT Stage: Revenue only */}
+        <ShowAt stage="compact">
+          <div className="flex flex-col items-center justify-center gap-1">
+            <ResponsiveText variant="caption" className="text-muted-foreground">
+              Revenue
+            </ResponsiveText>
+            <ResponsiveText variant="display" className="font-bold text-orange-500">
+              {formatCurrency(data.revenue, "compact")}
+            </ResponsiveText>
           </div>
-          <p className="mt-1 font-bold text-2xl">${data.avgTicket}</p>
-        </div>
-        <div className="rounded-lg border border-primary/10 bg-primary/5 p-3">
-          <div className="flex items-center gap-2 text-muted-foreground text-xs">
-            <Star className="size-4" />
-            Rating
+        </ShowAt>
+
+        {/* TINY Stage: Just the number */}
+        <ShowAt stage="tiny">
+          <div className="flex h-full items-center justify-center">
+            <ResponsiveText variant="display" className="font-bold text-orange-500">
+              {formatCurrency(data.revenue, "tiny")}
+            </ResponsiveText>
           </div>
-          <p className="mt-1 font-bold text-2xl">{data.rating}</p>
-        </div>
-      </div>
-    </div>
+        </ShowAt>
+      </ResponsiveContent>
+    </ResponsiveWidgetWrapper>
   );
 }

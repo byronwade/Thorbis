@@ -1,13 +1,22 @@
 /**
- * Company Goals Widget - Server Component
+ * Company Goals Widget - Fully Responsive
  *
- * Performance optimizations:
- * - Server Component (no "use client")
- * - Static data visualization rendered on server
- * - Reduced JavaScript bundle size for TV displays
+ * Responsive stages:
+ * - FULL (>400px): All 3 metrics with progress bars and labels
+ * - COMFORTABLE (200-400px): 2 metrics (Revenue + Avg Ticket), compact
+ * - COMPACT (120-200px): Revenue metric only, percentage text
+ * - TINY (<120px): Just the revenue percentage
  */
 
 import { Target } from "lucide-react";
+import {
+  ResponsiveWidgetWrapper,
+  ResponsiveContent,
+  ResponsiveText,
+  ResponsiveIcon,
+  ShowAt,
+} from "../responsive-widget-wrapper";
+import { formatCurrency, formatPercentage } from "@/lib/utils/responsive-utils";
 
 type CompanyGoalsWidgetProps = {
   data: {
@@ -26,63 +35,139 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
   const ratingProgress = (data.currentRating / data.customerRatingGoal) * 100;
 
   return (
-    <div className="h-full overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-4 backdrop-blur-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <div className="flex size-8 items-center justify-center rounded-full bg-primary/20">
-          <Target className="size-4 text-primary" />
-        </div>
-        <h3 className="font-bold text-lg">Company Goals</h3>
-      </div>
-
-      <div className="space-y-3">
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Revenue</span>
-            <span className="font-bold">
-              ${data.currentRevenue.toLocaleString()} / ${data.monthlyRevenue.toLocaleString()}
-            </span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-primary-foreground transition-all duration-500"
-              style={{ width: `${Math.min(revenueProgress, 100)}%` }}
-            />
-          </div>
-          <p className="text-muted-foreground text-xs">{revenueProgress.toFixed(1)}% achieved</p>
+    <ResponsiveWidgetWrapper className="bg-gradient-to-br from-primary/10 to-primary/5">
+      <ResponsiveContent className="flex flex-col gap-3">
+        {/* Header - adapts across stages */}
+        <div className="flex items-center gap-2">
+          <ResponsiveIcon>
+            <Target className="text-primary" />
+          </ResponsiveIcon>
+          <ShowAt stage="full">
+            <ResponsiveText variant="title">Company Goals</ResponsiveText>
+          </ShowAt>
+          <ShowAt stage="comfortable">
+            <ResponsiveText variant="body" className="font-semibold">
+              Goals
+            </ResponsiveText>
+          </ShowAt>
         </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Avg Ticket</span>
-            <span className="font-bold">
-              ${data.currentAvgTicket} / ${data.avgTicketGoal}
-            </span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500"
-              style={{ width: `${Math.min(ticketProgress, 100)}%` }}
-            />
-          </div>
-          <p className="text-muted-foreground text-xs">{ticketProgress.toFixed(1)}% achieved</p>
-        </div>
+        {/* FULL Stage: All 3 metrics */}
+        <ShowAt stage="full">
+          <div className="space-y-3">
+            {/* Revenue */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium">Revenue</span>
+                <span className="font-bold">
+                  {formatCurrency(data.currentRevenue, "comfortable")} /{" "}
+                  {formatCurrency(data.monthlyRevenue, "comfortable")}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-primary-foreground transition-all duration-500"
+                  style={{ width: `${Math.min(revenueProgress, 100)}%` }}
+                />
+              </div>
+              <p className="text-muted-foreground text-xs">{formatPercentage(revenueProgress, "full")} achieved</p>
+            </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Rating</span>
-            <span className="font-bold">
-              {data.currentRating} / {data.customerRatingGoal}
-            </span>
+            {/* Avg Ticket */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium">Avg Ticket</span>
+                <span className="font-bold">
+                  {formatCurrency(data.currentAvgTicket, "comfortable")} /{" "}
+                  {formatCurrency(data.avgTicketGoal, "comfortable")}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500"
+                  style={{ width: `${Math.min(ticketProgress, 100)}%` }}
+                />
+              </div>
+              <p className="text-muted-foreground text-xs">{formatPercentage(ticketProgress, "full")} achieved</p>
+            </div>
+
+            {/* Rating */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium">Rating</span>
+                <span className="font-bold">
+                  {data.currentRating} / {data.customerRatingGoal}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-500"
+                  style={{ width: `${Math.min(ratingProgress, 100)}%` }}
+                />
+              </div>
+              <p className="text-muted-foreground text-xs">{formatPercentage(ratingProgress, "full")} achieved</p>
+            </div>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-500"
-              style={{ width: `${Math.min(ratingProgress, 100)}%` }}
-            />
+        </ShowAt>
+
+        {/* COMFORTABLE Stage: Top 2 metrics only */}
+        <ShowAt stage="comfortable">
+          <div className="space-y-2">
+            {/* Revenue */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <ResponsiveText variant="caption">Revenue</ResponsiveText>
+                <ResponsiveText variant="caption" className="font-bold">
+                  {formatPercentage(revenueProgress, "comfortable")}
+                </ResponsiveText>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-primary-foreground transition-all"
+                  style={{ width: `${Math.min(revenueProgress, 100)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Avg Ticket */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <ResponsiveText variant="caption">Avg Ticket</ResponsiveText>
+                <ResponsiveText variant="caption" className="font-bold">
+                  {formatPercentage(ticketProgress, "comfortable")}
+                </ResponsiveText>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all"
+                  style={{ width: `${Math.min(ticketProgress, 100)}%` }}
+                />
+              </div>
+            </div>
           </div>
-          <p className="text-muted-foreground text-xs">{ratingProgress.toFixed(1)}% achieved</p>
-        </div>
-      </div>
-    </div>
+        </ShowAt>
+
+        {/* COMPACT Stage: Revenue percentage only */}
+        <ShowAt stage="compact">
+          <div className="flex flex-col items-center justify-center gap-1">
+            <ResponsiveText variant="caption" className="text-muted-foreground">
+              Revenue
+            </ResponsiveText>
+            <ResponsiveText variant="display" className="font-bold text-primary">
+              {formatPercentage(revenueProgress, "compact")}
+            </ResponsiveText>
+          </div>
+        </ShowAt>
+
+        {/* TINY Stage: Just the number */}
+        <ShowAt stage="tiny">
+          <div className="flex h-full items-center justify-center">
+            <ResponsiveText variant="display" className="font-bold text-primary">
+              {Math.round(revenueProgress)}%
+            </ResponsiveText>
+          </div>
+        </ShowAt>
+      </ResponsiveContent>
+    </ResponsiveWidgetWrapper>
   );
 }

@@ -15,7 +15,7 @@ export function TestimonialsSection() {
   const testimonials = [
     {
       quote:
-        "Stratos helped us grow from 8 to 25 technicians in just one year. The scheduling and dispatch features alone save us 15 hours every week.",
+        "Thorbis helped us grow from 8 to 25 technicians in just one year. The scheduling and dispatch features alone save us 15 hours every week.",
       author: "Michael Rodriguez",
       role: "Owner",
       company: "Rodriguez HVAC",
@@ -29,7 +29,7 @@ export function TestimonialsSection() {
     },
     {
       quote:
-        "We increased our average job value by 42% using Stratos' smart pricing and upsell features. The customer portal has been a game-changer for our reputation.",
+        "We increased our average job value by 42% using Thorbis' smart pricing and upsell features. The customer portal has been a game-changer for our reputation.",
       author: "Sarah Chen",
       role: "CEO",
       company: "Elite Plumbing Solutions",
@@ -90,7 +90,7 @@ export function TestimonialsSection() {
             </span>
           </h2>
           <p className="mx-auto max-w-2xl text-foreground text-lg">
-            Real businesses achieving remarkable results with Stratos
+            Real businesses achieving remarkable results with Thorbis
           </p>
         </div>
 
@@ -172,7 +172,7 @@ export function TestimonialsSection() {
           </h3>
           <p className="mx-auto mb-8 max-w-2xl text-foreground text-lg">
             Join thousands of field service professionals who have transformed
-            their operations with Stratos
+            their operations with Thorbis
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button

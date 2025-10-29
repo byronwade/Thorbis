@@ -1,42 +1,167 @@
+"use client";
+
 /**
- * Marketing Page - Server Component
+ * Marketing Page - Leads Management (Development & Production)
  *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - Reduced JavaScript bundle size
- * - Better SEO and initial page load
- * - ISR revalidation every 15 minutes
+ * Full-width seamless datatable layout matching work pages:
+ * - Toolbar shows in header with actions
+ * - Stats cards appear below toolbar
+ * - Table extends edge-to-edge for seamless appearance
+ * - Sidebar for navigation between marketing sections
+ *
+ * Environment behavior:
+ * - Development: Full datatable with mock data for testing
+ * - Production: Same UI (you can add real data when ready)
  */
 
-export const revalidate = 900; // Revalidate every 15 minutes
+import { LeadsDataTable } from "@/components/marketing/leads-datatable";
+import { StatsCards, type StatCard } from "@/components/ui/stats-cards";
+import type { Lead } from "@/components/marketing/leads-datatable";
 
-export default function MarketingPage() {  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Unified Inbox</h1>
-        <p className="text-muted-foreground">
-          Centralized communication hub for email, VoIP, and SMS
-        </p>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">Unread Messages</h3>
-          <p className="font-bold text-2xl">0</p>
-        </div>
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">Today's Calls</h3>
-          <p className="font-bold text-2xl">0</p>
-        </div>
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">SMS Sent</h3>
-          <p className="font-bold text-2xl">0</p>
-        </div>
-        <div className="rounded-lg border p-4">
-          <h3 className="font-medium">Active Campaigns</h3>
-          <p className="font-bold text-2xl">0</p>
-        </div>
-      </div>
-    </div>
-  );
+// Mock leads data - replace with real data from database
+const mockLeads: Lead[] = [
+	{
+		id: "1",
+		name: "John Smith",
+		email: "john.smith@example.com",
+		phone: "(555) 123-4567",
+		source: "google-ads",
+		score: "hot",
+		stage: "new",
+		value: 2500,
+		createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+		lastContact: null,
+	},
+	{
+		id: "2",
+		name: "Sarah Johnson",
+		email: "sarah.j@example.com",
+		phone: "(555) 234-5678",
+		source: "thumbtack",
+		score: "hot",
+		stage: "contacted",
+		value: 3200,
+		createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+		lastContact: new Date(Date.now() - 1 * 60 * 60 * 1000),
+	},
+	{
+		id: "3",
+		name: "Mike Davis",
+		email: "mdavis@example.com",
+		phone: "(555) 345-6789",
+		source: "website-form",
+		score: "warm",
+		stage: "qualified",
+		value: 1800,
+		createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+		lastContact: new Date(Date.now() - 3 * 60 * 60 * 1000),
+	},
+	{
+		id: "4",
+		name: "Emma Wilson",
+		email: "emma.w@example.com",
+		phone: "(555) 456-7890",
+		source: "facebook-ads",
+		score: "warm",
+		stage: "contacted",
+		value: 2100,
+		createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000),
+		lastContact: new Date(Date.now() - 12 * 60 * 60 * 1000),
+	},
+	{
+		id: "5",
+		name: "Robert Brown",
+		email: "rbrown@example.com",
+		phone: "(555) 567-8901",
+		source: "referral",
+		score: "cold",
+		stage: "new",
+		value: 1200,
+		createdAt: new Date(Date.now() - 72 * 60 * 60 * 1000),
+		lastContact: null,
+	},
+	{
+		id: "6",
+		name: "Lisa Anderson",
+		email: "landerson@example.com",
+		phone: "(555) 678-9012",
+		source: "google-ads",
+		score: "hot",
+		stage: "qualified",
+		value: 2800,
+		createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
+		lastContact: new Date(Date.now() - 2 * 60 * 60 * 1000),
+	},
+	{
+		id: "7",
+		name: "James Wilson",
+		email: "jwilson@example.com",
+		phone: "(555) 789-0123",
+		source: "thumbtack",
+		score: "warm",
+		stage: "contacted",
+		value: 1950,
+		createdAt: new Date(Date.now() - 36 * 60 * 60 * 1000),
+		lastContact: new Date(Date.now() - 6 * 60 * 60 * 1000),
+	},
+	{
+		id: "8",
+		name: "Patricia Martinez",
+		email: "pmartinez@example.com",
+		phone: "(555) 890-1234",
+		source: "website-form",
+		score: "hot",
+		stage: "new",
+		value: 3500,
+		createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
+		lastContact: null,
+	},
+];
+
+// Lead statistics data
+const leadStats: StatCard[] = [
+	{
+		label: "Total Leads",
+		value: 248,
+		change: 20.1,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Hot Leads",
+		value: 42,
+		change: 31.2,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Qualified",
+		value: 87,
+		change: 15.4,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Converted",
+		value: 28,
+		change: 12.0,
+		changeLabel: "vs last month",
+	},
+	{
+		label: "Est. Value",
+		value: "$52.4k",
+		change: 18.7,
+		changeLabel: "vs last month",
+	},
+];
+
+export default function MarketingPage() {
+	return (
+		<>
+			{/* Statistics - Full width, no padding */}
+			<StatsCards stats={leadStats} />
+
+			{/* Full-width seamless table (no padding) */}
+			<div>
+				<LeadsDataTable itemsPerPage={50} leads={mockLeads} />
+			</div>
+		</>
+	);
 }

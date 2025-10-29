@@ -81,7 +81,7 @@ export function SlideCarousel({
     <div className="h-full overflow-hidden" ref={emblaRef}>
       <div className="flex h-full">
         {slides.map((slide, index) => (
-          <div className="relative min-w-0 flex-[0_0_100%] px-8" key={slide.id}>
+          <div className="relative min-w-0 flex-[0_0_100%]" key={slide.id}>
             <AnimatePresence mode="wait">
               {index === currentSlide && (
                 <motion.div

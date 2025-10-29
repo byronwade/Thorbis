@@ -99,6 +99,13 @@ const mockJobs: Job[] = [
     metadata: null,
     createdAt: new Date("2025-01-15"),
     updatedAt: new Date("2025-01-20"),
+    // AI fields
+    aiCategories: null,
+    aiEquipment: null,
+    aiServiceType: null,
+    aiPriorityScore: null,
+    aiTags: null,
+    aiProcessedAt: null,
   },
   {
     id: "2",
@@ -122,6 +129,13 @@ const mockJobs: Job[] = [
     metadata: null,
     createdAt: new Date("2024-11-15"),
     updatedAt: new Date("2024-12-02"),
+    // AI fields
+    aiCategories: null,
+    aiEquipment: null,
+    aiServiceType: null,
+    aiPriorityScore: null,
+    aiTags: null,
+    aiProcessedAt: null,
   },
 ];
 

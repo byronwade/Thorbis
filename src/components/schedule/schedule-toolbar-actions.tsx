@@ -16,14 +16,15 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon, Plus, SlidersHorizontal } from "lucide-react"
 import { ScheduleViewToggle } from "./schedule-view-toggle"
-import { useScheduleView } from "./schedule-view-provider"
+import { useScheduleViewStore } from "@/lib/stores/schedule-view-store"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 
 export function ScheduleToolbarActions() {
   const [mounted, setMounted] = useState(false)
   const [date, setDate] = useState<Date>(new Date())
-  const { view, setView } = useScheduleView()
+  const view = useScheduleViewStore((state) => state.view)
+  const setView = useScheduleViewStore((state) => state.setView)
 
   // Prevent hydration mismatch by only rendering selects after mount
   useEffect(() => {

@@ -1,28 +1,26 @@
+"use client";
+
 /**
- * Marketing > Campaigns Page - Server Component
+ * Campaigns Page - Campaign Management
  *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * Full-width seamless datatable layout for managing campaigns
  */
 
-export const revalidate = 3600; // Revalidate every 1 hour
+import { Megaphone } from "lucide-react";
 
-export default function CampaignManagementPage() {  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Campaign Management</h1>
-        <p className="text-muted-foreground">
-          Create and manage marketing campaigns
-        </p>
-      </div>
-      <div className="rounded-lg border p-6">
-        <p className="text-muted-foreground">
-          Campaign Management system coming soon...
-        </p>
-      </div>
-    </div>
-  );
+export default function CampaignsPage() {
+	return (
+		<div className="flex h-full items-center justify-center">
+			<div className="text-center">
+				<Megaphone className="mx-auto mb-4 h-16 w-16 text-primary" />
+				<h2 className="mb-2 font-semibold text-2xl">Marketing Campaigns</h2>
+				<p className="text-muted-foreground">
+					Create and manage email, SMS, and direct mail campaigns
+				</p>
+				<p className="mt-4 text-muted-foreground text-sm">
+					Coming soon - Datatable for campaign management
+				</p>
+			</div>
+		</div>
+	);
 }

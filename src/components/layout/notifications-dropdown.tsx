@@ -146,7 +146,13 @@ const notificationColors: Record<NotificationType, string> = {
 const ONE_MINUTE = 60;
 const ONE_HOUR = 24;
 const ONE_WEEK = 7;
-const MAX_BADGE_COUNT = 9;
+
+function formatBadgeCount(count: number): string {
+  if (count <= 9) return count.toString();
+  if (count <= 99) return "99+";
+  if (count <= 999) return "999+";
+  return "1K+";
+}
 
 function formatTimestamp(date: Date): string {
   const now = new Date();
@@ -176,8 +182,8 @@ function NotificationBadge({ count }: { count: number }) {
     return null;
   }
   return (
-    <span className="-right-0.5 -top-0.5 absolute flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-500 px-1 font-bold text-[0.6rem] text-white">
-      {count > MAX_BADGE_COUNT ? "9+" : count}
+    <span className="-right-1 -top-1 absolute flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 font-bold text-[0.625rem] text-white leading-none">
+      {formatBadgeCount(count)}
     </span>
   );
 }
@@ -236,7 +242,7 @@ export function NotificationsDropdown() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative overflow-visible" ref={dropdownRef}>
       <button
         className="hover-gradient relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
         onClick={() => setIsOpen(!isOpen)}

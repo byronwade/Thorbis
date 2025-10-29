@@ -2,6 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,12 +15,18 @@ import {
 } from "@/components/ui/navigation-menu";
 
 export function MarketingHeader() {
+  const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const ANIMATION_DURATION = 300;
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const closeMobileMenu = useCallback(() => {
     setIsClosing(true);
@@ -96,124 +103,451 @@ export function MarketingHeader() {
             className="hover-gradient flex items-center gap-2 font-bold text-foreground text-xl transition-colors hover:text-primary"
             href="/"
           >
-            <svg
+            <Image
+              src="/ThorbisLogo.webp"
+              alt="Thorbis"
+              width={24}
+              height={24}
               className="size-6"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Stratos</title>
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
-            <span>Stratos</span>
+            />
+            <span>Thorbis</span>
           </Link>
 
           {/* Desktop Navigation with Mega Menu */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
+          {mounted && (
+            <NavigationMenu className="hidden lg:flex">
+              <NavigationMenuList>
+              {/* Solutions Mega Menu */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:border-primary/20 hover:bg-primary/5 hover:text-primary">
-                  Features
+                <NavigationMenuTrigger className="hover-gradient h-8 gap-1.5 rounded-md bg-transparent px-3 text-sm font-medium transition-all hover:bg-muted/50 hover:text-foreground focus:bg-muted/50 focus:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground">
+                  Solutions
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="border-none bg-transparent shadow-none">
-                  <div className="grid w-[600px] grid-cols-2 gap-3 p-6">
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">
-                        Field Operations
+                <NavigationMenuContent className="!border !bg-background !shadow-lg">
+                  <div className="grid w-[750px] grid-cols-3 gap-4 p-5">
+                    {/* Column 1: Grow Your Business */}
+                    <div className="space-y-1">
+                      <div className="mb-2 px-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground/70">
+                        Grow Your Business
                       </div>
-                      <div className="text-muted-foreground text-sm">
-                        Job management, scheduling, and dispatch tools
+                      <Link
+                        className="group block rounded-lg border border-transparent p-2.5 transition-all hover:bg-muted/60"
+                        href="/features/ai-assistant"
+                      >
+                        <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                          AI Assistant 24/7
+                        </div>
+                        <div className="text-muted-foreground text-xs leading-snug">
+                          Calls, books, answers questions
+                        </div>
+                      </Link>
+                      <Link
+                        className="group block rounded-lg border border-transparent p-2.5 transition-all hover:bg-muted/60"
+                        href="/features/crm"
+                      >
+                        <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                          Lead Management & CRM
+                        </div>
+                        <div className="text-muted-foreground text-xs leading-snug">
+                          Convert more leads to customers
+                        </div>
+                      </Link>
+                      <Link
+                        className="group block rounded-lg border border-transparent p-2.5 transition-all hover:bg-muted/60"
+                        href="/features/online-booking"
+                      >
+                        <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                          Online Booking Portal
+                        </div>
+                        <div className="text-muted-foreground text-xs leading-snug">
+                          24/7 customer self-scheduling
+                        </div>
+                      </Link>
+                      <Link
+                        className="group block rounded-lg border border-transparent p-2.5 transition-all hover:bg-muted/60"
+                        href="/features/marketing"
+                      >
+                        <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                          Marketing Automation
+                        </div>
+                        <div className="text-muted-foreground text-xs leading-snug">
+                          Email, SMS & follow-up campaigns
+                        </div>
+                      </Link>
+                      <Link
+                        className="group block rounded-lg border border-transparent p-2.5 transition-all hover:bg-muted/60"
+                        href="/features/customer-portal"
+                      >
+                        <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                          Customer Portal
+                        </div>
+                        <div className="text-muted-foreground text-xs leading-snug">
+                          Self-service history & payments
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Column 2: Manage Operations */}
+                    <div className="space-y-1">
+                      <div className="mb-2 px-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground/70">
+                        Manage Operations
                       </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">CRM & Sales</div>
-                      <div className="text-muted-foreground text-sm">
-                        Customer management and sales pipeline
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/scheduling"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Smart Scheduling & Dispatch
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            4 views, drag-and-drop board
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/mobile-app"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Mobile Field App
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Complete technician toolkit
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/routing"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Route Optimization
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            GPS tracking & intelligent routing
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/inventory"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Inventory & Equipment
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Track materials & truck stock
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/team-management"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Team Management
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Time tracking, skills & training
+                          </div>
+                        </Link>
+                      
+                    </div>
+
+                    {/* Column 3: Financial Management */}
+                    <div className="space-y-1">
+                      <div className="mb-2 px-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground/70">
+                        Financial Management
                       </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">
-                        Financial Tools
-                      </div>
-                      <div className="text-muted-foreground text-sm">
-                        Invoicing, payments, and accounting
-                      </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">
-                        AI Assistant
-                      </div>
-                      <div className="text-muted-foreground text-sm">
-                        Smart automation and intelligent insights
-                      </div>
-                    </NavigationMenuLink>
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/invoicing"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Invoicing & Payments
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Get paid faster with 0% fees
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/quickbooks"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            QuickBooks Integration
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            2-way sync with accounting
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/estimates"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Estimates & Proposals
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Good/better/best pricing options
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/financing"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Customer Financing
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Instant approval, higher tickets
+                          </div>
+                        </Link>
+                      
+                      
+                        <Link
+                          className="group block rounded-lg border border-transparent bg-transparent p-2.5 transition-all hover:bg-muted/60"
+                          href="/features/payroll"
+                        >
+                          <div className="font-medium text-sm text-foreground group-hover:text-primary">
+                            Payroll & Commission
+                          </div>
+                          <div className="text-muted-foreground text-xs leading-snug">
+                            Auto-calculate tech earnings
+                          </div>
+                        </Link>
+                      
+                    </div>
+                  </div>
+                  <div className="border-t bg-muted/20 px-5 py-3.5">
+                    <Link
+                      className="inline-flex items-center gap-1 font-medium text-sm text-primary transition-colors hover:text-primary/80"
+                      href="/features"
+                    >
+                      See All 50+ Features →
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
+
+              {/* Industries Mega Menu */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:border-primary/20 hover:bg-primary/5 hover:text-primary">
+                <NavigationMenuTrigger className="hover-gradient h-8 gap-1.5 rounded-md bg-transparent px-3 text-sm font-medium transition-all hover:bg-muted/50 hover:text-foreground focus:bg-muted/50 focus:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground">
+                  Industries
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="border bg-background shadow-lg">
+                  <div className="grid w-[600px] grid-cols-3 gap-2 p-4">
+                    {/* Column 1 */}
+                    <div className="space-y-0.5">
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/hvac"
+                        >
+                          HVAC Contractors
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/plumbing"
+                        >
+                          Plumbing Services
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/electrical"
+                        >
+                          Electrical Contractors
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/handyman"
+                        >
+                          Handyman Services
+                        </Link>
+                      
+                    </div>
+                    {/* Column 2 */}
+                    <div className="space-y-0.5">
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/landscaping"
+                        >
+                          Landscaping & Lawn
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/pool-service"
+                        >
+                          Pool & Spa Service
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/pest-control"
+                        >
+                          Pest Control
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/appliance-repair"
+                        >
+                          Appliance Repair
+                        </Link>
+                      
+                    </div>
+                    {/* Column 3 */}
+                    <div className="space-y-0.5">
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/roofing"
+                        >
+                          Roofing Contractors
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/cleaning"
+                        >
+                          Cleaning Services
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/locksmith"
+                        >
+                          Locksmith Services
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/industries/garage-door"
+                        >
+                          Garage Door Services
+                        </Link>
+                      
+                    </div>
+                  </div>
+                  <div className="border-t bg-muted/20 px-4 py-3">
+                    <Link
+                      className="inline-flex items-center gap-1 font-medium text-sm text-primary transition-colors hover:text-primary/80"
+                      href="/industries"
+                    >
+                      View All Industries (25+) →
+                    </Link>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* Pricing - Direct Link */}
+              <NavigationMenuItem>
+                <Link
+                  className="hover-gradient inline-flex h-8 items-center gap-1.5 rounded-md bg-transparent px-3 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
+                  href="/pricing"
+                >
                   Pricing
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="border-none bg-transparent shadow-none">
-                  <div className="grid w-[500px] grid-cols-1 gap-3 p-6">
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">Starter</div>
-                      <div className="text-muted-foreground text-sm">
-                        $49/month - Perfect for small teams
-                      </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">
-                        Professional
-                      </div>
-                      <div className="text-muted-foreground text-sm">
-                        $149/month - For growing businesses
-                      </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">Enterprise</div>
-                      <div className="text-muted-foreground text-sm">
-                        Custom pricing - Advanced features included
-                      </div>
-                    </NavigationMenuLink>
-                  </div>
-                </NavigationMenuContent>
+                </Link>
               </NavigationMenuItem>
+
+              {/* Resources Dropdown */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:border-primary/20 hover:bg-primary/5 hover:text-primary">
-                  About
+                <NavigationMenuTrigger className="hover-gradient h-8 gap-1.5 rounded-md bg-transparent px-3 text-sm font-medium transition-all hover:bg-muted/50 hover:text-foreground focus:bg-muted/50 focus:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground">
+                  Resources
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="border-none bg-transparent shadow-none">
-                  <div className="grid w-[400px] grid-cols-1 gap-3 p-6">
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">Our Story</div>
-                      <div className="text-muted-foreground text-sm">
-                        Building the future of field service
+                <NavigationMenuContent className="border bg-background shadow-lg">
+                  <div className="grid w-[420px] grid-cols-2 gap-4 p-4">
+                    {/* Column 1 */}
+                    <div className="space-y-1">
+                      <div className="mb-2 px-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground/70">
+                        Learn
                       </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">Careers</div>
-                      <div className="text-muted-foreground text-sm">
-                        Join our mission-driven team
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/blog"
+                        >
+                          Blog
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/case-studies"
+                        >
+                          Case Studies
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/webinars"
+                        >
+                          Webinars
+                        </Link>
+                      
+                    </div>
+                    {/* Column 2 */}
+                    <div className="space-y-1">
+                      <div className="mb-2 px-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground/70">
+                        Support
                       </div>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="group grid gap-2 rounded-lg bg-transparent p-4 transition-colors hover:border-primary/10 hover:bg-primary/5 hover:text-primary">
-                      <div className="font-semibold text-base">Contact</div>
-                      <div className="text-muted-foreground text-sm">
-                        Get in touch with our team
-                      </div>
-                    </NavigationMenuLink>
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/help"
+                        >
+                          Help Center
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/community"
+                        >
+                          Community
+                        </Link>
+                      
+                      
+                        <Link
+                          className="block rounded-lg border border-transparent bg-transparent px-3 py-2 text-sm transition-all hover:bg-muted/60 hover:text-primary"
+                          href="/contact"
+                        >
+                          Contact Support
+                        </Link>
+                      
+                    </div>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+              </NavigationMenuList>
+            </NavigationMenu>
+          )}
 
           {/* Right side actions */}
           <div className="ml-auto flex items-center gap-2">
@@ -236,7 +570,7 @@ export function MarketingHeader() {
 
           {/* Mobile Menu Button */}
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 md:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             type="button"
           >
@@ -265,45 +599,136 @@ export function MarketingHeader() {
 
           {/* Mobile Menu */}
           <div
-            className={`fixed inset-x-0 top-16 z-50 bg-background shadow-2xl duration-300 md:hidden ${
+            className={`fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto bg-background shadow-2xl duration-300 lg:hidden ${
               isClosing
                 ? "slide-out-to-top animate-out"
                 : "slide-in-from-top animate-in"
             }`}
             ref={mobileMenuRef}
           >
-            <div className="space-y-1 border-b p-4">
-              <Link
-                className="block rounded-md px-3 py-2 font-medium hover:bg-accent"
-                href="#features"
-                onClick={closeMobileMenu}
-              >
-                Features
-              </Link>
-              <Link
-                className="block rounded-md px-3 py-2 font-medium hover:bg-accent"
-                href="#pricing"
-                onClick={closeMobileMenu}
-              >
-                Pricing
-              </Link>
-              <Link
-                className="block rounded-md px-3 py-2 font-medium hover:bg-accent"
-                href="#about"
-                onClick={closeMobileMenu}
-              >
-                About
-              </Link>
-              <Link
-                className="block rounded-md px-3 py-2 font-medium hover:bg-accent"
-                href="/dashboard"
-                onClick={closeMobileMenu}
-              >
-                Dashboard
-              </Link>
+            <div className="space-y-1 p-4 pb-24">
+              {/* Solutions */}
+              <div className="space-y-1">
+                <div className="px-3 py-2 font-semibold text-sm">Solutions</div>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/features/ai-assistant"
+                  onClick={closeMobileMenu}
+                >
+                  AI Assistant 24/7
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/features/scheduling"
+                  onClick={closeMobileMenu}
+                >
+                  Smart Scheduling & Dispatch
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/features/mobile-app"
+                  onClick={closeMobileMenu}
+                >
+                  Mobile Field App
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/features/invoicing"
+                  onClick={closeMobileMenu}
+                >
+                  Invoicing & Payments
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/features/payroll"
+                  onClick={closeMobileMenu}
+                >
+                  Payroll & Commission
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/features"
+                  onClick={closeMobileMenu}
+                >
+                  View All 50+ Features →
+                </Link>
+              </div>
+
+              {/* Industries */}
+              <div className="space-y-1 pt-4">
+                <div className="px-3 py-2 font-semibold text-sm">
+                  Industries
+                </div>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/industries/hvac"
+                  onClick={closeMobileMenu}
+                >
+                  HVAC Contractors
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/industries/plumbing"
+                  onClick={closeMobileMenu}
+                >
+                  Plumbing Services
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/industries/electrical"
+                  onClick={closeMobileMenu}
+                >
+                  Electrical Contractors
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/industries"
+                  onClick={closeMobileMenu}
+                >
+                  View All Industries →
+                </Link>
+              </div>
+
+              {/* Pricing */}
+              <div className="pt-4">
+                <Link
+                  className="block rounded-md px-3 py-2 font-semibold text-sm hover:bg-accent"
+                  href="/pricing"
+                  onClick={closeMobileMenu}
+                >
+                  Pricing
+                </Link>
+              </div>
+
+              {/* Resources */}
+              <div className="space-y-1 pt-4">
+                <div className="px-3 py-2 font-semibold text-sm">Resources</div>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/blog"
+                  onClick={closeMobileMenu}
+                >
+                  Blog
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/case-studies"
+                  onClick={closeMobileMenu}
+                >
+                  Case Studies
+                </Link>
+                <Link
+                  className="block rounded-md px-6 py-2 text-sm hover:bg-accent"
+                  href="/help"
+                  onClick={closeMobileMenu}
+                >
+                  Help Center
+                </Link>
+              </div>
             </div>
-            {/* Bottom CTA buttons */}
-            <div className="absolute inset-x-0 bottom-0 border-t bg-background p-4">
+
+            {/* Bottom CTA buttons - Sticky */}
+            <div className="fixed inset-x-0 bottom-0 border-t bg-background p-4">
               <div className="flex flex-col gap-2">
                 <Button
                   asChild

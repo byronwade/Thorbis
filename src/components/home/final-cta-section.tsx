@@ -51,7 +51,7 @@ export function FinalCTASection() {
 
             <p className="mx-auto mb-10 max-w-2xl text-foreground text-xl leading-relaxed">
               Join 10,000+ field service professionals who have increased
-              revenue by 40% and saved 8+ hours per week with Stratos.
+              revenue by 40% and saved 8+ hours per week with Thorbis.
             </p>
 
             {/* CTA Buttons */}

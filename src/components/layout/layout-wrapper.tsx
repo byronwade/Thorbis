@@ -13,6 +13,12 @@ interface LayoutWrapperProps {
 
 export function LayoutWrapper({ children, showHeader }: LayoutWrapperProps) {
 	const pathname = usePathname();
+
+	// Hide layout wrapper completely on TV routes
+	if (pathname.includes("/tv-leaderboard")) {
+		return <>{children}</>;
+	}
+
 	const config = getLayoutConfig(pathname);
 
 	// Calculate classes
@@ -23,18 +29,18 @@ export function LayoutWrapper({ children, showHeader }: LayoutWrapperProps) {
 	const showSidebar = config.showSidebar !== false;
 	const showToolbar = config.showToolbar !== false;
 
-	const heightClass = config.fixedHeight ? (showHeader ? "h-[calc(100vh-3.5rem)]" : "h-screen") : showHeader ? "min-h-[calc(100vh-3.5rem)]" : "min-h-screen";
-
 	return (
 		<SidebarProvider>
-			<div className={`flex ${heightClass} w-full`}>
+			<div className="fixed inset-0 top-14 flex w-full overflow-hidden" data-dashboard-layout>
 				{showSidebar && <AppSidebar />}
-				<SidebarInset className="w-full">
+				<SidebarInset className="relative w-full">
 					{showToolbar && <AppToolbar />}
 					{isFullWidth ? (
-						<main className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}>{children}</main>
+						<main className={`flex w-full flex-1 flex-col overflow-y-auto ${gapClass} ${paddingClass}`}>
+							{children}
+						</main>
 					) : (
-						<main className={`flex w-full flex-1 flex-col ${gapClass} ${paddingClass}`}>
+						<main className={`flex w-full flex-1 flex-col overflow-y-auto ${gapClass} ${paddingClass}`}>
 							<div className={`w-full ${maxWidthClass}`}>{children}</div>
 						</main>
 					)}
