@@ -37,6 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 type CustomField = {
   id: string;
   name: string;
@@ -48,7 +49,8 @@ type CustomField = {
   placeholder?: string;
 };
 
-export default function CustomFieldsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function CustomFieldsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [customFields, setCustomFields] = useState<CustomField[]>([
     {
       id: "1",

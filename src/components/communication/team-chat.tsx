@@ -9,7 +9,7 @@
  * - User presence and typing indicators
  */
 
-import { Hash, Send, Smile, Paperclip, MoreVertical } from "lucide-react";
+import { Hash, MoreVertical, Paperclip, Send, Smile } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ const MOCK_MESSAGES: Message[] = [
     userId: "1",
     userName: "John Smith",
     content: "Good morning team! Ready for the busy day ahead?",
-    timestamp: new Date(NOW - 3600000 * 2),
+    timestamp: new Date(NOW - 3_600_000 * 2),
     reactions: [{ emoji: "👍", count: 3, users: ["2", "3", "4"] }],
   },
   {
@@ -50,7 +50,7 @@ const MOCK_MESSAGES: Message[] = [
     userName: "Sarah Johnson",
     content:
       "Morning! I've updated the schedule for today's appointments. Everyone should check their calendars.",
-    timestamp: new Date(NOW - 3600000 * 1.5),
+    timestamp: new Date(NOW - 3_600_000 * 1.5),
   },
   {
     id: "3",
@@ -58,7 +58,7 @@ const MOCK_MESSAGES: Message[] = [
     userName: "Mike Davis",
     content:
       "Thanks Sarah! I see I have 3 appointments today. All confirmed with customers.",
-    timestamp: new Date(NOW - 3600000),
+    timestamp: new Date(NOW - 3_600_000),
     reactions: [{ emoji: "✅", count: 1, users: ["2"] }],
   },
   {
@@ -67,7 +67,7 @@ const MOCK_MESSAGES: Message[] = [
     userName: "Emma Wilson",
     content:
       "Quick question - has anyone seen the new price book updates? I can't find the labor rates for HVAC installation.",
-    timestamp: new Date(NOW - 1800000),
+    timestamp: new Date(NOW - 1_800_000),
   },
   {
     id: "5",
@@ -75,7 +75,7 @@ const MOCK_MESSAGES: Message[] = [
     userName: "John Smith",
     content:
       "Emma - check the settings page. We moved all pricebook management there last week. The labor rates should be under Services > HVAC.",
-    timestamp: new Date(NOW - 900000),
+    timestamp: new Date(NOW - 900_000),
     reactions: [{ emoji: "🙏", count: 1, users: ["4"] }],
   },
 ];
@@ -93,7 +93,7 @@ export function TeamChat({ channelName, channelDescription }: TeamChatProps) {
   const formatTimestamp = (date: Date) => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / 3600000);
+    const hours = Math.floor(diff / 3_600_000);
 
     if (hours < 24) {
       return date.toLocaleTimeString([], {
@@ -140,7 +140,7 @@ export function TeamChat({ channelName, channelDescription }: TeamChatProps) {
               messages[index - 1]?.userId !== msg.userId ||
               msg.timestamp.getTime() -
                 messages[index - 1]?.timestamp.getTime() >
-                300000;
+                300_000;
 
             return (
               <div
@@ -203,13 +203,13 @@ export function TeamChat({ channelName, channelDescription }: TeamChatProps) {
           <div className="flex-1 space-y-2">
             <Input
               className="resize-none"
+              onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSend();
                 }
               }}
-              onChange={(e) => setMessage(e.target.value)}
               placeholder={`Message #${channelName}`}
               value={message}
             />

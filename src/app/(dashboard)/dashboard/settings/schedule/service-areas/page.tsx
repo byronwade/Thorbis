@@ -36,6 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 type ServiceArea = {
   id: string;
   name: string;
@@ -46,7 +47,8 @@ type ServiceArea = {
   enabled: boolean;
 };
 
-export default function ServiceAreasSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function ServiceAreasSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     primaryAddress: "123 Main St, City, ST 12345",
     radius: 25,

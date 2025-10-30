@@ -4,7 +4,7 @@
  * Reusable template for tool resource pages
  */
 
-import { ArrowLeft, ExternalLink, LucideIcon } from "lucide-react";
+import { ArrowLeft, ExternalLink, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

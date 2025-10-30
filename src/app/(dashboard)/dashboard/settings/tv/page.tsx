@@ -9,17 +9,28 @@
  * - Browser API access for enhanced UX
  */
 
-import { useState } from "react";
-import { ArrowLeft, Save, Monitor, Clock, Layout, Users, Target, Palette } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock,
+  Layout,
+  Monitor,
+  Palette,
+  Save,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
 type ViewMode = "table" | "slideshow";
 type DefaultPeriod = "daily" | "weekly" | "monthly" | "yearly" | "all";
 
-export default function TVLeaderboardSettingsPage() {  // Settings state
+export default function TVLeaderboardSettingsPage() {
+  // Settings state
   const [defaultViewMode, setDefaultViewMode] = useState<ViewMode>("table");
-  const [defaultTimePeriod, setDefaultTimePeriod] = useState<DefaultPeriod>("monthly");
+  const [defaultTimePeriod, setDefaultTimePeriod] =
+    useState<DefaultPeriod>("monthly");
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [tableScrollInterval, setTableScrollInterval] = useState(5);
   const [slideshowInterval, setSlideshowInterval] = useState(8);
@@ -67,7 +78,7 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             Settings
           </span>
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-lg text-muted-foreground">
           Customize how the leaderboard appears on TV displays
         </p>
       </div>
@@ -82,7 +93,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             </div>
             <div>
               <h2 className="font-bold text-2xl">Display Settings</h2>
-              <p className="text-muted-foreground text-sm">Configure how data is displayed</p>
+              <p className="text-muted-foreground text-sm">
+                Configure how data is displayed
+              </p>
             </div>
           </div>
 
@@ -98,7 +111,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
                 >
                   <Layout className="mb-2 size-6 text-primary" />
                   <p className="font-semibold">Table View</p>
-                  <p className="text-muted-foreground text-xs">Show leaderboard as a scrolling table</p>
+                  <p className="text-muted-foreground text-xs">
+                    Show leaderboard as a scrolling table
+                  </p>
                 </button>
                 <button
                   className={`flex-1 rounded-lg border-2 p-4 text-left transition-all ${defaultViewMode === "slideshow" ? "border-primary bg-primary/10" : "border-primary/20 hover:border-primary/40"}`}
@@ -107,7 +122,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
                 >
                   <Users className="mb-2 size-6 text-primary" />
                   <p className="font-semibold">Slideshow View</p>
-                  <p className="text-muted-foreground text-xs">Full-screen technician portfolios</p>
+                  <p className="text-muted-foreground text-xs">
+                    Full-screen technician portfolios
+                  </p>
                 </button>
               </div>
             </div>
@@ -116,7 +133,15 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             <div className="space-y-3">
               <label className="font-medium text-sm">Default Time Period</label>
               <div className="flex flex-wrap gap-2">
-                {(["daily", "weekly", "monthly", "yearly", "all"] as DefaultPeriod[]).map((period) => (
+                {(
+                  [
+                    "daily",
+                    "weekly",
+                    "monthly",
+                    "yearly",
+                    "all",
+                  ] as DefaultPeriod[]
+                ).map((period) => (
                   <button
                     className={`rounded-lg border-2 px-4 py-2 font-medium text-sm capitalize transition-all ${defaultTimePeriod === period ? "border-primary bg-primary/10 text-primary" : "border-primary/20 hover:border-primary/40"}`}
                     key={period}
@@ -133,14 +158,18 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             <div className="space-y-3">
               <label className="font-medium text-sm">
                 Technicians per Table View
-                <span className="ml-2 text-muted-foreground text-xs">(Table mode only)</span>
+                <span className="ml-2 text-muted-foreground text-xs">
+                  (Table mode only)
+                </span>
               </label>
               <div className="flex items-center gap-4">
                 <input
                   className="w-full rounded-lg border border-primary/20 bg-background px-4 py-2"
                   max={20}
                   min={3}
-                  onChange={(e) => setDisplayCount(Number.parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setDisplayCount(Number.parseInt(e.target.value))
+                  }
                   type="range"
                   value={displayCount}
                 />
@@ -160,7 +189,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             </div>
             <div>
               <h2 className="font-bold text-2xl">Auto-Scroll Settings</h2>
-              <p className="text-muted-foreground text-sm">Control automatic scrolling behavior</p>
+              <p className="text-muted-foreground text-sm">
+                Control automatic scrolling behavior
+              </p>
             </div>
           </div>
 
@@ -188,7 +219,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             <div className="space-y-3">
               <label className="font-medium text-sm">
                 Table Scroll Interval
-                <span className="ml-2 text-muted-foreground text-xs">(seconds)</span>
+                <span className="ml-2 text-muted-foreground text-xs">
+                  (seconds)
+                </span>
               </label>
               <div className="flex items-center gap-4">
                 <input
@@ -196,7 +229,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
                   disabled={!autoScrollEnabled}
                   max={30}
                   min={3}
-                  onChange={(e) => setTableScrollInterval(Number.parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setTableScrollInterval(Number.parseInt(e.target.value))
+                  }
                   type="range"
                   value={tableScrollInterval}
                 />
@@ -213,7 +248,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             <div className="space-y-3">
               <label className="font-medium text-sm">
                 Slideshow Interval
-                <span className="ml-2 text-muted-foreground text-xs">(seconds)</span>
+                <span className="ml-2 text-muted-foreground text-xs">
+                  (seconds)
+                </span>
               </label>
               <div className="flex items-center gap-4">
                 <input
@@ -221,7 +258,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
                   disabled={!autoScrollEnabled}
                   max={30}
                   min={5}
-                  onChange={(e) => setSlideshowInterval(Number.parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setSlideshowInterval(Number.parseInt(e.target.value))
+                  }
                   type="range"
                   value={slideshowInterval}
                 />
@@ -244,7 +283,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             </div>
             <div>
               <h2 className="font-bold text-2xl">Visual Settings</h2>
-              <p className="text-muted-foreground text-sm">Customize what information is shown</p>
+              <p className="text-muted-foreground text-sm">
+                Customize what information is shown
+              </p>
             </div>
           </div>
 
@@ -253,7 +294,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background/50 p-4">
               <div>
                 <p className="font-medium">Show Company Goals</p>
-                <p className="text-muted-foreground text-sm">Display company performance goals</p>
+                <p className="text-muted-foreground text-sm">
+                  Display company performance goals
+                </p>
               </div>
               <button
                 className={`relative h-8 w-14 rounded-full transition-colors ${showCompanyGoals ? "bg-primary" : "bg-muted"}`}
@@ -289,7 +332,9 @@ export default function TVLeaderboardSettingsPage() {  // Settings state
             <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background/50 p-4">
               <div>
                 <p className="font-medium">Highlight Top Three</p>
-                <p className="text-muted-foreground text-sm">Show trophy icons for top performers</p>
+                <p className="text-muted-foreground text-sm">
+                  Show trophy icons for top performers
+                </p>
               </div>
               <button
                 className={`relative h-8 w-14 rounded-full transition-colors ${highlightTopThree ? "bg-primary" : "bg-muted"}`}

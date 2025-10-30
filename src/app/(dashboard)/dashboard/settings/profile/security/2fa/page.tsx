@@ -34,7 +34,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-export default function TwoFactorAuthPage() {  const [setupStep, setSetupStep] = useState<"setup" | "verify" | "complete">(
+export default function TwoFactorAuthPage() {
+  const [setupStep, setSetupStep] = useState<"setup" | "verify" | "complete">(
     "setup"
   );
   const [verificationCode, setVerificationCode] = useState("");

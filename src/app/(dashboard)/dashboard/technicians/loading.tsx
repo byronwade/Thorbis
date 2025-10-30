@@ -16,14 +16,20 @@ export default function TechniciansLoading() {
       {/* Stats Skeleton */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-32 animate-pulse rounded-lg border bg-muted" />
+          <div
+            className="h-32 animate-pulse rounded-lg border bg-muted"
+            key={i}
+          />
         ))}
       </div>
 
       {/* Content Skeleton */}
       <div className="grid gap-4 md:grid-cols-2">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-48 animate-pulse rounded-lg border bg-muted" />
+          <div
+            className="h-48 animate-pulse rounded-lg border bg-muted"
+            key={i}
+          />
         ))}
       </div>
     </div>

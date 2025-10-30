@@ -2,7 +2,12 @@
  * Cash Flow Page - Server Component
  */
 
-import { ArrowDownRight, ArrowUpRight, DollarSign, TrendingUp } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  DollarSign,
+  TrendingUp,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -26,9 +31,7 @@ export default function CashFlowPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Cash Inflow
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Cash Inflow</CardTitle>
             <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
           </CardHeader>
           <CardContent>
@@ -39,9 +42,7 @@ export default function CashFlowPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Cash Outflow
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Cash Outflow</CardTitle>
             <ArrowDownRight className="h-4 w-4 text-red-600 dark:text-red-400" />
           </CardHeader>
           <CardContent>
@@ -52,9 +53,7 @@ export default function CashFlowPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Net Cash Flow
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Net Cash Flow</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -65,9 +64,7 @@ export default function CashFlowPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Runway
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Runway</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -80,7 +77,9 @@ export default function CashFlowPage() {
       <Card>
         <CardHeader>
           <CardTitle>Cash Flow Tools</CardTitle>
-          <CardDescription>Monitor and predict cash flow patterns</CardDescription>
+          <CardDescription>
+            Monitor and predict cash flow patterns
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">

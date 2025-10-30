@@ -61,6 +61,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const MIN_NAME_LENGTH = 2;
 const MIN_PHONE_LENGTH = 10;
@@ -155,7 +156,8 @@ function capitalizeDay(day: string): string {
   return day.charAt(0).toUpperCase() + day.slice(1);
 }
 
-export default function CompanyProfilePage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function CompanyProfilePage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [serviceAreaInput, setServiceAreaInput] = useState("");
   const [bulkHoursMode, setBulkHoursMode] = useState(false);

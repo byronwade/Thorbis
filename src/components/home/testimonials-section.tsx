@@ -7,9 +7,9 @@
  * - Reduced JavaScript bundle size
  */
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function TestimonialsSection() {
   const testimonials = [
@@ -69,7 +69,7 @@ export function TestimonialsSection() {
       {/* Background gradient */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute right-1/4 bottom-0 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -98,8 +98,8 @@ export function TestimonialsSection() {
         <div className="mb-16 grid gap-6 md:grid-cols-4">
           {metrics.map((metric, index) => (
             <div
-              key={index}
               className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6 text-center"
+              key={index}
             >
               <div className="mb-2 font-bold text-4xl text-primary">
                 {metric.value}
@@ -113,8 +113,8 @@ export function TestimonialsSection() {
         <div className="mb-16 grid gap-8 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <div
+              className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-white/5 to-transparent p-8 transition-all duration-300 hover:border-primary/40 hover:shadow-primary/10 hover:shadow-xl"
               key={index}
-              className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-white/5 to-transparent p-8 transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
             >
               {/* Industry Badge */}
               <div className="mb-4 flex items-center justify-between">
@@ -124,7 +124,7 @@ export function TestimonialsSection() {
                 </div>
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-primary text-xl">
+                    <span className="text-primary text-xl" key={i}>
                       ★
                     </span>
                   ))}

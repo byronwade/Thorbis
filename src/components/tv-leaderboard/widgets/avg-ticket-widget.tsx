@@ -8,16 +8,20 @@
  * - TINY (<120px): Just the currency value
  */
 
-import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import { DollarSign, TrendingDown, TrendingUp } from "lucide-react";
 import {
-  ResponsiveWidgetWrapper,
+  formatCurrency,
+  formatPercentage,
+  getTrendClass,
+} from "@/lib/utils/responsive-utils";
+import {
   ResponsiveContent,
-  ResponsiveText,
-  ResponsiveIcon,
-  ShowAt,
   ResponsiveFlex,
+  ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
+  ShowAt,
 } from "../responsive-widget-wrapper";
-import { formatCurrency, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
 
 type AvgTicketWidgetProps = {
   data: {
@@ -46,7 +50,10 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
         {/* COMFORTABLE Stage: Abbreviated title */}
         <ShowAt stage="comfortable">
           <ResponsiveFlex className="justify-between">
-            <ResponsiveText variant="body" className="font-medium text-muted-foreground">
+            <ResponsiveText
+              className="font-medium text-muted-foreground"
+              variant="body"
+            >
               Avg Ticket
             </ResponsiveText>
             <ResponsiveIcon>
@@ -65,18 +72,24 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
         </ShowAt>
 
         {/* Main currency value */}
-        <div className="flex flex-col items-center justify-center @[120px]:items-start">
-          <ResponsiveText variant="display" className="font-bold">
+        <div className="flex flex-col @[120px]:items-start items-center justify-center">
+          <ResponsiveText className="font-bold" variant="display">
             {/* Show with $ on all sizes */}
-            <span className="hidden @[120px]:inline">{formatCurrency(data.value, "comfortable")}</span>
-            <span className="@[120px]:hidden">{formatCurrency(data.value, "tiny")}</span>
+            <span className="@[120px]:inline hidden">
+              {formatCurrency(data.value, "comfortable")}
+            </span>
+            <span className="@[120px]:hidden">
+              {formatCurrency(data.value, "tiny")}
+            </span>
           </ResponsiveText>
 
           {/* Trend indicator */}
           <div className="mt-1">
             {/* FULL + COMFORTABLE: Full trend */}
             <ShowAt stage="full-comfortable">
-              <span className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}>
+              <span
+                className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}
+              >
                 <TrendIcon className="size-4" />
                 {isPositive ? "+" : ""}
                 {formatPercentage(data.change, "comfortable")}

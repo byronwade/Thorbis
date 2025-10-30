@@ -1,4 +1,3 @@
-import { Info } from "lucide-react";
 import { SectionHeaderTooltip } from "./section-header-client";
 
 type SectionHeaderProps = {

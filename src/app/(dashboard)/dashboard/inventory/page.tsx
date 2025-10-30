@@ -11,7 +11,8 @@
 
 export const revalidate = 3600; // Revalidate every 1 hour
 
-export default function InventoryDashboardPage() {  return (
+export default function InventoryDashboardPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Inventory Dashboard</h1>

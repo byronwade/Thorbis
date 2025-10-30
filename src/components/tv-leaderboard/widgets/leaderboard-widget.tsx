@@ -8,15 +8,19 @@
  * - TINY (<120px): Just #1's revenue
  */
 
-import { Trophy, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingDown, TrendingUp, Trophy } from "lucide-react";
 import {
-  ResponsiveWidgetWrapper,
+  formatCurrency,
+  formatNumber,
+  getTrendClass,
+} from "@/lib/utils/responsive-utils";
+import {
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
-import { formatCurrency, formatNumber, getAdaptiveCount, getTrendClass } from "@/lib/utils/responsive-utils";
 
 type Technician = {
   id: string;
@@ -61,7 +65,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
             <ResponsiveText variant="title">Top Technicians</ResponsiveText>
           </ShowAt>
           <ShowAt stage="comfortable">
-            <ResponsiveText variant="body" className="font-semibold">
+            <ResponsiveText className="font-semibold" variant="body">
               Leaders
             </ResponsiveText>
           </ShowAt>
@@ -75,11 +79,14 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
               const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
               return (
-                <div className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 p-2" key={tech.id}>
+                <div
+                  className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 p-2"
+                  key={tech.id}
+                >
                   {/* Rank + Trophy */}
-                  <div className="flex items-center gap-1.5 w-10">
+                  <div className="flex w-10 items-center gap-1.5">
                     <TrophyIcon rank={idx} />
-                    <ResponsiveText variant="body" className="font-bold">
+                    <ResponsiveText className="font-bold" variant="body">
                       {idx + 1}
                     </ResponsiveText>
                   </div>
@@ -90,11 +97,16 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
                   </div>
 
                   {/* Name + Trend */}
-                  <div className="flex-1 min-w-0">
-                    <ResponsiveText variant="body" className="truncate font-semibold">
+                  <div className="min-w-0 flex-1">
+                    <ResponsiveText
+                      className="truncate font-semibold"
+                      variant="body"
+                    >
                       {tech.name}
                     </ResponsiveText>
-                    <span className={`inline-flex items-center gap-0.5 text-xs ${getTrendClass(tech.stats.revenueChange)}`}>
+                    <span
+                      className={`inline-flex items-center gap-0.5 text-xs ${getTrendClass(tech.stats.revenueChange)}`}
+                    >
                       <TrendIcon className="size-3" />
                       {isPositive ? "+" : ""}
                       {tech.stats.revenueChange.toFixed(1)}%
@@ -103,11 +115,15 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 
                   {/* Revenue + Jobs */}
                   <div className="text-right">
-                    <ResponsiveText variant="body" className="font-bold">
+                    <ResponsiveText className="font-bold" variant="body">
                       {formatCurrency(tech.stats.revenue, "comfortable")}
                     </ResponsiveText>
-                    <ResponsiveText variant="caption" className="text-muted-foreground">
-                      {formatNumber(tech.stats.jobsCompleted, "comfortable")} jobs
+                    <ResponsiveText
+                      className="text-muted-foreground"
+                      variant="caption"
+                    >
+                      {formatNumber(tech.stats.jobsCompleted, "comfortable")}{" "}
+                      jobs
                     </ResponsiveText>
                   </div>
                 </div>
@@ -120,29 +136,35 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
         <ShowAt stage="comfortable">
           <div className="space-y-2">
             {technicians.slice(0, 3).map((tech, idx) => (
-              <div className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 p-1.5" key={tech.id}>
+              <div
+                className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 p-1.5"
+                key={tech.id}
+              >
                 {/* Rank */}
-                <div className="flex items-center gap-1 w-8">
+                <div className="flex w-8 items-center gap-1">
                   <TrophyIcon rank={idx} />
-                  <ResponsiveText variant="caption" className="font-bold">
+                  <ResponsiveText className="font-bold" variant="caption">
                     {idx + 1}
                   </ResponsiveText>
                 </div>
 
                 {/* Avatar */}
-                <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 font-bold text-primary text-[10px]">
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 font-bold text-[10px] text-primary">
                   {tech.avatar}
                 </div>
 
                 {/* Name */}
-                <div className="flex-1 min-w-0">
-                  <ResponsiveText variant="caption" className="truncate font-semibold">
+                <div className="min-w-0 flex-1">
+                  <ResponsiveText
+                    className="truncate font-semibold"
+                    variant="caption"
+                  >
                     {tech.name}
                   </ResponsiveText>
                 </div>
 
                 {/* Revenue */}
-                <ResponsiveText variant="caption" className="font-bold">
+                <ResponsiveText className="font-bold" variant="caption">
                   {formatCurrency(tech.stats.revenue, "comfortable")}
                 </ResponsiveText>
               </div>
@@ -156,14 +178,14 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
             <div className="flex flex-col items-center justify-center gap-1">
               <div className="flex items-center gap-1">
                 <Trophy className="size-3 text-yellow-500" />
-                <ResponsiveText variant="caption" className="font-bold">
+                <ResponsiveText className="font-bold" variant="caption">
                   #1
                 </ResponsiveText>
               </div>
-              <div className="flex size-6 items-center justify-center rounded-full bg-primary/20 font-bold text-primary text-[10px]">
+              <div className="flex size-6 items-center justify-center rounded-full bg-primary/20 font-bold text-[10px] text-primary">
                 {technicians[0].avatar}
               </div>
-              <ResponsiveText variant="body" className="font-bold">
+              <ResponsiveText className="font-bold" variant="body">
                 {formatCurrency(technicians[0].stats.revenue, "compact")}
               </ResponsiveText>
             </div>
@@ -174,7 +196,10 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
         <ShowAt stage="tiny">
           {technicians[0] && (
             <div className="flex h-full items-center justify-center">
-              <ResponsiveText variant="display" className="font-bold text-yellow-500">
+              <ResponsiveText
+                className="font-bold text-yellow-500"
+                variant="display"
+              >
                 {formatCurrency(technicians[0].stats.revenue, "tiny")}
               </ResponsiveText>
             </div>

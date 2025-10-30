@@ -45,7 +45,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useUIStore } from "@/lib/store";
 
 type SettingCategory = {
   title: string;
@@ -252,7 +251,8 @@ const settingCategories: SettingCategory[] = [
   },
 ];
 
-export default function SettingsOverviewPage() {  const [poSystemEnabled, setPoSystemEnabled] = useState(false);
+export default function SettingsOverviewPage() {
+  const [poSystemEnabled, setPoSystemEnabled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter settings based on search query

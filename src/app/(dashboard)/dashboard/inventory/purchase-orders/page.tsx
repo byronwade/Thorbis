@@ -10,7 +10,8 @@
 
 export const revalidate = 3600; // Revalidate every 1 hour
 
-export default function PurchaseOrdersPage() {  return (
+export default function PurchaseOrdersPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Purchase Orders</h1>

@@ -37,7 +37,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-export default function DispatchRulesSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function DispatchRulesSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     autoAssignment: true,
     assignmentMethod: "balanced",

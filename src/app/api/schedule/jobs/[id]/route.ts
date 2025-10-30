@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import type { Job } from '@/components/schedule/schedule-types'
+import { type NextRequest, NextResponse } from "next/server";
+import type { Job } from "@/components/schedule/schedule-types";
 
 /**
  * Mock Job API
@@ -9,38 +9,38 @@ import type { Job } from '@/components/schedule/schedule-types'
  */
 
 // In-memory storage (would be replaced with database)
-let jobs: Map<string, Job> = new Map()
+const jobs: Map<string, Job> = new Map();
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const job = jobs.get(id)
+    const { id } = await params;
+    const job = jobs.get(id);
 
     if (!job) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Job not found',
+          error: "Job not found",
         },
         { status: 404 }
-      )
+      );
     }
 
     return NextResponse.json({
       success: true,
       data: job,
-    })
+    });
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch job',
+        error: "Failed to fetch job",
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -49,20 +49,20 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const existingJob = jobs.get(id)
+    const { id } = await params;
+    const existingJob = jobs.get(id);
 
     if (!existingJob) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Job not found',
+          error: "Job not found",
         },
         { status: 404 }
-      )
+      );
     }
 
-    const body = await request.json()
+    const body = await request.json();
 
     // Update job
     const updatedJob: Job = {
@@ -71,24 +71,26 @@ export async function PUT(
       id,
       updatedAt: new Date(),
       // Convert date strings to Date objects
-      startTime: body.startTime ? new Date(body.startTime) : existingJob.startTime,
+      startTime: body.startTime
+        ? new Date(body.startTime)
+        : existingJob.startTime,
       endTime: body.endTime ? new Date(body.endTime) : existingJob.endTime,
-    }
+    };
 
-    jobs.set(id, updatedJob)
+    jobs.set(id, updatedJob);
 
     return NextResponse.json({
       success: true,
       data: updatedJob,
-    })
+    });
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to update job',
+        error: "Failed to update job",
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -97,32 +99,32 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const job = jobs.get(id)
+    const { id } = await params;
+    const job = jobs.get(id);
 
     if (!job) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Job not found',
+          error: "Job not found",
         },
         { status: 404 }
-      )
+      );
     }
 
-    jobs.delete(id)
+    jobs.delete(id);
 
     return NextResponse.json({
       success: true,
-      message: 'Job deleted successfully',
-    })
+      message: "Job deleted successfully",
+    });
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to delete job',
+        error: "Failed to delete job",
       },
       { status: 500 }
-    )
+    );
   }
 }

@@ -54,6 +54,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+
 type UserStatus = "active" | "invited" | "suspended";
 type SortField =
   | "name"
@@ -94,7 +95,8 @@ type Department = {
   memberCount: number;
 };
 
-export default function TeamMembersPage() {  const [searchQuery, setSearchQuery] = useState("");
+export default function TeamMembersPage() {
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");

@@ -68,7 +68,8 @@ const categories: {
   { value: "analytics", label: "Analytics", icon: TrendingUp },
 ];
 
-export default function IntegrationsPage() {  const [searchQuery, setSearchQuery] = useState("");
+export default function IntegrationsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<IntegrationCategory>("all");
   const [viewMode, setViewMode] = useState<"connected" | "available" | "all">(

@@ -16,11 +16,11 @@
  * - Memoized calculations
  */
 
-import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type AppleViewCarouselProps = {
   viewCount: number;
@@ -49,7 +49,7 @@ export function AppleViewCarousel({
   enableKeyboard = true,
   enableSwipe = true,
   autoPlay = false,
-  autoPlayInterval = 30000,
+  autoPlayInterval = 30_000,
 }: AppleViewCarouselProps) {
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [isPaused, setIsPaused] = useState(false);
@@ -89,7 +89,7 @@ export function AppleViewCarousel({
       } else if (e.key === "ArrowRight") {
         goToNextView();
       } else if (e.key >= "1" && e.key <= "9") {
-        const index = parseInt(e.key) - 1;
+        const index = Number.parseInt(e.key) - 1;
         if (index < viewCount) {
           goToView(index);
         }
@@ -113,14 +113,22 @@ export function AppleViewCarousel({
     }, autoPlayInterval);
 
     return () => clearInterval(intervalId);
-  }, [autoPlay, isPaused, currentView, viewCount, autoPlayInterval, goToNextView, goToView]);
+  }, [
+    autoPlay,
+    isPaused,
+    currentView,
+    viewCount,
+    autoPlayInterval,
+    goToNextView,
+    goToView,
+  ]);
 
   // Pause auto-play on interaction
   const handleInteraction = useCallback(() => {
     if (autoPlay) {
       setIsPaused(true);
       // Resume after 10 seconds of inactivity
-      setTimeout(() => setIsPaused(false), 10000);
+      setTimeout(() => setIsPaused(false), 10_000);
     }
   }, [autoPlay]);
 
@@ -168,7 +176,10 @@ export function AppleViewCarousel({
   };
 
   return (
-    <div className="relative size-full overflow-hidden" onClick={handleInteraction}>
+    <div
+      className="relative size-full overflow-hidden"
+      onClick={handleInteraction}
+    >
       {/* View content */}
       <AnimatePresence custom={direction} initial={false} mode="wait">
         <motion.div
@@ -201,7 +212,7 @@ export function AppleViewCarousel({
         <>
           <Button
             className={cn(
-              "absolute top-1/2 left-4 z-50 -translate-y-1/2 opacity-0 transition-opacity hover:opacity-100",
+              "-translate-y-1/2 absolute top-1/2 left-4 z-50 opacity-0 transition-opacity hover:opacity-100",
               currentView === 0 && "pointer-events-none opacity-0"
             )}
             onClick={(e) => {
@@ -215,7 +226,7 @@ export function AppleViewCarousel({
           </Button>
           <Button
             className={cn(
-              "absolute top-1/2 right-4 z-50 -translate-y-1/2 opacity-0 transition-opacity hover:opacity-100",
+              "-translate-y-1/2 absolute top-1/2 right-4 z-50 opacity-0 transition-opacity hover:opacity-100",
               currentView === viewCount - 1 && "pointer-events-none opacity-0"
             )}
             onClick={(e) => {

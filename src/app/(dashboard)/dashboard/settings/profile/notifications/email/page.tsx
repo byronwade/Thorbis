@@ -41,7 +41,8 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 
 export const revalidate = 3600; // Revalidate every 1 hour
-export default function EmailPreferencesPage() {  return (
+export default function EmailPreferencesPage() {
+  return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">

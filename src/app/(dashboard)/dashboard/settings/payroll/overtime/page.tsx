@@ -31,6 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type OvertimeSettings = {
   overtimeCalculationMethod: "daily" | "weekly" | "both";
   dailyOvertimeThreshold: number;
@@ -47,7 +48,8 @@ type OvertimeSettings = {
   onCallPayRate: number;
 };
 
-export default function OvertimeSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function OvertimeSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<OvertimeSettings>({
     overtimeCalculationMethod: "weekly",

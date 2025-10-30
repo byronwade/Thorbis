@@ -9,12 +9,18 @@
  * - Interactive pricing guides
  */
 
+import { AlertCircle, BarChart, DollarSign, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { BarChart, DollarSign, AlertCircle, TrendingUp } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -60,20 +66,54 @@ export default function IndustryPricingStandards() {
   const [myMarkup, setMyMarkup] = useState<string>("35");
 
   const benchmarks = industryData[industry];
-  const serviceCallNum = parseFloat(myServiceCall) || 0;
-  const hourlyNum = parseFloat(myHourlyRate) || 0;
-  const markupNum = parseFloat(myMarkup) || 0;
+  const serviceCallNum = Number.parseFloat(myServiceCall) || 0;
+  const hourlyNum = Number.parseFloat(myHourlyRate) || 0;
+  const markupNum = Number.parseFloat(myMarkup) || 0;
 
   const getStatus = (value: number, min: number, max: number, avg: number) => {
-    if (value < min) return { label: "Below Market", color: "text-red-600", bg: "bg-red-500/10" };
-    if (value > max) return { label: "Above Market", color: "text-amber-600", bg: "bg-amber-500/10" };
-    if (value >= avg - 5 && value <= avg + 5) return { label: "Market Average", color: "text-green-600", bg: "bg-green-500/10" };
-    return { label: "Within Range", color: "text-blue-600", bg: "bg-blue-500/10" };
+    if (value < min)
+      return {
+        label: "Below Market",
+        color: "text-red-600",
+        bg: "bg-red-500/10",
+      };
+    if (value > max)
+      return {
+        label: "Above Market",
+        color: "text-amber-600",
+        bg: "bg-amber-500/10",
+      };
+    if (value >= avg - 5 && value <= avg + 5)
+      return {
+        label: "Market Average",
+        color: "text-green-600",
+        bg: "bg-green-500/10",
+      };
+    return {
+      label: "Within Range",
+      color: "text-blue-600",
+      bg: "bg-blue-500/10",
+    };
   };
 
-  const serviceCallStatus = getStatus(serviceCallNum, benchmarks.serviceCall.min, benchmarks.serviceCall.max, benchmarks.serviceCall.avg);
-  const hourlyStatus = getStatus(hourlyNum, benchmarks.hourlyRate.min, benchmarks.hourlyRate.max, benchmarks.hourlyRate.avg);
-  const markupStatus = getStatus(markupNum, benchmarks.materialMarkup.min, benchmarks.materialMarkup.max, benchmarks.materialMarkup.avg);
+  const serviceCallStatus = getStatus(
+    serviceCallNum,
+    benchmarks.serviceCall.min,
+    benchmarks.serviceCall.max,
+    benchmarks.serviceCall.avg
+  );
+  const hourlyStatus = getStatus(
+    hourlyNum,
+    benchmarks.hourlyRate.min,
+    benchmarks.hourlyRate.max,
+    benchmarks.hourlyRate.avg
+  );
+  const markupStatus = getStatus(
+    markupNum,
+    benchmarks.materialMarkup.min,
+    benchmarks.materialMarkup.max,
+    benchmarks.materialMarkup.avg
+  );
 
   return (
     <div className="space-y-8">
@@ -85,7 +125,9 @@ export default function IndustryPricingStandards() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-bold text-3xl tracking-tight">Industry Pricing Standards</h1>
+              <h1 className="font-bold text-3xl tracking-tight">
+                Industry Pricing Standards
+              </h1>
               <Badge variant="secondary">Premium</Badge>
             </div>
             <p className="mt-1 text-muted-foreground">
@@ -105,11 +147,13 @@ export default function IndustryPricingStandards() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p>Compare your rates to industry standards:</p>
-          <ul className="ml-4 space-y-1 list-disc">
+          <ul className="ml-4 list-disc space-y-1">
             <li>Select your trade (HVAC, Plumbing, or Electrical)</li>
             <li>Enter your current pricing</li>
             <li>See how you compare to market averages</li>
-            <li>Data based on 2024 national averages (regional variations apply)</li>
+            <li>
+              Data based on 2024 national averages (regional variations apply)
+            </li>
           </ul>
         </CardContent>
       </Card>
@@ -120,10 +164,12 @@ export default function IndustryPricingStandards() {
           <Card>
             <CardHeader>
               <CardTitle>Your Industry</CardTitle>
-              <CardDescription>Select your trade for relevant benchmarks</CardDescription>
+              <CardDescription>
+                Select your trade for relevant benchmarks
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Select value={industry} onValueChange={setIndustry}>
+              <Select onValueChange={setIndustry} value={industry}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select trade" />
                 </SelectTrigger>
@@ -149,9 +195,9 @@ export default function IndustryPricingStandards() {
                 <Label htmlFor="service">Service Call Fee ($)</Label>
                 <Input
                   id="service"
+                  onChange={(e) => setMyServiceCall(e.target.value)}
                   type="number"
                   value={myServiceCall}
-                  onChange={(e) => setMyServiceCall(e.target.value)}
                 />
                 <p className="text-muted-foreground text-xs">
                   What you charge just to show up and diagnose
@@ -162,9 +208,9 @@ export default function IndustryPricingStandards() {
                 <Label htmlFor="hourly">Hourly Labor Rate ($)</Label>
                 <Input
                   id="hourly"
+                  onChange={(e) => setMyHourlyRate(e.target.value)}
                   type="number"
                   value={myHourlyRate}
-                  onChange={(e) => setMyHourlyRate(e.target.value)}
                 />
                 <p className="text-muted-foreground text-xs">
                   Your labor charge per hour
@@ -175,9 +221,9 @@ export default function IndustryPricingStandards() {
                 <Label htmlFor="markup">Material Markup (%)</Label>
                 <Input
                   id="markup"
+                  onChange={(e) => setMyMarkup(e.target.value)}
                   type="number"
                   value={myMarkup}
-                  onChange={(e) => setMyMarkup(e.target.value)}
                 />
                 <p className="text-muted-foreground text-xs">
                   Percentage added to material costs
@@ -194,10 +240,20 @@ export default function IndustryPricingStandards() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p><strong>Higher Rates:</strong> Urban areas, high cost of living regions (CA, NY, MA)</p>
-              <p><strong>Average Rates:</strong> Suburban and mid-sized cities</p>
-              <p><strong>Lower Rates:</strong> Rural areas, lower cost of living regions</p>
-              <p className="pt-2">Adjust benchmarks ±15-20% based on your location</p>
+              <p>
+                <strong>Higher Rates:</strong> Urban areas, high cost of living
+                regions (CA, NY, MA)
+              </p>
+              <p>
+                <strong>Average Rates:</strong> Suburban and mid-sized cities
+              </p>
+              <p>
+                <strong>Lower Rates:</strong> Rural areas, lower cost of living
+                regions
+              </p>
+              <p className="pt-2">
+                Adjust benchmarks ±15-20% based on your location
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -212,28 +268,37 @@ export default function IndustryPricingStandards() {
               <div className="space-y-4">
                 <div className={`rounded-lg p-4 ${serviceCallStatus.bg}`}>
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm">Service Call Fee</span>
-                    <Badge className={serviceCallStatus.color} variant="outline">
+                    <span className="font-medium text-sm">
+                      Service Call Fee
+                    </span>
+                    <Badge
+                      className={serviceCallStatus.color}
+                      variant="outline"
+                    >
                       {serviceCallStatus.label}
                     </Badge>
                   </div>
                   <p className="mt-1 font-bold text-2xl">${serviceCallNum}</p>
                   <p className="mt-1 text-muted-foreground text-xs">
-                    Market Range: ${benchmarks.serviceCall.min} - ${benchmarks.serviceCall.max}
+                    Market Range: ${benchmarks.serviceCall.min} - $
+                    {benchmarks.serviceCall.max}
                     (Avg: ${benchmarks.serviceCall.avg})
                   </p>
                 </div>
 
                 <div className={`rounded-lg p-4 ${hourlyStatus.bg}`}>
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm">Hourly Labor Rate</span>
+                    <span className="font-medium text-sm">
+                      Hourly Labor Rate
+                    </span>
                     <Badge className={hourlyStatus.color} variant="outline">
                       {hourlyStatus.label}
                     </Badge>
                   </div>
                   <p className="mt-1 font-bold text-2xl">${hourlyNum}/hr</p>
                   <p className="mt-1 text-muted-foreground text-xs">
-                    Market Range: ${benchmarks.hourlyRate.min} - ${benchmarks.hourlyRate.max}
+                    Market Range: ${benchmarks.hourlyRate.min} - $
+                    {benchmarks.hourlyRate.max}
                     (Avg: ${benchmarks.hourlyRate.avg})
                   </p>
                 </div>
@@ -247,8 +312,9 @@ export default function IndustryPricingStandards() {
                   </div>
                   <p className="mt-1 font-bold text-2xl">{markupNum}%</p>
                   <p className="mt-1 text-muted-foreground text-xs">
-                    Market Range: {benchmarks.materialMarkup.min}% - {benchmarks.materialMarkup.max}%
-                    (Avg: {benchmarks.materialMarkup.avg}%)
+                    Market Range: {benchmarks.materialMarkup.min}% -{" "}
+                    {benchmarks.materialMarkup.max}% (Avg:{" "}
+                    {benchmarks.materialMarkup.avg}%)
                   </p>
                 </div>
               </div>
@@ -262,13 +328,18 @@ export default function IndustryPricingStandards() {
             <CardContent className="space-y-4">
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="font-medium text-sm">Average Ticket Size</span>
+                  <span className="font-medium text-sm">
+                    Average Ticket Size
+                  </span>
                   <TrendingUp className="size-4 text-muted-foreground" />
                 </div>
                 <div className="rounded-lg border p-3">
-                  <p className="font-bold text-xl">${benchmarks.avgTicket.avg}</p>
+                  <p className="font-bold text-xl">
+                    ${benchmarks.avgTicket.avg}
+                  </p>
                   <p className="text-muted-foreground text-xs">
-                    Range: ${benchmarks.avgTicket.min} - ${benchmarks.avgTicket.max}
+                    Range: ${benchmarks.avgTicket.min} - $
+                    {benchmarks.avgTicket.max}
                   </p>
                 </div>
               </div>
@@ -277,15 +348,21 @@ export default function IndustryPricingStandards() {
                 <h4 className="mb-3 font-semibold text-sm">Pricing Factors</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Service Complexity</span>
+                    <span className="text-muted-foreground">
+                      Service Complexity
+                    </span>
                     <span className="font-medium">Varies widely</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Emergency Rates</span>
+                    <span className="text-muted-foreground">
+                      Emergency Rates
+                    </span>
                     <span className="font-medium">+50-100%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">After Hours/Weekend</span>
+                    <span className="text-muted-foreground">
+                      After Hours/Weekend
+                    </span>
                     <span className="font-medium">+25-50%</span>
                   </div>
                   <div className="flex justify-between">
@@ -305,11 +382,25 @@ export default function IndustryPricingStandards() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p><strong>Don't compete on price alone:</strong> Focus on value, quality, service</p>
-              <p><strong>Justify premium pricing:</strong> Warranties, certifications, response time</p>
-              <p><strong>Bundle services:</strong> Maintenance plans, annual inspections</p>
-              <p><strong>Be transparent:</strong> Clear pricing builds trust</p>
-              <p><strong>Review quarterly:</strong> Adjust for inflation and market changes</p>
+              <p>
+                <strong>Don't compete on price alone:</strong> Focus on value,
+                quality, service
+              </p>
+              <p>
+                <strong>Justify premium pricing:</strong> Warranties,
+                certifications, response time
+              </p>
+              <p>
+                <strong>Bundle services:</strong> Maintenance plans, annual
+                inspections
+              </p>
+              <p>
+                <strong>Be transparent:</strong> Clear pricing builds trust
+              </p>
+              <p>
+                <strong>Review quarterly:</strong> Adjust for inflation and
+                market changes
+              </p>
             </CardContent>
           </Card>
 
@@ -320,7 +411,9 @@ export default function IndustryPricingStandards() {
             <CardContent className="space-y-3">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm">Budget/Value Provider</span>
+                  <span className="font-medium text-sm">
+                    Budget/Value Provider
+                  </span>
                   <Badge variant="outline">Below Avg</Badge>
                 </div>
                 <p className="text-muted-foreground text-xs">

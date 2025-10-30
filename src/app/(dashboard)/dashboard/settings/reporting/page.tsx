@@ -62,7 +62,8 @@ const reportingSections = [
   },
 ];
 
-export default function ReportingSettingsPage() {  return (
+export default function ReportingSettingsPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">

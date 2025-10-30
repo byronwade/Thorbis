@@ -30,7 +30,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-export default function SMSSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function SMSSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     smsEnabled: true,
     smsPhoneNumber: "(555) 123-4567",

@@ -10,15 +10,6 @@
  * - Performance tracking
  */
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Calendar,
   CheckCircle2,
@@ -29,9 +20,23 @@ import {
   Play,
   Plus,
   Send,
-  Users,
 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type CampaignType = "email" | "sms" | "direct-mail";
 type CampaignStatus = "draft" | "scheduled" | "active" | "paused" | "completed";
@@ -113,7 +118,9 @@ const getCampaignIcon = (type: CampaignType) => {
   }
 };
 
-const getStatusColor = (status: CampaignStatus): "default" | "secondary" | "outline" | "destructive" => {
+const getStatusColor = (
+  status: CampaignStatus
+): "default" | "secondary" | "outline" | "destructive" => {
   switch (status) {
     case "active":
       return "default";
@@ -138,18 +145,30 @@ const calculateCTR = (clicked: number, opened: number): string => {
   return `${Math.round((clicked / opened) * 100)}%`;
 };
 
-const calculateConversionRate = (converted: number, recipients: number): string => {
+const calculateConversionRate = (
+  converted: number,
+  recipients: number
+): string => {
   if (recipients === 0) return "0%";
   return `${Math.round((converted / recipients) * 100)}%`;
 };
 
 export function CampaignsManager() {
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
+    null
+  );
 
-  const activeCampaigns = MOCK_CAMPAIGNS.filter((c) => c.status === "active").length;
-  const scheduledCampaigns = MOCK_CAMPAIGNS.filter((c) => c.status === "scheduled").length;
+  const activeCampaigns = MOCK_CAMPAIGNS.filter(
+    (c) => c.status === "active"
+  ).length;
+  const scheduledCampaigns = MOCK_CAMPAIGNS.filter(
+    (c) => c.status === "scheduled"
+  ).length;
   const totalSent = MOCK_CAMPAIGNS.reduce((sum, c) => sum + c.sent, 0);
-  const totalConverted = MOCK_CAMPAIGNS.reduce((sum, c) => sum + c.converted, 0);
+  const totalConverted = MOCK_CAMPAIGNS.reduce(
+    (sum, c) => sum + c.converted,
+    0
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -157,7 +176,9 @@ export function CampaignsManager() {
       <div className="grid gap-4 border-b p-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Active Campaigns</CardTitle>
+            <CardTitle className="font-medium text-sm">
+              Active Campaigns
+            </CardTitle>
             <Play className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -174,14 +195,18 @@ export function CampaignsManager() {
             <Send className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-bold text-2xl">{totalSent.toLocaleString()}</div>
+            <div className="font-bold text-2xl">
+              {totalSent.toLocaleString()}
+            </div>
             <p className="text-muted-foreground text-xs">This month</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Avg. Open Rate</CardTitle>
+            <CardTitle className="font-medium text-sm">
+              Avg. Open Rate
+            </CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -197,7 +222,9 @@ export function CampaignsManager() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">{totalConverted}</div>
-            <p className="text-muted-foreground text-xs">4.2% conversion rate</p>
+            <p className="text-muted-foreground text-xs">
+              4.2% conversion rate
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -223,16 +250,23 @@ export function CampaignsManager() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-base">{campaign.name}</CardTitle>
-                        <Badge variant={getStatusColor(campaign.status)} className="capitalize">
+                        <CardTitle className="text-base">
+                          {campaign.name}
+                        </CardTitle>
+                        <Badge
+                          className="capitalize"
+                          variant={getStatusColor(campaign.status)}
+                        >
                           {campaign.status}
                         </Badge>
                       </div>
                       <CardDescription className="capitalize">
-                        {campaign.type.replace("-", " ")} • {campaign.recipients.toLocaleString()} recipients
+                        {campaign.type.replace("-", " ")} •{" "}
+                        {campaign.recipients.toLocaleString()} recipients
                         {campaign.scheduledDate && (
                           <span className="ml-2">
-                            • Scheduled: {campaign.scheduledDate.toLocaleDateString()}
+                            • Scheduled:{" "}
+                            {campaign.scheduledDate.toLocaleDateString()}
                           </span>
                         )}
                       </CardDescription>
@@ -259,7 +293,9 @@ export function CampaignsManager() {
                       </DropdownMenuItem>
                       <DropdownMenuItem>Edit Campaign</DropdownMenuItem>
                       <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -270,10 +306,14 @@ export function CampaignsManager() {
                   <div className="grid gap-4 md:grid-cols-4">
                     <div>
                       <div className="text-muted-foreground text-xs">Sent</div>
-                      <div className="font-semibold text-lg">{campaign.sent.toLocaleString()}</div>
+                      <div className="font-semibold text-lg">
+                        {campaign.sent.toLocaleString()}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground text-xs">Open Rate</div>
+                      <div className="text-muted-foreground text-xs">
+                        Open Rate
+                      </div>
                       <div className="font-semibold text-lg">
                         {calculateOpenRate(campaign.opened, campaign.sent)}
                       </div>
@@ -282,7 +322,9 @@ export function CampaignsManager() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground text-xs">Click Rate</div>
+                      <div className="text-muted-foreground text-xs">
+                        Click Rate
+                      </div>
                       <div className="font-semibold text-lg">
                         {calculateCTR(campaign.clicked, campaign.opened)}
                       </div>
@@ -291,10 +333,18 @@ export function CampaignsManager() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground text-xs">Conversions</div>
-                      <div className="font-semibold text-lg">{campaign.converted}</div>
                       <div className="text-muted-foreground text-xs">
-                        {calculateConversionRate(campaign.converted, campaign.recipients)} rate
+                        Conversions
+                      </div>
+                      <div className="font-semibold text-lg">
+                        {campaign.converted}
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {calculateConversionRate(
+                          campaign.converted,
+                          campaign.recipients
+                        )}{" "}
+                        rate
                       </div>
                     </div>
                   </div>

@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useRef, useEffect } from "react"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { useEffect, useRef } from "react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface Job {
-  id: string
-  title: string
-  customer: string
-  startTime: string
-  endTime: string
-  status: "scheduled" | "in-progress" | "completed" | "cancelled"
-  priority: "low" | "medium" | "high" | "urgent"
-  location: string
+  id: string;
+  title: string;
+  customer: string;
+  startTime: string;
+  endTime: string;
+  status: "scheduled" | "in-progress" | "completed" | "cancelled";
+  priority: "low" | "medium" | "high" | "urgent";
+  location: string;
 }
 
 interface Technician {
-  id: string
-  name: string
-  role: string
-  status: "available" | "on-job" | "on-break" | "offline"
-  jobs: Job[]
+  id: string;
+  name: string;
+  role: string;
+  status: "available" | "on-job" | "on-break" | "offline";
+  jobs: Job[];
 }
 
-const HOUR_WIDTH = 120 // Width of each hour column in pixels
-const HOURS = Array.from({ length: 13 }, (_, i) => i + 7) // 7 AM to 7 PM
+const HOUR_WIDTH = 120; // Width of each hour column in pixels
+const HOURS = Array.from({ length: 13 }, (_, i) => i + 7); // 7 AM to 7 PM
 
 const mockTechnicians: Technician[] = [
   {
@@ -353,70 +353,72 @@ const mockTechnicians: Technician[] = [
       },
     ],
   },
-]
+];
 
 const statusColors = {
   scheduled: "bg-blue-500/20 border-blue-500 text-blue-700 dark:text-blue-300",
-  "in-progress": "bg-yellow-500/20 border-yellow-500 text-yellow-700 dark:text-yellow-300",
-  completed: "bg-green-500/20 border-green-500 text-green-700 dark:text-green-300",
+  "in-progress":
+    "bg-yellow-500/20 border-yellow-500 text-yellow-700 dark:text-yellow-300",
+  completed:
+    "bg-green-500/20 border-green-500 text-green-700 dark:text-green-300",
   cancelled: "bg-red-500/20 border-red-500 text-red-700 dark:text-red-300",
-}
+};
 
 const priorityColors = {
   low: "bg-gray-500",
   medium: "bg-blue-500",
   high: "bg-orange-500",
   urgent: "bg-red-500",
-}
+};
 
 const technicianStatusColors = {
   available: "bg-green-500",
   "on-job": "bg-yellow-500",
   "on-break": "bg-orange-500",
   offline: "bg-gray-500",
-}
+};
 
 function timeToPosition(time: string): number {
-  const [hours, minutes] = time.split(":").map(Number)
-  const totalMinutes = (hours - 7) * 60 + minutes
-  return (totalMinutes / 60) * HOUR_WIDTH
+  const [hours, minutes] = time.split(":").map(Number);
+  const totalMinutes = (hours - 7) * 60 + minutes;
+  return (totalMinutes / 60) * HOUR_WIDTH;
 }
 
 function calculateWidth(startTime: string, endTime: string): number {
-  const [startHours, startMinutes] = startTime.split(":").map(Number)
-  const [endHours, endMinutes] = endTime.split(":").map(Number)
-  const durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes)
-  return (durationMinutes / 60) * HOUR_WIDTH
+  const [startHours, startMinutes] = startTime.split(":").map(Number);
+  const [endHours, endMinutes] = endTime.split(":").map(Number);
+  const durationMinutes =
+    endHours * 60 + endMinutes - (startHours * 60 + startMinutes);
+  return (durationMinutes / 60) * HOUR_WIDTH;
 }
 
 export function TechnicianScheduleChart() {
-  const headerScrollRef = useRef<HTMLDivElement>(null)
-  const bodyScrollRef = useRef<HTMLDivElement>(null)
+  const headerScrollRef = useRef<HTMLDivElement>(null);
+  const bodyScrollRef = useRef<HTMLDivElement>(null);
 
   // Sync horizontal scrolling between header and body
   useEffect(() => {
-    const headerScroll = headerScrollRef.current
-    const bodyScroll = bodyScrollRef.current
+    const headerScroll = headerScrollRef.current;
+    const bodyScroll = bodyScrollRef.current;
 
-    if (!headerScroll || !bodyScroll) return
+    if (!(headerScroll && bodyScroll)) return;
 
-    const syncScroll = (source: HTMLDivElement, target: HTMLDivElement) => {
-      return () => {
-        target.scrollLeft = source.scrollLeft
-      }
-    }
+    const syncScroll =
+      (source: HTMLDivElement, target: HTMLDivElement) => () => {
+        target.scrollLeft = source.scrollLeft;
+      };
 
-    const headerListener = syncScroll(headerScroll, bodyScroll)
-    const bodyListener = syncScroll(bodyScroll, headerScroll)
+    const headerListener = syncScroll(headerScroll, bodyScroll);
+    const bodyListener = syncScroll(bodyScroll, headerScroll);
 
-    headerScroll.addEventListener("scroll", headerListener)
-    bodyScroll.addEventListener("scroll", bodyListener)
+    headerScroll.addEventListener("scroll", headerListener);
+    bodyScroll.addEventListener("scroll", bodyListener);
 
     return () => {
-      headerScroll.removeEventListener("scroll", headerListener)
-      bodyScroll.removeEventListener("scroll", bodyListener)
-    }
-  }, [])
+      headerScroll.removeEventListener("scroll", headerListener);
+      bodyScroll.removeEventListener("scroll", bodyListener);
+    };
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden border-y">
@@ -425,15 +427,22 @@ export function TechnicianScheduleChart() {
         <div className="flex w-[250px] shrink-0 items-center border-r bg-background px-4">
           <h3 className="font-semibold text-sm">Technicians</h3>
         </div>
-        <div ref={headerScrollRef} className="scrollbar-hide flex flex-1 overflow-x-auto">
+        <div
+          className="scrollbar-hide flex flex-1 overflow-x-auto"
+          ref={headerScrollRef}
+        >
           <div className="flex min-w-max">
             {HOURS.map((hour) => (
               <div
-                key={hour}
                 className="flex items-center justify-center border-r font-medium text-muted-foreground text-xs"
+                key={hour}
                 style={{ width: HOUR_WIDTH }}
               >
-                {hour === 12 ? "12 PM" : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                {hour === 12
+                  ? "12 PM"
+                  : hour > 12
+                    ? `${hour - 12} PM`
+                    : `${hour} AM`}
               </div>
             ))}
           </div>
@@ -441,16 +450,18 @@ export function TechnicianScheduleChart() {
       </div>
 
       {/* Scrollable technician rows */}
-      <div ref={bodyScrollRef} className="min-h-0 flex-1 overflow-auto">
+      <div className="min-h-0 flex-1 overflow-auto" ref={bodyScrollRef}>
         <div className="min-w-max divide-y">
           {mockTechnicians.map((technician) => (
-            <div key={technician.id} className="flex min-h-[100px]">
+            <div className="flex min-h-[100px]" key={technician.id}>
               {/* Technician info */}
               <div className="sticky left-0 z-10 w-[250px] shrink-0 border-r bg-background p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-sm">{technician.name}</h4>
+                      <h4 className="font-semibold text-sm">
+                        {technician.name}
+                      </h4>
                       <div
                         className={cn(
                           "size-2 rounded-full",
@@ -458,8 +469,10 @@ export function TechnicianScheduleChart() {
                         )}
                       />
                     </div>
-                    <p className="text-muted-foreground text-xs">{technician.role}</p>
-                    <Badge variant="outline" className="mt-1 text-xs">
+                    <p className="text-muted-foreground text-xs">
+                      {technician.role}
+                    </p>
+                    <Badge className="mt-1 text-xs" variant="outline">
                       {technician.jobs.length} jobs
                     </Badge>
                   </div>
@@ -471,11 +484,13 @@ export function TechnicianScheduleChart() {
                 {/* Hour markers */}
                 {HOURS.map((hour, index) => (
                   <div
-                    key={hour}
                     className={cn(
                       "absolute top-0 bottom-0 border-r",
-                      hour === 12 ? "border-muted-foreground/30" : "border-muted-foreground/10"
+                      hour === 12
+                        ? "border-muted-foreground/30"
+                        : "border-muted-foreground/10"
                     )}
+                    key={hour}
                     style={{ left: index * HOUR_WIDTH }}
                   />
                 ))}
@@ -483,11 +498,11 @@ export function TechnicianScheduleChart() {
                 {/* Jobs */}
                 {technician.jobs.map((job) => (
                   <div
-                    key={job.id}
                     className={cn(
-                      "absolute top-2 m-1 rounded-md border-2 p-2 transition-all hover:shadow-md hover:scale-105",
+                      "absolute top-2 m-1 rounded-md border-2 p-2 transition-all hover:scale-105 hover:shadow-md",
                       statusColors[job.status]
                     )}
+                    key={job.id}
                     style={{
                       left: timeToPosition(job.startTime),
                       width: calculateWidth(job.startTime, job.endTime),
@@ -502,12 +517,14 @@ export function TechnicianScheduleChart() {
                               priorityColors[job.priority]
                             )}
                           />
-                          <h5 className="truncate font-semibold text-xs">{job.title}</h5>
+                          <h5 className="truncate font-semibold text-xs">
+                            {job.title}
+                          </h5>
                         </div>
                         <p className="truncate text-[10px] text-muted-foreground">
                           {job.customer}
                         </p>
-                        <p className="mt-1 text-[10px] font-medium">
+                        <p className="mt-1 font-medium text-[10px]">
                           {job.startTime} - {job.endTime}
                         </p>
                       </div>
@@ -529,29 +546,51 @@ export function TechnicianScheduleChart() {
               <div className="flex items-center gap-2">
                 <div className="flex size-8 items-center justify-center rounded-md bg-blue-500/10">
                   <span className="font-semibold text-blue-600 text-sm dark:text-blue-400">
-                    {mockTechnicians.reduce((acc, tech) => acc + tech.jobs.filter(j => j.status === "scheduled").length, 0)}
+                    {mockTechnicians.reduce(
+                      (acc, tech) =>
+                        acc +
+                        tech.jobs.filter((j) => j.status === "scheduled")
+                          .length,
+                      0
+                    )}
                   </span>
                 </div>
                 <div>
                   <p className="font-medium text-xs leading-none">Scheduled</p>
-                  <p className="text-[10px] text-muted-foreground">jobs today</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    jobs today
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex size-8 items-center justify-center rounded-md bg-yellow-500/10">
-                  <span className="font-semibold text-yellow-600 text-sm dark:text-yellow-400">
-                    {mockTechnicians.reduce((acc, tech) => acc + tech.jobs.filter(j => j.status === "in-progress").length, 0)}
+                  <span className="font-semibold text-sm text-yellow-600 dark:text-yellow-400">
+                    {mockTechnicians.reduce(
+                      (acc, tech) =>
+                        acc +
+                        tech.jobs.filter((j) => j.status === "in-progress")
+                          .length,
+                      0
+                    )}
                   </span>
                 </div>
                 <div>
                   <p className="font-medium text-xs leading-none">Active</p>
-                  <p className="text-[10px] text-muted-foreground">in progress</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    in progress
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex size-8 items-center justify-center rounded-md bg-green-500/10">
                   <span className="font-semibold text-green-600 text-sm dark:text-green-400">
-                    {mockTechnicians.reduce((acc, tech) => acc + tech.jobs.filter(j => j.status === "completed").length, 0)}
+                    {mockTechnicians.reduce(
+                      (acc, tech) =>
+                        acc +
+                        tech.jobs.filter((j) => j.status === "completed")
+                          .length,
+                      0
+                    )}
                   </span>
                 </div>
                 <div>
@@ -566,19 +605,28 @@ export function TechnicianScheduleChart() {
               <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-green-500" />
                 <span className="text-xs">
-                  {mockTechnicians.filter(t => t.status === "available").length} Available
+                  {
+                    mockTechnicians.filter((t) => t.status === "available")
+                      .length
+                  }{" "}
+                  Available
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-yellow-500" />
                 <span className="text-xs">
-                  {mockTechnicians.filter(t => t.status === "on-job").length} On Job
+                  {mockTechnicians.filter((t) => t.status === "on-job").length}{" "}
+                  On Job
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-orange-500" />
                 <span className="text-xs">
-                  {mockTechnicians.filter(t => t.status === "on-break").length} On Break
+                  {
+                    mockTechnicians.filter((t) => t.status === "on-break")
+                      .length
+                  }{" "}
+                  On Break
                 </span>
               </div>
             </div>
@@ -586,7 +634,9 @@ export function TechnicianScheduleChart() {
 
           {/* Priority Legend */}
           <div className="flex items-center gap-4 text-xs">
-            <span className="font-semibold text-muted-foreground">Priority:</span>
+            <span className="font-semibold text-muted-foreground">
+              Priority:
+            </span>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
                 <div className="size-2 rounded-full bg-gray-500" />
@@ -609,5 +659,5 @@ export function TechnicianScheduleChart() {
         </div>
       </div>
     </div>
-  )
+  );
 }

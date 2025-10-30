@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+
 type InviteForm = {
   email: string;
   roleId: string;
@@ -55,7 +56,8 @@ type Department = {
   name: string;
 };
 
-export default function InviteMemberPage() {  const [invites, setInvites] = useState<InviteForm[]>([
+export default function InviteMemberPage() {
+  const [invites, setInvites] = useState<InviteForm[]>([
     { email: "", roleId: "", departmentId: "", jobTitle: "" },
   ]);
 

@@ -9,14 +9,14 @@
  */
 
 import { TrendingUp } from "lucide-react";
+import { formatCurrency } from "@/lib/utils/responsive-utils";
 import {
-  ResponsiveWidgetWrapper,
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
-import { formatCurrency, getAdaptiveCount } from "@/lib/utils/responsive-utils";
 
 type RevenueChartWidgetProps = {
   data: {
@@ -40,7 +40,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
             <ResponsiveText variant="title">Revenue Trend</ResponsiveText>
           </ShowAt>
           <ShowAt stage="comfortable">
-            <ResponsiveText variant="body" className="font-semibold">
+            <ResponsiveText className="font-semibold" variant="body">
               Revenue
             </ResponsiveText>
           </ShowAt>
@@ -52,14 +52,20 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
             {data.trend.slice(-7).map((item, idx) => {
               const height = (item.revenue / maxRevenue) * 100;
               return (
-                <div className="flex flex-1 flex-col items-center gap-1" key={idx}>
-                  <div className="relative w-full flex-1 min-h-0">
+                <div
+                  className="flex flex-1 flex-col items-center gap-1"
+                  key={idx}
+                >
+                  <div className="relative min-h-0 w-full flex-1">
                     <div
                       className="absolute bottom-0 w-full rounded-t-md bg-gradient-to-t from-green-500 to-green-400 transition-all duration-500"
                       style={{ height: `${height}%`, minHeight: "4px" }}
                     />
                   </div>
-                  <ResponsiveText variant="caption" className="text-muted-foreground">
+                  <ResponsiveText
+                    className="text-muted-foreground"
+                    variant="caption"
+                  >
                     {item.day}
                   </ResponsiveText>
                 </div>
@@ -74,14 +80,20 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
             {data.trend.slice(-5).map((item, idx) => {
               const height = (item.revenue / maxRevenue) * 100;
               return (
-                <div className="flex flex-1 flex-col items-center gap-1" key={idx}>
-                  <div className="relative w-full flex-1 min-h-0">
+                <div
+                  className="flex flex-1 flex-col items-center gap-1"
+                  key={idx}
+                >
+                  <div className="relative min-h-0 w-full flex-1">
                     <div
                       className="absolute bottom-0 w-full rounded-t-sm bg-gradient-to-t from-green-500 to-green-400"
                       style={{ height: `${height}%`, minHeight: "4px" }}
                     />
                   </div>
-                  <ResponsiveText variant="caption" className="text-muted-foreground">
+                  <ResponsiveText
+                    className="text-muted-foreground"
+                    variant="caption"
+                  >
                     {item.day.slice(0, 1)}
                   </ResponsiveText>
                 </div>
@@ -96,8 +108,11 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
             {data.trend.slice(-3).map((item, idx) => {
               const height = (item.revenue / maxRevenue) * 100;
               return (
-                <div className="flex w-6 flex-col items-center gap-0.5" key={idx}>
-                  <div className="relative w-full h-16">
+                <div
+                  className="flex w-6 flex-col items-center gap-0.5"
+                  key={idx}
+                >
+                  <div className="relative h-16 w-full">
                     <div
                       className="absolute bottom-0 w-full rounded-t-sm bg-green-500"
                       style={{ height: `${height}%`, minHeight: "4px" }}
@@ -112,7 +127,10 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
         {/* TINY Stage: Latest revenue only */}
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
-            <ResponsiveText variant="display" className="font-bold text-green-500">
+            <ResponsiveText
+              className="font-bold text-green-500"
+              variant="display"
+            >
               {formatCurrency(latestRevenue, "tiny")}
             </ResponsiveText>
           </div>

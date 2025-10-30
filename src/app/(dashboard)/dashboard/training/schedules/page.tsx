@@ -10,7 +10,8 @@
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default function TrainingSchedulesPage() {  return (
+export default function TrainingSchedulesPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Training Schedules</h1>

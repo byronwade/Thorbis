@@ -1,22 +1,20 @@
-import { Suspense } from "react";
 import {
-  MapPin,
+  AlertCircle,
+  CheckCircle2,
   Clock,
   DollarSign,
-  TrendingUp,
-  Wrench,
+  MapPin,
   Navigation,
-  CheckCircle2,
-  AlertCircle,
   Package,
   Star,
+  TrendingUp,
+  Wrench,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { SectionHeader } from "@/components/dashboard/section-header";
-import { KPICardSkeleton, TableSkeleton } from "@/components/ui/skeletons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 /**
  * Technician Dashboard - Server Component
@@ -39,17 +37,17 @@ export default function TechnicianDashboard() {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
           <h1 className="font-bold text-4xl tracking-tight">My Dashboard</h1>
-          <Badge variant="outline" className="text-orange-600">
+          <Badge className="text-orange-600" variant="outline">
             Technician View
           </Badge>
           <div className="flex items-center gap-2 rounded-full border border-border bg-green-500/10 px-3 py-1">
             <div className="size-2 rounded-full bg-green-500" />
-            <span className="text-green-700 text-xs font-medium dark:text-green-400">
+            <span className="font-medium text-green-700 text-xs dark:text-green-400">
               Clocked In
             </span>
           </div>
         </div>
-        <p className="text-muted-foreground text-lg">{currentDate}</p>
+        <p className="text-lg text-muted-foreground">{currentDate}</p>
       </div>
 
       {/* Active Job Alert */}
@@ -71,10 +69,10 @@ export default function TechnicianDashboard() {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 Update Status
               </Button>
-              <Button variant="default" size="sm">
+              <Button size="sm" variant="default">
                 Complete Job
               </Button>
             </div>
@@ -137,7 +135,9 @@ export default function TechnicianDashboard() {
                 </div>
                 <div className="flex-1">
                   <Badge variant="default">IN PROGRESS</Badge>
-                  <p className="mt-1 font-bold text-sm">9:00 AM - AC Not Cooling</p>
+                  <p className="mt-1 font-bold text-sm">
+                    9:00 AM - AC Not Cooling
+                  </p>
                   <p className="text-muted-foreground text-xs">
                     Sarah Johnson • 123 Main St, Suite 200
                   </p>
@@ -227,11 +227,15 @@ export default function TechnicianDashboard() {
                     <span className="font-bold text-green-600">$12,840</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground text-sm">Jobs Completed</span>
+                    <span className="text-muted-foreground text-sm">
+                      Jobs Completed
+                    </span>
                     <span className="font-bold">24 jobs</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground text-sm">Avg. per Day</span>
+                    <span className="text-muted-foreground text-sm">
+                      Avg. per Day
+                    </span>
                     <span className="font-bold">4.8 jobs</span>
                   </div>
                 </div>
@@ -241,13 +245,22 @@ export default function TechnicianDashboard() {
               <div className="space-y-2">
                 <p className="font-medium text-sm">Achievements</p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-green-600 text-green-600">
+                  <Badge
+                    className="border-green-600 text-green-600"
+                    variant="outline"
+                  >
                     ⭐ Top Performer
                   </Badge>
-                  <Badge variant="outline" className="border-blue-600 text-blue-600">
+                  <Badge
+                    className="border-blue-600 text-blue-600"
+                    variant="outline"
+                  >
                     🎯 Target Met
                   </Badge>
-                  <Badge variant="outline" className="border-purple-600 text-purple-600">
+                  <Badge
+                    className="border-purple-600 text-purple-600"
+                    variant="outline"
+                  >
                     💰 Highest Revenue
                   </Badge>
                 </div>
@@ -274,7 +287,9 @@ export default function TechnicianDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-bold text-sm">Estimated Commission</p>
-                    <p className="text-muted-foreground text-xs">Based on this week</p>
+                    <p className="text-muted-foreground text-xs">
+                      Based on this week
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-2xl text-blue-600">$1,284</p>
@@ -315,8 +330,16 @@ export default function TechnicianDashboard() {
 
               {/* Good Stock Items */}
               {[
-                { item: "Water Heater - 40 gal", quantity: "2 units", status: "Good" },
-                { item: "Copper Pipe - 3/4\"", quantity: "50 ft", status: "Good" },
+                {
+                  item: "Water Heater - 40 gal",
+                  quantity: "2 units",
+                  status: "Good",
+                },
+                {
+                  item: 'Copper Pipe - 3/4"',
+                  quantity: "50 ft",
+                  status: "Good",
+                },
                 { item: "Drain Snake", quantity: "1 unit", status: "Good" },
               ].map((item, index) => (
                 <div
@@ -327,16 +350,18 @@ export default function TechnicianDashboard() {
                     <Package className="size-5 text-muted-foreground" />
                     <div>
                       <p className="font-medium text-sm">{item.item}</p>
-                      <p className="text-muted-foreground text-xs">{item.quantity}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {item.quantity}
+                      </p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-green-600">
+                  <Badge className="text-green-600" variant="outline">
                     {item.status}
                   </Badge>
                 </div>
               ))}
 
-              <Button variant="outline" className="w-full">
+              <Button className="w-full" variant="outline">
                 View Full Inventory
               </Button>
             </CardContent>
@@ -367,10 +392,10 @@ export default function TechnicianDashboard() {
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button className="flex-1" size="sm" variant="outline">
                     Start Break
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button className="flex-1" size="sm" variant="outline">
                     Clock Out
                   </Button>
                 </div>
@@ -378,19 +403,19 @@ export default function TechnicianDashboard() {
 
               {/* Quick Action Buttons */}
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" size="sm">
+                <Button size="sm" variant="outline">
                   <Wrench className="mr-2 size-4" />
                   Update Job
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button size="sm" variant="outline">
                   <MapPin className="mr-2 size-4" />
                   Next Job
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button size="sm" variant="outline">
                   <Package className="mr-2 size-4" />
                   Order Parts
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button size="sm" variant="outline">
                   <DollarSign className="mr-2 size-4" />
                   Create Invoice
                 </Button>
@@ -401,14 +426,13 @@ export default function TechnicianDashboard() {
                 <p className="font-bold text-sm">Today's Notes</p>
                 <p className="mt-2 text-muted-foreground text-sm">
                   • Pick up parts from warehouse before 3 PM
-                  <br />
-                  • Mike Davis job may need water heater replacement
+                  <br />• Mike Davis job may need water heater replacement
                   <br />• Team meeting tomorrow at 8 AM
                 </p>
               </div>
 
               {/* Support */}
-              <Button variant="outline" className="w-full">
+              <Button className="w-full" variant="outline">
                 Contact Dispatcher
               </Button>
             </CardContent>
@@ -445,13 +469,16 @@ export default function TechnicianDashboard() {
                 job: "Furnace Check",
               },
             ].map((review, index) => (
-              <div className="rounded-lg border bg-green-50 p-3 dark:bg-green-950/30" key={index}>
+              <div
+                className="rounded-lg border bg-green-50 p-3 dark:bg-green-950/30"
+                key={index}
+              >
                 <div className="flex items-center gap-2">
                   <Star className="size-4 text-yellow-500" />
                   <span className="font-bold text-sm">
                     {review.rating}.0 ⭐
                   </span>
-                  <Badge variant="outline" className="ml-auto text-xs">
+                  <Badge className="ml-auto text-xs" variant="outline">
                     {review.job}
                   </Badge>
                 </div>

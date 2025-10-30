@@ -47,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -95,7 +96,8 @@ type CustomerPortalSettings = {
   showMaintenanceReminders: boolean;
 };
 
-export default function CustomerPortalPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function CustomerPortalPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<CustomerPortalSettings>({
     // Access
     enableCustomerPortal: true,

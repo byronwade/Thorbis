@@ -73,8 +73,8 @@ export function CleanTestimonialsSection() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {overallMetrics.map((metric, index) => (
           <div
-            key={index}
             className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm"
+            key={index}
           >
             <div className="space-y-2">
               <p className="font-medium text-muted-foreground text-sm">
@@ -93,8 +93,8 @@ export function CleanTestimonialsSection() {
       <div className="grid gap-6 lg:grid-cols-3">
         {testimonials.map((testimonial, index) => (
           <div
-            key={index}
             className="flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm"
+            key={index}
           >
             <div className="space-y-4 p-6">
               <div className="space-y-2">
@@ -106,7 +106,7 @@ export function CleanTestimonialsSection() {
 
               <div className="grid grid-cols-2 gap-2">
                 {testimonial.metrics.map((metric, idx) => (
-                  <div key={idx} className="rounded-md bg-muted p-2">
+                  <div className="rounded-md bg-muted p-2" key={idx}>
                     <div className="font-bold text-sm">{metric.value}</div>
                     <div className="text-muted-foreground text-xs">
                       {metric.label}

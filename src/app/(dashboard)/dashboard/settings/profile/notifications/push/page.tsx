@@ -39,7 +39,8 @@ export default function PushNotificationsPage() {
   // Call layout config after mount to avoid SSR issues
   useEffect(() => {
     // Config is set through usePageLayout's useEffect
-  }, []);  return (
+  }, []);
+  return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">

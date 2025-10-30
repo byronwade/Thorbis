@@ -7,10 +7,10 @@
  * - Reduced JavaScript bundle size
  */
 
-import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export function CleanHero() {
   return (
@@ -159,7 +159,7 @@ export function CleanHero() {
             { icon: "🧹", label: "Cleaning" },
             { icon: "🔨", label: "Handyman" },
           ].map((industry, index) => (
-            <Badge key={index} className="gap-2" variant="outline">
+            <Badge className="gap-2" key={index} variant="outline">
               <span>{industry.icon}</span>
               <span>{industry.label}</span>
             </Badge>

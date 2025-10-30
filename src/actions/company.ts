@@ -75,7 +75,10 @@ export async function updateCompanyInfo(formData: FormData) {
     // TODO: Save to database
 
     revalidatePath("/dashboard/settings/company");
-    return { success: true, message: "Company information updated successfully" };
+    return {
+      success: true,
+      message: "Company information updated successfully",
+    };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
@@ -104,7 +107,10 @@ export async function updateBillingInfo(formData: FormData) {
     // TODO: Save to database and update payment processor
 
     revalidatePath("/dashboard/settings/billing");
-    return { success: true, message: "Billing information updated successfully" };
+    return {
+      success: true,
+      message: "Billing information updated successfully",
+    };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {

@@ -46,6 +46,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const _MAX_DESCRIPTION_LENGTH = 500;
@@ -103,7 +104,8 @@ type ServicePlanSettings = {
   cancellationFee: number;
 };
 
-export default function ServicePlansPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function ServicePlansPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [_showAddPlan, setShowAddPlan] = useState(false);
 
   const [settings, setSettings] = useState<ServicePlanSettings>({

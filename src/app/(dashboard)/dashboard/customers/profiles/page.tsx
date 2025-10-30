@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/card";
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default function CustomerProfilesPage() {  return (
+export default function CustomerProfilesPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Customer Profiles</h1>

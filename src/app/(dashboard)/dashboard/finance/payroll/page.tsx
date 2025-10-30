@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 
 export const revalidate = 900; // Revalidate every 15 minutes
+
 import {
   Card,
   CardContent,
@@ -26,7 +27,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-export default function PayrollOverviewPage() {  return (
+export default function PayrollOverviewPage() {
+  return (
     <div className="space-y-6">
       {/* Header */}
       <div>

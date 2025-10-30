@@ -31,6 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type CommissionTier = {
   min: number;
   max: number | null;
@@ -54,7 +55,8 @@ type CommissionSettings = {
   leadCommissionPercent: number;
 };
 
-export default function CommissionSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function CommissionSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<CommissionSettings>({
     commissionEnabled: true,

@@ -39,6 +39,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type VirtualBucket = {
   id: string;
   name: string;
@@ -52,7 +53,8 @@ type VirtualBucket = {
   linkedAccount: string;
 };
 
-export default function VirtualBucketsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function VirtualBucketsSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [buckets, _setBuckets] = useState<VirtualBucket[]>([
     {
       id: "1",

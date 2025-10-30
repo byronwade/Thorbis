@@ -135,7 +135,7 @@ export function VirtualBucketsOverview() {
           return (
             <div key={bucket.id}>
               {index > 0 && <Separator />}
-              <div className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+              <div className="flex items-center justify-between p-4 transition-colors hover:bg-muted/50">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{bucket.name}</p>

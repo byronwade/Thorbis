@@ -10,22 +10,14 @@
  * - Analytics & ROI tracking
  */
 
-import {
-  BarChart3,
-  Mail,
-  Megaphone,
-  MessageSquare,
-  Star,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { BarChart3, Megaphone, Star, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LeadsTable } from "@/components/marketing/leads-table";
-import { ReviewsManagement } from "@/components/marketing/reviews-management";
 import { CampaignsManager } from "@/components/marketing/campaigns-manager";
+import { LeadsTable } from "@/components/marketing/leads-table";
 import { MarketingAnalytics } from "@/components/marketing/marketing-analytics";
+import { ReviewsManagement } from "@/components/marketing/reviews-management";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type MarketingTab = "leads" | "reviews" | "campaigns" | "analytics";
 
@@ -37,7 +29,9 @@ export function MarketingDashboard() {
       {/* Header Stats */}
       <div className="border-b bg-background p-6">
         <div className="mb-6">
-          <h1 className="font-semibold text-3xl tracking-tight">Marketing Center</h1>
+          <h1 className="font-semibold text-3xl tracking-tight">
+            Marketing Center
+          </h1>
           <p className="text-muted-foreground">
             Manage leads, reviews, campaigns, and track marketing ROI
           </p>
@@ -60,7 +54,9 @@ export function MarketingDashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium text-sm">Avg. Review Rating</CardTitle>
+              <CardTitle className="font-medium text-sm">
+                Avg. Review Rating
+              </CardTitle>
               <Star className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -73,7 +69,9 @@ export function MarketingDashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium text-sm">Active Campaigns</CardTitle>
+              <CardTitle className="font-medium text-sm">
+                Active Campaigns
+              </CardTitle>
               <Megaphone className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -86,7 +84,9 @@ export function MarketingDashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium text-sm">Marketing ROI</CardTitle>
+              <CardTitle className="font-medium text-sm">
+                Marketing ROI
+              </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -103,34 +103,34 @@ export function MarketingDashboard() {
       <div className="flex-1 overflow-hidden">
         <Tabs
           className="flex h-full flex-col"
-          value={activeTab}
           onValueChange={(value) => setActiveTab(value as MarketingTab)}
+          value={activeTab}
         >
           <div className="border-b bg-background px-6">
             <TabsList className="h-12 w-full justify-start rounded-none border-0 bg-transparent p-0">
               <TabsTrigger
-                className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="relative h-12 rounded-none border-transparent border-b-2 bg-transparent px-4 pt-2 pb-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
                 value="leads"
               >
                 <Users className="mr-2 h-4 w-4" />
                 Leads
               </TabsTrigger>
               <TabsTrigger
-                className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="relative h-12 rounded-none border-transparent border-b-2 bg-transparent px-4 pt-2 pb-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
                 value="reviews"
               >
                 <Star className="mr-2 h-4 w-4" />
                 Reviews
               </TabsTrigger>
               <TabsTrigger
-                className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="relative h-12 rounded-none border-transparent border-b-2 bg-transparent px-4 pt-2 pb-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
                 value="campaigns"
               >
                 <Megaphone className="mr-2 h-4 w-4" />
                 Campaigns
               </TabsTrigger>
               <TabsTrigger
-                className="relative h-12 rounded-none border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                className="relative h-12 rounded-none border-transparent border-b-2 bg-transparent px-4 pt-2 pb-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
                 value="analytics"
               >
                 <BarChart3 className="mr-2 h-4 w-4" />

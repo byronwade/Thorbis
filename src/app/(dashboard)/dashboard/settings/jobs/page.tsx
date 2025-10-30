@@ -49,6 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const MIN_JOB_NUMBER = 1000;
 const MAX_JOB_NUMBER = 999_999;
@@ -99,7 +100,8 @@ type JobSettings = {
   sendOnTheWayNotification: boolean;
 };
 
-export default function JobsSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function JobsSettingsPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<JobSettings>({
     // Job Numbers
     autoGenerateJobNumbers: true,

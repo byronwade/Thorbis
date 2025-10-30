@@ -55,7 +55,8 @@ const customerSections = [
   },
 ];
 
-export default function CustomersSettingsPage() {  return (
+export default function CustomersSettingsPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Customer Settings</h1>

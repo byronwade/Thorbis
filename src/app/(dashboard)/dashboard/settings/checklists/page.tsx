@@ -43,6 +43,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -87,7 +88,8 @@ type ChecklistSettings = {
   customerCanViewInPortal: boolean;
 };
 
-export default function ChecklistsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function ChecklistsPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedChecklist, setExpandedChecklist] = useState<string | null>(
     null
   );

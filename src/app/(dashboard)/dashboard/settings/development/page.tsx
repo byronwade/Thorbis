@@ -18,6 +18,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { RoleSwitcher } from "@/components/settings/role-switcher";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,9 +29,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useUIStore } from "@/lib/store";
-import { RoleSwitcher } from "@/components/settings/role-switcher";
 
-export default function DevelopmentSettingsPage() {  const [testResults, setTestResults] = useState<
+export default function DevelopmentSettingsPage() {
+  const [testResults, setTestResults] = useState<
     Array<{ type: string; message: string; timestamp: Date }>
   >([]);
   const { setIncomingCall, addNotification, openModal } = useUIStore();
@@ -135,7 +136,7 @@ export default function DevelopmentSettingsPage() {  const [testResults, setTest
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="font-mono">
+            <Badge className="font-mono" variant="outline">
               NODE_ENV: {process.env.NODE_ENV}
             </Badge>
           </div>
@@ -151,7 +152,8 @@ export default function DevelopmentSettingsPage() {  const [testResults, setTest
         <CardHeader>
           <CardTitle>Role-Based Dashboard Testing</CardTitle>
           <CardDescription>
-            Switch between user roles to test different dashboard views and permissions
+            Switch between user roles to test different dashboard views and
+            permissions
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -235,7 +237,9 @@ export default function DevelopmentSettingsPage() {  const [testResults, setTest
             <p className="font-medium text-sm">What this tests:</p>
             <ul className="mt-2 space-y-1 text-muted-foreground text-sm">
               <li>• Toast notification appearance</li>
-              <li>• Different notification types (success, error, info, warning)</li>
+              <li>
+                • Different notification types (success, error, info, warning)
+              </li>
               <li>• Auto-dismiss timing</li>
               <li>• Notification stacking</li>
             </ul>

@@ -36,7 +36,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-export default function CustomerPreferencesPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function CustomerPreferencesPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     requireCustomerApproval: true,
     allowCustomerNotes: true,

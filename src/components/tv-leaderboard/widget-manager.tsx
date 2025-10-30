@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Plus, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import type { Widget, WidgetType } from "./widget-types";
 import { WIDGET_CONFIGS } from "./widget-types";
 
@@ -58,18 +58,19 @@ export function WidgetManager({ onAddWidget }: WidgetManagerProps) {
   ];
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button size="lg" variant="default">
           <Plus className="mr-2 size-4" />
           Add Widget
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[85vh]">
+      <DialogContent className="max-h-[85vh] max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-xl">Add Widget to View</DialogTitle>
           <DialogDescription>
-            Choose a widget to add to your current TV view. Widgets will automatically adjust to fit the grid.
+            Choose a widget to add to your current TV view. Widgets will
+            automatically adjust to fit the grid.
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[600px] pr-4">
@@ -77,10 +78,12 @@ export function WidgetManager({ onAddWidget }: WidgetManagerProps) {
             {/* Statistics & Performance Widgets */}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
+                <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
                   Statistics & Performance
                 </h3>
-                <Badge variant="secondary" className="text-xs">{statsWidgets.length}</Badge>
+                <Badge className="text-xs" variant="secondary">
+                  {statsWidgets.length}
+                </Badge>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {statsWidgets.map((type) => {
@@ -95,10 +98,10 @@ export function WidgetManager({ onAddWidget }: WidgetManagerProps) {
                       type="button"
                     >
                       <div className="flex items-start justify-between">
-                        <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
+                        <h4 className="font-semibold text-sm transition-colors group-hover:text-primary">
                           {config.title}
                         </h4>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           {config.defaultSize}
                         </Badge>
                       </div>
@@ -114,10 +117,12 @@ export function WidgetManager({ onAddWidget }: WidgetManagerProps) {
             {/* Gamification Widgets */}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
+                <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
                   Gamification & Engagement
                 </h3>
-                <Badge variant="secondary" className="text-xs">{gamificationWidgets.length}</Badge>
+                <Badge className="text-xs" variant="secondary">
+                  {gamificationWidgets.length}
+                </Badge>
                 <Sparkles className="size-3.5 text-primary" />
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -133,10 +138,10 @@ export function WidgetManager({ onAddWidget }: WidgetManagerProps) {
                       type="button"
                     >
                       <div className="flex items-start justify-between">
-                        <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
+                        <h4 className="font-semibold text-sm transition-colors group-hover:text-primary">
                           {config.title}
                         </h4>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           {config.defaultSize}
                         </Badge>
                       </div>

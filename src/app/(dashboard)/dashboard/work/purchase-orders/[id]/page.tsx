@@ -2,10 +2,19 @@
  * Work > Purchase Orders > [Id] Page - Server Component
  *
  * Performance optimizations:
- * - Server Component by default (no "use client")
  * - Static content rendered on server
  * - ISR revalidation every 5 minutes
  * - Next.js 16+ async params pattern
+ */
+
+/**
+ * Server Component
+ *
+ * Performance optimizations:
+ * - Server Component fetches data before rendering (no loading flash)
+ * - Mock data defined on server (will be replaced with real DB queries)
+ * - Only interactive table/chart components are client-side
+ * - Better SEO and initial page load performance
  */
 
 import {
@@ -40,6 +49,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export const revalidate = 300; // Revalidate every 5 minutes
+
 import {
   Table,
   TableBody,
@@ -48,6 +58,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 type LineItem = {
   id: string;
   description: string;
@@ -56,7 +67,14 @@ type LineItem = {
   total: number;
 };
 
-type POStatus = "draft" | "pending_approval" | "approved" | "ordered" | "partially_received" | "received" | "cancelled";
+type POStatus =
+  | "draft"
+  | "pending_approval"
+  | "approved"
+  | "ordered"
+  | "partially_received"
+  | "received"
+  | "cancelled";
 
 export default async function PurchaseOrderDetailPage({
   params,

@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 900; // Revalidate every 15 minutes
+
 import {
   Card,
   CardContent,
@@ -24,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 const reportCategories = [
   {
     title: "Payroll Summary Reports",
@@ -111,7 +113,8 @@ const reportCategories = [
   },
 ];
 
-export default function PayrollReportsPage() {  return (
+export default function PayrollReportsPage() {
+  return (
     <div className="space-y-6">
       {/* Header */}
       <div>

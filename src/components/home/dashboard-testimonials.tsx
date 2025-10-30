@@ -7,10 +7,10 @@
  * - Reduced JavaScript bundle size
  */
 
-import { TrendingUp, Clock, DollarSign, Star } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Clock, DollarSign, Star, TrendingUp } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function DashboardTestimonialsSection() {
   const testimonials = [
@@ -102,7 +102,7 @@ export function DashboardTestimonialsSection() {
         {/* Testimonial Cards - Dashboard Style */}
         <div className="grid gap-6 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="flex flex-col">
+            <Card className="flex flex-col" key={index}>
               <CardHeader>
                 <div className="mb-4 flex items-center gap-4">
                   <Avatar className="size-12">
@@ -124,12 +124,14 @@ export function DashboardTestimonialsSection() {
                     const Icon = metric.icon;
                     return (
                       <div
-                        key={idx}
                         className="flex items-center gap-2 rounded-lg bg-muted p-2"
+                        key={idx}
                       >
                         <Icon className="size-4 text-primary" />
                         <div>
-                          <div className="font-bold text-sm">{metric.value}</div>
+                          <div className="font-bold text-sm">
+                            {metric.value}
+                          </div>
                           <div className="text-muted-foreground text-xs">
                             {metric.label}
                           </div>

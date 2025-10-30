@@ -33,12 +33,14 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 
 export const revalidate = 3600; // Revalidate every 1 hour
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Pricing Constants
 const BASE_FEE = 100;
 const PRICING = {
@@ -110,7 +112,8 @@ type UsageCategory = {
   example: string;
 };
 
-export default function BillingPage() {  const categories: UsageCategory[] = [
+export default function BillingPage() {
+  const categories: UsageCategory[] = [
     {
       name: "Team Members",
       icon: Users,

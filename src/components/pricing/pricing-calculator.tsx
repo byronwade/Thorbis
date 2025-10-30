@@ -10,32 +10,32 @@
  * - Business owner friendly explanations
  */
 
-import { useState } from "react";
-import Link from "next/link";
 import {
-  Phone,
-  MessageSquare,
-  Mail,
-  DollarSign,
-  CheckCircle2,
-  ArrowRight,
-  Calculator,
-  Users,
-  Shield,
-  XCircle,
-  Calendar,
-  Database,
-  BarChart3,
-  Bot,
-  Bell,
-  FileText,
-  TrendingUp,
   AlertCircle,
+  ArrowRight,
+  BarChart3,
+  Bell,
+  Bot,
+  Calculator,
+  Calendar,
+  CheckCircle2,
+  Database,
+  DollarSign,
+  FileText,
+  Mail,
+  MessageSquare,
+  Phone,
+  Shield,
+  TrendingUp,
+  Users,
+  XCircle,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Footer } from "@/components/layout/footer";
 
 /**
  * Pay-as-you-go pricing items
@@ -69,7 +69,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-phone-inbound",
     name: "AI Phone Calls (Inbound)",
-    description: "AI answers customer calls, books appointments, answers questions",
+    description:
+      "AI answers customer calls, books appointments, answers questions",
     icon: Phone,
     unit: "per minute",
     cost: 0.15, // Twilio $0.015/min + AI processing ~$0.085/min (real-time processing) = $0.10 × 1.5 markup = $0.15
@@ -153,7 +154,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-job-intelligence",
     name: "AI Job Intelligence",
-    description: "Smart scheduling suggestions, pricing optimization, dispatch recommendations",
+    description:
+      "Smart scheduling suggestions, pricing optimization, dispatch recommendations",
     icon: Shield,
     unit: "per analysis",
     cost: 0.08, // ~2000 tokens × $0.00004/token × 1.5 markup = $0.08 (needs context from multiple jobs)
@@ -165,7 +167,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-system-control",
     name: "AI System Control & Commands",
-    description: "Ask AI to do anything - send invoices, create quotes, update customers, etc.",
+    description:
+      "Ask AI to do anything - send invoices, create quotes, update customers, etc.",
     icon: Bot,
     unit: "per command",
     cost: 0.12, // ~3000 tokens (complex multi-step operations) × $0.00004/token × 1.5 markup = $0.12
@@ -178,7 +181,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-24-7-monitoring",
     name: "24/7 AI Business Monitoring",
-    description: "AI watches for price changes, missing photos, errors, opportunities - constantly",
+    description:
+      "AI watches for price changes, missing photos, errors, opportunities - constantly",
     icon: Bell,
     unit: "per business/month",
     cost: 50.0, // Dedicated server monitoring 24/7 (~$100/mo server cost × 0.5 allocation × 1.5 markup)
@@ -194,7 +198,7 @@ const PRICING_ITEMS = [
     description: "Transcribe, analyze urgency, extract info, auto-callback",
     icon: Phone,
     unit: "per voicemail",
-    cost: 0.20, // Speech-to-text $0.024/min avg + AI analysis ~$0.10 + callback scheduling × 1.5 markup
+    cost: 0.2, // Speech-to-text $0.024/min avg + AI analysis ~$0.10 + callback scheduling × 1.5 markup
     defaultValue: 50,
     maxValue: 500,
     step: 10,
@@ -204,7 +208,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-emergency-detection",
     name: "AI Emergency Call Detection",
-    description: "Instantly detect emergencies, prioritize, dispatch nearest tech, alert managers",
+    description:
+      "Instantly detect emergencies, prioritize, dispatch nearest tech, alert managers",
     icon: AlertCircle,
     unit: "per call analyzed",
     cost: 0.08, // Real-time keyword detection + priority routing × 1.5 markup
@@ -217,10 +222,11 @@ const PRICING_ITEMS = [
   {
     id: "ai-call-analytics",
     name: "AI Call Analytics & Insights",
-    description: "Track conversion rates, identify objections, measure sentiment, improve sales",
+    description:
+      "Track conversion rates, identify objections, measure sentiment, improve sales",
     icon: BarChart3,
     unit: "per call analyzed",
-    cost: 0.10, // Conversation analysis + sentiment + insights generation × 1.5 markup
+    cost: 0.1, // Conversation analysis + sentiment + insights generation × 1.5 markup
     defaultValue: 100,
     maxValue: 1000,
     step: 10,
@@ -230,7 +236,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-campaign-calling",
     name: "AI Marketing Campaigns (Outbound)",
-    description: "AI calls customers for seasonal services, warranty renewals, maintenance reminders",
+    description:
+      "AI calls customers for seasonal services, warranty renewals, maintenance reminders",
     icon: TrendingUp,
     unit: "per campaign call",
     cost: 0.25, // Outbound call + personalized pitch + conversation handling × 1.5 markup
@@ -243,7 +250,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-smart-invoicing",
     name: "AI Smart Invoicing",
-    description: "AI detects billing errors, inconsistencies, missing line items before sending",
+    description:
+      "AI detects billing errors, inconsistencies, missing line items before sending",
     icon: FileText,
     unit: "per invoice analyzed",
     cost: 0.06, // Document analysis + math verification × 1.5 markup
@@ -256,7 +264,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-inventory-auto-order",
     name: "AI Inventory Auto-Ordering",
-    description: "AI monitors stock levels, predicts needs, auto-orders from suppliers",
+    description:
+      "AI monitors stock levels, predicts needs, auto-orders from suppliers",
     icon: Zap,
     unit: "per order placed",
     cost: 0.15, // Inventory analysis + supplier API + order creation × 1.5 markup
@@ -269,10 +278,11 @@ const PRICING_ITEMS = [
   {
     id: "ai-cash-flow-optimization",
     name: "AI Cash Flow Optimization",
-    description: "AI analyzes accounts, optimizes transfers, maximizes savings automatically",
+    description:
+      "AI analyzes accounts, optimizes transfers, maximizes savings automatically",
     icon: DollarSign,
     unit: "per optimization",
-    cost: 0.50, // Complex financial analysis + multi-account review + transfer execution × 1.5 markup
+    cost: 0.5, // Complex financial analysis + multi-account review + transfer execution × 1.5 markup
     defaultValue: 10,
     maxValue: 100,
     step: 5,
@@ -282,7 +292,8 @@ const PRICING_ITEMS = [
   {
     id: "ai-customer-risk-analysis",
     name: "AI Customer Risk Analysis",
-    description: "Identify no-show patterns, payment risks, recommend deposits/prepayment",
+    description:
+      "Identify no-show patterns, payment risks, recommend deposits/prepayment",
     icon: Shield,
     unit: "per customer analyzed",
     cost: 0.05, // Historical pattern analysis + risk scoring × 1.5 markup
@@ -366,9 +377,7 @@ export function PricingCalculator() {
                 <div className="mb-2 text-2xl">⚡</div>
                 <p className="mb-1 font-bold text-primary">Thorbis</p>
                 <p className="text-primary text-sm">$100/mo + usage</p>
-                <p className="text-muted-foreground text-xs">
-                  Unlimited users
-                </p>
+                <p className="text-muted-foreground text-xs">Unlimited users</p>
               </div>
             </div>
           </div>
@@ -429,8 +438,8 @@ export function PricingCalculator() {
                 },
               ].map((feature, i) => (
                 <div
-                  key={i}
                   className="flex items-start gap-3 rounded-xl border border-primary/10 bg-background p-4"
+                  key={i}
                 >
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                     <feature.icon className="size-5 text-primary" />
@@ -478,8 +487,8 @@ export function PricingCalculator() {
 
                     return (
                       <div
-                        key={item.id}
                         className="rounded-xl border border-primary/10 bg-muted/30 p-6"
+                        key={item.id}
                       >
                         <div className="mb-4 flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3">
@@ -511,7 +520,8 @@ export function PricingCalculator() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">
-                              Usage: <strong>{quantity}</strong> {item.unit.replace("per ", "")}
+                              Usage: <strong>{quantity}</strong>{" "}
+                              {item.unit.replace("per ", "")}
                               {quantity !== 1 ? "s" : ""}
                             </span>
                             {item.note && (
@@ -521,13 +531,13 @@ export function PricingCalculator() {
                             )}
                           </div>
                           <Slider
-                            value={[quantity]}
+                            className="cursor-pointer"
+                            max={item.maxValue}
                             onValueChange={([value]) =>
                               setUsage({ ...usage, [item.id]: value })
                             }
-                            max={item.maxValue}
                             step={item.step}
-                            className="cursor-pointer"
+                            value={[quantity]}
                           />
                         </div>
                       </div>
@@ -544,9 +554,7 @@ export function PricingCalculator() {
                     <span className="font-semibold">${baseFee.toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between text-lg">
-                    <span className="text-muted-foreground">
-                      Usage Charges
-                    </span>
+                    <span className="text-muted-foreground">Usage Charges</span>
                     <span className="font-semibold">
                       ${totalUsageCost.toFixed(2)}
                     </span>
@@ -573,7 +581,7 @@ export function PricingCalculator() {
                     <div>
                       <p className="mb-1 font-semibold text-green-600 dark:text-green-400">
                         You&apos;re saving $
-                        {(23880 - monthlyTotal * 12).toFixed(0)}/year vs
+                        {(23_880 - monthlyTotal * 12).toFixed(0)}/year vs
                         ServiceTitan (5 users)
                       </p>
                       <p className="text-muted-foreground text-xs">
@@ -585,7 +593,7 @@ export function PricingCalculator() {
                 </div>
 
                 <div className="mt-6">
-                  <Button size="lg" className="w-full" asChild>
+                  <Button asChild className="w-full" size="lg">
                     <Link href="/register">
                       Start Free Trial - No Credit Card Required
                       <ArrowRight className="ml-2 size-5" />
@@ -603,8 +611,8 @@ export function PricingCalculator() {
               <div className="space-y-2">
                 {usageCosts.map((item, i) => (
                   <div
-                    key={i}
                     className="flex items-center justify-between text-sm"
+                    key={i}
                   >
                     <span className="text-muted-foreground">
                       {item.name} ({item.quantity} × ${item.unitCost.toFixed(3)}
@@ -789,8 +797,8 @@ export function PricingCalculator() {
                 },
               ].map((faq, i) => (
                 <div
-                  key={i}
                   className="rounded-xl border border-primary/10 bg-background p-6"
+                  key={i}
                 >
                   <h3 className="mb-2 font-semibold">{faq.q}</h3>
                   <p className="text-muted-foreground text-sm">{faq.a}</p>
@@ -806,15 +814,14 @@ export function PricingCalculator() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-6 font-bold text-3xl md:text-4xl">
-              Ready to Save{" "}
-              <span className="text-primary">$20,000+/year?</span>
+              Ready to Save <span className="text-primary">$20,000+/year?</span>
             </h2>
             <p className="mb-8 text-foreground/70 text-xl">
-              Start your free trial today. No credit card required. No sales calls. Cancel
-              anytime.
+              Start your free trial today. No credit card required. No sales
+              calls. Cancel anytime.
             </p>
             <div className="flex justify-center">
-              <Button size="lg" className="h-14 px-12" asChild>
+              <Button asChild className="h-14 px-12" size="lg">
                 <Link href="/register">
                   Start Free Trial Now
                   <ArrowRight className="ml-2 size-5" />

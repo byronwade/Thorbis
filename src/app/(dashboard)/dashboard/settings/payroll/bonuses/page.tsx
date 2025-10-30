@@ -31,6 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type BonusSettings = {
   performanceBonusEnabled: boolean;
   performanceBonusType: "monthly" | "quarterly" | "annual";
@@ -43,7 +44,8 @@ type BonusSettings = {
   referralBonusAmount: number;
 };
 
-export default function BonusesSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function BonusesSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<BonusSettings>({
     performanceBonusEnabled: true,

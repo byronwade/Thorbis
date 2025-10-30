@@ -61,7 +61,8 @@ const automationSections = [
   },
 ];
 
-export default function AutomationSettingsPage() {  return (
+export default function AutomationSettingsPage() {
+  return (
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-3">

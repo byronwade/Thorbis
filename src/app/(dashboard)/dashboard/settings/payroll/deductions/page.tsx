@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type DeductionSettings = {
   uniformDeduction: boolean;
   uniformDeductionAmount: number;
@@ -41,7 +42,8 @@ type DeductionSettings = {
   cellPhoneStipendAmount: number;
 };
 
-export default function DeductionsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function DeductionsSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<DeductionSettings>({
     uniformDeduction: false,

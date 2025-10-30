@@ -1,22 +1,19 @@
-import { Suspense } from "react";
 import {
-  Phone,
   Calendar,
-  Users,
-  DollarSign,
-  MessageSquare,
-  Clock,
   CheckCircle2,
-  AlertCircle,
-  Search,
+  Clock,
+  DollarSign,
   FileText,
+  MessageSquare,
+  Phone,
+  Search,
+  Users,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { SectionHeader } from "@/components/dashboard/section-header";
-import { KPICardSkeleton, TableSkeleton } from "@/components/ui/skeletons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 /**
@@ -39,16 +36,20 @@ export default function CSRDashboard() {
       {/* Enhanced Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
-          <h1 className="font-bold text-4xl tracking-tight">Customer Service Hub</h1>
-          <Badge variant="outline" className="text-pink-600">
+          <h1 className="font-bold text-4xl tracking-tight">
+            Customer Service Hub
+          </h1>
+          <Badge className="text-pink-600" variant="outline">
             CSR View
           </Badge>
           <div className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-3 py-1">
             <div className="size-2 animate-pulse rounded-full bg-green-500" />
-            <span className="text-muted-foreground text-xs font-medium">Available</span>
+            <span className="font-medium text-muted-foreground text-xs">
+              Available
+            </span>
           </div>
         </div>
-        <p className="text-muted-foreground text-lg">{currentDate}</p>
+        <p className="text-lg text-muted-foreground">{currentDate}</p>
       </div>
 
       {/* Quick Customer Search */}
@@ -63,9 +64,7 @@ export default function CSRDashboard() {
                 type="search"
               />
             </div>
-            <Button size="lg">
-              Search
-            </Button>
+            <Button size="lg">Search</Button>
             <Button size="lg" variant="outline">
               New Customer
             </Button>
@@ -172,7 +171,9 @@ export default function CSRDashboard() {
                   <div className="flex-1">
                     <Badge variant="outline">Pending</Badge>
                     <p className="mt-1 font-bold text-sm">{callback.name}</p>
-                    <p className="text-muted-foreground text-xs">{callback.phone}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {callback.phone}
+                    </p>
                     <p className="mt-1 text-muted-foreground text-xs">
                       {callback.reason} • {callback.time}
                     </p>
@@ -202,16 +203,20 @@ export default function CSRDashboard() {
                 </div>
                 <div className="flex-1">
                   <Badge
-                    variant="outline"
                     className="border-green-600 text-green-600"
+                    variant="outline"
                   >
                     High Value
                   </Badge>
-                  <p className="mt-1 font-bold text-sm">HVAC System Replacement</p>
+                  <p className="mt-1 font-bold text-sm">
+                    HVAC System Replacement
+                  </p>
                   <p className="text-muted-foreground text-xs">
                     Bob Anderson • Sent 2 days ago
                   </p>
-                  <p className="mt-1 font-bold text-green-600 text-sm">$8,500</p>
+                  <p className="mt-1 font-bold text-green-600 text-sm">
+                    $8,500
+                  </p>
                 </div>
                 <Button size="sm" variant="outline">
                   Follow Up
@@ -412,7 +417,9 @@ export default function CSRDashboard() {
                 </div>
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground text-sm">Sent Today</span>
+                    <span className="text-muted-foreground text-sm">
+                      Sent Today
+                    </span>
                     <span className="font-bold">8</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -439,7 +446,10 @@ export default function CSRDashboard() {
                       You're exceeding targets!
                     </p>
                   </div>
-                  <Badge variant="outline" className="border-green-600 text-green-600">
+                  <Badge
+                    className="border-green-600 text-green-600"
+                    variant="outline"
+                  >
                     ⭐ Top Performer
                   </Badge>
                 </div>
@@ -506,11 +516,13 @@ export default function CSRDashboard() {
                 },
                 {
                   title: "Emergency Response",
-                  preview: "I understand this is urgent. Let me get you scheduled...",
+                  preview:
+                    "I understand this is urgent. Let me get you scheduled...",
                 },
                 {
                   title: "Pricing Questions",
-                  preview: "Our standard service call is $89, which includes...",
+                  preview:
+                    "Our standard service call is $89, which includes...",
                 },
                 {
                   title: "Booking Confirmation",
@@ -524,7 +536,9 @@ export default function CSRDashboard() {
                   <MessageSquare className="mt-0.5 size-5 text-blue-600" />
                   <div className="flex-1">
                     <p className="font-bold text-sm">{script.title}</p>
-                    <p className="text-muted-foreground text-xs">{script.preview}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {script.preview}
+                    </p>
                   </div>
                   <Button size="sm" variant="ghost">
                     View

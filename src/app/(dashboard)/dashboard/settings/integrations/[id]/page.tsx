@@ -61,7 +61,8 @@ const integrationSettingsMap: Record<string, React.ComponentType> = {
 // Constants
 const DISCONNECT_TIMEOUT_MS = 1500;
 
-export default function IntegrationSettingsPage() {  const params = useParams();
+export default function IntegrationSettingsPage() {
+  const params = useParams();
   const router = useRouter();
   const integrationId = params.id as string;
 

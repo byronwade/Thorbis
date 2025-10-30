@@ -51,6 +51,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const DEFAULT_INVOICE_PREFIX = "INV";
@@ -112,7 +113,8 @@ type InvoiceSettings = {
   thankYouMessage: string;
 };
 
-export default function InvoiceSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function InvoiceSettingsPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<InvoiceSettings>({
     // Invoice Numbering
     autoGenerateNumbers: true,

@@ -17,11 +17,12 @@ import {
   Calendar,
   Camera,
   CheckCircle2,
-  Clock,
   ClipboardList,
+  Clock,
   CreditCard,
   DollarSign,
   FileEdit,
+  FileSignature,
   FileSpreadsheet,
   FileText,
   Globe,
@@ -76,6 +77,7 @@ import {
   SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import { useChatStore } from "@/lib/store/chat-store";
 
 // Navigation sections for each route
@@ -212,6 +214,11 @@ const navigationSections = {
           title: "Estimates",
           url: "/dashboard/work/estimates",
           icon: FileText,
+        },
+        {
+          title: "Contracts",
+          url: "/dashboard/work/contracts",
+          icon: FileSignature,
         },
         {
           title: "Purchase Orders",
@@ -2269,7 +2276,6 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   return "today";
 }
 
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const currentSection = getCurrentSection(pathname);
@@ -2286,6 +2292,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const isAISection = currentSection === "ai";
   const isReportingSection = currentSection === "reporting";
+  const isJobDetailsSection = currentSection === "jobDetails";
 
   // Use grouped navigation for settings, ai, work, customers, communication, finance, marketing, shop, tools, and jobDetails sections
   const useGroupedNav =
@@ -2311,6 +2318,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {isReportingSection ? (
           // Use custom collapsible navigation for reporting
           <ReportingSidebarNav />
+        ) : isJobDetailsSection ? (
+          // Use dynamic widget navigation for job details (uses NavGrouped internally)
+          <JobDetailsNav />
         ) : hasCustomConfig ? (
           // Use custom page configuration from layout
           <NavFlexible

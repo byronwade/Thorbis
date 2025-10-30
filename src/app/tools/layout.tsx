@@ -31,9 +31,7 @@ export default function ToolsLayout({
           </aside>
 
           {/* Main Content Area */}
-          <main className="flex-1 py-6 lg:pl-10">
-            {children}
-          </main>
+          <main className="flex-1 py-6 lg:pl-10">{children}</main>
         </div>
       </div>
     </div>

@@ -38,6 +38,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 export const revalidate = 900; // Revalidate every 15 minutes
+
 import {
   Table,
   TableBody,
@@ -46,6 +47,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 // Mock employee data
 const employees = [
   {
@@ -100,7 +102,8 @@ const employees = [
   },
 ];
 
-export default function PayrollEmployeesPage() {  return (
+export default function PayrollEmployeesPage() {
+  return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

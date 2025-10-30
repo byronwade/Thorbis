@@ -270,7 +270,7 @@ export default async function CustomerDetailsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: customerId } = await params;  // Calculate customer stats
+  const { id: customerId } = await params; // Calculate customer stats
   const totalRevenue = mockInvoices.reduce(
     (sum, inv) => sum + (inv.totalAmount || 0),
     0

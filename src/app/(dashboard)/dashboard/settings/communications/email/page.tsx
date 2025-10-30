@@ -30,9 +30,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 const MAX_SIGNATURE_LENGTH = 300;
 
-export default function EmailSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function EmailSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     companyEmail: "info@yourcompany.com",
     replyToEmail: "support@yourcompany.com",

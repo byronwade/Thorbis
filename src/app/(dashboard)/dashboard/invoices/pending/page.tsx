@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/card";
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default function PendingInvoicesPage() {  return (
+export default function PendingInvoicesPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Pending Invoices</h1>

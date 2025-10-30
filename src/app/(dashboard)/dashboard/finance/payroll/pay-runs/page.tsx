@@ -77,7 +77,8 @@ const payRuns: PayRun[] = [
   },
 ];
 
-export default function PayRunsPage() {  const columns: DataTableColumn<PayRun>[] = [
+export default function PayRunsPage() {
+  const columns: DataTableColumn<PayRun>[] = [
     {
       key: "period",
       header: "Period",

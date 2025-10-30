@@ -1,9 +1,18 @@
 "use client";
 
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  Loader2,
+  Mail,
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+import { signInWithOAuth, signUp } from "@/actions/auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,24 +23,59 @@ import { Separator } from "@/components/ui/separator";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    agreeToTerms: false,
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      console.log("📝 Submitting signup form...");
+
+      const result = await signUp(formData);
+      console.log("📨 Signup result:", result);
+
+      if (!result.success && result.error) {
+        console.error("❌ Signup error:", result.error);
+        setError(result.error);
+        setIsLoading(false);
+      } else if (result.success && result.data?.requiresEmailConfirmation) {
+        console.log("📧 Email confirmation required");
+        setSuccess(result.data.message);
+        setIsLoading(false);
+      } else if (result.success) {
+        console.log("✅ Signup successful, should redirect...");
+        // Server action should redirect
+      }
+      // If successful and no email confirmation required, the server action will redirect
+    } catch (err) {
+      console.error("💥 Unexpected error:", err);
+      setError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
-    // TODO: Implement authentication
+  const handleOAuthSignUp = async (provider: "google" | "facebook") => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await signInWithOAuth(provider);
+
+      if (!result.success && result.error) {
+        setError(result.error);
+        setIsLoading(false);
+      }
+      // If successful, the server action will redirect to OAuth provider
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -54,11 +98,11 @@ export default function RegisterPage() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <Image
-                src="/ThorbisLogo.webp"
                 alt="Thorbis Logo"
-                width={34}
-                height={34}
                 className="size-8.5"
+                height={34}
+                src="/ThorbisLogo.webp"
+                width={34}
               />
               <span className="font-semibold text-xl">Thorbis</span>
             </div>
@@ -73,15 +117,50 @@ export default function RegisterPage() {
               </p>
             </div>
 
+            {/* Error/Success Alerts */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {success && (
+              <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 p-6 backdrop-blur-sm">
+                {/* Animated background effect */}
+                <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-blue-500/5 via-cyan-500/5 to-blue-500/5" />
+
+                {/* Content */}
+                <div className="relative flex gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500">
+                      <Mail className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <h3 className="font-semibold text-lg">Check Your Email</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {success}
+                    </p>
+                    <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                      <div className="h-1 w-1 animate-pulse rounded-full bg-blue-500" />
+                      <span>Didn't receive it? Check your spam folder</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Social Registration Button */}
             <Button
               className="w-full"
-              onClick={() => {
-                // TODO: Implement Google OAuth
-              }}
+              disabled={isLoading}
+              onClick={() => handleOAuthSignUp("google")}
               variant="outline"
             >
-              Login with Google
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              Sign up with Google
             </Button>
 
             {/* Divider */}
@@ -97,12 +176,12 @@ export default function RegisterPage() {
               <div className="space-y-1">
                 <Label htmlFor="username">Name*</Label>
                 <Input
+                  disabled={isLoading}
                   id="username"
-                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  name="name"
                   placeholder="Enter your name"
                   required
                   type="text"
-                  value={formData.name}
                 />
               </div>
 
@@ -110,12 +189,12 @@ export default function RegisterPage() {
               <div className="space-y-1">
                 <Label htmlFor="userEmail">Email address*</Label>
                 <Input
+                  disabled={isLoading}
                   id="userEmail"
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  name="email"
                   placeholder="Enter your email address"
                   required
                   type="email"
-                  value={formData.email}
                 />
               </div>
 
@@ -125,17 +204,16 @@ export default function RegisterPage() {
                 <div className="relative">
                   <Input
                     className="pr-9"
+                    disabled={isLoading}
                     id="password"
-                    onChange={(e) =>
-                      handleInputChange("password", e.target.value)
-                    }
+                    name="password"
                     placeholder="••••••••••••••••"
                     required
                     type={showPassword ? "text" : "password"}
-                    value={formData.password}
                   />
                   <Button
                     className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                    disabled={isLoading}
                     onClick={() => setShowPassword(!showPassword)}
                     size="sm"
                     type="button"
@@ -151,25 +229,34 @@ export default function RegisterPage() {
                     </span>
                   </Button>
                 </div>
+                <p className="mt-1 text-muted-foreground text-xs">
+                  Must be 8+ characters with uppercase, lowercase, and number
+                </p>
               </div>
 
               {/* Terms Checkbox */}
               <div className="flex items-center gap-3">
                 <Checkbox
-                  checked={formData.agreeToTerms}
+                  disabled={isLoading}
                   id="rememberMe"
-                  onCheckedChange={(checked) =>
-                    handleInputChange("agreeToTerms", checked)
-                  }
+                  name="terms"
+                  required
                 />
                 <Label className="text-sm" htmlFor="rememberMe">
-                  I agree to all Term, privacy Policy and Fees
+                  I agree to all Terms, Privacy Policy and Fees
                 </Label>
               </div>
 
               {/* Submit Button */}
-              <Button className="w-full" type="submit">
-                Create Account
+              <Button className="w-full" disabled={isLoading} type="submit">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </form>
 

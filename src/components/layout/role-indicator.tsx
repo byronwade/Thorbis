@@ -1,9 +1,9 @@
 "use client";
 
 import { Shield } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { ROLE_CONFIGS } from "@/types/roles";
-import { Badge } from "@/components/ui/badge";
 
 /**
  * Role Indicator Component - Client Component
@@ -33,8 +33,8 @@ export function RoleIndicator() {
 
   return (
     <Badge
-      variant="outline"
       className={`flex items-center gap-1.5 ${colorClasses[config.color as keyof typeof colorClasses] || colorClasses.blue}`}
+      variant="outline"
     >
       <Shield className="size-3" />
       <span className="text-xs">{config.label}</span>

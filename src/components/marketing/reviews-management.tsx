@@ -10,13 +10,13 @@
  * - Bulk response templates
  */
 
+import { Facebook, Search, Star, ThumbsUp } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Facebook, Search, Star, ThumbsUp } from "lucide-react";
-import { useState } from "react";
 
 type ReviewPlatform = "google" | "facebook" | "yelp";
 type ReviewSentiment = "positive" | "neutral" | "negative";
@@ -53,7 +53,8 @@ const MOCK_REVIEWS: Review[] = [
     text: "Great experience overall. Only complaint is the wait time for scheduling, but the actual service was fantastic.",
     date: new Date(Date.now() - 24 * 60 * 60 * 1000),
     responded: true,
-    response: "Thank you for your feedback, Sarah! We're working on improving our scheduling times.",
+    response:
+      "Thank you for your feedback, Sarah! We're working on improving our scheduling times.",
   },
   {
     id: "3",
@@ -78,7 +79,9 @@ const getPlatformIcon = (platform: ReviewPlatform) => {
   }
 };
 
-const getSentimentColor = (sentiment: ReviewSentiment): "default" | "secondary" | "destructive" => {
+const getSentimentColor = (
+  sentiment: ReviewSentiment
+): "default" | "secondary" | "destructive" => {
   switch (sentiment) {
     case "positive":
       return "default";
@@ -102,9 +105,10 @@ export function ReviewsManagement() {
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
   const [responseText, setResponseText] = useState("");
 
-  const filteredReviews = activeTab === "all"
-    ? MOCK_REVIEWS
-    : MOCK_REVIEWS.filter((r) => r.platform === activeTab);
+  const filteredReviews =
+    activeTab === "all"
+      ? MOCK_REVIEWS
+      : MOCK_REVIEWS.filter((r) => r.platform === activeTab);
 
   const avgRating = (
     MOCK_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / MOCK_REVIEWS.length
@@ -129,7 +133,9 @@ export function ReviewsManagement() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Google Reviews</CardTitle>
+            <CardTitle className="font-medium text-sm">
+              Google Reviews
+            </CardTitle>
             <Search className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -142,7 +148,9 @@ export function ReviewsManagement() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">Facebook Reviews</CardTitle>
+            <CardTitle className="font-medium text-sm">
+              Facebook Reviews
+            </CardTitle>
             <Facebook className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -160,7 +168,12 @@ export function ReviewsManagement() {
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              {Math.round((MOCK_REVIEWS.filter((r) => r.responded).length / MOCK_REVIEWS.length) * 100)}%
+              {Math.round(
+                (MOCK_REVIEWS.filter((r) => r.responded).length /
+                  MOCK_REVIEWS.length) *
+                  100
+              )}
+              %
             </div>
             <p className="text-muted-foreground text-xs">Within 24 hours</p>
           </CardContent>
@@ -170,8 +183,8 @@ export function ReviewsManagement() {
       {/* Platform Tabs */}
       <Tabs
         className="flex h-full flex-col"
-        value={activeTab}
         onValueChange={(value) => setActiveTab(value as ReviewPlatform | "all")}
+        value={activeTab}
       >
         <div className="border-b px-4">
           <TabsList className="h-12 w-full justify-start rounded-none border-0 bg-transparent p-0">
@@ -205,11 +218,15 @@ export function ReviewsManagement() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold">{review.author}</span>
-                            <Badge variant="outline" className="capitalize">
+                            <span className="font-semibold">
+                              {review.author}
+                            </span>
+                            <Badge className="capitalize" variant="outline">
                               {review.platform}
                             </Badge>
-                            <Badge variant={getSentimentColor(review.sentiment)}>
+                            <Badge
+                              variant={getSentimentColor(review.sentiment)}
+                            >
                               {review.sentiment}
                             </Badge>
                           </div>
@@ -217,12 +234,12 @@ export function ReviewsManagement() {
                             <div className="flex items-center">
                               {[...Array(5)].map((_, i) => (
                                 <Star
-                                  key={i}
                                   className={`h-3 w-3 ${
                                     i < review.rating
                                       ? "fill-yellow-500 text-yellow-500"
                                       : "text-muted"
                                   }`}
+                                  key={i}
                                 />
                               ))}
                             </div>
@@ -238,8 +255,12 @@ export function ReviewsManagement() {
 
                     {review.responded && review.response && (
                       <div className="rounded-lg border bg-muted/50 p-3">
-                        <p className="mb-1 font-medium text-sm">Your Response:</p>
-                        <p className="text-muted-foreground text-sm">{review.response}</p>
+                        <p className="mb-1 font-medium text-sm">
+                          Your Response:
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          {review.response}
+                        </p>
                       </div>
                     )}
 

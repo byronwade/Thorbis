@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -48,19 +48,19 @@ export default function DashboardError({
         <CardContent className="space-y-4">
           {process.env.NODE_ENV === "development" && (
             <div className="rounded-lg bg-muted p-4">
-              <p className="font-mono text-sm text-muted-foreground">
+              <p className="font-mono text-muted-foreground text-sm">
                 {error.message}
               </p>
             </div>
           )}
           <div className="flex gap-2">
-            <Button onClick={reset} variant="default" className="flex-1">
+            <Button className="flex-1" onClick={reset} variant="default">
               Try again
             </Button>
             <Button
+              className="flex-1"
               onClick={() => (window.location.href = "/dashboard")}
               variant="outline"
-              className="flex-1"
             >
               Go to Dashboard
             </Button>

@@ -67,7 +67,10 @@ export async function updateEmailSettings(
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || "Validation error" };
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
     }
     return { success: false, error: "Failed to update settings" };
   }
@@ -96,7 +99,10 @@ export async function updateNotificationSettings(
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || "Validation error" };
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
     }
     return { success: false, error: "Failed to update settings" };
   }
@@ -125,7 +131,10 @@ export async function updateCompanySettings(
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || "Validation error" };
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
     }
     return { success: false, error: "Failed to update settings" };
   }

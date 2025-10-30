@@ -6,7 +6,7 @@
  * Similar to iOS home screen grid system
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type GridDimensions = {
   cols: number;

@@ -31,7 +31,7 @@ export function MarketingComingSoon() {
       {/* Background gradient blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       {/* Main content */}
@@ -63,7 +63,9 @@ export function MarketingComingSoon() {
             </span>
           </h1>
           <p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">
-            A comprehensive marketing suite to grow your business with integrated tools for lead management, review monitoring, campaign automation, and multi-channel marketing.
+            A comprehensive marketing suite to grow your business with
+            integrated tools for lead management, review monitoring, campaign
+            automation, and multi-channel marketing.
           </p>
         </div>
 
@@ -71,9 +73,11 @@ export function MarketingComingSoon() {
         <div className="mx-auto max-w-5xl space-y-8 pt-8">
           {/* Primary Features */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Core Marketing Features</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Core Marketing Features
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all duration-300 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-pink-500/10">
                     <Users className="size-6 text-pink-600 dark:text-pink-400" />
@@ -81,23 +85,27 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Lead Management</h3>
                 <p className="text-muted-foreground text-sm">
-                  Capture, track, and nurture leads from all channels with automated scoring and qualification
+                  Capture, track, and nurture leads from all channels with
+                  automated scoring and qualification
                 </p>
               </div>
 
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-6 transition-all duration-300 hover:border-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-yellow-500/10">
                     <Star className="size-6 text-yellow-600 dark:text-yellow-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-lg">Review Management</h3>
+                <h3 className="mb-2 font-semibold text-lg">
+                  Review Management
+                </h3>
                 <p className="text-muted-foreground text-sm">
-                  Monitor and respond to reviews across Google, Facebook, and Yelp from a single dashboard
+                  Monitor and respond to reviews across Google, Facebook, and
+                  Yelp from a single dashboard
                 </p>
               </div>
 
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
                     <Send className="size-6 text-blue-600 dark:text-blue-400" />
@@ -105,19 +113,23 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Campaigns</h3>
                 <p className="text-muted-foreground text-sm">
-                  Create and automate multi-channel marketing campaigns via email, SMS, and direct mail
+                  Create and automate multi-channel marketing campaigns via
+                  email, SMS, and direct mail
                 </p>
               </div>
 
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green-500/20 hover:shadow-lg hover:shadow-green-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
                     <Target className="size-6 text-green-600 dark:text-green-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-lg">Customer Outreach</h3>
+                <h3 className="mb-2 font-semibold text-lg">
+                  Customer Outreach
+                </h3>
                 <p className="text-muted-foreground text-sm">
-                  Targeted outreach to customers with personalized messaging and automated follow-ups
+                  Targeted outreach to customers with personalized messaging and
+                  automated follow-ups
                 </p>
               </div>
             </div>
@@ -125,7 +137,9 @@ export function MarketingComingSoon() {
 
           {/* Lead Management Features */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Lead Management Tools</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Lead Management Tools
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 text-left">
                 <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -133,7 +147,8 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Lead Capture</h3>
                 <p className="text-muted-foreground text-sm">
-                  Capture leads from website forms, phone calls, and online ads automatically
+                  Capture leads from website forms, phone calls, and online ads
+                  automatically
                 </p>
               </div>
 
@@ -143,7 +158,8 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Lead Scoring</h3>
                 <p className="text-muted-foreground text-sm">
-                  Automatically score and prioritize leads based on behavior and engagement
+                  Automatically score and prioritize leads based on behavior and
+                  engagement
                 </p>
               </div>
 
@@ -153,7 +169,8 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Lead Nurturing</h3>
                 <p className="text-muted-foreground text-sm">
-                  Automated nurture sequences to convert leads into paying customers
+                  Automated nurture sequences to convert leads into paying
+                  customers
                 </p>
               </div>
             </div>
@@ -169,12 +186,17 @@ export function MarketingComingSoon() {
                     <Star className="size-6 text-yellow-600 dark:text-yellow-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Multi-Platform Monitoring</h3>
-                    <p className="text-muted-foreground text-sm">Real-time tracking</p>
+                    <h3 className="font-semibold text-lg">
+                      Multi-Platform Monitoring
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Real-time tracking
+                    </p>
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  Monitor reviews from Google, Facebook, Yelp, and more from a single unified dashboard
+                  Monitor reviews from Google, Facebook, Yelp, and more from a
+                  single unified dashboard
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/10 px-2 py-1 text-xs">
@@ -199,11 +221,14 @@ export function MarketingComingSoon() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Smart Responses</h3>
-                    <p className="text-muted-foreground text-sm">AI-powered replies</p>
+                    <p className="text-muted-foreground text-sm">
+                      AI-powered replies
+                    </p>
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  AI-suggested responses and templates for quick, professional replies to all reviews
+                  AI-suggested responses and templates for quick, professional
+                  replies to all reviews
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="rounded-full bg-blue-500/10 px-2 py-1 text-xs">
@@ -256,7 +281,9 @@ export function MarketingComingSoon() {
 
           {/* Analytics & Reporting */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Analytics & Insights</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Analytics & Insights
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 text-left">
                 <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -264,7 +291,8 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Campaign Performance</h3>
                 <p className="text-muted-foreground text-sm">
-                  Track ROI, conversion rates, and engagement across all campaigns
+                  Track ROI, conversion rates, and engagement across all
+                  campaigns
                 </p>
               </div>
 
@@ -274,7 +302,8 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Lead Analytics</h3>
                 <p className="text-muted-foreground text-sm">
-                  Understand lead sources, conversion funnels, and customer journey
+                  Understand lead sources, conversion funnels, and customer
+                  journey
                 </p>
               </div>
 
@@ -284,7 +313,8 @@ export function MarketingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Reputation Score</h3>
                 <p className="text-muted-foreground text-sm">
-                  Monitor your online reputation with real-time scoring and alerts
+                  Monitor your online reputation with real-time scoring and
+                  alerts
                 </p>
               </div>
             </div>
@@ -302,37 +332,61 @@ export function MarketingComingSoon() {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Lead Management:</span> Capture leads from all sources, score automatically, and convert with intelligent nurturing sequences
+                  <span className="font-medium text-foreground">
+                    Lead Management:
+                  </span>{" "}
+                  Capture leads from all sources, score automatically, and
+                  convert with intelligent nurturing sequences
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Review Management:</span> Monitor and respond to reviews across Google, Facebook, and Yelp from one dashboard
+                  <span className="font-medium text-foreground">
+                    Review Management:
+                  </span>{" "}
+                  Monitor and respond to reviews across Google, Facebook, and
+                  Yelp from one dashboard
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Multi-Channel Campaigns:</span> Create email, SMS, and direct mail campaigns with drag-and-drop builder and automation
+                  <span className="font-medium text-foreground">
+                    Multi-Channel Campaigns:
+                  </span>{" "}
+                  Create email, SMS, and direct mail campaigns with
+                  drag-and-drop builder and automation
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Customer Outreach:</span> Targeted campaigns for maintenance reminders, special offers, and customer re-engagement
+                  <span className="font-medium text-foreground">
+                    Customer Outreach:
+                  </span>{" "}
+                  Targeted campaigns for maintenance reminders, special offers,
+                  and customer re-engagement
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Analytics & ROI:</span> Track campaign performance, lead conversion rates, and marketing ROI in real-time
+                  <span className="font-medium text-foreground">
+                    Analytics & ROI:
+                  </span>{" "}
+                  Track campaign performance, lead conversion rates, and
+                  marketing ROI in real-time
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Reputation Management:</span> Real-time alerts for new reviews with AI-powered response suggestions
+                  <span className="font-medium text-foreground">
+                    Reputation Management:
+                  </span>{" "}
+                  Real-time alerts for new reviews with AI-powered response
+                  suggestions
                 </p>
               </div>
             </div>

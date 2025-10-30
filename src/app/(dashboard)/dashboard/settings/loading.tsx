@@ -16,7 +16,10 @@ export default function SettingsLoading() {
       {/* Settings Grid Skeleton */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="h-32 animate-pulse rounded-lg border bg-muted" />
+          <div
+            className="h-32 animate-pulse rounded-lg border bg-muted"
+            key={i}
+          />
         ))}
       </div>
     </div>

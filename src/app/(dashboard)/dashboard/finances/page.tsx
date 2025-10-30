@@ -10,7 +10,8 @@
 
 export const revalidate = 900; // Revalidate every 15 minutes
 
-export default function FinancesPage() {  return (
+export default function FinancesPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl text-foreground">Finances</h1>

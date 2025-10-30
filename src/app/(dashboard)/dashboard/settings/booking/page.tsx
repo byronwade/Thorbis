@@ -49,6 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const MIN_BOOKING_WINDOW = 1;
 const MAX_BOOKING_WINDOW = 365;
@@ -99,7 +100,8 @@ type CompanyProfile = {
   state: string;
 };
 
-export default function BookingSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function BookingSettingsPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mock company profile settings (would come from API/database)
   const companyProfile: CompanyProfile = {

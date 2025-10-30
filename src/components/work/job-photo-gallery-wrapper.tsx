@@ -12,7 +12,7 @@
  * Server Components to Client Components in Next.js 16+.
  */
 
-import { PhotoGallery, type JobPhoto } from "./job-details/PhotoGallery";
+import { type JobPhoto, PhotoGallery } from "./job-details/PhotoGallery";
 
 type JobPhotoGalleryWrapperProps = {
   photos: JobPhoto[];
@@ -40,11 +40,11 @@ export function JobPhotoGalleryWrapper({
 
   return (
     <PhotoGallery
-      photos={photos}
-      onUpload={handleUpload}
+      className={className}
       onDelete={handleDelete}
       onDownloadAll={handleDownloadAll}
-      className={className}
+      onUpload={handleUpload}
+      photos={photos}
     />
   );
 }

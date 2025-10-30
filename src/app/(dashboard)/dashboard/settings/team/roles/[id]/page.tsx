@@ -33,6 +33,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+
 type PermissionCategory = {
   id: string;
   label: string;
@@ -205,7 +206,8 @@ export default function RoleDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) {  const resolvedParams = use(params);
+}) {
+  const resolvedParams = use(params);
   const isNewRole = resolvedParams.id === "new";
 
   const [roleForm, setRoleForm] = useState({

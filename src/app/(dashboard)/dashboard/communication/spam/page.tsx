@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Spam Page - Client Component
  *

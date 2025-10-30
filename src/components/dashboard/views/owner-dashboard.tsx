@@ -1,20 +1,20 @@
-import { Suspense } from "react";
 import {
-  DollarSign,
-  TrendingUp,
-  Users,
   AlertTriangle,
+  BarChart3,
   Calendar,
   CreditCard,
-  BarChart3,
+  DollarSign,
   PiggyBank,
+  TrendingUp,
+  Users,
 } from "lucide-react";
+import { Suspense } from "react";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { SectionHeader } from "@/components/dashboard/section-header";
-import { ChartSkeleton, KPICardSkeleton } from "@/components/ui/skeletons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartSkeleton } from "@/components/ui/skeletons";
 
 /**
  * Owner Dashboard - Server Component
@@ -36,12 +36,14 @@ export default function OwnerDashboard() {
       {/* Enhanced Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
-          <h1 className="font-bold text-4xl tracking-tight">Business Overview</h1>
-          <Badge variant="outline" className="text-purple-600">
+          <h1 className="font-bold text-4xl tracking-tight">
+            Business Overview
+          </h1>
+          <Badge className="text-purple-600" variant="outline">
             Owner View
           </Badge>
         </div>
-        <p className="text-muted-foreground text-lg">{currentDate}</p>
+        <p className="text-lg text-muted-foreground">{currentDate}</p>
       </div>
 
       {/* Critical Financial Alerts */}
@@ -61,7 +63,7 @@ export default function OwnerDashboard() {
                 $18,500 needed - Current balance: $45,230
               </p>
             </div>
-            <Badge variant="outline" className="text-green-600">
+            <Badge className="text-green-600" variant="outline">
               COVERED
             </Badge>
           </div>
@@ -73,7 +75,7 @@ export default function OwnerDashboard() {
                 $23,400 over 30 days - Collection needed
               </p>
             </div>
-            <Badge variant="outline" className="text-yellow-600">
+            <Badge className="text-yellow-600" variant="outline">
               ACTION NEEDED
             </Badge>
           </div>
@@ -236,7 +238,9 @@ export default function OwnerDashboard() {
         <div className="space-y-3">
           <div>
             <h2 className="font-semibold text-xl">Revenue Trend</h2>
-            <p className="text-muted-foreground text-sm">Last 30 days performance</p>
+            <p className="text-muted-foreground text-sm">
+              Last 30 days performance
+            </p>
           </div>
           <Suspense fallback={<ChartSkeleton />}>
             <RevenueChart />
@@ -246,7 +250,9 @@ export default function OwnerDashboard() {
         <div className="space-y-3">
           <div>
             <h2 className="font-semibold text-xl">Cash Flow Forecast</h2>
-            <p className="text-muted-foreground text-sm">Next 30 days projection</p>
+            <p className="text-muted-foreground text-sm">
+              Next 30 days projection
+            </p>
           </div>
           <Card>
             <CardContent className="pt-6">
@@ -258,7 +264,9 @@ export default function OwnerDashboard() {
                   <span className="font-bold text-green-600">+$145,000</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">Payroll (2x)</span>
+                  <span className="text-muted-foreground text-sm">
+                    Payroll (2x)
+                  </span>
                   <span className="font-bold text-red-600">-$37,000</span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -275,8 +283,12 @@ export default function OwnerDashboard() {
                 </div>
                 <div className="border-t" />
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm">Projected Balance (30 days)</span>
-                  <span className="font-bold text-xl text-green-600">$86,230</span>
+                  <span className="font-bold text-sm">
+                    Projected Balance (30 days)
+                  </span>
+                  <span className="font-bold text-green-600 text-xl">
+                    $86,230
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -294,11 +306,13 @@ export default function OwnerDashboard() {
             <div className="space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="font-bold text-3xl">47</span>
-                <span className="text-muted-foreground text-sm">new customers</span>
+                <span className="text-muted-foreground text-sm">
+                  new customers
+                </span>
               </div>
               <p className="text-muted-foreground text-xs">This month</p>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="text-green-600">
+                <Badge className="text-green-600" variant="outline">
                   +24% vs last month
                 </Badge>
               </div>
@@ -314,11 +328,13 @@ export default function OwnerDashboard() {
             <div className="space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="font-bold text-3xl">94%</span>
-                <span className="text-muted-foreground text-sm">retention rate</span>
+                <span className="text-muted-foreground text-sm">
+                  retention rate
+                </span>
               </div>
               <p className="text-muted-foreground text-xs">Last 12 months</p>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="text-green-600">
+                <Badge className="text-green-600" variant="outline">
                   Above industry avg (85%)
                 </Badge>
               </div>
@@ -334,11 +350,13 @@ export default function OwnerDashboard() {
             <div className="space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="font-bold text-3xl">$2,847</span>
-                <span className="text-muted-foreground text-sm">lifetime value</span>
+                <span className="text-muted-foreground text-sm">
+                  lifetime value
+                </span>
               </div>
               <p className="text-muted-foreground text-xs">Average LTV</p>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="text-green-600">
+                <Badge className="text-green-600" variant="outline">
                   +18% year over year
                 </Badge>
               </div>

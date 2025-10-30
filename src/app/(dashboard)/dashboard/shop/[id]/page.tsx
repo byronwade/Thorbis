@@ -7,9 +7,17 @@
  * - ISR revalidation configured
  */
 
-import { Check, CreditCard, Package, ShoppingCart, Star, Truck } from "lucide-react";
+import {
+  Check,
+  CreditCard,
+  Package,
+  ShoppingCart,
+  Star,
+  Truck,
+} from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +26,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export const revalidate = 3600; // Revalidate every hour
@@ -183,7 +190,7 @@ const products: Record<string, Product> = {
       { label: "Sizes", value: "Custom sizing available" },
       { label: "Installation", value: "DIY or professional install" },
       { label: "Removal", value: "Clean removal, no residue" },
-      { label: "Magnetic Option", value: "12\" x 18\" or 12\" x 24\"" },
+      { label: "Magnetic Option", value: '12" x 18" or 12" x 24"' },
       { label: "Warranty", value: "2 year warranty against fading" },
     ],
   },
@@ -239,7 +246,7 @@ const products: Record<string, Product> = {
       "Pre-numbered for organization",
       "Professional layout design",
       "Perforated for easy removal",
-      "Compact 5.5\" x 8.5\" size",
+      'Compact 5.5" x 8.5" size',
       "100 books (5,000 total invoices)",
       "Bulk pricing available",
     ],
@@ -374,12 +381,12 @@ export default async function ProductDetailPage({
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
-                    key={i}
                     className={`h-5 w-5 ${
                       i < Math.floor(product.rating)
                         ? "fill-yellow-400 text-yellow-400"
                         : "text-muted"
                     }`}
+                    key={i}
                   />
                 ))}
               </div>
@@ -454,9 +461,9 @@ export default async function ProductDetailPage({
               <h3 className="mb-3 font-semibold text-lg">Key Features</h3>
               <ul className="space-y-2">
                 {product.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2">
+                  <li className="flex items-start gap-2" key={index}>
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       {feature}
                     </span>
                   </li>
@@ -475,8 +482,8 @@ export default async function ProductDetailPage({
             <dl className="divide-y">
               {product.specifications.map((spec, index) => (
                 <div
-                  key={index}
                   className="flex justify-between gap-4 py-3 text-sm"
+                  key={index}
                 >
                   <dt className="font-medium">{spec.label}</dt>
                   <dd className="text-right text-muted-foreground">
@@ -502,7 +509,7 @@ export default async function ProductDetailPage({
             <div className="space-y-2">
               <Package className="h-8 w-8 text-primary" />
               <h3 className="font-semibold">Quality Guaranteed</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 We only sell products we'd use in our own businesses. Every item
                 is tested for quality and durability.
               </p>
@@ -510,7 +517,7 @@ export default async function ProductDetailPage({
             <div className="space-y-2">
               <CreditCard className="h-8 w-8 text-primary" />
               <h3 className="font-semibold">Net-30 Terms Available</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Approved businesses can pay on account with Net-30 terms. Focus
                 on growing your business.
               </p>
@@ -518,7 +525,7 @@ export default async function ProductDetailPage({
             <div className="space-y-2">
               <Truck className="h-8 w-8 text-primary" />
               <h3 className="font-semibold">Fast, Free Shipping</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Free shipping on orders over $100. Most items ship within 1
                 business day.
               </p>

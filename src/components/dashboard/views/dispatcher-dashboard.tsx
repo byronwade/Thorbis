@@ -1,20 +1,18 @@
-import { Suspense } from "react";
 import {
-  MapPin,
-  Clock,
   AlertCircle,
-  Users,
-  Radio,
+  Clock,
+  MapPin,
   Navigation,
-  Zap,
   Phone,
+  Radio,
+  Users,
+  Zap,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { SectionHeader } from "@/components/dashboard/section-header";
-import { KPICardSkeleton, TableSkeleton } from "@/components/ui/skeletons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 /**
  * Dispatcher Dashboard - Server Component
@@ -36,16 +34,20 @@ export default function DispatcherDashboard() {
       {/* Enhanced Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
-          <h1 className="font-bold text-4xl tracking-tight">Dispatch Command Center</h1>
-          <Badge variant="outline" className="text-blue-600">
+          <h1 className="font-bold text-4xl tracking-tight">
+            Dispatch Command Center
+          </h1>
+          <Badge className="text-blue-600" variant="outline">
             Dispatcher View
           </Badge>
           <div className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-3 py-1">
             <div className="size-2 animate-pulse rounded-full bg-green-500" />
-            <span className="text-muted-foreground text-xs font-medium">Live</span>
+            <span className="font-medium text-muted-foreground text-xs">
+              Live
+            </span>
           </div>
         </div>
-        <p className="text-muted-foreground text-lg">{currentDate}</p>
+        <p className="text-lg text-muted-foreground">{currentDate}</p>
       </div>
 
       {/* Emergency Alert Banner */}
@@ -62,7 +64,7 @@ export default function DispatcherDashboard() {
               </p>
             </div>
           </div>
-          <Button variant="destructive" size="sm">
+          <Button size="sm" variant="destructive">
             <Phone className="mr-2 size-4" />
             Dispatch Now
           </Button>
@@ -147,9 +149,13 @@ export default function DispatcherDashboard() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <Badge variant="destructive">EMERGENCY</Badge>
-                    <span className="text-muted-foreground text-xs">18 min ago</span>
+                    <span className="text-muted-foreground text-xs">
+                      18 min ago
+                    </span>
                   </div>
-                  <p className="mt-1 font-bold text-sm">No Hot Water - Urgent</p>
+                  <p className="mt-1 font-bold text-sm">
+                    No Hot Water - Urgent
+                  </p>
                   <p className="text-muted-foreground text-xs">
                     Sarah Johnson • 123 Main St • Water heater failure
                   </p>
@@ -190,7 +196,9 @@ export default function DispatcherDashboard() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Standard</Badge>
-                      <span className="text-muted-foreground text-xs">{job.time}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {job.time}
+                      </span>
                     </div>
                     <p className="mt-1 font-bold text-sm">{job.issue}</p>
                     <p className="text-muted-foreground text-xs">
@@ -217,7 +225,11 @@ export default function DispatcherDashboard() {
             <CardContent className="space-y-3 pt-6">
               {/* Available Technicians */}
               {[
-                { name: "John Smith", status: "available", location: "Near downtown" },
+                {
+                  name: "John Smith",
+                  status: "available",
+                  location: "Near downtown",
+                },
                 {
                   name: "Mike Rodriguez",
                   status: "available",
@@ -235,8 +247,8 @@ export default function DispatcherDashboard() {
                     <p className="font-bold text-sm">{tech.name}</p>
                     <div className="flex items-center gap-2">
                       <Badge
-                        variant="outline"
                         className="border-green-600 text-green-600"
+                        variant="outline"
                       >
                         ✓ Available
                       </Badge>
@@ -282,7 +294,10 @@ export default function DispatcherDashboard() {
                   <div className="flex-1">
                     <p className="font-bold text-sm">{tech.name}</p>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-blue-600 text-blue-600">
+                      <Badge
+                        className="border-blue-600 text-blue-600"
+                        variant="outline"
+                      >
                         On Job
                       </Badge>
                       <span className="text-muted-foreground text-xs">
@@ -305,8 +320,8 @@ export default function DispatcherDashboard() {
                   <p className="font-bold text-sm">Chris Martinez</p>
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant="outline"
                       className="border-yellow-600 text-yellow-600"
+                      variant="outline"
                     >
                       ⚠ Running Late
                     </Badge>
@@ -338,19 +353,19 @@ export default function DispatcherDashboard() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <Phone className="mr-2 size-4" />
                 New Customer Call
               </Button>
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <Zap className="mr-2 size-4" />
                 Emergency Dispatch
               </Button>
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <Users className="mr-2 size-4" />
                 Send Bulk SMS
               </Button>
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <MapPin className="mr-2 size-4" />
                 View All Routes
               </Button>

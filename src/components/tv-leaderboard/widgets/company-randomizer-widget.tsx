@@ -10,12 +10,12 @@
  * Note: Converted to Server Component. Interactive randomization removed for performance.
  */
 
-import { Shuffle, Users, Coffee, Trophy } from "lucide-react";
+import { Coffee, Shuffle, Trophy, Users } from "lucide-react";
 import {
-  ResponsiveWidgetWrapper,
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
 
@@ -63,7 +63,9 @@ function getCategoryLabel(category?: "team" | "food" | "activity") {
   }
 }
 
-export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: CompanyRandomizerWidgetProps) {
+export function CompanyRandomizerWidget({
+  selected = DEFAULT_SELECTED,
+}: CompanyRandomizerWidgetProps) {
   return (
     <ResponsiveWidgetWrapper className="bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-background/80">
       <ResponsiveContent className="flex flex-col gap-3">
@@ -71,10 +73,12 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
         <div className="flex items-center gap-2">
           <ResponsiveIcon>{getCategoryIcon(selected.category)}</ResponsiveIcon>
           <ShowAt stage="full">
-            <ResponsiveText variant="title">Random {getCategoryLabel(selected.category)}</ResponsiveText>
+            <ResponsiveText variant="title">
+              Random {getCategoryLabel(selected.category)}
+            </ResponsiveText>
           </ShowAt>
           <ShowAt stage="comfortable">
-            <ResponsiveText variant="body" className="font-semibold">
+            <ResponsiveText className="font-semibold" variant="body">
               {getCategoryLabel(selected.category)}
             </ResponsiveText>
           </ShowAt>
@@ -90,10 +94,13 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
 
             {/* Selected item */}
             <div>
-              <ResponsiveText variant="caption" className="text-muted-foreground">
+              <ResponsiveText
+                className="text-muted-foreground"
+                variant="caption"
+              >
                 Selected
               </ResponsiveText>
-              <ResponsiveText variant="title" className="font-bold">
+              <ResponsiveText className="font-bold" variant="title">
                 {selected.label}
               </ResponsiveText>
             </div>
@@ -101,7 +108,10 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
             {/* Description */}
             {selected.description && (
               <div className="rounded-lg bg-background/50 px-4 py-2">
-                <ResponsiveText variant="caption" className="text-muted-foreground">
+                <ResponsiveText
+                  className="text-muted-foreground"
+                  variant="caption"
+                >
                   {selected.description}
                 </ResponsiveText>
               </div>
@@ -117,14 +127,17 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
               <div className="flex size-8 items-center justify-center rounded-full bg-primary/20">
                 {getCategoryIcon(selected.category)}
               </div>
-              <ResponsiveText variant="caption" className="text-muted-foreground">
+              <ResponsiveText
+                className="text-muted-foreground"
+                variant="caption"
+              >
                 {getCategoryLabel(selected.category)}
               </ResponsiveText>
             </div>
 
             {/* Selected */}
             <div className="rounded-lg bg-primary/10 p-3 text-center">
-              <ResponsiveText variant="body" className="font-bold">
+              <ResponsiveText className="font-bold" variant="body">
                 {selected.label}
               </ResponsiveText>
             </div>
@@ -137,7 +150,7 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
             <div className="flex size-6 items-center justify-center rounded-full bg-primary/20">
               {getCategoryIcon(selected.category)}
             </div>
-            <ResponsiveText variant="body" className="truncate font-bold">
+            <ResponsiveText className="truncate font-bold" variant="body">
               {selected.label}
             </ResponsiveText>
           </div>

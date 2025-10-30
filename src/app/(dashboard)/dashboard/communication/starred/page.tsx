@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Starred Messages Page - Client Component
  *

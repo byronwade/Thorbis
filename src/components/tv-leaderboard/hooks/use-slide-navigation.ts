@@ -1,11 +1,14 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type UseSlideNavigationProps = {
   slideCount: number;
   onInteraction?: () => void;
 };
 
-export function useSlideNavigation({ slideCount, onInteraction }: UseSlideNavigationProps) {
+export function useSlideNavigation({
+  slideCount,
+  onInteraction,
+}: UseSlideNavigationProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const goToSlide = useCallback(

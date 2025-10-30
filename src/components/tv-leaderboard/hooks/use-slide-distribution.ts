@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import type { Widget } from "../widget-types";
-import type { Slide } from "../slide-types";
 import { optimizeSlideDistribution } from "../slide-distributor";
+import type { Slide } from "../slide-types";
+import type { Widget } from "../widget-types";
 
 /**
  * Hook to automatically distribute widgets across slides

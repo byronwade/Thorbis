@@ -9,7 +9,14 @@
  * - Browser API access for enhanced UX
  */
 
-import { ChevronLeft, DollarSign, Mail, Package, User, Users } from "lucide-react";
+import {
+  ChevronLeft,
+  DollarSign,
+  Mail,
+  Package,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +33,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-export default function PurchaseOrderSettingsPage() {  const [requireApproval, setRequireApproval] = useState(true);
+export default function PurchaseOrderSettingsPage() {
+  const [requireApproval, setRequireApproval] = useState(true);
   const [approvalThreshold, setApprovalThreshold] = useState("500");
   const [autoGenerateEnabled, setAutoGenerateEnabled] = useState(false);
   const [autoGenerateThreshold, setAutoGenerateThreshold] = useState("100");
@@ -156,9 +164,7 @@ export default function PurchaseOrderSettingsPage() {  const [requireApproval, s
           {/* Auto-Generate Threshold */}
           {autoGenerateEnabled && (
             <div className="space-y-2">
-              <Label htmlFor="auto-threshold">
-                Auto-Generation Threshold
-              </Label>
+              <Label htmlFor="auto-threshold">Auto-Generation Threshold</Label>
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
                 <Input

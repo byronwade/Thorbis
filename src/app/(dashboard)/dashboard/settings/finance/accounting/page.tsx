@@ -30,7 +30,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
-export default function AccountingSettingsPage() {  const [hasUnsavedChanges, _setHasUnsavedChanges] = useState(false);
+export default function AccountingSettingsPage() {
+  const [hasUnsavedChanges, _setHasUnsavedChanges] = useState(false);
 
   return (
     <TooltipProvider>

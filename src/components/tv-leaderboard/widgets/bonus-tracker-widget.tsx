@@ -8,15 +8,15 @@
  * - TINY (<120px): Just the current bonus amount
  */
 
-import { DollarSign, Users, Target } from "lucide-react";
+import { DollarSign, Target, Users } from "lucide-react";
+import { formatCurrency, formatPercentage } from "@/lib/utils/responsive-utils";
 import {
-  ResponsiveWidgetWrapper,
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
-import { formatCurrency, formatPercentage } from "@/lib/utils/responsive-utils";
 
 type BonusTrackerData = {
   currentBonus: number;
@@ -32,15 +32,17 @@ type BonusTrackerWidgetProps = {
 };
 
 const DEFAULT_DATA: BonusTrackerData = {
-  currentBonus: 12500,
-  targetBonus: 20000,
+  currentBonus: 12_500,
+  targetBonus: 20_000,
   teamMembers: 12,
   bonusPerPerson: 1042,
   daysRemaining: 14,
   progress: 62.5,
 };
 
-export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetProps) {
+export function BonusTrackerWidget({
+  data = DEFAULT_DATA,
+}: BonusTrackerWidgetProps) {
   const bonusPerPerson = Math.round(data.currentBonus / data.teamMembers);
   const remaining = data.targetBonus - data.currentBonus;
 
@@ -57,7 +59,7 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
               <ResponsiveText variant="title">Team Bonus Pool</ResponsiveText>
             </ShowAt>
             <ShowAt stage="comfortable">
-              <ResponsiveText variant="body" className="font-semibold">
+              <ResponsiveText className="font-semibold" variant="body">
                 Bonus
               </ResponsiveText>
             </ShowAt>
@@ -75,18 +77,27 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
             {/* Main metrics */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <ResponsiveText variant="caption" className="text-muted-foreground">
+                <ResponsiveText
+                  className="text-muted-foreground"
+                  variant="caption"
+                >
                   Current Bonus
                 </ResponsiveText>
-                <ResponsiveText variant="display" className="font-bold text-green-500">
+                <ResponsiveText
+                  className="font-bold text-green-500"
+                  variant="display"
+                >
                   {formatCurrency(data.currentBonus, "comfortable")}
                 </ResponsiveText>
               </div>
               <div className="space-y-1">
-                <ResponsiveText variant="caption" className="text-muted-foreground">
+                <ResponsiveText
+                  className="text-muted-foreground"
+                  variant="caption"
+                >
                   Target
                 </ResponsiveText>
-                <ResponsiveText variant="display" className="font-bold">
+                <ResponsiveText className="font-bold" variant="display">
                   {formatCurrency(data.targetBonus, "comfortable")}
                 </ResponsiveText>
               </div>
@@ -96,7 +107,9 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="font-bold text-green-500">{formatPercentage(data.progress, "full")}</span>
+                <span className="font-bold text-green-500">
+                  {formatPercentage(data.progress, "full")}
+                </span>
               </div>
               <div className="relative h-2 overflow-hidden rounded-full bg-background/50">
                 <div
@@ -111,10 +124,13 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
               <div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
                 <Users className="size-3.5 text-primary" />
                 <div>
-                  <ResponsiveText variant="caption" className="text-muted-foreground">
+                  <ResponsiveText
+                    className="text-muted-foreground"
+                    variant="caption"
+                  >
                     Team
                   </ResponsiveText>
-                  <ResponsiveText variant="body" className="font-bold">
+                  <ResponsiveText className="font-bold" variant="body">
                     {data.teamMembers}
                   </ResponsiveText>
                 </div>
@@ -122,10 +138,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
               <div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
                 <DollarSign className="size-3.5 text-green-500" />
                 <div>
-                  <ResponsiveText variant="caption" className="text-muted-foreground">
+                  <ResponsiveText
+                    className="text-muted-foreground"
+                    variant="caption"
+                  >
                     Each
                   </ResponsiveText>
-                  <ResponsiveText variant="body" className="font-bold text-green-500">
+                  <ResponsiveText
+                    className="font-bold text-green-500"
+                    variant="body"
+                  >
                     ${bonusPerPerson}
                   </ResponsiveText>
                 </div>
@@ -133,10 +155,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
               <div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
                 <Target className="size-3.5 text-orange-500" />
                 <div>
-                  <ResponsiveText variant="caption" className="text-muted-foreground">
+                  <ResponsiveText
+                    className="text-muted-foreground"
+                    variant="caption"
+                  >
                     Left
                   </ResponsiveText>
-                  <ResponsiveText variant="body" className="font-bold text-orange-500">
+                  <ResponsiveText
+                    className="font-bold text-orange-500"
+                    variant="body"
+                  >
                     ${(remaining / 1000).toFixed(0)}k
                   </ResponsiveText>
                 </div>
@@ -150,7 +178,10 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <ResponsiveText variant="caption">Current</ResponsiveText>
-              <ResponsiveText variant="body" className="font-bold text-green-500">
+              <ResponsiveText
+                className="font-bold text-green-500"
+                variant="body"
+              >
                 {formatCurrency(data.currentBonus, "comfortable")}
               </ResponsiveText>
             </div>
@@ -162,10 +193,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
                 />
               </div>
               <div className="flex justify-between">
-                <ResponsiveText variant="caption" className="text-muted-foreground">
+                <ResponsiveText
+                  className="text-muted-foreground"
+                  variant="caption"
+                >
                   {formatPercentage(data.progress, "comfortable")}
                 </ResponsiveText>
-                <ResponsiveText variant="caption" className="text-muted-foreground">
+                <ResponsiveText
+                  className="text-muted-foreground"
+                  variant="caption"
+                >
                   {formatCurrency(data.targetBonus, "comfortable")}
                 </ResponsiveText>
               </div>
@@ -176,13 +213,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
         {/* COMPACT Stage: Current bonus with percentage */}
         <ShowAt stage="compact">
           <div className="flex flex-col items-center justify-center gap-1">
-            <ResponsiveText variant="caption" className="text-muted-foreground">
+            <ResponsiveText className="text-muted-foreground" variant="caption">
               Bonus
             </ResponsiveText>
-            <ResponsiveText variant="display" className="font-bold text-green-500">
+            <ResponsiveText
+              className="font-bold text-green-500"
+              variant="display"
+            >
               {formatCurrency(data.currentBonus, "compact")}
             </ResponsiveText>
-            <ResponsiveText variant="caption" className="text-muted-foreground">
+            <ResponsiveText className="text-muted-foreground" variant="caption">
               {formatPercentage(data.progress, "compact")}
             </ResponsiveText>
           </div>
@@ -191,7 +231,10 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
         {/* TINY Stage: Just the current bonus */}
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
-            <ResponsiveText variant="display" className="font-bold text-green-500">
+            <ResponsiveText
+              className="font-bold text-green-500"
+              variant="display"
+            >
               {formatCurrency(data.currentBonus, "tiny")}
             </ResponsiveText>
           </div>

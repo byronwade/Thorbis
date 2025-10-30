@@ -43,6 +43,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const DEFAULT_ESTIMATE_PREFIX = "EST";
@@ -103,7 +104,8 @@ type EstimateSettings = {
   approvalThankYouMessage: string;
 };
 
-export default function EstimatesSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function EstimatesSettingsPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<EstimateSettings>({
     // Estimate Numbering
     autoGenerateNumbers: true,

@@ -46,6 +46,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+
 type Department = {
   id: string;
   name: string;
@@ -54,7 +55,8 @@ type Department = {
   memberCount: number;
 };
 
-export default function DepartmentsPage() {  const [showNewForm, setShowNewForm] = useState(false);
+export default function DepartmentsPage() {
+  const [showNewForm, setShowNewForm] = useState(false);
   const [newDepartment, setNewDepartment] = useState({
     name: "",
     description: "",

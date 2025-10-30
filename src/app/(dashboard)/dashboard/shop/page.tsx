@@ -10,16 +10,14 @@
 import { CreditCard, Package, Star, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -98,7 +96,8 @@ const products: Product[] = [
   {
     id: "5",
     name: "Tool Belt & Organizer",
-    description: "Heavy-duty tool belt with multiple pockets and reinforced stitching",
+    description:
+      "Heavy-duty tool belt with multiple pockets and reinforced stitching",
     price: 79.99,
     image: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc",
     category: "tools",
@@ -132,7 +131,8 @@ const products: Product[] = [
   {
     id: "8",
     name: "Business Card Pack (500)",
-    description: "Premium business cards with your company logo and contact info",
+    description:
+      "Premium business cards with your company logo and contact info",
     price: 39.99,
     image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f",
     category: "marketing",
@@ -161,7 +161,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             </div>
             <div>
               <p className="font-semibold text-sm">Free Shipping</p>
-              <p className="text-muted-foreground text-xs">On orders over $100</p>
+              <p className="text-muted-foreground text-xs">
+                On orders over $100
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -195,9 +197,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredProducts.map((product) => (
           <Link
-            key={product.id}
-            href={`/dashboard/shop/${product.id}`}
             className="group"
+            href={`/dashboard/shop/${product.id}`}
+            key={product.id}
           >
             <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
               <div className="relative aspect-square overflow-hidden bg-muted">
@@ -217,8 +219,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                     className="absolute top-2 left-2 bg-red-500"
                     variant="destructive"
                   >
-                    Save $
-                    {(product.originalPrice - product.price).toFixed(0)}
+                    Save ${(product.originalPrice - product.price).toFixed(0)}
                   </Badge>
                 )}
               </div>

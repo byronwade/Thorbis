@@ -3,314 +3,184 @@
  *
  * Performance optimizations:
  * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - Reduced JavaScript bundle size
- * - Better SEO and initial page load
+ * - Uses established DataTablePageHeader pattern
+ * - Follows consistent design system with other pages
  * - ISR revalidation every 5 minutes for invoice updates
  */
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Download, FileText, Plus, Send, Upload } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
+import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default function InvoicesPage() {  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-bold text-3xl tracking-tight">Invoices</h1>
-        <p className="text-muted-foreground">
-          Manage billing, payments, and financial transactions
-        </p>
-      </div>
+// Mock data - replace with real data from database
+const mockInvoices: Invoice[] = [
+  {
+    id: "1",
+    invoiceNumber: "INV-2025-001",
+    customer: "ABC Corporation",
+    date: "Jan 15, 2025",
+    dueDate: "Feb 14, 2025",
+    amount: 450_000,
+    status: "paid",
+  },
+  {
+    id: "2",
+    invoiceNumber: "INV-2025-002",
+    customer: "XYZ Industries",
+    date: "Jan 18, 2025",
+    dueDate: "Feb 17, 2025",
+    amount: 320_000,
+    status: "pending",
+  },
+  {
+    id: "3",
+    invoiceNumber: "INV-2025-003",
+    customer: "TechStart Inc",
+    date: "Jan 20, 2025",
+    dueDate: "Feb 19, 2025",
+    amount: 200_000,
+    status: "overdue",
+  },
+  {
+    id: "4",
+    invoiceNumber: "INV-2025-004",
+    customer: "Global Systems",
+    date: "Jan 22, 2025",
+    dueDate: "Feb 21, 2025",
+    amount: 680_000,
+    status: "paid",
+  },
+  {
+    id: "5",
+    invoiceNumber: "INV-2025-005",
+    customer: "123 Manufacturing",
+    date: "Jan 10, 2025",
+    dueDate: "Feb 9, 2025",
+    amount: 180_000,
+    status: "pending",
+  },
+];
 
-      {/* Invoice Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Total Invoices
-            </CardTitle>
-            <svg
-              className="size-4 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Receipt</title>
-              <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z" />
-              <path d="M14 8H8M16 12H8M14 16H8" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">1,247</div>
-            <p className="text-muted-foreground text-xs">+23 this month</p>
-          </CardContent>
-        </Card>
+export default function InvoicesPage() {
+  // Calculate stats from data
+  const totalInvoices = mockInvoices.length;
+  const totalAmount = mockInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const paidAmount = mockInvoices
+    .filter((inv) => inv.status === "paid")
+    .reduce((sum, inv) => sum + inv.amount, 0);
+  const pendingAmount = mockInvoices
+    .filter((inv) => inv.status === "pending")
+    .reduce((sum, inv) => sum + inv.amount, 0);
+  const overdueAmount = mockInvoices
+    .filter((inv) => inv.status === "overdue")
+    .reduce((sum, inv) => sum + inv.amount, 0);
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Pending Payment
-            </CardTitle>
-            <svg
-              className="size-4 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>DollarSign</title>
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$24,500</div>
-            <p className="text-muted-foreground text-xs">47 invoices</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Paid This Month
-            </CardTitle>
-            <svg
-              className="size-4 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>CheckCircle</title>
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <path d="M22 4 12 14.01l-3-3" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$89,200</div>
-            <p className="text-muted-foreground text-xs">156 invoices</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Average Payment
-            </CardTitle>
-            <svg
-              className="size-4 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>TrendingUp</title>
-              <path d="M22 7 13.5 15.5 8.5 10.5 2 17" />
-              <path d="M16 7h6v6" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="font-bold text-2xl">$572</div>
-            <p className="text-muted-foreground text-xs">Per invoice</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Invoice Management */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Invoices</CardTitle>
-            <CardDescription>
-              Latest invoices and payment status
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                {
-                  invoiceId: "INV-001",
-                  customer: "ABC Corporation",
-                  amount: "$450",
-                  status: "Paid",
-                  dueDate: "2024-01-25",
-                  paidDate: "2024-01-24",
-                  services: "HVAC Maintenance",
-                },
-                {
-                  invoiceId: "INV-002",
-                  customer: "XYZ Industries",
-                  amount: "$320",
-                  status: "Pending",
-                  dueDate: "2024-01-30",
-                  paidDate: "N/A",
-                  services: "Plumbing Repair",
-                },
-                {
-                  invoiceId: "INV-003",
-                  customer: "TechStart Inc",
-                  amount: "$200",
-                  status: "Overdue",
-                  dueDate: "2024-01-20",
-                  paidDate: "N/A",
-                  services: "Electrical Service",
-                },
-                {
-                  invoiceId: "INV-004",
-                  customer: "Global Systems",
-                  amount: "$680",
-                  status: "Paid",
-                  dueDate: "2024-01-28",
-                  paidDate: "2024-01-25",
-                  services: "AC Installation",
-                },
-                {
-                  invoiceId: "INV-005",
-                  customer: "123 Manufacturing",
-                  amount: "$180",
-                  status: "Pending",
-                  dueDate: "2024-02-01",
-                  paidDate: "N/A",
-                  services: "Heater Repair",
-                },
-              ].map((invoice, index) => (
-                <div
-                  className="flex items-center gap-4 rounded-lg border p-4"
-                  key={index}
-                >
-                  <div className="flex size-12 items-center justify-center rounded-full bg-accent">
-                    <span className="font-medium text-sm">
-                      {invoice.invoiceId}
-                    </span>
+  return (
+    <div className="flex h-full flex-col">
+      <DataTablePageHeader
+        actions={
+          <>
+            <Button size="sm" variant="outline">
+              <Upload className="mr-2 size-4" />
+              Import
+            </Button>
+            <Button size="sm" variant="outline">
+              <Download className="mr-2 size-4" />
+              Export
+            </Button>
+            <Button size="sm" variant="outline">
+              <Send className="mr-2 size-4" />
+              Send Batch
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/dashboard/invoices/create">
+                <Plus className="mr-2 size-4" />
+                New Invoice
+              </Link>
+            </Button>
+          </>
+        }
+        description="Manage billing, payments, and financial transactions"
+        stats={
+          <div className="mt-4 grid gap-3 md:grid-cols-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="font-medium text-sm">
+                  <div className="flex items-center gap-2">
+                    <FileText className="size-4 text-muted-foreground" />
+                    Total Invoiced
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm leading-none">
-                        {invoice.customer}
-                      </p>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
-                          invoice.status === "Paid"
-                            ? "bg-green-100 text-green-800"
-                            : invoice.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {invoice.status}
-                      </span>
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      {invoice.services}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      Due: {invoice.dueDate} • Paid: {invoice.paidDate}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-sm">{invoice.amount}</p>
-                    <p className="text-muted-foreground text-xs">Amount</p>
-                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="font-bold text-2xl">
+                  ${(totalAmount / 100).toFixed(2)}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <p className="text-muted-foreground text-xs">
+                  {totalInvoices} invoices
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="font-medium text-sm">Paid</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="font-bold text-2xl text-green-600">
+                  ${(paidAmount / 100).toFixed(2)}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  {mockInvoices.filter((inv) => inv.status === "paid").length}{" "}
+                  invoices
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="font-medium text-sm">Pending</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="font-bold text-2xl text-yellow-600">
+                  ${(pendingAmount / 100).toFixed(2)}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  {
+                    mockInvoices.filter((inv) => inv.status === "pending")
+                      .length
+                  }{" "}
+                  invoices
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="font-medium text-sm">Overdue</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="font-bold text-2xl text-red-600">
+                  ${(overdueAmount / 100).toFixed(2)}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  {
+                    mockInvoices.filter((inv) => inv.status === "overdue")
+                      .length
+                  }{" "}
+                  invoices
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        }
+        title="Invoices"
+      />
 
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Invoice Analytics</CardTitle>
-            <CardDescription>
-              Payment trends and financial metrics
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-                <div>
-                  <p className="font-medium text-sm">Payment Rate</p>
-                  <p className="text-muted-foreground text-xs">This month</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-sm">87%</p>
-                  <p className="text-muted-foreground text-xs">
-                    +3% from last month
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-                <div>
-                  <p className="font-medium text-sm">Average Payment Time</p>
-                  <p className="text-muted-foreground text-xs">
-                    Days to payment
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-sm">12</p>
-                  <p className="text-muted-foreground text-xs">
-                    -2 days from last month
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-                <div>
-                  <p className="font-medium text-sm">Overdue Amount</p>
-                  <p className="text-muted-foreground text-xs">Outstanding</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-sm">$3,200</p>
-                  <p className="text-muted-foreground text-xs">8 invoices</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-                <div>
-                  <p className="font-medium text-sm">Monthly Revenue</p>
-                  <p className="text-muted-foreground text-xs">
-                    Total collected
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-sm">$89,200</p>
-                  <p className="text-muted-foreground text-xs">
-                    +$5,400 from last month
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-                <div>
-                  <p className="font-medium text-sm">Collection Efficiency</p>
-                  <p className="text-muted-foreground text-xs">
-                    Payment success
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-sm">94%</p>
-                  <p className="text-muted-foreground text-xs">
-                    +2% from last quarter
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex-1 overflow-hidden">
+        <InvoicesTable invoices={mockInvoices} itemsPerPage={50} />
       </div>
     </div>
   );

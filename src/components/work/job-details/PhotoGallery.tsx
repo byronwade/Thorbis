@@ -1,19 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import {
   Camera,
   Download,
-  ExternalLink,
   MapPin,
-  Maximize2,
   Trash2,
   User,
-  X,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,8 +68,9 @@ export function PhotoGallery({
   className,
 }: PhotoGalleryProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<JobPhoto | null>(null);
-  const [selectedCategory, setSelectedCategory] =
-    useState<PhotoCategory | "all">("all");
+  const [selectedCategory, setSelectedCategory] = useState<
+    PhotoCategory | "all"
+  >("all");
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploader, setShowUploader] = useState(false);
 
@@ -99,15 +97,14 @@ export function PhotoGallery({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const formatDate = (date: Date): string => {
-    return new Intl.DateTimeFormat("en-US", {
+  const formatDate = (date: Date): string =>
+    new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
       hour: "numeric",
       minute: "2-digit",
     }).format(date);
-  };
 
   const getCategoryColor = (category: PhotoCategory): string => {
     switch (category) {
@@ -148,17 +145,19 @@ export function PhotoGallery({
               <Camera className="size-5" />
               Photo Gallery ({photos.length})
             </CardTitle>
-            <CardDescription>Job site photos organized by stage</CardDescription>
+            <CardDescription>
+              Job site photos organized by stage
+            </CardDescription>
           </div>
           <div className="flex gap-2">
             {onDownloadAll && photos.length > 0 && (
-              <Button size="sm" variant="outline" onClick={onDownloadAll}>
+              <Button onClick={onDownloadAll} size="sm" variant="outline">
                 <Download className="mr-2 size-4" />
                 Download All
               </Button>
             )}
             {onUpload && (
-              <Button size="sm" onClick={() => setShowUploader(true)}>
+              <Button onClick={() => setShowUploader(true)} size="sm">
                 <Camera className="mr-2 size-4" />
                 Upload Photos
               </Button>
@@ -172,18 +171,16 @@ export function PhotoGallery({
           {categories.map((category) => (
             <Button
               key={category.value}
+              onClick={() => setSelectedCategory(category.value)}
               size="sm"
               variant={
                 selectedCategory === category.value ? "default" : "outline"
               }
-              onClick={() => setSelectedCategory(category.value)}
             >
               {category.label}
               {category.value !== "all" && (
                 <Badge className="ml-2" variant="secondary">
-                  {
-                    photos.filter((p) => p.category === category.value).length
-                  }
+                  {photos.filter((p) => p.category === category.value).length}
                 </Badge>
               )}
             </Button>
@@ -199,7 +196,12 @@ export function PhotoGallery({
               category
             </p>
             {onUpload && (
-              <Button className="mt-4" size="sm" variant="outline" onClick={() => setShowUploader(true)}>
+              <Button
+                className="mt-4"
+                onClick={() => setShowUploader(true)}
+                size="sm"
+                variant="outline"
+              >
                 <Camera className="mr-2 size-4" />
                 Upload Photos
               </Button>
@@ -209,36 +211,37 @@ export function PhotoGallery({
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filteredPhotos.map((photo) => (
               <div
-                key={photo.id}
                 className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg border bg-muted transition-all hover:scale-105 hover:shadow-md"
+                key={photo.id}
                 onClick={() => setSelectedPhoto(photo)}
               >
                 <Image
-                  src={photo.thumbnailUrl || photo.url}
                   alt={photo.caption || "Job photo"}
-                  fill
                   className="object-cover"
+                  fill
+                  src={photo.thumbnailUrl || photo.url}
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
                   <div className="flex h-full flex-col justify-between p-3">
                     <div className="flex justify-between">
-                      <Badge className={cn("text-xs", getCategoryColor(photo.category))}>
+                      <Badge
+                        className={cn(
+                          "text-xs",
+                          getCategoryColor(photo.category)
+                        )}
+                      >
                         {photo.category}
                       </Badge>
                       {photo.gpsCoords && (
                         <MapPin className="size-4 text-white" />
                       )}
                     </div>
-                    <div className="text-xs text-white">
+                    <div className="text-white text-xs">
                       <div className="flex items-center gap-1">
                         <User className="size-3" />
-                        <span className="truncate">
-                          {photo.uploadedByName}
-                        </span>
+                        <span className="truncate">{photo.uploadedByName}</span>
                       </div>
-                      <div className="mt-1">
-                        {formatDate(photo.uploadedAt)}
-                      </div>
+                      <div className="mt-1">{formatDate(photo.uploadedAt)}</div>
                     </div>
                   </div>
                 </div>
@@ -249,13 +252,13 @@ export function PhotoGallery({
 
         {/* Lightbox Dialog */}
         <Dialog
-          open={selectedPhoto !== null}
           onOpenChange={(open) => {
             if (!open) {
               setSelectedPhoto(null);
               setZoomLevel(1);
             }
           }}
+          open={selectedPhoto !== null}
         >
           <DialogContent className="max-w-5xl">
             {selectedPhoto && (
@@ -263,47 +266,49 @@ export function PhotoGallery({
                 <DialogHeader>
                   <DialogTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge className={getCategoryColor(selectedPhoto.category)}>
+                      <Badge
+                        className={getCategoryColor(selectedPhoto.category)}
+                      >
                         {selectedPhoto.category}
                       </Badge>
                       {selectedPhoto.caption && (
-                        <span className="text-sm font-normal text-muted-foreground">
+                        <span className="font-normal text-muted-foreground text-sm">
                           {selectedPhoto.caption}
                         </span>
                       )}
                     </div>
                     <div className="flex gap-2">
                       <Button
+                        disabled={zoomLevel <= 0.5}
+                        onClick={handleZoomOut}
                         size="sm"
                         variant="outline"
-                        onClick={handleZoomOut}
-                        disabled={zoomLevel <= 0.5}
                       >
                         <ZoomOut className="size-4" />
                       </Button>
                       <Button
+                        disabled={zoomLevel >= 3}
+                        onClick={handleZoomIn}
                         size="sm"
                         variant="outline"
-                        onClick={handleZoomIn}
-                        disabled={zoomLevel >= 3}
                       >
                         <ZoomIn className="size-4" />
                       </Button>
                       <Button
+                        onClick={() => handleDownloadPhoto(selectedPhoto)}
                         size="sm"
                         variant="outline"
-                        onClick={() => handleDownloadPhoto(selectedPhoto)}
                       >
                         <Download className="size-4" />
                       </Button>
                       {onDelete && (
                         <Button
-                          size="sm"
-                          variant="outline"
                           onClick={() => {
                             onDelete(selectedPhoto.id);
                             setSelectedPhoto(null);
                           }}
+                          size="sm"
+                          variant="outline"
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -320,11 +325,11 @@ export function PhotoGallery({
                     }}
                   >
                     <Image
-                      src={selectedPhoto.url}
                       alt={selectedPhoto.caption || "Job photo"}
-                      width={selectedPhoto.metadata?.width || 1200}
-                      height={selectedPhoto.metadata?.height || 800}
                       className="max-w-full"
+                      height={selectedPhoto.metadata?.height || 800}
+                      src={selectedPhoto.url}
+                      width={selectedPhoto.metadata?.width || 1200}
                     />
                   </div>
                 </div>
@@ -376,7 +381,7 @@ export function PhotoGallery({
         </Dialog>
 
         {/* Upload Dialog */}
-        <Dialog open={showUploader} onOpenChange={setShowUploader}>
+        <Dialog onOpenChange={setShowUploader} open={showUploader}>
           <DialogContent className="max-w-3xl">
             <PhotoUploader
               onCancel={() => setShowUploader(false)}

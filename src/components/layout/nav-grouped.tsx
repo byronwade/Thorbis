@@ -48,12 +48,16 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
 
         return (
           <SidebarGroup key={`${group.label || "group"}-${groupIndex}`}>
-            {group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
+            {group.label && (
+              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            )}
             <SidebarMenu>
               {group.items.map((item) => {
-                const isActive =
-                  pathname === item.url ||
-                  item.items?.some((subItem) => pathname === subItem.url);
+                // Check if current path matches this item or its detail pages
+                const isExactMatch = pathname === item.url;
+                const isDetailPage = pathname.startsWith(`${item.url}/`);
+                const hasActiveSubItem = item.items?.some((subItem) => pathname === subItem.url);
+                const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
 
                 // If item has sub-items, render parent + children (always open, no chevron)
                 if (item.items && item.items.length > 0) {
@@ -71,7 +75,7 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                       </SidebarMenuButton>
                       <SidebarMenuSub>
                         {item.items.map((subItem) => {
-                          const isSubActive = pathname === subItem.url;
+                          const isSubActive = pathname === subItem.url || pathname.startsWith(`${subItem.url}/`);
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton

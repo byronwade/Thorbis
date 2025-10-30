@@ -7,8 +7,8 @@
  * - Reduced JavaScript bundle size
  */
 
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function FinalCTASection() {
   const trustMarkers = [
@@ -22,9 +22,9 @@ export function FinalCTASection() {
     <section className="relative overflow-hidden bg-black py-32">
       {/* Animated background gradient */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl" />
+        <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 size-[600px] rounded-full bg-primary/20 blur-3xl" />
         <div className="absolute top-1/4 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -58,7 +58,7 @@ export function FinalCTASection() {
             <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
                 asChild
-                className="group h-auto rounded-xl bg-primary px-10 py-6 font-bold text-xl text-primary-foreground shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-primary/50"
+                className="group h-auto rounded-xl bg-primary px-10 py-6 font-bold text-primary-foreground text-xl shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-primary/50"
                 size="lg"
               >
                 <Link href="/dashboard">
@@ -70,7 +70,7 @@ export function FinalCTASection() {
               </Button>
               <Button
                 asChild
-                className="group h-auto rounded-xl border-2 border-white/20 bg-white/10 px-10 py-6 font-bold text-xl text-white backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-white/20 hover:shadow-lg hover:shadow-primary/20"
+                className="group h-auto rounded-xl border-2 border-white/20 bg-white/10 px-10 py-6 font-bold text-white text-xl backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-white/20 hover:shadow-lg hover:shadow-primary/20"
                 size="lg"
                 variant="outline"
               >
@@ -86,7 +86,7 @@ export function FinalCTASection() {
             {/* Trust Markers */}
             <div className="mb-8 flex flex-wrap items-center justify-center gap-6 text-foreground/70 text-sm">
               {trustMarkers.map((marker, index) => (
-                <div key={index} className="flex items-center gap-2">
+                <div className="flex items-center gap-2" key={index}>
                   <span className="text-primary text-xl">{marker.icon}</span>
                   <span>{marker.label}</span>
                 </div>
@@ -106,8 +106,8 @@ export function FinalCTASection() {
                   "Pro Handyman",
                 ].map((company, index) => (
                   <div
-                    key={index}
                     className="rounded-lg border border-primary/10 bg-white/5 px-6 py-3"
+                    key={index}
                   >
                     <span className="font-semibold text-foreground text-sm">
                       {company}
@@ -119,8 +119,8 @@ export function FinalCTASection() {
           </div>
 
           {/* Floating elements */}
-          <div className="pointer-events-none absolute -top-4 -right-4 size-24 rounded-full border border-primary/20 bg-primary/10 blur-xl" />
-          <div className="pointer-events-none absolute -bottom-4 -left-4 size-32 rounded-full border border-primary/20 bg-primary/10 blur-xl" />
+          <div className="-top-4 -right-4 pointer-events-none absolute size-24 rounded-full border border-primary/20 bg-primary/10 blur-xl" />
+          <div className="-bottom-4 -left-4 pointer-events-none absolute size-32 rounded-full border border-primary/20 bg-primary/10 blur-xl" />
         </div>
 
         {/* Bottom guarantee */}

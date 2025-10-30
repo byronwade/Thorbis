@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { motion, AnimatePresence } from "framer-motion";
-import type { Slide } from "./slide-types";
+import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect } from "react";
 import { DraggableGrid } from "./draggable-grid";
+import type { Slide } from "./slide-types";
 import type { Widget } from "./widget-types";
 
 type SlideCarouselProps = {
@@ -71,7 +71,9 @@ export function SlideCarousel({
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground">No widgets to display</p>
-          <p className="text-muted-foreground text-sm">Add widgets to get started</p>
+          <p className="text-muted-foreground text-sm">
+            Add widgets to get started
+          </p>
         </div>
       </div>
     );

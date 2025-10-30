@@ -36,7 +36,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-export default function PrivacyConsentPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function PrivacyConsentPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     requirePrivacyConsent: true,
     requireMarketingConsent: false,

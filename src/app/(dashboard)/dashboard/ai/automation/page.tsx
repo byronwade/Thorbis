@@ -11,7 +11,6 @@
 import {
   ArrowRight,
   Bell,
-  Bot,
   Brain,
   Briefcase,
   Calendar,
@@ -38,12 +37,13 @@ import {
 } from "lucide-react";
 export const revalidate = 900; // Revalidate every 15 minutes
 
-export default function AIAutomationPage() {  return (
+export default function AIAutomationPage() {
+  return (
     <div className="relative flex h-full items-center justify-center overflow-auto py-12">
       {/* Background gradient blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       {/* Main content */}
@@ -75,7 +75,9 @@ export default function AIAutomationPage() {  return (
             </span>
           </h1>
           <p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">
-            Tell the AI what you want automated and it creates the workflow for you. No coding, no complex setup - just describe what should happen and the AI builds it.
+            Tell the AI what you want automated and it creates the workflow for
+            you. No coding, no complex setup - just describe what should happen
+            and the AI builds it.
           </p>
         </div>
 
@@ -99,7 +101,9 @@ export default function AIAutomationPage() {  return (
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  AI creates automation: When appointment scheduled → Wait until 24 hours before → Send SMS and email reminder → Log confirmation
+                  AI creates automation: When appointment scheduled → Wait until
+                  24 hours before → Send SMS and email reminder → Log
+                  confirmation
                 </p>
                 <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
                   <Sparkles className="size-3" />
@@ -119,7 +123,9 @@ export default function AIAutomationPage() {  return (
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  AI creates automation: When invoice created → Wait 30 days → Check payment status → If unpaid, notify you → Create follow-up task
+                  AI creates automation: When invoice created → Wait 30 days →
+                  Check payment status → If unpaid, notify you → Create
+                  follow-up task
                 </p>
                 <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
                   <Zap className="size-3" />
@@ -139,7 +145,9 @@ export default function AIAutomationPage() {  return (
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  AI creates automation: When job approved → Find techs with right skills → Check availability → Calculate distance → Assign to best match → Notify tech
+                  AI creates automation: When job approved → Find techs with
+                  right skills → Check availability → Calculate distance →
+                  Assign to best match → Notify tech
                 </p>
                 <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
                   <TrendingUp className="size-3" />
@@ -159,7 +167,9 @@ export default function AIAutomationPage() {  return (
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  AI creates automation: When job marked complete → Generate invoice from work order → Email and SMS to customer → Log in finance system
+                  AI creates automation: When job marked complete → Generate
+                  invoice from work order → Email and SMS to customer → Log in
+                  finance system
                 </p>
                 <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
                   <Rocket className="size-3" />
@@ -176,7 +186,7 @@ export default function AIAutomationPage() {  return (
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {/* AI-Powered Automation */}
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
                     <Brain className="size-6 text-purple-600 dark:text-purple-400" />
@@ -184,12 +194,13 @@ export default function AIAutomationPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">AI Assistant</h3>
                 <p className="text-muted-foreground text-sm">
-                  Chat with AI to create custom automations instantly - no technical knowledge required
+                  Chat with AI to create custom automations instantly - no
+                  technical knowledge required
                 </p>
               </div>
 
               {/* Smart Dispatch */}
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
                     <MapPin className="size-6 text-blue-600 dark:text-blue-400" />
@@ -197,12 +208,13 @@ export default function AIAutomationPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Smart Dispatch</h3>
                 <p className="text-muted-foreground text-sm">
-                  AI automatically assigns jobs to the best-fit technician based on skills, location, and availability
+                  AI automatically assigns jobs to the best-fit technician based
+                  on skills, location, and availability
                 </p>
               </div>
 
               {/* Auto-Billing */}
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green-500/20 hover:shadow-lg hover:shadow-green-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
                     <DollarSign className="size-6 text-green-600 dark:text-green-400" />
@@ -212,12 +224,13 @@ export default function AIAutomationPage() {  return (
                   Auto-Billing & Collection
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Automatically generate invoices, send payment reminders, and process collections on schedule
+                  Automatically generate invoices, send payment reminders, and
+                  process collections on schedule
                 </p>
               </div>
 
               {/* 24/7 AI Answering */}
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
                     <Phone className="size-6 text-orange-600 dark:text-orange-400" />
@@ -227,12 +240,13 @@ export default function AIAutomationPage() {  return (
                   24/7 AI Answering
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  AI handles incoming calls, books appointments, answers questions - never miss a lead
+                  AI handles incoming calls, books appointments, answers
+                  questions - never miss a lead
                 </p>
               </div>
 
               {/* Workflow Builder */}
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all duration-300 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-pink-500/10">
                     <Settings className="size-6 text-pink-600 dark:text-pink-400" />
@@ -242,12 +256,13 @@ export default function AIAutomationPage() {  return (
                   Visual Workflow Builder
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Drag-and-drop interface to create custom workflows with triggers, conditions, and actions
+                  Drag-and-drop interface to create custom workflows with
+                  triggers, conditions, and actions
                 </p>
               </div>
 
               {/* Team Automation */}
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-teal-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/20 hover:shadow-lg hover:shadow-teal-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-teal-500/5 to-transparent p-6 transition-all duration-300 hover:border-teal-500/20 hover:shadow-lg hover:shadow-teal-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-teal-500/10">
                     <Users className="size-6 text-teal-600 dark:text-teal-400" />
@@ -255,7 +270,8 @@ export default function AIAutomationPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Team Management</h3>
                 <p className="text-muted-foreground text-sm">
-                  Auto-assign tasks, track time, manage schedules, and process payroll automatically
+                  Auto-assign tasks, track time, manage schedules, and process
+                  payroll automatically
                 </p>
               </div>
             </div>
@@ -309,9 +325,7 @@ export default function AIAutomationPage() {  return (
                   <div className="flex size-8 items-center justify-center rounded-lg bg-purple-500/10">
                     <Smartphone className="size-4 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <h3 className="font-semibold text-sm">
-                    Review Request Flow
-                  </h3>
+                  <h3 className="font-semibold text-sm">Review Request Flow</h3>
                 </div>
                 <p className="mb-3 text-muted-foreground text-xs">
                   Job completed → Wait 1 hour → Send review request via SMS →
@@ -413,7 +427,7 @@ export default function AIAutomationPage() {  return (
                   New customer → Send welcome pack → Add to CRM → Schedule
                   follow-up → Offer membership → Track engagement
                 </p>
-                <div className="flex items-center gap-1 text-yellow-600 text-xs dark:text-yellow-400">
+                <div className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
                   <Sparkles className="size-3" />
                   <span>Higher retention</span>
                 </div>

@@ -7,7 +7,12 @@
  * - ISR revalidation configured
  */
 
-import { Calculator, FileSpreadsheet, PieChart, TrendingUp } from "lucide-react";
+import {
+  Calculator,
+  FileSpreadsheet,
+  PieChart,
+  TrendingUp,
+} from "lucide-react";
 import {
   Card,
   CardContent,

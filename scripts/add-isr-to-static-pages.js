@@ -71,7 +71,10 @@ function processFile(filePath) {
     let content = fs.readFileSync(filePath, "utf8");
 
     if (!shouldProcessFile(content, filePath)) {
-      return { skipped: true, reason: "already configured or client component" };
+      return {
+        skipped: true,
+        reason: "already configured or client component",
+      };
     }
 
     const revalidateTime = getRevalidateTime(filePath);
@@ -103,9 +106,10 @@ function processFile(filePath) {
     const insertPosition = lastImport.index + lastImport[0].length;
 
     // Insert revalidate export after imports
-    const revalidateComment = revalidateTime >= 3600
-      ? `// Revalidate every ${revalidateTime / 3600} hour${revalidateTime > 3600 ? "s" : ""}`
-      : `// Revalidate every ${revalidateTime / 60} minutes`;
+    const revalidateComment =
+      revalidateTime >= 3600
+        ? `// Revalidate every ${revalidateTime / 3600} hour${revalidateTime > 3600 ? "s" : ""}`
+        : `// Revalidate every ${revalidateTime / 60} minutes`;
 
     const newContent =
       content.slice(0, insertPosition) +
@@ -117,7 +121,7 @@ function processFile(filePath) {
     return {
       success: true,
       revalidateTime,
-      file: filePath.replace(process.cwd(), "")
+      file: filePath.replace(process.cwd(), ""),
     };
   } catch (error) {
     return { error: true, message: error.message, file: filePath };
@@ -127,10 +131,9 @@ function processFile(filePath) {
 function main() {
   console.log("🔍 Finding static dashboard pages...\n");
 
-  const files = glob.sync(
-    "src/app/(dashboard)/dashboard/**/page.tsx",
-    { cwd: process.cwd() }
-  );
+  const files = glob.sync("src/app/(dashboard)/dashboard/**/page.tsx", {
+    cwd: process.cwd(),
+  });
 
   console.log(`Found ${files.length} page files\n`);
 

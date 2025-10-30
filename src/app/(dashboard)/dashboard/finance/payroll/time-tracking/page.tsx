@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 900; // Revalidate every 15 minutes
+
 import {
   Card,
   CardContent,
@@ -35,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 // Mock timesheet data
 const timesheets = [
   {
@@ -96,7 +98,8 @@ function getTimesheetBadgeVariant(
   return "secondary";
 }
 
-export default function TimeTrackingPage() {  return (
+export default function TimeTrackingPage() {
+  return (
     <div className="space-y-6">
       {/* Header */}
       <div>

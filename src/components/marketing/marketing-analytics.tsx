@@ -10,7 +10,21 @@
  * - Revenue attribution
  */
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BarChart3,
+  DollarSign,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -19,14 +33,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  BarChart3,
-  DollarSign,
-  TrendingDown,
-  TrendingUp,
-  Users,
-} from "lucide-react";
 
 type LeadSourceMetrics = {
   source: string;
@@ -44,7 +50,7 @@ const MOCK_SOURCE_METRICS: LeadSourceMetrics[] = [
     leads: 125,
     cost: 3200,
     conversions: 42,
-    revenue: 12600,
+    revenue: 12_600,
     roi: 294,
     trend: "up",
   },
@@ -86,14 +92,13 @@ const MOCK_SOURCE_METRICS: LeadSourceMetrics[] = [
   },
 ];
 
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("en-US", {
+const formatCurrency = (amount: number): string =>
+  new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
-};
 
 const formatROI = (roi: number): string => {
   if (roi === 0) return "N/A";
@@ -114,10 +119,20 @@ const getTrendIcon = (trend: "up" | "down" | "stable") => {
 export function MarketingAnalytics() {
   const totalLeads = MOCK_SOURCE_METRICS.reduce((sum, m) => sum + m.leads, 0);
   const totalCost = MOCK_SOURCE_METRICS.reduce((sum, m) => sum + m.cost, 0);
-  const totalConversions = MOCK_SOURCE_METRICS.reduce((sum, m) => sum + m.conversions, 0);
-  const totalRevenue = MOCK_SOURCE_METRICS.reduce((sum, m) => sum + m.revenue, 0);
-  const overallROI = totalCost > 0 ? Math.round(((totalRevenue - totalCost) / totalCost) * 100) : 0;
-  const conversionRate = totalLeads > 0 ? ((totalConversions / totalLeads) * 100).toFixed(1) : "0";
+  const totalConversions = MOCK_SOURCE_METRICS.reduce(
+    (sum, m) => sum + m.conversions,
+    0
+  );
+  const totalRevenue = MOCK_SOURCE_METRICS.reduce(
+    (sum, m) => sum + m.revenue,
+    0
+  );
+  const overallROI =
+    totalCost > 0
+      ? Math.round(((totalRevenue - totalCost) / totalCost) * 100)
+      : 0;
+  const conversionRate =
+    totalLeads > 0 ? ((totalConversions / totalLeads) * 100).toFixed(1) : "0";
 
   return (
     <div className="flex h-full flex-col overflow-auto p-4">
@@ -128,7 +143,9 @@ export function MarketingAnalytics() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">Total Leads</CardTitle>
+                <CardTitle className="font-medium text-sm">
+                  Total Leads
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -141,31 +158,44 @@ export function MarketingAnalytics() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">Marketing Spend</CardTitle>
+                <CardTitle className="font-medium text-sm">
+                  Marketing Spend
+                </CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl">{formatCurrency(totalCost)}</div>
-                <p className="text-muted-foreground text-xs">Cost per lead: {formatCurrency(totalCost / totalLeads)}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">Revenue Generated</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">{formatCurrency(totalRevenue)}</div>
+                <div className="font-bold text-2xl">
+                  {formatCurrency(totalCost)}
+                </div>
                 <p className="text-muted-foreground text-xs">
-                  Avg: {formatCurrency(totalRevenue / totalConversions)} per conversion
+                  Cost per lead: {formatCurrency(totalCost / totalLeads)}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">Overall ROI</CardTitle>
+                <CardTitle className="font-medium text-sm">
+                  Revenue Generated
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="font-bold text-2xl">
+                  {formatCurrency(totalRevenue)}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  Avg: {formatCurrency(totalRevenue / totalConversions)} per
+                  conversion
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="font-medium text-sm">
+                  Overall ROI
+                </CardTitle>
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -202,7 +232,9 @@ export function MarketingAnalytics() {
               <TableBody>
                 {MOCK_SOURCE_METRICS.map((metric) => (
                   <TableRow key={metric.source}>
-                    <TableCell className="font-medium">{metric.source}</TableCell>
+                    <TableCell className="font-medium">
+                      {metric.source}
+                    </TableCell>
                     <TableCell className="text-right">{metric.leads}</TableCell>
                     <TableCell className="text-right">
                       {metric.cost > 0 ? formatCurrency(metric.cost) : "Free"}
@@ -210,7 +242,8 @@ export function MarketingAnalytics() {
                     <TableCell className="text-right">
                       {metric.conversions}
                       <span className="ml-2 text-muted-foreground text-xs">
-                        ({Math.round((metric.conversions / metric.leads) * 100)}%)
+                        ({Math.round((metric.conversions / metric.leads) * 100)}
+                        %)
                       </span>
                     </TableCell>
                     <TableCell className="text-right font-medium">
@@ -220,10 +253,14 @@ export function MarketingAnalytics() {
                       {metric.roi > 0 ? (
                         <Badge variant="default">{formatROI(metric.roi)}</Badge>
                       ) : (
-                        <span className="text-muted-foreground text-sm">N/A</span>
+                        <span className="text-muted-foreground text-sm">
+                          N/A
+                        </span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">{getTrendIcon(metric.trend)}</TableCell>
+                    <TableCell className="text-right">
+                      {getTrendIcon(metric.trend)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -252,7 +289,9 @@ export function MarketingAnalytics() {
               <div className="flex items-center justify-between rounded-lg border bg-green-50 p-4 dark:bg-green-950/20">
                 <div>
                   <div className="font-medium text-sm">Contacted</div>
-                  <div className="font-bold text-2xl">{Math.round(totalLeads * 0.8)}</div>
+                  <div className="font-bold text-2xl">
+                    {Math.round(totalLeads * 0.8)}
+                  </div>
                 </div>
                 <div className="text-muted-foreground text-sm">80%</div>
               </div>
@@ -260,17 +299,23 @@ export function MarketingAnalytics() {
               <div className="flex items-center justify-between rounded-lg border bg-yellow-50 p-4 dark:bg-yellow-950/20">
                 <div>
                   <div className="font-medium text-sm">Qualified</div>
-                  <div className="font-bold text-2xl">{Math.round(totalLeads * 0.5)}</div>
+                  <div className="font-bold text-2xl">
+                    {Math.round(totalLeads * 0.5)}
+                  </div>
                 </div>
                 <div className="text-muted-foreground text-sm">50%</div>
               </div>
 
               <div className="flex items-center justify-between rounded-lg border bg-purple-50 p-4 dark:bg-purple-950/20">
                 <div>
-                  <div className="font-medium text-sm">Converted to Customer</div>
+                  <div className="font-medium text-sm">
+                    Converted to Customer
+                  </div>
                   <div className="font-bold text-2xl">{totalConversions}</div>
                 </div>
-                <div className="text-muted-foreground text-sm">{conversionRate}%</div>
+                <div className="text-muted-foreground text-sm">
+                  {conversionRate}%
+                </div>
               </div>
             </div>
           </CardContent>

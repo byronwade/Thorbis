@@ -6,10 +6,10 @@
  * Similar to iOS home screen pagination
  */
 
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { calculateWidgetCells, convertLegacySize } from "../apple-grid-layout";
 import type { Widget } from "../widget-types";
 import type { GridDimensions } from "./use-viewport-grid";
-import { calculateWidgetCells, convertLegacySize, type WidgetGridSize } from "../apple-grid-layout";
 
 export type View = {
   id: string;
@@ -28,9 +28,10 @@ export function useViewPagination(
   dimensions: GridDimensions
 ) {
   // Calculate views and distribute widgets
-  const views = useMemo(() => {
-    return distributeWidgetsToViews(widgets, dimensions);
-  }, [widgets, dimensions]);
+  const views = useMemo(
+    () => distributeWidgetsToViews(widgets, dimensions),
+    [widgets, dimensions]
+  );
 
   // Get widgets for a specific view
   const getViewWidgets = useCallback(
@@ -135,11 +136,7 @@ function distributeWidgetsToViews(
 /**
  * Create a view object with metadata
  */
-function createView(
-  widgets: Widget[],
-  index: number,
-  maxCells: number
-): View {
+function createView(widgets: Widget[], index: number, maxCells: number): View {
   const usedCells = widgets.reduce((sum, widget) => {
     const size = convertLegacySize(widget.size);
     return sum + calculateWidgetCells(size);
@@ -168,12 +165,16 @@ export function optimizeViewDistribution(views: View[]): View[] {
   if (lastView.usedCells < lastView.availableCells * 0.3 && views.length > 1) {
     // Try to move some widgets from second-last view
     const widgetsToMove = secondLastView.widgets.slice(-2);
-    const cellsToMove = widgetsToMove.reduce((sum, w) => {
-      return sum + calculateWidgetCells(convertLegacySize(w.size));
-    }, 0);
+    const cellsToMove = widgetsToMove.reduce(
+      (sum, w) => sum + calculateWidgetCells(convertLegacySize(w.size)),
+      0
+    );
 
     // Only move if it doesn't overflow the last view
-    if (cellsToMove + lastView.usedCells <= lastView.availableCells + lastView.usedCells) {
+    if (
+      cellsToMove + lastView.usedCells <=
+      lastView.availableCells + lastView.usedCells
+    ) {
       secondLastView.widgets = secondLastView.widgets.slice(0, -2);
       lastView.widgets = [...widgetsToMove, ...lastView.widgets];
 

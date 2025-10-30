@@ -5,7 +5,6 @@ import {
   CreditCard,
   LogOut,
   type LucideIcon,
-  Monitor,
   Moon,
   Plus,
   Settings,
@@ -16,6 +15,7 @@ import {
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { signOut } from "@/actions/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -27,6 +27,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
 
 /**
  * UserMenu - Client Component
@@ -34,7 +35,7 @@ import {
  * Client-side features:
  * - User profile dropdown with account management
  * - Organization switcher (list view with active indicator)
- * - Theme switcher (Light/Dark/System)
+ * - Theme toggle (Light/Dark with clear visual indicator)
  * - Settings navigation
  * - Account and billing links
  */
@@ -61,40 +62,18 @@ export function UserMenu({ user, teams }: UserMenuProps) {
     setMounted(true);
   }, []);
 
-  const getThemeIcon = () => {
-    if (!mounted) return <Monitor className="size-4" />;
-
-    switch (theme) {
-      case "light":
-        return <Sun className="size-4" />;
-      case "dark":
-        return <Moon className="size-4" />;
-      default:
-        return <Monitor className="size-4" />;
-    }
+  const handleLogout = async () => {
+    await signOut();
   };
 
-  const getThemeLabel = () => {
-    if (!mounted) return "System";
+  const isDark =
+    mounted &&
+    (theme === "dark" ||
+      (theme === "system" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches));
 
-    switch (theme) {
-      case "light":
-        return "Light Mode";
-      case "dark":
-        return "Dark Mode";
-      default:
-        return "System Theme";
-    }
-  };
-
-  const cycleTheme = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else if (theme === "dark") {
-      setTheme("system");
-    } else {
-      setTheme("light");
-    }
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
@@ -102,6 +81,7 @@ export function UserMenu({ user, teams }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <button
           className="hover-gradient flex h-8 items-center gap-2 rounded-md border border-border bg-background px-2 shadow-sm outline-none transition-all hover:border-primary/50 hover:bg-accent hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+          suppressHydrationWarning
           type="button"
         >
           <Avatar className="size-6 rounded-md">
@@ -211,13 +191,30 @@ export function UserMenu({ user, teams }: UserMenuProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={cycleTheme}>
-          {getThemeIcon()}
-          {getThemeLabel()}
-        </DropdownMenuItem>
+        <div className="flex items-center justify-between px-2 py-2">
+          <div className="flex items-center gap-2">
+            <Sun className="size-4 text-muted-foreground" />
+            <span className="text-sm">Theme</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground text-xs">
+              {mounted ? (isDark ? "Dark" : "Light") : "..."}
+            </span>
+            <Switch
+              aria-label="Toggle theme"
+              checked={isDark}
+              disabled={!mounted}
+              onCheckedChange={toggleTheme}
+            />
+            <Moon className="size-4 text-muted-foreground" />
+          </div>
+        </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive">
-          <LogOut />
+        <DropdownMenuItem
+          className="hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive"
+          onClick={handleLogout}
+        >
+          <LogOut className="text-destructive" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

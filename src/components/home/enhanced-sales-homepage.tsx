@@ -15,52 +15,43 @@
  * - Trust signals and risk reversal
  */
 
-import Image from "next/image";
-import Link from "next/link";
 import {
+  AlertCircle,
+  ArrowRight,
+  Award,
+  BarChart3,
+  Bell,
+  Bot,
   Brain,
   Calendar,
   CheckCircle2,
+  ChevronRight,
   Clock,
   CreditCard,
+  Database,
   DollarSign,
   FileText,
+  HeadphonesIcon,
+  Mail,
+  MapPin,
+  MessageSquare,
   Phone,
+  Play,
   Shield,
+  Smartphone,
   Sparkles,
+  Star,
+  Target,
   TrendingUp,
   Users,
   Wrench,
-  Zap,
-  ArrowRight,
-  Star,
-  AlertCircle,
-  BarChart3,
-  MessageSquare,
-  Play,
-  ChevronRight,
-  Target,
-  Award,
-  Smartphone,
-  Globe,
-  Briefcase,
-  HeadphonesIcon,
-  Send,
-  Database,
-  Bot,
-  PhoneCall,
-  TrendingDown,
   X,
-  MapPin,
-  Mail,
-  Bell,
-  Search,
-  Filter,
-  Settings,
+  Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/layout/footer";
+import Link from "next/link";
 import { MarketingHeader } from "@/components/hero/marketing-header";
+import { Footer } from "@/components/layout/footer";
+import { Button } from "@/components/ui/button";
 
 export function EnhancedSalesHomepage() {
   return (
@@ -69,7 +60,7 @@ export function EnhancedSalesHomepage() {
       {/* ANIMATED HERO SECTION - BOLD VALUE PROPOSITION */}
       <section className="relative min-h-screen overflow-hidden">
         {/* Animated gradient background */}
-        <div className="absolute inset-0 -z-10">
+        <div className="-z-10 absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
           {/* Animated gradient orbs */}
@@ -128,11 +119,11 @@ export function EnhancedSalesHomepage() {
 
             {/* Social proof with avatars */}
             <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <div className="flex -space-x-3">
+              <div className="-space-x-3 flex">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <div
-                    key={i}
                     className="size-12 rounded-full border-2 border-background bg-gradient-to-br from-primary/30 to-primary/10"
+                    key={i}
                     style={{
                       backgroundImage:
                         i === 1
@@ -158,8 +149,8 @@ export function EnhancedSalesHomepage() {
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
-                      key={i}
                       className="size-5 fill-yellow-500 text-yellow-500"
+                      key={i}
                     />
                   ))}
                   <span className="ml-2 font-bold text-lg">4.9</span>
@@ -173,9 +164,9 @@ export function EnhancedSalesHomepage() {
             {/* CTA Buttons - Primary conversion goal */}
             <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
-                size="lg"
-                className="group h-16 px-10 text-lg shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30"
                 asChild
+                className="group h-16 px-10 text-lg shadow-lg shadow-primary/20 transition-all hover:shadow-primary/30 hover:shadow-xl"
+                size="lg"
               >
                 <Link href="/register">
                   <Zap className="mr-2 size-5" />
@@ -184,10 +175,10 @@ export function EnhancedSalesHomepage() {
                 </Link>
               </Button>
               <Button
+                asChild
+                className="group h-16 border-2 px-10 text-lg"
                 size="lg"
                 variant="outline"
-                className="group h-16 border-2 px-10 text-lg"
-                asChild
               >
                 <Link href="/demo">
                   <Play className="mr-2 size-5 fill-current" />
@@ -223,10 +214,10 @@ export function EnhancedSalesHomepage() {
           <div className="relative mx-auto mt-16 max-w-7xl">
             <div className="group relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-background/80 shadow-2xl backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-primary/10">
               {/* Animated gradient border effect */}
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/20 via-transparent to-blue-500/20 opacity-50" />
+              <div className="-z-10 absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-blue-500/20 opacity-50" />
 
               {/* Browser chrome */}
-              <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-3">
+              <div className="flex items-center gap-2 border-border border-b bg-muted/50 px-4 py-3">
                 <div className="flex gap-2">
                   <div className="size-3 rounded-full bg-red-500" />
                   <div className="size-3 rounded-full bg-yellow-500" />
@@ -248,8 +239,8 @@ export function EnhancedSalesHomepage() {
                     { label: "Avg Ticket", value: "$892", change: "+15%" },
                   ].map((stat, i) => (
                     <div
-                      key={i}
                       className="rounded-lg border border-primary/10 bg-background/80 p-4 backdrop-blur-sm"
+                      key={i}
                     >
                       <p className="mb-1 text-muted-foreground text-xs">
                         {stat.label}
@@ -265,7 +256,7 @@ export function EnhancedSalesHomepage() {
             </div>
 
             {/* Floating feature badges */}
-            <div className="absolute -right-4 top-20 hidden animate-pulse lg:block">
+            <div className="-right-4 absolute top-20 hidden animate-pulse lg:block">
               <div className="rounded-full border border-primary/20 bg-background px-4 py-2 text-sm shadow-lg">
                 <span className="flex items-center gap-2">
                   <Brain className="size-4 text-primary" />
@@ -273,7 +264,7 @@ export function EnhancedSalesHomepage() {
                 </span>
               </div>
             </div>
-            <div className="animation-delay-1000 absolute -left-4 bottom-20 hidden animate-pulse lg:block">
+            <div className="animation-delay-1000 -left-4 absolute bottom-20 hidden animate-pulse lg:block">
               <div className="rounded-full border border-primary/20 bg-background px-4 py-2 text-sm shadow-lg">
                 <span className="flex items-center gap-2">
                   <Phone className="size-4 text-primary" />
@@ -293,9 +284,7 @@ export function EnhancedSalesHomepage() {
               <div className="mb-2 font-extrabold text-4xl text-primary">
                 5,247+
               </div>
-              <p className="text-muted-foreground text-sm">
-                Active Businesses
-              </p>
+              <p className="text-muted-foreground text-sm">Active Businesses</p>
             </div>
             <div className="text-center">
               <div className="mb-2 font-extrabold text-4xl text-primary">
@@ -348,18 +337,19 @@ export function EnhancedSalesHomepage() {
             <div className="mb-12 grid gap-6 md:grid-cols-3">
               {/* Problem 1 - Enhanced */}
               <div className="group relative overflow-hidden rounded-2xl border border-red-500/20 bg-gradient-to-br from-red-500/10 to-transparent p-8 transition-all hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/10">
-                <div className="absolute -right-4 -top-4 size-24 rounded-full bg-red-500/10 opacity-50 blur-2xl" />
+                <div className="-right-4 -top-4 absolute size-24 rounded-full bg-red-500/10 opacity-50 blur-2xl" />
                 <div className="relative">
                   <div className="mb-6 flex size-14 items-center justify-center rounded-2xl bg-red-500/10 shadow-lg shadow-red-500/10">
                     <DollarSign className="size-7 text-red-600 dark:text-red-400" />
                   </div>
-                  <h3 className="mb-3 font-bold text-xl">
-                    Insanely Expensive
-                  </h3>
+                  <h3 className="mb-3 font-bold text-xl">Insanely Expensive</h3>
                   <p className="mb-4 text-muted-foreground leading-relaxed">
                     ServiceTitan averages <strong>$398/month per user</strong>.
-                    That&apos;s <strong className="text-red-600 dark:text-red-400">$4,776/year</strong> for
-                    bloated features you don&apos;t need.
+                    That&apos;s{" "}
+                    <strong className="text-red-600 dark:text-red-400">
+                      $4,776/year
+                    </strong>{" "}
+                    for bloated features you don&apos;t need.
                   </p>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
@@ -380,16 +370,18 @@ export function EnhancedSalesHomepage() {
 
               {/* Problem 2 - Enhanced */}
               <div className="group relative overflow-hidden rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-8 transition-all hover:border-orange-500/30 hover:shadow-lg hover:shadow-orange-500/10">
-                <div className="absolute -right-4 -top-4 size-24 rounded-full bg-orange-500/10 opacity-50 blur-2xl" />
+                <div className="-right-4 -top-4 absolute size-24 rounded-full bg-orange-500/10 opacity-50 blur-2xl" />
                 <div className="relative">
                   <div className="mb-6 flex size-14 items-center justify-center rounded-2xl bg-orange-500/10 shadow-lg shadow-orange-500/10">
                     <Clock className="size-7 text-orange-600 dark:text-orange-400" />
                   </div>
                   <h3 className="mb-3 font-bold text-xl">Painfully Slow</h3>
                   <p className="mb-4 text-muted-foreground leading-relaxed">
-                    Legacy interfaces require{" "}
-                    <strong>dozens of clicks</strong> for simple tasks. Your
-                    team wastes <strong className="text-orange-600 dark:text-orange-400">2+ hours daily</strong>{" "}
+                    Legacy interfaces require <strong>dozens of clicks</strong>{" "}
+                    for simple tasks. Your team wastes{" "}
+                    <strong className="text-orange-600 dark:text-orange-400">
+                      2+ hours daily
+                    </strong>{" "}
                     navigating menus.
                   </p>
                   <div className="space-y-2 text-sm">
@@ -411,7 +403,7 @@ export function EnhancedSalesHomepage() {
 
               {/* Problem 3 - Enhanced */}
               <div className="group relative overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-8 transition-all hover:border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/10">
-                <div className="absolute -right-4 -top-4 size-24 rounded-full bg-yellow-500/10 opacity-50 blur-2xl" />
+                <div className="-right-4 -top-4 absolute size-24 rounded-full bg-yellow-500/10 opacity-50 blur-2xl" />
                 <div className="relative">
                   <div className="mb-6 flex size-14 items-center justify-center rounded-2xl bg-yellow-500/10 shadow-lg shadow-yellow-500/10">
                     <Bot className="size-7 text-yellow-600 dark:text-yellow-400" />
@@ -420,7 +412,10 @@ export function EnhancedSalesHomepage() {
                   <p className="mb-4 text-muted-foreground leading-relaxed">
                     Built in 2012, competitors don&apos;t have AI assistants,
                     automated calling, or intelligent monitoring. You&apos;re{" "}
-                    <strong className="text-yellow-600 dark:text-yellow-400">stuck in the past</strong>.
+                    <strong className="text-yellow-600 dark:text-yellow-400">
+                      stuck in the past
+                    </strong>
+                    .
                   </p>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
@@ -446,10 +441,7 @@ export function EnhancedSalesHomepage() {
                 <span className="text-muted-foreground line-through">
                   ServiceTitan $398/mo
                 </span>{" "}
-                →{" "}
-                <span className="text-primary">
-                  Thorbis $49/mo with AI
-                </span>
+                → <span className="text-primary">Thorbis $49/mo with AI</span>
               </p>
               <p className="text-foreground/70">
                 Same features + AI assistant + 24/7 phone system = Save{" "}
@@ -464,8 +456,8 @@ export function EnhancedSalesHomepage() {
       <section className="relative overflow-hidden border-border/50 border-y bg-gradient-to-br from-primary/5 via-background to-background py-24">
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-40 top-0 size-96 rounded-full bg-primary/10 opacity-50 blur-3xl" />
-          <div className="absolute -left-40 bottom-0 size-96 rounded-full bg-blue-500/10 opacity-50 blur-3xl" />
+          <div className="-right-40 absolute top-0 size-96 rounded-full bg-primary/10 opacity-50 blur-3xl" />
+          <div className="-left-40 absolute bottom-0 size-96 rounded-full bg-blue-500/10 opacity-50 blur-3xl" />
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
@@ -489,8 +481,8 @@ export function EnhancedSalesHomepage() {
               </h2>
               <p className="mx-auto max-w-4xl text-foreground/70 text-xl leading-relaxed md:text-2xl">
                 Just ask in plain English. No clicking through menus. No
-                training manuals. The AI handles invoicing, scheduling,
-                customer updates, reporting, and monitors your business 24/7.
+                training manuals. The AI handles invoicing, scheduling, customer
+                updates, reporting, and monitors your business 24/7.
               </p>
             </div>
 
@@ -529,7 +521,7 @@ export function EnhancedSalesHomepage() {
                         <span>HVAC System Repair</span>
                         <span>$1,250.00</span>
                       </div>
-                      <div className="flex justify-between border-t border-border pt-2 font-bold text-sm">
+                      <div className="flex justify-between border-border border-t pt-2 font-bold text-sm">
                         <span>Total</span>
                         <span>$1,250.00</span>
                       </div>
@@ -613,8 +605,8 @@ export function EnhancedSalesHomepage() {
                 },
               ].map((item, i) => (
                 <div
+                  className="group hover:-translate-y-1 relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 transition-all hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
                   key={i}
-                  className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
                 >
                   <div
                     className={`mb-4 flex size-12 items-center justify-center rounded-xl bg-${item.color}-500/10 shadow-lg`}
@@ -731,8 +723,8 @@ export function EnhancedSalesHomepage() {
                     },
                   ].map((item, i) => (
                     <div
-                      key={i}
                       className="group rounded-xl border border-primary/10 bg-background p-4 transition-all hover:border-primary/20 hover:bg-muted/30"
+                      key={i}
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -794,8 +786,8 @@ export function EnhancedSalesHomepage() {
                     },
                   ].map((item, i) => (
                     <div
-                      key={i}
                       className="group rounded-xl border border-primary/10 bg-background p-4 transition-all hover:border-primary/20 hover:bg-muted/30"
+                      key={i}
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -857,8 +849,8 @@ export function EnhancedSalesHomepage() {
                     },
                   ].map((item, i) => (
                     <div
-                      key={i}
                       className="group rounded-xl border border-primary/10 bg-background p-4 transition-all hover:border-primary/20 hover:bg-muted/30"
+                      key={i}
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -948,8 +940,8 @@ export function EnhancedSalesHomepage() {
                     $229/mo
                   </p>
                 </div>
-                <div className="border-border/50 relative border-b border-l bg-primary/10 p-6 text-center">
-                  <div className="absolute top-0 right-0 -translate-y-1/2">
+                <div className="relative border-border/50 border-b border-l bg-primary/10 p-6 text-center">
+                  <div className="-translate-y-1/2 absolute top-0 right-0">
                     <span className="rounded-full bg-primary px-4 py-1 font-bold text-primary-foreground text-xs uppercase shadow-lg">
                       Best Value
                     </span>
@@ -961,28 +953,64 @@ export function EnhancedSalesHomepage() {
 
                 {/* Feature rows - Comprehensive */}
                 {[
-                  { feature: "AI Assistant", values: [false, false, false, true] },
-                  { feature: "24/7 AI Phone System", values: [false, false, false, true] },
-                  { feature: "Intelligent Monitoring", values: [false, false, false, true] },
-                  { feature: "Smart Scheduling", values: [true, true, true, true] },
+                  {
+                    feature: "AI Assistant",
+                    values: [false, false, false, true],
+                  },
+                  {
+                    feature: "24/7 AI Phone System",
+                    values: [false, false, false, true],
+                  },
+                  {
+                    feature: "Intelligent Monitoring",
+                    values: [false, false, false, true],
+                  },
+                  {
+                    feature: "Smart Scheduling",
+                    values: [true, true, true, true],
+                  },
                   { feature: "Mobile App", values: [true, true, true, true] },
-                  { feature: "Invoicing & Payments", values: [true, true, true, true] },
-                  { feature: "QuickBooks Sync", values: [true, true, true, true] },
-                  { feature: "Customer Portal", values: [true, true, false, true] },
-                  { feature: "Marketing Automation", values: ["$99/mo", "Limited", true, true] },
-                  { feature: "Payment Processing Fees", values: ["2.9%+", "2.9%+", "2.9%+", "0%"] },
-                  { feature: "Setup Fees", values: ["$2K-$5K", "$1K+", "$500+", "$0"] },
-                  { feature: "Training Required", values: ["2-4 weeks", "1-2 weeks", "1 week", "1 day"] },
-                  { feature: "Contract Length", values: ["2-3 years", "1 year", "1 year", "Monthly"] },
+                  {
+                    feature: "Invoicing & Payments",
+                    values: [true, true, true, true],
+                  },
+                  {
+                    feature: "QuickBooks Sync",
+                    values: [true, true, true, true],
+                  },
+                  {
+                    feature: "Customer Portal",
+                    values: [true, true, false, true],
+                  },
+                  {
+                    feature: "Marketing Automation",
+                    values: ["$99/mo", "Limited", true, true],
+                  },
+                  {
+                    feature: "Payment Processing Fees",
+                    values: ["2.9%+", "2.9%+", "2.9%+", "0%"],
+                  },
+                  {
+                    feature: "Setup Fees",
+                    values: ["$2K-$5K", "$1K+", "$500+", "$0"],
+                  },
+                  {
+                    feature: "Training Required",
+                    values: ["2-4 weeks", "1-2 weeks", "1 week", "1 day"],
+                  },
+                  {
+                    feature: "Contract Length",
+                    values: ["2-3 years", "1 year", "1 year", "Monthly"],
+                  },
                 ].map((row, i) => (
-                  <div key={i} className="contents">
+                  <div className="contents" key={i}>
                     <div className="border-border/50 border-b bg-background p-4">
                       <p className="font-medium text-sm">{row.feature}</p>
                     </div>
                     {row.values.map((value, j) => (
                       <div
-                        key={j}
                         className={`border-border/50 border-b border-l bg-background p-4 text-center ${j === 3 ? "bg-primary/5" : ""}`}
+                        key={j}
                       >
                         {typeof value === "boolean" ? (
                           value ? (
@@ -991,7 +1019,9 @@ export function EnhancedSalesHomepage() {
                             <X className="mx-auto size-5 text-red-600 dark:text-red-400" />
                           )
                         ) : (
-                          <span className={`text-sm ${j === 3 ? "font-semibold text-primary" : "text-muted-foreground"}`}>
+                          <span
+                            className={`text-sm ${j === 3 ? "font-semibold text-primary" : "text-muted-foreground"}`}
+                          >
                             {value}
                           </span>
                         )}
@@ -1044,7 +1074,7 @@ export function EnhancedSalesHomepage() {
                 invest in marketing ($4K/month), or upgrade your fleet. Why
                 waste it on expensive software?
               </p>
-              <Button size="lg" className="group h-14 px-10 text-lg" asChild>
+              <Button asChild className="group h-14 px-10 text-lg" size="lg">
                 <Link href="/register">
                   Start Saving Today
                   <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
@@ -1062,7 +1092,9 @@ export function EnhancedSalesHomepage() {
             <div className="mb-16 text-center">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm">
                 <Award className="size-4 text-primary" />
-                <span className="font-medium">Trusted by 5,247+ Businesses</span>
+                <span className="font-medium">
+                  Trusted by 5,247+ Businesses
+                </span>
               </div>
               <h2 className="mb-6 font-bold text-4xl md:text-5xl lg:text-6xl">
                 Real Stories from{" "}
@@ -1087,13 +1119,14 @@ export function EnhancedSalesHomepage() {
                     </span>
                   </div>
                   <h3 className="mb-4 font-bold text-3xl">
-                    &quot;We saved $52,000 and grew revenue 47% in year one&quot;
+                    &quot;We saved $52,000 and grew revenue 47% in year
+                    one&quot;
                   </h3>
                   <div className="mb-6 flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <Star
-                        key={i}
                         className="size-5 fill-yellow-500 text-yellow-500"
+                        key={i}
                       />
                     ))}
                   </div>
@@ -1213,14 +1246,14 @@ export function EnhancedSalesHomepage() {
                 },
               ].map((testimonial, i) => (
                 <div
-                  key={i}
                   className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 transition-all hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
+                  key={i}
                 >
                   <div className="mb-4 flex items-center gap-1">
                     {Array.from({ length: testimonial.stars }).map((_, j) => (
                       <Star
-                        key={j}
                         className="size-4 fill-yellow-500 text-yellow-500"
+                        key={j}
                       />
                     ))}
                   </div>
@@ -1284,8 +1317,8 @@ export function EnhancedSalesHomepage() {
                 { name: "Painting", icon: "🎨", businesses: "223+" },
               ].map((industry, i) => (
                 <div
-                  key={i}
                   className="group flex items-center gap-3 rounded-xl border border-primary/10 bg-background p-4 transition-all hover:border-primary/20 hover:bg-primary/5"
+                  key={i}
                 >
                   <div className="text-3xl">{industry.icon}</div>
                   <div className="flex-1">
@@ -1301,10 +1334,10 @@ export function EnhancedSalesHomepage() {
 
             <div className="mt-12 text-center">
               <Button
-                variant="outline"
-                size="lg"
-                className="h-14 px-8 text-lg"
                 asChild
+                className="h-14 px-8 text-lg"
+                size="lg"
+                variant="outline"
               >
                 <Link href="/industries">
                   View All 25+ Industries
@@ -1321,8 +1354,8 @@ export function EnhancedSalesHomepage() {
         {/* Dramatic gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-background" />
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-20 top-0 size-96 rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -right-20 bottom-0 size-96 rounded-full bg-blue-500/20 blur-3xl" />
+          <div className="-left-20 absolute top-0 size-96 rounded-full bg-primary/20 blur-3xl" />
+          <div className="-right-20 absolute bottom-0 size-96 rounded-full bg-blue-500/20 blur-3xl" />
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
@@ -1346,15 +1379,15 @@ export function EnhancedSalesHomepage() {
 
             <p className="mx-auto mb-10 max-w-3xl text-foreground/70 text-xl leading-relaxed md:text-2xl">
               Join <strong>5,247 field service businesses</strong> saving{" "}
-              <strong>$4,000+/year</strong> while growing faster with
-              AI-powered automation. No credit card required to start.
+              <strong>$4,000+/year</strong> while growing faster with AI-powered
+              automation. No credit card required to start.
             </p>
 
             <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
-                size="lg"
-                className="group h-16 px-12 text-lg shadow-2xl shadow-primary/30"
                 asChild
+                className="group h-16 px-12 text-lg shadow-2xl shadow-primary/30"
+                size="lg"
               >
                 <Link href="/register">
                   <Sparkles className="mr-2 size-5" />
@@ -1363,10 +1396,10 @@ export function EnhancedSalesHomepage() {
                 </Link>
               </Button>
               <Button
+                asChild
+                className="h-16 border-2 px-12 text-lg"
                 size="lg"
                 variant="outline"
-                className="h-16 border-2 px-12 text-lg"
-                asChild
               >
                 <Link href="/demo">
                   <Phone className="mr-2 size-5" />
@@ -1405,11 +1438,11 @@ export function EnhancedSalesHomepage() {
 
             {/* Social proof reminder */}
             <div className="mt-12 rounded-2xl border border-primary/20 bg-background/80 p-8 backdrop-blur-sm">
-              <div className="mb-4 flex justify-center -space-x-3">
+              <div className="-space-x-3 mb-4 flex justify-center">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                   <div
-                    key={i}
                     className="size-12 rounded-full border-2 border-background bg-gradient-to-br from-primary/30 to-primary/10"
+                    key={i}
                   />
                 ))}
               </div>

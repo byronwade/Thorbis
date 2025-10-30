@@ -1,27 +1,14 @@
-import {
-  ArrowLeft,
-  Edit,
-  Filter,
-  Mail,
-  MoreVertical,
-  Plus,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { CommunicationToolbarActions } from "@/components/communication/communication-toolbar-actions";
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
-import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions";
+import { JobDetailsToolbarActions } from "@/components/work/job-details-toolbar-actions";
+import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 
 type ToolbarConfig = {
   title: string;
@@ -87,12 +74,33 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
 // Regex patterns for route matching
 const JOB_DETAILS_PATTERN = /^\/dashboard\/work\/([^/]+)$/;
 const PRODUCT_DETAILS_PATTERN = /^\/dashboard\/shop\/([^/]+)$/;
+const INVOICE_DETAILS_PATTERN = /^\/dashboard\/work\/invoices\/([^/]+)$/;
 
 /**
  * Get toolbar config for a given route path
  * Returns undefined if no config found (toolbar will show default layout)
  */
 export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
+  // Check for invoice details page pattern: /dashboard/work/invoices/[id]
+  const invoiceDetailsMatch = pathname.match(INVOICE_DETAILS_PATTERN);
+  if (invoiceDetailsMatch) {
+    return {
+      title: "Invoice Details",
+      actions: (
+        <>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/dashboard/work/invoices">
+              <ArrowLeft className="mr-2 size-4" />
+              Back to Invoices
+            </Link>
+          </Button>
+          <Separator className="h-6" orientation="vertical" />
+          <InvoiceToolbarActions />
+        </>
+      ),
+    };
+  }
+
   // Check for product details page pattern: /dashboard/shop/[id]
   const productDetailsMatch = pathname.match(PRODUCT_DETAILS_PATTERN);
   if (productDetailsMatch) {
@@ -116,7 +124,6 @@ export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
   // Check for job details page pattern: /dashboard/work/[id]
   const jobDetailsMatch = pathname.match(JOB_DETAILS_PATTERN);
   if (jobDetailsMatch) {
-    const jobId = jobDetailsMatch[1];
     return {
       title: "Job Details",
       actions: (
@@ -124,41 +131,11 @@ export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
           <Button asChild size="sm" variant="ghost">
             <Link href="/dashboard/work">
               <ArrowLeft className="mr-2 size-4" />
-              Back to Jobs
+              Back
             </Link>
           </Button>
-          <Button asChild size="sm" variant="ghost">
-            <Link href={`/dashboard/work/${jobId}/edit`}>
-              <Edit className="mr-2 size-4" />
-              Edit
-            </Link>
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="ghost">
-                <MoreVertical className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Edit className="mr-2 size-4" />
-                Edit Job
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Plus className="mr-2 size-4" />
-                Create Invoice
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Plus className="mr-2 size-4" />
-                Create Estimate
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete Job
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Separator className="h-6" orientation="vertical" />
+          <JobDetailsToolbarActions />
         </>
       ),
     };

@@ -7,20 +7,19 @@
  * - Reduced JavaScript bundle size
  */
 
-import Link from "next/link";
 import {
-  TrendingUp,
-  Clock,
-  DollarSign,
-  Users,
   ArrowRight,
   Calendar,
   CheckCircle2,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  Users,
 } from "lucide-react";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export function DashboardHero() {
@@ -85,9 +84,11 @@ export function DashboardHero() {
         {/* KPI Cards Grid - Like Dashboard */}
         <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {kpiData.map((kpi, index) => (
-            <Card key={index} className="transition-all hover:shadow-lg">
+            <Card className="transition-all hover:shadow-lg" key={index}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">{kpi.title}</CardTitle>
+                <CardTitle className="font-medium text-sm">
+                  {kpi.title}
+                </CardTitle>
                 <kpi.icon className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="space-y-1">
@@ -198,7 +199,7 @@ export function DashboardHero() {
               { icon: "🧹", label: "Cleaning" },
               { icon: "🔨", label: "Handyman" },
             ].map((industry, index) => (
-              <Badge key={index} className="gap-2 px-4 py-2" variant="outline">
+              <Badge className="gap-2 px-4 py-2" key={index} variant="outline">
                 <span>{industry.icon}</span>
                 <span>{industry.label}</span>
               </Badge>

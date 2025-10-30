@@ -18,14 +18,12 @@ import {
   Inbox,
   Mail,
   MessageSquare,
-  MoreVertical,
   Phone,
   RefreshCw,
   Search,
   Star,
   Ticket,
   Trash2,
-  X,
 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -40,6 +38,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
+
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
 
@@ -165,7 +164,9 @@ export default function CommunicationPage() {
 
   // Use Zustand store for active filter (shared with toolbar)
   const activeFilter = useCommunicationStore((state) => state.activeFilter);
-  const setActiveFilter = useCommunicationStore((state) => state.setActiveFilter);
+  const setActiveFilter = useCommunicationStore(
+    (state) => state.setActiveFilter
+  );
 
   // Filter messages by type and search query
   const filteredMessages = MOCK_MESSAGES.filter((msg) => {
@@ -272,7 +273,6 @@ export default function CommunicationPage() {
     return date.toLocaleDateString();
   };
 
-
   return (
     <>
       <div className="flex h-full flex-col">
@@ -280,7 +280,7 @@ export default function CommunicationPage() {
         <div className="border-b bg-background">
           <div className="grid grid-cols-5 divide-x">
             <button
-              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+              className={`relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50 ${
                 activeFilter === "all"
                   ? "bg-muted/30 text-foreground"
                   : "text-muted-foreground"
@@ -299,7 +299,7 @@ export default function CommunicationPage() {
             </button>
 
             <button
-              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+              className={`relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50 ${
                 activeFilter === "email"
                   ? "bg-muted/30 text-foreground"
                   : "text-muted-foreground"
@@ -318,7 +318,7 @@ export default function CommunicationPage() {
             </button>
 
             <button
-              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+              className={`relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50 ${
                 activeFilter === "sms"
                   ? "bg-muted/30 text-foreground"
                   : "text-muted-foreground"
@@ -337,7 +337,7 @@ export default function CommunicationPage() {
             </button>
 
             <button
-              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+              className={`relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50 ${
                 activeFilter === "phone"
                   ? "bg-muted/30 text-foreground"
                   : "text-muted-foreground"
@@ -356,7 +356,7 @@ export default function CommunicationPage() {
             </button>
 
             <button
-              className={`relative flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all hover:bg-muted/50 ${
+              className={`relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50 ${
                 activeFilter === "ticket"
                   ? "bg-muted/30 text-foreground"
                   : "text-muted-foreground"
@@ -378,7 +378,6 @@ export default function CommunicationPage() {
 
         {/* Toolbar */}
         <div className="flex items-center gap-2 border-b px-4 py-2">
-
           <Checkbox
             checked={
               selectedIds.size === filteredMessages.length &&
@@ -515,7 +514,9 @@ export default function CommunicationPage() {
                         </Badge>
                       ))}
                       {message.attachments && (
-                        <span className="text-muted-foreground text-xs">📎</span>
+                        <span className="text-muted-foreground text-xs">
+                          📎
+                        </span>
                       )}
                       <span className="w-20 text-right text-muted-foreground text-xs">
                         {formatTimestamp(message.timestamp)}

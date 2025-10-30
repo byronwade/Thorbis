@@ -8,20 +8,20 @@
  * - Better initial page load performance
  */
 
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface Job {
-  id: string
-  title: string
-  customer: string
-  startTime: string
-  endTime: string
-  status: "scheduled" | "in-progress" | "completed" | "cancelled"
-  priority: "low" | "medium" | "high" | "urgent"
-  location: string
-  technician: string
+  id: string;
+  title: string;
+  customer: string;
+  startTime: string;
+  endTime: string;
+  status: "scheduled" | "in-progress" | "completed" | "cancelled";
+  priority: "low" | "medium" | "high" | "urgent";
+  location: string;
+  technician: string;
 }
 
 const mockJobs: Job[] = [
@@ -80,35 +80,49 @@ const mockJobs: Job[] = [
     location: "579 Medical Plaza",
     technician: "James Wilson",
   },
-]
+];
 
 const statusColors = {
-  scheduled: "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-300",
-  "in-progress": "bg-yellow-500/10 text-yellow-700 border-yellow-500/20 dark:text-yellow-300",
-  completed: "bg-green-500/10 text-green-700 border-green-500/20 dark:text-green-300",
+  scheduled:
+    "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-300",
+  "in-progress":
+    "bg-yellow-500/10 text-yellow-700 border-yellow-500/20 dark:text-yellow-300",
+  completed:
+    "bg-green-500/10 text-green-700 border-green-500/20 dark:text-green-300",
   cancelled: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-300",
-}
+};
 
 const priorityColors = {
   low: "bg-gray-500",
   medium: "bg-blue-500",
   high: "bg-orange-500",
   urgent: "bg-red-500",
-}
+};
 
 export function ScheduleListView() {
   return (
     <div className="h-full overflow-auto p-6">
       <div className="mx-auto max-w-4xl space-y-3">
         {mockJobs.map((job) => (
-          <Card key={job.id} className="p-4 transition-shadow hover:shadow-md">
+          <Card className="p-4 transition-shadow hover:shadow-md" key={job.id}>
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
-                  <div className={cn("size-2 rounded-full", priorityColors[job.priority])} />
+                  <div
+                    className={cn(
+                      "size-2 rounded-full",
+                      priorityColors[job.priority]
+                    )}
+                  />
                   <h3 className="font-semibold text-sm">{job.title}</h3>
-                  <Badge variant="outline" className={cn("text-xs", statusColors[job.status])}>
-                    {job.status === "in-progress" ? "In Progress" : job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                  <Badge
+                    className={cn("text-xs", statusColors[job.status])}
+                    variant="outline"
+                  >
+                    {job.status === "in-progress"
+                      ? "In Progress"
+                      : job.status.charAt(0).toUpperCase() +
+                        job.status.slice(1)}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-4 text-muted-foreground text-xs">
@@ -120,15 +134,19 @@ export function ScheduleListView() {
                 </div>
               </div>
               <div className="shrink-0 text-right text-xs">
-                <div className="font-medium">{job.startTime} - {job.endTime}</div>
+                <div className="font-medium">
+                  {job.startTime} - {job.endTime}
+                </div>
                 <div className="text-muted-foreground">
                   {(() => {
-                    const [startH, startM] = job.startTime.split(":").map(Number)
-                    const [endH, endM] = job.endTime.split(":").map(Number)
-                    const duration = (endH * 60 + endM) - (startH * 60 + startM)
-                    const hours = Math.floor(duration / 60)
-                    const mins = duration % 60
-                    return `${hours}h ${mins}m`
+                    const [startH, startM] = job.startTime
+                      .split(":")
+                      .map(Number);
+                    const [endH, endM] = job.endTime.split(":").map(Number);
+                    const duration = endH * 60 + endM - (startH * 60 + startM);
+                    const hours = Math.floor(duration / 60);
+                    const mins = duration % 60;
+                    return `${hours}h ${mins}m`;
                   })()}
                 </div>
               </div>
@@ -137,5 +155,5 @@ export function ScheduleListView() {
         ))}
       </div>
     </div>
-  )
+  );
 }

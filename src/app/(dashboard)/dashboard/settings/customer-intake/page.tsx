@@ -41,6 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const MAX_CUSTOM_FIELDS = 20;
@@ -85,7 +86,8 @@ type CustomField = {
   enabled: boolean;
 };
 
-export default function CustomerIntakePage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function CustomerIntakePage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<CustomerIntakeSettings>({
     // Required
     requireFirstName: true,

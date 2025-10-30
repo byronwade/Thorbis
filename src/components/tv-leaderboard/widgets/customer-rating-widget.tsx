@@ -8,16 +8,16 @@
  * - TINY (<120px): Just the rating number
  */
 
-import { Star, TrendingUp, TrendingDown } from "lucide-react";
-import {
-  ResponsiveWidgetWrapper,
-  ResponsiveContent,
-  ResponsiveText,
-  ResponsiveIcon,
-  ShowAt,
-  ResponsiveFlex,
-} from "../responsive-widget-wrapper";
+import { Star, TrendingDown, TrendingUp } from "lucide-react";
 import { formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+  ResponsiveContent,
+  ResponsiveFlex,
+  ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
+  ShowAt,
+} from "../responsive-widget-wrapper";
 
 type CustomerRatingWidgetProps = {
   data: {
@@ -46,7 +46,10 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
         {/* COMFORTABLE Stage: Short title */}
         <ShowAt stage="comfortable">
           <ResponsiveFlex className="justify-between">
-            <ResponsiveText variant="body" className="font-medium text-muted-foreground">
+            <ResponsiveText
+              className="font-medium text-muted-foreground"
+              variant="body"
+            >
               Rating
             </ResponsiveText>
             <ResponsiveIcon>
@@ -65,8 +68,8 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
         </ShowAt>
 
         {/* Main rating value */}
-        <div className="flex flex-col items-center justify-center @[120px]:items-start">
-          <ResponsiveText variant="display" className="font-bold">
+        <div className="flex flex-col @[120px]:items-start items-center justify-center">
+          <ResponsiveText className="font-bold" variant="display">
             {data.rating.toFixed(1)}
           </ResponsiveText>
 
@@ -75,8 +78,8 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
             <div className="mt-1 flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star
-                  key={i}
                   className={`size-3 ${i < Math.floor(data.rating) ? "fill-yellow-500 text-yellow-500" : "text-gray-300"}`}
+                  key={i}
                 />
               ))}
             </div>
@@ -86,7 +89,9 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
           <div className="mt-1">
             {/* FULL + COMFORTABLE: Full trend */}
             <ShowAt stage="full-comfortable">
-              <span className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}>
+              <span
+                className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}
+              >
                 <TrendIcon className="size-4" />
                 {isPositive ? "+" : ""}
                 {formatPercentage(data.change, "comfortable")}

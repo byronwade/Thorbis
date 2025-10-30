@@ -10,7 +10,8 @@
 
 export const revalidate = 900; // Revalidate every 15 minutes
 
-export default function TestFullWidthPage() {  return (
+export default function TestFullWidthPage() {
+  return (
     <div className="flex h-full flex-col">
       {/* Custom header */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

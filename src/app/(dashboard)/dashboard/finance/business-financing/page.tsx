@@ -2,7 +2,7 @@
  * Business Financing Page - Server Component
  */
 
-import { Building2, CreditCard, DollarSign, TrendingUp } from "lucide-react";
+import { Building2, CreditCard, DollarSign } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -26,9 +26,7 @@ export default function BusinessFinancingPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Active Loans
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Active Loans</CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -67,7 +65,9 @@ export default function BusinessFinancingPage() {
       <Card>
         <CardHeader>
           <CardTitle>Financing Options</CardTitle>
-          <CardDescription>Business lending and funding solutions</CardDescription>
+          <CardDescription>
+            Business lending and funding solutions
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">

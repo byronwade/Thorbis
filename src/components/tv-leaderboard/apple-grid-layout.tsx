@@ -16,8 +16,8 @@
  * - Memoized calculations to prevent unnecessary re-renders
  */
 
-import { useMemo } from "react";
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import type { GridDimensions } from "./hooks/use-viewport-grid";
 
@@ -95,10 +95,7 @@ export function AppleGridLayout({
   onWidgetClick,
 }: AppleGridLayoutProps) {
   // Memoize grid template to prevent recalculation
-  const gridStyle = useMemo(
-    () => getGridTemplate(dimensions),
-    [dimensions]
-  );
+  const gridStyle = useMemo(() => getGridTemplate(dimensions), [dimensions]);
 
   // Filter widgets for current view
   const viewWidgets = useMemo(() => {

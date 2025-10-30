@@ -14,19 +14,19 @@ export function formatNumber(
 ): string {
   if (stage === "tiny" || stage === "compact") {
     // Ultra-compact: use K/M abbreviations
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1_000_000) {
+      return `${(value / 1_000_000).toFixed(1)}M`;
     }
     if (value >= 1000) {
-      return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
+      return `${(value / 1000).toFixed(value >= 10_000 ? 0 : 1)}K`;
     }
     return value.toString();
   }
 
   if (stage === "comfortable") {
     // Compact with commas
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1_000_000) {
+      return `${(value / 1_000_000).toFixed(1)}M`;
     }
     if (value >= 1000) {
       return value.toLocaleString();
@@ -151,7 +151,10 @@ export function getTrendClass(value: number): string {
 /**
  * Format rank display (for leaderboards)
  */
-export function formatRank(rank: number, stage: "full" | "comfortable" | "compact" | "tiny"): string {
+export function formatRank(
+  rank: number,
+  stage: "full" | "comfortable" | "compact" | "tiny"
+): string {
   if (stage === "tiny") {
     return `#${rank}`;
   }

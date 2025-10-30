@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Trash Page - Client Component
  *

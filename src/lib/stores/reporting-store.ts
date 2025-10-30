@@ -29,7 +29,9 @@ type ReportingStore = {
 
   // Actions
   setCustomReports: (reports: CustomReport[]) => void;
-  addCustomReport: (report: Omit<CustomReport, "id" | "createdAt" | "updatedAt">) => void;
+  addCustomReport: (
+    report: Omit<CustomReport, "id" | "createdAt" | "updatedAt">
+  ) => void;
   updateCustomReport: (id: string, updates: Partial<CustomReport>) => void;
   deleteCustomReport: (id: string) => void;
   setActiveReport: (id: string | null) => void;
@@ -102,14 +104,18 @@ export const useReportingStore = create<ReportingStore>()(
 
         deleteCustomReport: (id) => {
           set((state) => ({
-            customReports: state.customReports.filter((report) => report.id !== id),
-            activeReportId: state.activeReportId === id ? null : state.activeReportId,
+            customReports: state.customReports.filter(
+              (report) => report.id !== id
+            ),
+            activeReportId:
+              state.activeReportId === id ? null : state.activeReportId,
           }));
         },
 
         setActiveReport: (id) => set({ activeReportId: id }),
 
-        setIsCreatingReport: (isCreating) => set({ isCreatingReport: isCreating }),
+        setIsCreatingReport: (isCreating) =>
+          set({ isCreatingReport: isCreating }),
 
         reset: () => set(initialState),
       }),

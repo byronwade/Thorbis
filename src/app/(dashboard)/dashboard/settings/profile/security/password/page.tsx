@@ -44,6 +44,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+
 // Constants
 const MIN_PASSWORD_LENGTH = 8;
 const VERY_WEAK_PASSWORD_LENGTH = 4;
@@ -87,7 +88,8 @@ const passwordSchema = z
 
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
-export default function PasswordPage() {  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+export default function PasswordPage() {
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 

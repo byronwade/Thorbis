@@ -19,14 +19,18 @@ const personalInfoSchema = z.object({
 });
 
 // Schema for password change
-const passwordChangeSchema = z.object({
-  currentPassword: z.string().min(8, "Password must be at least 8 characters"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const passwordChangeSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 // Schema for notification preferences
 const notificationPreferencesSchema = z.object({
@@ -137,7 +141,7 @@ export async function enableTwoFactor() {
     return {
       success: true,
       message: "Two-factor authentication enabled",
-      qrCode: "data:image/png;base64,..." // Placeholder
+      qrCode: "data:image/png;base64,...", // Placeholder
     };
   } catch (error) {
     return { success: false, error: "Failed to enable 2FA" };

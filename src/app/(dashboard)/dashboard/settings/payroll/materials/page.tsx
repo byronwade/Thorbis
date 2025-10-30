@@ -31,6 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type MaterialSettings = {
   deductMaterialsFromPay: boolean;
   materialDeductionType: "gross" | "commission-only" | "net";
@@ -40,7 +41,8 @@ type MaterialSettings = {
   subcontractorCostsDeducted: boolean;
 };
 
-export default function MaterialsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function MaterialsSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<MaterialSettings>({
     deductMaterialsFromPay: true,

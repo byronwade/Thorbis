@@ -62,7 +62,8 @@ const communicationsSections = [
   },
 ];
 
-export default function CommunicationsSettingsPage() {  return (
+export default function CommunicationsSettingsPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">

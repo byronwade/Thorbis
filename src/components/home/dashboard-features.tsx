@@ -1,21 +1,27 @@
 "use client";
 
-import { useState } from "react";
 import {
-  Calendar,
-  DollarSign,
-  TrendingUp,
-  BarChart3,
-  Users,
-  Smartphone,
-  CreditCard,
-  Bell,
   ArrowRight,
+  BarChart3,
+  Bell,
+  Calendar,
+  CreditCard,
+  DollarSign,
+  Smartphone,
+  TrendingUp,
+  Users,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import Link from "next/link";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export function DashboardFeaturesSection() {
@@ -184,11 +190,11 @@ export function DashboardFeaturesSection() {
             const Icon = category.icon;
             return (
               <Button
-                key={key}
                 className={cn(
                   "h-auto gap-2 px-6 py-3",
                   activeCategory !== key && "bg-transparent hover:bg-accent"
                 )}
+                key={key}
                 onClick={() => setActiveCategory(key)}
                 variant={activeCategory === key ? "default" : "outline"}
               >
@@ -205,10 +211,7 @@ export function DashboardFeaturesSection() {
             (feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card
-                  key={index}
-                  className="transition-all hover:shadow-lg"
-                >
+                <Card className="transition-all hover:shadow-lg" key={index}>
                   <CardHeader className="space-y-0 pb-4">
                     <div className="mb-4 flex items-start justify-between">
                       <div className="rounded-lg bg-primary/10 p-2">

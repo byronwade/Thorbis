@@ -10,7 +10,8 @@
 
 export const revalidate = 900; // Revalidate every 15 minutes
 
-export default function TimeAttendancePage() {  return (
+export default function TimeAttendancePage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Time & Attendance</h1>

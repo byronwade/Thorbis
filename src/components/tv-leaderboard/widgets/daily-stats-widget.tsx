@@ -8,15 +8,15 @@
  * - TINY (<120px): Just the revenue number
  */
 
-import { Calendar, DollarSign, Briefcase, Star } from "lucide-react";
+import { Briefcase, Calendar, DollarSign, Star } from "lucide-react";
+import { formatCurrency, formatNumber } from "@/lib/utils/responsive-utils";
 import {
-  ResponsiveWidgetWrapper,
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
-import { formatCurrency, formatNumber } from "@/lib/utils/responsive-utils";
 
 type DailyStatsWidgetProps = {
   data: {
@@ -40,7 +40,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
             <ResponsiveText variant="title">Today's Performance</ResponsiveText>
           </ShowAt>
           <ShowAt stage="comfortable">
-            <ResponsiveText variant="body" className="font-semibold">
+            <ResponsiveText className="font-semibold" variant="body">
               Today
             </ResponsiveText>
           </ShowAt>
@@ -55,7 +55,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
                 <DollarSign className="size-3.5" />
                 Revenue
               </div>
-              <ResponsiveText variant="display" className="mt-1 font-bold">
+              <ResponsiveText className="mt-1 font-bold" variant="display">
                 {formatCurrency(data.revenue, "comfortable")}
               </ResponsiveText>
             </div>
@@ -66,7 +66,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
                 <Briefcase className="size-3.5" />
                 Jobs
               </div>
-              <ResponsiveText variant="display" className="mt-1 font-bold">
+              <ResponsiveText className="mt-1 font-bold" variant="display">
                 {formatNumber(data.jobs, "comfortable")}
               </ResponsiveText>
             </div>
@@ -77,7 +77,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
                 <DollarSign className="size-3.5" />
                 Avg Ticket
               </div>
-              <ResponsiveText variant="display" className="mt-1 font-bold">
+              <ResponsiveText className="mt-1 font-bold" variant="display">
                 {formatCurrency(data.avgTicket, "comfortable")}
               </ResponsiveText>
             </div>
@@ -88,7 +88,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
                 <Star className="size-3.5" />
                 Rating
               </div>
-              <ResponsiveText variant="display" className="mt-1 font-bold">
+              <ResponsiveText className="mt-1 font-bold" variant="display">
                 {data.rating.toFixed(1)}
               </ResponsiveText>
             </div>
@@ -104,7 +104,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
                 <DollarSign className="size-3.5 text-green-500" />
                 <ResponsiveText variant="caption">Revenue</ResponsiveText>
               </div>
-              <ResponsiveText variant="body" className="font-bold">
+              <ResponsiveText className="font-bold" variant="body">
                 {formatCurrency(data.revenue, "comfortable")}
               </ResponsiveText>
             </div>
@@ -115,7 +115,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
                 <Briefcase className="size-3.5 text-blue-500" />
                 <ResponsiveText variant="caption">Jobs</ResponsiveText>
               </div>
-              <ResponsiveText variant="body" className="font-bold">
+              <ResponsiveText className="font-bold" variant="body">
                 {formatNumber(data.jobs, "comfortable")}
               </ResponsiveText>
             </div>
@@ -125,10 +125,13 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
         {/* COMPACT Stage: Revenue only */}
         <ShowAt stage="compact">
           <div className="flex flex-col items-center justify-center gap-1">
-            <ResponsiveText variant="caption" className="text-muted-foreground">
+            <ResponsiveText className="text-muted-foreground" variant="caption">
               Revenue
             </ResponsiveText>
-            <ResponsiveText variant="display" className="font-bold text-green-500">
+            <ResponsiveText
+              className="font-bold text-green-500"
+              variant="display"
+            >
               {formatCurrency(data.revenue, "compact")}
             </ResponsiveText>
           </div>
@@ -137,7 +140,10 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
         {/* TINY Stage: Just the number */}
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
-            <ResponsiveText variant="display" className="font-bold text-green-500">
+            <ResponsiveText
+              className="font-bold text-green-500"
+              variant="display"
+            >
               {formatCurrency(data.revenue, "tiny")}
             </ResponsiveText>
           </div>

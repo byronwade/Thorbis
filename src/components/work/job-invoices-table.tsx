@@ -12,6 +12,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
+import { cn } from "@/lib/utils";
 
 type Invoice = {
   id: string;
@@ -50,23 +51,48 @@ function getStatusBadge(status: string) {
   const variants: Record<
     string,
     {
-      variant: "default" | "secondary" | "destructive" | "outline";
+      className: string;
       label: string;
     }
   > = {
-    draft: { variant: "outline", label: "Draft" },
-    sent: { variant: "secondary", label: "Sent" },
-    paid: { variant: "default", label: "Paid" },
-    overdue: { variant: "destructive", label: "Overdue" },
-    cancelled: { variant: "destructive", label: "Cancelled" },
+    draft: {
+      className:
+        "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+      label: "Draft",
+    },
+    sent: {
+      className:
+        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+      label: "Sent",
+    },
+    paid: {
+      className:
+        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      label: "Paid",
+    },
+    overdue: {
+      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      label: "Overdue",
+    },
+    cancelled: {
+      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      label: "Cancelled",
+    },
   };
 
   const config = variants[status] || {
-    variant: "outline" as const,
+    className: "border-border/50 bg-background text-muted-foreground",
     label: status,
   };
 
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return (
+    <Badge
+      className={cn("font-medium text-xs", config.className)}
+      variant="outline"
+    >
+      {config.label}
+    </Badge>
+  );
 }
 
 export function JobInvoicesTable({
@@ -81,7 +107,7 @@ export function JobInvoicesTable({
       filterable: true,
       render: (invoice) => (
         <Link
-          className="font-medium hover:underline"
+          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
           href={`/dashboard/work/invoices/${invoice.id}`}
         >
           {invoice.invoiceNumber}
@@ -93,6 +119,9 @@ export function JobInvoicesTable({
       header: "Title",
       sortable: true,
       filterable: true,
+      render: (invoice) => (
+        <span className="text-sm leading-tight">{invoice.title}</span>
+      ),
     },
     {
       key: "status",
@@ -106,7 +135,7 @@ export function JobInvoicesTable({
       header: "Total Amount",
       sortable: true,
       render: (invoice) => (
-        <span className="font-medium">
+        <span className="font-semibold tabular-nums">
           {formatCurrency(invoice.totalAmount)}
         </span>
       ),
@@ -116,7 +145,7 @@ export function JobInvoicesTable({
       header: "Paid Amount",
       sortable: true,
       render: (invoice) => (
-        <span className="font-medium">
+        <span className="font-semibold tabular-nums">
           {formatCurrency(invoice.paidAmount)}
         </span>
       ),
@@ -125,7 +154,11 @@ export function JobInvoicesTable({
       key: "dueDate",
       header: "Due Date",
       sortable: true,
-      render: (invoice) => <span>{formatDate(invoice.dueDate)}</span>,
+      render: (invoice) => (
+        <span className="text-muted-foreground text-sm tabular-nums leading-tight">
+          {formatDate(invoice.dueDate)}
+        </span>
+      ),
     },
   ];
 

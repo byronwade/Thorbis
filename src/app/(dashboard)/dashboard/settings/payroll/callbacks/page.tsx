@@ -31,6 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type CallbackSettings = {
   callbackPayDeduction: boolean;
   callbackDeductionAmount: number;
@@ -41,7 +42,8 @@ type CallbackSettings = {
   chargebackMaxAmount: number;
 };
 
-export default function CallbacksSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function CallbacksSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<CallbackSettings>({
     callbackPayDeduction: true,

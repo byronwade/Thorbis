@@ -176,9 +176,7 @@ export function ComparisonSection() {
             </div>
             <div className="text-center">
               <div className="mb-2 inline-flex rounded-full bg-white/5 px-4 py-2">
-                <span className="font-medium text-foreground/60">
-                  Others
-                </span>
+                <span className="font-medium text-foreground/60">Others</span>
               </div>
             </div>
           </div>
@@ -186,10 +184,12 @@ export function ComparisonSection() {
           {/* Table Rows */}
           {features.map((item, index) => (
             <div
-              key={index}
               className={`grid grid-cols-3 gap-4 p-6 transition-colors hover:bg-white/5 ${
-                index !== features.length - 1 ? "border-primary/10 border-b" : ""
+                index !== features.length - 1
+                  ? "border-primary/10 border-b"
+                  : ""
               }`}
+              key={index}
             >
               <div>
                 <h3 className="mb-1 font-semibold text-white">

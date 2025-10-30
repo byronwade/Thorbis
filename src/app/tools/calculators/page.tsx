@@ -8,11 +8,11 @@
  */
 
 import {
+  BarChart,
   Calculator,
+  ChevronRight,
   DollarSign,
   TrendingUp,
-  BarChart,
-  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -40,8 +40,10 @@ type CalculatorTool = {
 const calculators: CalculatorTool[] = [
   {
     title: "Hourly Rate Calculator",
-    description: "Calculate what to charge per hour based on your costs and target profit",
-    detailedDescription: "Determine your ideal hourly rate by factoring in labor costs, overhead expenses, materials, and desired profit margin. Perfect for service-based businesses.",
+    description:
+      "Calculate what to charge per hour based on your costs and target profit",
+    detailedDescription:
+      "Determine your ideal hourly rate by factoring in labor costs, overhead expenses, materials, and desired profit margin. Perfect for service-based businesses.",
     href: "/tools/calculators/hourly-rate",
     icon: DollarSign,
     badge: "Popular",
@@ -55,8 +57,10 @@ const calculators: CalculatorTool[] = [
   },
   {
     title: "Job Pricing Calculator",
-    description: "Price jobs accurately with material, labor, and overhead costs",
-    detailedDescription: "Build accurate job quotes by calculating material costs, labor hours, equipment usage, and overhead. Ensure profitable pricing on every project.",
+    description:
+      "Price jobs accurately with material, labor, and overhead costs",
+    detailedDescription:
+      "Build accurate job quotes by calculating material costs, labor hours, equipment usage, and overhead. Ensure profitable pricing on every project.",
     href: "/tools/calculators/job-pricing",
     icon: Calculator,
     badge: "Essential",
@@ -70,8 +74,10 @@ const calculators: CalculatorTool[] = [
   },
   {
     title: "Profit & Loss Calculator",
-    description: "Track revenue, expenses, and calculate your net profit margins",
-    detailedDescription: "Monitor your business financial health with detailed P&L tracking. Calculate gross profit, operating profit, and net profit margins to understand your bottom line.",
+    description:
+      "Track revenue, expenses, and calculate your net profit margins",
+    detailedDescription:
+      "Monitor your business financial health with detailed P&L tracking. Calculate gross profit, operating profit, and net profit margins to understand your bottom line.",
     href: "/tools/calculators/profit-loss",
     icon: TrendingUp,
     badge: "Popular",
@@ -86,7 +92,8 @@ const calculators: CalculatorTool[] = [
   {
     title: "Commission Calculator",
     description: "Calculate sales commissions and technician incentive pay",
-    detailedDescription: "Design fair and motivating commission structures for your sales team and technicians. Calculate tiered commissions, bonuses, and performance-based pay.",
+    detailedDescription:
+      "Design fair and motivating commission structures for your sales team and technicians. Calculate tiered commissions, bonuses, and performance-based pay.",
     href: "/tools/calculators/commission",
     icon: DollarSign,
     features: [
@@ -99,7 +106,8 @@ const calculators: CalculatorTool[] = [
   {
     title: "Break-Even Calculator",
     description: "Find out how much revenue you need to cover your costs",
-    detailedDescription: "Determine your break-even point to understand the minimum revenue needed to cover all fixed and variable costs. Plan for profitability and growth.",
+    detailedDescription:
+      "Determine your break-even point to understand the minimum revenue needed to cover all fixed and variable costs. Plan for profitability and growth.",
     href: "/tools/calculators/break-even",
     icon: TrendingUp,
     features: [
@@ -111,8 +119,10 @@ const calculators: CalculatorTool[] = [
   },
   {
     title: "Industry Pricing Standards",
-    description: "Compare your pricing against industry benchmarks and averages",
-    detailedDescription: "Access industry-specific pricing data and benchmarks. Compare your rates to regional and national averages to ensure competitive pricing.",
+    description:
+      "Compare your pricing against industry benchmarks and averages",
+    detailedDescription:
+      "Access industry-specific pricing data and benchmarks. Compare your rates to regional and national averages to ensure competitive pricing.",
     href: "/tools/calculators/industry-pricing",
     icon: BarChart,
     badge: "Premium",
@@ -135,15 +145,20 @@ export default function CalculatorsPage() {
             <Calculator className="size-6 text-primary" />
           </div>
           <div>
-            <h1 className="font-bold text-4xl tracking-tight">Business Calculators</h1>
+            <h1 className="font-bold text-4xl tracking-tight">
+              Business Calculators
+            </h1>
             <p className="mt-1 text-lg text-muted-foreground">
               Essential tools for pricing, profit analysis, and growth planning
             </p>
           </div>
         </div>
 
-        <p className="text-muted-foreground max-w-3xl">
-          Make data-driven decisions with our suite of business calculators. From pricing jobs and calculating hourly rates to analyzing profit margins and planning commissions, these tools help you run a more profitable trade business.
+        <p className="max-w-3xl text-muted-foreground">
+          Make data-driven decisions with our suite of business calculators.
+          From pricing jobs and calculating hourly rates to analyzing profit
+          margins and planning commissions, these tools help you run a more
+          profitable trade business.
         </p>
       </div>
 
@@ -182,7 +197,9 @@ export default function CalculatorsPage() {
 
       {/* Calculator Tools Grid */}
       <div className="space-y-4">
-        <h2 className="font-semibold text-2xl tracking-tight">Available Calculators</h2>
+        <h2 className="font-semibold text-2xl tracking-tight">
+          Available Calculators
+        </h2>
         <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
           {calculators.map((calculator) => {
             const Icon = calculator.icon;
@@ -224,9 +241,14 @@ export default function CalculatorsPage() {
                       </p>
                       <ul className="space-y-1">
                         {calculator.features.slice(0, 3).map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm">
+                          <li
+                            className="flex items-start gap-2 text-sm"
+                            key={idx}
+                          >
                             <span className="mt-0.5 text-primary">•</span>
-                            <span className="text-muted-foreground">{feature}</span>
+                            <span className="text-muted-foreground">
+                              {feature}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -247,14 +269,15 @@ export default function CalculatorsPage() {
             Need Help Using These Calculators?
           </CardTitle>
           <CardDescription>
-            Our team can help you understand your numbers and make the right pricing decisions for your business
+            Our team can help you understand your numbers and make the right
+            pricing decisions for your business
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <Link href="/contact">
             <button
-              type="button"
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 font-medium text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              type="button"
             >
               Contact Support
               <ChevronRight className="size-4" />
@@ -262,8 +285,8 @@ export default function CalculatorsPage() {
           </Link>
           <Link href="/tools">
             <button
-              type="button"
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 font-medium text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              type="button"
             >
               Browse All Tools
               <ChevronRight className="size-4" />

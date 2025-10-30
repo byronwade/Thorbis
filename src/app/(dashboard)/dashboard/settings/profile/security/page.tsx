@@ -29,12 +29,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 3600; // Revalidate every 1 hour
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 type SecurityFeature = {
   title: string;
   description: string;
@@ -169,7 +171,8 @@ function getDeviceIcon(type: string) {
   }
 }
 
-export default function SecurityPage() {  return (
+export default function SecurityPage() {
+  return (
     <TooltipProvider>
       <div className="space-y-8 py-8">
         {/* Header */}

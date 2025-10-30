@@ -7,9 +7,9 @@
  * - Reduced JavaScript bundle size
  */
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function DemoShowcaseSection() {
   const highlights = [
@@ -64,8 +64,8 @@ export function DemoShowcaseSection() {
             <div className="mb-8 space-y-4">
               {highlights.map((highlight, index) => (
                 <div
-                  key={index}
                   className="flex items-start gap-4 rounded-xl border border-primary/20 bg-white/5 p-4 transition-all duration-300 hover:border-primary/40 hover:bg-primary/5"
+                  key={index}
                 >
                   <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-2xl">
                     {highlight.icon}

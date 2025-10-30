@@ -12,7 +12,8 @@
 // Revalidate every 5 minutes (ISR - Incremental Static Regeneration)
 export const revalidate = 300;
 
-export default function BusinessIntelligencePage() {  return (
+export default function BusinessIntelligencePage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Business Intelligence</h1>

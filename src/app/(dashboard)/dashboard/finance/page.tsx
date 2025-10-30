@@ -10,14 +10,9 @@
  */
 
 import { DollarSign, TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { BankAccountsOverview } from "@/components/finance/bank-accounts-overview";
 import { VirtualBucketsOverview } from "@/components/finance/virtual-buckets-overview";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const revalidate = 900; // Revalidate every 15 minutes
 

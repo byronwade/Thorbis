@@ -2,10 +2,19 @@
  * Schedule > Availability Page - Server Component
  *
  * Performance optimizations:
- * - Server Component by default (no "use client")
  * - Static content rendered on server
  * - ISR revalidation configured
  * - Reduced JavaScript bundle size
+ */
+
+/**
+ * Server Component
+ *
+ * Performance optimizations:
+ * - Server Component fetches data before rendering (no loading flash)
+ * - Mock data defined on server (will be replaced with real DB queries)
+ * - Only interactive table/chart components are client-side
+ * - Better SEO and initial page load performance
  */
 
 import {
@@ -17,7 +26,8 @@ import {
 } from "@/components/ui/card";
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default function AvailabilityPage() {  return (
+export default function AvailabilityPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Availability</h1>

@@ -41,6 +41,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 interface LoanAccount extends Record<string, unknown> {
   id: string;
   lender: string;
@@ -54,7 +55,8 @@ interface LoanAccount extends Record<string, unknown> {
   status: "active" | "paid-off" | "delinquent";
 }
 
-export default function BusinessFinancingSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function BusinessFinancingSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [loanAccounts] = useState<LoanAccount[]>([
     {
       id: "1",

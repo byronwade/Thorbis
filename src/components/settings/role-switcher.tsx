@@ -1,11 +1,11 @@
 "use client";
 
 import { Check, Shield } from "lucide-react";
-import { useRoleStore } from "@/lib/stores/role-store";
-import { ROLE_CONFIGS, type UserRole } from "@/types/roles";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useRoleStore } from "@/lib/stores/role-store";
+import { ROLE_CONFIGS, type UserRole } from "@/types/roles";
 
 /**
  * Role Switcher Component - Client Component
@@ -37,17 +37,18 @@ export function RoleSwitcher() {
 
           return (
             <Card
-              key={config.id}
               className={`cursor-pointer transition-all hover:border-primary ${
-                isActive ? "border-primary bg-primary/5 ring-2 ring-primary/20" : ""
+                isActive
+                  ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                  : ""
               }`}
+              key={config.id}
               onClick={() => setRole(config.id as UserRole)}
             >
               <div className="space-y-3 p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant={isActive ? "default" : "outline"}
                       className={`${
                         config.color === "purple"
                           ? "bg-purple-500"
@@ -61,6 +62,7 @@ export function RoleSwitcher() {
                                   ? "bg-pink-500"
                                   : "bg-red-500"
                       } ${isActive ? "" : "bg-transparent"}`}
+                      variant={isActive ? "default" : "outline"}
                     >
                       {config.label}
                     </Badge>
@@ -73,21 +75,27 @@ export function RoleSwitcher() {
                 </div>
 
                 <div>
-                  <p className="text-muted-foreground text-sm">{config.description}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {config.description}
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                  <p className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
                     Dashboard Features
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {config.dashboardFeatures.slice(0, 3).map((feature) => (
-                      <Badge key={feature} variant="secondary" className="text-xs">
+                      <Badge
+                        className="text-xs"
+                        key={feature}
+                        variant="secondary"
+                      >
                         {feature.replace(/-/g, " ")}
                       </Badge>
                     ))}
                     {config.dashboardFeatures.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge className="text-xs" variant="secondary">
                         +{config.dashboardFeatures.length - 3}
                       </Badge>
                     )}
@@ -102,11 +110,7 @@ export function RoleSwitcher() {
       <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
         <div className="flex gap-3">
           <div className="text-yellow-600 dark:text-yellow-400">
-            <svg
-              className="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 clipRule="evenodd"
                 d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -118,9 +122,10 @@ export function RoleSwitcher() {
             <p className="font-medium text-sm text-yellow-800 dark:text-yellow-200">
               Development Mode Only
             </p>
-            <p className="text-yellow-700 text-sm dark:text-yellow-300">
-              This role switcher is for development testing only. In production, user roles
-              will be determined by authentication and database permissions.
+            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+              This role switcher is for development testing only. In production,
+              user roles will be determined by authentication and database
+              permissions.
             </p>
           </div>
         </div>
@@ -135,12 +140,12 @@ export function RoleSwitcher() {
           </p>
         </div>
         <Button
-          variant="outline"
-          size="sm"
           onClick={() => {
             localStorage.removeItem("stratos_dev_role");
             setRole("owner");
           }}
+          size="sm"
+          variant="outline"
         >
           Reset to Owner
         </Button>

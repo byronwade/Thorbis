@@ -41,18 +41,28 @@ export function JobLineItemsTable({
       header: "Description",
       sortable: true,
       filterable: true,
+      render: (item) => (
+        <span className="text-sm leading-tight">{item.description}</span>
+      ),
     },
     {
       key: "quantity",
       header: "Quantity",
       sortable: true,
+      render: (item) => (
+        <span className="text-sm tabular-nums leading-tight">
+          {item.quantity}
+        </span>
+      ),
     },
     {
       key: "unitPrice",
       header: "Unit Price",
       sortable: true,
       render: (item) => (
-        <span className="font-medium">{formatCurrency(item.unitPrice)}</span>
+        <span className="font-semibold tabular-nums">
+          {formatCurrency(item.unitPrice)}
+        </span>
       ),
     },
     {
@@ -60,7 +70,9 @@ export function JobLineItemsTable({
       header: "Amount",
       sortable: true,
       render: (item) => (
-        <span className="font-medium">{formatCurrency(item.amount)}</span>
+        <span className="font-semibold tabular-nums">
+          {formatCurrency(item.amount)}
+        </span>
       ),
     },
   ];

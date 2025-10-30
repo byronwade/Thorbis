@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useMemo } from "react"
-import { Clock, Calendar } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Calendar, Clock } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
+  type GanttFeature,
   GanttFeatureList,
   GanttFeatureRow,
   GanttHeader,
   GanttProvider,
   GanttSidebar,
   GanttSidebarGroup,
+  type GanttStatus,
   GanttTimeline,
   GanttToday,
-  type GanttFeature,
-  type GanttStatus,
   type Range,
-} from "@/components/ui/shadcn-io/gantt"
-import { cn } from "@/lib/utils"
-import { useSchedule } from "@/hooks/use-schedule"
-import { useViewStore } from "@/stores/view-store"
-import { ZoomControls } from "./zoom-controls"
-import { calculateDuration, formatDuration } from "@/lib/schedule-utils"
-import type { Job } from "./schedule-types"
+} from "@/components/ui/shadcn-io/gantt";
+import { useSchedule } from "@/hooks/use-schedule";
+import { calculateDuration, formatDuration } from "@/lib/schedule-utils";
+import { cn } from "@/lib/utils";
+import { useViewStore } from "@/stores/view-store";
+import type { Job } from "./schedule-types";
+import { ZoomControls } from "./zoom-controls";
 
 /**
  * Enhanced Timeline View with:
@@ -39,21 +39,21 @@ const statusColorMap: Record<Job["status"], string> = {
   "in-progress": "#f59e0b",
   completed: "#22c55e",
   cancelled: "#ef4444",
-}
+};
 
 const priorityBorderColors = {
   low: "border-slate-500",
   medium: "border-blue-500",
   high: "border-orange-500",
   urgent: "border-red-500",
-}
+};
 
 const technicianStatusColors = {
   available: "bg-green-500",
   "on-job": "bg-amber-500",
   "on-break": "bg-orange-500",
   offline: "bg-slate-500",
-}
+};
 
 // Convert Job to GanttFeature
 function jobToGanttFeature(job: Job): GanttFeature {
@@ -61,16 +61,14 @@ function jobToGanttFeature(job: Job): GanttFeature {
     id: job.status,
     name: job.status,
     color: statusColorMap[job.status],
-  }
+  };
 
   // Ensure dates are Date objects (handle string dates from API)
-  const startAt = job.startTime instanceof Date
-    ? job.startTime
-    : new Date(job.startTime)
+  const startAt =
+    job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
 
-  const endAt = job.endTime instanceof Date
-    ? job.endTime
-    : new Date(job.endTime)
+  const endAt =
+    job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
   return {
     id: job.id,
@@ -78,75 +76,96 @@ function jobToGanttFeature(job: Job): GanttFeature {
     startAt,
     endAt,
     status,
-  }
+  };
 }
 
 // Calculate Gantt range from zoom level
 function getGanttRange(zoom: number): Range {
-  if (zoom < 50) return "quarterly"  // Year/Quarter view
-  if (zoom < 100) return "monthly"   // Monthly view
-  return "daily"                      // Daily/Weekly/Hourly view
+  if (zoom < 50) return "quarterly"; // Year/Quarter view
+  if (zoom < 100) return "monthly"; // Monthly view
+  return "daily"; // Daily/Weekly/Hourly view
 }
 
 // Calculate column width from zoom level
 function getColumnWidth(zoom: number): number {
-  if (zoom < 50) return 100  // Quarterly
-  if (zoom < 100) return 150 // Monthly
-  return 50                   // Daily
+  if (zoom < 50) return 100; // Quarterly
+  if (zoom < 100) return 150; // Monthly
+  return 50; // Daily
 }
 
 // Component that renders the timeline content
 function TimelineContent() {
-  const { technicians, getJobsForTechnician, moveJob, selectJob, selectedJobId } = useSchedule()
-  const { zoom, showConflicts } = useViewStore()
+  const {
+    technicians,
+    getJobsForTechnician,
+    moveJob,
+    selectJob,
+    selectedJobId,
+  } = useSchedule();
+  const { zoom, showConflicts } = useViewStore();
 
   // Convert schedule data to Gantt format
-  const ganttData = useMemo(() => {
-    return technicians.map((tech) => {
-      const jobs = getJobsForTechnician(tech.id)
-      const features = jobs.map(jobToGanttFeature)
+  const ganttData = useMemo(
+    () =>
+      technicians.map((tech) => {
+        const jobs = getJobsForTechnician(tech.id);
+        const features = jobs.map(jobToGanttFeature);
 
-      return {
-        technician: tech,
-        features,
-      }
-    })
-  }, [technicians, getJobsForTechnician])
+        return {
+          technician: tech,
+          features,
+        };
+      }),
+    [technicians, getJobsForTechnician]
+  );
 
   // Handle job move (drag and drop)
-  const handleJobMove = (jobId: string, newStartAt: Date, newEndAt: Date | null) => {
-    if (!newEndAt) return
+  const handleJobMove = (
+    jobId: string,
+    newStartAt: Date,
+    newEndAt: Date | null
+  ) => {
+    if (!newEndAt) return;
 
     // Find which technician this job belongs to
     const job = ganttData
       .flatMap((data) => data.features)
-      .find((f) => f.id === jobId)
+      .find((f) => f.id === jobId);
 
-    if (!job) return
+    if (!job) return;
 
     // Find the original job to get the technician ID
-    const originalJob = ganttData
-      .find((data) => data.features.some((f) => f.id === jobId))
+    const originalJob = ganttData.find((data) =>
+      data.features.some((f) => f.id === jobId)
+    );
 
-    if (!originalJob) return
+    if (!originalJob) return;
 
     // Update the job
-    moveJob(jobId, originalJob.technician.id, newStartAt, newEndAt)
-  }
+    moveJob(jobId, originalJob.technician.id, newStartAt, newEndAt);
+  };
 
   return (
     <>
       <GanttSidebar>
         <GanttSidebarGroup name="Technicians">
           {ganttData.map(({ technician }) => (
-            <div key={technician.id} className="border-b border-border/50 last:border-b-0">
+            <div
+              className="border-border/50 border-b last:border-b-0"
+              key={technician.id}
+            >
               <div className="flex items-start gap-3 p-2.5">
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
-                  {technician.name.split(" ").map((n) => n[0]).join("")}
+                  {technician.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="truncate font-semibold text-xs">{technician.name}</h4>
+                    <h4 className="truncate font-semibold text-xs">
+                      {technician.name}
+                    </h4>
                     <div
                       className={cn(
                         "size-2 shrink-0 rounded-full",
@@ -154,7 +173,9 @@ function TimelineContent() {
                       )}
                     />
                   </div>
-                  <p className="truncate text-[10px] text-muted-foreground">{technician.role}</p>
+                  <p className="truncate text-[10px] text-muted-foreground">
+                    {technician.role}
+                  </p>
                   <div className="mt-1 flex items-center gap-1">
                     <Badge className="text-[10px]" variant="outline">
                       {getJobsForTechnician(technician.id).length} jobs
@@ -177,17 +198,17 @@ function TimelineContent() {
               onMove={handleJobMove}
             >
               {(feature) => {
-                const jobs = getJobsForTechnician(technician.id)
-                const job = jobs.find((j) => j.id === feature.id)
-                if (!job) return null
+                const jobs = getJobsForTechnician(technician.id);
+                const job = jobs.find((j) => j.id === feature.id);
+                if (!job) return null;
 
-                const duration = calculateDuration(job.startTime, job.endTime)
-                const isSelected = selectedJobId === job.id
+                const duration = calculateDuration(job.startTime, job.endTime);
+                const isSelected = selectedJobId === job.id;
 
                 return (
                   <div
                     className={cn(
-                      "flex h-full w-full flex-col gap-0.5 px-1 cursor-pointer transition-all",
+                      "flex h-full w-full cursor-pointer flex-col gap-0.5 px-1 transition-all",
                       isSelected && "ring-2 ring-primary ring-offset-1"
                     )}
                     onClick={() => selectJob(job.id)}
@@ -199,7 +220,10 @@ function TimelineContent() {
                       <div
                         className={cn(
                           "size-1.5 shrink-0 rounded-full",
-                          priorityBorderColors[job.priority].replace("border-", "bg-")
+                          priorityBorderColors[job.priority].replace(
+                            "border-",
+                            "bg-"
+                          )
                         )}
                       />
                     </div>
@@ -213,7 +237,7 @@ function TimelineContent() {
                       </span>
                     </div>
                   </div>
-                )
+                );
               }}
             </GanttFeatureRow>
           ))}
@@ -221,22 +245,22 @@ function TimelineContent() {
         <GanttToday />
       </GanttTimeline>
     </>
-  )
+  );
 }
 
 export function TimelineViewV2() {
-  const [mounted, setMounted] = useState(false)
-  const { zoom, currentDate, goToToday, setCurrentDate } = useViewStore()
-  const { isLoading, error } = useSchedule()
+  const [mounted, setMounted] = useState(false);
+  const { zoom, currentDate, goToToday, setCurrentDate } = useViewStore();
+  const { isLoading, error } = useSchedule();
 
   // Prevent hydration mismatch
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   // Calculate Gantt configuration from zoom level
-  const ganttRange = useMemo(() => getGanttRange(zoom), [zoom])
-  const columnWidth = useMemo(() => getColumnWidth(zoom), [zoom])
+  const ganttRange = useMemo(() => getGanttRange(zoom), [zoom]);
+  const columnWidth = useMemo(() => getColumnWidth(zoom), [zoom]);
 
   // Loading state
   if (!mounted || isLoading) {
@@ -255,7 +279,7 @@ export function TimelineViewV2() {
           <div className="text-muted-foreground">Loading schedule...</div>
         </div>
       </div>
-    )
+    );
   }
 
   // Error state
@@ -273,12 +297,12 @@ export function TimelineViewV2() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
-            <p className="text-destructive mb-2">Error loading schedule</p>
+            <p className="mb-2 text-destructive">Error loading schedule</p>
             <p className="text-muted-foreground text-sm">{error}</p>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -295,12 +319,9 @@ export function TimelineViewV2() {
       </div>
 
       {/* Gantt Chart */}
-      <GanttProvider
-        range={ganttRange}
-        zoom={zoom}
-      >
+      <GanttProvider range={ganttRange} zoom={zoom}>
         <TimelineContent />
       </GanttProvider>
     </div>
-  )
+  );
 }

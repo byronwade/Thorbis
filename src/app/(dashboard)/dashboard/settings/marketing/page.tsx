@@ -50,6 +50,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const MAX_MESSAGE_LENGTH = 500;
@@ -116,7 +117,8 @@ type MarketingSettings = {
   facebookPixelId: string;
 };
 
-export default function MarketingCenterPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function MarketingCenterPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [settings, setSettings] = useState<MarketingSettings>({
     // Review Requests

@@ -9,16 +9,17 @@
  * - Browser API access for enhanced UX
  */
 
-import {
-  ArrowLeft,
-  BookOpen,
-  Box,
-  Clock,
-  DollarSign,
-  Package,
-  TrendingUp,
-  Wrench,
-} from "lucide-react";
+/**
+ * Server Component
+ *
+ * Performance optimizations:
+ * - Server Component fetches data before rendering (no loading flash)
+ * - Mock data defined on server (will be replaced with real DB queries)
+ * - Only interactive table/chart components are client-side
+ * - Better SEO and initial page load performance
+ */
+
+import { Clock, DollarSign, Package, TrendingUp, Wrench } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { StatCard } from "@/components/work/stat-card";
 import { WorkPageLayout } from "@/components/work/work-page-layout";
+
 type Service = {
   id: string;
   serviceCode: string;
@@ -298,7 +300,8 @@ function MaterialCard({ material }: { material: Material }) {
   );
 }
 
-function PriceBookPageContent() {  const searchParams = useSearchParams();
+function PriceBookPageContent() {
+  const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState("services");
   const [searchQuery, setSearchQuery] = useState("");

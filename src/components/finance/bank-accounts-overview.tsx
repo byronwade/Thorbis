@@ -110,8 +110,8 @@ export function BankAccountsOverview() {
           <div className="space-y-2">
             {checkingAccounts.map((account) => (
               <div
-                key={account.id}
                 className="flex items-center justify-between rounded-lg border p-3"
+                key={account.id}
               >
                 <div>
                   <p className="font-medium text-sm">{account.accountName}</p>
@@ -163,8 +163,8 @@ export function BankAccountsOverview() {
           <div className="space-y-2">
             {savingsAccounts.map((account) => (
               <div
-                key={account.id}
                 className="flex items-center justify-between rounded-lg border p-3"
+                key={account.id}
               >
                 <div>
                   <p className="font-medium text-sm">{account.accountName}</p>

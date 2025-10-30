@@ -11,15 +11,12 @@ import { HeroSection } from "@/components/hero/hero-section";
 import { Footer } from "@/components/layout/footer";
 import { CleanFeaturesSection } from "./clean-features";
 import { CleanTestimonialsSection } from "./clean-testimonials";
-import { DemoShowcaseSection } from "./demo-showcase";
-import { IntegrationsSection } from "./integrations-section";
 import { ComparisonSection } from "./comparison-section";
+import { DemoShowcaseSection } from "./demo-showcase";
 import { FAQSection } from "./faq-section";
 import { FinalCTASection } from "./final-cta-section";
-import {
-  IndustrySolutionsSection,
-  ROICalculatorSection,
-} from "./new-sections";
+import { IntegrationsSection } from "./integrations-section";
+import { IndustrySolutionsSection, ROICalculatorSection } from "./new-sections";
 
 export function ScrollExperience() {
   return (

@@ -13,12 +13,27 @@ const isProduction = process.env.NODE_ENV === "production";
 
 /**
  * Users table - works with both SQLite (dev) and PostgreSQL (prod)
+ *
+ * Note: This syncs with Supabase Auth users (auth.users table)
+ * The id should match the Supabase Auth user ID for proper RLS policies
+ *
+ * Auth fields are managed by Supabase Auth separately:
+ * - Email/password authentication
+ * - OAuth providers (Google, Facebook, etc.)
+ * - Email verification
+ * - Password reset
  */
 export const users = isProduction
   ? pgTable("users", {
-      id: uuid("id").primaryKey().defaultRandom(),
+      id: uuid("id").primaryKey().defaultRandom(), // Should match Supabase Auth user ID
       name: pgText("name").notNull(),
       email: pgText("email").notNull().unique(),
+      avatar: pgText("avatar"), // Profile picture URL
+      bio: pgText("bio"), // User biography
+      phone: pgText("phone"), // Phone number
+      emailVerified: pgBoolean("email_verified").default(false), // Email verification status
+      lastLoginAt: timestamp("last_login_at"), // Last login timestamp
+      isActive: pgBoolean("is_active").default(true).notNull(), // Account status
       createdAt: timestamp("created_at").defaultNow().notNull(),
       updatedAt: timestamp("updated_at")
         .defaultNow()
@@ -31,6 +46,16 @@ export const users = isProduction
         .$defaultFn(() => crypto.randomUUID()),
       name: text("name").notNull(),
       email: text("email").notNull().unique(),
+      avatar: text("avatar"), // Profile picture URL
+      bio: text("bio"), // User biography
+      phone: text("phone"), // Phone number
+      emailVerified: integer("email_verified", { mode: "boolean" }).default(
+        false
+      ), // Email verification status
+      lastLoginAt: integer("last_login_at", { mode: "timestamp" }), // Last login timestamp
+      isActive: integer("is_active", { mode: "boolean" })
+        .default(true)
+        .notNull(), // Account status
       createdAt: integer("created_at", { mode: "timestamp" })
         .notNull()
         .$defaultFn(() => new Date()),
@@ -787,6 +812,109 @@ export const invoices = isProduction
     });
 
 /**
+ * Contracts table - Digital contract management
+ *
+ * Note: Contracts are linked to estimates/invoices, NOT directly to customers.
+ * Customer information is derived from the linked estimate/invoice.
+ * For standalone contracts sent via email, only signer email is required.
+ */
+export const contracts = isProduction
+  ? pgTable("contracts", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      jobId: uuid("job_id").references(() => jobs.id as any, {
+        onDelete: "set null",
+      }),
+      estimateId: uuid("estimate_id").references(() => estimates.id as any, {
+        onDelete: "set null",
+      }),
+      invoiceId: uuid("invoice_id").references(() => invoices.id as any, {
+        onDelete: "set null",
+      }),
+      contractNumber: pgText("contract_number").notNull().unique(),
+      title: pgText("title").notNull(),
+      description: pgText("description"),
+      content: pgText("content").notNull(), // Contract body/terms
+      status: pgText("status").notNull().default("draft"), // 'draft' | 'sent' | 'viewed' | 'signed' | 'rejected' | 'expired' | 'cancelled'
+      contractType: pgText("contract_type").notNull().default("service"), // 'service' | 'maintenance' | 'custom'
+      // Signing information
+      signerName: pgText("signer_name"),
+      signerEmail: pgText("signer_email"),
+      signerTitle: pgText("signer_title"),
+      signerCompany: pgText("signer_company"),
+      signature: pgText("signature"), // Base64 encoded signature image
+      signedAt: timestamp("signed_at"),
+      ipAddress: pgText("ip_address"), // IP address when signed
+      // Validity and terms
+      validFrom: timestamp("valid_from"),
+      validUntil: timestamp("valid_until"),
+      terms: pgText("terms"),
+      notes: pgText("notes"),
+      // Metadata
+      templateId: uuid("template_id"), // Reference to contract template
+      metadata: pgJson("metadata"), // Additional contract-specific data
+      // Tracking
+      sentAt: timestamp("sent_at"),
+      viewedAt: timestamp("viewed_at"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("contracts", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      jobId: text("job_id").references(() => jobs.id as any, {
+        onDelete: "set null",
+      }),
+      estimateId: text("estimate_id").references(() => estimates.id as any, {
+        onDelete: "set null",
+      }),
+      invoiceId: text("invoice_id").references(() => invoices.id as any, {
+        onDelete: "set null",
+      }),
+      contractNumber: text("contract_number").notNull().unique(),
+      title: text("title").notNull(),
+      description: text("description"),
+      content: text("content").notNull(),
+      status: text("status").notNull().default("draft"),
+      contractType: text("contract_type").notNull().default("service"),
+      // Signing information
+      signerName: text("signer_name"),
+      signerEmail: text("signer_email"),
+      signerTitle: text("signer_title"),
+      signerCompany: text("signer_company"),
+      signature: text("signature"),
+      signedAt: integer("signed_at", { mode: "timestamp" }),
+      ipAddress: text("ip_address"),
+      // Validity and terms
+      validFrom: integer("valid_from", { mode: "timestamp" }),
+      validUntil: integer("valid_until", { mode: "timestamp" }),
+      terms: text("terms"),
+      notes: text("notes"),
+      // Metadata
+      templateId: text("template_id"),
+      metadata: text("metadata"), // JSON string
+      // Tracking
+      sentAt: integer("sent_at", { mode: "timestamp" }),
+      viewedAt: integer("viewed_at", { mode: "timestamp" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
  * Purchase Orders table - Material ordering system
  */
 export const purchaseOrders = isProduction
@@ -905,12 +1033,12 @@ export const poSettings = isProduction
         .references(() => companies.id as any, { onDelete: "cascade" }),
       enabled: pgBoolean("enabled").notNull().default(false),
       requireApproval: pgBoolean("require_approval").notNull().default(true),
-      approvalThreshold: pgInteger("approval_threshold").default(50000), // In cents, null = all POs require approval
+      approvalThreshold: pgInteger("approval_threshold").default(50_000), // In cents, null = all POs require approval
       autoGenerateEnabled: pgBoolean("auto_generate_enabled")
         .notNull()
         .default(false),
       autoGenerateThreshold: pgInteger("auto_generate_threshold").default(
-        10000
+        10_000
       ), // In cents
       defaultVendors: pgJson("default_vendors"), // Array of frequently used vendors
       notificationEmails: pgJson("notification_emails"), // Emails to notify on new POs
@@ -933,11 +1061,11 @@ export const poSettings = isProduction
       requireApproval: integer("require_approval", { mode: "boolean" })
         .notNull()
         .default(true),
-      approvalThreshold: integer("approval_threshold").default(50000),
+      approvalThreshold: integer("approval_threshold").default(50_000),
       autoGenerateEnabled: integer("auto_generate_enabled", { mode: "boolean" })
         .notNull()
         .default(false),
-      autoGenerateThreshold: integer("auto_generate_threshold").default(10000),
+      autoGenerateThreshold: integer("auto_generate_threshold").default(10_000),
       defaultVendors: text("default_vendors"), // JSON string
       notificationEmails: text("notification_emails"), // JSON string
       approvers: text("approvers"), // JSON string
@@ -948,6 +1076,124 @@ export const poSettings = isProduction
         .notNull()
         .$defaultFn(() => new Date())
         .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Activity Tracking table - Comprehensive audit log for all entities
+ *
+ * This table tracks all changes and activities across the system:
+ * - Status changes
+ * - Field updates
+ * - Notes added
+ * - Photos/documents uploaded
+ * - AI-generated insights
+ * - Automation workflow notifications
+ * - Assignment changes
+ * - Communications sent
+ * - And more...
+ */
+export const activities = isProduction
+  ? pgTable("activities", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      // Entity references (polymorphic - one will be set, others null)
+      entityType: pgText("entity_type").notNull(), // 'job' | 'customer' | 'invoice' | 'estimate' | 'property' | 'purchase_order'
+      entityId: uuid("entity_id").notNull(), // The ID of the entity being tracked
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      // Activity metadata
+      activityType: pgText("activity_type").notNull(), // 'status_change' | 'field_update' | 'note_added' | 'photo_added' | 'document_added' | 'ai_insight' | 'automation' | 'assignment_change' | 'communication' | 'created' | 'deleted'
+      action: pgText("action").notNull(), // Human-readable action (e.g., "changed status from Scheduled to In Progress")
+      category: pgText("category").notNull(), // 'system' | 'user' | 'ai' | 'automation'
+      // Actor (who performed the action)
+      actorId: uuid("actor_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }), // null for system/AI actions
+      actorType: pgText("actor_type").notNull().default("user"), // 'user' | 'system' | 'ai' | 'automation'
+      actorName: pgText("actor_name"), // Display name for the actor
+      // Change details
+      fieldName: pgText("field_name"), // Field that was changed (if applicable)
+      oldValue: pgText("old_value"), // Previous value (stringified)
+      newValue: pgText("new_value"), // New value (stringified)
+      // Additional context
+      description: pgText("description"), // Detailed description of the activity
+      metadata: pgJson("metadata"), // Flexible JSON for storing additional context
+      // References to related entities
+      relatedEntityType: pgText("related_entity_type"), // Related entity (e.g., 'user' for assignment changes)
+      relatedEntityId: uuid("related_entity_id"), // Related entity ID
+      // File attachments
+      attachmentType: pgText("attachment_type"), // 'photo' | 'document' | 'video' | null
+      attachmentUrl: pgText("attachment_url"), // URL to the attachment
+      attachmentName: pgText("attachment_name"), // Filename
+      // AI/Automation specific
+      aiModel: pgText("ai_model"), // AI model used (e.g., 'gpt-4')
+      automationWorkflowId: uuid("automation_workflow_id"), // Reference to automation workflow
+      automationWorkflowName: pgText("automation_workflow_name"),
+      // Visibility and importance
+      isImportant: pgBoolean("is_important").notNull().default(false), // Highlight important activities
+      isSystemGenerated: pgBoolean("is_system_generated")
+        .notNull()
+        .default(false),
+      isVisible: pgBoolean("is_visible").notNull().default(true), // Hide/show in timeline
+      // Timestamps
+      occurredAt: timestamp("occurred_at").notNull().defaultNow(), // When the activity occurred
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("activities", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      // Entity references
+      entityType: text("entity_type").notNull(),
+      entityId: text("entity_id").notNull(),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      // Activity metadata
+      activityType: text("activity_type").notNull(),
+      action: text("action").notNull(),
+      category: text("category").notNull(),
+      // Actor
+      actorId: text("actor_id").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      actorType: text("actor_type").notNull().default("user"),
+      actorName: text("actor_name"),
+      // Change details
+      fieldName: text("field_name"),
+      oldValue: text("old_value"),
+      newValue: text("new_value"),
+      // Additional context
+      description: text("description"),
+      metadata: text("metadata"), // JSON string
+      // References to related entities
+      relatedEntityType: text("related_entity_type"),
+      relatedEntityId: text("related_entity_id"),
+      // File attachments
+      attachmentType: text("attachment_type"),
+      attachmentUrl: text("attachment_url"),
+      attachmentName: text("attachment_name"),
+      // AI/Automation specific
+      aiModel: text("ai_model"),
+      automationWorkflowId: text("automation_workflow_id"),
+      automationWorkflowName: text("automation_workflow_name"),
+      // Visibility and importance
+      isImportant: integer("is_important", { mode: "boolean" })
+        .notNull()
+        .default(false),
+      isSystemGenerated: integer("is_system_generated", { mode: "boolean" })
+        .notNull()
+        .default(false),
+      isVisible: integer("is_visible", { mode: "boolean" })
+        .notNull()
+        .default(true),
+      // Timestamps
+      occurredAt: integer("occurred_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
     });
 
 // Export types for use in your application
@@ -991,7 +1237,13 @@ export type Estimate = typeof estimates.$inferSelect;
 export type NewEstimate = typeof estimates.$inferInsert;
 export type Invoice = typeof invoices.$inferSelect;
 export type NewInvoice = typeof invoices.$inferInsert;
+export type Contract = typeof contracts.$inferSelect;
+export type NewContract = typeof contracts.$inferInsert;
 export type PurchaseOrder = typeof purchaseOrders.$inferSelect;
 export type NewPurchaseOrder = typeof purchaseOrders.$inferInsert;
 export type POSettings = typeof poSettings.$inferSelect;
 export type NewPOSettings = typeof poSettings.$inferInsert;
+
+// Activity tracking types
+export type Activity = typeof activities.$inferSelect;
+export type NewActivity = typeof activities.$inferInsert;

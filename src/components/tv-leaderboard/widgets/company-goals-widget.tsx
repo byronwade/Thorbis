@@ -9,14 +9,14 @@
  */
 
 import { Target } from "lucide-react";
+import { formatCurrency, formatPercentage } from "@/lib/utils/responsive-utils";
 import {
-  ResponsiveWidgetWrapper,
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
-import { formatCurrency, formatPercentage } from "@/lib/utils/responsive-utils";
 
 type CompanyGoalsWidgetProps = {
   data: {
@@ -46,7 +46,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
             <ResponsiveText variant="title">Company Goals</ResponsiveText>
           </ShowAt>
           <ShowAt stage="comfortable">
-            <ResponsiveText variant="body" className="font-semibold">
+            <ResponsiveText className="font-semibold" variant="body">
               Goals
             </ResponsiveText>
           </ShowAt>
@@ -70,7 +70,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
                   style={{ width: `${Math.min(revenueProgress, 100)}%` }}
                 />
               </div>
-              <p className="text-muted-foreground text-xs">{formatPercentage(revenueProgress, "full")} achieved</p>
+              <p className="text-muted-foreground text-xs">
+                {formatPercentage(revenueProgress, "full")} achieved
+              </p>
             </div>
 
             {/* Avg Ticket */}
@@ -88,7 +90,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
                   style={{ width: `${Math.min(ticketProgress, 100)}%` }}
                 />
               </div>
-              <p className="text-muted-foreground text-xs">{formatPercentage(ticketProgress, "full")} achieved</p>
+              <p className="text-muted-foreground text-xs">
+                {formatPercentage(ticketProgress, "full")} achieved
+              </p>
             </div>
 
             {/* Rating */}
@@ -105,7 +109,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
                   style={{ width: `${Math.min(ratingProgress, 100)}%` }}
                 />
               </div>
-              <p className="text-muted-foreground text-xs">{formatPercentage(ratingProgress, "full")} achieved</p>
+              <p className="text-muted-foreground text-xs">
+                {formatPercentage(ratingProgress, "full")} achieved
+              </p>
             </div>
           </div>
         </ShowAt>
@@ -117,7 +123,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <ResponsiveText variant="caption">Revenue</ResponsiveText>
-                <ResponsiveText variant="caption" className="font-bold">
+                <ResponsiveText className="font-bold" variant="caption">
                   {formatPercentage(revenueProgress, "comfortable")}
                 </ResponsiveText>
               </div>
@@ -133,7 +139,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <ResponsiveText variant="caption">Avg Ticket</ResponsiveText>
-                <ResponsiveText variant="caption" className="font-bold">
+                <ResponsiveText className="font-bold" variant="caption">
                   {formatPercentage(ticketProgress, "comfortable")}
                 </ResponsiveText>
               </div>
@@ -150,10 +156,13 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
         {/* COMPACT Stage: Revenue percentage only */}
         <ShowAt stage="compact">
           <div className="flex flex-col items-center justify-center gap-1">
-            <ResponsiveText variant="caption" className="text-muted-foreground">
+            <ResponsiveText className="text-muted-foreground" variant="caption">
               Revenue
             </ResponsiveText>
-            <ResponsiveText variant="display" className="font-bold text-primary">
+            <ResponsiveText
+              className="font-bold text-primary"
+              variant="display"
+            >
               {formatPercentage(revenueProgress, "compact")}
             </ResponsiveText>
           </div>
@@ -162,7 +171,10 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
         {/* TINY Stage: Just the number */}
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
-            <ResponsiveText variant="display" className="font-bold text-primary">
+            <ResponsiveText
+              className="font-bold text-primary"
+              variant="display"
+            >
               {Math.round(revenueProgress)}%
             </ResponsiveText>
           </div>

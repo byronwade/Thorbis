@@ -9,9 +9,9 @@
  * - Browser API access for enhanced UX
  */
 
-import { Hash, Inbox, Users } from "lucide-react";
 import { useState } from "react";
 import { CompanyFeed } from "@/components/communication/company-feed";
+
 type ChannelType = "channel" | "dm";
 
 export default function CompanyFeedPage() {

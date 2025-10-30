@@ -9,12 +9,18 @@
  * - State management for calculator values
  */
 
+import { AlertCircle, Calculator, DollarSign, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { Calculator, DollarSign, TrendingUp, AlertCircle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function HourlyRateCalculator() {
   const [annualRevenue, setAnnualRevenue] = useState<string>("200000");
@@ -24,11 +30,11 @@ export default function HourlyRateCalculator() {
   const [profitMargin, setProfitMargin] = useState<string>("20");
 
   // Calculations
-  const revenueNum = parseFloat(annualRevenue) || 0;
-  const billableNum = parseFloat(billableHours) || 1;
-  const totalNum = parseFloat(totalHours) || 1;
-  const overheadNum = parseFloat(overhead) || 0;
-  const profitNum = parseFloat(profitMargin) || 0;
+  const revenueNum = Number.parseFloat(annualRevenue) || 0;
+  const billableNum = Number.parseFloat(billableHours) || 1;
+  const totalNum = Number.parseFloat(totalHours) || 1;
+  const overheadNum = Number.parseFloat(overhead) || 0;
+  const profitNum = Number.parseFloat(profitMargin) || 0;
 
   const utilizationRate = (billableNum / totalNum) * 100;
   const totalCosts = overheadNum;
@@ -47,11 +53,14 @@ export default function HourlyRateCalculator() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-bold text-3xl tracking-tight">Hourly Rate Calculator</h1>
+              <h1 className="font-bold text-3xl tracking-tight">
+                Hourly Rate Calculator
+              </h1>
               <Badge variant="secondary">Popular</Badge>
             </div>
             <p className="mt-1 text-muted-foreground">
-              Calculate what to charge per hour based on your costs and target profit
+              Calculate what to charge per hour based on your costs and target
+              profit
             </p>
           </div>
         </div>
@@ -67,9 +76,10 @@ export default function HourlyRateCalculator() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p>
-            This calculator helps you determine your ideal hourly billing rate by considering:
+            This calculator helps you determine your ideal hourly billing rate
+            by considering:
           </p>
-          <ul className="ml-4 space-y-1 list-disc">
+          <ul className="ml-4 list-disc space-y-1">
             <li>Your annual revenue goals</li>
             <li>Billable hours vs total working hours (utilization rate)</li>
             <li>Overhead and operating costs</li>
@@ -86,17 +96,19 @@ export default function HourlyRateCalculator() {
               <Calculator className="size-5" />
               Your Business Numbers
             </CardTitle>
-            <CardDescription>Enter your annual business metrics</CardDescription>
+            <CardDescription>
+              Enter your annual business metrics
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="revenue">Target Annual Revenue ($)</Label>
               <Input
                 id="revenue"
-                type="number"
-                value={annualRevenue}
                 onChange={(e) => setAnnualRevenue(e.target.value)}
                 placeholder="200000"
+                type="number"
+                value={annualRevenue}
               />
               <p className="text-muted-foreground text-xs">
                 Your desired total revenue for the year
@@ -107,10 +119,10 @@ export default function HourlyRateCalculator() {
               <Label htmlFor="billable">Billable Hours per Year</Label>
               <Input
                 id="billable"
-                type="number"
-                value={billableHours}
                 onChange={(e) => setBillableHours(e.target.value)}
                 placeholder="1500"
+                type="number"
+                value={billableHours}
               />
               <p className="text-muted-foreground text-xs">
                 Hours you can actually bill to clients (typically 1,200-1,800)
@@ -121,10 +133,10 @@ export default function HourlyRateCalculator() {
               <Label htmlFor="total">Total Working Hours per Year</Label>
               <Input
                 id="total"
-                type="number"
-                value={totalHours}
                 onChange={(e) => setTotalHours(e.target.value)}
                 placeholder="2080"
+                type="number"
+                value={totalHours}
               />
               <p className="text-muted-foreground text-xs">
                 Total hours available (40 hrs/week × 52 weeks = 2,080)
@@ -135,10 +147,10 @@ export default function HourlyRateCalculator() {
               <Label htmlFor="overhead">Annual Overhead Costs ($)</Label>
               <Input
                 id="overhead"
-                type="number"
-                value={overhead}
                 onChange={(e) => setOverhead(e.target.value)}
                 placeholder="50000"
+                type="number"
+                value={overhead}
               />
               <p className="text-muted-foreground text-xs">
                 Rent, insurance, equipment, utilities, admin, etc.
@@ -149,10 +161,10 @@ export default function HourlyRateCalculator() {
               <Label htmlFor="profit">Target Profit Margin (%)</Label>
               <Input
                 id="profit"
-                type="number"
-                value={profitMargin}
                 onChange={(e) => setProfitMargin(e.target.value)}
                 placeholder="20"
+                type="number"
+                value={profitMargin}
               />
               <p className="text-muted-foreground text-xs">
                 Desired profit as percentage of revenue (typically 10-30%)
@@ -173,14 +185,17 @@ export default function HourlyRateCalculator() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <p className="text-muted-foreground text-sm">Minimum Hourly Rate</p>
+                  <p className="text-muted-foreground text-sm">
+                    Minimum Hourly Rate
+                  </p>
                   <p className="font-bold text-4xl">
                     ${hourlyRate.toFixed(2)}
                     <span className="text-muted-foreground text-xl">/hour</span>
                   </p>
                 </div>
                 <p className="text-sm">
-                  This rate ensures you hit your revenue target of ${revenueNum.toLocaleString()}
+                  This rate ensures you hit your revenue target of $
+                  {revenueNum.toLocaleString()}
                   with {billableNum.toLocaleString()} billable hours per year.
                 </p>
               </div>
@@ -193,28 +208,50 @@ export default function HourlyRateCalculator() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground text-sm">Utilization Rate</span>
-                <span className="font-semibold">{utilizationRate.toFixed(1)}%</span>
+                <span className="text-muted-foreground text-sm">
+                  Utilization Rate
+                </span>
+                <span className="font-semibold">
+                  {utilizationRate.toFixed(1)}%
+                </span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground text-sm">Billable Hours/Year</span>
-                <span className="font-semibold">{billableNum.toLocaleString()}</span>
+                <span className="text-muted-foreground text-sm">
+                  Billable Hours/Year
+                </span>
+                <span className="font-semibold">
+                  {billableNum.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground text-sm">Total Working Hours</span>
-                <span className="font-semibold">{totalNum.toLocaleString()}</span>
+                <span className="text-muted-foreground text-sm">
+                  Total Working Hours
+                </span>
+                <span className="font-semibold">
+                  {totalNum.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground text-sm">Annual Overhead</span>
-                <span className="font-semibold">${overheadNum.toLocaleString()}</span>
+                <span className="text-muted-foreground text-sm">
+                  Annual Overhead
+                </span>
+                <span className="font-semibold">
+                  ${overheadNum.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground text-sm">Target Profit</span>
-                <span className="font-semibold">${targetProfit.toLocaleString()}</span>
+                <span className="text-muted-foreground text-sm">
+                  Target Profit
+                </span>
+                <span className="font-semibold">
+                  ${targetProfit.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between pt-2">
                 <span className="font-semibold">Required Revenue</span>
-                <span className="font-bold text-lg">${requiredRevenue.toLocaleString()}</span>
+                <span className="font-bold text-lg">
+                  ${requiredRevenue.toLocaleString()}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -227,9 +264,16 @@ export default function HourlyRateCalculator() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p>• Industry average utilization is 70-75% (1,450-1,560 hrs/year)</p>
-              <p>• Don't forget to include benefits, taxes, and equipment costs in overhead</p>
-              <p>• Consider market rates in your area for competitive pricing</p>
+              <p>
+                • Industry average utilization is 70-75% (1,450-1,560 hrs/year)
+              </p>
+              <p>
+                • Don't forget to include benefits, taxes, and equipment costs
+                in overhead
+              </p>
+              <p>
+                • Consider market rates in your area for competitive pricing
+              </p>
               <p>• Review and adjust quarterly based on actual performance</p>
             </CardContent>
           </Card>

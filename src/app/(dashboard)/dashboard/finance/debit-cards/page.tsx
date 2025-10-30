@@ -26,9 +26,7 @@ export default function DebitCardsPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Active Cards
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Active Cards</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -39,9 +37,7 @@ export default function DebitCardsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Monthly Spend
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Monthly Spend</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -52,9 +48,7 @@ export default function DebitCardsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Transactions
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Transactions</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -65,9 +59,7 @@ export default function DebitCardsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Card Controls
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Card Controls</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -80,7 +72,9 @@ export default function DebitCardsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Debit Card Management</CardTitle>
-          <CardDescription>Issue and manage company debit cards</CardDescription>
+          <CardDescription>
+            Issue and manage company debit cards
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">

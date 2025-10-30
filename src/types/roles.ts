@@ -28,7 +28,8 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
   [USER_ROLES.OWNER]: {
     id: "owner",
     label: "Owner",
-    description: "Full system access with focus on business financials and growth",
+    description:
+      "Full system access with focus on business financials and growth",
     color: "purple",
     permissions: ["*"],
     dashboardFeatures: [
@@ -43,7 +44,8 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
   [USER_ROLES.DISPATCHER]: {
     id: "dispatcher",
     label: "Dispatcher",
-    description: "Manage technician schedules, job assignments, and real-time operations",
+    description:
+      "Manage technician schedules, job assignments, and real-time operations",
     color: "blue",
     permissions: [
       "view-schedule",
@@ -64,7 +66,8 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
   [USER_ROLES.MANAGER]: {
     id: "manager",
     label: "Manager",
-    description: "Oversee team performance, customer satisfaction, and operations",
+    description:
+      "Oversee team performance, customer satisfaction, and operations",
     color: "green",
     permissions: [
       "view-reports",
@@ -85,7 +88,8 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
   [USER_ROLES.TECHNICIAN]: {
     id: "technician",
     label: "Technician",
-    description: "View assigned jobs, update job status, and track personal performance",
+    description:
+      "View assigned jobs, update job status, and track personal performance",
     color: "orange",
     permissions: [
       "view-my-schedule",
@@ -106,7 +110,8 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
   [USER_ROLES.CSR]: {
     id: "csr",
     label: "Customer Service Rep",
-    description: "Handle customer calls, schedule appointments, and manage customer relationships",
+    description:
+      "Handle customer calls, schedule appointments, and manage customer relationships",
     color: "pink",
     permissions: [
       "view-customers",
@@ -145,5 +150,7 @@ export function getRoleConfig(role: UserRole): RoleConfig {
 
 export function hasPermission(role: UserRole, permission: string): boolean {
   const config = getRoleConfig(role);
-  return config.permissions.includes("*") || config.permissions.includes(permission);
+  return (
+    config.permissions.includes("*") || config.permissions.includes(permission)
+  );
 }

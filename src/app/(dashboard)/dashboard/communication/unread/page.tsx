@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Unread Messages Page - Client Component
  *
@@ -18,7 +16,8 @@ export default function UnreadMessagesPage() {
         <div className="space-y-2">
           <h3 className="font-semibold text-lg">Unread Messages</h3>
           <p className="text-muted-foreground text-sm">
-            View all your unread messages from email, SMS, phone calls, and tickets
+            View all your unread messages from email, SMS, phone calls, and
+            tickets
           </p>
         </div>
       </div>

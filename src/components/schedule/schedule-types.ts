@@ -3,123 +3,123 @@
 // ============================================
 
 export interface Address {
-  street: string
-  city: string
-  state: string
-  zip: string
-  country: string
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
 }
 
 export interface Location {
-  address: Address
+  address: Address;
   coordinates: {
-    lat: number
-    lng: number
-  }
-  placeId?: string // Google Places ID
+    lat: number;
+    lng: number;
+  };
+  placeId?: string; // Google Places ID
 }
 
 export interface Customer {
-  id: string
-  name: string
-  email?: string
-  phone?: string
-  company?: string
-  location: Location
-  notes?: string
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  location: Location;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface RecurrenceRule {
-  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
-  interval: number // Every N days/weeks/months/years
-  endDate?: Date
-  count?: number // Stop after N occurrences
-  daysOfWeek?: number[] // 0-6 (Sunday-Saturday)
-  dayOfMonth?: number // 1-31
-  monthOfYear?: number // 1-12
+  frequency: "daily" | "weekly" | "monthly" | "yearly";
+  interval: number; // Every N days/weeks/months/years
+  endDate?: Date;
+  count?: number; // Stop after N occurrences
+  daysOfWeek?: number[]; // 0-6 (Sunday-Saturday)
+  dayOfMonth?: number; // 1-31
+  monthOfYear?: number; // 1-12
 }
 
 export interface JobMetadata {
-  estimatedDuration?: number // minutes
-  actualDuration?: number // minutes
-  materials?: string[]
-  notes?: string
-  internalNotes?: string
-  attachments?: string[] // URLs
-  tags?: string[]
-  customFields?: Record<string, any>
+  estimatedDuration?: number; // minutes
+  actualDuration?: number; // minutes
+  materials?: string[];
+  notes?: string;
+  internalNotes?: string;
+  attachments?: string[]; // URLs
+  tags?: string[];
+  customFields?: Record<string, any>;
 }
 
 export interface Job {
-  id: string
-  technicianId: string // Which technician is assigned
+  id: string;
+  technicianId: string; // Which technician is assigned
 
   // Job details
-  title: string
-  description?: string
-  customer: Customer
-  location: Location
+  title: string;
+  description?: string;
+  customer: Customer;
+  location: Location;
 
   // Scheduling
-  startTime: Date
-  endTime: Date
-  allDay?: boolean // For meetings, events
+  startTime: Date;
+  endTime: Date;
+  allDay?: boolean; // For meetings, events
 
   // Status
-  status: "scheduled" | "in-progress" | "completed" | "cancelled"
-  priority: "low" | "medium" | "high" | "urgent"
+  status: "scheduled" | "in-progress" | "completed" | "cancelled";
+  priority: "low" | "medium" | "high" | "urgent";
 
   // Recurrence
-  recurrence?: RecurrenceRule
-  parentJobId?: string // For recurring job instances
+  recurrence?: RecurrenceRule;
+  parentJobId?: string; // For recurring job instances
 
   // Metadata
-  metadata: JobMetadata
+  metadata: JobMetadata;
 
   // Audit
-  createdAt: Date
-  updatedAt: Date
-  createdBy?: string
-  updatedBy?: string
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 export interface TechnicianSchedule {
   availableHours: {
-    start: number // 0-23
-    end: number   // 0-23
-  }
-  daysOff: Date[]
+    start: number; // 0-23
+    end: number; // 0-23
+  };
+  daysOff: Date[];
   breakTimes?: Array<{
-    start: number // minutes from day start
-    end: number
-  }>
+    start: number; // minutes from day start
+    end: number;
+  }>;
 }
 
 export interface Technician {
-  id: string
-  name: string
-  email?: string
-  phone?: string
-  avatar?: string
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  avatar?: string;
 
   // Employment
-  role: string
-  department?: string
-  skills?: string[]
-  certifications?: string[]
+  role: string;
+  department?: string;
+  skills?: string[];
+  certifications?: string[];
 
   // Status
-  status: "available" | "on-job" | "on-break" | "offline"
-  currentLocation?: Location
+  status: "available" | "on-job" | "on-break" | "offline";
+  currentLocation?: Location;
 
   // Schedule
-  schedule: TechnicianSchedule
+  schedule: TechnicianSchedule;
 
   // Audit
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ============================================
@@ -128,19 +128,19 @@ export interface Technician {
 
 /** @deprecated Use Job with Date objects instead */
 export interface LegacyJob {
-  id: string
-  title: string
-  customer: string
-  startTime: string // HH:MM format
-  endTime: string   // HH:MM format
-  status: "scheduled" | "in-progress" | "completed" | "cancelled"
-  priority: "low" | "medium" | "high" | "urgent"
-  location: string
-  address: string
-  lat: number
-  lng: number
-  description?: string
-  estimatedDuration?: string
+  id: string;
+  title: string;
+  customer: string;
+  startTime: string; // HH:MM format
+  endTime: string; // HH:MM format
+  status: "scheduled" | "in-progress" | "completed" | "cancelled";
+  priority: "low" | "medium" | "high" | "urgent";
+  location: string;
+  address: string;
+  lat: number;
+  lng: number;
+  description?: string;
+  estimatedDuration?: string;
 }
 
 // ============================================
@@ -168,7 +168,7 @@ export const mockTechnicians: any[] = [
         location: "123 Main St",
         address: "123 Main St, Downtown",
         lat: 40.7128,
-        lng: -74.0060,
+        lng: -74.006,
         description: "Annual HVAC system maintenance and inspection",
         estimatedDuration: "2.5 hours",
       },
@@ -182,7 +182,7 @@ export const mockTechnicians: any[] = [
         priority: "urgent",
         location: "456 Oak Ave",
         address: "456 Oak Ave, Business District",
-        lat: 40.7580,
+        lat: 40.758,
         lng: -73.9855,
         description: "Emergency AC unit repair - not cooling",
         estimatedDuration: "3 hours",
@@ -198,7 +198,7 @@ export const mockTechnicians: any[] = [
         location: "789 Pine Rd",
         address: "789 Pine Rd, Tech Park",
         lat: 40.7489,
-        lng: -73.9680,
+        lng: -73.968,
         description: "New HVAC system installation",
         estimatedDuration: "2.5 hours",
       },
@@ -318,7 +318,7 @@ export const mockTechnicians: any[] = [
         location: "369 Corporate Way",
         address: "369 Corporate Way, Office Park",
         lat: 40.7549,
-        lng: -73.9840,
+        lng: -73.984,
         description: "Repair HVAC system in office building",
         estimatedDuration: "2 hours",
       },
@@ -708,7 +708,7 @@ export const mockTechnicians: any[] = [
         location: "445 Business Plaza",
         address: "445 Business Plaza, Financial District",
         lat: 40.7167,
-        lng: -73.9890,
+        lng: -73.989,
         description: "Routine maintenance",
         estimatedDuration: "2.5 hours",
       },
@@ -1083,4 +1083,4 @@ export const mockTechnicians: any[] = [
       },
     ],
   },
-]
+];

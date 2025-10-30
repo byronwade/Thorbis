@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { Camera, Upload, X, FileImage } from "lucide-react";
+import { Camera, FileImage, Upload, X } from "lucide-react";
 import Image from "next/image";
+import { useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -29,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { PhotoCategory } from "./PhotoGallery";
 
@@ -326,8 +317,8 @@ export function PhotoUploader({
             <div className="space-y-3">
               {files.map((photoFile) => (
                 <div
-                  key={photoFile.id}
                   className="flex gap-4 rounded-lg border bg-muted/30 p-3"
+                  key={photoFile.id}
                 >
                   {/* Preview */}
                   <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -367,7 +358,10 @@ export function PhotoUploader({
 
                     {/* Category Select */}
                     <div className="flex items-center gap-2">
-                      <Label className="text-xs" htmlFor={`category-${photoFile.id}`}>
+                      <Label
+                        className="text-xs"
+                        htmlFor={`category-${photoFile.id}`}
+                      >
                         Category:
                       </Label>
                       <Select
@@ -392,7 +386,12 @@ export function PhotoUploader({
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
-                      <Badge className={cn("text-xs", getCategoryColor(photoFile.category))}>
+                      <Badge
+                        className={cn(
+                          "text-xs",
+                          getCategoryColor(photoFile.category)
+                        )}
+                      >
                         {photoFile.category}
                       </Badge>
                     </div>
@@ -431,7 +430,11 @@ export function PhotoUploader({
 
         {/* Actions */}
         <div className="flex justify-end gap-2">
-          <Button disabled={isUploading} onClick={handleCancel} variant="outline">
+          <Button
+            disabled={isUploading}
+            onClick={handleCancel}
+            variant="outline"
+          >
             Cancel
           </Button>
           <Button

@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Archived Messages Page - Client Component
  *

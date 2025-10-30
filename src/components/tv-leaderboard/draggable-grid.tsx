@@ -1,29 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
+  useSortable,
 } from "@dnd-kit/sortable";
-import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { WidgetRenderer } from "./widget-renderer";
 import type { Widget } from "./widget-types";
 import { WIDGET_SIZE_CLASSES } from "./widget-types";
-import { WidgetRenderer } from "./widget-renderer";
 
 type DraggableGridProps = {
   widgets: Widget[];
@@ -39,8 +38,20 @@ type SortableWidgetProps = {
   onRemove: () => void;
 };
 
-function SortableWidget({ widget, data, isEditMode, onRemove }: SortableWidgetProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+function SortableWidget({
+  widget,
+  data,
+  isEditMode,
+  onRemove,
+}: SortableWidgetProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: widget.id,
     disabled: !isEditMode,
   });
@@ -78,7 +89,12 @@ function SortableWidget({ widget, data, isEditMode, onRemove }: SortableWidgetPr
   );
 }
 
-export function DraggableGrid({ widgets, onWidgetsChange, data, isEditMode }: DraggableGridProps) {
+export function DraggableGrid({
+  widgets,
+  onWidgetsChange,
+  data,
+  isEditMode,
+}: DraggableGridProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -101,8 +117,15 @@ export function DraggableGrid({ widgets, onWidgetsChange, data, isEditMode }: Dr
   }
 
   return (
-    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
-      <SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
+    <DndContext
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+      sensors={sensors}
+    >
+      <SortableContext
+        items={widgets.map((w) => w.id)}
+        strategy={rectSortingStrategy}
+      >
         <div className="grid h-full w-full auto-rows-[minmax(80px,1fr)] grid-cols-4 gap-6 p-6">
           {widgets.map((widget) => (
             <SortableWidget

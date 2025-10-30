@@ -11,8 +11,8 @@
  * - tiny: <120px height (raw data only)
  */
 
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
 
 type ResponsiveStage = "full" | "comfortable" | "compact" | "tiny";
 
@@ -30,7 +30,7 @@ export function ResponsiveWidgetWrapper({
   return (
     <div
       className={cn(
-        "relative h-full w-full overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-background/95 to-background/80 shadow-lg backdrop-blur-sm",
+        "relative h-full w-full overflow-hidden rounded-lg border bg-background shadow-sm",
         "@container", // Enable container queries
         className
       )}
@@ -89,7 +89,9 @@ export function ResponsiveText({
     caption: "text-[clamp(0.625rem,2.5cqh,0.875rem)] text-muted-foreground",
   };
 
-  return <div className={cn(variantClasses[variant], className)}>{children}</div>;
+  return (
+    <div className={cn(variantClasses[variant], className)}>{children}</div>
+  );
 }
 
 /**
@@ -124,7 +126,13 @@ export function ShowAt({
   stage,
   children,
 }: {
-  stage: "full" | "comfortable" | "compact" | "tiny" | "full-comfortable" | "comfortable-compact";
+  stage:
+    | "full"
+    | "comfortable"
+    | "compact"
+    | "tiny"
+    | "full-comfortable"
+    | "comfortable-compact";
   children: ReactNode;
 }) {
   const stageClasses = {
@@ -183,7 +191,7 @@ export function ResponsiveFlex({
       className={cn(
         "flex gap-2",
         // Column on tiny, row on larger
-        "flex-col @[200px]:flex-row @[200px]:items-center",
+        "@[200px]:flex-row flex-col @[200px]:items-center",
         "@[200px]:gap-3",
         className
       )}

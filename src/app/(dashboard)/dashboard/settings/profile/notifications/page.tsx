@@ -33,6 +33,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 type NotificationSettings = {
   email: {
     marketing: boolean;
@@ -61,7 +62,8 @@ type NotificationSettings = {
   };
 };
 
-export default function NotificationsPage() {  const [settings, setSettings] = useState<NotificationSettings>({
+export default function NotificationsPage() {
+  const [settings, setSettings] = useState<NotificationSettings>({
     email: {
       marketing: false,
       updates: true,

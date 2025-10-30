@@ -37,6 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 type Tier = {
   id: string;
   name: string;
@@ -45,7 +46,8 @@ type Tier = {
   color: string;
 };
 
-export default function LoyaltyRewardsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function LoyaltyRewardsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     enableLoyaltyProgram: true,
     programName: "Rewards Program",

@@ -1,9 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function OutcomeFeaturesSection() {
   const [activeCategory, setActiveCategory] = useState("grow");
@@ -88,8 +88,7 @@ export function OutcomeFeaturesSection() {
         },
         {
           title: "Customer Financing",
-          description:
-            "Offer payment plans to close more high-ticket jobs",
+          description: "Offer payment plans to close more high-ticket jobs",
           icon: "🏦",
         },
         {
@@ -156,12 +155,12 @@ export function OutcomeFeaturesSection() {
         <div className="mb-12 flex flex-wrap justify-center gap-4">
           {Object.entries(categories).map(([key, category]) => (
             <button
-              key={key}
               className={`group flex items-center gap-3 rounded-xl border px-6 py-4 transition-all duration-300 ${
                 activeCategory === key
                   ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
                   : "border-border bg-white/5 hover:border-primary/50 hover:bg-white/10"
               }`}
+              key={key}
               onClick={() => setActiveCategory(key)}
               type="button"
             >
@@ -182,8 +181,8 @@ export function OutcomeFeaturesSection() {
           {categories[activeCategory as keyof typeof categories].features.map(
             (feature, index) => (
               <div
+                className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-white/5 to-transparent p-6 transition-all duration-300 hover:border-primary/40 hover:shadow-primary/10 hover:shadow-xl"
                 key={index}
-                className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-white/5 to-transparent p-6 transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
               >
                 {/* Icon */}
                 <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-primary/10 text-3xl transition-transform duration-300 group-hover:scale-110">

@@ -137,6 +137,107 @@ The AGENTS.md file contains 436 comprehensive linting rules covering:
    - Benefits: Lighter bundle, better performance, cleaner code
    - Exception: Built-in Next.js contexts (ThemeProvider, etc.) are allowed
 
+5. **EXTEND EXISTING INFRASTRUCTURE - MANDATORY**
+   - **CRITICAL: ALWAYS check for existing components before creating new ones**
+   - **NEVER create duplicate infrastructure** (toolbars, layouts, tables, forms, etc.)
+   - This project has established patterns that MUST be reused and extended
+
+   ### Component Discovery Process (REQUIRED BEFORE ANY NEW COMPONENT)
+   1. Search for similar components in the codebase first
+   2. Review existing implementations in the same feature area
+   3. Check `/src/components/layout/` for shared infrastructure
+   4. Look at similar pages for established patterns
+   5. Only create new components if NO existing solution exists
+
+   ### Key Infrastructure Components (ALWAYS REUSE)
+   - **AppToolbar** (`src/components/layout/app-toolbar.tsx`) - Universal toolbar for all pages
+   - **AppHeader** (`src/components/layout/app-header.tsx`) - Page headers with breadcrumbs
+   - **WorkPageLayout** (`src/components/work/work-page-layout.tsx`) - Standard page layout
+   - **FullWidthDatatable** (`src/components/ui/full-width-datatable.tsx`) - Tables
+   - **NavGrouped** (`src/components/layout/nav-grouped.tsx`) - Sidebar navigation
+   - **AppSidebar** (`src/components/layout/app-sidebar.tsx`) - Main sidebar structure
+
+   ### Examples of WRONG vs RIGHT Approach
+
+   ❌ **WRONG - Creating New Toolbar:**
+   ```typescript
+   // contracts/page.tsx
+   export default function ContractsPage() {
+     return (
+       <div>
+         <div className="flex items-center justify-between p-4">
+           <h1>Contracts</h1>
+           <Button>New Contract</Button>
+         </div>
+         <ContractsTable />
+       </div>
+     );
+   }
+   ```
+
+   ✅ **RIGHT - Using Existing AppToolbar:**
+   ```typescript
+   // contracts/page.tsx
+   import { AppToolbar } from "@/components/layout/app-toolbar";
+
+   export default function ContractsPage() {
+     return (
+       <>
+         <AppToolbar
+           title="Contracts"
+           actions={[
+             { label: "New Contract", variant: "default", href: "/dashboard/work/contracts/new" }
+           ]}
+         />
+         <ContractsTable />
+       </>
+     );
+   }
+   ```
+
+   ❌ **WRONG - Creating Custom Layout:**
+   ```typescript
+   export default function NewPage() {
+     return (
+       <div className="p-8">
+         <div className="mb-4">
+           <h1 className="text-2xl font-bold">Title</h1>
+         </div>
+         <div className="bg-white rounded-lg p-6">
+           <Content />
+         </div>
+       </div>
+     );
+   }
+   ```
+
+   ✅ **RIGHT - Using WorkPageLayout:**
+   ```typescript
+   import { WorkPageLayout } from "@/components/work/work-page-layout";
+
+   export default function NewPage() {
+     return (
+       <WorkPageLayout title="Title">
+         <Content />
+       </WorkPageLayout>
+     );
+   }
+   ```
+
+   ### Why This Matters
+   - **Consistency**: Users expect the same UX patterns across all pages
+   - **Maintainability**: One component to update vs dozens of duplicates
+   - **Performance**: Shared components are already optimized and bundled
+   - **Quality**: Existing components have been tested and refined
+   - **Speed**: Extending is faster than building from scratch
+
+   ### Enforcement
+   - Before creating ANY new component, ask: "Does something like this already exist?"
+   - Search the codebase using Grep/Glob for similar patterns
+   - Review at least 2-3 similar pages in the same feature area
+   - Consistency is MORE important than individual creativity
+   - When in doubt, extend existing components rather than creating new ones
+
 ## 📋 Linting Rules
 
 Avoid `accessKey` attr and distracting els
@@ -603,6 +704,14 @@ pnpm lint:fix
 
 Before committing code, verify:
 
+### Infrastructure & Patterns
+- [ ] **Did you search for existing components before creating new ones?**
+- [ ] **Are you using AppToolbar instead of custom toolbars?**
+- [ ] **Are you using WorkPageLayout or similar existing layouts?**
+- [ ] **Are you extending existing patterns instead of creating duplicates?**
+- [ ] Did you review 2-3 similar pages for established patterns?
+
+### Performance & Architecture
 - [ ] Is this a Server Component? (if yes, no `"use client"`)
 - [ ] If Client Component, is it absolutely necessary?
 - [ ] Are slow components wrapped in `<Suspense>`?
@@ -611,11 +720,14 @@ Before committing code, verify:
 - [ ] Are Zustand stores organized in `/src/lib/stores/`?
 - [ ] Are shallow selectors used to prevent unnecessary re-renders?
 - [ ] Is static content using ISR (`export const revalidate`)?
+
+### Quality & Best Practices
 - [ ] Are images using `next/image` (not `<img>`)?
 - [ ] Is bundle size monitored (`pnpm analyze:bundle`)?
 - [ ] Does JSDoc explain the component type and optimizations?
 - [ ] Are all hooks dependencies specified correctly?
 - [ ] Is input validated server-side with Zod?
+- [ ] Does the code follow existing naming and structure conventions?
 
 ---
 
@@ -808,6 +920,14 @@ export function MyComponent() {
 ---
 
 ## 🔄 VERSION HISTORY
+
+- **v2.1** - Enhanced Component Reuse Guidelines (2025-10-29)
+  - Strengthened "Extend Existing Infrastructure" rule (Critical Rule #5)
+  - Added Component Discovery Process with 5-step checklist
+  - Documented key infrastructure components (AppToolbar, WorkPageLayout, etc.)
+  - Added WRONG vs RIGHT code examples for common patterns
+  - Enhanced Code Review Checklist with infrastructure checks
+  - Emphasized consistency over creativity for better maintainability
 
 - **v2.0** - Advanced Performance Optimizations (2025-01-XX)
   - Converted 65% of pages to Server Components

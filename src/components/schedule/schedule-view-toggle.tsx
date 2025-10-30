@@ -1,15 +1,18 @@
-"use client"
+"use client";
 
-import { LayoutGrid, List, Calendar, MapPin, Bug } from "lucide-react"
-import { cn } from "@/lib/utils"
-import type { ScheduleView } from "@/types/schedule"
+import { Bug, LayoutGrid } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { ScheduleView } from "@/types/schedule";
 
 interface ScheduleViewToggleProps {
-  view: ScheduleView
-  onViewChange: (view: ScheduleView) => void
+  view: ScheduleView;
+  onViewChange: (view: ScheduleView) => void;
 }
 
-export function ScheduleViewToggle({ view, onViewChange }: ScheduleViewToggleProps) {
+export function ScheduleViewToggle({
+  view,
+  onViewChange,
+}: ScheduleViewToggleProps) {
   const views = [
     { value: "timeline" as const, icon: LayoutGrid, label: "Timeline" },
     { value: "test" as const, icon: Bug, label: "Debug" },
@@ -17,31 +20,31 @@ export function ScheduleViewToggle({ view, onViewChange }: ScheduleViewTogglePro
     // { value: "list" as const, icon: List, label: "List" },
     // { value: "calendar" as const, icon: Calendar, label: "Calendar" },
     // { value: "map" as const, icon: MapPin, label: "Map" },
-  ]
+  ];
 
   return (
     <div className="inline-flex items-stretch rounded-lg border bg-background p-1">
       {views.map((item) => {
-        const Icon = item.icon
-        const isActive = view === item.value
+        const Icon = item.icon;
+        const isActive = view === item.value;
 
         return (
           <button
-            key={item.value}
-            type="button"
             className={cn(
-              "relative flex min-w-[80px] items-center justify-center gap-1.5 rounded-md px-3 py-1 text-sm font-medium transition-all",
+              "relative flex min-w-[80px] items-center justify-center gap-1.5 rounded-md px-3 py-1 font-medium text-sm transition-all",
               isActive
                 ? "bg-accent text-accent-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
+            key={item.value}
             onClick={() => onViewChange(item.value)}
+            type="button"
           >
             <Icon className="size-4" />
             <span>{item.label}</span>
           </button>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -19,49 +19,29 @@
  * - Honest pricing, no hidden fees
  */
 
-import Link from "next/link";
 import {
-  Brain,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  CreditCard,
-  DollarSign,
-  FileText,
-  Phone,
-  Shield,
-  Sparkles,
-  TrendingUp,
-  Users,
-  Wrench,
-  Zap,
   ArrowRight,
-  Star,
-  AlertCircle,
-  BarChart3,
-  MessageSquare,
-  Play,
-  ChevronRight,
-  Award,
-  Smartphone,
-  HeadphonesIcon,
-  Send,
+  Brain,
+  CheckCircle2,
   Database,
-  Bot,
-  Target,
-  Bell,
-  MapPin,
-  Mail,
-  X,
+  DollarSign,
   Download,
-  Unlock,
-  Heart,
-  TrendingDown,
-  XCircle,
+  FileText,
   Handshake,
+  Heart,
+  MessageSquare,
+  Phone,
+  Play,
+  Shield,
+  Star,
+  Target,
+  Unlock,
+  X,
+  XCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
+import { Button } from "@/components/ui/button";
 
 export function HonestSalesHomepage() {
   return (
@@ -69,7 +49,7 @@ export function HonestSalesHomepage() {
       {/* HONEST HERO SECTION */}
       <section className="relative min-h-screen overflow-hidden">
         {/* Subtle background */}
-        <div className="absolute inset-0 -z-10">
+        <div className="-z-10 absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
           <div className="pointer-events-none absolute top-0 left-1/4 size-96 animate-pulse rounded-full bg-primary/10 opacity-50 blur-3xl" />
           <div className="animation-delay-2000 pointer-events-none absolute right-1/4 bottom-0 size-96 animate-pulse rounded-full bg-blue-500/10 opacity-50 blur-3xl" />
@@ -98,9 +78,11 @@ export function HonestSalesHomepage() {
 
             {/* Honest value prop */}
             <p className="mx-auto mb-4 max-w-4xl text-center text-foreground/70 text-xl leading-relaxed md:text-2xl">
-              <strong>$100/month base + pay-as-you-go</strong>. Unlimited users included.
-              ServiceTitan charges <strong>$398/month PER USER</strong>. We don't.
-              Try it free, use it if you love it, leave if you don't. All your data comes with you.
+              <strong>$100/month base + pay-as-you-go</strong>. Unlimited users
+              included. ServiceTitan charges{" "}
+              <strong>$398/month PER USER</strong>. We don't. Try it free, use
+              it if you love it, leave if you don't. All your data comes with
+              you.
             </p>
 
             {/* The anti-competitor pitch */}
@@ -121,11 +103,11 @@ export function HonestSalesHomepage() {
 
             {/* Social proof */}
             <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <div className="flex -space-x-3">
+              <div className="-space-x-3 flex">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <div
-                    key={i}
                     className="size-12 rounded-full border-2 border-background bg-gradient-to-br from-primary/30 to-primary/10"
+                    key={i}
                     style={{
                       backgroundImage:
                         i === 1
@@ -151,8 +133,8 @@ export function HonestSalesHomepage() {
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
-                      key={i}
                       className="size-5 fill-yellow-500 text-yellow-500"
+                      key={i}
                     />
                   ))}
                   <span className="ml-2 font-bold text-lg">4.9</span>
@@ -166,9 +148,9 @@ export function HonestSalesHomepage() {
             {/* Honest CTAs */}
             <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
-                size="lg"
-                className="group h-16 px-10 text-lg shadow-lg shadow-primary/20"
                 asChild
+                className="group h-16 px-10 text-lg shadow-lg shadow-primary/20"
+                size="lg"
               >
                 <Link href="/register">
                   Start Using It Free
@@ -176,10 +158,10 @@ export function HonestSalesHomepage() {
                 </Link>
               </Button>
               <Button
+                asChild
+                className="h-16 border-2 px-10 text-lg"
                 size="lg"
                 variant="outline"
-                className="h-16 border-2 px-10 text-lg"
-                asChild
               >
                 <Link href="/demo">
                   <Play className="mr-2 size-5 fill-current" />
@@ -208,10 +190,10 @@ export function HonestSalesHomepage() {
           {/* Dashboard preview */}
           <div className="relative mx-auto mt-16 max-w-7xl">
             <div className="group relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-background/80 shadow-2xl backdrop-blur-sm">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/20 via-transparent to-blue-500/20 opacity-50" />
+              <div className="-z-10 absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-blue-500/20 opacity-50" />
 
               {/* Browser chrome */}
-              <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-3">
+              <div className="flex items-center gap-2 border-border border-b bg-muted/50 px-4 py-3">
                 <div className="flex gap-2">
                   <div className="size-3 rounded-full bg-red-500" />
                   <div className="size-3 rounded-full bg-yellow-500" />
@@ -231,8 +213,8 @@ export function HonestSalesHomepage() {
                     { label: "Avg Ticket", value: "$892", change: "+15%" },
                   ].map((stat, i) => (
                     <div
-                      key={i}
                       className="rounded-lg border border-primary/10 bg-background/80 p-4 backdrop-blur-sm"
+                      key={i}
                     >
                       <p className="mb-1 text-muted-foreground text-xs">
                         {stat.label}
@@ -266,15 +248,17 @@ export function HonestSalesHomepage() {
                 </span>
               </h2>
               <p className="mx-auto max-w-3xl text-foreground/70 text-xl">
-                ServiceTitan charges <strong>$398/month PER USER</strong>. With 5 users, that's <strong>$23,880/year</strong>.
-                We charge $100/month base + usage for <strong>UNLIMITED users</strong>. No per-seat fees. Ever.
+                ServiceTitan charges <strong>$398/month PER USER</strong>. With
+                5 users, that's <strong>$23,880/year</strong>. We charge
+                $100/month base + usage for <strong>UNLIMITED users</strong>. No
+                per-seat fees. Ever.
               </p>
             </div>
 
             {/* Simple pricing card */}
             <div className="mx-auto mb-12 max-w-2xl">
               <div className="relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-background p-10 shadow-2xl">
-                <div className="absolute -right-20 -top-20 size-40 rounded-full bg-primary/10 blur-3xl" />
+                <div className="-right-20 -top-20 absolute size-40 rounded-full bg-primary/10 blur-3xl" />
                 <div className="relative text-center">
                   <div className="mb-4">
                     <div className="mb-2 font-bold text-7xl text-primary">
@@ -284,7 +268,8 @@ export function HonestSalesHomepage() {
                       base per month + pay-as-you-go
                     </p>
                     <p className="mt-2 text-muted-foreground text-sm">
-                      Only pay for what you actually use. No wasted spend on unused features.
+                      Only pay for what you actually use. No wasted spend on
+                      unused features.
                     </p>
                   </div>
 
@@ -301,7 +286,7 @@ export function HonestSalesHomepage() {
                       "Unlimited users, unlimited jobs",
                       "All future features included",
                     ].map((feature, i) => (
-                      <div key={i} className="flex items-start gap-3">
+                      <div className="flex items-start gap-3" key={i}>
                         <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
                         <span className="text-sm">{feature}</span>
                       </div>
@@ -309,9 +294,9 @@ export function HonestSalesHomepage() {
                   </div>
 
                   <Button
-                    size="lg"
-                    className="mb-6 h-14 w-full text-lg"
                     asChild
+                    className="mb-6 h-14 w-full text-lg"
+                    size="lg"
                   >
                     <Link href="/register">
                       Try It Free — No Credit Card
@@ -339,7 +324,7 @@ export function HonestSalesHomepage() {
 
             {/* Pay-as-you-go explanation */}
             <div className="mx-auto mb-8 max-w-2xl rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-8">
-              <h3 className="mb-4 font-bold text-xl text-center">
+              <h3 className="mb-4 text-center font-bold text-xl">
                 How Pay-As-You-Go Works
               </h3>
               <div className="space-y-3">
@@ -350,7 +335,8 @@ export function HonestSalesHomepage() {
                   <div>
                     <p className="font-semibold text-sm">$100/month base fee</p>
                     <p className="text-muted-foreground text-xs">
-                      Covers all core features: scheduling, invoicing, mobile app, QuickBooks sync, unlimited users
+                      Covers all core features: scheduling, invoicing, mobile
+                      app, QuickBooks sync, unlimited users
                     </p>
                   </div>
                 </div>
@@ -359,9 +345,12 @@ export function HonestSalesHomepage() {
                     2
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">Only pay for what you use</p>
+                    <p className="font-semibold text-sm">
+                      Only pay for what you use
+                    </p>
                     <p className="text-muted-foreground text-xs">
-                      AI phone calls, SMS messages, premium features - billed only when you actually use them
+                      AI phone calls, SMS messages, premium features - billed
+                      only when you actually use them
                     </p>
                   </div>
                 </div>
@@ -370,16 +359,20 @@ export function HonestSalesHomepage() {
                     3
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">Transparent usage dashboard</p>
+                    <p className="font-semibold text-sm">
+                      Transparent usage dashboard
+                    </p>
                     <p className="text-muted-foreground text-xs">
-                      See exactly what you're using in real-time. Set spending limits. No surprise bills.
+                      See exactly what you're using in real-time. Set spending
+                      limits. No surprise bills.
                     </p>
                   </div>
                 </div>
               </div>
               <div className="mt-6 rounded-xl border border-green-500/20 bg-green-500/5 p-4 text-center">
                 <p className="font-semibold text-green-600 text-sm dark:text-green-400">
-                  💡 Most businesses pay $120-$150/month total vs $398+ with competitors
+                  💡 Most businesses pay $120-$150/month total vs $398+ with
+                  competitors
                 </p>
               </div>
             </div>
@@ -393,7 +386,8 @@ export function HonestSalesHomepage() {
                 <p className="flex items-start gap-2">
                   <X className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                   <span>
-                    <strong>No hidden fees:</strong> Crystal clear usage-based billing. See exactly what you pay.
+                    <strong>No hidden fees:</strong> Crystal clear usage-based
+                    billing. See exactly what you pay.
                   </span>
                 </p>
                 <p className="flex items-start gap-2">
@@ -469,7 +463,7 @@ export function HonestSalesHomepage() {
                         None
                       </span>
                     </p>
-                    <p className="flex items-center justify-between border-t border-red-500/20 pt-2 font-bold">
+                    <p className="flex items-center justify-between border-red-500/20 border-t pt-2 font-bold">
                       <span>Year 1 (5 users)</span>
                       <span className="text-red-600 dark:text-red-400">
                         ~$26,880
@@ -514,7 +508,7 @@ export function HonestSalesHomepage() {
                         None
                       </span>
                     </p>
-                    <p className="flex items-center justify-between border-t border-orange-500/20 pt-2 font-bold">
+                    <p className="flex items-center justify-between border-orange-500/20 border-t pt-2 font-bold">
                       <span>Year 1 (5 users)</span>
                       <span className="text-orange-600 dark:text-orange-400">
                         ~$18,340
@@ -553,7 +547,7 @@ export function HonestSalesHomepage() {
                       <span>AI features</span>
                       <span className="text-primary">✓ Included</span>
                     </p>
-                    <p className="flex items-center justify-between border-t border-primary/20 pt-2 font-bold">
+                    <p className="flex items-center justify-between border-primary/20 border-t pt-2 font-bold">
                       <span>Avg Year 1</span>
                       <span className="text-primary">$1,440-$1,800*</span>
                     </p>
@@ -573,18 +567,27 @@ export function HonestSalesHomepage() {
                     vs ServiceTitan with 5 users
                   </p>
                   <p className="mt-2 text-muted-foreground text-sm">
-                    Even with pay-as-you-go usage, you&apos;ll save <strong>$25K+/year</strong>.
-                    That&apos;s enough to hire 2 new technicians or fund serious marketing.
+                    Even with pay-as-you-go usage, you&apos;ll save{" "}
+                    <strong>$25K+/year</strong>. That&apos;s enough to hire 2
+                    new technicians or fund serious marketing.
                   </p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 text-center">
-                    <p className="mb-1 font-bold text-xl text-primary">$16,540/year saved</p>
-                    <p className="text-muted-foreground text-xs">vs Housecall Pro (5 users)</p>
+                    <p className="mb-1 font-bold text-primary text-xl">
+                      $16,540/year saved
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      vs Housecall Pro (5 users)
+                    </p>
                   </div>
                   <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 text-center">
-                    <p className="mb-1 font-bold text-xl text-primary">$10,548/year saved</p>
-                    <p className="text-muted-foreground text-xs">vs Jobber (5 users)</p>
+                    <p className="mb-1 font-bold text-primary text-xl">
+                      $10,548/year saved
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      vs Jobber (5 users)
+                    </p>
                   </div>
                 </div>
               </div>
@@ -662,8 +665,8 @@ export function HonestSalesHomepage() {
                 },
               ].map((item, i) => (
                 <div
-                  key={i}
                   className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 transition-all hover:border-primary/20 hover:shadow-lg"
+                  key={i}
                 >
                   <div className="mb-4 flex items-center justify-between">
                     <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
@@ -692,7 +695,8 @@ export function HonestSalesHomepage() {
                   <div className="space-y-3 text-sm">
                     <p className="flex items-start gap-2 text-muted-foreground">
                       <X className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
-                      <strong>$398/month PER USER</strong> (5 users = $23,880/year)
+                      <strong>$398/month PER USER</strong> (5 users =
+                      $23,880/year)
                     </p>
                     <p className="flex items-start gap-2 text-muted-foreground">
                       <X className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
@@ -717,7 +721,7 @@ export function HonestSalesHomepage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="mb-4 flex items-center gap-2 font-bold text-xl text-primary">
+                  <h3 className="mb-4 flex items-center gap-2 font-bold text-primary text-xl">
                     <CheckCircle2 className="size-6 text-primary" />
                     Thorbis
                   </h3>
@@ -725,7 +729,8 @@ export function HonestSalesHomepage() {
                     <p className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
                       <span>
-                        <strong>$100/month unlimited users</strong> (not $398 per user)
+                        <strong>$100/month unlimited users</strong> (not $398
+                        per user)
                       </span>
                     </p>
                     <p className="flex items-start gap-2">
@@ -757,8 +762,8 @@ export function HonestSalesHomepage() {
                     <p className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
                       <span>
-                        <strong>Permanent deletion</strong> - gone when you
-                        want it gone
+                        <strong>Permanent deletion</strong> - gone when you want
+                        it gone
                       </span>
                     </p>
                   </div>
@@ -819,8 +824,8 @@ export function HonestSalesHomepage() {
                 },
               ].map((item, i) => (
                 <div
-                  key={i}
                   className="rounded-xl border border-primary/10 bg-background p-6"
+                  key={i}
                 >
                   <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
                     <item.icon className="size-6 text-primary" />
@@ -888,14 +893,14 @@ export function HonestSalesHomepage() {
                 },
               ].map((testimonial, i) => (
                 <div
-                  key={i}
                   className="rounded-xl border border-primary/10 bg-background p-6"
+                  key={i}
                 >
                   <div className="mb-4 flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((j) => (
                       <Star
-                        key={j}
                         className="size-4 fill-yellow-500 text-yellow-500"
+                        key={j}
                       />
                     ))}
                   </div>
@@ -910,7 +915,9 @@ export function HonestSalesHomepage() {
                   <div className="flex items-center gap-3">
                     <div className="size-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10" />
                     <div>
-                      <p className="font-semibold text-sm">{testimonial.name}</p>
+                      <p className="font-semibold text-sm">
+                        {testimonial.name}
+                      </p>
                       <p className="text-muted-foreground text-xs">
                         {testimonial.business}
                       </p>
@@ -941,9 +948,9 @@ export function HonestSalesHomepage() {
 
             <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
-                size="lg"
-                className="group h-16 px-12 text-lg shadow-lg"
                 asChild
+                className="group h-16 px-12 text-lg shadow-lg"
+                size="lg"
               >
                 <Link href="/register">
                   Start Using Thorbis Free
@@ -951,10 +958,10 @@ export function HonestSalesHomepage() {
                 </Link>
               </Button>
               <Button
+                asChild
+                className="h-16 border-2 px-12 text-lg"
                 size="lg"
                 variant="outline"
-                className="h-16 border-2 px-12 text-lg"
-                asChild
               >
                 <Link href="/demo">
                   <Play className="mr-2 size-5 fill-current" />

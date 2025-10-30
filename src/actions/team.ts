@@ -24,7 +24,9 @@ const inviteTeamMemberSchema = z.object({
 const createRoleSchema = z.object({
   name: z.string().min(1, "Role name is required"),
   description: z.string().optional(),
-  permissions: z.array(z.string()).min(1, "At least one permission is required"),
+  permissions: z
+    .array(z.string())
+    .min(1, "At least one permission is required"),
 });
 
 // Schema for creating departments
@@ -68,10 +70,7 @@ export async function inviteTeamMember(formData: FormData) {
 /**
  * Update team member
  */
-export async function updateTeamMember(
-  memberId: string,
-  formData: FormData
-) {
+export async function updateTeamMember(memberId: string, formData: FormData) {
   try {
     const data = {
       firstName: formData.get("firstName") as string,

@@ -23,7 +23,7 @@ files.forEach((filePath) => {
     return;
   }
 
-  let content = fs.readFileSync(fullPath, "utf8");
+  const content = fs.readFileSync(fullPath, "utf8");
   const lines = content.split("\n");
   const newLines = [];
 

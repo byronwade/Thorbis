@@ -50,6 +50,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type BankAccount = {
   id: string;
   bankName: string;
@@ -115,7 +116,8 @@ const getBankLogo = (bankName: string) => {
   );
 };
 
-export default function BankAccountsSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function BankAccountsSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [accounts, setAccounts] = useState<BankAccount[]>([
     {
       id: "1",

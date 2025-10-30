@@ -47,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -65,7 +66,8 @@ type PreferenceSettings = {
   tableView: "default" | "compact";
 };
 
-export default function PreferencesPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function PreferencesPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<PreferenceSettings>({
     theme: "dark",
     language: "en-US",

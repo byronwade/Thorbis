@@ -10,19 +10,10 @@
  * - Better SEO and initial page load
  */
 
+import { Clock, DollarSign, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
-import {
-  TrendingUp,
-  Clock,
-  DollarSign,
-  Users,
-  ArrowRight,
-} from "lucide-react";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import { MagicCard } from "@/components/ui/magic-card";
 
 export function HeroContent() {
@@ -99,7 +90,7 @@ export function HeroContent() {
         <div className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             asChild
-            className="group rounded-lg bg-primary px-8 py-6 font-semibold text-lg text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
+            className="group rounded-lg bg-primary px-8 py-6 font-semibold text-lg text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-primary/30 hover:shadow-xl"
             size="lg"
           >
             <Link href="/dashboard">

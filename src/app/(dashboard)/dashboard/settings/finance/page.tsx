@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 
 export const revalidate = 3600; // Revalidate every 1 hour
+
 import {
   Card,
   CardContent,
@@ -31,6 +32,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 const financeSections = [
   {
     title: "Bank Accounts",
@@ -106,7 +108,8 @@ const financeSections = [
   },
 ];
 
-export default function FinanceSettingsPage() {  return (
+export default function FinanceSettingsPage() {
+  return (
     <div className="space-y-6">
       {/* Header */}
       <div>

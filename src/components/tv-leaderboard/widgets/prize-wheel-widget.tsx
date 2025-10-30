@@ -12,10 +12,10 @@
 
 import { Gift, Trophy } from "lucide-react";
 import {
-  ResponsiveWidgetWrapper,
   ResponsiveContent,
-  ResponsiveText,
   ResponsiveIcon,
+  ResponsiveText,
+  ResponsiveWidgetWrapper,
   ShowAt,
 } from "../responsive-widget-wrapper";
 
@@ -37,7 +37,9 @@ const DEFAULT_PRIZE: PrizeOption = {
   winner: "Sarah J.",
 };
 
-export function PrizeWheelWidget({ currentPrize = DEFAULT_PRIZE }: PrizeWheelWidgetProps) {
+export function PrizeWheelWidget({
+  currentPrize = DEFAULT_PRIZE,
+}: PrizeWheelWidgetProps) {
   return (
     <ResponsiveWidgetWrapper className="bg-gradient-to-br from-purple-500/20 via-pink-500/10 to-background/80">
       <ResponsiveContent className="flex flex-col gap-3">
@@ -50,7 +52,7 @@ export function PrizeWheelWidget({ currentPrize = DEFAULT_PRIZE }: PrizeWheelWid
             <ResponsiveText variant="title">Prize Winner</ResponsiveText>
           </ShowAt>
           <ShowAt stage="comfortable">
-            <ResponsiveText variant="body" className="font-semibold">
+            <ResponsiveText className="font-semibold" variant="body">
               Prize
             </ResponsiveText>
           </ShowAt>
@@ -66,17 +68,23 @@ export function PrizeWheelWidget({ currentPrize = DEFAULT_PRIZE }: PrizeWheelWid
 
             {/* Winner name */}
             <div>
-              <ResponsiveText variant="caption" className="text-muted-foreground">
+              <ResponsiveText
+                className="text-muted-foreground"
+                variant="caption"
+              >
                 Winner
               </ResponsiveText>
-              <ResponsiveText variant="title" className="font-bold text-purple-500">
+              <ResponsiveText
+                className="font-bold text-purple-500"
+                variant="title"
+              >
                 {currentPrize.winner}
               </ResponsiveText>
             </div>
 
             {/* Prize */}
             <div className="w-full rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 p-4">
-              <ResponsiveText variant="body" className="font-bold text-white">
+              <ResponsiveText className="font-bold text-white" variant="body">
                 {currentPrize.label}
               </ResponsiveText>
             </div>
@@ -89,14 +97,17 @@ export function PrizeWheelWidget({ currentPrize = DEFAULT_PRIZE }: PrizeWheelWid
             {/* Winner */}
             <div className="flex items-center gap-2">
               <Trophy className="size-4 text-purple-500" />
-              <ResponsiveText variant="body" className="font-bold">
+              <ResponsiveText className="font-bold" variant="body">
                 {currentPrize.winner}
               </ResponsiveText>
             </div>
 
             {/* Prize */}
             <div className="rounded-lg bg-purple-500/20 p-2 text-center">
-              <ResponsiveText variant="body" className="font-bold text-purple-500">
+              <ResponsiveText
+                className="font-bold text-purple-500"
+                variant="body"
+              >
                 {currentPrize.label}
               </ResponsiveText>
             </div>
@@ -107,10 +118,13 @@ export function PrizeWheelWidget({ currentPrize = DEFAULT_PRIZE }: PrizeWheelWid
         <ShowAt stage="compact">
           <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
             <Trophy className="size-6 text-purple-500" />
-            <ResponsiveText variant="body" className="font-bold text-purple-500">
+            <ResponsiveText
+              className="font-bold text-purple-500"
+              variant="body"
+            >
               {currentPrize.winner}
             </ResponsiveText>
-            <ResponsiveText variant="caption" className="text-muted-foreground">
+            <ResponsiveText className="text-muted-foreground" variant="caption">
               {currentPrize.value || currentPrize.label}
             </ResponsiveText>
           </div>
@@ -119,7 +133,10 @@ export function PrizeWheelWidget({ currentPrize = DEFAULT_PRIZE }: PrizeWheelWid
         {/* TINY Stage: Prize value only */}
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
-            <ResponsiveText variant="display" className="font-bold text-purple-500">
+            <ResponsiveText
+              className="font-bold text-purple-500"
+              variant="display"
+            >
               {currentPrize.value || "🎁"}
             </ResponsiveText>
           </div>

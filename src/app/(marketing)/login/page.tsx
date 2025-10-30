@@ -1,9 +1,12 @@
 "use client";
 
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
+import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { signIn, signInWithOAuth } from "@/actions/auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,16 +15,57 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
+  const errorParam = searchParams.get("error");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(errorParam);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle login logic here
-    // TODO: Implement authentication
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+
+      // Add redirectTo if present
+      if (redirectTo) {
+        formData.append("redirectTo", redirectTo);
+      }
+
+      const result = await signIn(formData);
+
+      if (!result.success && result.error) {
+        setError(result.error);
+        setIsLoading(false);
+      }
+      // If successful, the server action will redirect
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleOAuthLogin = async (provider: "google" | "facebook") => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await signInWithOAuth(provider);
+
+      if (!result.success && result.error) {
+        setError(result.error);
+        setIsLoading(false);
+      }
+      // If successful, the server action will redirect to OAuth provider
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -44,11 +88,11 @@ export default function LoginPage() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <Image
-                src="/ThorbisLogo.webp"
                 alt="Thorbis Logo"
-                width={34}
-                height={34}
                 className="size-8.5"
+                height={34}
+                src="/ThorbisLogo.webp"
+                width={34}
               />
               <span className="font-semibold text-xl">Thorbis</span>
             </div>
@@ -61,24 +105,36 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {/* Error Alert */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             {/* Social Login Buttons */}
             <div className="flex flex-wrap gap-4 sm:gap-6">
               <Button
                 className="grow"
-                onClick={() => {
-                  // TODO: Implement Google OAuth
-                }}
+                disabled={isLoading}
+                onClick={() => handleOAuthLogin("google")}
                 variant="outline"
               >
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
                 Login with Google
               </Button>
               <Button
                 className="grow"
-                onClick={() => {
-                  // TODO: Implement Facebook OAuth
-                }}
+                disabled={isLoading}
+                onClick={() => handleOAuthLogin("facebook")}
                 variant="outline"
               >
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
                 Login with Facebook
               </Button>
             </div>
@@ -97,12 +153,12 @@ export default function LoginPage() {
               <div className="space-y-1">
                 <Label htmlFor="email">Email address*</Label>
                 <Input
+                  disabled={isLoading}
                   id="email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
                   placeholder="Enter your email address"
                   required
                   type="email"
-                  value={email}
                 />
               </div>
 
@@ -111,15 +167,16 @@ export default function LoginPage() {
                 <div className="relative">
                   <Input
                     className="pr-9"
+                    disabled={isLoading}
                     id="password"
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                     placeholder="••••••••••••••••"
                     required
                     type={showPassword ? "text" : "password"}
-                    value={password}
                   />
                   <Button
                     className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                    disabled={isLoading}
                     onClick={() => setShowPassword(!showPassword)}
                     size="sm"
                     type="button"
@@ -141,11 +198,9 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Checkbox
-                    checked={rememberMe}
+                    disabled={isLoading}
                     id="rememberMe"
-                    onCheckedChange={(checked) =>
-                      setRememberMe(checked === true)
-                    }
+                    name="rememberMe"
                   />
                   <Label className="text-sm" htmlFor="rememberMe">
                     Remember Me
@@ -160,8 +215,15 @@ export default function LoginPage() {
               </div>
 
               {/* Submit Button */}
-              <Button className="w-full" type="submit">
-                Sign in to Thorbis
+              <Button className="w-full" disabled={isLoading} type="submit">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in to Thorbis"
+                )}
               </Button>
             </form>
 
@@ -382,5 +444,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

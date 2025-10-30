@@ -26,7 +26,9 @@ export function KPICard({
     <Card className="transition-all duration-200 hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex items-center gap-2">
-          <CardTitle className="font-medium text-sm text-muted-foreground">{title}</CardTitle>
+          <CardTitle className="font-medium text-muted-foreground text-sm">
+            {title}
+          </CardTitle>
           {tooltip && <KPICardTooltip tooltip={tooltip} />}
         </div>
         <div className="flex size-9 items-center justify-center rounded-lg bg-muted/50">
@@ -39,11 +41,13 @@ export function KPICard({
           {change && (
             <p
               className={cn(
-                "text-xs font-medium",
-                changeType === "positive" && "text-green-600 dark:text-green-400",
+                "font-medium text-xs",
+                changeType === "positive" &&
+                  "text-green-600 dark:text-green-400",
                 changeType === "negative" && "text-red-600 dark:text-red-400",
                 changeType === "neutral" && "text-muted-foreground",
-                changeType === "warning" && "text-yellow-600 dark:text-yellow-400"
+                changeType === "warning" &&
+                  "text-yellow-600 dark:text-yellow-400"
               )}
             >
               {change}

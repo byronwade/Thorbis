@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export function CleanFeaturesSection() {
   const [activeCategory, setActiveCategory] = useState("grow");
@@ -147,10 +147,10 @@ export function CleanFeaturesSection() {
       <div className="flex flex-wrap gap-2">
         {Object.entries(categories).map(([key, category]) => (
           <Button
-            key={key}
             className={
               activeCategory !== key ? "bg-transparent hover:bg-accent" : ""
             }
+            key={key}
             onClick={() => setActiveCategory(key)}
             size="sm"
             variant={activeCategory === key ? "default" : "outline"}
@@ -165,13 +165,13 @@ export function CleanFeaturesSection() {
         {categories[activeCategory as keyof typeof categories].features.map(
           (feature, index) => (
             <div
-              key={index}
               className="space-y-2 rounded-lg border bg-card p-6 text-card-foreground shadow-sm"
+              key={index}
             >
               <div className="flex items-start justify-between">
                 <h3 className="font-semibold">{feature.title}</h3>
                 <div className="text-right">
-                  <div className="font-bold text-xl text-primary">
+                  <div className="font-bold text-primary text-xl">
                     {feature.metric}
                   </div>
                   <div className="text-muted-foreground text-xs">

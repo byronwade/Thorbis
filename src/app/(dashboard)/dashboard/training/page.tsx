@@ -11,7 +11,6 @@
 
 import {
   Award,
-  BookOpen,
   Briefcase,
   Building2,
   CheckCircle2,
@@ -19,25 +18,24 @@ import {
   FileText,
   GraduationCap,
   Lightbulb,
-  PlayCircle,
   Rocket,
   Shield,
   Star,
   TrendingUp,
   Upload,
   Users,
-  Video,
   Wrench,
 } from "lucide-react";
 
 export const revalidate = 3600; // Revalidate every 1 hour
 
-export default function TrainingDashboardPage() {  return (
+export default function TrainingDashboardPage() {
+  return (
     <div className="relative flex h-full items-center justify-center overflow-auto py-12">
       {/* Background gradient blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       {/* Main content */}
@@ -55,7 +53,10 @@ export default function TrainingDashboardPage() {  return (
           <div className="relative">
             <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-primary/20 to-primary/10 blur-2xl" />
             <div className="relative flex size-32 items-center justify-center rounded-full border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm">
-              <GraduationCap className="size-16 text-primary" strokeWidth={1.5} />
+              <GraduationCap
+                className="size-16 text-primary"
+                strokeWidth={1.5}
+              />
             </div>
           </div>
         </div>
@@ -69,7 +70,9 @@ export default function TrainingDashboardPage() {  return (
             </span>
           </h1>
           <p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">
-            A comprehensive learning management system bringing together company training, industry partnerships, and professional certifications - all in one place.
+            A comprehensive learning management system bringing together company
+            training, industry partnerships, and professional certifications -
+            all in one place.
           </p>
         </div>
 
@@ -77,9 +80,11 @@ export default function TrainingDashboardPage() {  return (
         <div className="mx-auto max-w-5xl space-y-8 pt-8">
           {/* Primary Features */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Core Training Features</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Core Training Features
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
                     <Building2 className="size-6 text-blue-600 dark:text-blue-400" />
@@ -87,11 +92,12 @@ export default function TrainingDashboardPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">System Training</h3>
                 <p className="text-muted-foreground text-sm">
-                  Master every feature of the Thorbis platform with step-by-step video tutorials and guides
+                  Master every feature of the Thorbis platform with step-by-step
+                  video tutorials and guides
                 </p>
               </div>
 
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green-500/20 hover:shadow-lg hover:shadow-green-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
                     <TrendingUp className="size-6 text-green-600 dark:text-green-400" />
@@ -99,11 +105,12 @@ export default function TrainingDashboardPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Sales Training</h3>
                 <p className="text-muted-foreground text-sm">
-                  Close more deals with proven sales techniques and customer service excellence courses
+                  Close more deals with proven sales techniques and customer
+                  service excellence courses
                 </p>
               </div>
 
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
                     <Star className="size-6 text-purple-600 dark:text-purple-400" />
@@ -111,11 +118,12 @@ export default function TrainingDashboardPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Nextstar</h3>
                 <p className="text-muted-foreground text-sm">
-                  Access exclusive training from the nation's premier coaching organization for home services
+                  Access exclusive training from the nation's premier coaching
+                  organization for home services
                 </p>
               </div>
 
-              <div className="group rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
                     <Wrench className="size-6 text-orange-600 dark:text-orange-400" />
@@ -123,7 +131,8 @@ export default function TrainingDashboardPage() {  return (
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Trade Certs</h3>
                 <p className="text-muted-foreground text-sm">
-                  Journeyman and Master certification programs for HVAC, Plumbing, and Electrical trades
+                  Journeyman and Master certification programs for HVAC,
+                  Plumbing, and Electrical trades
                 </p>
               </div>
             </div>
@@ -131,7 +140,9 @@ export default function TrainingDashboardPage() {  return (
 
           {/* Company Training Features */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Company Training Tools</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Company Training Tools
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 text-left">
                 <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -167,7 +178,9 @@ export default function TrainingDashboardPage() {  return (
 
           {/* Certification Programs */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Professional Certifications</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Professional Certifications
+            </h2>
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
@@ -175,12 +188,17 @@ export default function TrainingDashboardPage() {  return (
                     <Wrench className="size-6 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Journeyman Programs</h3>
-                    <p className="text-muted-foreground text-sm">8-12 months • 120 hours</p>
+                    <h3 className="font-semibold text-lg">
+                      Journeyman Programs
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      8-12 months • 120 hours
+                    </p>
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  Comprehensive training and assessments for state-recognized journeyman certification
+                  Comprehensive training and assessments for state-recognized
+                  journeyman certification
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 text-xs">
@@ -204,12 +222,17 @@ export default function TrainingDashboardPage() {  return (
                     <Shield className="size-6 text-yellow-600 dark:text-yellow-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Master Certification</h3>
-                    <p className="text-muted-foreground text-sm">12-24 months • 200 hours</p>
+                    <h3 className="font-semibold text-lg">
+                      Master Certification
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      12-24 months • 200 hours
+                    </p>
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  Advanced expertise with leadership courses and industry-certified credentials
+                  Advanced expertise with leadership courses and
+                  industry-certified credentials
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="rounded-full bg-yellow-500/10 px-2 py-1 text-xs">
@@ -228,7 +251,9 @@ export default function TrainingDashboardPage() {  return (
 
           {/* Additional Features */}
           <div>
-            <h2 className="mb-6 font-semibold text-2xl">Learning Management Features</h2>
+            <h2 className="mb-6 font-semibold text-2xl">
+              Learning Management Features
+            </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
                 <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -272,37 +297,61 @@ export default function TrainingDashboardPage() {  return (
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Thorbis System Training:</span> Master every feature with video tutorials, interactive guides, and hands-on exercises
+                  <span className="font-medium text-foreground">
+                    Thorbis System Training:
+                  </span>{" "}
+                  Master every feature with video tutorials, interactive guides,
+                  and hands-on exercises
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Sales & Customer Service:</span> Proven techniques to close more deals and deliver exceptional customer experiences
+                  <span className="font-medium text-foreground">
+                    Sales & Customer Service:
+                  </span>{" "}
+                  Proven techniques to close more deals and deliver exceptional
+                  customer experiences
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Nextstar Partnership:</span> Access exclusive content from the nation's premier coaching organization - all integrated in one platform
+                  <span className="font-medium text-foreground">
+                    Nextstar Partnership:
+                  </span>{" "}
+                  Access exclusive content from the nation's premier coaching
+                  organization - all integrated in one platform
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Trade Certifications:</span> Real curriculum for journeyman and master certifications with EPA, NATE, and state licensing prep
+                  <span className="font-medium text-foreground">
+                    Trade Certifications:
+                  </span>{" "}
+                  Real curriculum for journeyman and master certifications with
+                  EPA, NATE, and state licensing prep
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Company Training:</span> Upload your own videos, create custom curricula, and build courses specific to your processes
+                  <span className="font-medium text-foreground">
+                    Company Training:
+                  </span>{" "}
+                  Upload your own videos, create custom curricula, and build
+                  courses specific to your processes
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
                 <p className="text-sm">
-                  <span className="font-medium text-foreground">Progress & Analytics:</span> Track individual and team progress, completion rates, and certification status
+                  <span className="font-medium text-foreground">
+                    Progress & Analytics:
+                  </span>{" "}
+                  Track individual and team progress, completion rates, and
+                  certification status
                 </p>
               </div>
             </div>

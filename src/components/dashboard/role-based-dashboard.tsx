@@ -1,12 +1,12 @@
 "use client";
 
-import { useRoleStore } from "@/lib/stores/role-store";
-import { USER_ROLES } from "@/types/roles";
-import OwnerDashboard from "@/components/dashboard/views/owner-dashboard";
+import CSRDashboard from "@/components/dashboard/views/csr-dashboard";
 import DispatcherDashboard from "@/components/dashboard/views/dispatcher-dashboard";
 import ManagerDashboard from "@/components/dashboard/views/manager-dashboard";
+import OwnerDashboard from "@/components/dashboard/views/owner-dashboard";
 import TechnicianDashboard from "@/components/dashboard/views/technician-dashboard";
-import CSRDashboard from "@/components/dashboard/views/csr-dashboard";
+import { useRoleStore } from "@/lib/stores/role-store";
+import { USER_ROLES } from "@/types/roles";
 
 /**
  * Role-Based Dashboard Router - Client Component
@@ -26,7 +26,9 @@ export function RoleBasedDashboard() {
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
           <div className="mx-auto size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-4 text-muted-foreground text-sm">Loading dashboard...</p>
+          <p className="mt-4 text-muted-foreground text-sm">
+            Loading dashboard...
+          </p>
         </div>
       </div>
     );

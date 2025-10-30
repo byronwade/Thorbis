@@ -1,9 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -80,15 +80,15 @@ export function FAQSection() {
         <div className="mb-12 space-y-4">
           {faqs.map((faq, index) => (
             <div
-              key={index}
               className="overflow-hidden rounded-2xl border border-primary/20 bg-white/5 transition-all duration-300 hover:border-primary/40"
+              key={index}
             >
               <button
                 className="flex w-full items-center justify-between p-6 text-left transition-colors hover:bg-primary/5"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 type="button"
               >
-                <span className="pr-8 font-semibold text-white text-lg">
+                <span className="pr-8 font-semibold text-lg text-white">
                   {faq.question}
                 </span>
                 <svg

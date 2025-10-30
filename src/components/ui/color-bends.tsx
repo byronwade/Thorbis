@@ -172,7 +172,10 @@ export default function ColorBends({
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     const geometry = new THREE.PlaneGeometry(2, 2);
-    const uColorsArray = Array.from({ length: MAX_COLORS }, () => new THREE.Vector3(0, 0, 0));
+    const uColorsArray = Array.from(
+      { length: MAX_COLORS },
+      () => new THREE.Vector3(0, 0, 0)
+    );
     const material = new THREE.ShaderMaterial({
       vertexShader: vert,
       fragmentShader: frag,
@@ -202,12 +205,23 @@ export default function ColorBends({
       const h = hex.replace("#", "").trim();
       const v =
         h.length === 3
-          ? [parseInt(h[0] + h[0], 16), parseInt(h[1] + h[1], 16), parseInt(h[2] + h[2], 16)]
-          : [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+          ? [
+              Number.parseInt(h[0] + h[0], 16),
+              Number.parseInt(h[1] + h[1], 16),
+              Number.parseInt(h[2] + h[2], 16),
+            ]
+          : [
+              Number.parseInt(h.slice(0, 2), 16),
+              Number.parseInt(h.slice(2, 4), 16),
+              Number.parseInt(h.slice(4, 6), 16),
+            ];
       return new THREE.Vector3(v[0] / 255, v[1] / 255, v[2] / 255);
     };
 
-    const colorVectors = (colors || []).filter(Boolean).slice(0, MAX_COLORS).map(toVec3);
+    const colorVectors = (colors || [])
+      .filter(Boolean)
+      .slice(0, MAX_COLORS)
+      .map(toVec3);
     for (let i = 0; i < MAX_COLORS; i++) {
       const vec = material.uniforms.uColors.value[i];
       if (i < colorVectors.length) vec.copy(colorVectors[i]);
@@ -226,7 +240,7 @@ export default function ColorBends({
     rendererRef.current = renderer;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0x000000, transparent ? 0 : 1);
+    renderer.setClearColor(0x00_00_00, transparent ? 0 : 1);
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
@@ -256,7 +270,10 @@ export default function ColorBends({
       ro.observe(container);
       resizeObserverRef.current = ro;
     } else if (typeof window !== "undefined") {
-      (window as Window & typeof globalThis).addEventListener("resize", handleResize);
+      (window as Window & typeof globalThis).addEventListener(
+        "resize",
+        handleResize
+      );
     }
 
     const loop = () => {
@@ -287,11 +304,23 @@ export default function ColorBends({
       geometry.dispose();
       material.dispose();
       renderer.dispose();
-      if (renderer.domElement && renderer.domElement.parentElement === container) {
+      if (
+        renderer.domElement &&
+        renderer.domElement.parentElement === container
+      ) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [frequency, mouseInfluence, noise, parallax, scale, speed, transparent, warpStrength]);
+  }, [
+    frequency,
+    mouseInfluence,
+    noise,
+    parallax,
+    scale,
+    speed,
+    transparent,
+    warpStrength,
+  ]);
 
   useEffect(() => {
     const material = materialRef.current;
@@ -312,8 +341,16 @@ export default function ColorBends({
       const h = hex.replace("#", "").trim();
       const v =
         h.length === 3
-          ? [parseInt(h[0] + h[0], 16), parseInt(h[1] + h[1], 16), parseInt(h[2] + h[2], 16)]
-          : [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+          ? [
+              Number.parseInt(h[0] + h[0], 16),
+              Number.parseInt(h[1] + h[1], 16),
+              Number.parseInt(h[2] + h[2], 16),
+            ]
+          : [
+              Number.parseInt(h.slice(0, 2), 16),
+              Number.parseInt(h.slice(2, 4), 16),
+              Number.parseInt(h.slice(4, 6), 16),
+            ];
       return new THREE.Vector3(v[0] / 255, v[1] / 255, v[2] / 255);
     };
 
@@ -326,7 +363,7 @@ export default function ColorBends({
     material.uniforms.uColorCount.value = arr.length;
 
     material.uniforms.uTransparent.value = transparent ? 1 : 0;
-    if (renderer) renderer.setClearColor(0x000000, transparent ? 0 : 1);
+    if (renderer) renderer.setClearColor(0x00_00_00, transparent ? 0 : 1);
   }, [
     rotation,
     autoRotate,
@@ -344,7 +381,7 @@ export default function ColorBends({
   useEffect(() => {
     const material = materialRef.current;
     const container = containerRef.current;
-    if (!material || !container) return;
+    if (!(material && container)) return;
 
     const handlePointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
@@ -361,10 +398,10 @@ export default function ColorBends({
 
   return (
     <div
-      ref={containerRef}
       className={`color-bends-container ${className || ""}`}
-      style={style}
       data-testid="color-bends-container"
+      ref={containerRef}
+      style={style}
     />
   );
 }

@@ -10,7 +10,8 @@
 
 export const revalidate = 3600; // Revalidate every 1 hour
 
-export default function LowStockAlertsPage() {  return (
+export default function LowStockAlertsPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-semibold text-2xl">Low Stock Alerts</h1>

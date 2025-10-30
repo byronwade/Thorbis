@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Technicians Team Channel Page - Client Component
  *

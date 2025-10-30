@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 const ColorBends = dynamic(() => import("@/components/ui/color-bends"), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 via-purple-500/20 to-cyan-500/20 animate-pulse">
+    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-pink-500/20 via-purple-500/20 to-cyan-500/20">
       <div className="flex h-full items-center justify-center">
         <p className="text-muted-foreground text-sm">Loading ColorBends...</p>
       </div>

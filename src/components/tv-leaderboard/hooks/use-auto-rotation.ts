@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SlideSettings } from "../slide-types";
 
 type UseAutoRotationProps = {
@@ -59,7 +59,14 @@ export function useAutoRotation({
       const nextSlide = (currentSlide + 1) % slideCount;
       onSlideChange(nextSlide);
     }, settings.rotationInterval);
-  }, [settings, slideCount, currentSlide, onSlideChange, isEditMode, clearTimers]);
+  }, [
+    settings,
+    slideCount,
+    currentSlide,
+    onSlideChange,
+    isEditMode,
+    clearTimers,
+  ]);
 
   const pauseRotation = useCallback(() => {
     if (!settings.pauseOnInteraction) {
@@ -82,14 +89,21 @@ export function useAutoRotation({
 
   // Start/restart rotation when conditions change
   useEffect(() => {
-    if (!isPaused && !isEditMode && settings.autoRotate && slideCount > 1) {
+    if (!(isPaused || isEditMode) && settings.autoRotate && slideCount > 1) {
       startRotation();
     }
 
     return () => {
       clearTimers();
     };
-  }, [isPaused, isEditMode, settings.autoRotate, slideCount, startRotation, clearTimers]);
+  }, [
+    isPaused,
+    isEditMode,
+    settings.autoRotate,
+    slideCount,
+    startRotation,
+    clearTimers,
+  ]);
 
   // Handle user interaction
   const handleInteraction = useCallback(() => {

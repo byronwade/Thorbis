@@ -7,9 +7,9 @@
  * - Reduced JavaScript bundle size
  */
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function IntegrationsSection() {
   const integrations = [
@@ -75,7 +75,7 @@ export function IntegrationsSection() {
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/3 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/3 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -105,8 +105,8 @@ export function IntegrationsSection() {
         <div className="mb-12 flex flex-wrap justify-center gap-4">
           {categories.map((category, index) => (
             <div
-              key={index}
               className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-6 py-3 text-foreground"
+              key={index}
             >
               <span className="text-2xl">{category.icon}</span>
               <span className="font-medium">{category.label}</span>
@@ -118,8 +118,8 @@ export function IntegrationsSection() {
         <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {integrations.map((integration, index) => (
             <div
+              className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-white/5 p-6 transition-all duration-300 hover:border-primary/40 hover:shadow-primary/10 hover:shadow-xl"
               key={index}
-              className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-white/5 p-6 transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
             >
               {/* Logo */}
               <div className="mb-4 flex size-16 items-center justify-center rounded-xl bg-primary/10 text-4xl transition-transform duration-300 group-hover:scale-110">

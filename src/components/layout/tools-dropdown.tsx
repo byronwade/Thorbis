@@ -100,7 +100,7 @@ export function ToolsDropdown() {
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{tool.label}</p>
                     {tool.badge && (
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary text-[10px]">
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 font-medium text-[10px] text-primary">
                         {tool.badge}
                       </span>
                     )}

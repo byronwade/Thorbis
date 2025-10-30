@@ -1,7 +1,7 @@
+import { headers } from "next/headers";
 import { AppHeader } from "@/components/layout/app-header";
 import { IncomingCallNotification } from "@/components/layout/incoming-call-notification";
 import { LayoutWrapper } from "@/components/layout/layout-wrapper";
-import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -14,26 +14,26 @@ export const dynamic = "force-dynamic";
  * Conditionally hides header/sidebar for TV routes
  */
 export default async function DashboardLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	// Check if we're on a TV route
-	const headersList = await headers();
-	const pathname = headersList.get("x-pathname") || "";
-	const isTVRoute = pathname.includes("/tv-leaderboard");
+  // Check if we're on a TV route (not including settings)
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const isTVRoute = pathname === "/dashboard/tv";
 
-	// For TV routes, render children directly without header/sidebar
-	if (isTVRoute) {
-		return <>{children}</>;
-	}
+  // For TV routes, render children directly without header/sidebar
+  if (isTVRoute) {
+    return <>{children}</>;
+  }
 
-	// Normal dashboard layout with header and sidebar
-	return (
-		<>
-			<AppHeader />
-			<LayoutWrapper showHeader={true}>{children}</LayoutWrapper>
-			<IncomingCallNotification />
-		</>
-	);
+  // Normal dashboard layout with header and sidebar
+  return (
+    <>
+      <AppHeader />
+      <LayoutWrapper showHeader={true}>{children}</LayoutWrapper>
+      <IncomingCallNotification />
+    </>
+  );
 }

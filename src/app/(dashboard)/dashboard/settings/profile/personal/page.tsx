@@ -44,6 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const MIN_NAME_LENGTH = 2;
 const MIN_PHONE_LENGTH = 10;
@@ -84,7 +85,8 @@ const personalInfoSchema = z.object({
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
-export default function PersonalInformationPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function PersonalInformationPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   const form = useForm<PersonalInfoFormData>({

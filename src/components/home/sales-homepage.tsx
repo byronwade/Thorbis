@@ -14,9 +14,10 @@
  * - Authority: Industry leadership, certifications
  */
 
-import Image from "next/image";
-import Link from "next/link";
 import {
+  AlertCircle,
+  ArrowRight,
+  BarChart3,
   Brain,
   Calendar,
   CheckCircle2,
@@ -24,21 +25,19 @@ import {
   CreditCard,
   DollarSign,
   FileText,
+  MessageSquare,
   Phone,
   Shield,
   Sparkles,
+  Star,
   TrendingUp,
   Users,
   Wrench,
   Zap,
-  ArrowRight,
-  Star,
-  AlertCircle,
-  BarChart3,
-  MessageSquare,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
+import { Button } from "@/components/ui/button";
 
 export function SalesHomepage() {
   return (
@@ -46,8 +45,8 @@ export function SalesHomepage() {
       {/* HERO SECTION - BOLD VALUE PROPOSITION */}
       <section className="relative min-h-[90vh] overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-background" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+        <div className="-z-10 absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
+        <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
 
         <div className="container relative mx-auto px-4 py-20 sm:px-6 lg:px-8">
           {/* Alert bar - Urgency */}
@@ -84,11 +83,11 @@ export function SalesHomepage() {
 
             {/* Social proof */}
             <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <div className="flex -space-x-2">
+              <div className="-space-x-2 flex">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div
-                    key={i}
                     className="size-10 rounded-full border-2 border-background bg-gradient-to-br from-primary/20 to-primary/10"
+                    key={i}
                   />
                 ))}
               </div>
@@ -105,17 +104,17 @@ export function SalesHomepage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" className="group h-14 px-8 text-lg" asChild>
+              <Button asChild className="group h-14 px-8 text-lg" size="lg">
                 <Link href="/register">
                   Get Started Free
                   <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
               <Button
+                asChild
+                className="h-14 px-8 text-lg"
                 size="lg"
                 variant="outline"
-                className="h-14 px-8 text-lg"
-                asChild
               >
                 <Link href="/demo">
                   <Phone className="mr-2 size-5" />
@@ -144,7 +143,7 @@ export function SalesHomepage() {
           {/* Dashboard preview image */}
           <div className="relative mx-auto mt-16 max-w-6xl">
             <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-background/80 shadow-2xl backdrop-blur-sm">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent" />
+              <div className="-z-10 absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
               <div className="aspect-video w-full bg-muted/30" />
             </div>
           </div>
@@ -218,7 +217,9 @@ export function SalesHomepage() {
               <div className="mb-4 flex justify-center">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm backdrop-blur-sm">
                   <Brain className="size-4 text-primary" />
-                  <span className="font-medium">Game-Changing AI Assistant</span>
+                  <span className="font-medium">
+                    Game-Changing AI Assistant
+                  </span>
                 </div>
               </div>
               <h2 className="mb-4 font-bold text-4xl md:text-5xl">
@@ -237,7 +238,7 @@ export function SalesHomepage() {
             {/* AI Capabilities Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* AI Feature 1 */}
-              <div className="group rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all hover:-translate-y-1 hover:border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
                   <MessageSquare className="size-6 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -251,7 +252,7 @@ export function SalesHomepage() {
               </div>
 
               {/* AI Feature 2 */}
-              <div className="group rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all hover:-translate-y-1 hover:border-green-500/20 hover:shadow-lg hover:shadow-green-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-green-500/10">
                   <Phone className="size-6 text-green-600 dark:text-green-400" />
                 </div>
@@ -265,7 +266,7 @@ export function SalesHomepage() {
               </div>
 
               {/* AI Feature 3 */}
-              <div className="group rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all hover:-translate-y-1 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-purple-500/10">
                   <Shield className="size-6 text-purple-600 dark:text-purple-400" />
                 </div>
@@ -279,7 +280,7 @@ export function SalesHomepage() {
               </div>
 
               {/* AI Feature 4 */}
-              <div className="group rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all hover:-translate-y-1 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-orange-500/10">
                   <DollarSign className="size-6 text-orange-600 dark:text-orange-400" />
                 </div>
@@ -293,13 +294,11 @@ export function SalesHomepage() {
               </div>
 
               {/* AI Feature 5 */}
-              <div className="group rounded-xl border border-primary/10 bg-gradient-to-br from-cyan-500/5 to-transparent p-6 transition-all hover:-translate-y-1 hover:border-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-cyan-500/5 to-transparent p-6 transition-all hover:border-cyan-500/20 hover:shadow-cyan-500/10 hover:shadow-lg">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-cyan-500/10">
                   <Calendar className="size-6 text-cyan-600 dark:text-cyan-400" />
                 </div>
-                <h3 className="mb-2 font-semibold text-lg">
-                  Smart Scheduling
-                </h3>
+                <h3 className="mb-2 font-semibold text-lg">Smart Scheduling</h3>
                 <p className="text-muted-foreground text-sm">
                   &quot;Schedule Sarah tomorrow at 2pm&quot; - AI finds the best
                   tech, creates the appointment, notifies everyone.
@@ -307,7 +306,7 @@ export function SalesHomepage() {
               </div>
 
               {/* AI Feature 6 */}
-              <div className="group rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all hover:-translate-y-1 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-pink-500/10">
                   <BarChart3 className="size-6 text-pink-600 dark:text-pink-400" />
                 </div>
@@ -389,9 +388,7 @@ export function SalesHomepage() {
                 <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-primary/10">
                   <FileText className="size-5 text-primary" />
                 </div>
-                <h3 className="mb-2 font-semibold">
-                  Invoicing & Payments
-                </h3>
+                <h3 className="mb-2 font-semibold">Invoicing & Payments</h3>
                 <p className="mb-3 text-muted-foreground text-sm">
                   Create invoices in seconds. Accept credit cards, ACH, checks.{" "}
                   <strong>0% payment fees</strong>.
@@ -471,9 +468,7 @@ export function SalesHomepage() {
                 <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-primary/10">
                   <Wrench className="size-5 text-primary" />
                 </div>
-                <h3 className="mb-2 font-semibold">
-                  Equipment & Maintenance
-                </h3>
+                <h3 className="mb-2 font-semibold">Equipment & Maintenance</h3>
                 <p className="mb-3 text-muted-foreground text-sm">
                   Track equipment, service history, warranties. Auto-schedule
                   recurring maintenance.
@@ -489,9 +484,7 @@ export function SalesHomepage() {
                 <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-primary/10">
                   <BarChart3 className="size-5 text-primary" />
                 </div>
-                <h3 className="mb-2 font-semibold">
-                  Analytics & Reporting
-                </h3>
+                <h3 className="mb-2 font-semibold">Analytics & Reporting</h3>
                 <p className="mb-3 text-muted-foreground text-sm">
                   Real-time dashboards, custom reports, KPI tracking. Know your
                   numbers instantly.
@@ -548,18 +541,14 @@ export function SalesHomepage() {
                 </div>
                 <div className="border-border/50 border-b border-l bg-muted/50 p-6 text-center">
                   <h3 className="font-semibold">ServiceTitan</h3>
-                  <p className="mt-1 text-muted-foreground text-sm">
-                    $398/mo
-                  </p>
+                  <p className="mt-1 text-muted-foreground text-sm">$398/mo</p>
                 </div>
                 <div className="border-border/50 border-b border-l bg-muted/50 p-6 text-center">
                   <h3 className="font-semibold">Housecall Pro</h3>
-                  <p className="mt-1 text-muted-foreground text-sm">
-                    $289/mo
-                  </p>
+                  <p className="mt-1 text-muted-foreground text-sm">$289/mo</p>
                 </div>
-                <div className="border-border/50 relative border-b border-l bg-primary/5 p-6 text-center">
-                  <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-0">
+                <div className="relative border-border/50 border-b border-l bg-primary/5 p-6 text-center">
+                  <div className="-translate-y-1/2 absolute top-0 right-0 translate-x-0">
                     <span className="rounded-full bg-primary px-3 py-1 font-semibold text-primary-foreground text-xs">
                       BEST VALUE
                     </span>
@@ -649,9 +638,7 @@ export function SalesHomepage() {
                   <span className="text-muted-foreground text-sm">2.9%+</span>
                 </div>
                 <div className="border-border/50 border-l bg-background p-6 text-center">
-                  <span className="font-semibold text-primary text-sm">
-                    0%
-                  </span>
+                  <span className="font-semibold text-primary text-sm">0%</span>
                 </div>
               </div>
             </div>
@@ -669,7 +656,7 @@ export function SalesHomepage() {
                 That&apos;s enough to hire another technician, buy new tools, or
                 invest in marketing. Why waste it on expensive software?
               </p>
-              <Button size="lg" className="group" asChild>
+              <Button asChild className="group" size="lg">
                 <Link href="/register">
                   Start Saving Now
                   <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
@@ -700,8 +687,8 @@ export function SalesHomepage() {
                 <div className="mb-4 flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
-                      key={i}
                       className="size-4 fill-yellow-500 text-yellow-500"
+                      key={i}
                     />
                   ))}
                 </div>
@@ -726,8 +713,8 @@ export function SalesHomepage() {
                 <div className="mb-4 flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
-                      key={i}
                       className="size-4 fill-yellow-500 text-yellow-500"
+                      key={i}
                     />
                   ))}
                 </div>
@@ -752,8 +739,8 @@ export function SalesHomepage() {
                 <div className="mb-4 flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
-                      key={i}
                       className="size-4 fill-yellow-500 text-yellow-500"
+                      key={i}
                     />
                   ))}
                 </div>
@@ -803,8 +790,8 @@ export function SalesHomepage() {
                 "Roofing",
               ].map((industry) => (
                 <div
-                  key={industry}
                   className="flex items-center gap-3 rounded-lg border border-primary/10 bg-background p-4 transition-colors hover:bg-muted/50"
+                  key={industry}
                 >
                   <CheckCircle2 className="size-5 shrink-0 text-primary" />
                   <span className="font-medium">{industry}</span>
@@ -813,7 +800,7 @@ export function SalesHomepage() {
             </div>
 
             <div className="mt-8 text-center">
-              <Button variant="outline" size="lg" asChild>
+              <Button asChild size="lg" variant="outline">
                 <Link href="/industries">
                   View All 25+ Industries
                   <ArrowRight className="ml-2 size-5" />
@@ -846,17 +833,17 @@ export function SalesHomepage() {
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" className="group h-14 px-8 text-lg" asChild>
+              <Button asChild className="group h-14 px-8 text-lg" size="lg">
                 <Link href="/register">
                   Get Started Free - No Credit Card
                   <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
               <Button
+                asChild
+                className="h-14 px-8 text-lg"
                 size="lg"
                 variant="outline"
-                className="h-14 px-8 text-lg"
-                asChild
               >
                 <Link href="/demo">
                   <Phone className="mr-2 size-5" />

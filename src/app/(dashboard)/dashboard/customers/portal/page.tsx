@@ -18,7 +18,8 @@ import {
 
 export const revalidate = 900; // Revalidate every 15 minutes
 
-export default function CustomerPortalPage() {  return (
+export default function CustomerPortalPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Customer Portal</h1>

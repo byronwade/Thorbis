@@ -10,6 +10,18 @@
  * - Bulk actions and filtering
  */
 
+import {
+  Filter,
+  Mail,
+  MessageSquare,
+  MoreHorizontal,
+  Phone,
+  Plus,
+  Search,
+  TrendingUp,
+  UserPlus,
+} from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -28,20 +40,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Filter,
-  Mail,
-  MessageSquare,
-  MoreHorizontal,
-  Phone,
-  Plus,
-  Search,
-  TrendingUp,
-  UserPlus,
-} from "lucide-react";
-import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-type LeadSource = "google-ads" | "thumbtack" | "website-form" | "facebook-ads" | "referral";
+type LeadSource =
+  | "google-ads"
+  | "thumbtack"
+  | "website-form"
+  | "facebook-ads"
+  | "referral";
 type LeadScore = "hot" | "warm" | "cold";
 type LeadStage = "new" | "contacted" | "qualified" | "customer" | "lost";
 
@@ -123,15 +129,17 @@ const MOCK_LEADS: Lead[] = [
 const getSourceLabel = (source: LeadSource): string => {
   const labels: Record<LeadSource, string> = {
     "google-ads": "Google Ads",
-    "thumbtack": "Thumbtack",
+    thumbtack: "Thumbtack",
     "website-form": "Website",
     "facebook-ads": "Facebook",
-    "referral": "Referral",
+    referral: "Referral",
   };
   return labels[source];
 };
 
-const getScoreColor = (score: LeadScore): "destructive" | "default" | "secondary" => {
+const getScoreColor = (
+  score: LeadScore
+): "destructive" | "default" | "secondary" => {
   const colors: Record<LeadScore, "destructive" | "default" | "secondary"> = {
     hot: "destructive",
     warm: "default",
@@ -140,7 +148,9 @@ const getScoreColor = (score: LeadScore): "destructive" | "default" | "secondary
   return colors[score];
 };
 
-const getStageColor = (stage: LeadStage): "default" | "secondary" | "outline" => {
+const getStageColor = (
+  stage: LeadStage
+): "default" | "secondary" | "outline" => {
   const colors: Record<LeadStage, "default" | "secondary" | "outline"> = {
     new: "default",
     contacted: "secondary",
@@ -240,7 +250,10 @@ export function LeadsTable() {
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={selectedIds.size === filteredLeads.length && filteredLeads.length > 0}
+                  checked={
+                    selectedIds.size === filteredLeads.length &&
+                    filteredLeads.length > 0
+                  }
                   onCheckedChange={handleSelectAll}
                 />
               </TableHead>
@@ -276,43 +289,65 @@ export function LeadsTable() {
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium">{lead.name}</div>
-                    {lead.lastContact && (
-                      <div className="text-muted-foreground text-xs">
-                        Last contact: {formatTimeAgo(lead.lastContact)}
+                    <div className="min-w-0">
+                      <div className="truncate font-medium leading-tight">
+                        {lead.name}
                       </div>
-                    )}
+                      {lead.lastContact && (
+                        <div className="mt-0.5 text-muted-foreground text-xs leading-tight">
+                          Last contact: {formatTimeAgo(lead.lastContact)}
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1 text-sm">
+                    <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3 text-muted-foreground" />
-                        {lead.email}
+                        <span className="text-muted-foreground text-xs leading-tight">
+                          {lead.email}
+                        </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3 text-muted-foreground" />
-                        {lead.phone}
+                        <span className="text-muted-foreground text-xs leading-tight">
+                          {lead.phone}
+                        </span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{getSourceLabel(lead.source)}</Badge>
+                    <Badge
+                      className={cn(
+                        "font-medium text-xs",
+                        "border-border/50 bg-background text-muted-foreground"
+                      )}
+                      variant="outline"
+                    >
+                      {getSourceLabel(lead.source)}
+                    </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getScoreColor(lead.score)}>
+                    <Badge
+                      className={cn("font-medium text-xs")}
+                      variant={getScoreColor(lead.score)}
+                    >
                       <TrendingUp className="mr-1 h-3 w-3" />
                       {lead.score.toUpperCase()}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStageColor(lead.stage)}>
+                    <Badge
+                      className={cn("font-medium text-xs")}
+                      variant={getStageColor(lead.stage)}
+                    >
                       {lead.stage}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-semibold tabular-nums">
                     ${lead.value.toLocaleString()}
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-muted-foreground text-xs tabular-nums leading-tight">
                     {formatTimeAgo(lead.createdAt)}
                   </TableCell>
                   <TableCell>

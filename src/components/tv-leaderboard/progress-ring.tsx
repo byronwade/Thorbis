@@ -9,7 +9,11 @@ type ProgressRingProps = {
   className?: string;
 };
 
-export function ProgressRing({ progress, isPaused, className }: ProgressRingProps) {
+export function ProgressRing({
+  progress,
+  isPaused,
+  className,
+}: ProgressRingProps) {
   const size = 32;
   const strokeWidth = 3;
   const radius = (size - strokeWidth) / 2;
@@ -23,20 +27,13 @@ export function ProgressRing({ progress, isPaused, className }: ProgressRingProp
   return (
     <motion.div
       animate={{ opacity: 1, scale: 1 }}
-      className={cn(
-        "fixed bottom-8 right-8 z-40",
-        className
-      )}
+      className={cn("fixed right-6 bottom-6 z-40", className)}
       exit={{ opacity: 0, scale: 0.8 }}
       initial={{ opacity: 0, scale: 0.8 }}
       transition={{ duration: 0.2 }}
     >
       <div className="relative" style={{ width: size, height: size }}>
-        <svg
-          className="rotate-[-90deg]"
-          height={size}
-          width={size}
-        >
+        <svg className="rotate-[-90deg]" height={size} width={size}>
           {/* Background circle */}
           <circle
             className="stroke-muted"

@@ -31,6 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 3600; // Revalidate every 1 hour
+
 import {
   Card,
   CardContent,
@@ -45,6 +46,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 type CustomRole = {
   id: string;
   name: string;
@@ -54,7 +56,8 @@ type CustomRole = {
   memberCount: number;
 };
 
-export default function RolesPage() {  const customRoles: CustomRole[] = [
+export default function RolesPage() {
+  const customRoles: CustomRole[] = [
     {
       id: "1",
       name: "Owner",

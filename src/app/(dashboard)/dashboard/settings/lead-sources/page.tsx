@@ -54,6 +54,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 
@@ -108,7 +109,8 @@ type LeadSourceSettings = {
   reportFrequency: "daily" | "weekly" | "monthly";
 };
 
-export default function LeadSourcesPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function LeadSourcesPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const [settings, setSettings] = useState<LeadSourceSettings>({

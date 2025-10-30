@@ -57,6 +57,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 // Constants
 const SIMULATED_API_DELAY = 1500;
 const DEFAULT_POST_LENGTH = 5000;
@@ -138,7 +139,8 @@ type CompanyFeedSettings = {
   retentionPeriod: number; // days
 };
 
-export default function CompanyFeedSettingsPage() {  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function CompanyFeedSettingsPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [settings, setSettings] = useState<CompanyFeedSettings>({
     // General Settings

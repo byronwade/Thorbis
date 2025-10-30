@@ -54,7 +54,10 @@ export async function createCustomer(
     return { success: true, customerId };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || "Validation error" };
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
     }
     return { success: false, error: "Failed to create customer" };
   }
@@ -90,7 +93,10 @@ export async function updateCustomer(
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || "Validation error" };
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
     }
     return { success: false, error: "Failed to update customer" };
   }

@@ -31,6 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 type ScheduleSettings = {
   payrollFrequency: "weekly" | "biweekly" | "semimonthly" | "monthly";
   payPeriodStartDay: number;
@@ -44,7 +45,8 @@ type ScheduleSettings = {
   detailedCommissionBreakdown: boolean;
 };
 
-export default function ScheduleSettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function ScheduleSettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [settings, setSettings] = useState<ScheduleSettings>({
     payrollFrequency: "biweekly",

@@ -19,7 +19,8 @@ import {
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
-export default function JobsPage() {  return (
+export default function JobsPage() {
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-3xl tracking-tight">Active Jobs</h1>

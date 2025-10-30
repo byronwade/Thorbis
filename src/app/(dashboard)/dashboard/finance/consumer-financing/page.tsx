@@ -2,7 +2,7 @@
  * Consumer Financing Page - Server Component
  */
 
-import { CreditCard, DollarSign, Users, Wallet } from "lucide-react";
+import { DollarSign, Users, Wallet } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -26,9 +26,7 @@ export default function ConsumerFinancingPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Financed Jobs
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Financed Jobs</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -52,9 +50,7 @@ export default function ConsumerFinancingPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-medium text-sm">
-              Approval Rate
-            </CardTitle>
+            <CardTitle className="font-medium text-sm">Approval Rate</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -67,7 +63,9 @@ export default function ConsumerFinancingPage() {
       <Card>
         <CardHeader>
           <CardTitle>Consumer Financing Solutions</CardTitle>
-          <CardDescription>Help customers pay for your services</CardDescription>
+          <CardDescription>
+            Help customers pay for your services
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">

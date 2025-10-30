@@ -36,6 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 type DayAvailability = {
   day: string;
   enabled: boolean;
@@ -121,7 +122,8 @@ type Exception = {
   endTime?: string;
 };
 
-export default function AvailabilitySettingsPage() {  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+export default function AvailabilitySettingsPage() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [availability, setAvailability] = useState(defaultWeek);
   const [settings, setSettings] = useState({
     allowOnlineBooking: true,
