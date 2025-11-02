@@ -4,15 +4,17 @@
  * Settings > Customers > Loyalty Page - Client Component
  *
  * Client-side features:
- * - Interactive state management and event handlers
+ * - Interactive state management with useSettings hook
  * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * - Real-time settings updates with database integration
  */
 
-import { Crown, Gift, HelpCircle, Save, Star, TrendingUp } from "lucide-react";
+import { Crown, Gift, HelpCircle, Save, Star, TrendingUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getLoyaltySettings, updateLoyaltySettings } from "@/actions/settings/customers";
 import {
   Card,
   CardContent,
@@ -47,8 +49,17 @@ type Tier = {
 };
 
 export default function LoyaltyRewardsPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [settings, setSettings] = useState({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings({
+    getter: getLoyaltySettings,
+    setter: updateLoyaltySettings,
+    initialState: {
     enableLoyaltyProgram: true,
     programName: "Rewards Program",
     pointsPerDollar: 10,
@@ -75,6 +86,47 @@ export default function LoyaltyRewardsPage() {
     displayPointsOnInvoice: true,
     displayTierOnProfile: true,
     allowPointsTransfer: false,
+    },
+    settingsName: "loyalty",
+    transformLoad: (data) => ({
+      enableLoyaltyProgram: data.loyalty_enabled ?? false,
+      programName: data.program_name || "Loyalty Rewards",
+      pointsPerDollar: data.points_per_dollar_spent ?? 1,
+      enableReferralRewards: (data.points_per_referral ?? 0) > 0,
+      referrerPoints: data.points_per_referral ?? 100,
+      pointsExpireDays: data.points_expiry_days || 365,
+      pointsValue: 0.01,
+      minimumRedemption: 500,
+      earnOnTaxes: false,
+      earnOnFees: true,
+      allowPartialRedemption: true,
+      refereeDiscount: 25,
+      referralRequirement: "first_job",
+      enableBirthdayReward: false,
+      birthdayRewardType: "points",
+      birthdayRewardAmount: 100,
+      enableAnniversaryReward: false,
+      anniversaryRewardType: "discount",
+      anniversaryRewardAmount: 15,
+      enableTierSystem: false,
+      autoUpgradeTiers: true,
+      tierReviewPeriod: "annual",
+      sendTierChangeNotification: true,
+      displayPointsOnInvoice: true,
+      displayTierOnProfile: true,
+      allowPointsTransfer: false,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("loyaltyEnabled", settings.enableLoyaltyProgram.toString());
+      formData.append("programName", settings.programName);
+      formData.append("pointsPerDollarSpent", settings.pointsPerDollar.toString());
+      formData.append("pointsPerReferral", settings.referrerPoints.toString());
+      formData.append("pointsExpiryDays", settings.pointsExpireDays?.toString() || "");
+      formData.append("autoApplyRewards", "false");
+      formData.append("notifyOnPointsEarned", "true");
+      return formData;
+    },
   });
 
   const [tiers, _setTiers] = useState<Tier[]>([
@@ -108,21 +160,20 @@ export default function LoyaltyRewardsPage() {
     },
   ]);
 
-  const updateSetting = (key: string, value: string | boolean | number) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSave = () => {
-    setHasUnsavedChanges(false);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Loyalty & Rewards
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -130,9 +181,18 @@ export default function LoyaltyRewardsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={() => saveSettings()} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -142,7 +202,7 @@ export default function LoyaltyRewardsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Star className="h-4 w-4" />
+                  <Star className="size-4" />
                   Loyalty Program
                 </CardTitle>
                 <CardDescription>
@@ -294,7 +354,7 @@ export default function LoyaltyRewardsPage() {
                       updateSetting("pointsExpireDays", Number(e.target.value))
                     }
                     type="number"
-                    value={settings.pointsExpireDays}
+                    value={settings.pointsExpireDays || 0}
                   />
                   <span className="text-muted-foreground text-sm">
                     days (0 = never)
@@ -377,7 +437,7 @@ export default function LoyaltyRewardsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Crown className="h-4 w-4" />
+                  <Crown className="size-4" />
                   Customer Tiers
                 </CardTitle>
                 <CardDescription>
@@ -519,7 +579,7 @@ export default function LoyaltyRewardsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <TrendingUp className="h-4 w-4" />
+                  <TrendingUp className="size-4" />
                   Referral Rewards
                 </CardTitle>
                 <CardDescription>
@@ -649,7 +709,7 @@ export default function LoyaltyRewardsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Gift className="h-4 w-4" />
+              <Gift className="size-4" />
               Special Occasion Rewards
             </CardTitle>
             <CardDescription>

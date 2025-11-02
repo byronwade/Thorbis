@@ -15,6 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { HelpDropdown } from "./help-dropdown";
 import { NotificationsDropdown } from "./notifications-dropdown";
+import { QuickAddDropdown } from "./quick-add-dropdown";
 import { UserMenu } from "./user-menu";
 
 /**
@@ -34,6 +35,11 @@ import { UserMenu } from "./user-menu";
 
 interface AppHeaderClientProps {
   userProfile: UserProfile;
+  companies: Array<{
+    id: string;
+    name: string;
+    plan: string;
+  }>;
 }
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
@@ -86,7 +92,7 @@ const navigationItems: NavItemWithMobile[] = [
   {
     label: "Finances",
     href: "/dashboard/finance",
-    status: "updated",
+    status: "coming-soon",
     mobileIcon: "F",
     mobileIconBg: "bg-emerald-500/10",
     mobileIconColor: "text-emerald-600",
@@ -94,6 +100,7 @@ const navigationItems: NavItemWithMobile[] = [
   {
     label: "Reporting",
     href: "/dashboard/reporting",
+    status: "coming-soon",
     mobileIcon: "R",
     mobileIconBg: "bg-blue-500/10",
     mobileIconColor: "text-blue-600",
@@ -116,24 +123,8 @@ const navigationItems: NavItemWithMobile[] = [
   },
 ];
 
-// Sample teams data - TODO: Fetch from getUserCompanies() in server component
-const sampleTeams = [
-  {
-    name: "Thorbis FSM",
-    logo: GalleryVerticalEnd,
-    plan: "Enterprise",
-  },
-  {
-    name: "Demo Company",
-    logo: AudioWaveform,
-    plan: "Pro",
-  },
-  {
-    name: "Test Business",
-    logo: Command,
-    plan: "Free",
-  },
-];
+// Default logo for all companies
+const defaultLogo = GalleryVerticalEnd;
 
 function StatusIndicator({ status }: { status?: NavItemStatus }) {
   if (!status) {
@@ -194,7 +185,7 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
   );
 }
 
-export function AppHeaderClient({ userProfile }: AppHeaderClientProps) {
+export function AppHeaderClient({ userProfile, companies }: AppHeaderClientProps) {
   const pathname = usePathname();
 
   // Hide header completely on TV display route (not settings)
@@ -455,6 +446,9 @@ export function AppHeaderClient({ userProfile }: AppHeaderClientProps) {
             <span className="sr-only">TV Display</span>
           </Link>
 
+          {/* Quick Add Menu */}
+          <QuickAddDropdown />
+
           {/* Notifications */}
           <NotificationsDropdown />
 
@@ -463,7 +457,11 @@ export function AppHeaderClient({ userProfile }: AppHeaderClientProps) {
 
           {/* User Menu - Data passed from server, no loading state needed */}
           <UserMenu
-            teams={sampleTeams}
+            teams={companies.map((company) => ({
+              name: company.name,
+              logo: defaultLogo,
+              plan: company.plan,
+            }))}
             user={{
               name: userProfile.name,
               email: userProfile.email,

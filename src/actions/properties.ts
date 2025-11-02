@@ -1,0 +1,612 @@
+/**
+ * Property Management Server Actions
+ *
+ * Property/location management for customers with:
+ * - Property CRUD operations
+ * - Multiple properties per customer
+ * - Property type classification
+ * - Equipment tracking per property
+ * - Job history per property
+ */
+
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import {
+  ActionError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
+import {
+  type ActionResult,
+  assertAuthenticated,
+  assertExists,
+  withErrorHandling,
+} from "@/lib/errors/with-error-handling";
+import { createClient } from "@/lib/supabase/server";
+
+// ============================================================================
+// VALIDATION SCHEMAS
+// ============================================================================
+
+const propertySchema = z.object({
+  customerId: z.string().uuid("Customer is required"),
+  name: z.string().min(1, "Property name is required").max(200),
+  address: z.string().min(1, "Address is required").max(200),
+  address2: z.string().max(100).optional(),
+  city: z.string().min(1, "City is required").max(100),
+  state: z.string().min(1, "State is required").max(50),
+  zipCode: z.string().min(1, "ZIP code is required").max(20),
+  country: z.string().max(50).default("USA"),
+  propertyType: z.enum(["residential", "commercial", "industrial"]).optional(),
+  squareFootage: z.number().int().min(0).optional(),
+  yearBuilt: z
+    .number()
+    .int()
+    .min(1800)
+    .max(new Date().getFullYear() + 5)
+    .optional(),
+  notes: z.string().optional(),
+});
+
+// ============================================================================
+// PROPERTY CRUD OPERATIONS
+// ============================================================================
+
+/**
+ * Create a new property for a customer
+ */
+export async function createProperty(
+  formData: FormData
+): Promise<ActionResult<string>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Validate input
+    const data = propertySchema.parse({
+      customerId: formData.get("customerId"),
+      name: formData.get("name"),
+      address: formData.get("address"),
+      address2: formData.get("address2") || undefined,
+      city: formData.get("city"),
+      state: formData.get("state"),
+      zipCode: formData.get("zipCode"),
+      country: formData.get("country") || "USA",
+      propertyType: formData.get("propertyType") || undefined,
+      squareFootage: formData.get("squareFootage")
+        ? Number(formData.get("squareFootage"))
+        : undefined,
+      yearBuilt: formData.get("yearBuilt")
+        ? Number(formData.get("yearBuilt"))
+        : undefined,
+      notes: formData.get("notes") || undefined,
+    });
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", data.customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Create property
+    const { data: property, error: createError } = await supabase
+      .from("properties")
+      .insert({
+        company_id: teamMember.company_id,
+        customer_id: data.customerId,
+        name: data.name,
+        address: data.address,
+        address2: data.address2,
+        city: data.city,
+        state: data.state,
+        zip_code: data.zipCode,
+        country: data.country,
+        property_type: data.propertyType,
+        square_footage: data.squareFootage,
+        year_built: data.yearBuilt,
+        notes: data.notes,
+      })
+      .select("id")
+      .single();
+
+    if (createError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("create property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${data.customerId}`);
+    return property.id;
+  });
+}
+
+/**
+ * Update existing property
+ */
+export async function updateProperty(
+  propertyId: string,
+  formData: FormData
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify property exists and belongs to company
+    const { data: property } = await supabase
+      .from("properties")
+      .select("id, company_id, customer_id")
+      .eq("id", propertyId)
+      .single();
+
+    assertExists(property, "Property");
+
+    if (property.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Property not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Validate input
+    const data = propertySchema.parse({
+      customerId: property.customer_id, // Keep existing customer
+      name: formData.get("name"),
+      address: formData.get("address"),
+      address2: formData.get("address2") || undefined,
+      city: formData.get("city"),
+      state: formData.get("state"),
+      zipCode: formData.get("zipCode"),
+      country: formData.get("country") || "USA",
+      propertyType: formData.get("propertyType") || undefined,
+      squareFootage: formData.get("squareFootage")
+        ? Number(formData.get("squareFootage"))
+        : undefined,
+      yearBuilt: formData.get("yearBuilt")
+        ? Number(formData.get("yearBuilt"))
+        : undefined,
+      notes: formData.get("notes") || undefined,
+    });
+
+    // Update property
+    const { error: updateError } = await supabase
+      .from("properties")
+      .update({
+        name: data.name,
+        address: data.address,
+        address2: data.address2,
+        city: data.city,
+        state: data.state,
+        zip_code: data.zipCode,
+        country: data.country,
+        property_type: data.propertyType,
+        square_footage: data.squareFootage,
+        year_built: data.yearBuilt,
+        notes: data.notes,
+      })
+      .eq("id", propertyId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${property.customer_id}`);
+  });
+}
+
+/**
+ * Delete property
+ * Only allowed if no equipment or jobs are associated
+ */
+export async function deleteProperty(
+  propertyId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify property exists and belongs to company
+    const { data: property } = await supabase
+      .from("properties")
+      .select("id, company_id, customer_id")
+      .eq("id", propertyId)
+      .single();
+
+    assertExists(property, "Property");
+
+    if (property.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Property not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Check if property has equipment
+    const { data: equipment } = await supabase
+      .from("equipment")
+      .select("id")
+      .eq("property_id", propertyId)
+      .is("deleted_at", null)
+      .limit(1);
+
+    if (equipment && equipment.length > 0) {
+      throw new ActionError(
+        "Cannot delete property with equipment. Remove or reassign equipment first.",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Check if property has jobs
+    const { data: jobs } = await supabase
+      .from("jobs")
+      .select("id")
+      .eq("property_id", propertyId)
+      .limit(1);
+
+    if (jobs && jobs.length > 0) {
+      throw new ActionError(
+        "Cannot delete property with job history.",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Delete property
+    const { error: deleteError } = await supabase
+      .from("properties")
+      .delete()
+      .eq("id", propertyId);
+
+    if (deleteError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("delete property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${property.customer_id}`);
+  });
+}
+
+// ============================================================================
+// PROPERTY QUERIES
+// ============================================================================
+
+/**
+ * Get all properties for a customer
+ */
+export async function getCustomerProperties(
+  customerId: string
+): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Get all properties for customer
+    const { data: properties, error } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("customer_id", customerId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch properties"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return properties || [];
+  });
+}
+
+/**
+ * Get property with equipment count
+ */
+export async function getPropertyWithDetails(
+  propertyId: string
+): Promise<ActionResult<any>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Get property
+    const { data: property, error: propertyError } = await supabase
+      .from("properties")
+      .select(
+        `
+        *,
+        customer:customers(id, display_name, email, phone)
+      `
+      )
+      .eq("id", propertyId)
+      .single();
+
+    if (propertyError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    assertExists(property, "Property");
+
+    if (property.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Property not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Get equipment count
+    const { count: equipmentCount } = await supabase
+      .from("equipment")
+      .select("id", { count: "exact" })
+      .eq("property_id", propertyId)
+      .is("deleted_at", null);
+
+    // Get job count
+    const { count: jobCount } = await supabase
+      .from("jobs")
+      .select("id", { count: "exact" })
+      .eq("property_id", propertyId);
+
+    return {
+      ...property,
+      equipmentCount: equipmentCount || 0,
+      jobCount: jobCount || 0,
+    };
+  });
+}
+
+/**
+ * Set property as primary for customer
+ * This is useful when a customer has multiple properties
+ */
+export async function setPrimaryProperty(
+  customerId: string,
+  propertyId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id, address, city, state, zip_code")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify property exists and belongs to customer
+    const { data: property } = await supabase
+      .from("properties")
+      .select("id, customer_id, address, city, state, zip_code")
+      .eq("id", propertyId)
+      .single();
+
+    assertExists(property, "Property");
+
+    if (property.customer_id !== customerId) {
+      throw new ActionError(
+        "Property does not belong to this customer",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Update customer's primary address to match this property
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({
+        address: property.address,
+        city: property.city,
+        state: property.state,
+        zip_code: property.zip_code,
+      })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("set primary property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath(`/dashboard/customers/${customerId}`);
+  });
+}

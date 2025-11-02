@@ -13,10 +13,11 @@ import { Button } from "@/components/ui/button";
 
 export function ShopToolbarActions() {
   return (
-    <div className="flex items-center gap-3">
-      <Button>
-        <ShoppingCart className="mr-2 h-4 w-4" />
-        Cart (0)
+    <div className="flex items-center gap-1">
+      <Button size="sm" variant="default">
+        <ShoppingCart className="mr-2 size-4" />
+        <span className="hidden sm:inline">Cart (0)</span>
+        <span className="sm:hidden">(0)</span>
       </Button>
     </div>
   );

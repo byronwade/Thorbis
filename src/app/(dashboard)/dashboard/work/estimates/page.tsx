@@ -108,27 +108,58 @@ export default function EstimatesPage() {
       <DataTablePageHeader
         actions={
           <>
-            <Button asChild size="sm" variant="outline">
+            <Button
+              asChild
+              className="md:hidden"
+              size="sm"
+              title="Create PO"
+              variant="outline"
+            >
+              <Link href="/dashboard/work/purchase-orders/new">
+                <Package className="size-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Link href="/dashboard/work/purchase-orders/new">
                 <Package className="mr-2 size-4" />
                 Create PO
               </Link>
             </Button>
-            <Button size="sm" variant="outline">
+
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Export"
+              variant="outline"
+            >
+              <Download className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Download className="mr-2 size-4" />
               Export
             </Button>
+
             <Button asChild size="sm">
               <Link href="/dashboard/work/estimates/new">
                 <Plus className="mr-2 size-4" />
-                New Estimate
+                <span className="hidden sm:inline">New Estimate</span>
+                <span className="sm:hidden">New</span>
               </Link>
             </Button>
           </>
         }
         description="Create and manage project estimates and quotes"
         stats={
-          <div className="mt-4 grid gap-3 md:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="font-medium text-sm">
@@ -189,7 +220,7 @@ export default function EstimatesPage() {
       />
 
       {/* EstimatesTable - Client component handles interactive features */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         <EstimatesTable estimates={mockEstimates} itemsPerPage={50} />
       </div>
     </div>

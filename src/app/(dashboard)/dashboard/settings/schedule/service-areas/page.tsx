@@ -134,14 +134,14 @@ export default function ServiceAreasSettingsPage() {
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">Service Areas</h1>
+            <h1 className="font-bold text-4xl tracking-tight">Service Areas</h1>
             <p className="mt-2 text-muted-foreground">
               Define where you provide services and manage travel fees
             </p>
           </div>
           {hasUnsavedChanges && (
             <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 size-4" />
               Save Changes
             </Button>
           )}
@@ -150,7 +150,7 @@ export default function ServiceAreasSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <MapPin className="h-4 w-4" />
+              <MapPin className="size-4" />
               Primary Service Area
             </CardTitle>
             <CardDescription>
@@ -366,7 +366,7 @@ export default function ServiceAreasSettingsPage() {
                 </CardDescription>
               </div>
               <Button onClick={addServiceArea} size="sm" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 size-4" />
                 Add Area
               </Button>
             </div>
@@ -396,7 +396,7 @@ export default function ServiceAreasSettingsPage() {
                     size="sm"
                     variant="ghost"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="size-4" />
                   </Button>
                 </div>
 

@@ -5,9 +5,21 @@
  * - Server Component by default (no "use client")
  * - Static content rendered on server
  * - Reduced JavaScript bundle size
+ *
+ * Shows Coming Soon component in production, normal page in development
  */
 
+import { ReportingComingSoon } from "@/components/reporting/reporting-coming-soon";
+
 export default function ReportingPage() {
+  // Show Coming Soon in production, normal page in development
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
+
+  if (isProduction) {
+    return <ReportingComingSoon />;
+  }
+
+  // Development - show normal page
   return (
     <div className="flex flex-col gap-6">
       {/* Page Header */}

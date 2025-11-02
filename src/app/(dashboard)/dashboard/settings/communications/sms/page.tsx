@@ -9,9 +9,11 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, MessageSquare, Save } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, MessageSquare, Save, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { getSmsSettings, updateSmsSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -31,16 +33,49 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function SMSSettingsPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     smsEnabled: true,
-    smsPhoneNumber: "(555) 123-4567",
-    smsFromName: "YourCo",
+    smsPhoneNumber: "",
+    smsFromName: "",
     includeUnsubscribeLink: true,
-    autoRespondToSMS: true,
-    smsAutoResponseMessage:
-      "Thanks for texting! We'll respond during business hours (Mon-Fri 8am-5pm). For emergencies, call us at (555) 123-4567.",
+    autoRespondToSMS: false,
+    smsAutoResponseMessage: "",
+    optOutMessage: "Reply STOP to unsubscribe",
+    consentRequired: true,
   });
+
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getSmsSettings();
+
+        if (result.success && result.data) {
+          setSettings({
+            smsEnabled: true, // Not in DB, always enabled if configured
+            smsPhoneNumber: result.data.sender_number || "",
+            smsFromName: result.data.sender_number || "",
+            includeUnsubscribeLink: result.data.include_opt_out ?? true,
+            autoRespondToSMS: result.data.auto_reply_enabled ?? false,
+            smsAutoResponseMessage: result.data.auto_reply_message || "",
+            optOutMessage: result.data.opt_out_message || "Reply STOP to unsubscribe",
+            consentRequired: result.data.consent_required ?? true,
+          });
+        }
+      } catch (error) {
+        toast.error("Failed to load SMS settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
 
   const updateSetting = (key: string, value: string | boolean) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -48,15 +83,41 @@ export default function SMSSettingsPage() {
   };
 
   const handleSave = () => {
-    setHasUnsavedChanges(false);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("provider", "telnyx");
+      formData.append("senderNumber", settings.smsPhoneNumber);
+      formData.append("autoReplyEnabled", settings.autoRespondToSMS.toString());
+      formData.append("autoReplyMessage", settings.smsAutoResponseMessage);
+      formData.append("optOutMessage", settings.optOutMessage);
+      formData.append("includeOptOut", settings.includeUnsubscribeLink.toString());
+      formData.append("consentRequired", settings.consentRequired.toString());
+
+      const result = await updateSmsSettings(formData);
+
+      if (result.success) {
+        setHasUnsavedChanges(false);
+        toast.success("SMS settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save SMS settings");
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               SMS & Text Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -64,9 +125,18 @@ export default function SMSSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={handleSave} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -74,7 +144,7 @@ export default function SMSSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="size-4" />
               SMS Configuration
             </CardTitle>
             <CardDescription>

@@ -28,9 +28,11 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { updateCompanyInfo, updateBusinessHours } from "@/actions/company";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -157,7 +159,9 @@ function capitalizeDay(day: string): string {
 }
 
 export default function CompanyProfilePage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
   const [serviceAreaInput, setServiceAreaInput] = useState("");
   const [bulkHoursMode, setBulkHoursMode] = useState(false);
@@ -204,13 +208,40 @@ export default function CompanyProfilePage() {
     },
   });
 
-  async function onSubmit(_values: CompanyProfileFormData) {
-    setIsSubmitting(true);
-    await new Promise((resolve) => {
-      setTimeout(resolve, SIMULATED_API_DELAY);
+  // Load company data on mount
+  useEffect(() => {
+    async function loadCompanyData() {
+      setIsLoading(true);
+      // TODO: Load from getCompanyInfo action when available
+      setIsLoading(false);
+    }
+    loadCompanyData();
+  }, []);
+
+  async function onSubmit(values: CompanyProfileFormData) {
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("name", values.companyName);
+      formData.append("legalName", values.legalName || "");
+      formData.append("email", values.email);
+      formData.append("phone", values.phone);
+      formData.append("website", values.website || "");
+      formData.append("taxId", values.taxId || "");
+      formData.append("licenseNumber", "");
+      formData.append("address", values.address);
+      formData.append("city", values.city);
+      formData.append("state", values.state);
+      formData.append("zipCode", values.zipCode);
+
+      const result = await updateCompanyInfo(formData);
+
+      if (result.success) {
+        setHasChanges(false);
+        toast.success("Company settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save company settings");
+      }
     });
-    setHasChanges(false);
-    setIsSubmitting(false);
   }
 
   function addServiceArea() {
@@ -316,7 +347,7 @@ export default function CompanyProfilePage() {
                           size="icon"
                           type="button"
                         >
-                          <Upload className="h-4 w-4" />
+                          <Upload className="size-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -336,7 +367,7 @@ export default function CompanyProfilePage() {
                             className="flex items-center justify-center"
                             type="button"
                           >
-                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs">
@@ -354,11 +385,11 @@ export default function CompanyProfilePage() {
 
                   <div className="flex gap-3">
                     <Button type="button" variant="outline">
-                      <Upload className="mr-2 h-4 w-4" />
+                      <Upload className="mr-2 size-4" />
                       Upload New Logo
                     </Button>
                     <Button type="button" variant="ghost">
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       Remove
                     </Button>
                   </div>
@@ -383,7 +414,7 @@ export default function CompanyProfilePage() {
                         className="flex items-center justify-center"
                         type="button"
                       >
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -690,7 +721,7 @@ export default function CompanyProfilePage() {
                           className="flex items-center justify-center"
                           type="button"
                         >
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -845,7 +876,7 @@ export default function CompanyProfilePage() {
                         value={serviceAreaInput}
                       />
                       <Button onClick={addServiceArea} type="button">
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="mr-2 size-4" />
                         Add
                       </Button>
                     </div>
@@ -955,7 +986,7 @@ export default function CompanyProfilePage() {
                           className="flex items-center justify-center"
                           type="button"
                         >
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -1212,7 +1243,7 @@ export default function CompanyProfilePage() {
                         className="flex items-center justify-center"
                         type="button"
                       >
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -1368,7 +1399,7 @@ export default function CompanyProfilePage() {
 
                 <div className="flex gap-3">
                   <Button
-                    disabled={isSubmitting || !hasChanges}
+                    disabled={isPending || !hasChanges}
                     onClick={() => {
                       form.reset();
                       setHasChanges(false);
@@ -1378,15 +1409,15 @@ export default function CompanyProfilePage() {
                   >
                     Cancel
                   </Button>
-                  <Button disabled={isSubmitting || !hasChanges} type="submit">
-                    {isSubmitting ? (
+                  <Button disabled={isPending || !hasChanges} type="submit">
+                    {isPending ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 size-4 animate-spin" />
                         Saving...
                       </>
                     ) : (
                       <>
-                        <Save className="mr-2 h-4 w-4" />
+                        <Save className="mr-2 size-4" />
                         Save Company Profile
                       </>
                     )}

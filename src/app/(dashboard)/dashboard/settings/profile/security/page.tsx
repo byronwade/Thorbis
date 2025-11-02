@@ -214,7 +214,7 @@ export default function SecurityPage() {
                     className="flex items-center justify-center"
                     type="button"
                   >
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
@@ -248,7 +248,7 @@ export default function SecurityPage() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button type="button">
-                              <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs">
@@ -298,7 +298,7 @@ export default function SecurityPage() {
                       className="flex items-center justify-center"
                       type="button"
                     >
-                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
@@ -363,7 +363,7 @@ export default function SecurityPage() {
                       className="flex items-center justify-center"
                       type="button"
                     >
-                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
@@ -439,7 +439,7 @@ export default function SecurityPage() {
                     className="flex items-center justify-center"
                     type="button"
                   >
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
@@ -467,7 +467,7 @@ export default function SecurityPage() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button type="button">
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -500,7 +500,7 @@ export default function SecurityPage() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button type="button">
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -517,7 +517,7 @@ export default function SecurityPage() {
                 </div>
               </div>
               <Button size="sm" type="button" variant="outline">
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-2 size-4" />
                 Download
               </Button>
             </div>
@@ -534,7 +534,7 @@ export default function SecurityPage() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button type="button">
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -571,7 +571,7 @@ export default function SecurityPage() {
                     className="flex items-center justify-center"
                     type="button"
                   >
-                    <HelpCircle className="h-4 w-4 text-red-600 dark:text-red-500" />
+                    <HelpCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-500" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">

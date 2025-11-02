@@ -9,9 +9,10 @@
  * - Browser API access for enhanced UX
  */
 
-import { Calendar, HelpCircle, Save } from "lucide-react";
-import { useState } from "react";
+import { Calendar, HelpCircle, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getCalendarSettings, updateCalendarSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,8 +38,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function CalendarSettingsPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [settings, setSettings] = useState({
+  const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings } = useSettings({
+    getter: getCalendarSettings,
+    setter: updateCalendarSettings,
+    initialState: {
     timeZone: "America/New_York",
     firstDayOfWeek: "sunday",
     timeFormat: "12",
@@ -51,23 +54,45 @@ export default function CalendarSettingsPage() {
     showCanceledJobs: false,
     colorCodeByStatus: true,
     colorCodeByTechnician: false,
+    },
+    settingsName: "calendar",
+    transformLoad: (data) => ({
+      firstDayOfWeek: data.start_day_of_week === 0 ? "sunday" : "monday",
+      timeSlotInterval: data.time_slot_duration_minutes ?? 30,
+      showWeekends: true,
+      colorCodeByStatus: data.show_job_status_colors ?? true,
+      colorCodeByTechnician: data.show_technician_colors ?? true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("defaultView", "week");
+      formData.append("startDayOfWeek", settings.firstDayOfWeek === "sunday" ? "0" : "1");
+      formData.append("timeSlotDurationMinutes", settings.timeSlotInterval.toString());
+      formData.append("showTechnicianColors", settings.colorCodeByTechnician.toString());
+      formData.append("showJobStatusColors", settings.colorCodeByStatus.toString());
+      formData.append("showTravelTime", "true");
+      formData.append("showCustomerName", "true");
+      formData.append("showJobType", "true");
+      formData.append("syncWithGoogleCalendar", "false");
+      formData.append("syncWithOutlook", "false");
+      return formData;
+    },
   });
 
-  const updateSetting = (key: string, value: string | boolean | number) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSave = () => {
-    setHasUnsavedChanges(false);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Calendar Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -75,9 +100,18 @@ export default function CalendarSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={() => saveSettings()} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>

@@ -22,6 +22,12 @@ export type LayoutConfig = {
   showHeader?: boolean;
   sidebar?: SidebarConfig;
   fixedHeight?: boolean;
+  // Right sidebar configuration
+  showRightSidebar?: boolean;
+  rightSidebarComponent?: "invoice" | "pricebook" | "generic" | string;
+  rightSidebarCollapsible?: boolean;
+  rightSidebarDefaultOpen?: boolean;
+  rightSidebarWidth?: number; // In pixels (default 320)
 };
 
 type LayoutRule = {
@@ -108,6 +114,67 @@ const LAYOUT_RULES: LayoutRule[] = [
       fixedHeight: true,
     },
     priority: 65,
+  },
+  // Right sidebar pages (high priority)
+  {
+    pattern: /^\/dashboard\/work\/invoices\/[^/]+$/,
+    config: {
+      maxWidth: "full",
+      padding: "none",
+      gap: "none",
+      showToolbar: true,
+      showSidebar: true,
+      showHeader: true,
+      fixedHeight: true,
+      showRightSidebar: true,
+      rightSidebarComponent: "invoice",
+      rightSidebarCollapsible: true,
+      rightSidebarDefaultOpen: true,
+      rightSidebarWidth: 320,
+    },
+    priority: 75,
+  },
+  {
+    pattern: /^\/dashboard\/work\/pricebook/,
+    config: {
+      maxWidth: "full",
+      padding: "none",
+      gap: "none",
+      showToolbar: true,
+      showSidebar: true,
+      showHeader: true,
+      fixedHeight: true,
+      showRightSidebar: true,
+      rightSidebarComponent: "pricebook",
+      rightSidebarCollapsible: true,
+      rightSidebarDefaultOpen: true,
+      rightSidebarWidth: 320,
+    },
+    priority: 76,
+  },
+  {
+    pattern: /^\/dashboard\/work\/new$/,
+    config: {
+      maxWidth: "full",
+      padding: "none",
+      gap: "none",
+      showToolbar: false,
+      showSidebar: false,
+      showHeader: true,
+    },
+    priority: 78,
+  },
+  {
+    pattern: /^\/dashboard\/work\/jobs\/new$/,
+    config: {
+      maxWidth: "4xl",
+      padding: "md",
+      gap: "md",
+      showToolbar: false,
+      showSidebar: false,
+      showHeader: true,
+    },
+    priority: 77,
   },
   {
     pattern: /^\/dashboard\/(automation|training)/,
@@ -201,7 +268,7 @@ const LAYOUT_RULES: LayoutRule[] = [
   },
   {
     pattern:
-      /^\/dashboard\/work\/(invoices|estimates|materials|equipment|maintenance-plans|service-agreements|purchase-orders)/,
+      /^\/dashboard\/work\/(invoices|estimates|materials|equipment|maintenance-plans|service-agreements|purchase-orders|pricebook)/,
     config: {
       maxWidth: "full",
       padding: "none",

@@ -33,186 +33,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { Separator } from "@/components/ui/separator";
+import { CustomerDataTables } from "@/components/customers/customer-data-tables";
+import { InvitePortalButton } from "@/components/customers/invite-portal-button";
+import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
 import type { Invoice, Job, Property } from "@/lib/db/schema";
-
-// Customer type
-type Customer = {
-  id: string;
-  companyId: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  address2?: string | null;
-  city: string;
-  state: string;
-  zipCode: string;
-  customerType: "residential" | "commercial";
-  company?: string | null;
-  notes?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-// Mock data
-const mockCustomer: Customer = {
-  id: "customer-1",
-  companyId: "company-1",
-  name: "John Smith",
-  email: "john.smith@mainstreetoffice.com",
-  phone: "(555) 123-4567",
-  address: "123 Main Street",
-  address2: "Suite 100",
-  city: "San Francisco",
-  state: "CA",
-  zipCode: "94102",
-  customerType: "commercial",
-  company: "Main Street Office Building LLC",
-  notes:
-    "Preferred communication via email. Available for site visits M-F 9am-5pm. Long-term client since 2020.",
-  createdAt: new Date("2024-06-15"),
-  updatedAt: new Date("2025-01-20"),
-};
-
-const mockJobs: Job[] = [
-  {
-    id: "1",
-    companyId: "company-1",
-    propertyId: "property-1",
-    customerId: "customer-1",
-    assignedTo: "user-1",
-    jobNumber: "JOB-2025-001",
-    title: "HVAC Installation - Main Street Office",
-    description: "Install new HVAC system for commercial office space",
-    status: "in_progress",
-    priority: "high",
-    jobType: "installation",
-    scheduledStart: new Date("2025-01-31"),
-    scheduledEnd: new Date("2025-02-04"),
-    actualStart: new Date("2025-02-01"),
-    actualEnd: null,
-    totalAmount: 1_250_000,
-    paidAmount: 625_000,
-    notes: null,
-    metadata: null,
-    createdAt: new Date("2025-01-15"),
-    updatedAt: new Date("2025-01-20"),
-    // AI fields
-    aiCategories: null,
-    aiEquipment: null,
-    aiServiceType: null,
-    aiPriorityScore: null,
-    aiTags: null,
-    aiProcessedAt: null,
-  },
-  {
-    id: "2",
-    companyId: "company-1",
-    propertyId: "property-1",
-    customerId: "customer-1",
-    assignedTo: "user-2",
-    jobNumber: "JOB-2024-089",
-    title: "Annual HVAC Maintenance",
-    description: "Routine maintenance and inspection",
-    status: "completed",
-    priority: "medium",
-    jobType: "maintenance",
-    scheduledStart: new Date("2024-12-01"),
-    scheduledEnd: new Date("2024-12-01"),
-    actualStart: new Date("2024-12-01"),
-    actualEnd: new Date("2024-12-01"),
-    totalAmount: 35_000,
-    paidAmount: 35_000,
-    notes: null,
-    metadata: null,
-    createdAt: new Date("2024-11-15"),
-    updatedAt: new Date("2024-12-02"),
-    // AI fields
-    aiCategories: null,
-    aiEquipment: null,
-    aiServiceType: null,
-    aiPriorityScore: null,
-    aiTags: null,
-    aiProcessedAt: null,
-  },
-];
-
-const mockProperties: Property[] = [
-  {
-    id: "property-1",
-    companyId: "company-1",
-    customerId: "customer-1",
-    name: "Main Street Office Building",
-    address: "123 Main Street",
-    address2: "Suite 100",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94102",
-    country: "USA",
-    propertyType: "commercial",
-    squareFootage: 5000,
-    yearBuilt: 1995,
-    notes: "Three-story office building with basement",
-    metadata: null,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
-  },
-];
-
-const mockInvoices: Invoice[] = [
-  {
-    id: "inv-1",
-    companyId: "company-1",
-    jobId: "1",
-    customerId: "customer-1",
-    invoiceNumber: "INV-2025-0123",
-    title: "HVAC Installation - Initial Payment",
-    description: "50% deposit for HVAC installation project",
-    status: "paid",
-    subtotal: 625_000,
-    taxAmount: 0,
-    discountAmount: 0,
-    totalAmount: 625_000,
-    paidAmount: 625_000,
-    balanceAmount: 0,
-    dueDate: new Date("2025-01-20"),
-    lineItems: null,
-    terms: "Net 30",
-    notes: "Initial deposit payment",
-    sentAt: new Date("2025-01-15"),
-    viewedAt: new Date("2025-01-15"),
-    paidAt: new Date("2025-01-18"),
-    createdAt: new Date("2025-01-15"),
-    updatedAt: new Date("2025-01-18"),
-  },
-  {
-    id: "inv-2",
-    companyId: "company-1",
-    jobId: "2",
-    customerId: "customer-1",
-    invoiceNumber: "INV-2024-0589",
-    title: "Annual HVAC Maintenance",
-    description: "Maintenance service",
-    status: "paid",
-    subtotal: 35_000,
-    taxAmount: 0,
-    discountAmount: 0,
-    totalAmount: 35_000,
-    paidAmount: 35_000,
-    balanceAmount: 0,
-    dueDate: new Date("2024-12-15"),
-    lineItems: null,
-    terms: "Net 30",
-    notes: null,
-    sentAt: new Date("2024-12-01"),
-    viewedAt: new Date("2024-12-01"),
-    paidAt: new Date("2024-12-10"),
-    createdAt: new Date("2024-12-01"),
-    updatedAt: new Date("2024-12-10"),
-  },
-];
 
 const CENTS_DIVISOR = 100;
 
@@ -270,89 +96,57 @@ export default async function CustomerDetailsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: customerId } = await params; // Calculate customer stats
-  const totalRevenue = mockInvoices.reduce(
-    (sum, inv) => sum + (inv.totalAmount || 0),
-    0
-  );
-  const totalJobs = mockJobs.length;
-  const activeJobs = mockJobs.filter(
+  const { id: customerId } = await params;
+
+  // Fetch customer data from database
+  const supabase = await createClient();
+
+  if (!supabase) {
+    return notFound();
+  }
+
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("id", customerId)
+    .is("deleted_at", null)
+    .single();
+
+  if (!customer) {
+    notFound();
+  }
+
+  // Fetch related data
+  const [
+    { data: jobs },
+    { data: properties },
+    { data: invoices }
+  ] = await Promise.all([
+    supabase
+      .from("jobs")
+      .select("*")
+      .eq("customer_id", customerId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("properties")
+      .select("*")
+      .eq("customer_id", customerId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("invoices")
+      .select("*")
+      .eq("customer_id", customerId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+  ]);
+
+  // Calculate stats from real data
+  const totalRevenue = customer.total_revenue || 0;
+  const totalJobs = jobs?.length || 0;
+  const activeJobs = jobs?.filter(
     (j) => j.status === "in_progress" || j.status === "scheduled"
-  ).length;
-
-  // Job columns for DataTable
-  const jobColumns: DataTableColumn<Job>[] = [
-    {
-      key: "jobNumber",
-      header: "Job Number",
-      sortable: true,
-      filterable: true,
-      render: (job) => <span className="font-medium">{job.jobNumber}</span>,
-    },
-    {
-      key: "title",
-      header: "Title",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (job) => getStatusBadge(job.status),
-    },
-    {
-      key: "totalAmount",
-      header: "Amount",
-      sortable: true,
-      render: (job) => formatCurrency(job.totalAmount),
-    },
-    {
-      key: "scheduledStart",
-      header: "Scheduled",
-      sortable: true,
-      render: (job) => formatDate(job.scheduledStart),
-    },
-  ];
-
-  // Invoice columns
-  const invoiceColumns: DataTableColumn<Invoice>[] = [
-    {
-      key: "invoiceNumber",
-      header: "Invoice Number",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => (
-        <span className="font-medium">{invoice.invoiceNumber}</span>
-      ),
-    },
-    {
-      key: "title",
-      header: "Title",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => getStatusBadge(invoice.status),
-    },
-    {
-      key: "totalAmount",
-      header: "Amount",
-      sortable: true,
-      render: (invoice) => formatCurrency(invoice.totalAmount),
-    },
-    {
-      key: "dueDate",
-      header: "Due Date",
-      sortable: true,
-      render: (invoice) => formatDate(invoice.dueDate),
-    },
-  ];
+  ).length || 0;
 
   return (
     <div className="space-y-6">
@@ -367,14 +161,14 @@ export default async function CustomerDetailsPage({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-bold text-3xl tracking-tight">
-                {mockCustomer.name}
+                {customer.display_name}
               </h1>
               <Badge className="capitalize" variant="outline">
-                {mockCustomer.customerType}
+                {customer.type}
               </Badge>
             </div>
-            {mockCustomer.company ? (
-              <p className="text-muted-foreground">{mockCustomer.company}</p>
+            {customer.company_name ? (
+              <p className="text-muted-foreground">{customer.company_name}</p>
             ) : null}
           </div>
         </div>
@@ -425,7 +219,7 @@ export default async function CustomerDetailsPage({
             <MapPin className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-bold text-2xl">{mockProperties.length}</div>
+            <div className="font-bold text-2xl">{properties?.length || 0}</div>
             <p className="text-muted-foreground text-xs">Service locations</p>
           </CardContent>
         </Card>
@@ -439,10 +233,10 @@ export default async function CustomerDetailsPage({
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">
-              {mockCustomer.createdAt.getFullYear()}
+              {new Date(customer.created_at).getFullYear()}
             </div>
             <p className="text-muted-foreground text-xs">
-              {formatDate(mockCustomer.createdAt)}
+              {formatDate(new Date(customer.created_at))}
             </p>
           </CardContent>
         </Card>
@@ -470,32 +264,32 @@ export default async function CustomerDetailsPage({
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <div className="text-muted-foreground text-sm">Name</div>
-                    <div className="font-medium">{mockCustomer.name}</div>
+                    <div className="font-medium">{customer.display_name}</div>
                   </div>
                   <div>
                     <div className="text-muted-foreground text-sm">Email</div>
                     <Link
                       className="font-medium hover:underline"
-                      href={`mailto:${mockCustomer.email}`}
+                      href={`mailto:${customer.email}`}
                     >
-                      {mockCustomer.email}
+                      {customer.email}
                     </Link>
                   </div>
                   <div>
                     <div className="text-muted-foreground text-sm">Phone</div>
                     <Link
                       className="font-medium hover:underline"
-                      href={`tel:${mockCustomer.phone}`}
+                      href={`tel:${customer.phone}`}
                     >
-                      {mockCustomer.phone}
+                      {customer.phone}
                     </Link>
                   </div>
-                  {mockCustomer.company ? (
+                  {customer.company_name ? (
                     <div>
                       <div className="text-muted-foreground text-sm">
                         Company
                       </div>
-                      <div className="font-medium">{mockCustomer.company}</div>
+                      <div className="font-medium">{customer.company_name}</div>
                     </div>
                   ) : null}
                 </div>
@@ -511,12 +305,12 @@ export default async function CustomerDetailsPage({
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="font-medium">
-                    {mockCustomer.address}
-                    {mockCustomer.address2 ? `, ${mockCustomer.address2}` : ""}
+                    {customer.address}
+                    {customer.address2 ? `, ${customer.address2}` : ""}
                   </div>
                   <div className="text-muted-foreground">
-                    {mockCustomer.city}, {mockCustomer.state}{" "}
-                    {mockCustomer.zipCode}
+                    {customer.city}, {customer.state}{" "}
+                    {customer.zip_code}
                   </div>
                 </div>
               </div>
@@ -529,11 +323,11 @@ export default async function CustomerDetailsPage({
                   Customer Type
                 </div>
                 <Badge className="capitalize" variant="outline">
-                  {mockCustomer.customerType}
+                  {customer.type}
                 </Badge>
               </div>
 
-              {mockCustomer.notes ? (
+              {customer.notes ? (
                 <>
                   <Separator />
                   <div>
@@ -541,7 +335,7 @@ export default async function CustomerDetailsPage({
                       Customer Notes
                     </div>
                     <div className="rounded-md bg-muted p-3 text-sm">
-                      {mockCustomer.notes}
+                      {customer.notes || "No notes available"}
                     </div>
                   </div>
                 </>
@@ -554,7 +348,7 @@ export default async function CustomerDetailsPage({
                 <div>
                   <div className="text-muted-foreground text-sm">Created</div>
                   <div className="font-medium">
-                    {formatDate(mockCustomer.createdAt)}
+                    {formatDate(new Date(customer.created_at))}
                   </div>
                 </div>
                 <div>
@@ -562,79 +356,26 @@ export default async function CustomerDetailsPage({
                     Last Updated
                   </div>
                   <div className="font-medium">
-                    {formatDate(mockCustomer.updatedAt)}
+                    {formatDate(new Date(customer.updated_at))}
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Jobs Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Jobs ({mockJobs.length})</CardTitle>
-                  <CardDescription>All jobs for this customer</CardDescription>
-                </div>
-                <Button asChild size="sm" variant="outline">
-                  <Link href={`/dashboard/work/new?customer=${customerId}`}>
-                    <Briefcase className="mr-2 size-4" />
-                    New Job
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <DataTable
-                columns={jobColumns}
-                data={mockJobs}
-                emptyMessage="No jobs found for this customer."
-                itemsPerPage={5}
-                keyField="id"
-                searchPlaceholder="Search jobs..."
-              />
-            </CardContent>
-          </Card>
-
-          {/* Invoices Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Invoices ({mockInvoices.length})</CardTitle>
-                  <CardDescription>
-                    All invoices for this customer
-                  </CardDescription>
-                </div>
-                <Button asChild size="sm" variant="outline">
-                  <Link
-                    href={`/dashboard/work/invoices/new?customer=${customerId}`}
-                  >
-                    <FileText className="mr-2 size-4" />
-                    New Invoice
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <DataTable
-                columns={invoiceColumns}
-                data={mockInvoices}
-                emptyMessage="No invoices found for this customer."
-                itemsPerPage={5}
-                keyField="id"
-                searchPlaceholder="Search invoices..."
-              />
-            </CardContent>
-          </Card>
+          {/* Jobs and Invoices Tables */}
+          <CustomerDataTables
+            customerId={customerId}
+            jobs={jobs || []}
+            invoices={invoices || []}
+          />
 
           {/* Properties Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-bold text-2xl tracking-tight">
-                  Properties ({mockProperties.length})
+                  Properties ({properties?.length || 0})
                 </h2>
                 <p className="text-muted-foreground text-sm">
                   Service locations for this customer
@@ -648,7 +389,7 @@ export default async function CustomerDetailsPage({
               </Button>
             </div>
 
-            {mockProperties.map((property) => (
+            {properties?.map((property) => (
               <Card key={property.id}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -760,18 +501,24 @@ export default async function CustomerDetailsPage({
                 </Link>
               </Button>
               <Button asChild className="w-full" variant="outline">
-                <Link href={`mailto:${mockCustomer.email}`}>
+                <Link href={`mailto:${customer.email}`}>
                   <Mail className="mr-2 size-4" />
                   Send Email
                 </Link>
               </Button>
               <Button asChild className="w-full" variant="outline">
-                <Link href={`tel:${mockCustomer.phone}`}>
+                <Link href={`tel:${customer.phone}`}>
                   <Phone className="mr-2 size-4" />
                   Call Customer
                 </Link>
               </Button>
               <Separator className="my-4" />
+              <InvitePortalButton
+                customerId={customerId}
+                customerName={customer.display_name}
+                portalEnabled={customer.portal_enabled || false}
+                portalInvitedAt={customer.portal_invited_at}
+              />
               <Button asChild className="w-full" variant="outline">
                 <Link href={`/dashboard/properties/new?customer=${customerId}`}>
                   <Building2 className="mr-2 size-4" />
@@ -815,7 +562,7 @@ export default async function CustomerDetailsPage({
                 <span className="text-muted-foreground text-sm">
                   Properties
                 </span>
-                <span className="font-bold">{mockProperties.length}</span>
+                <span className="font-bold">{properties?.length || 0}</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
@@ -823,7 +570,7 @@ export default async function CustomerDetailsPage({
                   Customer Since
                 </span>
                 <span className="font-medium text-sm">
-                  {formatDate(mockCustomer.createdAt)}
+                  {formatDate(new Date(customer.created_at))}
                 </span>
               </div>
             </CardContent>

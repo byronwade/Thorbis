@@ -8,13 +8,14 @@
  * - Sidebar for navigation between marketing sections
  *
  * Environment behavior:
+ * - Production: Shows Coming Soon page
  * - Development: Full datatable with mock data for testing
- * - Production: Same UI (you can add real data when ready)
  */
 
 import type { Lead } from "@/components/marketing/leads-datatable";
 import { LeadsDataTable } from "@/components/marketing/leads-datatable";
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
+import { MarketingComingSoon } from "@/components/marketing/marketing-coming-soon";
 
 // Mock leads data - replace with real data from database
 const mockLeads: Lead[] = [
@@ -151,6 +152,14 @@ const leadStats: StatCard[] = [
 ];
 
 export default function MarketingPage() {
+  // Show Coming Soon in production, normal page in development
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
+
+  if (isProduction) {
+    return <MarketingComingSoon />;
+  }
+
+  // Development - show normal datatable
   return (
     <>
       {/* Statistics - Full width, no padding */}

@@ -21,9 +21,11 @@ import {
   Trash2,
   TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getPricebookSettings, updatePricebookSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -124,6 +126,9 @@ type PriceBookSettings = {
 };
 
 export default function PriceBookSettingsPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [laborRates, setLaborRates] = useState<LaborRate[]>([
@@ -295,6 +300,32 @@ export default function PriceBookSettingsPage() {
     includeTaxInPrice: false,
   });
 
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getPricebookSettings();
+
+        if (result.success && result.data) {
+          setSettings((prev) => ({
+            ...prev,
+            showCostToTechs: result.data.show_cost_prices ?? true,
+            defaultMarkupPercent: result.data.markup_default_percentage ?? 50,
+            requireDescription: result.data.require_categories ?? true,
+            // Other fields can be extended as needed
+          }));
+        }
+      } catch (error) {
+        toast.error("Failed to load pricebook settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
+
   const updateSetting = <K extends keyof PriceBookSettings>(
     key: K,
     value: PriceBookSettings[K]
@@ -418,22 +449,41 @@ export default function PriceBookSettingsPage() {
   };
 
   async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => {
-      setTimeout(resolve, SIMULATED_API_DELAY);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("showCostPrices", settings.showCostToTechs.toString());
+      formData.append("markupDefaultPercentage", settings.defaultMarkupPercent.toString());
+      formData.append("requireCategories", settings.requireDescription.toString());
+      formData.append("allowCustomItems", "true");
+      formData.append("showItemCodes", "true");
+      formData.append("showItemDescriptions", "true");
+
+      const result = await updatePricebookSettings(formData);
+
+      if (result.success) {
+        toast.success("Pricebook settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save pricebook settings");
+      }
     });
-    // TODO: Save price book settings to database/API
-    setIsSubmitting(false);
   }
 
   const examplePrice = 100;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Price Book Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -447,7 +497,7 @@ export default function PriceBookSettingsPage() {
         <Card className="border-primary/50 bg-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="size-4" />
               Pricing Model
               <Tooltip>
                 <TooltipTrigger>
@@ -525,7 +575,7 @@ export default function PriceBookSettingsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <DollarSign className="h-4 w-4" />
+                    <DollarSign className="size-4" />
                     Labor Rates
                   </CardTitle>
                   <CardDescription>
@@ -533,7 +583,7 @@ export default function PriceBookSettingsPage() {
                   </CardDescription>
                 </div>
                 <Button onClick={addLaborRate} size="sm" variant="outline">
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2 size-4" />
                   Add Rate
                 </Button>
               </div>
@@ -640,7 +690,7 @@ export default function PriceBookSettingsPage() {
                             size="sm"
                             variant="ghost"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="size-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -661,7 +711,7 @@ export default function PriceBookSettingsPage() {
                   Material Markups
                   <Tooltip>
                     <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="max-w-xs">
@@ -681,7 +731,7 @@ export default function PriceBookSettingsPage() {
                 size="sm"
                 variant="outline"
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 size-4" />
                 Add Tier ({materialMarkups.length}/100)
               </Button>
             </div>
@@ -777,7 +827,7 @@ export default function PriceBookSettingsPage() {
                           size="sm"
                           variant="ghost"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="size-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -804,7 +854,7 @@ export default function PriceBookSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="size-4" />
               Pricing Strategy
               <Tooltip>
                 <TooltipTrigger>
@@ -1052,7 +1102,7 @@ export default function PriceBookSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <TrendingUp className="h-4 w-4" />
+                <TrendingUp className="size-4" />
                 Pricing Tiers
                 <Tooltip>
                   <TooltipTrigger>
@@ -1186,7 +1236,7 @@ export default function PriceBookSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Package className="h-4 w-4" />
+              <Package className="size-4" />
               Item Management Rules
               <Tooltip>
                 <TooltipTrigger>
@@ -1349,7 +1399,7 @@ export default function PriceBookSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Receipt className="h-4 w-4" />
+              <Receipt className="size-4" />
               Tax Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -1489,7 +1539,7 @@ export default function PriceBookSettingsPage() {
 
                 <div className="rounded-lg border bg-muted/50 p-4">
                   <p className="mb-2 flex items-center gap-2 font-medium text-sm">
-                    <Percent className="h-4 w-4" />
+                    <Percent className="size-4" />
                     Tax Calculation Example
                   </p>
                   <div className="space-y-1 text-sm">
@@ -1557,10 +1607,18 @@ export default function PriceBookSettingsPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Price Book Settings
+          <Button disabled={isPending} onClick={handleSave}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Price Book Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

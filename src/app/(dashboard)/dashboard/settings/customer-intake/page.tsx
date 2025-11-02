@@ -9,6 +9,7 @@
  * - Browser API access for enhanced UX
  */
 
+import { useState } from "react";
 import {
   Building,
   FileText,
@@ -22,8 +23,9 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getIntakeSettings, updateIntakeSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -87,8 +89,17 @@ type CustomField = {
 };
 
 export default function CustomerIntakePage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [settings, setSettings] = useState<CustomerIntakeSettings>({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<CustomerIntakeSettings>({
+    getter: getIntakeSettings,
+    setter: updateIntakeSettings,
+    initialState: {
     // Required
     requireFirstName: true,
     requireLastName: true,
@@ -119,6 +130,28 @@ export default function CustomerIntakePage() {
       "Welcome! We're excited to serve you. Our team is committed to providing excellent service.",
     customIntakeInstructions:
       "Please provide as much detail as possible to help us serve you better.",
+    },
+    settingsName: "customer intake",
+    transformLoad: (data) => ({
+      requirePhone: data.require_phone ?? true,
+      requireEmail: data.require_email ?? true,
+      requireAddress: data.require_address ?? true,
+      requirePropertyType: data.require_property_type ?? false,
+      sendWelcomeEmail: data.send_welcome_email ?? true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("requirePhone", settings.requirePhone.toString());
+      formData.append("requireEmail", settings.requireEmail.toString());
+      formData.append("requireAddress", settings.requireAddress.toString());
+      formData.append("requirePropertyType", settings.requirePropertyType.toString());
+      formData.append("sendWelcomeEmail", settings.sendWelcomeEmail.toString());
+      formData.append("trackLeadSource", "true");
+      formData.append("requireLeadSource", "false");
+      formData.append("autoAssignTechnician", "false");
+      formData.append("autoCreateJob", "false");
+      return formData;
+    },
   });
 
   const [customFields] = useState<CustomField[]>([
@@ -145,20 +178,12 @@ export default function CustomerIntakePage() {
     },
   ]);
 
-  const updateSetting = <K extends keyof CustomerIntakeSettings>(
-    key: K,
-    value: CustomerIntakeSettings[K]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -166,7 +191,7 @@ export default function CustomerIntakePage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Customer Intake Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -180,7 +205,7 @@ export default function CustomerIntakePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="size-4" />
               Required Customer Information
               <Tooltip>
                 <TooltipTrigger>
@@ -389,7 +414,7 @@ export default function CustomerIntakePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Phone className="h-4 w-4" />
+              <Phone className="size-4" />
               Optional Contact Information
               <Tooltip>
                 <TooltipTrigger>
@@ -529,7 +554,7 @@ export default function CustomerIntakePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Home className="h-4 w-4" />
+              <Home className="size-4" />
               Property Details
               <Tooltip>
                 <TooltipTrigger>
@@ -672,7 +697,7 @@ export default function CustomerIntakePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Communication & Onboarding
               <Tooltip>
                 <TooltipTrigger>
@@ -809,7 +834,7 @@ export default function CustomerIntakePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <FileText className="h-4 w-4" />
+              <FileText className="size-4" />
               Custom Messages
               <Tooltip>
                 <TooltipTrigger>
@@ -889,7 +914,7 @@ export default function CustomerIntakePage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
+                  <FileText className="size-4" />
                   Custom Fields
                   <Tooltip>
                     <TooltipTrigger>
@@ -943,10 +968,18 @@ export default function CustomerIntakePage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave} type="button">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Intake Settings
+          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Intake Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import { CalendarIcon, Plus, SlidersHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -66,21 +67,15 @@ export function ScheduleToolbarActions() {
       </Popover>
 
       {/* Right Group: Filters in Popover + New Job */}
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1">
         {/* Condensed Filters Popover */}
         {mounted && (
           <Popover>
             <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  "flex h-8 items-center gap-1.5 rounded-md border bg-background px-3 text-sm transition-colors",
-                  "hover:bg-accent hover:text-accent-foreground"
-                )}
-                type="button"
-              >
-                <SlidersHorizontal className="size-4" />
-                <span>Filters</span>
-              </button>
+              <Button size="sm" variant="ghost">
+                <SlidersHorizontal className="mr-2 size-4" />
+                Filters
+              </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[280px] p-4">
               <div className="space-y-4">
@@ -159,19 +154,16 @@ export function ScheduleToolbarActions() {
         )}
 
         {/* Primary Action: New Job */}
-        <button
-          className={cn(
-            "flex h-8 items-center gap-1.5 rounded-md bg-foreground px-3 font-medium text-background text-sm transition-all",
-            "hover:opacity-90 active:scale-[0.97]"
-          )}
+        <Button
           onClick={() => {
             // TODO: Open new job dialog
           }}
-          type="button"
+          size="sm"
+          variant="default"
         >
-          <Plus className="size-4" />
-          <span>New Job</span>
-        </button>
+          <Plus className="mr-2 size-4" />
+          New Job
+        </Button>
       </div>
     </div>
   );

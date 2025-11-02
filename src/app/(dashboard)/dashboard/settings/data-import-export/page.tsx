@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getImportExportSettings, updateImportExportSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -250,15 +252,34 @@ export default function DataImportExportPage() {
   const [dateRange, setDateRange] = useState<string>("all");
   const [fileFormat, setFileFormat] = useState<string>("xlsx");
 
+  const { settings, isLoading } = useSettings({
+    getter: getImportExportSettings,
+    setter: updateImportExportSettings,
+    initialState: { allowBulkImport: true, defaultExportFormat: "csv" },
+    settingsName: "import/export",
+    transformLoad: (data) => ({
+      allowBulkImport: data.allow_bulk_import ?? true,
+      defaultExportFormat: data.default_export_format || "csv",
+    }),
+    transformSave: (s) => {
+      const fd = new FormData();
+      fd.append("allowBulkImport", String(s.allowBulkImport));
+      fd.append("defaultExportFormat", s.defaultExportFormat);
+      return fd;
+    },
+  });
+
   const currentCategory = dataCategories.find(
     (cat) => cat.id === selectedCategory
   );
+
+  if (isLoading) return null;
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Data Import & Export
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -320,8 +341,11 @@ export default function DataImportExportPage() {
                 <Label>Upload File</Label>
                 <div className="mt-2 flex items-center gap-2">
                   <Button className="w-full" variant="outline">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Choose Excel File (.xlsx, .xls, .csv)
+                    <Upload className="mr-2 size-4" />
+                    <span className="hidden sm:inline">
+                      Choose Excel File (.xlsx, .xls, .csv)
+                    </span>
+                    <span className="sm:hidden">Choose File</span>
                   </Button>
                 </div>
                 <p className="mt-1 text-muted-foreground text-xs">
@@ -442,8 +466,11 @@ export default function DataImportExportPage() {
               </div>
 
               <Button className="w-full">
-                <Download className="mr-2 h-4 w-4" />
-                Export {currentCategory?.recordCount} Records
+                <Download className="mr-2 size-4" />
+                <span className="hidden sm:inline">
+                  Export {currentCategory?.recordCount} Records
+                </span>
+                <span className="sm:hidden">Export</span>
               </Button>
             </CardContent>
           </Card>
@@ -577,8 +604,9 @@ export default function DataImportExportPage() {
                   </div>
                 </div>
                 <Button size="sm" variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Re-download
+                  <Download className="mr-2 size-4" />
+                  <span className="hidden sm:inline">Re-download</span>
+                  <span className="sm:hidden">Download</span>
                 </Button>
               </div>
 
@@ -593,8 +621,9 @@ export default function DataImportExportPage() {
                   </div>
                 </div>
                 <Button size="sm" variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Re-download
+                  <Download className="mr-2 size-4" />
+                  <span className="hidden sm:inline">Re-download</span>
+                  <span className="sm:hidden">Download</span>
                 </Button>
               </div>
 
@@ -609,8 +638,9 @@ export default function DataImportExportPage() {
                   </div>
                 </div>
                 <Button size="sm" variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Re-download
+                  <Download className="mr-2 size-4" />
+                  <span className="hidden sm:inline">Re-download</span>
+                  <span className="sm:hidden">Download</span>
                 </Button>
               </div>
             </div>

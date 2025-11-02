@@ -267,12 +267,12 @@ export default function RoleDetailPage({
           <div className="mb-4">
             <Link href="/dashboard/settings/team/roles">
               <Button size="sm" type="button" variant="ghost">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 size-4" />
                 Back to Roles
               </Button>
             </Link>
           </div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             {isNewRole ? "Create Custom Role" : `Edit ${roleForm.name}`}
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -282,7 +282,7 @@ export default function RoleDetailPage({
           </p>
         </div>
         <Button onClick={handleSave}>
-          <Save className="mr-2 h-4 w-4" />
+          <Save className="mr-2 size-4" />
           Save Changes
         </Button>
       </div>
@@ -406,7 +406,7 @@ export default function RoleDetailPage({
           </Button>
         </Link>
         <Button onClick={handleSave}>
-          <Save className="mr-2 h-4 w-4" />
+          <Save className="mr-2 size-4" />
           {isNewRole ? "Create Role" : "Save Changes"}
         </Button>
       </div>

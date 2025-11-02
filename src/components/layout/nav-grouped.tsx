@@ -19,6 +19,7 @@ type NavItem = {
   url: string;
   icon?: LucideIcon;
   highlight?: "yellow";
+  onClick?: () => void;
   items?: {
     title: string;
     url: string;
@@ -56,8 +57,11 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                 // Check if current path matches this item or its detail pages
                 const isExactMatch = pathname === item.url;
                 const isDetailPage = pathname.startsWith(`${item.url}/`);
-                const hasActiveSubItem = item.items?.some((subItem) => pathname === subItem.url);
-                const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
+                const hasActiveSubItem = item.items?.some(
+                  (subItem) => pathname === subItem.url
+                );
+                const isActive =
+                  isExactMatch || isDetailPage || hasActiveSubItem;
 
                 // If item has sub-items, render parent + children (always open, no chevron)
                 if (item.items && item.items.length > 0) {
@@ -75,7 +79,9 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                       </SidebarMenuButton>
                       <SidebarMenuSub>
                         {item.items.map((subItem) => {
-                          const isSubActive = pathname === subItem.url || pathname.startsWith(`${subItem.url}/`);
+                          const isSubActive =
+                            pathname === subItem.url ||
+                            pathname.startsWith(`${subItem.url}/`);
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton
@@ -100,6 +106,24 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                   item.highlight === "yellow"
                     ? "ring-2 ring-yellow-500/50 hover:ring-yellow-500/70 dark:ring-yellow-500/50 dark:hover:ring-yellow-500/70"
                     : "";
+
+                // If onClick is provided, use button instead of Link
+                if (item.onClick) {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        className={highlightClass}
+                        isActive={isActive}
+                        onClick={item.onClick}
+                        tooltip={item.title}
+                      >
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                }
+
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton

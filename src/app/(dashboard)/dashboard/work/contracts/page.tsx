@@ -95,27 +95,58 @@ export default function ContractsPage() {
       <DataTablePageHeader
         actions={
           <>
-            <Button size="sm" variant="outline">
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Export"
+              variant="outline"
+            >
+              <Download className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Download className="mr-2 size-4" />
               Export
             </Button>
-            <Button asChild size="sm" variant="outline">
+
+            <Button
+              asChild
+              className="md:hidden"
+              size="sm"
+              title="Templates"
+              variant="outline"
+            >
+              <Link href="/dashboard/work/contracts/templates">
+                <FileSignature className="size-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Link href="/dashboard/work/contracts/templates">
                 <FileSignature className="mr-2 size-4" />
                 Templates
               </Link>
             </Button>
+
             <Button asChild size="sm">
               <Link href="/dashboard/work/contracts/new">
                 <Plus className="mr-2 size-4" />
-                New Contract
+                <span className="hidden sm:inline">New Contract</span>
+                <span className="sm:hidden">New</span>
               </Link>
             </Button>
           </>
         }
         description="Create and manage digital contracts for estimates, invoices, and standalone agreements"
         stats={
-          <div className="mt-4 grid gap-3 md:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="font-medium text-sm">
@@ -170,7 +201,7 @@ export default function ContractsPage() {
       />
 
       {/* ContractsTable - Client component handles interactive features */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         <ContractsTable contracts={mockContracts} itemsPerPage={50} />
       </div>
     </div>

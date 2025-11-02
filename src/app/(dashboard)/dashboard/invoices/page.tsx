@@ -107,7 +107,7 @@ export default function InvoicesPage() {
         }
         description="Manage billing, payments, and financial transactions"
         stats={
-          <div className="mt-4 grid gap-3 md:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="font-medium text-sm">
@@ -179,7 +179,7 @@ export default function InvoicesPage() {
         title="Invoices"
       />
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         <InvoicesTable invoices={mockInvoices} itemsPerPage={50} />
       </div>
     </div>

@@ -114,13 +114,14 @@ export default function PayrollEmployeesPage() {
           </p>
         </div>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Employee
+          <Plus className="mr-2 size-4" />
+          <span className="hidden sm:inline">Add Employee</span>
+          <span className="sm:hidden">Add</span>
         </Button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">
@@ -227,7 +228,7 @@ export default function PayrollEmployeesPage() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button size="sm" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="size-4" />
                           <span className="sr-only">Open menu</span>
                         </Button>
                       </DropdownMenuTrigger>

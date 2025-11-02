@@ -7,16 +7,27 @@
  * - ISR revalidation configured
  * - Reduced JavaScript bundle size
  * - Client components extracted for interactivity only
+ *
+ * Shows Coming Soon component in production, normal page in development
  */
 
-import { DollarSign, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { DollarSign, PieChart, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { BankAccountsOverview } from "@/components/finance/bank-accounts-overview";
 import { VirtualBucketsOverview } from "@/components/finance/virtual-buckets-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FinanceComingSoon } from "@/components/finance/finance-coming-soon";
 
 export const revalidate = 900; // Revalidate every 15 minutes
 
 export default function FinancePage() {
+  // Show Coming Soon in production, normal page in development
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
+
+  if (isProduction) {
+    return <FinanceComingSoon />;
+  }
+
+  // Development - show normal page
   return (
     <div className="space-y-6">
       {/* Header */}

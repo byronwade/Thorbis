@@ -39,12 +39,12 @@ export function WorkPageLayout({
 }: WorkPageLayoutProps) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-bold text-3xl tracking-tight">{title}</h1>
           <p className="text-muted-foreground">{description}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
           {secondaryActions.map((action) => {
             const Icon = action.icon;
             return (

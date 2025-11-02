@@ -124,6 +124,9 @@ export const useReportingStore = create<ReportingStore>()(
         partialize: (state) => ({
           customReports: state.customReports,
         }),
+        // PERFORMANCE: Skip hydration to prevent SSR mismatches
+        // Allows Next.js to generate static pages without Zustand errors
+        skipHydration: true,
       }
     ),
     { name: "ReportingStore" }

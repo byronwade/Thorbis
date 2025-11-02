@@ -15,7 +15,7 @@ export const revalidate = 3600; // Revalidate every 1 hour
 const scheduleSections = [
   {
     title: "Calendar Settings",
-    description: "Configure calendar view, business hours, and time zones",
+    subtitle: "Configure calendar view, business hours, and time zones",
     icon: Calendar,
     href: "/dashboard/settings/schedule/calendar",
     color: "text-blue-500",
@@ -23,7 +23,7 @@ const scheduleSections = [
   },
   {
     title: "Availability",
-    description: "Set technician availability and working hours",
+    subtitle: "Set technician availability and working hours",
     icon: Clock,
     href: "/dashboard/settings/schedule/availability",
     color: "text-green-500",
@@ -47,7 +47,7 @@ const scheduleSections = [
   },
   {
     title: "Team Scheduling",
-    description: "Manage crew assignments and capacity",
+    subtitle: "Manage crew assignments and capacity",
     icon: Users,
     href: "/dashboard/settings/schedule/team",
     color: "text-pink-500",
@@ -59,7 +59,7 @@ export default function ScheduleSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Schedule Settings</h1>
+        <h1 className="font-bold text-4xl tracking-tight">Schedule Settings</h1>
         <p className="mt-2 text-muted-foreground">
           Configure scheduling, dispatch, and availability settings
         </p>

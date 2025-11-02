@@ -29,6 +29,8 @@ import {
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getServicePlanSettings, updateServicePlanSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -105,10 +107,19 @@ type ServicePlanSettings = {
 };
 
 export default function ServicePlansPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [_showAddPlan, setShowAddPlan] = useState(false);
 
-  const [settings, setSettings] = useState<ServicePlanSettings>({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<ServicePlanSettings>({
+    getter: getServicePlanSettings,
+    setter: updateServicePlanSettings,
+    initialState: {
     // General Settings
     enableServicePlans: true,
     allowCustomerSignup: true,
@@ -144,6 +155,28 @@ export default function ServicePlansPage() {
     noticePeriodDays: 30,
     refundUnusedVisits: true,
     cancellationFee: 0,
+    },
+    settingsName: "service plans",
+    transformLoad: (data) => ({
+      enableServicePlans: true, // UI only for now
+      requirePaymentMethod: data.require_contract_signature ?? true,
+      sendWelcomeEmail: data.auto_renew_enabled ?? true,
+      autoRenew: data.auto_renew_enabled ?? true,
+      autoScheduleVisits: data.auto_schedule_services ?? true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("allowMultiplePlansPerCustomer", "false");
+      formData.append("requireContractSignature", settings.requirePaymentMethod.toString());
+      formData.append("autoRenewEnabled", settings.autoRenew.toString());
+      formData.append("renewalNoticeDays", settings.noticePeriodDays.toString());
+      formData.append("autoInvoiceOnRenewal", "true");
+      formData.append("autoScheduleServices", settings.autoScheduleVisits.toString());
+      formData.append("scheduleAdvanceDays", "7");
+      formData.append("sendReminderBeforeService", "true");
+      formData.append("reminderDays", "3");
+      return formData;
+    },
   });
 
   // Sample service plans
@@ -207,13 +240,6 @@ export default function ServicePlansPage() {
     },
   ]);
 
-  const updateSetting = <K extends keyof ServicePlanSettings>(
-    key: K,
-    value: ServicePlanSettings[K]
-  ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
   const getBillingIntervalLabel = (interval: string) => {
     const labels: Record<string, string> = {
       monthly: "Monthly",
@@ -240,10 +266,12 @@ export default function ServicePlansPage() {
     return sum + monthlyPrice * plan.subscribers;
   }, 0);
 
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -252,13 +280,13 @@ export default function ServicePlansPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">Service Plans</h1>
+            <h1 className="font-bold text-4xl tracking-tight">Service Plans</h1>
             <p className="mt-2 text-muted-foreground">
               Recurring maintenance plans and memberships
             </p>
           </div>
           <Button onClick={() => setShowAddPlan(true)}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Service Plan
           </Button>
         </div>
@@ -316,7 +344,7 @@ export default function ServicePlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               General Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -507,7 +535,7 @@ export default function ServicePlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CreditCard className="h-4 w-4" />
+              <CreditCard className="size-4" />
               Billing Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -695,7 +723,7 @@ export default function ServicePlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               Service Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -860,7 +888,7 @@ export default function ServicePlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Gift className="h-4 w-4" />
+              <Gift className="size-4" />
               Member Benefits
               <Tooltip>
                 <TooltipTrigger>
@@ -1064,7 +1092,7 @@ export default function ServicePlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Repeat className="h-4 w-4" />
+              <Repeat className="size-4" />
               Cancellation Policy
               <Tooltip>
                 <TooltipTrigger>
@@ -1275,10 +1303,10 @@ export default function ServicePlansPage() {
                   </div>
                   <div className="flex gap-2">
                     <Button size="icon" variant="ghost">
-                      <Edit className="h-4 w-4" />
+                      <Edit className="size-4" />
                     </Button>
                     <Button size="icon" variant="ghost">
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="size-4" />
                     </Button>
                   </div>
                 </div>
@@ -1289,13 +1317,21 @@ export default function ServicePlansPage() {
 
         {/* Save Button */}
         <div className="flex justify-end gap-4">
-          <Button disabled={isSubmitting} type="button" variant="outline">
+          <Button disabled={isPending} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Service Plan Settings
+          <Button disabled={isPending} onClick={() => saveSettings()}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Service Plan Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

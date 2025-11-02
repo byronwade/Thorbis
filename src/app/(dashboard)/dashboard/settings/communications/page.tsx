@@ -22,7 +22,7 @@ export const revalidate = 3600; // Revalidate every 1 hour
 const communicationsSections = [
   {
     title: "Email",
-    description: "Configure email addresses, signatures, and tracking",
+    subtitle: "Configure email addresses, signatures, and tracking",
     icon: Mail,
     href: "/dashboard/settings/communications/email",
     color: "text-blue-500",
@@ -30,7 +30,7 @@ const communicationsSections = [
   },
   {
     title: "SMS & Text",
-    description: "Set up text messaging and auto-responses",
+    subtitle: "Set up text messaging and auto-responses",
     icon: MessageSquare,
     href: "/dashboard/settings/communications/sms",
     color: "text-green-500",
@@ -38,7 +38,7 @@ const communicationsSections = [
   },
   {
     title: "Phone & Voice",
-    description: "Manage phone system and voicemail settings",
+    subtitle: "Manage phone system and voicemail settings",
     icon: Phone,
     href: "/dashboard/settings/communications/phone",
     color: "text-purple-500",
@@ -66,7 +66,7 @@ export default function CommunicationsSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">
+        <h1 className="font-bold text-4xl tracking-tight">
           Communications Settings
         </h1>
         <p className="mt-2 text-muted-foreground">

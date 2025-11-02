@@ -58,7 +58,7 @@ const settingsSections = [
   },
   {
     title: "Pay Schedule",
-    description: "Configure pay periods and schedules",
+    subtitle: "Configure pay periods and schedules",
     icon: Calendar,
     items: [
       {
@@ -108,7 +108,7 @@ const settingsSections = [
   },
   {
     title: "Time Tracking",
-    description: "Configure time entry and approval",
+    subtitle: "Configure time entry and approval",
     icon: Clock,
     items: [
       {
@@ -163,7 +163,7 @@ const settingsSections = [
     items: [
       {
         name: "Access Control",
-        description: "Manage who can view and edit payroll",
+        subtitle: "Manage who can view and edit payroll",
         icon: Shield,
         href: "#",
       },
@@ -175,7 +175,7 @@ const settingsSections = [
       },
       {
         name: "Data Retention",
-        description: "Configure record keeping policies",
+        subtitle: "Configure record keeping policies",
         icon: FileText,
         href: "#",
       },

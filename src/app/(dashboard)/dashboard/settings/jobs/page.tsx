@@ -23,8 +23,10 @@ import {
   Settings,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { getJobSettings, updateJobSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -101,7 +103,9 @@ type JobSettings = {
 };
 
 export default function JobsSettingsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<JobSettings>({
     // Job Numbers
     autoGenerateJobNumbers: true,
@@ -140,6 +144,40 @@ export default function JobsSettingsPage() {
     sendOnTheWayNotification: true,
   });
 
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getJobSettings();
+
+        if (result.success && result.data) {
+          // Map database fields to local state
+          setSettings((prev) => ({
+            ...prev,
+            jobNumberPrefix: result.data.job_number_prefix || "JOB",
+            nextJobNumber: result.data.next_job_number || 1,
+            defaultJobStatus: result.data.default_job_status || "scheduled",
+            requireCustomerSignature: result.data.require_customer_signature ?? false,
+            requirePhotoBefore: result.data.require_photo_completion ?? false,
+            requirePhotoAfter: result.data.require_photo_completion ?? false,
+            autoGenerateInvoiceOnComplete: result.data.auto_invoice_on_completion ?? false,
+            sendJobCompletionEmail: result.data.auto_send_completion_email ?? true,
+            requireTimeTracking: result.data.track_technician_time ?? true,
+            requireArrivalConfirmation: result.data.require_arrival_confirmation ?? false,
+            requireCompletionNotes: result.data.require_completion_notes ?? true,
+          }));
+        }
+      } catch (error) {
+        toast.error("Failed to load job settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
+
   const updateSetting = <K extends keyof JobSettings>(
     key: K,
     value: JobSettings[K]
@@ -151,9 +189,27 @@ export default function JobsSettingsPage() {
   };
 
   async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("jobNumberPrefix", settings.jobNumberPrefix);
+      formData.append("nextJobNumber", settings.nextJobNumber.toString());
+      formData.append("defaultJobStatus", settings.defaultJobStatus);
+      formData.append("requireCustomerSignature", settings.requireCustomerSignature.toString());
+      formData.append("requirePhotoCompletion", settings.requirePhotoAfter.toString());
+      formData.append("autoInvoiceOnCompletion", settings.autoGenerateInvoiceOnComplete.toString());
+      formData.append("autoSendCompletionEmail", settings.sendJobCompletionEmail.toString());
+      formData.append("trackTechnicianTime", settings.requireTimeTracking.toString());
+      formData.append("requireArrivalConfirmation", settings.requireArrivalConfirmation.toString());
+      formData.append("requireCompletionNotes", settings.requireCompletionNotes.toString());
+
+      const result = await updateJobSettings(formData);
+
+      if (result.success) {
+        toast.success("Job settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save job settings");
+      }
+    });
   }
 
   const getJobNumberExample = () => {
@@ -167,12 +223,20 @@ export default function JobsSettingsPage() {
     return `${prefix}-${number.toString().padStart(5, "0")}`;
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">Jobs Settings</h1>
+          <h1 className="font-bold text-4xl tracking-tight">Jobs Settings</h1>
           <p className="mt-2 text-muted-foreground">
             Configure how jobs are created, assigned, and completed
           </p>
@@ -184,7 +248,7 @@ export default function JobsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <FileText className="h-4 w-4" />
+              <FileText className="size-4" />
               Job Numbers
               <Tooltip>
                 <TooltipTrigger>
@@ -342,7 +406,7 @@ export default function JobsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Default Job Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -507,7 +571,7 @@ export default function JobsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Image className="h-4 w-4" />
+              <Image className="size-4" />
               Photos & Documentation
               <Tooltip>
                 <TooltipTrigger>
@@ -648,7 +712,7 @@ export default function JobsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="size-4" />
               Job Assignment
               <Tooltip>
                 <TooltipTrigger>
@@ -786,7 +850,7 @@ export default function JobsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="size-4" />
               Completion Requirements
               <Tooltip>
                 <TooltipTrigger>
@@ -921,7 +985,7 @@ export default function JobsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <MapPin className="h-4 w-4" />
+              <MapPin className="size-4" />
               Customer Communication
               <Tooltip>
                 <TooltipTrigger>
@@ -1061,10 +1125,18 @@ export default function JobsSettingsPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave} type="button">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Jobs Settings
+          <Button disabled={isPending} onClick={handleSave} type="button">
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Jobs Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

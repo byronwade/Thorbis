@@ -21,9 +21,11 @@ import {
   Upload,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { getPersonalInfo, updatePersonalInfo } from "@/actions/settings";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -86,7 +88,9 @@ const personalInfoSchema = z.object({
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
 
   const form = useForm<PersonalInfoFormData>({
@@ -106,12 +110,40 @@ export default function PersonalInformationPage() {
     },
   });
 
-  async function onSubmit(_values: PersonalInfoFormData) {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setHasChanges(false);
-    setIsSubmitting(false);
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      const result = await getPersonalInfo();
+      if (result.success && result.data) {
+        form.reset({
+          firstName: result.data.name?.split(' ')[0] || "",
+          lastName: result.data.name?.split(' ')[1] || "",
+          email: result.data.email || "",
+          phone: result.data.phone || "",
+        });
+      }
+      setIsLoading(false);
+    }
+    loadData();
+  }, [form]);
+
+  async function onSubmit(values: PersonalInfoFormData) {
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("name", `${values.firstName} ${values.lastName}`);
+      formData.append("email", values.email);
+      formData.append("phone", values.phone);
+      formData.append("avatar", "");
+
+      const result = await updatePersonalInfo(formData);
+
+      if (result.success) {
+        setHasChanges(false);
+        toast.success("Personal information saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save personal information");
+      }
+    });
   }
 
   return (
@@ -178,7 +210,7 @@ export default function PersonalInformationPage() {
                           size="icon"
                           type="button"
                         >
-                          <Camera className="h-4 w-4" />
+                          <Camera className="size-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -198,7 +230,7 @@ export default function PersonalInformationPage() {
                             className="flex items-center justify-center"
                             type="button"
                           >
-                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs">
@@ -217,11 +249,11 @@ export default function PersonalInformationPage() {
 
                   <div className="flex gap-3">
                     <Button type="button" variant="outline">
-                      <Upload className="mr-2 h-4 w-4" />
+                      <Upload className="mr-2 size-4" />
                       Upload New Photo
                     </Button>
                     <Button type="button" variant="ghost">
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       Remove
                     </Button>
                   </div>
@@ -246,7 +278,7 @@ export default function PersonalInformationPage() {
                         className="flex items-center justify-center"
                         type="button"
                       >
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -517,7 +549,7 @@ export default function PersonalInformationPage() {
                         className="flex items-center justify-center"
                         type="button"
                       >
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -627,7 +659,7 @@ export default function PersonalInformationPage() {
 
                 <div className="flex gap-3">
                   <Button
-                    disabled={isSubmitting || !hasChanges}
+                    disabled={isPending || !hasChanges}
                     onClick={() => {
                       form.reset();
                       setHasChanges(false);
@@ -637,15 +669,15 @@ export default function PersonalInformationPage() {
                   >
                     Cancel
                   </Button>
-                  <Button disabled={isSubmitting || !hasChanges} type="submit">
-                    {isSubmitting ? (
+                  <Button disabled={isPending || !hasChanges} type="submit">
+                    {isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Saving...
                       </>
                     ) : (
                       <>
-                        <Save className="mr-2 h-4 w-4" />
+                        <Save className="mr-2 size-4" />
                         Save Changes
                       </>
                     )}

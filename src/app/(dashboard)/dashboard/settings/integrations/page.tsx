@@ -99,7 +99,7 @@ export default function IntegrationsPage() {
     <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Integrations</h1>
+        <h1 className="font-bold text-4xl tracking-tight">Integrations</h1>
         <p className="text-muted-foreground">
           Connect Thorbis with your favorite tools and services
         </p>

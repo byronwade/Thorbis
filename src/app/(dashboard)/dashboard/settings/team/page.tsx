@@ -269,7 +269,7 @@ export default function TeamMembersPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Team & Permissions
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -279,8 +279,9 @@ export default function TeamMembersPage() {
         </div>
         <Link href="/dashboard/settings/team/invite">
           <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Invite Member
+            <UserPlus className="mr-2 size-4" />
+            <span className="hidden sm:inline">Invite Member</span>
+            <span className="sm:hidden">Invite</span>
           </Button>
         </Link>
       </div>
@@ -378,7 +379,7 @@ export default function TeamMembersPage() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button type="button" variant="outline">
-                    <Filter className="mr-2 h-4 w-4" />
+                    <Filter className="mr-2 size-4" />
                     Filters
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -450,7 +451,7 @@ export default function TeamMembersPage() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button type="button" variant="outline">
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                    <ArrowUpDown className="mr-2 size-4" />
                     Sort
                   </Button>
                 </DropdownMenuTrigger>
@@ -526,14 +527,14 @@ export default function TeamMembersPage() {
                     <DropdownMenuItem
                       onClick={() => handleBulkAction("export")}
                     >
-                      <Download className="mr-2 h-4 w-4" />
+                      <Download className="mr-2 size-4" />
                       Export Selected
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-destructive"
                       onClick={() => handleBulkAction("remove")}
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       Remove Members
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -541,8 +542,21 @@ export default function TeamMembersPage() {
               )}
 
               {/* Export */}
-              <Button type="button" variant="outline">
-                <Download className="mr-2 h-4 w-4" />
+              <Button
+                className="md:hidden"
+                size="sm"
+                title="Export"
+                type="button"
+                variant="outline"
+              >
+                <Download className="size-4" />
+              </Button>
+              <Button
+                className="hidden md:inline-flex"
+                type="button"
+                variant="outline"
+              >
+                <Download className="mr-2 size-4" />
                 Export
               </Button>
             </div>
@@ -634,7 +648,7 @@ export default function TeamMembersPage() {
                       type="button"
                       variant="ghost"
                     >
-                      <MoreVertical className="h-4 w-4" />
+                      <MoreVertical className="size-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -650,7 +664,7 @@ export default function TeamMembersPage() {
                       {member.status === "active" ? "Suspend" : "Activate"}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive">
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       Remove
                     </DropdownMenuItem>
                   </DropdownMenuContent>

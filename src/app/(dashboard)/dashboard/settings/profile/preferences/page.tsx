@@ -22,8 +22,9 @@ import {
   Save,
   Sun,
 } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getUserPreferences, updateUserPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -67,36 +68,61 @@ type PreferenceSettings = {
 };
 
 export default function PreferencesPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [settings, setSettings] = useState<PreferenceSettings>({
-    theme: "dark",
-    language: "en-US",
-    timezone: "America/New_York",
-    dateFormat: "MM/dd/yyyy",
-    timeFormat: "12h",
-    currency: "USD",
-    compactMode: true,
-    showAnimations: true,
-    autoSaveForms: true,
-    sidebarPosition: "right",
-    tableView: "default",
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<PreferenceSettings>({
+    getter: getUserPreferences,
+    setter: updateUserPreferences,
+    initialState: {
+      theme: "system",
+      language: "en-US",
+      timezone: "America/New_York",
+      dateFormat: "MM/dd/yyyy",
+      timeFormat: "12h",
+      currency: "USD",
+      compactMode: false,
+      showAnimations: true,
+      autoSaveForms: true,
+      sidebarPosition: "right",
+      tableView: "default",
+    },
+    settingsName: "preferences",
+    transformLoad: (data) => ({
+      theme: data.theme || "system",
+      language: data.language || "en-US",
+      timezone: data.timezone || "America/New_York",
+      dateFormat: data.date_format || "MM/dd/yyyy",
+      timeFormat: data.time_format || "12h",
+      currency: "USD", // Not in DB yet
+      compactMode: false, // Not in DB yet
+      showAnimations: true, // Not in DB yet
+      autoSaveForms: true, // Not in DB yet
+      sidebarPosition: "right", // Not in DB yet
+      tableView: data.default_page_size === 10 ? "compact" : "default",
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("theme", settings.theme);
+      formData.append("language", settings.language);
+      formData.append("timezone", settings.timezone);
+      formData.append("dateFormat", settings.dateFormat);
+      formData.append("timeFormat", settings.timeFormat);
+      formData.append("defaultPageSize", settings.tableView === "compact" ? "10" : "25");
+      return formData;
+    },
   });
 
-  const updateSetting = <K extends keyof PreferenceSettings>(
-    key: K,
-    value: PreferenceSettings[K]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  async function handleSave() {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -104,7 +130,7 @@ export default function PreferencesPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">Preferences</h1>
+          <h1 className="font-bold text-4xl tracking-tight">Preferences</h1>
           <p className="mt-2 text-muted-foreground">
             Customize your interface and application experience
           </p>
@@ -116,7 +142,7 @@ export default function PreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Palette className="h-4 w-4" />
+              <Palette className="size-4" />
               Interface Theme
               <Tooltip>
                 <TooltipTrigger>
@@ -206,7 +232,7 @@ export default function PreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Globe className="h-4 w-4" />
+              <Globe className="size-4" />
               Language & Region
               <Tooltip>
                 <TooltipTrigger>
@@ -411,7 +437,7 @@ export default function PreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Layout className="h-4 w-4" />
+              <Layout className="size-4" />
               Display Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -589,10 +615,18 @@ export default function PreferencesPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave} type="button">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Preferences
+          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Preferences
+              </>
+            )}
           </Button>
         </div>
       </div>

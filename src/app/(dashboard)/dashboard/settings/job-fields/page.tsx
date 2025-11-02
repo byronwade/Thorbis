@@ -341,7 +341,7 @@ export default function JobFieldsPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Custom Job Fields
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -349,7 +349,7 @@ export default function JobFieldsPage() {
             </p>
           </div>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Field
           </Button>
         </div>
@@ -415,7 +415,7 @@ export default function JobFieldsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               General Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -526,7 +526,7 @@ export default function JobFieldsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Field Visibility
               <Tooltip>
                 <TooltipTrigger>
@@ -630,7 +630,7 @@ export default function JobFieldsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Customer Portal
               <Tooltip>
                 <TooltipTrigger>
@@ -737,7 +737,7 @@ export default function JobFieldsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Standard Field Requirements
               <Tooltip>
                 <TooltipTrigger>
@@ -922,10 +922,10 @@ export default function JobFieldsPage() {
                     </div>
                     <div className="flex gap-2">
                       <Button size="icon" variant="ghost">
-                        <Edit className="h-4 w-4" />
+                        <Edit className="size-4" />
                       </Button>
                       <Button size="icon" variant="ghost">
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </div>
@@ -942,7 +942,7 @@ export default function JobFieldsPage() {
           </Button>
           <Button disabled={isSubmitting} onClick={handleSave}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
+            <Save className="mr-2 size-4" />
             Save Field Settings
           </Button>
         </div>

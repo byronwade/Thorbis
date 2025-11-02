@@ -29,6 +29,8 @@ import {
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getTagSettings, updateTagSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -103,10 +105,19 @@ type TagSettings = {
 };
 
 export default function TagsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const [settings, setSettings] = useState<TagSettings>({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<TagSettings>({
+    getter: getTagSettings,
+    setter: updateTagSettings,
+    initialState: {
     // General Settings
     enableTags: true,
     allowMultipleTags: true,
@@ -130,6 +141,23 @@ export default function TagsPage() {
     trackTagPerformance: true,
     showTagReports: true,
     trackRevenueByTag: true,
+    },
+    settingsName: "tags",
+    transformLoad: (data) => ({
+      allowMultipleTags: data.allow_custom_tags ?? true,
+      allowCustomTagCreation: data.allow_custom_tags ?? true,
+      showTagColors: data.use_color_coding ?? true,
+      requireAtLeastOneTag: data.require_tag_approval ?? false,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("allowCustomTags", settings.allowCustomTagCreation.toString());
+      formData.append("requireTagApproval", settings.requireAtLeastOneTag.toString());
+      formData.append("maxTagsPerItem", "10");
+      formData.append("useColorCoding", settings.showTagColors.toString());
+      formData.append("autoAssignColors", "true");
+      return formData;
+    },
   });
 
   // Sample tags
@@ -303,13 +331,6 @@ export default function TagsPage() {
     },
   ]);
 
-  const updateSetting = <K extends keyof TagSettings>(
-    key: K,
-    value: TagSettings[K]
-  ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
       customer: "Customer",
@@ -355,10 +376,12 @@ export default function TagsPage() {
     }
   );
 
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -367,13 +390,13 @@ export default function TagsPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">Tags</h1>
+            <h1 className="font-bold text-4xl tracking-tight">Tags</h1>
             <p className="mt-2 text-muted-foreground">
               Organize and categorize customers, jobs, and services
             </p>
           </div>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Tag
           </Button>
         </div>
@@ -471,7 +494,7 @@ export default function TagsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               General Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -630,7 +653,7 @@ export default function TagsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Display Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -758,7 +781,7 @@ export default function TagsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Automatic Tagging
               <Tooltip>
                 <TooltipTrigger>
@@ -889,7 +912,7 @@ export default function TagsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp className="size-4" />
               Tag Analytics
               <Tooltip>
                 <TooltipTrigger>
@@ -1078,10 +1101,10 @@ export default function TagsPage() {
                     </div>
                     <div className="flex gap-2">
                       <Button size="icon" variant="ghost">
-                        <Edit className="h-4 w-4" />
+                        <Edit className="size-4" />
                       </Button>
                       <Button size="icon" variant="ghost">
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </div>
@@ -1093,13 +1116,22 @@ export default function TagsPage() {
 
         {/* Save Button */}
         <div className="flex justify-end gap-4">
-          <Button disabled={isSubmitting} type="button" variant="outline">
+          <Button disabled={isPending} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Tag Settings
+          <Button disabled={isPending} onClick={() => saveSettings()}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                <span className="hidden sm:inline">Save Tag Settings</span>
+              </>
+            )}
+            <span className="sm:hidden">Save</span>
           </Button>
         </div>
       </div>

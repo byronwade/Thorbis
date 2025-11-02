@@ -81,7 +81,7 @@ export default function TechnicianDashboard() {
       </Card>
 
       {/* Top Personal KPIs - 4 columns */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           change="+$240 vs yesterday"
           changeType="positive"
@@ -448,7 +448,7 @@ export default function TechnicianDashboard() {
           tooltip="Customer reviews and ratings from your completed jobs"
         />
         <Card>
-          <CardContent className="grid gap-3 pt-6 sm:grid-cols-2 lg:grid-cols-3">
+          <CardContent className="grid grid-cols-1 gap-3 pt-6 md:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 customer: "Sarah Johnson",

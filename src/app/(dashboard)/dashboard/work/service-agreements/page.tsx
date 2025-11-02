@@ -104,25 +104,52 @@ export default function ServiceAgreementsPage() {
       <DataTablePageHeader
         actions={
           <>
-            <Button size="sm" variant="outline">
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Import"
+              variant="outline"
+            >
+              <Upload className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Upload className="mr-2 size-4" />
               Import
             </Button>
-            <Button size="sm" variant="outline">
+
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Export"
+              variant="outline"
+            >
+              <Download className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Download className="mr-2 size-4" />
               Export
             </Button>
+
             <Button asChild size="sm">
               <Link href="/dashboard/work/service-agreements/new">
                 <Plus className="mr-2 size-4" />
-                Create Agreement
+                <span className="hidden sm:inline">Create Agreement</span>
+                <span className="sm:hidden">New</span>
               </Link>
             </Button>
           </>
         }
         description="Manage customer service contracts and warranties"
         stats={
-          <div className="mt-4 grid gap-3 md:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="font-medium text-sm">
@@ -180,7 +207,7 @@ export default function ServiceAgreementsPage() {
         title="Service Agreements"
       />
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         <ServiceAgreementsTable agreements={mockAgreements} itemsPerPage={50} />
       </div>
     </div>

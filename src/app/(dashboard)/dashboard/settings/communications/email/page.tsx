@@ -6,11 +6,12 @@
  * Client-side features:
  * - Interactive state management and event handlers
  * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * - Real database integration with server actions
  */
 
-import { HelpCircle, Mail, Save } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, Mail, Save, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,21 +31,52 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getEmailSettings, updateEmailSettings } from "@/actions/settings";
 
 const MAX_SIGNATURE_LENGTH = 300;
 
 export default function EmailSettingsPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
-    companyEmail: "info@yourcompany.com",
-    replyToEmail: "support@yourcompany.com",
-    emailFromName: "Your Company",
-    emailSignature:
-      "Thank you for your business!\n\nYour Company Team\n(555) 123-4567\nwww.yourcompany.com",
-    includeLogoInEmails: true,
-    trackEmailOpens: true,
-    trackEmailClicks: true,
+    smtpFromEmail: "",
+    smtpFromName: "",
+    defaultSignature: "",
+    autoCcEmail: "",
+    emailLogoUrl: "",
+    trackOpens: true,
+    trackClicks: true,
   });
+
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getEmailSettings();
+
+        if (result.success && result.data) {
+          setSettings({
+            smtpFromEmail: result.data.smtp_from_email || "",
+            smtpFromName: result.data.smtp_from_name || "",
+            defaultSignature: result.data.default_signature || "",
+            autoCcEmail: result.data.auto_cc_email || "",
+            emailLogoUrl: result.data.email_logo_url || "",
+            trackOpens: result.data.track_opens ?? true,
+            trackClicks: result.data.track_clicks ?? true,
+          });
+        }
+      } catch (error) {
+        toast.error("Failed to load email settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
 
   const updateSetting = (key: string, value: string | boolean) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -52,15 +84,41 @@ export default function EmailSettingsPage() {
   };
 
   const handleSave = () => {
-    setHasUnsavedChanges(false);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("smtpFromEmail", settings.smtpFromEmail);
+      formData.append("smtpFromName", settings.smtpFromName);
+      formData.append("defaultSignature", settings.defaultSignature);
+      formData.append("autoCcEmail", settings.autoCcEmail);
+      formData.append("emailLogoUrl", settings.emailLogoUrl);
+      formData.append("trackOpens", settings.trackOpens.toString());
+      formData.append("trackClicks", settings.trackClicks.toString());
+
+      const result = await updateEmailSettings(formData);
+
+      if (result.success) {
+        setHasUnsavedChanges(false);
+        toast.success("Email settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save email settings");
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Email Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -68,9 +126,18 @@ export default function EmailSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={handleSave} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -78,7 +145,7 @@ export default function EmailSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Email Identity
             </CardTitle>
             <CardDescription>
@@ -104,11 +171,11 @@ export default function EmailSettingsPage() {
                 <Input
                   className="mt-2"
                   onChange={(e) =>
-                    updateSetting("companyEmail", e.target.value)
+                    updateSetting("smtpFromEmail", e.target.value)
                   }
                   placeholder="info@yourcompany.com"
                   type="email"
-                  value={settings.companyEmail}
+                  value={settings.smtpFromEmail}
                 />
                 <p className="mt-1 text-muted-foreground text-xs">
                   Shows in customer's inbox
@@ -130,14 +197,14 @@ export default function EmailSettingsPage() {
                 <Input
                   className="mt-2"
                   onChange={(e) =>
-                    updateSetting("replyToEmail", e.target.value)
+                    updateSetting("autoCcEmail", e.target.value)
                   }
                   placeholder="support@yourcompany.com"
                   type="email"
-                  value={settings.replyToEmail}
+                  value={settings.autoCcEmail}
                 />
                 <p className="mt-1 text-muted-foreground text-xs">
-                  Where replies are sent
+                  Auto CC address for all emails
                 </p>
               </div>
             </div>
@@ -158,9 +225,9 @@ export default function EmailSettingsPage() {
               </Label>
               <Input
                 className="mt-2"
-                onChange={(e) => updateSetting("emailFromName", e.target.value)}
+                onChange={(e) => updateSetting("smtpFromName", e.target.value)}
                 placeholder="Your Company"
-                value={settings.emailFromName}
+                value={settings.smtpFromName}
               />
               <p className="mt-1 text-muted-foreground text-xs">
                 Example: "Your Company" &lt;info@yourcompany.com&gt;
@@ -192,13 +259,13 @@ export default function EmailSettingsPage() {
               <Textarea
                 className="mt-2 min-h-[120px] resize-none font-mono text-sm"
                 onChange={(e) =>
-                  updateSetting("emailSignature", e.target.value)
+                  updateSetting("defaultSignature", e.target.value)
                 }
                 placeholder="Thank you for your business!..."
-                value={settings.emailSignature}
+                value={settings.defaultSignature}
               />
               <p className="mt-1 text-muted-foreground text-xs">
-                {settings.emailSignature.length} / {MAX_SIGNATURE_LENGTH}{" "}
+                {settings.defaultSignature.length} / {MAX_SIGNATURE_LENGTH}{" "}
                 characters
               </p>
             </div>
@@ -225,9 +292,9 @@ export default function EmailSettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={settings.includeLogoInEmails}
+                checked={!!settings.emailLogoUrl}
                 onCheckedChange={(checked) =>
-                  updateSetting("includeLogoInEmails", checked)
+                  updateSetting("emailLogoUrl", checked ? "default-logo" : "")
                 }
               />
             </div>
@@ -262,9 +329,9 @@ export default function EmailSettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={settings.trackEmailOpens}
+                checked={settings.trackOpens}
                 onCheckedChange={(checked) =>
-                  updateSetting("trackEmailOpens", checked)
+                  updateSetting("trackOpens", checked)
                 }
               />
             </div>
@@ -291,9 +358,9 @@ export default function EmailSettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={settings.trackEmailClicks}
+                checked={settings.trackClicks}
                 onCheckedChange={(checked) =>
-                  updateSetting("trackEmailClicks", checked)
+                  updateSetting("trackClicks", checked)
                 }
               />
             </div>

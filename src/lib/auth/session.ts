@@ -18,6 +18,10 @@ import { createClient } from "@/lib/supabase/server";
  *
  * Returns the currently authenticated user or null if not authenticated.
  * Cached per request to avoid multiple database calls.
+ *
+ * SECURITY: Uses getUser() instead of getSession() to verify the session
+ * is authentic by contacting the Supabase Auth server. Session data from
+ * cookies cannot be trusted without server-side verification.
  */
 export const getCurrentUser = cache(async (): Promise<User | null> => {
   try {
@@ -27,18 +31,36 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
       return null;
     }
 
+    // Use getUser() to authenticate with Supabase Auth server
+    // This verifies the session is valid and not tampered with
     const {
       data: { user },
       error,
     } = await supabase.auth.getUser();
 
+    // Handle error - could be AuthSessionMissingError or network error
     if (error) {
-      console.error("Error getting current user:", error);
+      // AuthSessionMissingError is expected when user is not authenticated
+      // Don't log this as an error, just return null
+      if (error.name === "AuthSessionMissingError") {
+        return null;
+      }
+
+      // Other errors should be logged
+      console.error("Error getting current user:", error.message);
       return null;
     }
 
     return user;
   } catch (error) {
+    // Catch any unexpected errors (network issues, etc.)
+    // The error might be thrown instead of returned in some cases
+    if (error && typeof error === "object" && "name" in error) {
+      if (error.name === "AuthSessionMissingError") {
+        return null;
+      }
+    }
+
     console.error("Unexpected error getting current user:", error);
     return null;
   }

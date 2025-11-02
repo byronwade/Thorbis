@@ -9,9 +9,10 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Lock, Save, Shield, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, Lock, Save, Shield, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getPrivacySettings, updatePrivacySettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,56 +38,90 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function PrivacyConsentPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [settings, setSettings] = useState({
-    requirePrivacyConsent: true,
-    requireMarketingConsent: false,
-    consentMethod: "checkbox",
-    showConsentOnBooking: true,
-    showConsentOnPortal: true,
-    allowConsentWithdrawal: true,
-    sendConsentConfirmation: true,
-    trackConsentChanges: true,
-    dataRetentionDays: 2555,
-    deleteInactiveCustomers: false,
-    inactivityPeriodDays: 730,
-    anonymizeInsteadOfDelete: true,
-    requireDeletionApproval: true,
-    sendDeletionNotification: true,
-    allowDataExport: true,
-    exportFormat: "pdf",
-    includeJobHistory: true,
-    includePaymentHistory: true,
-    includeDocuments: true,
-    maskSensitiveData: true,
-    maskCreditCards: true,
-    maskSSN: true,
-    logDataAccess: true,
-    requireReasonForAccess: false,
-    notifyCustomerOfAccess: false,
-    enableGDPRCompliance: true,
-    enableCCPACompliance: true,
-    dataProtectionOfficer: "",
-    dpoEmail: "",
-    privacyPolicyUrl: "",
-    termsOfServiceUrl: "",
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings({
+    getter: getPrivacySettings,
+    setter: updatePrivacySettings,
+    initialState: {
+      requirePrivacyConsent: true,
+      requireMarketingConsent: false,
+      consentMethod: "checkbox",
+      showConsentOnBooking: true,
+      showConsentOnPortal: true,
+      allowConsentWithdrawal: true,
+      sendConsentConfirmation: true,
+      trackConsentChanges: true,
+      dataRetentionDays: 2555,
+      deleteInactiveCustomers: false,
+      inactivityPeriodDays: 730,
+      anonymizeInsteadOfDelete: true,
+      requireDeletionApproval: true,
+      sendDeletionNotification: true,
+      allowDataExport: true,
+      exportFormat: "pdf",
+      includeJobHistory: true,
+      includePaymentHistory: true,
+      includeDocuments: true,
+      maskSensitiveData: true,
+      maskCreditCards: true,
+      maskSSN: true,
+      logDataAccess: true,
+      requireReasonForAccess: false,
+      notifyCustomerOfAccess: false,
+      enableGDPRCompliance: true,
+      enableCCPACompliance: true,
+      dataProtectionOfficer: "",
+      dpoEmail: "",
+      privacyPolicyUrl: "",
+      termsOfServiceUrl: "",
+    },
+    settingsName: "privacy",
+    transformLoad: (data) => ({
+      dataRetentionDays: data.data_retention_years ? data.data_retention_years * 365 : 2555,
+      deleteInactiveCustomers: data.auto_delete_inactive_customers ?? false,
+      inactivityPeriodDays: data.inactive_threshold_years ? data.inactive_threshold_years * 365 : 730,
+      requireMarketingConsent: data.require_marketing_consent ?? true,
+      requirePrivacyConsent: data.require_data_processing_consent ?? true,
+      privacyPolicyUrl: data.privacy_policy_url || "",
+      termsOfServiceUrl: data.terms_of_service_url || "",
+      allowDataExport: data.enable_data_export ?? true,
+      enableGDPRCompliance: data.enable_right_to_deletion ?? true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("dataRetentionYears", Math.floor(settings.dataRetentionDays / 365).toString());
+      formData.append("autoDeleteInactiveCustomers", settings.deleteInactiveCustomers.toString());
+      formData.append("inactiveThresholdYears", Math.floor(settings.inactivityPeriodDays / 365).toString());
+      formData.append("requireMarketingConsent", settings.requireMarketingConsent.toString());
+      formData.append("requireDataProcessingConsent", settings.requirePrivacyConsent.toString());
+      formData.append("privacyPolicyUrl", settings.privacyPolicyUrl);
+      formData.append("termsOfServiceUrl", settings.termsOfServiceUrl);
+      formData.append("enableRightToDeletion", settings.enableGDPRCompliance.toString());
+      formData.append("enableDataExport", settings.allowDataExport.toString());
+      return formData;
+    },
   });
 
-  const updateSetting = (key: string, value: string | boolean | number) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSave = () => {
-    setHasUnsavedChanges(false);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Privacy & Consent
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -94,9 +129,18 @@ export default function PrivacyConsentPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={() => saveSettings()} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -120,7 +164,7 @@ export default function PrivacyConsentPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Lock className="h-4 w-4" />
+              <Lock className="size-4" />
               Customer Consent
             </CardTitle>
             <CardDescription>
@@ -313,7 +357,7 @@ export default function PrivacyConsentPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="size-4" />
               Data Retention & Deletion
             </CardTitle>
             <CardDescription>

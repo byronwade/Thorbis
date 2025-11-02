@@ -47,7 +47,7 @@ export async function GET(request: Request) {
         );
       }
 
-      // Successfully authenticated - redirect to dashboard or specified next page
+      // Successfully authenticated - redirect directly to dashboard
       return NextResponse.redirect(`${requestUrl.origin}${next}`);
     } catch (error) {
       console.error("Unexpected error in auth callback:", error);

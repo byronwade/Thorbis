@@ -137,12 +137,12 @@ export default function RolesPage() {
           <div className="mb-4">
             <Link href="/dashboard/settings/team">
               <Button size="sm" type="button" variant="ghost">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 size-4" />
                 Back to Team
               </Button>
             </Link>
           </div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Roles & Permissions
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -151,7 +151,7 @@ export default function RolesPage() {
         </div>
         <Link href="/dashboard/settings/team/roles/new">
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             Create Role
           </Button>
         </Link>
@@ -210,7 +210,7 @@ export default function RolesPage() {
                         type="button"
                         variant="ghost"
                       >
-                        <MoreVertical className="h-4 w-4" />
+                        <MoreVertical className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -238,7 +238,7 @@ export default function RolesPage() {
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 className="mr-2 size-4" />
                             Delete Role
                           </DropdownMenuItem>
                         </>

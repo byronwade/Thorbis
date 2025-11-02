@@ -1,585 +1,332 @@
-"use client";
-
 /**
- * Settings > Payroll > Commission Page - Client Component
+ * Commission Settings Page
  *
- * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * Configure commission structures, tiers, and rules for technicians
  */
 
-import { BadgeDollarSign, Info, Save } from "lucide-react";
-import { useState } from "react";
+import { TrendingUp, Plus, Trash2, Edit } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { getCommissionRules } from "@/actions/settings";
 
-type CommissionTier = {
-  min: number;
-  max: number | null;
-  rate: number;
-};
-
-type CommissionSettings = {
-  commissionEnabled: boolean;
-  commissionType: "flat" | "tiered" | "performance" | "hybrid";
-  flatCommissionRate: number;
-  tieredCommissions: CommissionTier[];
-  commissionPayoutTiming: "same-period" | "next-period" | "monthly";
-  commissionMinimumThreshold: number;
-  commissionCap: number;
-  commissionCapEnabled: boolean;
-  commissionOnServicePlans: boolean;
-  commissionOnMaintenanceAgreements: boolean;
-  maintenanceAgreementCommissionRate: number;
-  splitCommissionMultipleTechs: boolean;
-  helperCommissionPercent: number;
-  leadCommissionPercent: number;
-};
-
-export default function CommissionSettingsPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-  const [settings, setSettings] = useState<CommissionSettings>({
-    commissionEnabled: true,
-    commissionType: "tiered",
-    flatCommissionRate: 10,
-    tieredCommissions: [
-      { min: 0, max: 5000, rate: 5 },
-      { min: 5000, max: 10_000, rate: 7.5 },
-      { min: 10_000, max: null, rate: 10 },
-    ],
-    commissionPayoutTiming: "same-period",
-    commissionMinimumThreshold: 100,
-    commissionCap: 0,
-    commissionCapEnabled: false,
-    commissionOnServicePlans: true,
-    commissionOnMaintenanceAgreements: true,
-    maintenanceAgreementCommissionRate: 15,
-    splitCommissionMultipleTechs: true,
-    helperCommissionPercent: 30,
-    leadCommissionPercent: 70,
-  });
-
-  const handleSettingChange = <K extends keyof CommissionSettings>(
-    key: K,
-    value: CommissionSettings[K]
-  ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleTierChange = (
-    index: number,
-    field: keyof CommissionTier,
-    value: number | null
-  ) => {
-    const newTiers = [...settings.tieredCommissions];
-    newTiers[index] = { ...newTiers[index], [field]: value };
-    handleSettingChange("tieredCommissions", newTiers);
-  };
-
-  const addCommissionTier = () => {
-    const lastTier = settings.tieredCommissions.at(-1);
-    const newTier: CommissionTier = {
-      min: lastTier?.max || 0,
-      max: null,
-      rate: 0,
-    };
-    handleSettingChange("tieredCommissions", [
-      ...settings.tieredCommissions,
-      newTier,
-    ]);
-  };
-
-  const removeTier = (index: number) => {
-    if (settings.tieredCommissions.length > 1) {
-      const newTiers = settings.tieredCommissions.filter((_, i) => i !== index);
-      handleSettingChange("tieredCommissions", newTiers);
-    }
-  };
-
-  const handleSave = () => {
-    // TODO: Implement save logic
-    setHasUnsavedChanges(false);
-  };
+export default async function CommissionSettingsPage() {
+  const result = await getCommissionRules();
+  const rules = result.success ? result.data : [];
 
   return (
-    <TooltipProvider>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="font-bold text-3xl tracking-tight">
-              Commission Settings
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Configure how technician commissions are calculated
-            </p>
-          </div>
-          {hasUnsavedChanges && (
-            <Button onClick={handleSave} size="lg">
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
-            </Button>
-          )}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight">Commission Settings</h1>
+          <p className="text-muted-foreground">
+            Configure commission structures and rules for sales and upsells
+          </p>
         </div>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Commission Rule
+        </Button>
+      </div>
+
+      {/* Overview Stats */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Rules</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {rules.filter((r: any) => r.is_active).length}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {rules.length} total rules configured
+            </p>
+          </CardContent>
+        </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BadgeDollarSign className="h-5 w-5 text-primary" />
-              Commission Structure
-            </CardTitle>
-            <CardDescription>
-              Configure how technician commissions are calculated
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Job Revenue Rules</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="commission-enabled">
-                  Enable Commission Pay
-                </Label>
-                <p className="text-muted-foreground text-sm">
-                  Pay technicians commission on sales and services
-                </p>
-              </div>
-              <Switch
-                checked={settings.commissionEnabled}
-                id="commission-enabled"
-                onCheckedChange={(checked) =>
-                  handleSettingChange("commissionEnabled", checked)
-                }
-              />
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {rules.filter((r: any) => r.commission_basis === "job_revenue").length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Most common commission type
+            </p>
+          </CardContent>
+        </Card>
 
-            {settings.commissionEnabled && (
-              <>
-                <Separator />
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="commission-type">Commission Type</Label>
-                    <Select
-                      onValueChange={(value) =>
-                        handleSettingChange(
-                          "commissionType",
-                          value as CommissionSettings["commissionType"]
-                        )
-                      }
-                      value={settings.commissionType}
-                    >
-                      <SelectTrigger id="commission-type">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="flat">Flat Percentage</SelectItem>
-                        <SelectItem value="tiered">Tiered Structure</SelectItem>
-                        <SelectItem value="performance">
-                          Performance Based
-                        </SelectItem>
-                        <SelectItem value="hybrid">
-                          Hybrid (Base + Commission)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-muted-foreground text-xs">
-                      How commission percentages are determined
-                    </p>
-                  </div>
-
-                  {settings.commissionType === "flat" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="flat-rate">Commission Rate (%)</Label>
-                      <Input
-                        id="flat-rate"
-                        max={100}
-                        min={0}
-                        onChange={(e) =>
-                          handleSettingChange(
-                            "flatCommissionRate",
-                            Number.parseFloat(e.target.value)
-                          )
-                        }
-                        step={0.5}
-                        type="number"
-                        value={settings.flatCommissionRate}
-                      />
-                      <p className="text-muted-foreground text-xs">
-                        All sales earn this percentage
-                      </p>
-                    </div>
-                  )}
-
-                  {settings.commissionType === "tiered" && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label>Commission Tiers</Label>
-                        <Button
-                          onClick={addCommissionTier}
-                          size="sm"
-                          type="button"
-                          variant="outline"
-                        >
-                          + Add Tier
-                        </Button>
-                      </div>
-                      <div className="space-y-3">
-                        {settings.tieredCommissions.map((tier, index) => (
-                          <Card key={index}>
-                            <CardContent className="grid gap-4 pt-6 md:grid-cols-4">
-                              <div className="space-y-2">
-                                <Label>From ($)</Label>
-                                <Input
-                                  disabled={index > 0}
-                                  min={0}
-                                  onChange={(e) =>
-                                    handleTierChange(
-                                      index,
-                                      "min",
-                                      Number.parseFloat(e.target.value)
-                                    )
-                                  }
-                                  step={100}
-                                  type="number"
-                                  value={tier.min}
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>To ($)</Label>
-                                <Input
-                                  disabled={
-                                    index ===
-                                    settings.tieredCommissions.length - 1
-                                  }
-                                  min={tier.min}
-                                  onChange={(e) =>
-                                    handleTierChange(
-                                      index,
-                                      "max",
-                                      e.target.value
-                                        ? Number.parseFloat(e.target.value)
-                                        : null
-                                    )
-                                  }
-                                  placeholder="No limit"
-                                  step={100}
-                                  type="number"
-                                  value={tier.max || ""}
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Rate (%)</Label>
-                                <Input
-                                  max={100}
-                                  min={0}
-                                  onChange={(e) =>
-                                    handleTierChange(
-                                      index,
-                                      "rate",
-                                      Number.parseFloat(e.target.value)
-                                    )
-                                  }
-                                  step={0.5}
-                                  type="number"
-                                  value={tier.rate}
-                                />
-                              </div>
-                              <div className="flex items-end">
-                                {settings.tieredCommissions.length > 1 && (
-                                  <Button
-                                    className="w-full"
-                                    onClick={() => removeTier(index)}
-                                    size="sm"
-                                    type="button"
-                                    variant="destructive"
-                                  >
-                                    Remove
-                                  </Button>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                      <Card className="border-blue-500/50 bg-blue-500/5">
-                        <CardContent className="pt-6">
-                          <div className="flex items-start gap-3">
-                            <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
-                            <div className="text-sm">
-                              <p className="font-medium">Tier Example:</p>
-                              <ul className="mt-2 space-y-1 text-muted-foreground">
-                                {settings.tieredCommissions.map(
-                                  (tier, index) => (
-                                    <li key={index}>
-                                      ${tier.min.toLocaleString()} -{" "}
-                                      {tier.max
-                                        ? `$${tier.max.toLocaleString()}`
-                                        : "∞"}
-                                      : {tier.rate}% commission
-                                    </li>
-                                  )
-                                )}
-                              </ul>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  )}
-                </div>
-
-                <Separator />
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="commission-timing">
-                      Commission Payout Timing
-                    </Label>
-                    <Select
-                      onValueChange={(value) =>
-                        handleSettingChange(
-                          "commissionPayoutTiming",
-                          value as CommissionSettings["commissionPayoutTiming"]
-                        )
-                      }
-                      value={settings.commissionPayoutTiming}
-                    >
-                      <SelectTrigger id="commission-timing">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="same-period">
-                          Same Pay Period
-                        </SelectItem>
-                        <SelectItem value="next-period">
-                          Next Pay Period
-                        </SelectItem>
-                        <SelectItem value="monthly">Monthly Payout</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-muted-foreground text-xs">
-                      When commissions are paid out
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="min-threshold">Minimum Threshold ($)</Label>
-                    <Input
-                      id="min-threshold"
-                      min={0}
-                      onChange={(e) =>
-                        handleSettingChange(
-                          "commissionMinimumThreshold",
-                          Number.parseFloat(e.target.value)
-                        )
-                      }
-                      step={10}
-                      type="number"
-                      value={settings.commissionMinimumThreshold}
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      Minimum sale amount to earn commission
-                    </p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="commission-cap">
-                        Enable Commission Cap
-                      </Label>
-                      <p className="text-muted-foreground text-sm">
-                        Set maximum commission per pay period
-                      </p>
-                    </div>
-                    <Switch
-                      checked={settings.commissionCapEnabled}
-                      id="commission-cap"
-                      onCheckedChange={(checked) =>
-                        handleSettingChange("commissionCapEnabled", checked)
-                      }
-                    />
-                  </div>
-
-                  {settings.commissionCapEnabled && (
-                    <div className="ml-6 space-y-2 border-l-2 pl-4">
-                      <Label htmlFor="cap-amount">Maximum Commission ($)</Label>
-                      <Input
-                        id="cap-amount"
-                        min={0}
-                        onChange={(e) =>
-                          handleSettingChange(
-                            "commissionCap",
-                            Number.parseFloat(e.target.value)
-                          )
-                        }
-                        step={100}
-                        type="number"
-                        value={settings.commissionCap}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="font-medium text-sm">
-                    Special Commission Rules
-                  </h3>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Service Plans &amp; Memberships</Label>
-                      <p className="text-muted-foreground text-sm">
-                        Pay commission on recurring service plans
-                      </p>
-                    </div>
-                    <Switch
-                      checked={settings.commissionOnServicePlans}
-                      onCheckedChange={(checked) =>
-                        handleSettingChange("commissionOnServicePlans", checked)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Maintenance Agreements</Label>
-                      <p className="text-muted-foreground text-sm">
-                        Commission on maintenance contract sales
-                      </p>
-                    </div>
-                    <Switch
-                      checked={settings.commissionOnMaintenanceAgreements}
-                      onCheckedChange={(checked) =>
-                        handleSettingChange(
-                          "commissionOnMaintenanceAgreements",
-                          checked
-                        )
-                      }
-                    />
-                  </div>
-
-                  {settings.commissionOnMaintenanceAgreements && (
-                    <div className="ml-6 space-y-2 border-l-2 pl-4">
-                      <Label htmlFor="maintenance-rate">
-                        Maintenance Agreement Rate (%)
-                      </Label>
-                      <Input
-                        className="max-w-xs"
-                        id="maintenance-rate"
-                        max={100}
-                        min={0}
-                        onChange={(e) =>
-                          handleSettingChange(
-                            "maintenanceAgreementCommissionRate",
-                            Number.parseFloat(e.target.value)
-                          )
-                        }
-                        step={0.5}
-                        type="number"
-                        value={settings.maintenanceAgreementCommissionRate}
-                      />
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Split Commission (Multiple Techs)</Label>
-                      <p className="text-muted-foreground text-sm">
-                        Divide commission when multiple techs work a job
-                      </p>
-                    </div>
-                    <Switch
-                      checked={settings.splitCommissionMultipleTechs}
-                      onCheckedChange={(checked) =>
-                        handleSettingChange(
-                          "splitCommissionMultipleTechs",
-                          checked
-                        )
-                      }
-                    />
-                  </div>
-
-                  {settings.splitCommissionMultipleTechs && (
-                    <div className="ml-6 grid gap-4 border-l-2 pl-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="lead-percent">
-                          Lead Technician (%)
-                        </Label>
-                        <Input
-                          id="lead-percent"
-                          max={100}
-                          min={0}
-                          onChange={(e) =>
-                            handleSettingChange(
-                              "leadCommissionPercent",
-                              Number.parseFloat(e.target.value)
-                            )
-                          }
-                          step={5}
-                          type="number"
-                          value={settings.leadCommissionPercent}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="helper-percent">
-                          Helper/Assistant (%)
-                        </Label>
-                        <Input
-                          id="helper-percent"
-                          max={100}
-                          min={0}
-                          onChange={(e) =>
-                            handleSettingChange(
-                              "helperCommissionPercent",
-                              Number.parseFloat(e.target.value)
-                            )
-                          }
-                          step={5}
-                          type="number"
-                          value={settings.helperCommissionPercent}
-                        />
-                      </div>
-                      {settings.leadCommissionPercent +
-                        settings.helperCommissionPercent !==
-                        100 && (
-                        <p className="text-destructive text-xs md:col-span-2">
-                          Warning: Percentages should total 100%
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Upsell Rules</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {rules.filter((r: any) => r.commission_basis === "upsells").length}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Incentivizing additional sales
+            </p>
           </CardContent>
         </Card>
       </div>
-    </TooltipProvider>
+
+      {/* Commission Rules List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Commission Rules</CardTitle>
+          <CardDescription>
+            Manage commission structures for different job types and scenarios
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {rules.length === 0 ? (
+            <div className="text-center py-12">
+              <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-semibold">No Commission Rules</h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Get started by creating your first commission rule
+              </p>
+              <Button className="mt-4">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Commission Rule
+              </Button>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Rule Name</TableHead>
+                  <TableHead>Basis</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Rate</TableHead>
+                  <TableHead>Payout</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rules.map((rule: any) => (
+                  <TableRow key={rule.id}>
+                    <TableCell className="font-medium">{rule.rule_name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {rule.commission_basis.replace(/_/g, " ")}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {rule.rate_type === "flat_percentage" && "Flat %"}
+                      {rule.rate_type === "tiered" && "Tiered"}
+                      {rule.rate_type === "progressive" && "Progressive"}
+                    </TableCell>
+                    <TableCell>
+                      {rule.rate_type === "flat_percentage" && rule.flat_percentage
+                        ? `${rule.flat_percentage}%`
+                        : "Variable"}
+                    </TableCell>
+                    <TableCell>
+                      {rule.payout_frequency === "per_job" && "Per Job"}
+                      {rule.payout_frequency === "weekly" && "Weekly"}
+                      {rule.payout_frequency === "biweekly" && "Bi-Weekly"}
+                      {rule.payout_frequency === "monthly" && "Monthly"}
+                      {rule.payout_frequency === "quarterly" && "Quarterly"}
+                    </TableCell>
+                    <TableCell>
+                      {rule.is_active ? (
+                        <Badge className="bg-green-500">Active</Badge>
+                      ) : (
+                        <Badge variant="secondary">Inactive</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Commission Types Examples */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Flat Percentage Commission</CardTitle>
+            <CardDescription>
+              Simple percentage-based commission on job value
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div>
+                  <p className="font-medium">Job Revenue: $5,000</p>
+                  <p className="text-sm text-muted-foreground">Commission Rate: 5%</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-green-600">$250</p>
+                  <p className="text-xs text-muted-foreground">Commission Earned</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Best for: Consistent commission rates across all job types
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tiered Commission</CardTitle>
+            <CardDescription>
+              Different rates based on revenue tiers
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 rounded border">
+                  <span className="text-sm">$0 - $2,500</span>
+                  <Badge>3%</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded border">
+                  <span className="text-sm">$2,501 - $5,000</span>
+                  <Badge>5%</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded border">
+                  <span className="text-sm">$5,001+</span>
+                  <Badge>7%</Badge>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Best for: Incentivizing higher-value jobs and upsells
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Commission Basis Types */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Commission Basis Options</CardTitle>
+          <CardDescription>
+            Different ways to calculate commission amounts
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2">Job Revenue</h4>
+              <p className="text-sm text-muted-foreground">
+                Percentage of total job invoice amount
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2">Job Profit</h4>
+              <p className="text-sm text-muted-foreground">
+                Percentage of profit margin (revenue - costs)
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2">Product Sales</h4>
+              <p className="text-sm text-muted-foreground">
+                Percentage of physical products sold
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2">Service Agreements</h4>
+              <p className="text-sm text-muted-foreground">
+                Commission on recurring service plans sold
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2">Memberships</h4>
+              <p className="text-sm text-muted-foreground">
+                Commission on membership sales
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2">Upsells</h4>
+              <p className="text-sm text-muted-foreground">
+                Additional services added to original job
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Payout Timing Options */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Payout Timing</CardTitle>
+          <CardDescription>
+            When commission is earned and paid
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <h4 className="font-semibold">Earn Timing</h4>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <span className="text-sm">On Job Completion</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  <span className="text-sm">On Invoice Sent</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                  <span className="text-sm">On Payment Received</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  <span className="text-sm">On Full Payment</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold">Payout Frequency</h4>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <span className="text-sm">Per Job (Immediate)</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  <span className="text-sm">Weekly</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                  <span className="text-sm">Bi-Weekly</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded border">
+                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  <span className="text-sm">Monthly</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

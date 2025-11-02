@@ -51,7 +51,7 @@ export default function Error({
         {/* Actions */}
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
           <Button onClick={() => reset()} variant="default">
-            <RefreshCw className="mr-2 h-4 w-4" />
+            <RefreshCw className="mr-2 size-4" />
             Try again
           </Button>
           <Button

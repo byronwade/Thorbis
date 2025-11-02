@@ -77,7 +77,7 @@ export default function DispatchRulesSettingsPage() {
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Dispatch Rules
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -86,7 +86,7 @@ export default function DispatchRulesSettingsPage() {
           </div>
           {hasUnsavedChanges && (
             <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 size-4" />
               Save Changes
             </Button>
           )}
@@ -95,7 +95,7 @@ export default function DispatchRulesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Zap className="h-4 w-4" />
+              <Zap className="size-4" />
               Automatic Assignment
             </CardTitle>
             <CardDescription>
@@ -540,7 +540,7 @@ export default function DispatchRulesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Route className="h-4 w-4" />
+              <Route className="size-4" />
               Route Optimization
             </CardTitle>
             <CardDescription>

@@ -26,6 +26,8 @@ import {
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getChecklistSettings, updateChecklistSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -89,12 +91,21 @@ type ChecklistSettings = {
 };
 
 export default function ChecklistsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedChecklist, setExpandedChecklist] = useState<string | null>(
     null
   );
 
-  const [settings, setSettings] = useState<ChecklistSettings>({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<ChecklistSettings>({
+    getter: getChecklistSettings,
+    setter: updateChecklistSettings,
+    initialState: {
     // General Settings
     enableChecklists: true,
     requireChecklistCompletion: true,
@@ -115,6 +126,21 @@ export default function ChecklistsPage() {
     shareChecklistWithCustomer: true,
     includeInJobSummary: true,
     customerCanViewInPortal: true,
+    },
+    settingsName: "checklists",
+    transformLoad: (data) => ({
+      requireChecklistCompletion: data.require_checklist_completion ?? false,
+      allowTechnicianSkip: data.allow_skip_items ?? true,
+      requirePhotos: data.require_photos_for_checklist ?? false,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("requireChecklistCompletion", settings.requireChecklistCompletion.toString());
+      formData.append("allowSkipItems", settings.allowTechnicianSkip.toString());
+      formData.append("requirePhotosForChecklist", settings.requirePhotos.toString());
+      formData.append("autoAssignByJobType", "true");
+      return formData;
+    },
   });
 
   // Sample checklists
@@ -263,13 +289,6 @@ export default function ChecklistsPage() {
     },
   ]);
 
-  const updateSetting = <K extends keyof ChecklistSettings>(
-    key: K,
-    value: ChecklistSettings[K]
-  ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
       hvac: "HVAC",
@@ -297,10 +316,12 @@ export default function ChecklistsPage() {
   const totalItems = checklists.reduce((sum, c) => sum + c.items.length, 0);
   const avgItemsPerChecklist = Math.round(totalItems / totalChecklists);
 
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -309,7 +330,7 @@ export default function ChecklistsPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Job Checklists
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -317,7 +338,7 @@ export default function ChecklistsPage() {
             </p>
           </div>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Checklist
           </Button>
         </div>
@@ -385,7 +406,7 @@ export default function ChecklistsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               General Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -524,7 +545,7 @@ export default function ChecklistsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="size-4" />
               Photo Requirements
               <Tooltip>
                 <TooltipTrigger>
@@ -636,7 +657,7 @@ export default function ChecklistsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="size-4" />
               Completion Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -739,7 +760,7 @@ export default function ChecklistsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="size-4" />
               Customer Visibility
               <Tooltip>
                 <TooltipTrigger>
@@ -937,7 +958,7 @@ export default function ChecklistsPage() {
                         size="icon"
                         variant="ghost"
                       >
-                        <Copy className="h-4 w-4" />
+                        <Copy className="size-4" />
                       </Button>
                       <Button
                         onClick={(e) => {
@@ -946,7 +967,7 @@ export default function ChecklistsPage() {
                         size="icon"
                         variant="ghost"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="size-4" />
                       </Button>
                       <Button
                         onClick={(e) => {
@@ -955,7 +976,7 @@ export default function ChecklistsPage() {
                         size="icon"
                         variant="ghost"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </div>
@@ -998,13 +1019,21 @@ export default function ChecklistsPage() {
 
         {/* Save Button */}
         <div className="flex justify-end gap-4">
-          <Button disabled={isSubmitting} type="button" variant="outline">
+          <Button disabled={isPending} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Checklist Settings
+          <Button disabled={isPending} onClick={() => saveSettings()}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Checklist Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

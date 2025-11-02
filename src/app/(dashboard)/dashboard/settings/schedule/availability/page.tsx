@@ -9,9 +9,11 @@
  * - Browser API access for enhanced UX
  */
 
-import { Clock, HelpCircle, Plus, Save, Trash2 } from "lucide-react";
+import { Clock, HelpCircle, Plus, Save, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getAvailabilitySettings, updateAvailabilitySettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -123,9 +125,20 @@ type Exception = {
 };
 
 export default function AvailabilitySettingsPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [availability, setAvailability] = useState(defaultWeek);
-  const [settings, setSettings] = useState({
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges: hookHasChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings({
+    getter: getAvailabilitySettings,
+    setter: updateAvailabilitySettings,
+    initialState: {
     allowOnlineBooking: true,
     bookingLeadTime: 24,
     maxAdvanceBooking: 90,
@@ -134,6 +147,32 @@ export default function AvailabilitySettingsPage() {
     emergencyFeeType: "flat",
     allowSameDayBooking: true,
     sameDayLeadTime: 4,
+    },
+    settingsName: "schedule availability",
+    transformLoad: (data) => ({
+      bookingLeadTime: data.min_booking_notice_hours ?? 24,
+      maxAdvanceBooking: data.max_booking_advance_days ?? 90,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      const workHours = JSON.stringify(availability.reduce((acc, day) => {
+        acc[day.day.toLowerCase()] = {
+          start: day.startTime,
+          end: day.endTime,
+          enabled: day.enabled
+        };
+        return acc;
+      }, {} as any));
+      formData.append("defaultWorkHours", workHours);
+      formData.append("defaultAppointmentDurationMinutes", "60");
+      formData.append("bufferTimeMinutes", "15");
+      formData.append("minBookingNoticeHours", settings.bookingLeadTime.toString());
+      formData.append("maxBookingAdvanceDays", settings.maxAdvanceBooking.toString());
+      formData.append("lunchBreakEnabled", "true");
+      formData.append("lunchBreakStart", "12:00");
+      formData.append("lunchBreakDurationMinutes", "60");
+      return formData;
+    },
   });
   const [exceptions, setExceptions] = useState<Exception[]>([
     {
@@ -149,11 +188,6 @@ export default function AvailabilitySettingsPage() {
       type: "closed",
     },
   ]);
-
-  const updateSetting = (key: string, value: string | boolean | number) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
-  };
 
   const updateAvailability = (
     index: number,
@@ -181,19 +215,22 @@ export default function AvailabilitySettingsPage() {
 
   const removeException = (id: string) => {
     setExceptions((prev) => prev.filter((e) => e.id !== id));
-    setHasUnsavedChanges(true);
   };
 
-  const handleSave = () => {
-    setHasUnsavedChanges(false);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Availability Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -201,9 +238,18 @@ export default function AvailabilitySettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={() => saveSettings()} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -211,7 +257,7 @@ export default function AvailabilitySettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="size-4" />
               Weekly Schedule
             </CardTitle>
             <CardDescription>
@@ -536,7 +582,7 @@ export default function AvailabilitySettingsPage() {
                 </CardDescription>
               </div>
               <Button onClick={addException} size="sm" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 size-4" />
                 Add Exception
               </Button>
             </div>
@@ -586,7 +632,7 @@ export default function AvailabilitySettingsPage() {
                   size="sm"
                   variant="ghost"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             ))}

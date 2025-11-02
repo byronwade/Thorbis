@@ -173,9 +173,9 @@ export function FullWidthDataTable<T>({
     selectedIds.size === paginatedData.length && paginatedData.length > 0;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Sticky Top Toolbar */}
-      <div className="sticky top-0 z-30 flex items-center gap-2 border-b bg-background px-4 py-2">
+      <div className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b bg-background px-4 py-2">
         {enableSelection && (
           <Checkbox
             aria-label="Select all"
@@ -198,7 +198,7 @@ export function FullWidthDataTable<T>({
         {/* Bulk Actions */}
         {selectedIds.size > 0 && bulkActions.length > 0 && (
           <>
-            <div className="mx-2 h-4 w-px bg-border" />
+            <div className="mx-2 hidden h-4 w-px bg-border md:block" />
             {bulkActions.map((action, index) => (
               <Button
                 key={index}
@@ -217,14 +217,14 @@ export function FullWidthDataTable<T>({
         )}
 
         {/* Right side: Search and Pagination */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           {toolbarActions}
 
           {searchFilter && (
             <div className="relative">
               <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
               <Input
-                className="h-9 w-64 pl-8"
+                className="h-9 w-40 pl-8 md:w-64"
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1); // Reset to first page on search
@@ -245,7 +245,7 @@ export function FullWidthDataTable<T>({
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm">
+              <span className="text-nowrap text-sm">
                 {(currentPage - 1) * itemsPerPage + 1}-
                 {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
                 {filteredData.length}
@@ -263,8 +263,38 @@ export function FullWidthDataTable<T>({
         </div>
       </div>
 
+      {/* Table Header */}
+      {paginatedData.length > 0 && (
+        <div className="sticky top-[53px] z-20 flex items-center gap-4 border-b bg-muted/40 px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+          {/* Spacer for checkbox */}
+          {enableSelection && <div className="w-4 shrink-0" />}
+
+          {/* Column Headers */}
+          {columns.map((column) => {
+            const widthClass = column.width || "flex-1";
+            const shrinkClass = column.shrink ? "shrink-0" : "";
+            const alignClass =
+              column.align === "right"
+                ? "justify-end text-right"
+                : column.align === "center"
+                  ? "justify-center text-center"
+                  : "justify-start text-left";
+            const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
+
+            return (
+              <div
+                className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} min-w-0`}
+                key={column.key}
+              >
+                {column.header}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Table Content */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-auto">
         {paginatedData.length === 0 ? (
           <div className="flex h-full min-h-[50vh] items-center justify-center px-4 py-12 md:min-h-[60vh]">
             <div className="mx-auto w-full max-w-md space-y-4 text-center">

@@ -1,4 +1,4 @@
-import { getUserProfile } from "@/lib/auth/user-data";
+import { getUserProfile, getUserCompanies } from "@/lib/auth/user-data";
 import { AppHeaderClient } from "./app-header-client";
 
 /**
@@ -6,7 +6,7 @@ import { AppHeaderClient } from "./app-header-client";
  *
  * Performance optimizations:
  * - Server Component fetches user data BEFORE rendering (eliminates loading flash)
- * - Uses cached getUserProfile() with RLS security
+ * - Uses cached getUserProfile() and getUserCompanies() with RLS security
  * - Passes data to minimal client component for interactivity only
  * - Better SEO and initial page load performance
  *
@@ -15,12 +15,19 @@ import { AppHeaderClient } from "./app-header-client";
  * - No need for client-side loading states or auth checks
  * - Faster initial render with server-fetched data
  * - Smaller JavaScript bundle (auth logic stays on server)
+ *
+ * Conditional Rendering:
+ * - Wrapped by AppHeaderWrapper client component which uses usePathname()
+ * - AppHeaderWrapper hides header on routes like /dashboard/tv and /dashboard/welcome
  */
 
 export async function AppHeader() {
-  // Fetch user profile on server (cached with React cache())
+  // Fetch user profile and companies on server (cached with React cache())
   // This runs on server BEFORE sending HTML to client
-  const userProfile = await getUserProfile();
+  const [userProfile, companies] = await Promise.all([
+    getUserProfile(),
+    getUserCompanies(),
+  ]);
 
   // If no user, this should never happen because dashboard is protected by middleware
   // But we handle it gracefully anyway
@@ -30,5 +37,5 @@ export async function AppHeader() {
 
   // Pass server-fetched data to client component for interactivity
   // Client component only handles interactive parts (mobile menu, active nav state)
-  return <AppHeaderClient userProfile={userProfile} />;
+  return <AppHeaderClient userProfile={userProfile} companies={companies} />;
 }

@@ -9,14 +9,19 @@
  * - Browser API access for enhanced UX
  */
 
+import { useState, useTransition } from "react";
 import {
   Bell,
   HelpCircle,
   Mail,
   MessageSquare,
   Smartphone,
+  Loader2,
+  Save,
 } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -63,6 +68,63 @@ type NotificationSettings = {
 };
 
 export default function NotificationsPage() {
+  const {
+    settings: flatSettings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting: updateFlat,
+    saveSettings,
+  } = useSettings({
+    getter: getNotificationPreferences,
+    setter: updateNotificationPreferences,
+    initialState: {
+      emailNewJobs: true,
+      emailJobUpdates: true,
+      emailMentions: true,
+      emailMessages: true,
+      pushNewJobs: true,
+      pushJobUpdates: true,
+      pushMentions: true,
+      pushMessages: true,
+      smsUrgentJobs: false,
+      smsScheduleChanges: false,
+      inAppAll: true,
+    },
+    settingsName: "notifications",
+    transformLoad: (data) => ({
+      emailNewJobs: data.email_new_jobs ?? true,
+      emailJobUpdates: data.email_job_updates ?? true,
+      emailMentions: data.email_mentions ?? true,
+      emailMessages: data.email_messages ?? true,
+      pushNewJobs: data.push_new_jobs ?? true,
+      pushJobUpdates: data.push_job_updates ?? true,
+      pushMentions: data.push_mentions ?? true,
+      pushMessages: data.push_messages ?? true,
+      smsUrgentJobs: data.sms_urgent_jobs ?? false,
+      smsScheduleChanges: data.sms_schedule_changes ?? false,
+      inAppAll: data.in_app_all ?? true,
+    }),
+    transformSave: (s) => {
+      const fd = new FormData();
+      fd.append("emailNewJobs", s.emailNewJobs.toString());
+      fd.append("emailJobUpdates", s.emailJobUpdates.toString());
+      fd.append("emailMentions", s.emailMentions.toString());
+      fd.append("emailMessages", s.emailMessages.toString());
+      fd.append("pushNewJobs", s.pushNewJobs.toString());
+      fd.append("pushJobUpdates", s.pushJobUpdates.toString());
+      fd.append("pushMentions", s.pushMentions.toString());
+      fd.append("pushMessages", s.pushMessages.toString());
+      fd.append("smsUrgentJobs", s.smsUrgentJobs.toString());
+      fd.append("smsScheduleChanges", s.smsScheduleChanges.toString());
+      fd.append("inAppAll", s.inAppAll.toString());
+      fd.append("digestEnabled", "false");
+      fd.append("digestFrequency", "daily");
+      return fd;
+    },
+  });
+
+  // Maintain nested structure for UI compatibility
   const [settings, setSettings] = useState<NotificationSettings>({
     email: {
       marketing: false,
@@ -105,15 +167,40 @@ export default function NotificationsPage() {
     }));
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="font-bold text-3xl tracking-tight">Notifications</h1>
-          <p className="mt-2 text-muted-foreground">
-            Manage how and when you receive notifications
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="font-bold text-4xl tracking-tight">Notifications</h1>
+            <p className="mt-2 text-muted-foreground">
+              Manage how and when you receive notifications
+            </p>
+          </div>
+          {hasUnsavedChanges && (
+            <Button onClick={() => saveSettings()} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          )}
         </div>
 
         <Separator />
@@ -122,7 +209,7 @@ export default function NotificationsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Email Notifications
               <Tooltip>
                 <TooltipTrigger>
@@ -318,7 +405,7 @@ export default function NotificationsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Smartphone className="h-4 w-4" />
+              <Smartphone className="size-4" />
               Push Notifications
               <Tooltip>
                 <TooltipTrigger>
@@ -425,7 +512,7 @@ export default function NotificationsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="size-4" />
               SMS Notifications
               <Tooltip>
                 <TooltipTrigger>
@@ -508,7 +595,7 @@ export default function NotificationsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Bell className="h-4 w-4" />
+              <Bell className="size-4" />
               In-App Notifications
               <Tooltip>
                 <TooltipTrigger>

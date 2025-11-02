@@ -26,9 +26,10 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getPortalSettings, updatePortalSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -97,67 +98,102 @@ type CustomerPortalSettings = {
 };
 
 export default function CustomerPortalPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [settings, setSettings] = useState<CustomerPortalSettings>({
-    // Access
-    enableCustomerPortal: true,
-    requireAccountActivation: true,
-    allowSelfRegistration: true,
-    requireEmailVerification: true,
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<CustomerPortalSettings>({
+    getter: getPortalSettings,
+    setter: updatePortalSettings,
+    initialState: {
+      // Access
+      enableCustomerPortal: false,
+      requireAccountActivation: false,
+      allowSelfRegistration: true,
+      requireEmailVerification: true,
 
-    // View Permissions
-    viewJobHistory: true,
-    viewInvoices: true,
-    viewEstimates: true,
-    viewPaymentHistory: true,
-    viewScheduledAppointments: true,
-    viewServiceAgreements: true,
+      // View Permissions
+      viewJobHistory: true,
+      viewInvoices: true,
+      viewEstimates: true,
+      viewPaymentHistory: true,
+      viewScheduledAppointments: true,
+      viewServiceAgreements: true,
 
-    // Actions
-    bookAppointments: true,
-    rescheduleAppointments: true,
-    cancelAppointments: 24,
-    requestServices: true,
-    payInvoicesOnline: true,
-    approveEstimates: true,
-    uploadDocuments: true,
-    messageTeam: true,
+      // Actions
+      bookAppointments: true,
+      rescheduleAppointments: true,
+      cancelAppointments: 24,
+      requestServices: true,
+      payInvoicesOnline: true,
+      approveEstimates: true,
+      uploadDocuments: true,
+      messageTeam: true,
 
-    // Communication
-    enablePortalNotifications: true,
-    notifyOnNewInvoice: true,
-    notifyOnAppointmentUpdate: true,
-    notifyOnMessageReceived: true,
+      // Communication
+      enablePortalNotifications: true,
+      notifyOnNewInvoice: true,
+      notifyOnAppointmentUpdate: true,
+      notifyOnMessageReceived: true,
 
-    // Branding
-    portalName: "My Services Portal",
-    customDomain: "",
-    brandingColor: "#3b82f6",
-    showCompanyLogo: true,
-    customWelcomeMessage:
-      "Welcome to your customer portal! View your service history, pay invoices, and book appointments.",
+      // Branding
+      portalName: "My Services Portal",
+      customDomain: "",
+      brandingColor: "#3b82f6",
+      showCompanyLogo: true,
+      customWelcomeMessage: "",
 
-    // Features
-    enableReviews: true,
-    enableReferrals: true,
-    showServiceHistory: true,
-    showMaintenanceReminders: true,
+      // Features
+      enableReviews: true,
+      enableReferrals: true,
+      showServiceHistory: true,
+      showMaintenanceReminders: true,
+    },
+    settingsName: "customer portal",
+    transformLoad: (data) => ({
+      enableCustomerPortal: data.portal_enabled ?? false,
+      requireAccountActivation: data.require_account_approval ?? false,
+      viewJobHistory: data.show_service_history ?? true,
+      viewInvoices: data.show_invoices ?? true,
+      viewEstimates: data.show_estimates ?? true,
+      bookAppointments: data.allow_booking ?? true,
+      payInvoicesOnline: data.allow_invoice_payment ?? true,
+      approveEstimates: data.allow_estimate_approval ?? true,
+      messageTeam: data.allow_messaging ?? true,
+      brandingColor: data.primary_color || "#3b82f6",
+      customWelcomeMessage: data.welcome_message || "",
+      notifyOnNewInvoice: data.notify_on_new_invoice ?? true,
+      notifyOnAppointmentUpdate: data.notify_on_appointment ?? true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("portalEnabled", settings.enableCustomerPortal.toString());
+      formData.append("requireAccountApproval", settings.requireAccountActivation.toString());
+      formData.append("allowBooking", settings.bookAppointments.toString());
+      formData.append("allowInvoicePayment", settings.payInvoicesOnline.toString());
+      formData.append("allowEstimateApproval", settings.approveEstimates.toString());
+      formData.append("showServiceHistory", settings.viewJobHistory.toString());
+      formData.append("showInvoices", settings.viewInvoices.toString());
+      formData.append("showEstimates", settings.viewEstimates.toString());
+      formData.append("allowMessaging", settings.messageTeam.toString());
+      formData.append("primaryColor", settings.brandingColor);
+      formData.append("welcomeMessage", settings.customWelcomeMessage);
+      formData.append("notifyOnNewInvoice", settings.notifyOnNewInvoice.toString());
+      formData.append("notifyOnNewEstimate", "true");
+      formData.append("notifyOnAppointment", settings.notifyOnAppointmentUpdate.toString());
+      return formData;
+    },
   });
 
-  const updateSetting = <K extends keyof CustomerPortalSettings>(
-    key: K,
-    value: CustomerPortalSettings[K]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -166,7 +202,7 @@ export default function CustomerPortalPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Customer Portal Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -188,7 +224,7 @@ export default function CustomerPortalPage() {
         <Card className={settings.enableCustomerPortal ? "" : "opacity-60"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Lock className="h-4 w-4" />
+              <Lock className="size-4" />
               Portal Access & Security
               <Tooltip>
                 <TooltipTrigger>
@@ -210,7 +246,7 @@ export default function CustomerPortalPage() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <Label className="flex items-center gap-2 font-medium text-base">
-                  <Globe className="h-4 w-4" />
+                  <Globe className="size-4" />
                   Enable Customer Portal
                   <Tooltip>
                     <TooltipTrigger>
@@ -336,7 +372,7 @@ export default function CustomerPortalPage() {
         <Card className={settings.enableCustomerPortal ? "" : "opacity-60"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Eye className="h-4 w-4" />
+              <Eye className="size-4" />
               What Customers Can See
               <Tooltip>
                 <TooltipTrigger>
@@ -470,7 +506,7 @@ export default function CustomerPortalPage() {
         <Card className={settings.enableCustomerPortal ? "" : "opacity-60"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="size-4" />
               What Customers Can Do
               <Tooltip>
                 <TooltipTrigger>
@@ -737,7 +773,7 @@ export default function CustomerPortalPage() {
         <Card className={settings.enableCustomerPortal ? "" : "opacity-60"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Star className="h-4 w-4" />
+              <Star className="size-4" />
               Portal Features
               <Tooltip>
                 <TooltipTrigger>
@@ -880,7 +916,7 @@ export default function CustomerPortalPage() {
         <Card className={settings.enableCustomerPortal ? "" : "opacity-60"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Palette className="h-4 w-4" />
+              <Palette className="size-4" />
               Portal Branding
               <Tooltip>
                 <TooltipTrigger>
@@ -1007,10 +1043,18 @@ export default function CustomerPortalPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave} type="button">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Portal Settings
+          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Portal Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

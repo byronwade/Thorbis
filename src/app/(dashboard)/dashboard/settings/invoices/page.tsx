@@ -23,9 +23,11 @@ import {
   Save,
   Settings,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getInvoiceSettings, updateInvoiceSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -114,7 +116,9 @@ type InvoiceSettings = {
 };
 
 export default function InvoiceSettingsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<InvoiceSettings>({
     // Invoice Numbering
     autoGenerateNumbers: true,
@@ -171,6 +175,40 @@ export default function InvoiceSettingsPage() {
       "We appreciate your prompt payment. Please contact us if you have any questions.",
   });
 
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getInvoiceSettings();
+
+        if (result.success && result.data) {
+          setSettings((prev) => ({
+            ...prev,
+            invoicePrefix: result.data.invoice_number_prefix || "INV",
+            nextInvoiceNumber: result.data.next_invoice_number || 1,
+            defaultPaymentTerms: result.data.default_payment_terms === 30 ? "net30" :
+                                 result.data.default_payment_terms === 15 ? "net15" :
+                                 result.data.default_payment_terms === 60 ? "net60" : "net30",
+            lateFeeEnabled: result.data.late_fee_enabled ?? false,
+            lateFeePercent: result.data.late_fee_amount ?? 1.5,
+            lateFeeGracePeriodDays: result.data.late_fee_grace_period_days ?? 3,
+            defaultTaxRate: result.data.default_tax_rate ?? 0,
+            taxLabel: result.data.tax_label || "Sales Tax",
+            defaultInvoiceTerms: result.data.default_terms || "",
+            sendOverdueReminders: result.data.send_reminders ?? true,
+          }));
+        }
+      } catch (error) {
+        toast.error("Failed to load invoice settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
+
   const updateSetting = <K extends keyof InvoiceSettings>(
     key: K,
     value: InvoiceSettings[K]
@@ -207,10 +245,45 @@ export default function InvoiceSettingsPage() {
   };
 
   async function handleSave() {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+    startTransition(async () => {
+      const formData = new FormData();
+
+      // Convert payment terms to days
+      const paymentTermsDays =
+        settings.defaultPaymentTerms === "net15" ? 15 :
+        settings.defaultPaymentTerms === "net30" ? 30 :
+        settings.defaultPaymentTerms === "net60" ? 60 :
+        settings.defaultPaymentTerms === "due-on-receipt" ? 0 :
+        settings.customTermsDays;
+
+      formData.append("invoiceNumberPrefix", settings.invoicePrefix);
+      formData.append("nextInvoiceNumber", settings.nextInvoiceNumber.toString());
+      formData.append("defaultPaymentTerms", paymentTermsDays.toString());
+      formData.append("lateFeeEnabled", settings.lateFeeEnabled.toString());
+      formData.append("lateFeeType", "percentage");
+      formData.append("lateFeeAmount", settings.lateFeePercent.toString());
+      formData.append("lateFeeGracePeriodDays", settings.lateFeeGracePeriodDays.toString());
+      formData.append("defaultTerms", settings.defaultInvoiceTerms);
+      formData.append("defaultTaxRate", settings.defaultTaxRate.toString());
+      formData.append("taxLabel", settings.taxLabel);
+      formData.append("sendReminders", settings.sendOverdueReminders.toString());
+
+      const result = await updateInvoiceSettings(formData);
+
+      if (result.success) {
+        toast.success("Invoice settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save invoice settings");
+      }
+    });
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -218,7 +291,7 @@ export default function InvoiceSettingsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Invoice Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -232,7 +305,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Hash className="h-4 w-4" />
+              <Hash className="size-4" />
               Invoice Numbering
               <Tooltip>
                 <TooltipTrigger>
@@ -408,7 +481,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               Payment Terms
               <Tooltip>
                 <TooltipTrigger>
@@ -635,7 +708,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CreditCard className="h-4 w-4" />
+              <CreditCard className="size-4" />
               Payment Methods
               <Tooltip>
                 <TooltipTrigger>
@@ -819,7 +892,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="size-4" />
               Tax Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -989,7 +1062,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Palette className="h-4 w-4" />
+              <Palette className="size-4" />
               Invoice Appearance
               <Tooltip>
                 <TooltipTrigger>
@@ -1140,7 +1213,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Automatic Actions
               <Tooltip>
                 <TooltipTrigger>
@@ -1312,7 +1385,7 @@ export default function InvoiceSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Custom Messages
               <Tooltip>
                 <TooltipTrigger>
@@ -1417,13 +1490,21 @@ export default function InvoiceSettingsPage() {
 
         {/* Save Button */}
         <div className="flex justify-end gap-4">
-          <Button disabled={isSubmitting} type="button" variant="outline">
+          <Button disabled={isPending} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Invoice Settings
+          <Button disabled={isPending} onClick={handleSave}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Invoice Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

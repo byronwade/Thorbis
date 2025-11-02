@@ -1,0 +1,184 @@
+"use client";
+
+/**
+ * Custom Payment Form Component
+ *
+ * Fully custom Stripe payment form with individual Elements:
+ * - CardNumber
+ * - CardExpiry
+ * - CardCvc
+ * - Integrated with our design system
+ */
+
+import { useState } from "react";
+import {
+	CardNumberElement,
+	CardExpiryElement,
+	CardCvcElement,
+	useStripe,
+	useElements,
+} from "@stripe/react-stripe-js";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle } from "lucide-react";
+import type { StripeCardNumberElementChangeEvent } from "@stripe/stripe-js";
+
+type CustomPaymentFormProps = {
+	onSuccess: (paymentMethodId: string) => void;
+	onError: (error: string) => void;
+	buttonText?: string;
+	showButton?: boolean;
+};
+
+export function CustomPaymentForm({
+	onSuccess,
+	onError,
+	buttonText = "Save Payment Method",
+	showButton = true,
+}: CustomPaymentFormProps) {
+	const stripe = useStripe();
+	const elements = useElements();
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [cardComplete, setCardComplete] = useState(false);
+	const [expiryComplete, setExpiryComplete] = useState(false);
+	const [cvcComplete, setCvcComplete] = useState(false);
+	const [cardError, setCardError] = useState<string | null>(null);
+
+	// Styling for Stripe Elements to match our design system
+	const elementOptions = {
+		style: {
+			base: {
+				fontSize: "16px",
+				color: "hsl(var(--foreground))",
+				fontFamily: "inherit",
+				"::placeholder": {
+					color: "hsl(var(--muted-foreground))",
+				},
+			},
+			invalid: {
+				color: "hsl(var(--destructive))",
+			},
+		},
+	};
+
+	const handleCardChange = (event: StripeCardNumberElementChangeEvent) => {
+		setCardComplete(event.complete);
+		if (event.error) {
+			setCardError(event.error.message);
+		} else {
+			setCardError(null);
+		}
+	};
+
+	const handleExpiryChange = (event: any) => {
+		setExpiryComplete(event.complete);
+	};
+
+	const handleCvcChange = (event: any) => {
+		setCvcComplete(event.complete);
+	};
+
+	const isFormComplete = cardComplete && expiryComplete && cvcComplete;
+
+	const handleSubmit = async (e?: React.FormEvent) => {
+		if (e) e.preventDefault();
+
+		if (!stripe || !elements) {
+			onError("Stripe has not loaded yet. Please try again.");
+			return;
+		}
+
+		if (!isFormComplete) {
+			onError("Please complete all payment fields.");
+			return;
+		}
+
+		setIsProcessing(true);
+
+		try {
+			const cardNumberElement = elements.getElement(CardNumberElement);
+
+			if (!cardNumberElement) {
+				throw new Error("Card element not found");
+			}
+
+			// Create payment method
+			const { error, paymentMethod } = await stripe.createPaymentMethod({
+				type: "card",
+				card: cardNumberElement,
+			});
+
+			if (error) {
+				onError(error.message || "Failed to save payment method");
+				setIsProcessing(false);
+			} else if (paymentMethod) {
+				onSuccess(paymentMethod.id);
+				setIsProcessing(false);
+			}
+		} catch (err) {
+			onError(err instanceof Error ? err.message : "An unexpected error occurred");
+			setIsProcessing(false);
+		}
+	};
+
+	return (
+		<form onSubmit={handleSubmit} className="space-y-4">
+			{/* Card Number */}
+			<div className="space-y-2">
+				<Label htmlFor="card-number">Card Number</Label>
+				<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+					<CardNumberElement
+						id="card-number"
+						options={elementOptions}
+						onChange={handleCardChange}
+						className="w-full"
+					/>
+				</div>
+				{cardError && (
+					<div className="flex items-center gap-1 text-sm text-destructive">
+						<AlertCircle className="size-3" />
+						<span>{cardError}</span>
+					</div>
+				)}
+			</div>
+
+			{/* Expiry and CVC */}
+			<div className="grid grid-cols-2 gap-4">
+				<div className="space-y-2">
+					<Label htmlFor="card-expiry">Expiry Date</Label>
+					<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+						<CardExpiryElement
+							id="card-expiry"
+							options={elementOptions}
+							onChange={handleExpiryChange}
+							className="w-full"
+						/>
+					</div>
+				</div>
+
+				<div className="space-y-2">
+					<Label htmlFor="card-cvc">CVC</Label>
+					<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+						<CardCvcElement id="card-cvc" options={elementOptions} onChange={handleCvcChange} className="w-full" />
+					</div>
+				</div>
+			</div>
+
+			{/* Success Indicator */}
+			{isFormComplete && !isProcessing && (
+				<div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
+					<CheckCircle2 className="size-4" />
+					<span>Payment information is valid</span>
+				</div>
+			)}
+
+			{/* Optional Submit Button */}
+			{showButton && (
+				<Button type="submit" disabled={!stripe || isProcessing || !isFormComplete} className="w-full">
+					{isProcessing && <Loader2 className="mr-2 size-4 animate-spin" />}
+					{isProcessing ? "Processing..." : buttonText}
+				</Button>
+			)}
+		</form>
+	);
+}

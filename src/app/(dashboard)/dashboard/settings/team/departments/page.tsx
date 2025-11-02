@@ -129,18 +129,18 @@ export default function DepartmentsPage() {
           <div className="mb-4">
             <Link href="/dashboard/settings/team">
               <Button size="sm" type="button" variant="ghost">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 size-4" />
                 Back to Team
               </Button>
             </Link>
           </div>
-          <h1 className="font-bold text-3xl tracking-tight">Departments</h1>
+          <h1 className="font-bold text-4xl tracking-tight">Departments</h1>
           <p className="mt-2 text-muted-foreground">
             Organize your team into departments for better management
           </p>
         </div>
         <Button onClick={() => setShowNewForm(true)}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 size-4" />
           Create Department
         </Button>
       </div>
@@ -223,7 +223,7 @@ export default function DepartmentsPage() {
             </div>
             <div className="flex justify-end">
               <Button onClick={handleCreateDepartment}>
-                <Save className="mr-2 h-4 w-4" />
+                <Save className="mr-2 size-4" />
                 Create Department
               </Button>
             </div>
@@ -263,7 +263,7 @@ export default function DepartmentsPage() {
                       type="button"
                       variant="ghost"
                     >
-                      <MoreVertical className="h-4 w-4" />
+                      <MoreVertical className="size-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -271,7 +271,7 @@ export default function DepartmentsPage() {
                     <DropdownMenuItem>View Members</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive">
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       Delete Department
                     </DropdownMenuItem>
                   </DropdownMenuContent>

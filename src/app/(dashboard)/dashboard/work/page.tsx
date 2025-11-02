@@ -1,13 +1,14 @@
 import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
+import { notFound } from "next/navigation";
 import { JobsTable } from "@/components/work/jobs-table";
-import { mockJobs } from "@/lib/data/mock-jobs";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Work Page - Server Component
  *
  * Performance optimizations:
  * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
+ * - Real-time data from Supabase
  * - Only JobsTable and JobStatusPipeline components are client-side for interactivity
  * - Better SEO and initial page load performance
  *
@@ -18,10 +19,38 @@ import { mockJobs } from "@/lib/data/mock-jobs";
  * - Full-width seamless datatable layout with toolbar integration
  */
 
-export default function JobsPage() {
-  // Server Component: Data is fetched here before rendering
-  // TODO: Replace mockJobs with real database query
-  // const jobs = await db.select().from(jobsTable).where(...);
+// Configuration constants
+const MAX_JOBS_PER_PAGE = 100;
+
+export default async function JobsPage() {
+  const supabase = await createClient();
+
+  if (!supabase) {
+    return notFound();
+  }
+
+  if (!supabase) {
+    throw new Error("Database connection not available");
+  }
+
+  // Fetch jobs from Supabase with customer and property details
+  // Note: Use the foreign key column name with ! to specify the exact relationship
+  const { data: jobs, error } = await supabase
+    .from("jobs")
+    .select(`
+      *,
+      customers!customer_id(first_name, last_name, email, phone),
+      properties!property_id(address, city, state, zip_code)
+    `)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(MAX_JOBS_PER_PAGE);
+
+  if (error) {
+    // Supabase PostgREST errors may not have standard structure
+    const errorMessage = error.message || error.hint || JSON.stringify(error) || "Unknown database error";
+    throw new Error(`Failed to load jobs: ${errorMessage}`);
+  }
 
   return (
     <>
@@ -30,7 +59,7 @@ export default function JobsPage() {
 
       {/* Jobs Table - Client component handles sorting, filtering, pagination */}
       <div>
-        <JobsTable itemsPerPage={50} jobs={mockJobs} />
+        <JobsTable itemsPerPage={50} jobs={jobs || []} />
       </div>
     </>
   );

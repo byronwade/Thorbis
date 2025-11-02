@@ -24,6 +24,8 @@ import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getBookingSettings, updateBookingSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -101,9 +103,6 @@ type CompanyProfile = {
 };
 
 export default function BookingSettingsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Mock company profile settings (would come from API/database)
   const companyProfile: CompanyProfile = {
     hoursOfOperation: {
       monday: { enabled: true, start: "08:00", end: "17:00" },
@@ -119,7 +118,17 @@ export default function BookingSettingsPage() {
     state: "CA",
   };
 
-  const [settings, setSettings] = useState<BookingSettings>({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting: updateSettingHook,
+    saveSettings,
+  } = useSettings<BookingSettings>({
+    getter: getBookingSettings,
+    setter: updateBookingSettings,
+    initialState: {
     enableOnlineBooking: true,
     requireApproval: false,
     bookingWindowDays: 30,
@@ -145,41 +154,50 @@ export default function BookingSettingsPage() {
     },
     useCompanyHours: true,
     useCompanyServiceArea: true,
+    },
+    settingsName: "booking",
+    transformLoad: (data) => ({
+      enableOnlineBooking: data.online_booking_enabled ?? false,
+      requireApproval: data.require_account ?? false,
+      sendConfirmationEmail: data.send_confirmation_email ?? true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("onlineBookingEnabled", settings.enableOnlineBooking.toString());
+      formData.append("requireAccount", settings.requireApproval.toString());
+      formData.append("sendConfirmationEmail", settings.sendConfirmationEmail.toString());
+      formData.append("sendConfirmationSms", "false");
+      formData.append("minBookingNoticeHours", "24");
+      formData.append("requireServiceSelection", "true");
+      formData.append("showPricing", "true");
+      formData.append("allowTimePreferences", "true");
+      return formData;
+    },
   });
 
-  const updateSetting = <K extends keyof BookingSettings>(
-    key: K,
-    value: BookingSettings[K]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+  // Alias for UI compatibility
+  const updateSetting = updateSettingHook;
 
   const updateBusinessHours = (
     day: DayOfWeek,
     field: keyof BusinessHours,
     value: boolean | string
   ) => {
-    setSettings((prev) => ({
-      ...prev,
-      businessHours: {
-        ...prev.businessHours,
-        [day]: {
-          ...prev.businessHours[day],
-          [field]: value,
-        },
+    updateSettingHook("businessHours", {
+      ...settings.businessHours,
+      [day]: {
+        ...settings.businessHours[day],
+        [field]: value,
       },
-    }));
+    });
   };
 
-  async function handleSave() {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    // TODO: Save settings to database/API
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   const daysOfWeek: { key: DayOfWeek; label: string }[] = [
@@ -197,7 +215,7 @@ export default function BookingSettingsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Booking Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -208,7 +226,7 @@ export default function BookingSettingsPage() {
         {/* Inheritance Status Banner */}
         {(settings.useCompanyHours || settings.useCompanyServiceArea) && (
           <Alert>
-            <Link2 className="h-4 w-4" />
+            <Link2 className="size-4" />
             <AlertDescription>
               <span className="font-medium">
                 Inheriting settings from Company Profile:
@@ -247,7 +265,7 @@ export default function BookingSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Globe className="h-4 w-4" />
+              <Globe className="size-4" />
               Online Booking
               <Tooltip>
                 <TooltipTrigger>
@@ -383,7 +401,7 @@ export default function BookingSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Clock className="h-4 w-4" />
+                  <Clock className="size-4" />
                   Business Hours
                   <Tooltip>
                     <TooltipTrigger>
@@ -422,7 +440,7 @@ export default function BookingSettingsPage() {
           <CardContent className="space-y-4">
             {settings.useCompanyHours && (
               <Alert>
-                <Link2 className="h-4 w-4" />
+                <Link2 className="size-4" />
                 <AlertDescription>
                   Business hours are inherited from your{" "}
                   <a
@@ -503,7 +521,7 @@ export default function BookingSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               Scheduling Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -624,7 +642,7 @@ export default function BookingSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="size-4" />
                   Service Area
                   <Tooltip>
                     <TooltipTrigger>
@@ -663,7 +681,7 @@ export default function BookingSettingsPage() {
           <CardContent className="space-y-4">
             {settings.useCompanyServiceArea && (
               <Alert>
-                <Link2 className="h-4 w-4" />
+                <Link2 className="size-4" />
                 <AlertDescription>
                   Service area is inherited from your{" "}
                   <a
@@ -736,7 +754,7 @@ export default function BookingSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="size-4" />
               Cancellation & Rescheduling
               <Tooltip>
                 <TooltipTrigger>
@@ -823,7 +841,7 @@ export default function BookingSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="size-4" />
               Booking Notifications
               <Tooltip>
                 <TooltipTrigger>
@@ -939,10 +957,18 @@ export default function BookingSettingsPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave} type="button">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Booking Settings
+          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Booking Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

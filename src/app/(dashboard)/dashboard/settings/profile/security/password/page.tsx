@@ -21,9 +21,11 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { updatePassword } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -89,6 +91,8 @@ const passwordSchema = z
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function PasswordPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -151,7 +155,23 @@ export default function PasswordPage() {
 
   const strength = getPasswordStrength(newPassword);
 
-  function onSubmit(_values: PasswordFormData) {}
+  function onSubmit(values: PasswordFormData) {
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("currentPassword", values.currentPassword);
+      formData.append("newPassword", values.newPassword);
+      formData.append("confirmPassword", values.confirmPassword);
+
+      const result = await updatePassword(formData);
+
+      if (result.success) {
+        form.reset();
+        toast.success("Password updated successfully");
+      } else {
+        toast.error(result.error || "Failed to update password");
+      }
+    });
+  }
 
   return (
     <div className="space-y-8">
@@ -159,11 +179,11 @@ export default function PasswordPage() {
       <div className="flex items-center gap-4">
         <Button asChild size="icon" variant="outline">
           <Link href="/dashboard/settings/profile/security">
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">Change Password</h1>
+          <h1 className="font-bold text-4xl tracking-tight">Change Password</h1>
           <p className="text-muted-foreground">
             Update your password to keep your account secure
           </p>
@@ -211,9 +231,9 @@ export default function PasswordPage() {
                             variant="ghost"
                           >
                             {showCurrentPassword ? (
-                              <EyeOff className="h-4 w-4" />
+                              <EyeOff className="size-4" />
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <Eye className="size-4" />
                             )}
                           </Button>
                         </div>
@@ -244,9 +264,9 @@ export default function PasswordPage() {
                             variant="ghost"
                           >
                             {showNewPassword ? (
-                              <EyeOff className="h-4 w-4" />
+                              <EyeOff className="size-4" />
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <Eye className="size-4" />
                             )}
                           </Button>
                         </div>
@@ -301,9 +321,9 @@ export default function PasswordPage() {
                             variant="ghost"
                           >
                             {showConfirmPassword ? (
-                              <EyeOff className="h-4 w-4" />
+                              <EyeOff className="size-4" />
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <Eye className="size-4" />
                             )}
                           </Button>
                         </div>
@@ -346,9 +366,9 @@ export default function PasswordPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button type="submit">
-                    <Shield className="mr-2 h-4 w-4" />
-                    Update Password
+                  <Button type="submit" disabled={isPending}>
+                    <Shield className="mr-2 size-4" />
+                    {isPending ? "Updating..." : "Update Password"}
                   </Button>
                   <Button asChild type="button" variant="outline">
                     <Link href="/dashboard/settings/profile/security">

@@ -196,8 +196,7 @@ export const getUserCompanies = cache(
         company_id,
         companies!inner (
           id,
-          name,
-          subscription_plan
+          name
         )
       `
         )
@@ -210,11 +209,12 @@ export const getUserCompanies = cache(
       }
 
       // Map to simplified structure
+      // Note: plan defaults to "Enterprise" since subscription_plan column doesn't exist yet
       return (
         memberships?.map((m: any) => ({
           id: m.companies.id,
           name: m.companies.name,
-          plan: m.companies.subscription_plan || "free",
+          plan: "Enterprise", // TODO: Add subscription_plan column to companies table
         })) || []
       );
     } catch (error) {
@@ -223,6 +223,42 @@ export const getUserCompanies = cache(
     }
   }
 );
+
+/**
+ * Get User Company ID
+ *
+ * Gets the primary company ID for the current user
+ * Returns null if user is not part of any company
+ * Cached per request for optimal performance
+ */
+export const getUserCompanyId = cache(async (): Promise<string | null> => {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return null;
+
+    const supabase = await createClient();
+    if (!supabase) return null;
+
+    // Get first active company membership
+    const { data: membership, error } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user company:", error);
+      return null;
+    }
+
+    return membership?.company_id || null;
+  } catch (error) {
+    console.error("Unexpected error fetching user company:", error);
+    return null;
+  }
+});
 
 /**
  * Update User Profile

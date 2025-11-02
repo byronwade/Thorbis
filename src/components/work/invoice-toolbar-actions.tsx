@@ -9,11 +9,12 @@
  * - Export to PDF
  * - Send via email
  *
- * Note: Invoice number and status are displayed in the toolbar title/subtitle,
- * not here to avoid duplication.
+ * Note:
+ * - Invoice number and status are displayed in the toolbar title/subtitle
+ * - Right sidebar toggle is now handled by AppToolbar (unified across all pages)
  */
 
-import { Download, Eye, Mail, PanelRight, Save } from "lucide-react";
+import { Download, Eye, Mail, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +23,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useInvoiceSidebarStore } from "@/lib/stores/invoice-sidebar-store";
 
 // ============================================================================
 // Invoice Toolbar Actions Component
@@ -30,8 +30,6 @@ import { useInvoiceSidebarStore } from "@/lib/stores/invoice-sidebar-store";
 
 export function InvoiceToolbarActions() {
   const [isSaving, setIsSaving] = useState(false);
-  const toggleRightSidebar = useInvoiceSidebarStore((state) => state.toggle);
-  const isRightSidebarOpen = useInvoiceSidebarStore((state) => state.isOpen);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -57,8 +55,8 @@ export function InvoiceToolbarActions() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Save Button */}
+    <div className="flex items-center gap-1">
+      {/* Primary Action - Save */}
       <Button
         disabled={isSaving}
         onClick={handleSave}
@@ -69,12 +67,18 @@ export function InvoiceToolbarActions() {
         {isSaving ? "Saving..." : "Save"}
       </Button>
 
-      {/* Preview */}
+      {/* Secondary Actions - Icon Only, Ghost Style */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button onClick={handlePreview} size="sm" variant="outline">
-              <Eye className="size-4" />
+            <Button
+              className="size-7 shrink-0"
+              onClick={handlePreview}
+              size="icon"
+              variant="ghost"
+            >
+              <Eye />
+              <span className="sr-only">Preview invoice</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -83,12 +87,17 @@ export function InvoiceToolbarActions() {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Export PDF */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button onClick={handleExportPDF} size="sm" variant="outline">
-              <Download className="size-4" />
+            <Button
+              className="size-7 shrink-0"
+              onClick={handleExportPDF}
+              size="icon"
+              variant="ghost"
+            >
+              <Download />
+              <span className="sr-only">Export to PDF</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -97,36 +106,21 @@ export function InvoiceToolbarActions() {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Send Email */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button onClick={handleSendEmail} size="sm" variant="outline">
-              <Mail className="size-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Send via email</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      {/* Right Sidebar Toggle */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              onClick={toggleRightSidebar}
-              size="sm"
-              variant={isRightSidebarOpen ? "default" : "outline"}
+              className="size-7 shrink-0"
+              onClick={handleSendEmail}
+              size="icon"
+              variant="ghost"
             >
-              <PanelRight className="size-4" />
+              <Mail />
+              <span className="sr-only">Send via email</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>
-              {isRightSidebarOpen ? "Hide" : "Show"} invoice customization
-            </p>
+            <p>Send via email</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

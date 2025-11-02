@@ -1,0 +1,462 @@
+/**
+ * Telnyx WebRTC Hook
+ *
+ * Provides WebRTC calling functionality using the Telnyx WebRTC SDK.
+ * Compatible with both web browsers and React Native.
+ *
+ * Features:
+ * - Make and receive calls
+ * - Call controls (mute, hold, end)
+ * - Real-time call state management
+ * - Audio device selection
+ * - Connection status monitoring
+ */
+
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { TelnyxRTC } from "@telnyx/webrtc";
+import type { Call, INotification } from "@telnyx/webrtc";
+
+/**
+ * Call state types
+ */
+export type CallState = "idle" | "connecting" | "ringing" | "active" | "held" | "ended";
+
+/**
+ * Call direction
+ */
+export type CallDirection = "inbound" | "outbound";
+
+/**
+ * WebRTC call information
+ */
+export interface WebRTCCall {
+  id: string;
+  state: CallState;
+  direction: CallDirection;
+  remoteNumber: string;
+  remoteName?: string;
+  localNumber: string;
+  startTime?: Date;
+  duration: number;
+  isMuted: boolean;
+  isHeld: boolean;
+  isRecording: boolean;
+}
+
+/**
+ * Hook options
+ */
+export interface UseTelnyxWebRTCOptions {
+  username: string;
+  password: string;
+  autoConnect?: boolean;
+  debug?: boolean;
+  onIncomingCall?: (call: WebRTCCall) => void;
+  onCallEnded?: (call: WebRTCCall) => void;
+}
+
+/**
+ * Hook return type
+ */
+export interface UseTelnyxWebRTCReturn {
+  // Connection state
+  isConnected: boolean;
+  isConnecting: boolean;
+  connectionError: string | null;
+
+  // Current call
+  currentCall: WebRTCCall | null;
+
+  // Call actions
+  makeCall: (destination: string, callerIdNumber?: string) => Promise<void>;
+  answerCall: () => Promise<void>;
+  endCall: () => Promise<void>;
+  muteCall: () => Promise<void>;
+  unmuteCall: () => Promise<void>;
+  holdCall: () => Promise<void>;
+  unholdCall: () => Promise<void>;
+  sendDTMF: (digit: string) => Promise<void>;
+
+  // Connection actions
+  connect: () => Promise<void>;
+  disconnect: () => void;
+
+  // Audio devices
+  audioDevices: MediaDeviceInfo[];
+  setAudioDevice: (deviceId: string) => Promise<void>;
+}
+
+/**
+ * Telnyx WebRTC Hook
+ *
+ * Manages WebRTC connection and call state
+ */
+export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRTCReturn {
+  // Connection state
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+
+  // Call state
+  const [currentCall, setCurrentCall] = useState<WebRTCCall | null>(null);
+
+  // Audio devices
+  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
+
+  // Refs
+  const clientRef = useRef<TelnyxRTC | null>(null);
+  const activeCallRef = useRef<Call | null>(null);
+
+  /**
+   * Initialize WebRTC client
+   */
+  const initializeClient = useCallback(() => {
+    if (clientRef.current) {
+      return clientRef.current;
+    }
+
+    const client = new TelnyxRTC({
+      login: options.username,
+      password: options.password,
+      ringtoneFile: undefined, // Use browser default
+      ringbackFile: undefined,
+      debug: options.debug || false,
+    });
+
+    // Handle ready event
+    client.on("telnyx.ready", () => {
+      console.log("Telnyx WebRTC client ready");
+      setIsConnected(true);
+      setIsConnecting(false);
+      setConnectionError(null);
+    });
+
+    // Handle error event
+    client.on("telnyx.error", (error: any) => {
+      console.error("Telnyx WebRTC error:", error);
+      setConnectionError(error.message || "Connection error");
+      setIsConnecting(false);
+    });
+
+    // Handle socket error
+    client.on("telnyx.socket.error", (error: any) => {
+      console.error("Telnyx socket error:", error);
+      setConnectionError("Socket connection failed");
+      setIsConnecting(false);
+      setIsConnected(false);
+    });
+
+    // Handle socket close
+    client.on("telnyx.socket.close", () => {
+      console.log("Telnyx socket closed");
+      setIsConnected(false);
+    });
+
+    // Handle incoming call
+    client.on("telnyx.notification", (notification: INotification) => {
+      if (notification.type === "callUpdate") {
+        const call = notification.call as Call & any;
+
+        // Update call state
+        const callState = mapTelnyxCallState(call.state);
+        const callInfo: WebRTCCall = {
+          id: call.id,
+          state: callState,
+          direction: call.direction === "inbound" ? "inbound" : "outbound",
+          remoteNumber: call.remoteNumber || "Unknown",
+          remoteName: call.remoteName,
+          localNumber: call.localNumber || "",
+          startTime: callState === "active" ? new Date() : undefined,
+          duration: 0,
+          isMuted: false,
+          isHeld: call.state === "held",
+          isRecording: false,
+        };
+
+        setCurrentCall(callInfo);
+        activeCallRef.current = call;
+
+        // Notify parent component
+        if (call.direction === "inbound" && call.state === "ringing") {
+          options.onIncomingCall?.(callInfo);
+        }
+
+        // Handle call ended
+        if (call.state === "destroy" || call.state === "hangup") {
+          options.onCallEnded?.(callInfo);
+          setCurrentCall(null);
+          activeCallRef.current = null;
+        }
+      }
+    });
+
+    clientRef.current = client;
+    return client;
+  }, [options]);
+
+  /**
+   * Connect to Telnyx
+   */
+  const connect = useCallback(async () => {
+    try {
+      setIsConnecting(true);
+      setConnectionError(null);
+
+      const client = initializeClient();
+      await client.connect();
+    } catch (error) {
+      console.error("Failed to connect:", error);
+      setConnectionError(error instanceof Error ? error.message : "Connection failed");
+      setIsConnecting(false);
+    }
+  }, [initializeClient]);
+
+  /**
+   * Disconnect from Telnyx
+   */
+  const disconnect = useCallback(() => {
+    if (clientRef.current) {
+      clientRef.current.disconnect();
+      clientRef.current = null;
+    }
+    setIsConnected(false);
+    setCurrentCall(null);
+    activeCallRef.current = null;
+  }, []);
+
+  /**
+   * Make an outbound call
+   */
+  const makeCall = useCallback(
+    async (destination: string, callerIdNumber?: string) => {
+      if (!clientRef.current || !isConnected) {
+        throw new Error("Not connected to Telnyx");
+      }
+
+      try {
+        const call = await clientRef.current.newCall({
+          destinationNumber: destination,
+          callerNumber: callerIdNumber,
+        });
+
+        activeCallRef.current = call;
+      } catch (error) {
+        console.error("Failed to make call:", error);
+        throw error;
+      }
+    },
+    [isConnected]
+  );
+
+  /**
+   * Answer incoming call
+   */
+  const answerCall = useCallback(async () => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call to answer");
+    }
+
+    try {
+      await activeCallRef.current.answer();
+    } catch (error) {
+      console.error("Failed to answer call:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * End active call
+   */
+  const endCall = useCallback(async () => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call to end");
+    }
+
+    try {
+      await activeCallRef.current.hangup();
+      setCurrentCall(null);
+      activeCallRef.current = null;
+    } catch (error) {
+      console.error("Failed to end call:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Mute call
+   */
+  const muteCall = useCallback(async () => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call to mute");
+    }
+
+    try {
+      await activeCallRef.current.muteAudio();
+      setCurrentCall((prev) => (prev ? { ...prev, isMuted: true } : null));
+    } catch (error) {
+      console.error("Failed to mute call:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Unmute call
+   */
+  const unmuteCall = useCallback(async () => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call to unmute");
+    }
+
+    try {
+      await activeCallRef.current.unmuteAudio();
+      setCurrentCall((prev) => (prev ? { ...prev, isMuted: false } : null));
+    } catch (error) {
+      console.error("Failed to unmute call:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Hold call
+   */
+  const holdCall = useCallback(async () => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call to hold");
+    }
+
+    try {
+      await activeCallRef.current.hold();
+      setCurrentCall((prev) => (prev ? { ...prev, isHeld: true } : null));
+    } catch (error) {
+      console.error("Failed to hold call:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Unhold call
+   */
+  const unholdCall = useCallback(async () => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call to unhold");
+    }
+
+    try {
+      await activeCallRef.current.unhold();
+      setCurrentCall((prev) => (prev ? { ...prev, isHeld: false } : null));
+    } catch (error) {
+      console.error("Failed to unhold call:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Send DTMF tone
+   */
+  const sendDTMF = useCallback(async (digit: string) => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call");
+    }
+
+    try {
+      await activeCallRef.current.dtmf(digit);
+    } catch (error) {
+      console.error("Failed to send DTMF:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Set audio output device
+   */
+  const setAudioDevice = useCallback(async (deviceId: string) => {
+    if (!activeCallRef.current) {
+      throw new Error("No active call");
+    }
+
+    try {
+      await activeCallRef.current.setAudioOutDevice(deviceId);
+    } catch (error) {
+      console.error("Failed to set audio device:", error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Load audio devices
+   */
+  const loadAudioDevices = useCallback(async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const audioOutputDevices = devices.filter((d) => d.kind === "audiooutput");
+      setAudioDevices(audioOutputDevices);
+    } catch (error) {
+      console.error("Failed to load audio devices:", error);
+    }
+  }, []);
+
+  /**
+   * Auto-connect on mount if enabled
+   */
+  useEffect(() => {
+    if (options.autoConnect) {
+      connect();
+    }
+
+    // Load audio devices
+    loadAudioDevices();
+
+    // Listen for device changes
+    navigator.mediaDevices.addEventListener("devicechange", loadAudioDevices);
+
+    return () => {
+      disconnect();
+      navigator.mediaDevices.removeEventListener("devicechange", loadAudioDevices);
+    };
+  }, [options.autoConnect, connect, disconnect, loadAudioDevices]);
+
+  return {
+    isConnected,
+    isConnecting,
+    connectionError,
+    currentCall,
+    makeCall,
+    answerCall,
+    endCall,
+    muteCall,
+    unmuteCall,
+    holdCall,
+    unholdCall,
+    sendDTMF,
+    connect,
+    disconnect,
+    audioDevices,
+    setAudioDevice,
+  };
+}
+
+/**
+ * Map Telnyx call state to our call state
+ */
+function mapTelnyxCallState(telnyxState: string): CallState {
+  switch (telnyxState) {
+    case "new":
+    case "requesting":
+      return "connecting";
+    case "trying":
+    case "recovering":
+    case "ringing":
+      return "ringing";
+    case "active":
+      return "active";
+    case "held":
+      return "held";
+    case "hangup":
+    case "destroy":
+      return "ended";
+    default:
+      return "idle";
+  }
+}

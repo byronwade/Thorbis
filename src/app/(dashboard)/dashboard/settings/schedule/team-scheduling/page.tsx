@@ -9,9 +9,10 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Save, Users } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, Save, Users, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getTeamSchedulingRules, updateTeamSchedulingRules } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,8 +38,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function TeamSchedulingSettingsPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [settings, setSettings] = useState({
+  const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings } = useSettings({
+    getter: getTeamSchedulingRules,
+    setter: updateTeamSchedulingRules,
+    initialState: {
     allowTechnicianScheduleView: true,
     allowTechnicianScheduleEdit: false,
     technicianCanSwapJobs: true,
@@ -62,23 +65,44 @@ export default function TeamSchedulingSettingsPage() {
     allowOvertimeBooking: false,
     overtimeThreshold: 40,
     overtimeApprovalRequired: true,
+    },
+    settingsName: "team scheduling",
+    transformLoad: (data) => ({
+      allowOvertimeBooking: data.allow_overtime ?? false,
+      overtimeThreshold: 40,
+      allowTechnicianScheduleView: true,
+      allowMultipleTechniciansPerJob: true,
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("maxJobsPerDay", "8");
+      formData.append("maxJobsPerWeek", settings.overtimeThreshold.toString());
+      formData.append("allowOvertime", settings.allowOvertimeBooking.toString());
+      formData.append("preferSameTechnician", "true");
+      formData.append("balanceWorkload", "true");
+      formData.append("optimizeForTravelTime", "true");
+      formData.append("maxTravelTimeMinutes", "60");
+      formData.append("requireBreaks", "true");
+      formData.append("breakAfterHours", "4");
+      formData.append("breakDurationMinutes", "15");
+      return formData;
+    },
   });
 
-  const updateSetting = (key: string, value: string | boolean | number) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSave = () => {
-    setHasUnsavedChanges(false);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Team Scheduling
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -87,9 +111,18 @@ export default function TeamSchedulingSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={() => saveSettings()} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -97,7 +130,7 @@ export default function TeamSchedulingSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="size-4" />
               Technician Permissions
             </CardTitle>
             <CardDescription>

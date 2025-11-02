@@ -1,8 +1,15 @@
 /**
  * Business Financing Page - Server Component
+ *
+ * Performance optimizations:
+ * - Server Component (no "use client")
+ * - Static content rendered on server
+ * - ISR revalidation configured
+ *
+ * Shows Coming Soon component in production, normal page in development
  */
 
-import { Building2, CreditCard, DollarSign } from "lucide-react";
+import { Building2, CreditCard, DollarSign, FileText } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -10,10 +17,53 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ComingSoon } from "@/components/ui/coming-soon";
 
-export const revalidate = 900;
+export const revalidate = 900; // Revalidate every 15 minutes
 
 export default function BusinessFinancingPage() {
+  // Show Coming Soon in production, normal page in development
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
+
+  if (isProduction) {
+    return (
+      <ComingSoon
+        icon={Building2}
+        title="Business Financing"
+        titleGradient="from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
+        description="Access capital to grow your business with term loans, lines of credit, equipment financing, and more - all integrated directly into your workflow."
+        features={[
+          {
+            icon: DollarSign,
+            title: "Term Loans",
+            description: "Fixed-rate business loans with flexible repayment terms to fund expansion and growth",
+            color: "blue-500",
+          },
+          {
+            icon: CreditCard,
+            title: "Lines of Credit",
+            description: "Revolving credit lines for working capital and seasonal cash flow needs",
+            color: "green-500",
+          },
+          {
+            icon: Building2,
+            title: "Equipment Financing",
+            description: "Finance trucks, tools, and equipment with low down payments and competitive rates",
+            color: "purple-500",
+          },
+          {
+            icon: FileText,
+            title: "SBA & More",
+            description: "SBA loans, invoice factoring, and merchant cash advances for every situation",
+            color: "orange-500",
+          },
+        ]}
+        showViewAllLink={false}
+      />
+    );
+  }
+
+  // Development - show normal page
   return (
     <div className="space-y-6">
       <div>
@@ -23,7 +73,7 @@ export default function BusinessFinancingPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Active Loans</CardTitle>

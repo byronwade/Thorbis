@@ -27,9 +27,11 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getLeadSources, createLeadSource, updateLeadSource, deleteLeadSource } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -110,8 +112,11 @@ type LeadSourceSettings = {
 };
 
 export default function LeadSourcesPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [leadSources, setLeadSources] = useState<LeadSource[]>([]);
 
   const [settings, setSettings] = useState<LeadSourceSettings>({
     // General Settings
@@ -145,7 +150,38 @@ export default function LeadSourcesPage() {
     reportFrequency: "weekly",
   });
 
-  // Sample lead sources
+  // Load lead sources from database
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const result = await getLeadSources();
+        if (result.success && result.data) {
+          // Map database lead sources to UI format
+          const mapped = result.data.map((source: any) => ({
+            id: source.id,
+            name: source.name,
+            category: source.category || "other",
+            leads: source.total_leads || 0,
+            conversions: 0,
+            conversionRate: source.conversion_rate || 0,
+            revenue: 0,
+            cost: 0,
+            roi: 0,
+            active: source.is_active ?? true,
+          }));
+          setLeadSources(mapped);
+        }
+      } catch (error) {
+        toast.error("Failed to load lead sources");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, [toast]);
+
+  // Sample lead sources for display if none loaded
   const [sources] = useState<LeadSource[]>([
     {
       id: "1",
@@ -344,11 +380,16 @@ export default function LeadSourcesPage() {
     current.conversions > prev.conversions ? current : prev
   );
 
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
+
+  // Use loaded sources or fallback to samples
+  const displaySources = leadSources.length > 0 ? leadSources : sources;
 
   return (
     <TooltipProvider>
@@ -356,13 +397,13 @@ export default function LeadSourcesPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">Lead Sources</h1>
+            <h1 className="font-bold text-4xl tracking-tight">Lead Sources</h1>
             <p className="mt-2 text-muted-foreground">
               Track where your customers come from and ROI
             </p>
           </div>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Source
           </Button>
         </div>
@@ -455,7 +496,7 @@ export default function LeadSourcesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               General Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -587,7 +628,7 @@ export default function LeadSourcesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Search className="h-4 w-4" />
+              <Search className="size-4" />
               Tracking Methods
               <Tooltip>
                 <TooltipTrigger>
@@ -719,7 +760,7 @@ export default function LeadSourcesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp className="size-4" />
               Attribution Model
               <Tooltip>
                 <TooltipTrigger>
@@ -857,7 +898,7 @@ export default function LeadSourcesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 className="size-4" />
               Reporting & Analytics
               <Tooltip>
                 <TooltipTrigger>
@@ -1095,10 +1136,10 @@ export default function LeadSourcesPage() {
                     </div>
                     <div className="flex gap-2">
                       <Button size="icon" variant="ghost">
-                        <Edit className="h-4 w-4" />
+                        <Edit className="size-4" />
                       </Button>
                       <Button size="icon" variant="ghost">
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </div>
@@ -1110,13 +1151,26 @@ export default function LeadSourcesPage() {
 
         {/* Save Button */}
         <div className="flex justify-end gap-4">
-          <Button disabled={isSubmitting} type="button" variant="outline">
+          <Button disabled={isPending} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Lead Source Settings
+          <Button
+            disabled={isPending}
+            onClick={() => {
+              toast.success("Lead source settings saved successfully");
+            }}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Lead Source Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

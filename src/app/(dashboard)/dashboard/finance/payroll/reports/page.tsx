@@ -125,7 +125,7 @@ export default function PayrollReportsPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Total Reports</CardTitle>
@@ -207,7 +207,7 @@ export default function PayrollReportsPage() {
                     </CardHeader>
                     <CardContent>
                       <Button className="w-full" size="sm" variant="outline">
-                        <Download className="mr-2 h-4 w-4" />
+                        <Download className="mr-2 size-4" />
                         Generate Report
                       </Button>
                     </CardContent>

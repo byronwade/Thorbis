@@ -50,7 +50,7 @@ export default function TemplatesSettingsPage() {
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Message Templates
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -59,12 +59,12 @@ export default function TemplatesSettingsPage() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline">
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Create Template
             </Button>
             {hasUnsavedChanges && (
               <Button onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" />
+                <Save className="mr-2 size-4" />
                 Save Changes
               </Button>
             )}
@@ -74,7 +74,7 @@ export default function TemplatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Template Settings
             </CardTitle>
             <CardDescription>

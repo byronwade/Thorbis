@@ -113,7 +113,7 @@ export default function FinanceSettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Finance Settings</h1>
+        <h1 className="font-bold text-4xl tracking-tight">Finance Settings</h1>
         <p className="mt-2 text-muted-foreground">
           Manage banking, financing, cards, and financial integrations
         </p>

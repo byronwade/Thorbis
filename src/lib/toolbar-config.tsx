@@ -2,12 +2,15 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CommunicationToolbarActions } from "@/components/communication/communication-toolbar-actions";
+import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions";
 import { JobDetailsToolbarActions } from "@/components/work/job-details-toolbar-actions";
+import { PriceBookItemToolbarActions } from "@/components/work/pricebook-item-toolbar-actions";
+import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 
 type ToolbarConfig = {
@@ -43,8 +46,27 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
     title: "Schedule",
     actions: <ScheduleToolbarActions />,
   },
+  "/dashboard/work/invoices": {
+    title: "Invoices",
+    subtitle: "Create, track, and manage customer invoices",
+  },
+  "/dashboard/work/estimates": {
+    title: "Estimates",
+    subtitle: "Create and manage customer estimates",
+  },
+  "/dashboard/work/contracts": {
+    title: "Contracts",
+    subtitle: "Manage service contracts and agreements",
+  },
+  "/dashboard/work/pricebook": {
+    title: "Price Book",
+    subtitle: "Manage services and materials pricing",
+    actions: <PriceBookToolbarActions />,
+  },
   "/dashboard/customers": {
     title: "Customers",
+    subtitle: "Manage customer relationships and contacts",
+    actions: <CustomersToolbarActions />,
   },
   "/dashboard/finances": {
     title: "Finances",
@@ -72,15 +94,60 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
 };
 
 // Regex patterns for route matching
-const JOB_DETAILS_PATTERN = /^\/dashboard\/work\/([^/]+)$/;
+// Match only job detail pages with numeric/UUID IDs, not page names like "invoices", "schedule", etc.
+// This prevents the job details toolbar from showing on other work pages
+const JOB_DETAILS_PATTERN =
+  /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)([^/]+)$/;
 const PRODUCT_DETAILS_PATTERN = /^\/dashboard\/shop\/([^/]+)$/;
 const INVOICE_DETAILS_PATTERN = /^\/dashboard\/work\/invoices\/([^/]+)$/;
+const PRICEBOOK_DETAILS_PATTERN =
+  /^\/dashboard\/work\/pricebook\/(?!new)([^/]+)$/;
+const PRICEBOOK_NEW_PATTERN = /^\/dashboard\/work\/pricebook\/new$/;
 
 /**
  * Get toolbar config for a given route path
  * Returns undefined if no config found (toolbar will show default layout)
  */
 export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
+  // Check for price book new page pattern: /dashboard/work/pricebook/new
+  const pricebookNewMatch = pathname.match(PRICEBOOK_NEW_PATTERN);
+  if (pricebookNewMatch) {
+    return {
+      title: "Add New Item",
+      subtitle:
+        "Create a new service, material, or package for your price book",
+      actions: (
+        <Button asChild size="sm" variant="ghost">
+          <Link href="/dashboard/work/pricebook">
+            <ArrowLeft className="mr-2 size-4" />
+            Back to Price Book
+          </Link>
+        </Button>
+      ),
+    };
+  }
+
+  // Check for price book details page pattern: /dashboard/work/pricebook/[id]
+  const pricebookDetailsMatch = pathname.match(PRICEBOOK_DETAILS_PATTERN);
+  if (pricebookDetailsMatch) {
+    return {
+      title: "Price Book Item",
+      subtitle: "View and manage price book item details",
+      actions: (
+        <>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/dashboard/work/pricebook">
+              <ArrowLeft className="mr-2 size-4" />
+              Back to Price Book
+            </Link>
+          </Button>
+          <Separator className="h-6" orientation="vertical" />
+          <PriceBookItemToolbarActions />
+        </>
+      ),
+    };
+  }
+
   // Check for invoice details page pattern: /dashboard/work/invoices/[id]
   const invoiceDetailsMatch = pathname.match(INVOICE_DETAILS_PATTERN);
   if (invoiceDetailsMatch) {

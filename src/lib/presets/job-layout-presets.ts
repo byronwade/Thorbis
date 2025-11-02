@@ -40,7 +40,7 @@ function createWidget(
     isResizable: true,
     isDraggable: true,
     ...options,
-  };
+  } as JobWidget;
 }
 
 // ============================================================================

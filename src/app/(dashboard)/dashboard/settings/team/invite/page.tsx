@@ -133,12 +133,12 @@ export default function InviteMemberPage() {
           <div className="mb-4">
             <Link href="/dashboard/settings/team">
               <Button size="sm" type="button" variant="ghost">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 size-4" />
                 Back to Team
               </Button>
             </Link>
           </div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Invite Team Members
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -146,7 +146,7 @@ export default function InviteMemberPage() {
           </p>
         </div>
         <Button onClick={handleSendInvites}>
-          <Send className="mr-2 h-4 w-4" />
+          <Send className="mr-2 size-4" />
           Send {invites.length} Invitation{invites.length !== 1 ? "s" : ""}
         </Button>
       </div>
@@ -195,7 +195,7 @@ export default function InviteMemberPage() {
                       type="button"
                       variant="ghost"
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       Remove
                     </Button>
                   )}
@@ -287,7 +287,7 @@ export default function InviteMemberPage() {
             type="button"
             variant="outline"
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             Add Another Member
           </Button>
         </CardContent>
@@ -301,7 +301,7 @@ export default function InviteMemberPage() {
           </Button>
         </Link>
         <Button onClick={handleSendInvites}>
-          <Send className="mr-2 h-4 w-4" />
+          <Send className="mr-2 size-4" />
           Send {invites.length} Invitation{invites.length !== 1 ? "s" : ""}
         </Button>
       </div>

@@ -9,9 +9,11 @@
  * - Browser API access for enhanced UX
  */
 
-import { Bell, HelpCircle, Save, Smartphone } from "lucide-react";
-import { useState } from "react";
+import { Bell, HelpCircle, Save, Smartphone, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { getNotificationSettings, updateNotificationSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,6 +39,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function NotificationsSettingsPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     // Customer Notifications
@@ -48,9 +53,9 @@ export default function NotificationsSettingsPage() {
     sendPaymentReceipt: true,
 
     // Internal Notifications
-    notifyNewLeads: true,
-    notifyNewLeadsEmail: "sales@yourcompany.com",
-    notifyNewLeadsSMS: true,
+    notifyNewLeads: false,
+    notifyNewLeadsEmail: "",
+    notifyNewLeadsSMS: false,
     notifyJobScheduled: true,
     notifyJobCompleted: true,
     notifyPaymentReceived: true,
@@ -61,7 +66,44 @@ export default function NotificationsSettingsPage() {
     notifyTechnicianJobUpdate: true,
     notifyOfficeOnArrival: true,
     notifyOfficeOnCompletion: true,
+
+    // Channels
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+    inAppNotifications: true,
   });
+
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getNotificationSettings();
+
+        if (result.success && result.data) {
+          setSettings((prev) => ({
+            ...prev,
+            notifyJobScheduled: result.data.notify_new_jobs ?? true,
+            notifyJobCompleted: result.data.notify_job_completions ?? true,
+            notifyNewLeads: result.data.notify_new_customers ?? false,
+            notifyPaymentReceived: result.data.notify_invoice_paid ?? true,
+            notifyTechnicianAssignment: result.data.notify_technician_assigned ?? true,
+            emailNotifications: result.data.email_notifications ?? true,
+            smsNotifications: result.data.sms_notifications ?? false,
+            pushNotifications: result.data.push_notifications ?? true,
+            inAppNotifications: result.data.in_app_notifications ?? true,
+          }));
+        }
+      } catch (error) {
+        toast.error("Failed to load notification settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
 
   const updateSetting = (key: string, value: string | boolean | number) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -69,15 +111,49 @@ export default function NotificationsSettingsPage() {
   };
 
   const handleSave = () => {
-    setHasUnsavedChanges(false);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("notifyNewJobs", settings.notifyJobScheduled.toString());
+      formData.append("notifyJobUpdates", settings.notifyTechnicianJobUpdate.toString());
+      formData.append("notifyJobCompletions", settings.notifyJobCompleted.toString());
+      formData.append("notifyNewCustomers", settings.notifyNewLeads.toString());
+      formData.append("notifyInvoiceSent", "true");
+      formData.append("notifyInvoicePaid", settings.notifyPaymentReceived.toString());
+      formData.append("notifyInvoiceOverdue", "true");
+      formData.append("notifyEstimateSent", "true");
+      formData.append("notifyEstimateApproved", "true");
+      formData.append("notifyScheduleChanges", "true");
+      formData.append("notifyTechnicianAssigned", settings.notifyTechnicianAssignment.toString());
+      formData.append("emailNotifications", settings.emailNotifications.toString());
+      formData.append("smsNotifications", settings.smsNotifications.toString());
+      formData.append("pushNotifications", settings.pushNotifications.toString());
+      formData.append("inAppNotifications", settings.inAppNotifications.toString());
+
+      const result = await updateNotificationSettings(formData);
+
+      if (result.success) {
+        setHasUnsavedChanges(false);
+        toast.success("Notification settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save notification settings");
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Notification Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -85,9 +161,18 @@ export default function NotificationsSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={handleSave} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -95,7 +180,7 @@ export default function NotificationsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Smartphone className="h-4 w-4" />
+              <Smartphone className="size-4" />
               Customer Notifications
             </CardTitle>
             <CardDescription>
@@ -236,7 +321,7 @@ export default function NotificationsSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Bell className="h-4 w-4" />
+              <Bell className="size-4" />
               Internal Notifications
             </CardTitle>
             <CardDescription>Alerts for your team and managers</CardDescription>

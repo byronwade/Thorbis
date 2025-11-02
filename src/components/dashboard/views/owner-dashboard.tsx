@@ -8,10 +8,21 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { KPICard } from "@/components/dashboard/kpi-card";
-import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { SectionHeader } from "@/components/dashboard/section-header";
+
+/**
+ * PERFORMANCE: Lazy load RevenueChart (recharts library ~100KB+)
+ * Only loads when user scrolls to chart section
+ */
+const RevenueChart = dynamic(
+  () => import("@/components/dashboard/revenue-chart").then((mod) => mod.RevenueChart),
+  {
+    loading: () => <ChartSkeleton />,
+  }
+);
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartSkeleton } from "@/components/ui/skeletons";
@@ -83,7 +94,7 @@ export default function OwnerDashboard() {
       </Card>
 
       {/* Top Financial KPIs - 4 columns */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           change="+18.2% vs last month"
           changeType="positive"
@@ -297,7 +308,7 @@ export default function OwnerDashboard() {
       </div>
 
       {/* Business Growth Metrics */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Customer Acquisition</CardTitle>

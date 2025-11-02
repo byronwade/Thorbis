@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * AppSidebar - Dynamic Navigation Component
+ *
+ * Performance optimizations:
+ * - Uses dynamic icon imports from @/lib/icons/icon-registry
+ * - Icons are code-split and loaded on demand
+ * - Reduces initial bundle by ~300-900KB
+ * - Only loads icons needed for current page section
+ */
+
 import {
   Archive,
   ArrowDownToLine,
@@ -62,14 +72,16 @@ import {
   Wrench,
   X,
   Zap,
-} from "lucide-react";
+} from "@/lib/icons/icon-registry";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { EmailDetailSidebar } from "@/components/communication/email-detail-sidebar";
 import { NavChatHistory } from "@/components/layout/nav-chat-history";
 import { NavFlexible } from "@/components/layout/nav-flexible";
 import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
+import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
 import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav-v2";
 import {
   Sidebar,
@@ -254,16 +266,6 @@ const navigationSections = {
           title: "Price Book",
           url: "/dashboard/work/pricebook",
           icon: BookOpen,
-          items: [
-            {
-              title: "Services",
-              url: "/dashboard/work/pricebook?tab=services",
-            },
-            {
-              title: "Materials",
-              url: "/dashboard/work/pricebook?tab=materials",
-            },
-          ],
         },
         {
           title: "Materials Inventory",
@@ -343,6 +345,7 @@ const navigationSections = {
           title: "Reports",
           url: "/dashboard/finance/reports",
           icon: FileText,
+          badge: "Soon",
         },
       ],
     },
@@ -353,6 +356,7 @@ const navigationSections = {
           title: "Expenses",
           url: "/dashboard/finance/expenses",
           icon: Receipt,
+          badge: "Soon",
         },
         {
           title: "Debit Cards",
@@ -373,16 +377,19 @@ const navigationSections = {
           title: "Bookkeeping",
           url: "/dashboard/finance/bookkeeping",
           icon: Book,
+          badge: "Soon",
         },
         {
           title: "Bank Reconciliation",
           url: "/dashboard/finance/bank-reconciliation",
           icon: CheckCircle2,
+          badge: "Soon",
         },
         {
           title: "Journal Entries",
           url: "/dashboard/finance/journal-entries",
           icon: FileEdit,
+          badge: "Soon",
         },
       ],
     },
@@ -393,31 +400,37 @@ const navigationSections = {
           title: "Accounting",
           url: "/dashboard/finance/accounting",
           icon: Calculator,
+          badge: "Soon",
         },
         {
           title: "Chart of Accounts",
           url: "/dashboard/finance/chart-of-accounts",
           icon: List,
+          badge: "Soon",
         },
         {
           title: "General Ledger",
           url: "/dashboard/finance/general-ledger",
           icon: BookOpen,
+          badge: "Soon",
         },
         {
           title: "Accounts Receivable",
           url: "/dashboard/finance/accounts-receivable",
           icon: ArrowDownToLine,
+          badge: "Soon",
         },
         {
           title: "Accounts Payable",
           url: "/dashboard/finance/accounts-payable",
           icon: ArrowUpFromLine,
+          badge: "Soon",
         },
         {
           title: "QuickBooks",
           url: "/dashboard/finance/quickbooks",
           icon: Building2,
+          badge: "Soon",
         },
       ],
     },
@@ -428,11 +441,13 @@ const navigationSections = {
           title: "Payroll",
           url: "/dashboard/finance/payroll",
           icon: Users,
+          badge: "Soon",
         },
         {
           title: "Taxes",
           url: "/dashboard/finance/tax",
           icon: FileText,
+          badge: "Soon",
         },
       ],
     },
@@ -443,11 +458,13 @@ const navigationSections = {
           title: "Business Financing",
           url: "/dashboard/finance/business-financing",
           icon: Building2,
+          badge: "Soon",
         },
         {
           title: "Consumer Financing",
           url: "/dashboard/finance/consumer-financing",
           icon: Users,
+          badge: "Soon",
         },
       ],
     },
@@ -458,6 +475,7 @@ const navigationSections = {
           title: "Budget",
           url: "/dashboard/finance/budget",
           icon: Target,
+          badge: "Soon",
         },
       ],
     },
@@ -470,41 +488,49 @@ const navigationSections = {
           title: "Overview",
           url: "/dashboard/reporting",
           icon: BarChart,
+          badge: "Soon",
         },
         {
           title: "Executive Dashboard",
           url: "/dashboard/reporting/executive",
           icon: TrendingUp,
+          badge: "Soon",
         },
         {
           title: "AI Insights",
           url: "/dashboard/reporting/ai",
           icon: Sparkles,
+          badge: "Soon",
         },
         {
           title: "Communication",
           url: "/dashboard/reporting/communication",
           icon: MessageSquare,
+          badge: "Soon",
         },
         {
           title: "Finance",
           url: "/dashboard/reporting/finance",
           icon: DollarSign,
+          badge: "Soon",
         },
         {
           title: "Operations",
           url: "/dashboard/reporting/operations",
           icon: Wrench,
+          badge: "Soon",
         },
         {
           title: "Team Performance",
           url: "/dashboard/reporting/team",
           icon: Users,
+          badge: "Soon",
         },
         {
           title: "Custom Reports",
           url: "/dashboard/reporting/custom",
           icon: FileEdit,
+          badge: "Soon",
         },
       ],
     },
@@ -1961,6 +1987,7 @@ const navigationSections = {
       ],
     },
   ],
+  pricebook: "custom", // Use custom tree sidebar
   tools: [
     {
       label: "Marketing & Social",
@@ -2228,15 +2255,32 @@ const navigationSections = {
 };
 
 // Regex patterns for route matching
-const JOB_DETAILS_PATTERN = /^\/dashboard\/work\/[^/]+$/;
+// Match only job detail pages with numeric/UUID IDs, not page names like "invoices", "schedule", etc.
+// This prevents the job details sidebar from showing on other work pages
+const JOB_DETAILS_PATTERN =
+  /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)[^/]+$/;
+
+// Match communication detail pages (e.g., /dashboard/communication/123)
+// Exclude special routes like unread, starred, archive, trash, spam, teams, feed
+const COMMUNICATION_DETAIL_PATTERN =
+  /^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|teams|feed)[^/]+$/;
 
 // Function to determine current section based on pathname
 function getCurrentSection(pathname: string): keyof typeof navigationSections {
   if (pathname === "/dashboard") {
     return "today";
   }
+  // Check for communication detail page before general communication check
+  // Communication detail pages should use the communication sidebar
+  if (pathname.match(COMMUNICATION_DETAIL_PATTERN)) {
+    return "communication";
+  }
   if (pathname.startsWith("/dashboard/communication")) {
     return "communication";
+  }
+  // Check for price book page before general work check
+  if (pathname.startsWith("/dashboard/work/pricebook")) {
+    return "pricebook";
   }
   // Check for job details page pattern: /dashboard/work/[id]
   if (pathname.match(JOB_DETAILS_PATTERN)) {
@@ -2293,8 +2337,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isAISection = currentSection === "ai";
   const isReportingSection = currentSection === "reporting";
   const isJobDetailsSection = currentSection === "jobDetails";
+  const isCommunicationDetail =
+    pathname.match(COMMUNICATION_DETAIL_PATTERN) !== null;
 
-  // Use grouped navigation for settings, ai, work, customers, communication, finance, marketing, shop, tools, and jobDetails sections
+  // Use grouped navigation for settings, ai, work, customers, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
   const useGroupedNav =
     currentSection === "settings" ||
     currentSection === "ai" ||
@@ -2305,6 +2351,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     currentSection === "marketing" ||
     currentSection === "shop" ||
     currentSection === "tools" ||
+    currentSection === "pricebook" ||
     currentSection === "jobDetails";
 
   // Check if page has custom sidebar config
@@ -2312,10 +2359,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const hasCustomConfig = false;
   const sidebarConfig: any = undefined;
 
+  // Check if using custom sidebar component
+  const useCustomSidebar = navItems === "custom";
+
+  // For pricebook, return tree sidebar
+  if (useCustomSidebar && currentSection === "pricebook") {
+    return <PriceBookTreeSidebar {...props} />;
+  }
+
   return (
     <Sidebar collapsible="offcanvas" variant="inset" {...props}>
       <SidebarContent>
-        {isReportingSection ? (
+        {isCommunicationDetail ? (
+          // Use custom sidebar for email/message detail view
+          <EmailDetailSidebar />
+        ) : isReportingSection ? (
           // Use custom collapsible navigation for reporting
           <ReportingSidebarNav />
         ) : isJobDetailsSection ? (

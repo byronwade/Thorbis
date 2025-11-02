@@ -2,17 +2,16 @@
 
 /**
  * Communication Page - Client Component
- * Gmail-style table layout
+ * Hub for all communication types with type-specific views
  *
  * Client-side features:
- * - Gmail-style table view with checkboxes
- * - Bulk actions toolbar
- * - Message selection and filtering
- * - Context provider for toolbar integration
+ * - Type-specific views (email, SMS, calls, tickets)
+ * - Filtering by message type
+ * - Search functionality
+ * - Next.js routing to detail pages
  */
 
 import {
-  Archive,
   ChevronLeft,
   ChevronRight,
   Inbox,
@@ -21,22 +20,16 @@ import {
   Phone,
   RefreshCw,
   Search,
-  Star,
   Ticket,
-  Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
+import { CallsView } from "@/components/communication/calls-view";
+import { EmailView } from "@/components/communication/email-view";
+import { SMSView } from "@/components/communication/sms-view";
+import { TicketsView } from "@/components/communication/tickets-view";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 type MessageType = "email" | "sms" | "phone" | "ticket";
@@ -155,12 +148,11 @@ const MOCK_MESSAGES: UnifiedMessage[] = [
 ];
 
 export default function CommunicationPage() {
-  const [selectedMessage, setSelectedMessage] = useState<UnifiedMessage | null>(
-    null
-  );
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isMessageOpen, setIsMessageOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [isDetailView, setIsDetailView] = useState(false);
 
   // Use Zustand store for active filter (shared with toolbar)
   const activeFilter = useCommunicationStore((state) => state.activeFilter);
@@ -213,22 +205,23 @@ export default function CommunicationPage() {
   };
 
   const handleOpenMessage = (message: UnifiedMessage) => {
-    setSelectedMessage(message);
-    setIsMessageOpen(true);
+    setSelectedMessageId(message.id);
+    setIsDetailView(true);
+    router.push(`/dashboard/communication/${message.id}`);
   };
 
   const getMessageIcon = (type: MessageType) => {
     switch (type) {
       case "email":
-        return <Mail className="h-4 w-4" />;
+        return <Mail className="size-4" />;
       case "sms":
-        return <MessageSquare className="h-4 w-4" />;
+        return <MessageSquare className="size-4" />;
       case "phone":
-        return <Phone className="h-4 w-4" />;
+        return <Phone className="size-4" />;
       case "ticket":
-        return <Ticket className="h-4 w-4" />;
+        return <Ticket className="size-4" />;
       default:
-        return <MessageSquare className="h-4 w-4" />;
+        return <MessageSquare className="size-4" />;
     }
   };
 
@@ -273,6 +266,23 @@ export default function CommunicationPage() {
     return date.toLocaleDateString();
   };
 
+  // Render different views based on activeFilter
+  const renderView = () => {
+    switch (activeFilter) {
+      case "email":
+        return <EmailView messages={filteredMessages} />;
+      case "sms":
+        return <SMSView messages={filteredMessages} />;
+      case "phone":
+        return <CallsView messages={filteredMessages} />;
+      case "ticket":
+        return <TicketsView messages={filteredMessages} />;
+      default:
+        // For "all", show email view (could be a combined view in the future)
+        return <EmailView messages={filteredMessages} />;
+    }
+  };
+
   return (
     <>
       <div className="flex h-full flex-col">
@@ -288,7 +298,7 @@ export default function CommunicationPage() {
               onClick={() => setActiveFilter("all")}
               type="button"
             >
-              <Inbox className="h-4 w-4" />
+              <Inbox className="size-4" />
               All Messages
               <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
                 {messageCounts.all}
@@ -307,7 +317,7 @@ export default function CommunicationPage() {
               onClick={() => setActiveFilter("email")}
               type="button"
             >
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Email
               <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
                 {messageCounts.email}
@@ -326,7 +336,7 @@ export default function CommunicationPage() {
               onClick={() => setActiveFilter("sms")}
               type="button"
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="size-4" />
               Texts
               <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
                 {messageCounts.sms}
@@ -345,7 +355,7 @@ export default function CommunicationPage() {
               onClick={() => setActiveFilter("phone")}
               type="button"
             >
-              <Phone className="h-4 w-4" />
+              <Phone className="size-4" />
               Calls
               <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
                 {messageCounts.phone}
@@ -364,7 +374,7 @@ export default function CommunicationPage() {
               onClick={() => setActiveFilter("ticket")}
               type="button"
             >
-              <Ticket className="h-4 w-4" />
+              <Ticket className="size-4" />
               Support
               <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
                 {messageCounts.ticket}
@@ -376,245 +386,34 @@ export default function CommunicationPage() {
           </div>
         </div>
 
-        {/* Toolbar */}
+        {/* Search Bar */}
         <div className="flex items-center gap-2 border-b px-4 py-2">
-          <Checkbox
-            checked={
-              selectedIds.size === filteredMessages.length &&
-              filteredMessages.length > 0
-            }
-            onCheckedChange={handleSelectAll}
-          />
           <Button size="icon" variant="ghost">
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className="size-4" />
           </Button>
-
-          {selectedIds.size > 0 && (
-            <>
-              <div className="mx-2 h-4 w-px bg-border" />
-              <Button size="sm" variant="ghost">
-                <Archive className="mr-2 h-4 w-4" />
-                Archive
-              </Button>
-              <Button size="sm" variant="ghost">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </Button>
-              <Button size="sm" variant="ghost">
-                <Star className="mr-2 h-4 w-4" />
-                Star
-              </Button>
-              <span className="ml-2 text-muted-foreground text-sm">
-                {selectedIds.size} selected
-              </span>
-            </>
-          )}
-
+          <div className="relative max-w-md flex-1">
+            <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
+            <Input
+              className="h-9 pl-8"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search messages..."
+              value={searchQuery}
+            />
+          </div>
           <div className="ml-auto flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
-              <Input
-                className="h-9 w-64 pl-8"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search messages..."
-                value={searchQuery}
-              />
-            </div>
             <Button size="icon" variant="ghost">
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="size-4" />
             </Button>
             <span className="text-sm">1-{filteredMessages.length}</span>
             <Button size="icon" variant="ghost">
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="size-4" />
             </Button>
           </div>
         </div>
 
-        {/* Message Table */}
-        <div className="flex-1 overflow-auto">
-          {filteredMessages.length === 0 ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="space-y-2 text-center">
-                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
-                <p className="font-medium">No messages found</p>
-                <p className="text-muted-foreground text-sm">
-                  Try adjusting your search
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="divide-y">
-              {filteredMessages.map((message) => (
-                <div
-                  className={`group flex cursor-pointer items-center gap-4 px-4 py-2 transition-colors hover:bg-muted/50 ${
-                    message.status === "unread"
-                      ? "bg-blue-50/30 dark:bg-blue-950/10"
-                      : ""
-                  } ${selectedIds.has(message.id) ? "bg-muted/50" : ""}`}
-                  key={message.id}
-                  onClick={() => handleOpenMessage(message)}
-                >
-                  <div
-                    className="flex items-center gap-3"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Checkbox
-                      checked={selectedIds.has(message.id)}
-                      onCheckedChange={() => handleSelectMessage(message.id)}
-                    />
-                    <button
-                      className="opacity-0 transition-opacity group-hover:opacity-100"
-                      type="button"
-                    >
-                      <Star className="h-4 w-4 text-muted-foreground hover:text-yellow-500" />
-                    </button>
-                  </div>
-
-                  <div className="flex min-w-0 flex-1 items-center gap-4">
-                    <div className="flex w-48 shrink-0 items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
-                          {message.from
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span
-                        className={`truncate text-sm ${
-                          message.status === "unread" ? "font-semibold" : ""
-                        }`}
-                      >
-                        {message.from}
-                      </span>
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        {getMessageIcon(message.type)}
-                        {message.subject && (
-                          <span
-                            className={`text-sm ${
-                              message.status === "unread" ? "font-semibold" : ""
-                            }`}
-                          >
-                            {message.subject}
-                          </span>
-                        )}
-                        <span className="text-muted-foreground text-sm">
-                          - {message.preview.substring(0, 80)}...
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-2">
-                      {message.tags?.slice(0, 2).map((tag) => (
-                        <Badge className="text-xs" key={tag} variant="outline">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {message.attachments && (
-                        <span className="text-muted-foreground text-xs">
-                          📎
-                        </span>
-                      )}
-                      <span className="w-20 text-right text-muted-foreground text-xs">
-                        {formatTimestamp(message.timestamp)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Type-specific View */}
+        {renderView()}
       </div>
-
-      {/* Message Detail Sheet */}
-      <Sheet onOpenChange={setIsMessageOpen} open={isMessageOpen}>
-        <SheetContent className="w-full sm:max-w-2xl">
-          {selectedMessage && (
-            <>
-              <SheetHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      {getMessageIcon(selectedMessage.type)}
-                      <SheetTitle>
-                        {selectedMessage.subject ||
-                          `${selectedMessage.type.charAt(0).toUpperCase() + selectedMessage.type.slice(1)} from ${selectedMessage.from}`}
-                      </SheetTitle>
-                      <Badge
-                        variant={getPriorityColor(selectedMessage.priority)}
-                      >
-                        {selectedMessage.priority}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-muted-foreground text-sm">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">
-                            {selectedMessage.from
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>{selectedMessage.from}</span>
-                        {selectedMessage.fromEmail && (
-                          <span className="text-xs">
-                            ({selectedMessage.fromEmail})
-                          </span>
-                        )}
-                      </div>
-                      <span>•</span>
-                      <span>{selectedMessage.timestamp.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </SheetHeader>
-
-              <div className="mt-6 space-y-4">
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
-                    <Star className="mr-2 h-4 w-4" />
-                    Star
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Archive className="mr-2 h-4 w-4" />
-                    Archive
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                  </Button>
-                </div>
-
-                <div className="prose dark:prose-invert">
-                  <p>{selectedMessage.preview}</p>
-                  <p className="text-muted-foreground">
-                    This is additional message content that would display the
-                    full message body in a real application.
-                  </p>
-                </div>
-
-                {selectedMessage.tags && selectedMessage.tags.length > 0 && (
-                  <div>
-                    <h3 className="mb-2 font-medium text-sm">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedMessage.tags.map((tag) => (
-                        <Badge key={tag} variant="outline">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
     </>
   );
 }

@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * NotificationsDropdown - Client Component
+ *
+ * Client-side features:
+ * - Interactive dropdown with notifications
+ * - Real-time updates via Zustand store and Supabase Realtime
+ * - Optimistic updates for better UX
+ * - Mark as read/delete functionality
+ */
+
 import {
   AlertCircle,
   Bell,
@@ -16,113 +26,23 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-
-type NotificationType =
-  | "message"
-  | "alert"
-  | "payment"
-  | "job"
-  | "team"
-  | "system";
-
-type NotificationPriority = "low" | "medium" | "high" | "urgent";
-
-type Notification = {
-  id: string;
-  type: NotificationType;
-  priority: NotificationPriority;
-  title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-  actionUrl?: string;
-  actionLabel?: string;
-};
+import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import type {
+  NotificationType,
+  NotificationPriority,
+} from "@/lib/stores/notifications-store";
+import {
+  getNotifications,
+  markAsRead as markAsReadAction,
+  markAllAsRead as markAllAsReadAction,
+  deleteNotification as deleteNotificationAction,
+} from "@/actions/notifications";
+import { createClient } from "@/lib/supabase/client";
 
 // Time constants in milliseconds
 const MS_PER_SECOND = 1000;
 const MS_PER_MINUTE = 60 * MS_PER_SECOND;
 const MS_PER_HOUR = 60 * MS_PER_MINUTE;
-// biome-ignore lint/style/noMagicNumbers: Timestamp constants for mock data - numbers are self-documenting
-const FIVE_MINUTES = 5 * MS_PER_MINUTE;
-// biome-ignore lint/style/noMagicNumbers: Timestamp constants for mock data
-const FIFTEEN_MINUTES = 15 * MS_PER_MINUTE;
-// biome-ignore lint/style/noMagicNumbers: Timestamp constants for mock data
-const THIRTY_MINUTES = 30 * MS_PER_MINUTE;
-const TWO_HOURS = 2 * MS_PER_HOUR;
-// biome-ignore lint/style/noMagicNumbers: Timestamp constants for mock data
-const FOUR_HOURS = 4 * MS_PER_HOUR;
-const ONE_DAY = 24 * MS_PER_HOUR;
-
-// Mock notifications data
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    type: "payment",
-    priority: "high",
-    title: "Payment Received",
-    message: "Payment of $2,450 received from John's HVAC Inc.",
-    timestamp: new Date(Date.now() - FIVE_MINUTES),
-    read: false,
-    actionUrl: "/dashboard/finance/invoices/inv-123",
-    actionLabel: "View",
-  },
-  {
-    id: "2",
-    type: "job",
-    priority: "urgent",
-    title: "Urgent Job Assignment",
-    message: "Emergency service call assigned to you at 123 Main St.",
-    timestamp: new Date(Date.now() - FIFTEEN_MINUTES),
-    read: false,
-    actionUrl: "/dashboard/work/job-456",
-    actionLabel: "View",
-  },
-  {
-    id: "3",
-    type: "message",
-    priority: "medium",
-    title: "New Message from Sarah Chen",
-    message: "Can you provide an update on the HVAC installation project?",
-    timestamp: new Date(Date.now() - THIRTY_MINUTES),
-    read: false,
-    actionUrl: "/dashboard/communication/messages/msg-789",
-    actionLabel: "Reply",
-  },
-  {
-    id: "4",
-    type: "team",
-    priority: "low",
-    title: "New Team Member",
-    message: "Mike Johnson has joined your team as a technician.",
-    timestamp: new Date(Date.now() - TWO_HOURS),
-    read: true,
-    actionUrl: "/dashboard/settings/team",
-    actionLabel: "View",
-  },
-  {
-    id: "5",
-    type: "alert",
-    priority: "high",
-    title: "Equipment Maintenance Due",
-    message: "3 vehicles require scheduled maintenance this week.",
-    timestamp: new Date(Date.now() - FOUR_HOURS),
-    read: true,
-    actionUrl: "/dashboard/work/equipment",
-    actionLabel: "View",
-  },
-  {
-    id: "6",
-    type: "system",
-    priority: "low",
-    title: "System Update Available",
-    message: "New features and improvements are ready to install.",
-    timestamp: new Date(Date.now() - ONE_DAY),
-    read: true,
-    actionUrl: "/changelog",
-    actionLabel: "View",
-  },
-];
 
 const notificationIcons: Record<NotificationType, typeof Bell> = {
   message: MessageSquare,
@@ -202,12 +122,70 @@ function EmptyState() {
 
 export function NotificationsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  const [isInitialized, setIsInitialized] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Get notifications from Zustand store
+  const notifications = useNotificationsStore((state) => state.notifications);
+  const unreadCount = useNotificationsStore((state) => state.unreadCount);
+  const setNotifications = useNotificationsStore((state) => state.setNotifications);
+  const optimisticMarkAsRead = useNotificationsStore(
+    (state) => state.optimisticMarkAsRead
+  );
+  const optimisticMarkAllAsRead = useNotificationsStore(
+    (state) => state.optimisticMarkAllAsRead
+  );
+  const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
+  const subscribe = useNotificationsStore((state) => state.subscribe);
+  const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
+  // Load notifications and set up realtime subscription on mount
+  useEffect(() => {
+    async function initialize() {
+      try {
+        // Get current user
+        const supabase = createClient();
+
+        if (!supabase) {
+          console.error("Supabase client not configured");
+          return;
+        }
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          console.error("No authenticated user found");
+          return;
+        }
+
+        // Load initial notifications
+        const result = await getNotifications({ limit: 50 });
+
+        if (result.success && result.data) {
+          setNotifications(result.data);
+        }
+
+        // Set up Supabase Realtime subscription
+        await subscribe(user.id);
+        setIsInitialized(true);
+      } catch (error) {
+        console.error("Error initializing notifications:", error);
+      }
+    }
+
+    if (!isInitialized) {
+      initialize();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribe();
+    };
+  }, [isInitialized, setNotifications, subscribe, unsubscribe]);
+
+  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -227,18 +205,43 @@ export function NotificationsDropdown() {
     };
   }, [isOpen]);
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  // Mark notification as read with optimistic update
+  const markAsRead = async (id: string) => {
+    // Optimistic update
+    optimisticMarkAsRead(id);
+
+    // Server action
+    const result = await markAsReadAction(id);
+    if (!result.success) {
+      console.error("Failed to mark notification as read:", result.error);
+      // TODO: Revert optimistic update on error
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  // Mark all notifications as read with optimistic update
+  const markAllAsRead = async () => {
+    // Optimistic update
+    optimisticMarkAllAsRead();
+
+    // Server action
+    const result = await markAllAsReadAction();
+    if (!result.success) {
+      console.error("Failed to mark all notifications as read:", result.error);
+      // TODO: Revert optimistic update on error
+    }
   };
 
-  const deleteNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  // Delete notification with optimistic update
+  const deleteNotification = async (id: string) => {
+    // Optimistic update
+    optimisticDelete(id);
+
+    // Server action
+    const result = await deleteNotificationAction(id);
+    if (!result.success) {
+      console.error("Failed to delete notification:", result.error);
+      // TODO: Revert optimistic update on error
+    }
   };
 
   return (
@@ -330,21 +333,21 @@ export function NotificationsDropdown() {
                           <div className="flex items-center justify-between gap-2 pt-1">
                             <div className="flex items-center gap-1 text-muted-foreground text-xs">
                               <Clock className="size-3" />
-                              {formatTimestamp(notification.timestamp)}
+                              {formatTimestamp(new Date(notification.created_at))}
                             </div>
 
                             {/* Actions */}
                             <div className="flex items-center gap-1">
-                              {notification.actionUrl && (
+                              {notification.action_url && (
                                 <Link
                                   className="rounded px-2 py-1 font-medium text-primary text-xs transition-colors hover:bg-primary/10"
-                                  href={notification.actionUrl}
+                                  href={notification.action_url}
                                   onClick={() => {
                                     markAsRead(notification.id);
                                     setIsOpen(false);
                                   }}
                                 >
-                                  {notification.actionLabel}
+                                  {notification.action_label || "View"}
                                 </Link>
                               )}
                               {!notification.read && (

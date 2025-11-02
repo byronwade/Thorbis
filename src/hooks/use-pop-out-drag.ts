@@ -1,0 +1,238 @@
+/**
+ * usePopOutDrag Hook
+ *
+ * Manages pop-out window creation when call UI is dragged beyond window bounds
+ *
+ * Features:
+ * - Detects when drag exceeds threshold (50px beyond edge)
+ * - Shows visual indicator when in pop-out zone
+ * - Creates pop-out window on release
+ * - Manages pop-out state and communication
+ * - Handles returning call to main window
+ *
+ * Works with useDraggablePosition hook for drag detection
+ */
+
+import { useCallback, useEffect, useRef, useState } from "react";
+
+type PopOutState = {
+  isPopOutZone: boolean; // User is dragging in pop-out zone
+  isPopOutActive: boolean; // Call is currently popped out
+  popOutWindow: Window | null; // Reference to pop-out window
+};
+
+type UsePopOutDragOptions = {
+  callId: string;
+  onPopOutCreated?: () => void;
+  onPopOutClosed?: () => void;
+};
+
+const POP_OUT_WIDTH = 900;
+const POP_OUT_HEIGHT = 800;
+
+export function usePopOutDrag(options: UsePopOutDragOptions) {
+  const { callId, onPopOutCreated, onPopOutClosed } = options;
+
+  const [state, setState] = useState<PopOutState>({
+    isPopOutZone: false,
+    isPopOutActive: false,
+    popOutWindow: null,
+  });
+
+  const popOutWindowRef = useRef<Window | null>(null);
+  const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(
+    null
+  );
+
+  // Handle when user drags into/out of pop-out zone
+  const handleBeyondBounds = useCallback((isBeyond: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      isPopOutZone: isBeyond && !prev.isPopOutActive,
+    }));
+  }, []);
+
+  // Create pop-out window
+  const createPopOut = useCallback(() => {
+    if (state.isPopOutActive || popOutWindowRef.current) {
+      console.warn("Pop-out already active");
+      return;
+    }
+
+    // Calculate center position
+    const left = window.screen.width / 2 - POP_OUT_WIDTH / 2;
+    const top = window.screen.height / 2 - POP_OUT_HEIGHT / 2;
+
+    // Open pop-out window
+    const popOut = window.open(
+      `/call-window?callId=${callId}`,
+      `call-${callId}`,
+      `width=${POP_OUT_WIDTH},height=${POP_OUT_HEIGHT},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+    );
+
+    if (!popOut) {
+      console.error("Failed to open pop-out window. Check popup blocker.");
+      return;
+    }
+
+    popOutWindowRef.current = popOut;
+
+    setState((prev) => ({
+      ...prev,
+      isPopOutActive: true,
+      isPopOutZone: false,
+      popOutWindow: popOut,
+    }));
+
+    // Wait for pop-out to load, then send call data
+    const checkInterval = setInterval(() => {
+      if (popOut.closed) {
+        clearInterval(checkInterval);
+        handlePopOutClosed();
+        return;
+      }
+
+      try {
+        // Send call state to pop-out window
+        popOut.postMessage(
+          {
+            type: "CALL_STATE_INIT",
+            callId,
+            timestamp: Date.now(),
+          },
+          window.location.origin
+        );
+
+        // Successfully sent, stop checking
+        clearInterval(checkInterval);
+        onPopOutCreated?.();
+      } catch (error) {
+        // Pop-out not ready yet, continue checking
+      }
+    }, 100);
+
+    // Stop checking after 5 seconds
+    setTimeout(() => clearInterval(checkInterval), 5000);
+
+    // Monitor for pop-out window close
+    const closeInterval = setInterval(() => {
+      if (popOut.closed) {
+        clearInterval(closeInterval);
+        handlePopOutClosed();
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(checkInterval);
+      clearInterval(closeInterval);
+    };
+  }, [callId, state.isPopOutActive, onPopOutCreated]);
+
+  // Handle when pop-out window is closed
+  const handlePopOutClosed = useCallback(() => {
+    popOutWindowRef.current = null;
+
+    setState((prev) => ({
+      ...prev,
+      isPopOutActive: false,
+      popOutWindow: null,
+    }));
+
+    onPopOutClosed?.();
+  }, [onPopOutClosed]);
+
+  // Close pop-out and return call to main window
+  const returnToMain = useCallback(() => {
+    if (popOutWindowRef.current && !popOutWindowRef.current.closed) {
+      popOutWindowRef.current.close();
+    }
+
+    handlePopOutClosed();
+  }, [handlePopOutClosed]);
+
+  // Bring pop-out window to front
+  const focusPopOut = useCallback(() => {
+    if (popOutWindowRef.current && !popOutWindowRef.current.closed) {
+      popOutWindowRef.current.focus();
+    }
+  }, []);
+
+  // Handle messages from pop-out window
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Security: Verify origin
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      const { type, callId: messageCallId } = event.data;
+
+      // Only handle messages for this call
+      if (messageCallId !== callId) {
+        return;
+      }
+
+      switch (type) {
+        case "CALL_POP_OUT_READY":
+          // Pop-out window is ready to receive data
+          if (popOutWindowRef.current) {
+            popOutWindowRef.current.postMessage(
+              {
+                type: "CALL_STATE_SYNC",
+                callId,
+                timestamp: Date.now(),
+              },
+              window.location.origin
+            );
+          }
+          break;
+
+        case "CALL_POP_OUT_CLOSED":
+          // Pop-out requested to close
+          handlePopOutClosed();
+          break;
+
+        case "CALL_ACTION":
+          // Forward call actions (mute, hold, etc.) to main window
+          // The pop-out can trigger actions, main window executes them
+          console.log("Call action from pop-out:", event.data.action);
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    messageHandlerRef.current = handleMessage;
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      if (messageHandlerRef.current) {
+        window.removeEventListener("message", messageHandlerRef.current);
+      }
+    };
+  }, [callId, handlePopOutClosed]);
+
+  // Cleanup on unmount
+  useEffect(
+    () => () => {
+      if (popOutWindowRef.current && !popOutWindowRef.current.closed) {
+        popOutWindowRef.current.close();
+      }
+    },
+    []
+  );
+
+  return {
+    // State
+    isPopOutZone: state.isPopOutZone,
+    isPopOutActive: state.isPopOutActive,
+    popOutWindow: state.popOutWindow,
+
+    // Actions
+    handleBeyondBounds,
+    createPopOut,
+    returnToMain,
+    focusPopOut,
+  };
+}

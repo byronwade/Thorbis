@@ -117,7 +117,7 @@ export default function PurchaseOrderSettingsPage() {
               <Label htmlFor="approvers">Approvers</Label>
               <div className="rounded-lg border p-4">
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <User className="h-4 w-4" />
+                  <User className="size-4" />
                   <span>No approvers selected</span>
                 </div>
                 <Button className="mt-3" size="sm" variant="outline">

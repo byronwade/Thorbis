@@ -57,11 +57,11 @@ export default function TwoFactorAuthPage() {
       <div className="flex items-center gap-4">
         <Button asChild size="icon" variant="outline">
           <Link href="/dashboard/settings/profile/security">
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Two-Factor Authentication
           </h1>
           <p className="text-muted-foreground">
@@ -267,7 +267,7 @@ export default function TwoFactorAuthPage() {
                   Thorbis:john@example.com
                 </p>
                 <Button size="sm" variant="outline">
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <RefreshCw className="mr-2 size-4" />
                   Regenerate Code
                 </Button>
               </div>
@@ -365,11 +365,11 @@ export default function TwoFactorAuthPage() {
 
               <div className="flex gap-3">
                 <Button className="flex-1">
-                  <Download className="mr-2 h-4 w-4" />
+                  <Download className="mr-2 size-4" />
                   Download Codes
                 </Button>
                 <Button className="flex-1" variant="outline">
-                  <Copy className="mr-2 h-4 w-4" />
+                  <Copy className="mr-2 size-4" />
                   Copy Codes
                 </Button>
               </div>

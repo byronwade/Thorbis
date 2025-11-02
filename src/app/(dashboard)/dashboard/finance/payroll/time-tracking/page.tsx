@@ -110,7 +110,7 @@ export default function TimeTrackingPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Total Hours</CardTitle>
@@ -164,7 +164,7 @@ export default function TimeTrackingPage() {
               </CardDescription>
             </div>
             <Button size="sm" variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
+              <Filter className="mr-2 size-4" />
               Filter
             </Button>
           </div>
@@ -213,11 +213,11 @@ export default function TimeTrackingPage() {
                     {timesheet.status === "pending" ? (
                       <div className="flex justify-end gap-2">
                         <Button size="sm" variant="outline">
-                          <Check className="h-4 w-4" />
+                          <Check className="size-4" />
                           <span className="sr-only">Approve</span>
                         </Button>
                         <Button size="sm" variant="outline">
-                          <X className="h-4 w-4" />
+                          <X className="size-4" />
                           <span className="sr-only">Reject</span>
                         </Button>
                       </div>
@@ -225,7 +225,7 @@ export default function TimeTrackingPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size="sm" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="size-4" />
                             <span className="sr-only">Open menu</span>
                           </Button>
                         </DropdownMenuTrigger>

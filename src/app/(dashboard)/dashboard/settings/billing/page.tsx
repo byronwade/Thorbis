@@ -303,7 +303,7 @@ export default function BillingPage() {
                           className="flex items-center justify-center"
                           type="button"
                         >
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-sm">
@@ -533,7 +533,7 @@ export default function BillingPage() {
                                       className="flex items-center justify-center"
                                       type="button"
                                     >
-                                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                                     </button>
                                   </TooltipTrigger>
                                   <TooltipContent className="max-w-sm">
@@ -590,7 +590,7 @@ export default function BillingPage() {
                       This is everything listed above added together
                     </p>
                   </div>
-                  <p className="font-bold text-3xl">
+                  <p className="font-bold text-4xl">
                     ${TOTAL_USAGE_COST.toFixed(CURRENCY_DECIMAL_PLACES)}
                   </p>
                 </div>
@@ -613,7 +613,7 @@ export default function BillingPage() {
                         className="flex items-center justify-center"
                         type="button"
                       >
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -682,7 +682,7 @@ export default function BillingPage() {
                         className="flex items-center justify-center"
                         type="button"
                       >
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -771,7 +771,7 @@ export default function BillingPage() {
                 </div>
                 <div className="space-y-2">
                   <Button className="w-full bg-primary" size="default">
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <MessageCircle className="mr-2 size-4" />
                     Chat With Support
                   </Button>
                   <Button className="w-full" size="default" variant="outline">

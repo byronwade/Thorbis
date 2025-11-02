@@ -22,9 +22,11 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getEstimateSettings, updateEstimateSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -105,7 +107,9 @@ type EstimateSettings = {
 };
 
 export default function EstimatesSettingsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<EstimateSettings>({
     // Estimate Numbering
     autoGenerateNumbers: true,
@@ -162,6 +166,37 @@ export default function EstimatesSettingsPage() {
       "Thank you for approving this estimate! We'll get started on your project right away.",
   });
 
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getEstimateSettings();
+
+        if (result.success && result.data) {
+          setSettings((prev) => ({
+            ...prev,
+            estimatePrefix: result.data.estimate_number_prefix || "EST",
+            nextEstimateNumber: result.data.next_estimate_number || 1,
+            defaultValidityDays: result.data.default_valid_for_days || 30,
+            showExpirationDate: result.data.show_expiry_date ?? true,
+            defaultEstimateTerms: result.data.default_terms || "",
+            requireCustomerApproval: result.data.require_approval ?? false,
+            autoConvertToInvoice: result.data.auto_convert_to_job ?? false,
+            sendExpirationReminder: result.data.send_reminder_enabled ?? true,
+            reminderDaysBeforeExpiration: result.data.reminder_days_before_expiry ?? 7,
+          }));
+        }
+      } catch (error) {
+        toast.error("Failed to load estimate settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
+
   const updateSetting = <K extends keyof EstimateSettings>(
     key: K,
     value: EstimateSettings[K]
@@ -181,10 +216,36 @@ export default function EstimatesSettingsPage() {
   };
 
   async function handleSave() {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
-    setIsSubmitting(false);
+    startTransition(async () => {
+      const formData = new FormData();
+
+      formData.append("estimateNumberPrefix", settings.estimatePrefix);
+      formData.append("nextEstimateNumber", settings.nextEstimateNumber.toString());
+      formData.append("defaultValidForDays", settings.defaultValidityDays.toString());
+      formData.append("showExpiryDate", settings.showExpirationDate.toString());
+      formData.append("includeTermsAndConditions", "true");
+      formData.append("defaultTerms", settings.defaultEstimateTerms);
+      formData.append("requireApproval", settings.requireCustomerApproval.toString());
+      formData.append("autoConvertToJob", settings.autoConvertToInvoice.toString());
+      formData.append("sendReminderEnabled", settings.sendExpirationReminder.toString());
+      formData.append("reminderDaysBeforeExpiry", settings.reminderDaysBeforeExpiration.toString());
+
+      const result = await updateEstimateSettings(formData);
+
+      if (result.success) {
+        toast.success("Estimate settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save estimate settings");
+      }
+    });
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -192,7 +253,7 @@ export default function EstimatesSettingsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Price Quote Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -206,7 +267,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Hash className="h-4 w-4" />
+              <Hash className="size-4" />
               Quote Numbering
               <Tooltip>
                 <TooltipTrigger>
@@ -385,7 +446,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               Quote Validity
               <Tooltip>
                 <TooltipTrigger>
@@ -550,7 +611,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="size-4" />
               Customer Approval
               <Tooltip>
                 <TooltipTrigger>
@@ -745,7 +806,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="h-4 w-4" />
+              <Sparkles className="size-4" />
               Pricing Options
               <Tooltip>
                 <TooltipTrigger>
@@ -925,7 +986,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               Follow-up Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -1090,7 +1151,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Palette className="h-4 w-4" />
+              <Palette className="size-4" />
               Quote Appearance
               <Tooltip>
                 <TooltipTrigger>
@@ -1254,7 +1315,7 @@ export default function EstimatesSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Custom Messages
               <Tooltip>
                 <TooltipTrigger>
@@ -1359,13 +1420,21 @@ export default function EstimatesSettingsPage() {
 
         {/* Save Button */}
         <div className="flex justify-end gap-4">
-          <Button disabled={isSubmitting} type="button" variant="outline">
+          <Button disabled={isPending} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Quote Settings
+          <Button disabled={isPending} onClick={handleSave}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Quote Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

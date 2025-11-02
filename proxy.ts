@@ -1,43 +1,42 @@
 import { createServerClient } from "@supabase/ssr";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Proxy - Authentication and Route Protection (Next.js 16+)
+ * Next.js Proxy - Session Refresh & Route Protection (Next.js 16+)
  *
- * Features:
- * - Protects dashboard routes (requires authentication)
- * - Sets pathname header for server components
- * - Handles session refresh automatically
- * - Redirects unauthenticated users to login
- * - Allows public routes (marketing pages)
- *
- * Next.js 16+ Migration:
+ * Next.js 16 Migration:
  * - Renamed from middleware.ts to proxy.ts
  * - Renamed function from middleware to proxy
  * - Runs on Node.js runtime (not Edge)
  * - Clarifies network boundary behavior
+ *
+ * Critical Security Features:
+ * - Automatic session refresh on every request
+ * - Route protection for authenticated areas
+ * - Cookie-based session management
+ * - Prevents session expiration during active use
+ *
+ * Performance optimizations:
+ * - Runs on Node.js runtime
+ * - Minimal session validation overhead
+ * - Only refreshes when necessary
  */
-export async function proxy(request: NextRequest) {
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
-      headers: requestHeaders,
+      headers: request.headers,
     },
   });
 
-  // Skip auth check if Supabase is not configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!(supabaseUrl && supabaseAnonKey)) {
-    console.warn("Supabase not configured - skipping auth proxy");
+  // If Supabase is not configured, allow request to continue
+  if (!supabaseUrl || !supabaseAnonKey) {
     return response;
   }
 
-  // Create Supabase client for proxy
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
@@ -51,7 +50,7 @@ export async function proxy(request: NextRequest) {
         });
         response = NextResponse.next({
           request: {
-            headers: requestHeaders,
+            headers: request.headers,
           },
         });
         response.cookies.set({
@@ -68,7 +67,7 @@ export async function proxy(request: NextRequest) {
         });
         response = NextResponse.next({
           request: {
-            headers: requestHeaders,
+            headers: request.headers,
           },
         });
         response.cookies.set({
@@ -80,40 +79,55 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Check if user is authenticated
+  // Refresh session if expired - this is important for long-running sessions
+  // This also validates the session token is still valid
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const isAuthRoute =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/register") ||
-    request.nextUrl.pathname.startsWith("/auth");
+  // Protected routes that require authentication
+  const protectedPaths = ["/dashboard"];
+  const isProtectedPath = protectedPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
 
-  const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
+  // Auth pages that should redirect to dashboard if already logged in
+  const authPaths = ["/login", "/signup", "/auth"];
+  const isAuthPath = authPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
 
-  // Redirect authenticated users away from auth pages
-  if (session && isAuthRoute) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Redirect unauthenticated users from protected paths to login
+  if (isProtectedPath && !session) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/login";
+    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect unauthenticated users to login for protected routes
-  if (!session && isDashboardRoute) {
-    const redirectUrl = new URL("/login", request.url);
-    // Preserve the original destination for redirect after login
-    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+  // Redirect authenticated users from auth pages to dashboard
+  if (isAuthPath && session) {
+    // Check if there's a redirectTo parameter
+    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = redirectTo || "/dashboard";
+    redirectUrl.search = ""; // Clear query params
     return NextResponse.redirect(redirectUrl);
   }
 
   return response;
 }
 
-// Run proxy on all dashboard routes and auth routes
 export const config = {
   matcher: [
-    "/dashboard/:path*", // Protected dashboard routes
-    "/login", // Auth routes (redirect if already logged in)
-    "/register", // Auth routes (redirect if already logged in)
-    "/auth/:path*", // Auth callback routes
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     * - API routes that handle their own auth
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

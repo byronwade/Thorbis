@@ -18,7 +18,21 @@
  * - Uses established sidebar patterns
  */
 
-import { Layout, Palette, RotateCcw, Settings2, Sparkles, Type } from "lucide-react";
+import {
+  Building,
+  Columns,
+  DollarSign,
+  FileCheck,
+  FileText,
+  Layout,
+  Palette,
+  QrCode,
+  RotateCcw,
+  Settings2,
+  Sparkles,
+  Stamp,
+  Type,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +53,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import {
   type FontFamily,
   INVOICE_PRESETS,
@@ -67,6 +82,29 @@ export function InvoiceSidebarRight() {
     (state) => state.updateBorderSettings
   );
   const resetToDefault = useInvoiceLayoutStore((state) => state.resetToDefault);
+
+  // New store actions
+  const updateWatermark = useInvoiceLayoutStore(
+    (state) => state.updateWatermark
+  );
+  const updateQRCode = useInvoiceLayoutStore((state) => state.updateQRCode);
+  const updatePaymentLink = useInvoiceLayoutStore(
+    (state) => state.updatePaymentLink
+  );
+  const updateCurrency = useInvoiceLayoutStore((state) => state.updateCurrency);
+  const updateDigitalSignature = useInvoiceLayoutStore(
+    (state) => state.updateDigitalSignature
+  );
+  const updateVAT = useInvoiceLayoutStore((state) => state.updateVAT);
+  const updatePageSettings = useInvoiceLayoutStore(
+    (state) => state.updatePageSettings
+  );
+  const updateColumnLayout = useInvoiceLayoutStore(
+    (state) => state.updateColumnLayout
+  );
+  const updateIndustryType = useInvoiceLayoutStore(
+    (state) => state.updateIndustryType
+  );
 
   return (
     <Sidebar collapsible="offcanvas" side="right" variant="inset">
@@ -243,6 +281,16 @@ export function InvoiceSidebarRight() {
                 <SelectContent>
                   <SelectItem value="geist-sans">Geist Sans</SelectItem>
                   <SelectItem value="geist-mono">Geist Mono</SelectItem>
+                  <SelectItem value="inter">Inter</SelectItem>
+                  <SelectItem value="roboto">Roboto</SelectItem>
+                  <SelectItem value="open-sans">Open Sans</SelectItem>
+                  <SelectItem value="lato">Lato</SelectItem>
+                  <SelectItem value="montserrat">Montserrat</SelectItem>
+                  <SelectItem value="playfair">Playfair Display</SelectItem>
+                  <SelectItem value="merriweather">Merriweather</SelectItem>
+                  <SelectItem value="source-sans">Source Sans Pro</SelectItem>
+                  <SelectItem value="helvetica">Helvetica</SelectItem>
+                  <SelectItem value="arial">Arial</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -263,6 +311,16 @@ export function InvoiceSidebarRight() {
                 <SelectContent>
                   <SelectItem value="geist-sans">Geist Sans</SelectItem>
                   <SelectItem value="geist-mono">Geist Mono</SelectItem>
+                  <SelectItem value="inter">Inter</SelectItem>
+                  <SelectItem value="roboto">Roboto</SelectItem>
+                  <SelectItem value="open-sans">Open Sans</SelectItem>
+                  <SelectItem value="lato">Lato</SelectItem>
+                  <SelectItem value="montserrat">Montserrat</SelectItem>
+                  <SelectItem value="playfair">Playfair Display</SelectItem>
+                  <SelectItem value="merriweather">Merriweather</SelectItem>
+                  <SelectItem value="source-sans">Source Sans Pro</SelectItem>
+                  <SelectItem value="helvetica">Helvetica</SelectItem>
+                  <SelectItem value="arial">Arial</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -416,6 +474,624 @@ export function InvoiceSidebarRight() {
               <span className="text-muted-foreground text-xs">
                 {customization.borderRadius}px
               </span>
+            </div>
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Watermark Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <Stamp className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Watermark</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="watermark-enabled">
+                Enable Watermark
+              </Label>
+              <Switch
+                checked={customization.watermarkEnabled}
+                id="watermark-enabled"
+                onCheckedChange={(checked) =>
+                  updateWatermark(
+                    checked,
+                    customization.watermarkText,
+                    customization.watermarkOpacity,
+                    customization.watermarkPosition
+                  )
+                }
+              />
+            </div>
+
+            {customization.watermarkEnabled && (
+              <>
+                <div>
+                  <Label className="text-xs" htmlFor="watermark-text">
+                    Watermark Text
+                  </Label>
+                  <Input
+                    className="h-9"
+                    id="watermark-text"
+                    onChange={(e) =>
+                      updateWatermark(
+                        customization.watermarkEnabled,
+                        e.target.value,
+                        customization.watermarkOpacity,
+                        customization.watermarkPosition
+                      )
+                    }
+                    placeholder="DRAFT"
+                    value={customization.watermarkText || ""}
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs" htmlFor="watermark-opacity">
+                    Opacity
+                  </Label>
+                  <Slider
+                    className="mt-2"
+                    id="watermark-opacity"
+                    max={100}
+                    min={0}
+                    onValueChange={([value]) =>
+                      updateWatermark(
+                        customization.watermarkEnabled,
+                        customization.watermarkText,
+                        value,
+                        customization.watermarkPosition
+                      )
+                    }
+                    step={5}
+                    value={[customization.watermarkOpacity]}
+                  />
+                  <span className="text-muted-foreground text-xs">
+                    {customization.watermarkOpacity}%
+                  </span>
+                </div>
+
+                <div>
+                  <Label className="text-xs" htmlFor="watermark-position">
+                    Position
+                  </Label>
+                  <Select
+                    onValueChange={(value) =>
+                      updateWatermark(
+                        customization.watermarkEnabled,
+                        customization.watermarkText,
+                        customization.watermarkOpacity,
+                        value as "center" | "diagonal" | "top-right"
+                      )
+                    }
+                    value={customization.watermarkPosition}
+                  >
+                    <SelectTrigger className="h-9" id="watermark-position">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="center">Center</SelectItem>
+                      <SelectItem value="diagonal">Diagonal</SelectItem>
+                      <SelectItem value="top-right">Top Right</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Payment Features Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <QrCode className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Payment Features</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="qr-enabled">
+                QR Code
+              </Label>
+              <Switch
+                checked={customization.qrCodeEnabled}
+                id="qr-enabled"
+                onCheckedChange={(checked) =>
+                  updateQRCode(
+                    checked,
+                    customization.qrCodeType,
+                    customization.qrCodeData
+                  )
+                }
+              />
+            </div>
+
+            {customization.qrCodeEnabled && (
+              <>
+                <div>
+                  <Label className="text-xs" htmlFor="qr-type">
+                    QR Code Type
+                  </Label>
+                  <Select
+                    onValueChange={(value) =>
+                      updateQRCode(
+                        customization.qrCodeEnabled,
+                        value as "payment-link" | "venmo" | "crypto" | "custom",
+                        customization.qrCodeData
+                      )
+                    }
+                    value={customization.qrCodeType}
+                  >
+                    <SelectTrigger className="h-9" id="qr-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="payment-link">Payment Link</SelectItem>
+                      <SelectItem value="venmo">Venmo</SelectItem>
+                      <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                      <SelectItem value="custom">Custom</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-xs" htmlFor="qr-data">
+                    QR Code Data
+                  </Label>
+                  <Input
+                    className="h-9"
+                    id="qr-data"
+                    onChange={(e) =>
+                      updateQRCode(
+                        customization.qrCodeEnabled,
+                        customization.qrCodeType,
+                        e.target.value
+                      )
+                    }
+                    placeholder="Payment URL or data"
+                    value={customization.qrCodeData || ""}
+                  />
+                </div>
+              </>
+            )}
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="payment-link-enabled">
+                Payment Link
+              </Label>
+              <Switch
+                checked={customization.paymentLinkEnabled}
+                id="payment-link-enabled"
+                onCheckedChange={(checked) =>
+                  updatePaymentLink(checked, customization.paymentLinkURL)
+                }
+              />
+            </div>
+
+            {customization.paymentLinkEnabled && (
+              <div>
+                <Label className="text-xs" htmlFor="payment-link-url">
+                  Payment URL
+                </Label>
+                <Input
+                  className="h-9"
+                  id="payment-link-url"
+                  onChange={(e) =>
+                    updatePaymentLink(
+                      customization.paymentLinkEnabled,
+                      e.target.value
+                    )
+                  }
+                  placeholder="https://pay.example.com"
+                  type="url"
+                  value={customization.paymentLinkURL || ""}
+                />
+              </div>
+            )}
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Currency Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <DollarSign className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Currency</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div>
+              <Label className="text-xs" htmlFor="currency">
+                Currency
+              </Label>
+              <Select
+                onValueChange={(value) =>
+                  updateCurrency(
+                    value,
+                    customization.currencySymbol,
+                    customization.currencyPosition,
+                    customization.showCurrencyCode
+                  )
+                }
+                value={customization.currency}
+              >
+                <SelectTrigger className="h-9" id="currency">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USD">USD - US Dollar</SelectItem>
+                  <SelectItem value="EUR">EUR - Euro</SelectItem>
+                  <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                  <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
+                  <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+                  <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
+                  <SelectItem value="CNY">CNY - Chinese Yuan</SelectItem>
+                  <SelectItem value="INR">INR - Indian Rupee</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-xs" htmlFor="currency-symbol">
+                Currency Symbol
+              </Label>
+              <Input
+                className="h-9"
+                id="currency-symbol"
+                maxLength={3}
+                onChange={(e) =>
+                  updateCurrency(
+                    customization.currency,
+                    e.target.value,
+                    customization.currencyPosition,
+                    customization.showCurrencyCode
+                  )
+                }
+                placeholder="$"
+                value={customization.currencySymbol || ""}
+              />
+            </div>
+
+            <div>
+              <Label className="text-xs" htmlFor="currency-position">
+                Symbol Position
+              </Label>
+              <Select
+                onValueChange={(value) =>
+                  updateCurrency(
+                    customization.currency,
+                    customization.currencySymbol,
+                    value as "before" | "after",
+                    customization.showCurrencyCode
+                  )
+                }
+                value={customization.currencyPosition}
+              >
+                <SelectTrigger className="h-9" id="currency-position">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="before">Before ($100)</SelectItem>
+                  <SelectItem value="after">After (100$)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="show-currency-code">
+                Show Currency Code
+              </Label>
+              <Switch
+                checked={customization.showCurrencyCode}
+                id="show-currency-code"
+                onCheckedChange={(checked) =>
+                  updateCurrency(
+                    customization.currency,
+                    customization.currencySymbol,
+                    customization.currencyPosition,
+                    checked
+                  )
+                }
+              />
+            </div>
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Compliance & Legal Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <FileCheck className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Compliance & Legal</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="digital-signature-enabled">
+                Digital Signature
+              </Label>
+              <Switch
+                checked={customization.digitalSignatureEnabled}
+                id="digital-signature-enabled"
+                onCheckedChange={(checked) =>
+                  updateDigitalSignature(
+                    checked,
+                    customization.digitalSignatureImage
+                  )
+                }
+              />
+            </div>
+
+            {customization.digitalSignatureEnabled && (
+              <div>
+                <Label className="text-xs" htmlFor="signature-image">
+                  Signature Image URL
+                </Label>
+                <Input
+                  className="h-9"
+                  id="signature-image"
+                  onChange={(e) =>
+                    updateDigitalSignature(
+                      customization.digitalSignatureEnabled,
+                      e.target.value
+                    )
+                  }
+                  placeholder="https://example.com/signature.png"
+                  type="url"
+                  value={customization.digitalSignatureImage || ""}
+                />
+              </div>
+            )}
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="vat-enabled">
+                VAT Enabled
+              </Label>
+              <Switch
+                checked={customization.vatEnabled}
+                id="vat-enabled"
+                onCheckedChange={(checked) =>
+                  updateVAT(
+                    checked,
+                    customization.vatNumber,
+                    customization.vatRate
+                  )
+                }
+              />
+            </div>
+
+            {customization.vatEnabled && (
+              <>
+                <div>
+                  <Label className="text-xs" htmlFor="vat-number">
+                    VAT Number
+                  </Label>
+                  <Input
+                    className="h-9"
+                    id="vat-number"
+                    onChange={(e) =>
+                      updateVAT(
+                        customization.vatEnabled,
+                        e.target.value,
+                        customization.vatRate
+                      )
+                    }
+                    placeholder="GB123456789"
+                    value={customization.vatNumber || ""}
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs" htmlFor="vat-rate">
+                    VAT Rate (%)
+                  </Label>
+                  <Input
+                    className="h-9"
+                    id="vat-rate"
+                    onChange={(e) =>
+                      updateVAT(
+                        customization.vatEnabled,
+                        customization.vatNumber,
+                        Number.parseFloat(e.target.value) || 0
+                      )
+                    }
+                    placeholder="20"
+                    type="number"
+                    value={customization.vatRate || ""}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Page Settings Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <FileText className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Page Settings</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div>
+              <Label className="text-xs" htmlFor="page-size">
+                Page Size
+              </Label>
+              <Select
+                onValueChange={(value) =>
+                  updatePageSettings(
+                    value as "A4" | "Letter" | "Legal" | "A5",
+                    customization.pageOrientation,
+                    customization.showPageNumbers,
+                    customization.pageNumberPosition
+                  )
+                }
+                value={customization.pageSize}
+              >
+                <SelectTrigger className="h-9" id="page-size">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Letter">Letter (8.5" × 11")</SelectItem>
+                  <SelectItem value="A4">A4 (210mm × 297mm)</SelectItem>
+                  <SelectItem value="Legal">Legal (8.5" × 14")</SelectItem>
+                  <SelectItem value="A5">A5 (148mm × 210mm)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-xs" htmlFor="page-orientation">
+                Orientation
+              </Label>
+              <Select
+                onValueChange={(value) =>
+                  updatePageSettings(
+                    customization.pageSize,
+                    value as "portrait" | "landscape",
+                    customization.showPageNumbers,
+                    customization.pageNumberPosition
+                  )
+                }
+                value={customization.pageOrientation}
+              >
+                <SelectTrigger className="h-9" id="page-orientation">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="portrait">Portrait</SelectItem>
+                  <SelectItem value="landscape">Landscape</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label className="text-xs" htmlFor="show-page-numbers">
+                Show Page Numbers
+              </Label>
+              <Switch
+                checked={customization.showPageNumbers}
+                id="show-page-numbers"
+                onCheckedChange={(checked) =>
+                  updatePageSettings(
+                    customization.pageSize,
+                    customization.pageOrientation,
+                    checked,
+                    customization.pageNumberPosition
+                  )
+                }
+              />
+            </div>
+
+            {customization.showPageNumbers && (
+              <div>
+                <Label className="text-xs" htmlFor="page-number-position">
+                  Page Number Position
+                </Label>
+                <Select
+                  onValueChange={(value) =>
+                    updatePageSettings(
+                      customization.pageSize,
+                      customization.pageOrientation,
+                      customization.showPageNumbers,
+                      value as "top" | "bottom"
+                    )
+                  }
+                  value={customization.pageNumberPosition}
+                >
+                  <SelectTrigger className="h-9" id="page-number-position">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="top">Top</SelectItem>
+                    <SelectItem value="bottom">Bottom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Column Layout Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <Columns className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Column Layout</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div>
+              <Label className="text-xs" htmlFor="column-layout">
+                Layout
+              </Label>
+              <Select
+                onValueChange={(value) =>
+                  updateColumnLayout(
+                    value as "single" | "two-column" | "three-column"
+                  )
+                }
+                value={customization.columnLayout}
+              >
+                <SelectTrigger className="h-9" id="column-layout">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="single">Single Column</SelectItem>
+                  <SelectItem value="two-column">Two Columns</SelectItem>
+                  <SelectItem value="three-column">Three Columns</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </SidebarGroup>
+
+        <Separator className="my-2" />
+
+        {/* Industry Type Group */}
+        <SidebarGroup>
+          <div className="flex items-center gap-2 px-2">
+            <Building className="size-4 text-muted-foreground" />
+            <SidebarGroupLabel>Industry Type</SidebarGroupLabel>
+          </div>
+          <div className="space-y-3 px-2">
+            <div>
+              <Label className="text-xs" htmlFor="industry-type">
+                Industry
+              </Label>
+              <Select
+                onValueChange={(value) =>
+                  updateIndustryType(
+                    value as
+                      | "construction"
+                      | "consulting"
+                      | "retail"
+                      | "healthcare"
+                      | "tech"
+                      | "general"
+                  )
+                }
+                value={customization.industryType || "general"}
+              >
+                <SelectTrigger className="h-9" id="industry-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">General Business</SelectItem>
+                  <SelectItem value="construction">Construction</SelectItem>
+                  <SelectItem value="consulting">Consulting</SelectItem>
+                  <SelectItem value="retail">Retail</SelectItem>
+                  <SelectItem value="healthcare">Healthcare</SelectItem>
+                  <SelectItem value="tech">Technology</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </SidebarGroup>

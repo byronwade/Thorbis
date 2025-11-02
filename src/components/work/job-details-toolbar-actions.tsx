@@ -109,7 +109,7 @@ export function JobDetailsToolbarActions({
   }
 
   return (
-    <>
+    <div className="flex items-center gap-1">
       {/* Edit Mode Toggle - Minimal */}
       <div className="flex items-center gap-2">
         {isEditMode ? (
@@ -243,6 +243,6 @@ export function JobDetailsToolbarActions({
           <JobActivityTimeline entityType="job" jobId={jobId} />
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

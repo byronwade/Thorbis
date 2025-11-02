@@ -105,29 +105,69 @@ export default function InvoicesPage() {
       <DataTablePageHeader
         actions={
           <>
-            <Button size="sm" variant="outline">
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Import"
+              variant="outline"
+            >
+              <Upload className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Upload className="mr-2 size-4" />
               Import
             </Button>
-            <Button size="sm" variant="outline">
+
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Export"
+              variant="outline"
+            >
+              <Download className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Download className="mr-2 size-4" />
               Export
             </Button>
-            <Button size="sm" variant="outline">
+
+            <Button
+              className="md:hidden"
+              size="sm"
+              title="Send Batch"
+              variant="outline"
+            >
+              <Send className="size-4" />
+            </Button>
+            <Button
+              className="hidden md:inline-flex"
+              size="sm"
+              variant="outline"
+            >
               <Send className="mr-2 size-4" />
               Send Batch
             </Button>
+
             <Button asChild size="sm">
               <Link href="/dashboard/work/invoices/new">
                 <Plus className="mr-2 size-4" />
-                New Invoice
+                <span className="hidden sm:inline">New Invoice</span>
+                <span className="sm:hidden">New</span>
               </Link>
             </Button>
           </>
         }
         description="Create, track, and manage customer invoices and payments"
         stats={
-          <div className="mt-4 grid gap-3 md:grid-cols-5">
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="font-medium text-sm">
@@ -210,7 +250,7 @@ export default function InvoicesPage() {
         title="Invoices"
       />
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         <InvoicesTable invoices={mockInvoices} itemsPerPage={50} />
       </div>
     </div>

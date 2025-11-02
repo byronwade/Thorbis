@@ -99,7 +99,7 @@ export default function ManagerDashboard() {
       </Card>
 
       {/* Top Management KPIs - 4 columns */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           change="Target: 4.5+"
           changeType="positive"

@@ -48,6 +48,9 @@ const DENSITY_PRESETS: Record<
     iconSize: string;
     textSize: string;
     avatarSize: string;
+    // PERFORMANCE: Skip hydration to prevent SSR mismatches
+    // Allows Next.js to generate static pages without Zustand errors
+    skipHydration: true,
   }
 > = {
   "text-only": {
@@ -59,6 +62,7 @@ const DENSITY_PRESETS: Record<
     iconSize: "size-0",
     textSize: "text-xs",
     avatarSize: "size-0",
+    skipHydration: true as const,
   },
   small: {
     showIcons: true,
@@ -69,6 +73,7 @@ const DENSITY_PRESETS: Record<
     iconSize: "size-4",
     textSize: "text-sm",
     avatarSize: "size-6",
+    skipHydration: true as const,
   },
   medium: {
     showIcons: true,
@@ -79,6 +84,7 @@ const DENSITY_PRESETS: Record<
     iconSize: "size-4",
     textSize: "text-sm",
     avatarSize: "size-8",
+    skipHydration: true as const,
   },
   large: {
     showIcons: true,
@@ -89,6 +95,7 @@ const DENSITY_PRESETS: Record<
     iconSize: "size-6",
     textSize: "text-lg",
     avatarSize: "size-12",
+    skipHydration: true as const,
   },
 };
 

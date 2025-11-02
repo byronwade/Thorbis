@@ -212,13 +212,13 @@ export default async function PurchaseOrderDetailPage({
         </div>
         <div className="flex gap-2">
           <Button size="sm" variant="outline">
-            <Edit className="mr-2 h-4 w-4" />
+            <Edit className="mr-2 size-4" />
             Edit
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="outline">
-                <MoreVertical className="h-4 w-4" />
+                <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

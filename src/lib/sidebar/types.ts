@@ -90,4 +90,10 @@ export type SidebarConfig = {
    * Default value (for tabs/filters)
    */
   defaultValue?: string;
+
+  /**
+   * Custom width for the sidebar (e.g., "16rem", "20rem")
+   * If not specified, uses default width
+   */
+  width?: string;
 };

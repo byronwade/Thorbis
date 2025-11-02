@@ -1,120 +1,1154 @@
+/**
+ * Customer Management Server Actions
+ *
+ * Comprehensive customer relationship management with:
+ * - Customer CRUD operations
+ * - Customer portal invitation and access
+ * - Customer metrics tracking (revenue, jobs, invoices)
+ * - Communication preferences
+ * - Soft delete/archive support
+ * - Customer search and filtering
+ */
+
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
+import {
+  ActionError,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
+import {
+  type ActionResult,
+  assertAuthenticated,
+  assertExists,
+  withErrorHandling,
+} from "@/lib/errors/with-error-handling";
+import { sendEmail } from "@/lib/email/email-sender";
+import { EmailTemplate } from "@/lib/email/email-types";
+import PortalInvitationEmail from "../../emails/templates/customer/portal-invitation";
+import { createClient } from "@/lib/supabase/server";
 
-/**
- * Server Actions for Customer Management
- *
- * Handles customer CRUD operations with server-side validation
- * and automatic cache revalidation
- */
+// ============================================================================
+// VALIDATION SCHEMAS
+// ============================================================================
 
-// Validation schemas
 const customerSchema = z.object({
-  name: z.string().min(1, "Customer name is required"),
-  email: z.string().email("Valid email required"),
-  phone: z.string().min(10, "Valid phone number required"),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "Valid zip code required"),
+  type: z
+    .enum(["residential", "commercial", "industrial"])
+    .default("residential"),
+  firstName: z.string().min(1, "First name is required").max(100),
+  lastName: z.string().min(1, "Last name is required").max(100),
+  companyName: z.string().max(200).optional(),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(1, "Phone is required").max(20),
+  secondaryPhone: z.string().max(20).optional(),
+  address: z.string().max(200).optional(),
+  address2: z.string().max(100).optional(),
+  city: z.string().max(100).optional(),
+  state: z.string().max(50).optional(),
+  zipCode: z.string().max(20).optional(),
+  country: z.string().max(50).default("USA"),
+  source: z
+    .enum(["referral", "google", "facebook", "direct", "yelp", "other"])
+    .optional(),
+  referredBy: z.string().uuid().optional().nullable(),
+  preferredContactMethod: z.enum(["email", "phone", "sms"]).default("email"),
+  preferredTechnician: z.string().uuid().optional().nullable(),
+  billingEmail: z.string().email().optional().nullable(),
+  paymentTerms: z
+    .enum(["due_on_receipt", "net_15", "net_30", "net_60"])
+    .default("due_on_receipt"),
+  creditLimit: z.number().int().min(0).default(0), // In cents
+  taxExempt: z.boolean().default(false),
+  taxExemptNumber: z.string().max(50).optional(),
+  tags: z.array(z.string()).optional(),
   notes: z.string().optional(),
+  internalNotes: z.string().optional(),
 });
 
-export type Customer = z.infer<typeof customerSchema>;
+const communicationPreferencesSchema = z.object({
+  email: z.boolean().default(true),
+  sms: z.boolean().default(true),
+  phone: z.boolean().default(true),
+  marketing: z.boolean().default(false),
+});
+
+// ============================================================================
+// CUSTOMER CRUD OPERATIONS
+// ============================================================================
 
 /**
- * Create a new customer
+ * Create a new customer with multiple contacts and properties
  */
 export async function createCustomer(
   formData: FormData
-): Promise<{ success: boolean; error?: string; customerId?: string }> {
-  try {
-    const rawData = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      address: formData.get("address"),
-      city: formData.get("city"),
-      state: formData.get("state"),
-      zipCode: formData.get("zipCode"),
-      notes: formData.get("notes"),
+): Promise<ActionResult<string>> {
+  return await withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    const FORBIDDEN_STATUS_CODE = 403;
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        FORBIDDEN_STATUS_CODE
+      );
+    }
+
+    // Parse contacts from JSON
+    const contactsString = formData.get("contacts");
+    let contacts: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      role: string;
+      isPrimary: boolean;
+    }[] = [];
+
+    if (contactsString && typeof contactsString === "string") {
+      try {
+        contacts = JSON.parse(contactsString);
+      } catch {
+        throw new ActionError(
+          "Invalid contacts data",
+          ERROR_CODES.VALIDATION_FAILED
+        );
+      }
+    }
+
+    // Get primary contact
+    const primaryContact = contacts.find((c) => c.isPrimary) || contacts[0];
+    if (!primaryContact) {
+      throw new ActionError(
+        "At least one contact is required",
+        ERROR_CODES.VALIDATION_FAILED
+      );
+    }
+
+    // Parse properties from JSON
+    const propertiesString = formData.get("properties");
+    let properties: {
+      name: string;
+      address: string;
+      address2: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
+      propertyType: string;
+      isPrimary: boolean;
+      notes: string;
+    }[] = [];
+
+    if (propertiesString && typeof propertiesString === "string") {
+      try {
+        properties = JSON.parse(propertiesString);
+      } catch {
+        throw new ActionError(
+          "Invalid properties data",
+          ERROR_CODES.VALIDATION_FAILED
+        );
+      }
+    }
+
+    // Get primary property
+    const primaryProperty = properties.find((p) => p.isPrimary) || properties[0];
+
+    // Parse tags if provided
+    let tags: string[] | undefined;
+    const tagsString = formData.get("tags");
+    if (tagsString && typeof tagsString === "string") {
+      try {
+        tags = JSON.parse(tagsString);
+      } catch {
+        tags = tagsString.split(",").map((t) => t.trim());
+      }
+    }
+
+    // Check if email already exists for this company
+    const { data: existingEmail } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("company_id", teamMember.company_id)
+      .eq("email", primaryContact.email)
+      .is("deleted_at", null)
+      .single();
+
+    if (existingEmail) {
+      throw new ActionError(
+        "A customer with this email already exists",
+        ERROR_CODES.DB_DUPLICATE_ENTRY
+      );
+    }
+
+    // Generate display name
+    const customerType = formData.get("type") || "residential";
+    const companyName = formData.get("companyName");
+    const displayName =
+      customerType === "commercial" && companyName
+        ? String(companyName)
+        : `${primaryContact.firstName} ${primaryContact.lastName}`;
+
+    // Default communication preferences
+    const communicationPreferences = {
+      email: true,
+      sms: true,
+      phone: true,
+      marketing: false,
     };
 
-    const validated = customerSchema.parse(rawData);
+    // Store all contacts in metadata
+    const customerMetadata = {
+      contacts: contacts.map((c) => ({
+        firstName: c.firstName,
+        lastName: c.lastName,
+        email: c.email,
+        phone: c.phone,
+        role: c.role,
+        isPrimary: c.isPrimary,
+      })),
+    };
 
-    // TODO: Save to database
-    const customerId = `customer-${Date.now()}`;
+    // Create customer
+    const { data: customer, error: createError } = await supabase
+      .from("customers")
+      .insert({
+        company_id: teamMember.company_id,
+        type: String(customerType),
+        first_name: primaryContact.firstName,
+        last_name: primaryContact.lastName,
+        company_name: companyName ? String(companyName) : null,
+        display_name: displayName,
+        email: primaryContact.email,
+        phone: primaryContact.phone,
+        secondary_phone: contacts[1]?.phone || null,
+        address: primaryProperty?.address || null,
+        address2: primaryProperty?.address2 || null,
+        city: primaryProperty?.city || null,
+        state: primaryProperty?.state || null,
+        zip_code: primaryProperty?.zipCode || null,
+        country: primaryProperty?.country || "USA",
+        source: formData.get("source")
+          ? String(formData.get("source"))
+          : null,
+        referred_by: formData.get("referredBy")
+          ? String(formData.get("referredBy"))
+          : null,
+        preferred_contact_method:
+          String(formData.get("preferredContactMethod")) || "email",
+        preferred_technician: formData.get("preferredTechnician")
+          ? String(formData.get("preferredTechnician"))
+          : null,
+        billing_email: formData.get("billingEmail")
+          ? String(formData.get("billingEmail"))
+          : null,
+        payment_terms:
+          String(formData.get("paymentTerms")) || "due_on_receipt",
+        credit_limit: formData.get("creditLimit")
+          ? Number(formData.get("creditLimit")) * 100
+          : 0,
+        tax_exempt: formData.get("taxExempt") === "on",
+        tax_exempt_number: formData.get("taxExemptNumber")
+          ? String(formData.get("taxExemptNumber"))
+          : null,
+        tags: tags || null,
+        communication_preferences: communicationPreferences,
+        notes: formData.get("notes") ? String(formData.get("notes")) : null,
+        internal_notes: formData.get("internalNotes")
+          ? String(formData.get("internalNotes"))
+          : null,
+        metadata: customerMetadata,
+        status: "active",
+        portal_enabled: false,
+        total_revenue: 0,
+        total_jobs: 0,
+        total_invoices: 0,
+        average_job_value: 0,
+        outstanding_balance: 0,
+      })
+      .select("id")
+      .single();
 
-    // Revalidate customer lists
-    revalidatePath("/dashboard/customers");
-
-    return { success: true, customerId };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
+    if (createError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("create customer"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
     }
-    return { success: false, error: "Failed to create customer" };
-  }
+
+    // Create additional properties if any
+    const additionalProperties = properties.filter((p) => !p.isPrimary);
+    if (additionalProperties.length > 0) {
+      const propertiesToInsert = additionalProperties.map((prop) => ({
+        company_id: teamMember.company_id,
+        customer_id: customer.id,
+        name: prop.name || "Additional Property",
+        address: prop.address,
+        address2: prop.address2 || null,
+        city: prop.city,
+        state: prop.state,
+        zip_code: prop.zipCode,
+        country: prop.country || "USA",
+        property_type: prop.propertyType || "residential",
+        notes: prop.notes || null,
+      }));
+
+      const { error: propertiesError } = await supabase
+        .from("properties")
+        .insert(propertiesToInsert);
+
+      if (propertiesError) {
+        // Don't fail the whole operation if properties fail
+        console.error("Failed to create properties:", propertiesError);
+      }
+    }
+
+    revalidatePath("/dashboard/customers");
+    return customer.id;
+  });
 }
 
 /**
- * Update an existing customer
+ * Update existing customer
  */
 export async function updateCustomer(
   customerId: string,
   formData: FormData
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const rawData = {
-      name: formData.get("name"),
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id, email")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Parse tags if provided
+    let tags: string[] | undefined;
+    const tagsString = formData.get("tags");
+    if (tagsString && typeof tagsString === "string") {
+      try {
+        tags = JSON.parse(tagsString);
+      } catch {
+        tags = tagsString.split(",").map((t) => t.trim());
+      }
+    }
+
+    // Validate input
+    const data = customerSchema.parse({
+      type: formData.get("type") || "residential",
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
+      companyName: formData.get("companyName") || undefined,
       email: formData.get("email"),
       phone: formData.get("phone"),
-      address: formData.get("address"),
-      city: formData.get("city"),
-      state: formData.get("state"),
-      zipCode: formData.get("zipCode"),
-      notes: formData.get("notes"),
-    };
+      secondaryPhone: formData.get("secondaryPhone") || undefined,
+      address: formData.get("address") || undefined,
+      address2: formData.get("address2") || undefined,
+      city: formData.get("city") || undefined,
+      state: formData.get("state") || undefined,
+      zipCode: formData.get("zipCode") || undefined,
+      country: formData.get("country") || "USA",
+      source: formData.get("source") || undefined,
+      referredBy: formData.get("referredBy") || null,
+      preferredContactMethod: formData.get("preferredContactMethod") || "email",
+      preferredTechnician: formData.get("preferredTechnician") || null,
+      billingEmail: formData.get("billingEmail") || null,
+      paymentTerms: formData.get("paymentTerms") || "due_on_receipt",
+      creditLimit: formData.get("creditLimit")
+        ? Number(formData.get("creditLimit"))
+        : 0,
+      taxExempt: formData.get("taxExempt") === "true",
+      taxExemptNumber: formData.get("taxExemptNumber") || undefined,
+      tags,
+      notes: formData.get("notes") || undefined,
+      internalNotes: formData.get("internalNotes") || undefined,
+    });
 
-    const validated = customerSchema.parse(rawData);
+    // Check if email already exists (excluding current customer)
+    if (data.email !== customer.email) {
+      const { data: existingEmail } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("company_id", teamMember.company_id)
+        .eq("email", data.email)
+        .neq("id", customerId)
+        .is("deleted_at", null)
+        .single();
 
-    // TODO: Update in database
+      if (existingEmail) {
+        throw new ActionError(
+          "A customer with this email already exists",
+          ERROR_CODES.DB_DUPLICATE_ENTRY
+        );
+      }
+    }
 
-    // Revalidate customer pages
+    // Generate display name
+    const displayName =
+      data.type === "commercial" && data.companyName
+        ? data.companyName
+        : `${data.firstName} ${data.lastName}`;
+
+    // Update customer
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({
+        type: data.type,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        company_name: data.companyName,
+        display_name: displayName,
+        email: data.email,
+        phone: data.phone,
+        secondary_phone: data.secondaryPhone,
+        address: data.address,
+        address2: data.address2,
+        city: data.city,
+        state: data.state,
+        zip_code: data.zipCode,
+        country: data.country,
+        source: data.source,
+        referred_by: data.referredBy,
+        preferred_contact_method: data.preferredContactMethod,
+        preferred_technician: data.preferredTechnician,
+        billing_email: data.billingEmail,
+        payment_terms: data.paymentTerms,
+        credit_limit: data.creditLimit,
+        tax_exempt: data.taxExempt,
+        tax_exempt_number: data.taxExemptNumber,
+        tags: data.tags,
+        notes: data.notes,
+        internal_notes: data.internalNotes,
+      })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update customer"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
     revalidatePath("/dashboard/customers");
     revalidatePath(`/dashboard/customers/${customerId}`);
-
-    return { success: true };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-    return { success: false, error: "Failed to update customer" };
-  }
+  });
 }
 
 /**
- * Delete a customer
+ * Delete customer (soft delete/archive)
  */
 export async function deleteCustomer(
   customerId: string
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    // TODO: Delete from database
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
 
-    // Revalidate and redirect
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id, outstanding_balance")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Prevent deletion if customer has outstanding balance
+    if (customer.outstanding_balance > 0) {
+      throw new ActionError(
+        "Cannot delete customer with outstanding balance. Collect payment first.",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Soft delete
+    const { error: deleteError } = await supabase
+      .from("customers")
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id,
+        status: "archived",
+      })
+      .eq("id", customerId);
+
+    if (deleteError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("delete customer"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
     revalidatePath("/dashboard/customers");
-    redirect("/dashboard/customers");
-  } catch (error) {
-    return { success: false, error: "Failed to delete customer" };
-  }
+  });
+}
+
+// ============================================================================
+// CUSTOMER STATUS & PREFERENCES
+// ============================================================================
+
+/**
+ * Update customer status
+ */
+export async function updateCustomerStatus(
+  customerId: string,
+  status: "active" | "inactive" | "archived" | "blocked"
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Update status
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({ status })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update customer status"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${customerId}`);
+  });
+}
+
+/**
+ * Update communication preferences
+ */
+export async function updateCommunicationPreferences(
+  customerId: string,
+  formData: FormData
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Validate input
+    const preferences = communicationPreferencesSchema.parse({
+      email: formData.get("email") === "true",
+      sms: formData.get("sms") === "true",
+      phone: formData.get("phone") === "true",
+      marketing: formData.get("marketing") === "true",
+    });
+
+    // Update preferences
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({ communication_preferences: preferences })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update communication preferences"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath(`/dashboard/customers/${customerId}`);
+  });
+}
+
+// ============================================================================
+// CUSTOMER PORTAL
+// ============================================================================
+
+/**
+ * Invite customer to portal
+ * TODO: Implement email sending
+ */
+export async function inviteToPortal(
+  customerId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id, email, display_name, portal_enabled")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    if (customer.portal_enabled) {
+      throw new ActionError(
+        "Customer is already invited to portal",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Generate secure portal invitation token
+    const inviteToken = Buffer.from(
+      `${customerId}:${Date.now()}:${Math.random()}`
+    ).toString("base64url");
+
+    // Update customer
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({
+        portal_enabled: true,
+        portal_invited_at: new Date().toISOString(),
+      })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("invite customer to portal"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Send invitation email
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const portalUrl = `${siteUrl}/portal/setup?token=${inviteToken}`;
+
+    const emailResult = await sendEmail({
+      to: customer.email,
+      subject: "You've been invited to your Customer Portal",
+      template: PortalInvitationEmail({
+        customerName: customer.display_name,
+        portalUrl,
+        expiresInHours: 168, // 7 days
+        supportEmail: process.env.RESEND_FROM_EMAIL || "support@thorbis.com",
+        supportPhone: "(555) 123-4567",
+      }),
+      templateType: EmailTemplate.PORTAL_INVITATION,
+    });
+
+    if (!emailResult.success) {
+      console.error("Failed to send portal invitation email:", emailResult.error);
+      // Don't fail the whole operation if email fails - customer is still invited
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${customerId}`);
+  });
+}
+
+/**
+ * Revoke portal access
+ */
+export async function revokePortalAccess(
+  customerId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Revoke access
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({ portal_enabled: false })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("revoke portal access"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${customerId}`);
+  });
+}
+
+// ============================================================================
+// SEARCH & REPORTING
+// ============================================================================
+
+/**
+ * Search customers by name, email, phone, or company
+ */
+export async function searchCustomers(
+  searchTerm: string
+): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Search across multiple fields
+    const { data: customers, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("company_id", teamMember.company_id)
+      .is("deleted_at", null)
+      .or(
+        `display_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,company_name.ilike.%${searchTerm}%`
+      )
+      .order("display_name", { ascending: true })
+      .limit(50);
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("search customers"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return customers || [];
+  });
+}
+
+/**
+ * Get top customers by revenue
+ */
+export async function getTopCustomers(
+  limit = 10
+): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const { data: customers, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("company_id", teamMember.company_id)
+      .eq("status", "active")
+      .is("deleted_at", null)
+      .order("total_revenue", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch top customers"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return customers || [];
+  });
+}
+
+/**
+ * Get customers with outstanding balance
+ */
+export async function getCustomersWithBalance(): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const { data: customers, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("company_id", teamMember.company_id)
+      .is("deleted_at", null)
+      .gt("outstanding_balance", 0)
+      .order("outstanding_balance", { ascending: false });
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch customers with balance"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return customers || [];
+  });
+}
+
+type CustomerRecord = {
+  id: string;
+  company_id: string;
+  type: string;
+  first_name: string;
+  last_name: string;
+  display_name: string;
+  email: string;
+  phone: string;
+  secondary_phone?: string;
+  address?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  status: string;
+  total_revenue?: number;
+  total_jobs?: number;
+  total_invoices?: number;
+  outstanding_balance?: number;
+  last_job_date?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Get all customers for the current company
+ */
+export async function getAllCustomers(): Promise<
+  ActionResult<CustomerRecord[]>
+> {
+  return await withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    const FORBIDDEN_STATUS_CODE = 403;
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        FORBIDDEN_STATUS_CODE
+      );
+    }
+
+    const { data: customers, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("company_id", teamMember.company_id)
+      .is("deleted_at", null)
+      .order("display_name", { ascending: true });
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch customers"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return (customers || []) as CustomerRecord[];
+  });
 }

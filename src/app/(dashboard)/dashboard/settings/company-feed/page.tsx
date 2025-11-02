@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getCompanyFeedSettings, updateCompanyFeedSettings } from "@/actions/company";
 import {
   Card,
   CardContent,
@@ -140,9 +142,17 @@ type CompanyFeedSettings = {
 };
 
 export default function CompanyFeedSettingsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [settings, setSettings] = useState<CompanyFeedSettings>({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings<CompanyFeedSettings>({
+    getter: getCompanyFeedSettings,
+    setter: updateCompanyFeedSettings,
+    initialState: {
     // General Settings
     feedEnabled: true,
     feedName: "Company Feed",
@@ -236,22 +246,26 @@ export default function CompanyFeedSettingsPage() {
     allowPostDeletion: true,
     retainDeletedPosts: true,
     retentionPeriod: DEFAULT_RETENTION_DAYS,
+    },
+    settingsName: "company feed",
+    transformLoad: (data) => ({
+      feedEnabled: data.company_feed_enabled ?? true,
+      feedVisibility: data.feed_visibility === "all_team" ? "all_employees" : "role_based",
+    }),
+    transformSave: (settings) => {
+      const formData = new FormData();
+      formData.append("feedEnabled", settings.feedEnabled.toString());
+      formData.append("feedVisibility", settings.feedVisibility === "all_employees" ? "all_team" : "role_based");
+      return formData;
+    },
   });
 
-  const updateSetting = <K extends keyof CompanyFeedSettings>(
-    key: K,
-    value: CompanyFeedSettings[K]
-  ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
-  async function handleSave() {
-    setIsSubmitting(true);
-    await new Promise((resolve) => {
-      setTimeout(resolve, SIMULATED_API_DELAY);
-    });
-    // TODO: Save company feed settings to database/API
-    setIsSubmitting(false);
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -259,7 +273,7 @@ export default function CompanyFeedSettingsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Company Feed Settings
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -274,7 +288,7 @@ export default function CompanyFeedSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="size-4" />
               General Settings
               <Tooltip>
                 <TooltipTrigger>
@@ -394,7 +408,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <MessageSquare className="h-4 w-4" />
+                <MessageSquare className="size-4" />
                 Post Settings
               </CardTitle>
               <CardDescription>
@@ -528,7 +542,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <FileText className="h-4 w-4" />
+                <FileText className="size-4" />
                 Content Types
               </CardTitle>
               <CardDescription>
@@ -654,7 +668,7 @@ export default function CompanyFeedSettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <ImageIcon className="h-4 w-4" />
+                  <ImageIcon className="size-4" />
                   Media Settings
                 </CardTitle>
                 <CardDescription>
@@ -746,7 +760,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Shield className="h-4 w-4" />
+                <Shield className="size-4" />
                 Content Moderation
               </CardTitle>
               <CardDescription>
@@ -831,7 +845,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Bell className="h-4 w-4" />
+                <Bell className="size-4" />
                 Notification Settings
               </CardTitle>
               <CardDescription>
@@ -950,7 +964,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Archive className="h-4 w-4" />
+                <Archive className="size-4" />
                 Content Portal
                 <Tooltip>
                   <TooltipTrigger>
@@ -1093,7 +1107,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Globe className="h-4 w-4" />
+                <Globe className="size-4" />
                 Customer-Facing Content
                 <Tooltip>
                   <TooltipTrigger>
@@ -1210,7 +1224,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <TrendingUp className="h-4 w-4" />
+                <TrendingUp className="size-4" />
                 Analytics & Insights
               </CardTitle>
               <CardDescription>
@@ -1315,7 +1329,7 @@ export default function CompanyFeedSettingsPage() {
                   {settings.enableLeaderboard && (
                     <div className="rounded-lg border bg-muted/50 p-4">
                       <p className="mb-2 flex items-center gap-2 font-medium text-sm">
-                        <Award className="h-4 w-4" />
+                        <Award className="size-4" />
                         Leaderboard Features
                       </p>
                       <p className="text-muted-foreground text-xs">
@@ -1336,7 +1350,7 @@ export default function CompanyFeedSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Archive className="h-4 w-4" />
+                <Archive className="size-4" />
                 Data Management
               </CardTitle>
               <CardDescription>
@@ -1515,10 +1529,18 @@ export default function CompanyFeedSettingsPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isSubmitting} onClick={handleSave}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <Save className="mr-2 h-4 w-4" />
-            Save Company Feed Settings
+          <Button disabled={isPending} onClick={() => saveSettings()}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 size-4" />
+                Save Company Feed Settings
+              </>
+            )}
           </Button>
         </div>
       </div>

@@ -9,9 +9,11 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Save, UserCircle } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, Save, UserCircle, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { getCustomerPreferences, updateCustomerPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,6 +39,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function CustomerPreferencesPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
     requireCustomerApproval: true,
@@ -67,21 +72,77 @@ export default function CustomerPreferencesPage() {
     displayLastServiceDate: true,
   });
 
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getCustomerPreferences();
+
+        if (result.success && result.data) {
+          setSettings((prev) => ({
+            ...prev,
+            requireServiceAddress: result.data.require_service_address ?? false,
+            allowCustomerFeedback: result.data.request_feedback ?? true,
+            feedbackRequestDelay: result.data.feedback_delay_hours ?? 24,
+            // Note: Other fields don't exist in DB yet, keeping UI defaults
+          }));
+        }
+      } catch (error) {
+        toast.error("Failed to load customer preferences");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
+
   const updateSetting = (key: string, value: string | boolean | number) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
     setHasUnsavedChanges(true);
   };
 
   const handleSave = () => {
-    setHasUnsavedChanges(false);
+    startTransition(async () => {
+      const formData = new FormData();
+
+      // Map fields that exist in database
+      formData.append("defaultContactMethod", "email"); // UI doesn't have this field yet
+      formData.append("allowMarketingEmails", "true"); // UI doesn't have this field yet
+      formData.append("allowMarketingSms", "false"); // UI doesn't have this field yet
+      formData.append("requestFeedback", settings.allowCustomerFeedback.toString());
+      formData.append("feedbackDelayHours", settings.feedbackRequestDelay.toString());
+      formData.append("sendAppointmentReminders", "true"); // UI doesn't have this field yet
+      formData.append("reminderHoursBefore", "24"); // UI doesn't have this field yet
+      formData.append("requireServiceAddress", settings.requireServiceAddress.toString());
+      formData.append("autoTagCustomers", "false"); // UI doesn't have this field yet
+
+      const result = await updateCustomerPreferences(formData);
+
+      if (result.success) {
+        setHasUnsavedChanges(false);
+        toast.success("Customer preferences saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save customer preferences");
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Customer Preferences
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -89,9 +150,18 @@ export default function CustomerPreferencesPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={handleSave} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -99,7 +169,7 @@ export default function CustomerPreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserCircle className="h-4 w-4" />
+              <UserCircle className="size-4" />
               Customer Account Requirements
             </CardTitle>
             <CardDescription>

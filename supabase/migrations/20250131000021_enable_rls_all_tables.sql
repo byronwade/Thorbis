@@ -1,0 +1,69 @@
+-- ============================================================================
+-- PART 1: ENABLE RLS ON ALL 42 TABLES
+-- ============================================================================
+-- This migration enables Row Level Security on all tables
+-- Policies will be added in subsequent migrations
+
+-- Critical tables (PII and financial data)
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE communications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+
+-- Core business tables
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE company_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE custom_roles ENABLE ROW LEVEL SECURITY;
+
+-- Job and work management
+ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE estimates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE service_plans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE service_packages ENABLE ROW LEVEL SECURITY;
+
+-- Inventory and equipment
+ALTER TABLE equipment ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
+ALTER TABLE purchase_orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE po_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE supplier_integrations ENABLE ROW LEVEL SECURITY;
+
+-- Price book
+ALTER TABLE price_book_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE price_book_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE price_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pricing_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE labor_rates ENABLE ROW LEVEL SECURITY;
+
+-- Properties and locations
+ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
+
+-- Tags and categorization
+ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customer_tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE job_tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE equipment_tags ENABLE ROW LEVEL SECURITY;
+
+-- Files and attachments
+ALTER TABLE attachments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
+
+-- Activity and audit
+ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
+
+-- Authentication
+ALTER TABLE verification_tokens ENABLE ROW LEVEL SECURITY;
+
+-- Communication features
+ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages_v2 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE streams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE suggestions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE votes_v2 ENABLE ROW LEVEL SECURITY;

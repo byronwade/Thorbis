@@ -4,25 +4,23 @@
  * Settings > Finance > Bank Accounts Page - Client Component
  *
  * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * - Interactive bank account management
+ * - Real-time balance updates
+ * - Add/Edit/Delete bank accounts with Plaid integration support
  */
 
 import {
-  AlertTriangle,
   Building2,
-  CheckCircle2,
-  Link as LinkIcon,
-  MoreVertical,
   Plus,
-  RefreshCw,
-  Save,
-  Shield,
+  Loader2,
   Trash2,
+  Edit,
+  CheckCircle,
+  AlertCircle,
+  HelpCircle,
 } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,15 +29,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -47,709 +40,601 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  createBankAccount,
+  updateBankAccount,
+  deleteBankAccount,
+  getBankAccounts,
+} from "@/actions/settings";
 
 type BankAccount = {
   id: string;
-  bankName: string;
-  accountName: string;
-  accountType: "checking" | "savings" | "credit" | "line-of-credit";
-  lastFour: string;
-  status: "connected" | "reconnect-needed" | "error";
-  lastSynced: string;
-  isDefault: boolean;
-  logoUrl: string;
-  primaryColor: string;
-};
-
-const getBankLogo = (bankName: string) => {
-  const logos: Record<string, { url: string; color: string }> = {
-    "Chase Bank": {
-      url: "https://logo.clearbit.com/chase.com",
-      color: "#0071CE",
-    },
-    "Bank of America": {
-      url: "https://logo.clearbit.com/bankofamerica.com",
-      color: "#E31837",
-    },
-    "Wells Fargo": {
-      url: "https://logo.clearbit.com/wellsfargo.com",
-      color: "#D71E28",
-    },
-    Citibank: {
-      url: "https://logo.clearbit.com/citi.com",
-      color: "#003B71",
-    },
-    "American Express": {
-      url: "https://logo.clearbit.com/americanexpress.com",
-      color: "#006FCF",
-    },
-    "Capital One": {
-      url: "https://logo.clearbit.com/capitalone.com",
-      color: "#004879",
-    },
-    "US Bank": {
-      url: "https://logo.clearbit.com/usbank.com",
-      color: "#0D2C54",
-    },
-    "PNC Bank": {
-      url: "https://logo.clearbit.com/pnc.com",
-      color: "#F58025",
-    },
-    "TD Bank": {
-      url: "https://logo.clearbit.com/td.com",
-      color: "#5DBB46",
-    },
-    Truist: {
-      url: "https://logo.clearbit.com/truist.com",
-      color: "#340084",
-    },
-  };
-
-  return (
-    logos[bankName] || {
-      url: "https://logo.clearbit.com/bank.com",
-      color: "#6B7280",
-    }
-  );
+  account_name: string;
+  bank_name: string;
+  account_type: string;
+  account_number_last4?: string;
+  current_balance: number;
+  available_balance: number;
+  auto_import_transactions: boolean;
+  is_active: boolean;
+  is_primary: boolean;
+  last_synced_at?: string;
+  created_at: string;
 };
 
 export default function BankAccountsSettingsPage() {
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [accounts, setAccounts] = useState<BankAccount[]>([
-    {
-      id: "1",
-      bankName: "Chase Bank",
-      accountName: "Business Checking",
-      accountType: "checking",
-      lastFour: "4521",
-      status: "connected",
-      lastSynced: "2 minutes ago",
-      isDefault: true,
-      logoUrl: getBankLogo("Chase Bank").url,
-      primaryColor: getBankLogo("Chase Bank").color,
-    },
-    {
-      id: "2",
-      bankName: "Bank of America",
-      accountName: "Business Savings",
-      accountType: "savings",
-      lastFour: "8832",
-      status: "connected",
-      lastSynced: "5 minutes ago",
-      isDefault: false,
-      logoUrl: getBankLogo("Bank of America").url,
-      primaryColor: getBankLogo("Bank of America").color,
-    },
-    {
-      id: "3",
-      bankName: "American Express",
-      accountName: "Business Credit Card",
-      accountType: "credit",
-      lastFour: "1005",
-      status: "reconnect-needed",
-      lastSynced: "1 hour ago",
-      isDefault: false,
-      logoUrl: getBankLogo("American Express").url,
-      primaryColor: getBankLogo("American Express").color,
-    },
-  ]);
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
+  const [accounts, setAccounts] = useState<BankAccount[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<BankAccount | null>(
+    null
+  );
+  const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
 
-  const [settings, setSettings] = useState({
-    plaidEnabled: true,
-    autoSyncEnabled: true,
-    syncFrequency: "daily",
-    syncTime: "02:00",
-    realtimeUpdates: true,
-    requireMFA: true,
-    transactionHistory: 90,
-    autoCategorize: true,
-    emailNotifications: true,
-    lowBalanceThreshold: 1000,
-    largeTransactionThreshold: 5000,
-    reconciliationReminders: true,
-    allowManualAccounts: false,
+  // Form state
+  const [formData, setFormData] = useState({
+    accountName: "",
+    bankName: "",
+    accountType: "checking",
+    accountNumberLast4: "",
+    currentBalance: "0",
+    availableBalance: "0",
+    autoImportTransactions: false,
+    isActive: true,
+    isPrimary: false,
   });
 
-  const handleChange = (key: string, value: any) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasUnsavedChanges(true);
+  // Load accounts from database
+  useEffect(() => {
+    async function loadAccounts() {
+      setIsLoading(true);
+      try {
+        const result = await getBankAccounts();
+
+        if (result.success && result.data) {
+          setAccounts(result.data);
+        }
+      } catch (error) {
+        toast.error("Failed to load bank accounts");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadAccounts();
+  }, [toast]);
+
+  const resetForm = () => {
+    setFormData({
+      accountName: "",
+      bankName: "",
+      accountType: "checking",
+      accountNumberLast4: "",
+      currentBalance: "0",
+      availableBalance: "0",
+      autoImportTransactions: false,
+      isActive: true,
+      isPrimary: false,
+    });
+    setEditingAccount(null);
+  };
+
+  const handleOpenDialog = (account?: BankAccount) => {
+    if (account) {
+      setEditingAccount(account);
+      setFormData({
+        accountName: account.account_name,
+        bankName: account.bank_name,
+        accountType: account.account_type,
+        accountNumberLast4: account.account_number_last4 || "",
+        currentBalance: account.current_balance.toString(),
+        availableBalance: account.available_balance.toString(),
+        autoImportTransactions: account.auto_import_transactions,
+        isActive: account.is_active,
+        isPrimary: account.is_primary,
+      });
+    } else {
+      resetForm();
+    }
+    setDialogOpen(true);
   };
 
   const handleSave = () => {
-    // TODO: Implement save logic
-    setHasUnsavedChanges(false);
+    startTransition(async () => {
+      const formDataObj = new FormData();
+      formDataObj.append("accountName", formData.accountName);
+      formDataObj.append("bankName", formData.bankName);
+      formDataObj.append("accountType", formData.accountType);
+      formDataObj.append("accountNumberLast4", formData.accountNumberLast4);
+      formDataObj.append("currentBalance", formData.currentBalance);
+      formDataObj.append("availableBalance", formData.availableBalance);
+      formDataObj.append(
+        "autoImportTransactions",
+        formData.autoImportTransactions.toString()
+      );
+      formDataObj.append("isActive", formData.isActive.toString());
+      formDataObj.append("isPrimary", formData.isPrimary.toString());
+
+      let result;
+      if (editingAccount) {
+        result = await updateBankAccount(editingAccount.id, formDataObj);
+      } else {
+        result = await createBankAccount(formDataObj);
+      }
+
+      if (result.success) {
+        toast.success(`Bank account ${editingAccount ? "updated" : "created"} successfully`);
+        setDialogOpen(false);
+        resetForm();
+        // Reload accounts
+        const accountsResult = await getBankAccounts();
+        if (accountsResult.success && accountsResult.data) {
+          setAccounts(accountsResult.data);
+        }
+      } else {
+        toast.error(result.error || `Failed to ${editingAccount ? "update" : "create"} bank account`);
+      }
+    });
   };
 
-  const handleSetDefault = (accountId: string) => {
-    setAccounts(
-      accounts.map((acc) => ({
-        ...acc,
-        isDefault: acc.id === accountId,
-      }))
+  const handleDelete = async () => {
+    if (!accountToDelete) return;
+
+    startTransition(async () => {
+      const result = await deleteBankAccount(accountToDelete);
+
+      if (result.success) {
+        toast.success("Bank account deleted successfully");
+        setDeleteDialogOpen(false);
+        setAccountToDelete(null);
+        // Reload accounts
+        const accountsResult = await getBankAccounts();
+        if (accountsResult.success && accountsResult.data) {
+          setAccounts(accountsResult.data);
+        }
+      } else {
+        toast.error(result.error || "Failed to delete bank account");
+      }
+    });
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
     );
-    setHasUnsavedChanges(true);
-  };
-
-  const handleDisconnect = (accountId: string) => {
-    setAccounts(accounts.filter((acc) => acc.id !== accountId));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSync = (_accountId: string) => {
-    // TODO: Implement sync logic
-  };
-
-  const getStatusBadge = (status: BankAccount["status"]) => {
-    switch (status) {
-      case "connected":
-        return (
-          <div className="flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1">
-            <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
-            <span className="font-medium text-green-700 text-xs dark:text-green-400">
-              Connected
-            </span>
-          </div>
-        );
-      case "reconnect-needed":
-        return (
-          <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1">
-            <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-            <span className="font-medium text-amber-700 text-xs dark:text-amber-400">
-              Reconnect Needed
-            </span>
-          </div>
-        );
-      case "error":
-        return (
-          <div className="flex items-center gap-1.5 rounded-full bg-red-500/10 px-2.5 py-1">
-            <AlertTriangle className="h-3 w-3 text-red-600 dark:text-red-400" />
-            <span className="font-medium text-red-700 text-xs dark:text-red-400">
-              Error
-            </span>
-          </div>
-        );
-    }
-  };
+  }
 
   return (
-    <TooltipProvider>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="font-bold text-3xl tracking-tight">
-              Bank Account Settings
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Connect and configure bank account synchronization
-            </p>
+    <div className="space-y-8 py-8">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="font-bold text-4xl tracking-tight">Bank Accounts</h1>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button type="button">
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">Connect and manage your business bank accounts with Plaid integration for automatic transaction imports and real-time balance updates.</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
-          {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
-            </Button>
-          )}
         </div>
+        <p className="text-lg text-muted-foreground">
+          Connect and manage your business bank accounts
+        </p>
+      </div>
 
-        {/* Connected Accounts */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Connected Bank Accounts</CardTitle>
-                <CardDescription>
-                  Manage your connected business bank accounts
-                </CardDescription>
-              </div>
-              <Button>
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Connect Bank
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {accounts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-                <Building2 className="mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="mb-2 font-semibold text-lg">
-                  No Accounts Connected
-                </h3>
-                <p className="mb-4 max-w-sm text-muted-foreground text-sm">
-                  Connect your business bank accounts to automatically sync
-                  transactions and balances.
-                </p>
-                <Button>
-                  <LinkIcon className="mr-2 h-4 w-4" />
-                  Connect Your First Account
-                </Button>
-              </div>
-            ) : (
-              <>
-                {accounts.map((account) => (
-                  <Card key={account.id}>
-                    <CardContent className="pt-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4">
-                          <div
-                            className="flex size-12 items-center justify-center rounded-lg border bg-white p-2"
-                            style={{
-                              borderColor: `${account.primaryColor}20`,
-                            }}
-                          >
-                            <Image
-                              alt={`${account.bankName} logo`}
-                              className="size-full object-contain"
-                              height={48}
-                              src={account.logoUrl}
-                              width={48}
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-semibold">
-                                {account.accountName}
-                              </h3>
-                              {account.isDefault && (
-                                <span className="rounded-full bg-primary px-2 py-0.5 text-primary-foreground text-xs">
-                                  Default
-                                </span>
-                              )}
-                              {getStatusBadge(account.status)}
-                            </div>
-                            <p className="text-muted-foreground text-sm">
-                              {account.bankName} •••• {account.lastFour}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                              Last synced: {account.lastSynced}
-                            </p>
-                          </div>
-                        </div>
+      <div className="space-y-6">
+        <div className="flex items-start justify-between">
+          <div></div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => handleOpenDialog()}>
+              <Plus className="mr-2 size-4" />
+              Add Account
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>
+                {editingAccount ? "Edit Bank Account" : "Add Bank Account"}
+              </DialogTitle>
+              <DialogDescription>
+                {editingAccount
+                  ? "Update the bank account details below"
+                  : "Connect a new bank account to your business"}
+              </DialogDescription>
+            </DialogHeader>
 
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="ghost">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleSync(account.id)}
-                            >
-                              <RefreshCw className="mr-2 h-4 w-4" />
-                              Sync Now
-                            </DropdownMenuItem>
-                            {!account.isDefault && (
-                              <DropdownMenuItem
-                                onClick={() => handleSetDefault(account.id)}
-                              >
-                                <CheckCircle2 className="mr-2 h-4 w-4" />
-                                Set as Default
-                              </DropdownMenuItem>
-                            )}
-                            {account.status === "reconnect-needed" && (
-                              <DropdownMenuItem>
-                                <LinkIcon className="mr-2 h-4 w-4" />
-                                Reconnect Account
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDisconnect(account.id)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Disconnect
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-
-                      {account.status === "reconnect-needed" && (
-                        <>
-                          <Separator className="my-4" />
-                          <div className="flex items-center justify-between rounded-lg bg-amber-500/5 p-3">
-                            <div className="flex items-start gap-2">
-                              <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-500" />
-                              <div>
-                                <p className="font-medium text-amber-700 text-sm dark:text-amber-400">
-                                  Reconnection Required
-                                </p>
-                                <p className="text-muted-foreground text-xs">
-                                  Your bank credentials need to be updated
-                                </p>
-                              </div>
-                            </div>
-                            <Button size="sm" variant="outline">
-                              Reconnect
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-
-                <Button className="w-full" size="lg" variant="outline">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Connect Another Bank Account
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Bank Integration */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              Bank Integration
-            </CardTitle>
-            <CardDescription>
-              Connect to banking services via Plaid
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Enable Plaid Integration</Label>
-                <p className="text-muted-foreground text-sm">
-                  Allow connection to bank accounts through Plaid
-                </p>
-              </div>
-              <Switch
-                checked={settings.plaidEnabled}
-                onCheckedChange={(checked) =>
-                  handleChange("plaidEnabled", checked)
-                }
-              />
-            </div>
-
-            {settings.plaidEnabled && (
-              <>
-                <Separator />
-
-                <div className="space-y-2">
-                  <Label htmlFor="transaction-history">
-                    Initial Sync History
-                  </Label>
-                  <Select
-                    onValueChange={(value) =>
-                      handleChange(
-                        "transactionHistory",
-                        Number.parseInt(value, 10)
-                      )
+            <div className="space-y-4 py-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="accountName">Account Name</Label>
+                  <Input
+                    className="mt-2"
+                    id="accountName"
+                    placeholder="Business Checking"
+                    value={formData.accountName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, accountName: e.target.value })
                     }
-                    value={settings.transactionHistory.toString()}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="bankName">Bank Name</Label>
+                  <Input
+                    className="mt-2"
+                    id="bankName"
+                    placeholder="Chase Bank"
+                    value={formData.bankName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bankName: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="accountType">Account Type</Label>
+                  <Select
+                    value={formData.accountType}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, accountType: value })
+                    }
                   >
-                    <SelectTrigger id="transaction-history">
+                    <SelectTrigger className="mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="30">Last 30 days</SelectItem>
-                      <SelectItem value="90">Last 90 days</SelectItem>
-                      <SelectItem value="180">Last 6 months</SelectItem>
-                      <SelectItem value="365">Last 12 months</SelectItem>
-                      <SelectItem value="730">Last 24 months</SelectItem>
+                      <SelectItem value="checking">Checking</SelectItem>
+                      <SelectItem value="savings">Savings</SelectItem>
+                      <SelectItem value="business_checking">
+                        Business Checking
+                      </SelectItem>
+                      <SelectItem value="credit_card">Credit Card</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-muted-foreground text-xs">
-                    How far back to sync when connecting a new account
-                  </p>
                 </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Require Multi-Factor Authentication</Label>
-                    <p className="text-muted-foreground text-sm">
-                      Users must complete MFA when connecting accounts
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.requireMFA}
-                    onCheckedChange={(checked) =>
-                      handleChange("requireMFA", checked)
+                <div>
+                  <Label htmlFor="accountNumberLast4">Last 4 Digits</Label>
+                  <Input
+                    className="mt-2"
+                    id="accountNumberLast4"
+                    maxLength={4}
+                    placeholder="1234"
+                    value={formData.accountNumberLast4}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        accountNumberLast4: e.target.value,
+                      })
                     }
                   />
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Synchronization Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Automatic Synchronization</CardTitle>
-            <CardDescription>
-              Configure how often accounts sync with banks
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Enable Auto-Sync</Label>
-                <p className="text-muted-foreground text-sm">
-                  Automatically sync all connected accounts
-                </p>
               </div>
-              <Switch
-                checked={settings.autoSyncEnabled}
-                onCheckedChange={(checked) =>
-                  handleChange("autoSyncEnabled", checked)
-                }
-              />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="currentBalance">Current Balance</Label>
+                  <Input
+                    className="mt-2"
+                    id="currentBalance"
+                    placeholder="0.00"
+                    type="number"
+                    value={formData.currentBalance}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        currentBalance: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="availableBalance">Available Balance</Label>
+                  <Input
+                    className="mt-2"
+                    id="availableBalance"
+                    placeholder="0.00"
+                    type="number"
+                    value={formData.availableBalance}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        availableBalance: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Label>Auto Import Transactions</Label>
+                  <p className="text-muted-foreground text-xs">
+                    Automatically sync transactions via Plaid
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.autoImportTransactions}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, autoImportTransactions: checked })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Label>Primary Account</Label>
+                  <p className="text-muted-foreground text-xs">
+                    Use as default for payments
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.isPrimary}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isPrimary: checked })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Label>Active</Label>
+                  <p className="text-muted-foreground text-xs">
+                    Show in reports and dashboard
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isActive: checked })
+                  }
+                />
+              </div>
             </div>
 
-            {settings.autoSyncEnabled && (
-              <>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDialogOpen(false);
+                  resetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Account"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {accounts.length === 0 ? (
+        <Card>
+          <CardContent className="flex min-h-[300px] flex-col items-center justify-center py-12">
+            <Building2 className="mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 font-semibold text-lg">
+              No bank accounts connected
+            </h3>
+            <p className="mb-6 text-center text-muted-foreground text-sm">
+              Connect your business bank accounts to track balances and manage
+              transactions
+            </p>
+            <Button onClick={() => handleOpenDialog()}>
+              <Plus className="mr-2 size-4" />
+              Add Your First Account
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {accounts.map((account) => (
+            <Card
+              key={account.id}
+              className={!account.is_active ? "opacity-60" : ""}
+            >
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="flex items-center gap-2">
+                      <Building2 className="size-5 text-primary" />
+                      {account.account_name}
+                      {account.is_primary && (
+                        <span className="rounded-full bg-blue-500/10 px-2 py-0.5 font-medium text-blue-700 text-xs dark:text-blue-400">
+                          Primary
+                        </span>
+                      )}
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      {account.bank_name}
+                      {account.account_number_last4 && (
+                        <span className="ml-2">
+                          ····{account.account_number_last4}
+                        </span>
+                      )}
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleOpenDialog(account)}
+                    >
+                      <Edit className="size-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setAccountToDelete(account.id);
+                        setDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-muted-foreground text-xs">
+                      Current Balance
+                    </p>
+                    <p className="font-semibold text-lg">
+                      {formatCurrency(account.current_balance)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">
+                      Available Balance
+                    </p>
+                    <p className="font-semibold text-lg">
+                      {formatCurrency(account.available_balance)}
+                    </p>
+                  </div>
+                </div>
+
                 <Separator />
 
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="sync-frequency">Sync Frequency</Label>
-                    <Select
-                      onValueChange={(value) =>
-                        handleChange("syncFrequency", value)
-                      }
-                      value={settings.syncFrequency}
-                    >
-                      <SelectTrigger id="sync-frequency">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="hourly">Every Hour</SelectItem>
-                        <SelectItem value="every-4-hours">
-                          Every 4 Hours
-                        </SelectItem>
-                        <SelectItem value="daily">Daily</SelectItem>
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {settings.syncFrequency === "daily" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="sync-time">Daily Sync Time</Label>
-                      <Input
-                        id="sync-time"
-                        onChange={(e) =>
-                          handleChange("syncTime", e.target.value)
-                        }
-                        type="time"
-                        value={settings.syncTime}
-                      />
-                      <p className="text-muted-foreground text-xs">
-                        Time in your local timezone
-                      </p>
-                    </div>
+                <div className="flex items-center gap-2 text-sm">
+                  {account.is_active ? (
+                    <>
+                      <CheckCircle className="size-4 text-green-500" />
+                      <span className="text-muted-foreground">Active</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="size-4 text-amber-500" />
+                      <span className="text-muted-foreground">Inactive</span>
+                    </>
+                  )}
+                  <span className="text-muted-foreground">·</span>
+                  <span className="text-muted-foreground">
+                    {account.account_type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </span>
+                  {account.auto_import_transactions && (
+                    <>
+                      <span className="text-muted-foreground">·</span>
+                      <span className="text-muted-foreground">
+                        Auto-sync enabled
+                      </span>
+                    </>
                   )}
                 </div>
 
-                <Separator />
+                {account.last_synced_at && (
+                  <p className="text-muted-foreground text-xs">
+                    Last synced:{" "}
+                    {new Date(account.last_synced_at).toLocaleString()}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Real-time Balance Updates</Label>
-                    <p className="text-muted-foreground text-sm">
-                      Update balances immediately when transactions post
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.realtimeUpdates}
-                    onCheckedChange={(checked) =>
-                      handleChange("realtimeUpdates", checked)
-                    }
-                  />
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Transaction Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Processing</CardTitle>
-            <CardDescription>
-              Configure automatic transaction handling
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Auto-Categorize Transactions</Label>
-                <p className="text-muted-foreground text-sm">
-                  Automatically assign categories based on merchant
-                </p>
-              </div>
-              <Switch
-                checked={settings.autoCategorize}
-                onCheckedChange={(checked) =>
-                  handleChange("autoCategorize", checked)
-                }
-              />
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Reconciliation Reminders</Label>
-                <p className="text-muted-foreground text-sm">
-                  Send reminders for unreconciled transactions
-                </p>
-              </div>
-              <Switch
-                checked={settings.reconciliationReminders}
-                onCheckedChange={(checked) =>
-                  handleChange("reconciliationReminders", checked)
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Notifications */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Notifications & Alerts</CardTitle>
-            <CardDescription>
-              Get notified about account activity
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Email Notifications</Label>
-                <p className="text-muted-foreground text-sm">
-                  Send email alerts for important events
-                </p>
-              </div>
-              <Switch
-                checked={settings.emailNotifications}
-                onCheckedChange={(checked) =>
-                  handleChange("emailNotifications", checked)
-                }
-              />
-            </div>
-
-            {settings.emailNotifications && (
-              <>
-                <Separator />
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="low-balance">
-                      Low Balance Threshold ($)
-                    </Label>
-                    <Input
-                      id="low-balance"
-                      min={0}
-                      onChange={(e) =>
-                        handleChange(
-                          "lowBalanceThreshold",
-                          Number.parseInt(e.target.value, 10)
-                        )
-                      }
-                      step={100}
-                      type="number"
-                      value={settings.lowBalanceThreshold}
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      Alert when balance drops below this amount
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="large-transaction">
-                      Large Transaction Alert ($)
-                    </Label>
-                    <Input
-                      id="large-transaction"
-                      min={0}
-                      onChange={(e) =>
-                        handleChange(
-                          "largeTransactionThreshold",
-                          Number.parseInt(e.target.value, 10)
-                        )
-                      }
-                      step={100}
-                      type="number"
-                      value={settings.largeTransactionThreshold}
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      Alert for transactions above this amount
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Advanced Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Advanced Settings</CardTitle>
-            <CardDescription>Additional configuration options</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Allow Manual Account Entry</Label>
-                <p className="text-muted-foreground text-sm">
-                  Users can add accounts without Plaid connection
-                </p>
-              </div>
-              <Switch
-                checked={settings.allowManualAccounts}
-                onCheckedChange={(checked) =>
-                  handleChange("allowManualAccounts", checked)
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Security Notice */}
         <Card className="border-blue-500/50 bg-blue-500/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <Shield className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
-            <div className="space-y-2">
+            <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+            <div className="space-y-1">
               <p className="font-medium text-blue-700 text-sm dark:text-blue-400">
-                Bank-Level Security with Plaid
+                Bank Account Integration
               </p>
-              <ul className="space-y-1 text-muted-foreground text-sm">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-blue-500" />
-                  <span>256-bit AES encryption for all data transmission</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-blue-500" />
-                  <span>
-                    Read-only access - credentials never stored on our servers
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-blue-500" />
-                  <span>SOC 2 Type II certified infrastructure</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-blue-500" />
-                  <span>Supports 12,000+ financial institutions</span>
-                </li>
-              </ul>
+              <p className="text-muted-foreground text-sm">
+                Connect your accounts using Plaid for automatic transaction
+                imports, real-time balance updates, and seamless reconciliation.
+                Your credentials are encrypted and secure.
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
-    </TooltipProvider>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Bank Account</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this bank account? This action
+              cannot be undone. Transaction history will be preserved but the
+              account connection will be removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setAccountToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isPending}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Account"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

@@ -66,7 +66,7 @@ export default function AutomationSettingsPage() {
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Automation Settings
           </h1>
           <Badge variant="secondary">Beta</Badge>

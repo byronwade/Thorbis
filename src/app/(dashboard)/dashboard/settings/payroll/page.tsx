@@ -32,7 +32,7 @@ import {
 const payrollSections = [
   {
     title: "Commission",
-    description: "Configure commission structures and payout timing",
+    subtitle: "Configure commission structures and payout timing",
     icon: BadgeDollarSign,
     href: "/dashboard/settings/payroll/commission",
     color: "text-blue-500",
@@ -40,7 +40,7 @@ const payrollSections = [
   },
   {
     title: "Materials",
-    description: "Manage material cost deductions and handling",
+    subtitle: "Manage material cost deductions and handling",
     icon: Layers,
     href: "/dashboard/settings/payroll/materials",
     color: "text-purple-500",
@@ -48,7 +48,7 @@ const payrollSections = [
   },
   {
     title: "Callbacks",
-    description: "Set callback deductions and warranty work rates",
+    subtitle: "Set callback deductions and warranty work rates",
     icon: AlertCircle,
     href: "/dashboard/settings/payroll/callbacks",
     color: "text-orange-500",
@@ -56,7 +56,7 @@ const payrollSections = [
   },
   {
     title: "Bonuses",
-    description: "Configure performance bonuses and incentives",
+    subtitle: "Configure performance bonuses and incentives",
     icon: TrendingUp,
     href: "/dashboard/settings/payroll/bonuses",
     color: "text-green-500",
@@ -64,7 +64,7 @@ const payrollSections = [
   },
   {
     title: "Overtime",
-    description: "Set overtime rules and premium pay rates",
+    subtitle: "Set overtime rules and premium pay rates",
     icon: Clock,
     href: "/dashboard/settings/payroll/overtime",
     color: "text-amber-500",
@@ -72,7 +72,7 @@ const payrollSections = [
   },
   {
     title: "Deductions",
-    description: "Manage equipment deductions and reimbursements",
+    subtitle: "Manage equipment deductions and reimbursements",
     icon: Wallet,
     href: "/dashboard/settings/payroll/deductions",
     color: "text-red-500",
@@ -80,7 +80,7 @@ const payrollSections = [
   },
   {
     title: "Schedule",
-    description: "Configure payroll timing and approval workflow",
+    subtitle: "Configure payroll timing and approval workflow",
     icon: Calendar,
     href: "/dashboard/settings/payroll/schedule",
     color: "text-indigo-500",
@@ -93,7 +93,7 @@ export default function PayrollSettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Payroll Settings</h1>
+        <h1 className="font-bold text-4xl tracking-tight">Payroll Settings</h1>
         <p className="mt-2 text-muted-foreground">
           Configure commission structures, deductions, bonuses, and payroll
           policies
@@ -166,7 +166,7 @@ export default function PayrollSettingsPage() {
                         {section.title}
                       </CardTitle>
                       <CardDescription className="text-xs">
-                        {section.description}
+                        {section.subtitle}
                       </CardDescription>
                     </div>
                   </div>

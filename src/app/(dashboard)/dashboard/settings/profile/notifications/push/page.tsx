@@ -26,6 +26,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-settings";
+import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -36,21 +38,51 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 export default function PushNotificationsPage() {
-  // Call layout config after mount to avoid SSR issues
+  const { settings, isLoading } = useSettings({
+    getter: getNotificationPreferences,
+    setter: updateNotificationPreferences,
+    initialState: { pushNewJobs: true, pushMessages: true },
+    settingsName: "push notifications",
+    transformLoad: (data) => ({
+      pushNewJobs: data.push_new_jobs ?? true,
+      pushMessages: data.push_messages ?? true,
+    }),
+    transformSave: (s) => {
+      const fd = new FormData();
+      fd.append("emailNewJobs", "true");
+      fd.append("emailJobUpdates", "true");
+      fd.append("emailMentions", "true");
+      fd.append("emailMessages", "true");
+      fd.append("pushNewJobs", s.pushNewJobs.toString());
+      fd.append("pushJobUpdates", "true");
+      fd.append("pushMentions", "true");
+      fd.append("pushMessages", s.pushMessages.toString());
+      fd.append("smsUrgentJobs", "false");
+      fd.append("smsScheduleChanges", "false");
+      fd.append("inAppAll", "true");
+      fd.append("digestEnabled", "false");
+      fd.append("digestFrequency", "daily");
+      return fd;
+    },
+  });
+
   useEffect(() => {
     // Config is set through usePageLayout's useEffect
   }, []);
+
+  if (isLoading) return null;
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button asChild size="icon" variant="outline">
           <Link href="/dashboard/settings/profile/notifications">
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Push Notifications
           </h1>
           <p className="text-muted-foreground">
@@ -93,7 +125,7 @@ export default function PushNotificationsPage() {
                   <span className="text-sm">Enabled</span>
                 </div>
                 <Button size="sm" variant="outline">
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </div>
@@ -119,7 +151,7 @@ export default function PushNotificationsPage() {
                   <span className="text-sm">Enabled</span>
                 </div>
                 <Button size="sm" variant="outline">
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </div>
@@ -145,7 +177,7 @@ export default function PushNotificationsPage() {
                   <span className="text-sm">Disabled</span>
                 </div>
                 <Button size="sm" variant="outline">
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </div>
@@ -161,7 +193,7 @@ export default function PushNotificationsPage() {
               </div>
             </div>
             <Button variant="outline">
-              <Settings className="mr-2 h-4 w-4" />
+              <Settings className="mr-2 size-4" />
               Browser Settings
             </Button>
           </div>
@@ -402,11 +434,11 @@ export default function PushNotificationsPage() {
         <CardContent>
           <div className="flex gap-3">
             <Button>
-              <Bell className="mr-2 h-4 w-4" />
+              <Bell className="mr-2 size-4" />
               Send Test Notification
             </Button>
             <Button variant="outline">
-              <Settings className="mr-2 h-4 w-4" />
+              <Settings className="mr-2 size-4" />
               Reset to Defaults
             </Button>
           </div>

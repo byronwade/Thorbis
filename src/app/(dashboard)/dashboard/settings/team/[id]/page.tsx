@@ -382,7 +382,7 @@ export default function EmployeeProfilePage() {
         <div className="flex items-start gap-4">
           <Link href="/dashboard/settings/team">
             <Button size="icon" variant="ghost">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="size-4" />
             </Button>
           </Link>
           <div className="flex items-start gap-4">
@@ -394,7 +394,7 @@ export default function EmployeeProfilePage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="font-bold text-3xl tracking-tight">
+              <h1 className="font-bold text-4xl tracking-tight">
                 {employee.firstName} {employee.lastName}
               </h1>
               <p className="mt-1 text-muted-foreground">{employee.jobTitle}</p>
@@ -417,12 +417,12 @@ export default function EmployeeProfilePage() {
         <div className="flex gap-2">
           {hasUnsavedChanges && (
             <Button onClick={handleSave} size="lg">
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 size-4" />
               Save Changes
             </Button>
           )}
           <Button size="lg" variant="outline">
-            <Upload className="mr-2 h-4 w-4" />
+            <Upload className="mr-2 size-4" />
             Upload Document
           </Button>
         </div>
@@ -1863,7 +1863,7 @@ export default function EmployeeProfilePage() {
               </div>
 
               <Button className="w-full" type="button" variant="outline">
-                <Upload className="mr-2 h-4 w-4" />
+                <Upload className="mr-2 size-4" />
                 Upload Document
               </Button>
 
@@ -1891,7 +1891,7 @@ export default function EmployeeProfilePage() {
             Cancel
           </Button>
           <Button onClick={handleSave} size="lg">
-            <Save className="mr-2 h-4 w-4" />
+            <Save className="mr-2 size-4" />
             Save All Changes
           </Button>
         </div>

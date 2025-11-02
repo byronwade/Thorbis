@@ -44,6 +44,10 @@ export type Customer = {
   contact: string;
   email: string;
   phone: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
   status: "active" | "inactive" | "prospect";
   lastService: string;
   nextService: string;
@@ -145,6 +149,38 @@ export function CustomersTable({
           </div>
         </div>
       ),
+    },
+    {
+      key: "address",
+      header: "Address",
+      width: "w-56",
+      shrink: true,
+      hideOnMobile: true,
+      render: (customer) => {
+        if (!(customer.address || customer.city || customer.state)) {
+          return (
+            <span className="text-muted-foreground text-sm italic">
+              No address
+            </span>
+          );
+        }
+        return (
+          <div className="space-y-1">
+            {customer.address && (
+              <div className="truncate text-foreground text-sm">
+                {customer.address}
+              </div>
+            )}
+            {(customer.city || customer.state || customer.zipCode) && (
+              <div className="truncate text-muted-foreground text-xs">
+                {[customer.city, customer.state, customer.zipCode]
+                  .filter(Boolean)
+                  .join(", ")}
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "status",
@@ -264,7 +300,11 @@ export function CustomersTable({
       customer.contact.toLowerCase().includes(searchStr) ||
       customer.email.toLowerCase().includes(searchStr) ||
       customer.phone.toLowerCase().includes(searchStr) ||
-      customer.status.toLowerCase().includes(searchStr)
+      customer.status.toLowerCase().includes(searchStr) ||
+      (customer.address?.toLowerCase().includes(searchStr) ?? false) ||
+      (customer.city?.toLowerCase().includes(searchStr) ?? false) ||
+      (customer.state?.toLowerCase().includes(searchStr) ?? false) ||
+      (customer.zipCode?.toLowerCase().includes(searchStr) ?? false)
     );
   };
 
@@ -294,7 +334,7 @@ export function CustomersTable({
       onRefresh={() => window.location.reload()}
       onRowClick={handleRowClick}
       searchFilter={searchFilter}
-      searchPlaceholder="Search customers by name, email, phone, or status..."
+      searchPlaceholder="Search customers by name, email, phone, address, or status..."
       showRefresh={true}
     />
   );

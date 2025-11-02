@@ -24,17 +24,33 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   Calendar,
+  ChevronDown,
+  CreditCard,
   GripVertical,
   Hash,
   Mail,
   MapPin,
   Phone,
   Plus,
-  Trash2,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import {
   type FontFamily,
@@ -42,20 +58,120 @@ import {
 } from "@/lib/stores/invoice-layout-store";
 
 // ============================================================================
-// Font Mapping
+// Price Book - Preset Items
+// ============================================================================
+
+interface PriceBookItem {
+  id: string;
+  name: string;
+  description: string;
+  rate: number;
+  category: string;
+}
+
+const DEFAULT_PRICE_BOOK: PriceBookItem[] = [
+  {
+    id: "pb_1",
+    name: "Consulting Services",
+    description: "Professional consulting services",
+    rate: 150.0,
+    category: "Services",
+  },
+  {
+    id: "pb_2",
+    name: "Project Management",
+    description: "Project management and coordination",
+    rate: 125.0,
+    category: "Services",
+  },
+  {
+    id: "pb_3",
+    name: "Design Work",
+    description: "UI/UX design and mockups",
+    rate: 100.0,
+    category: "Design",
+  },
+  {
+    id: "pb_4",
+    name: "Development (Hourly)",
+    description: "Software development services",
+    rate: 175.0,
+    category: "Development",
+  },
+  {
+    id: "pb_5",
+    name: "Website Hosting",
+    description: "Monthly website hosting service",
+    rate: 29.99,
+    category: "Hosting",
+  },
+  {
+    id: "pb_6",
+    name: "Support & Maintenance",
+    description: "Ongoing support and maintenance",
+    rate: 75.0,
+    category: "Support",
+  },
+  {
+    id: "pb_7",
+    name: "Custom Feature",
+    description: "Custom feature development",
+    rate: 500.0,
+    category: "Development",
+  },
+  {
+    id: "pb_8",
+    name: "Training Session",
+    description: "Team training and onboarding",
+    rate: 200.0,
+    category: "Training",
+  },
+];
+
+// ============================================================================
+// Font Mapping & Currency Formatting
 // ============================================================================
 
 /**
  * Maps FontFamily type to CSS font-family values
- * Uses the website's Geist fonts for consistency
+ * Supports all professional fonts with system fallbacks
  */
 function getFontFamily(font: FontFamily): string {
   const fontMap: Record<FontFamily, string> = {
     "geist-sans":
       "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
     "geist-mono": "var(--font-geist-mono), ui-monospace, monospace",
+    inter: "Inter, ui-sans-serif, system-ui, sans-serif",
+    roboto: "Roboto, ui-sans-serif, system-ui, sans-serif",
+    "open-sans": "'Open Sans', ui-sans-serif, system-ui, sans-serif",
+    lato: "Lato, ui-sans-serif, system-ui, sans-serif",
+    montserrat: "Montserrat, ui-sans-serif, system-ui, sans-serif",
+    playfair: "'Playfair Display', ui-serif, Georgia, serif",
+    merriweather: "Merriweather, ui-serif, Georgia, serif",
+    "source-sans": "'Source Sans Pro', ui-sans-serif, system-ui, sans-serif",
+    helvetica: "Helvetica, Arial, sans-serif",
+    arial: "Arial, Helvetica, sans-serif",
   };
   return fontMap[font];
+}
+
+/**
+ * Formats currency based on user settings
+ */
+function formatCurrency(
+  amount: number,
+  symbol: string,
+  position: "before" | "after",
+  showCode: boolean,
+  currencyCode: string
+): string {
+  const formattedAmount = amount.toFixed(2);
+  const codeStr = showCode ? ` ${currencyCode}` : "";
+
+  if (position === "before") {
+    return `${symbol}${formattedAmount}${codeStr}`;
+  }
+  return `${formattedAmount}${symbol}${codeStr}`;
 }
 
 // ============================================================================
@@ -211,6 +327,7 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
   const [taxRate, setTaxRate] = useState<number>(invoice.taxRate || 8.5);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [priceBookOpen, setPriceBookOpen] = useState(false);
 
   // Fix hydration mismatch: Only render DndContext after client-side mount
   useEffect(() => {
@@ -242,7 +359,19 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
     );
   };
 
-  // Add line item
+  // Add line item from price book
+  const addFromPriceBook = (priceBookItem: PriceBookItem) => {
+    const newItem: LineItem = {
+      id: Date.now().toString(),
+      description: priceBookItem.description,
+      quantity: 1,
+      rate: priceBookItem.rate,
+      amount: priceBookItem.rate,
+    };
+    setLineItems([...lineItems, newItem]);
+  };
+
+  // Add blank line item
   const addLineItem = () => {
     const newItem: LineItem = {
       id: Date.now().toString(),
@@ -301,7 +430,9 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
         }}
       >
         {/* Loading placeholder during hydration */}
-        <div className="text-center text-muted-foreground">Loading editor...</div>
+        <div className="text-center text-muted-foreground">
+          Loading editor...
+        </div>
       </div>
     );
   }
@@ -314,13 +445,38 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
     >
       <SortableContext items={blocks} strategy={verticalListSortingStrategy}>
         <div
-          className="mx-auto max-w-5xl space-y-8"
+          className="relative mx-auto max-w-5xl space-y-8"
           style={{
             fontFamily: getFontFamily(typography.bodyFont),
             fontSize: `${typography.bodySize}rem`,
             lineHeight: typography.lineHeight,
           }}
         >
+          {/* Watermark Overlay */}
+          {customization.watermarkEnabled && customization.watermarkText && (
+            <div
+              className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
+              style={{
+                opacity: customization.watermarkOpacity / 100,
+              }}
+            >
+              <div
+                className="select-none font-bold uppercase tracking-widest"
+                style={{
+                  fontSize: "6rem",
+                  color: colors.textLight,
+                  transform:
+                    customization.watermarkPosition === "diagonal"
+                      ? "rotate(-45deg)"
+                      : "none",
+                  textAlign: "center",
+                  lineHeight: 1,
+                }}
+              >
+                {customization.watermarkText}
+              </div>
+            </div>
+          )}
           {blocks.map((block) => (
             <SortableBlock
               id={block.id}
@@ -432,7 +588,7 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
                             style={{ color: colors.primary }}
                           />
                           <Input
-                            className="border-0 bg-transparent p-0 font-bold text-right focus-visible:ring-0"
+                            className="border-0 bg-transparent p-0 text-right font-bold focus-visible:ring-0"
                             onChange={(e) =>
                               updateBlockData(block.id, {
                                 invoiceNumber: e.target.value,
@@ -588,168 +744,279 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
                   </div>
                 ) : null}
 
-                {/* Line Items Block */}
+                {/* Line Items Block - Minimalistic */}
                 {block.type === "lineItems" ? (
                   <div>
-                    <h3
-                      className="mb-6 font-semibold"
-                      style={{
-                        fontFamily: getFontFamily(typography.headingFont),
-                        fontSize: "1.125rem", // 18px
-                        color: colors.primary,
-                      }}
-                    >
-                      Line Items
-                    </h3>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr
-                            className="border-b-2"
-                            style={{ borderColor: colors.primary }}
-                          >
-                            <th
-                              className="pb-4 text-left font-semibold uppercase tracking-wider"
-                              style={{
-                                color: colors.text,
-                                fontSize: "0.8125rem", // 13px
-                                letterSpacing: "0.05em",
-                              }}
-                            >
-                              Description
-                            </th>
-                            <th
-                              className="w-24 pb-4 text-right font-semibold uppercase tracking-wider"
-                              style={{
-                                color: colors.text,
-                                fontSize: "0.8125rem",
-                                letterSpacing: "0.05em",
-                              }}
-                            >
-                              Qty
-                            </th>
-                            <th
-                              className="w-32 pb-4 text-right font-semibold uppercase tracking-wider"
-                              style={{
-                                color: colors.text,
-                                fontSize: "0.8125rem",
-                                letterSpacing: "0.05em",
-                              }}
-                            >
-                              Rate
-                            </th>
-                            <th
-                              className="w-32 pb-4 text-right font-semibold uppercase tracking-wider"
-                              style={{
-                                color: colors.text,
-                                fontSize: "0.8125rem",
-                                letterSpacing: "0.05em",
-                              }}
-                            >
-                              Amount
-                            </th>
-                            <th className="w-12 pb-4" />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {lineItems.map((item, index) => (
-                            <tr
-                              className="border-b transition-colors hover:bg-accent/5"
-                              key={item.id}
-                              style={{ borderColor: colors.border }}
-                            >
-                              <td className="py-4">
-                                <Input
-                                  className="border-0 bg-transparent p-0 font-medium focus-visible:ring-0"
-                                  onChange={(e) =>
-                                    updateLineItem(
-                                      item.id,
-                                      "description",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="Item description"
-                                  style={{
-                                    color: colors.text,
-                                    fontSize: "0.9375rem", // 15px
-                                  }}
-                                  value={item.description}
-                                />
-                              </td>
-                              <td className="py-4 text-right">
-                                <Input
-                                  className="border-0 bg-transparent p-0 text-right focus-visible:ring-0"
-                                  min={1}
-                                  onChange={(e) =>
-                                    updateLineItem(
-                                      item.id,
-                                      "quantity",
-                                      Number.parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                  style={{
-                                    color: colors.text,
-                                    fontSize: "0.9375rem",
-                                  }}
-                                  type="number"
-                                  value={item.quantity}
-                                />
-                              </td>
-                              <td className="py-4 text-right">
-                                <Input
-                                  className="border-0 bg-transparent p-0 text-right focus-visible:ring-0"
-                                  min={0}
-                                  onChange={(e) =>
-                                    updateLineItem(
-                                      item.id,
-                                      "rate",
-                                      Number.parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                  step={0.01}
-                                  style={{
-                                    color: colors.text,
-                                    fontSize: "0.9375rem",
-                                  }}
-                                  type="number"
-                                  value={item.rate}
-                                />
-                              </td>
-                              <td
-                                className="py-4 text-right font-semibold"
-                                style={{
-                                  color: colors.text,
-                                  fontSize: "0.9375rem",
-                                }}
-                              >
-                                ${item.amount.toFixed(2)}
-                              </td>
-                              <td className="py-4 text-right">
-                                <Button
-                                  className="opacity-0 transition-opacity group-hover:opacity-100"
-                                  onClick={() => removeLineItem(item.id)}
-                                  size="sm"
-                                  variant="ghost"
-                                >
-                                  <Trash2 className="size-4 text-destructive" />
-                                </Button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="mt-6">
-                      <Button
-                        className="gap-2"
-                        onClick={addLineItem}
-                        size="sm"
-                        variant="outline"
+                    {/* Header with Quick Add */}
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3
+                        className="font-medium"
+                        style={{
+                          fontFamily: getFontFamily(typography.headingFont),
+                          fontSize: "0.875rem",
+                          color: colors.textLight,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                        }}
                       >
-                        <Plus className="size-4" />
-                        Add Line Item
-                      </Button>
+                        Items
+                      </h3>
+
+                      {/* Quick Add Menu */}
+                      <div className="flex items-center gap-2">
+                        <Popover
+                          onOpenChange={setPriceBookOpen}
+                          open={priceBookOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              className="h-8 gap-1 text-xs"
+                              size="sm"
+                              style={{
+                                borderColor: colors.border,
+                                color: colors.text,
+                              }}
+                              variant="outline"
+                            >
+                              <Plus className="size-3" />
+                              Quick Add
+                              <ChevronDown className="size-3" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent align="end" className="w-80 p-0">
+                            <Command>
+                              <CommandInput placeholder="Search price book..." />
+                              <CommandList>
+                                <CommandEmpty>No items found.</CommandEmpty>
+                                {Object.entries(
+                                  DEFAULT_PRICE_BOOK.reduce(
+                                    (acc, item) => {
+                                      if (!acc[item.category])
+                                        acc[item.category] = [];
+                                      acc[item.category].push(item);
+                                      return acc;
+                                    },
+                                    {} as Record<string, PriceBookItem[]>
+                                  )
+                                ).map(([category, items]) => (
+                                  <CommandGroup
+                                    heading={category}
+                                    key={category}
+                                  >
+                                    {items.map((pbItem) => (
+                                      <CommandItem
+                                        key={pbItem.id}
+                                        onSelect={() => {
+                                          addFromPriceBook(pbItem);
+                                          setPriceBookOpen(false);
+                                        }}
+                                      >
+                                        <div className="flex w-full items-center justify-between">
+                                          <div className="flex-1">
+                                            <div className="font-medium">
+                                              {pbItem.name}
+                                            </div>
+                                            <div className="text-muted-foreground text-xs">
+                                              {pbItem.description}
+                                            </div>
+                                          </div>
+                                          <div className="font-semibold text-sm">
+                                            {formatCurrency(
+                                              pbItem.rate,
+                                              customization.currencySymbol,
+                                              customization.currencyPosition,
+                                              false,
+                                              customization.currency
+                                            )}
+                                          </div>
+                                        </div>
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                ))}
+                                <CommandSeparator />
+                                <CommandGroup>
+                                  <CommandItem
+                                    onSelect={() => {
+                                      addLineItem();
+                                      setPriceBookOpen(false);
+                                    }}
+                                  >
+                                    <Plus className="mr-2 size-4" />
+                                    <span>Add blank item</span>
+                                  </CommandItem>
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                     </div>
+
+                    {/* Minimal Table */}
+                    {lineItems.length > 0 ? (
+                      <div
+                        className="overflow-hidden rounded-md border"
+                        style={{ borderColor: colors.border }}
+                      >
+                        <table className="w-full">
+                          <thead>
+                            <tr
+                              className="border-b text-xs"
+                              style={{
+                                borderColor: colors.border,
+                                backgroundColor: `${colors.background}`,
+                              }}
+                            >
+                              <th
+                                className="px-3 py-2 text-left font-medium"
+                                style={{ color: colors.textLight }}
+                              >
+                                Description
+                              </th>
+                              <th
+                                className="w-20 px-3 py-2 text-center font-medium"
+                                style={{ color: colors.textLight }}
+                              >
+                                Qty
+                              </th>
+                              <th
+                                className="w-28 px-3 py-2 text-right font-medium"
+                                style={{ color: colors.textLight }}
+                              >
+                                Rate
+                              </th>
+                              <th
+                                className="w-32 px-3 py-2 text-right font-medium"
+                                style={{ color: colors.textLight }}
+                              >
+                                Amount
+                              </th>
+                              <th className="w-10" />
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {lineItems.map((item) => (
+                              <tr
+                                className="group border-b transition-colors hover:bg-accent/5"
+                                key={item.id}
+                                style={{ borderColor: colors.border }}
+                              >
+                                <td className="px-3 py-2">
+                                  <Input
+                                    className="h-8 border-0 bg-transparent p-0 text-sm focus-visible:ring-0"
+                                    onChange={(e) =>
+                                      updateLineItem(
+                                        item.id,
+                                        "description",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="Item description"
+                                    style={{ color: colors.text }}
+                                    value={item.description}
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <Input
+                                    className="h-8 border-0 bg-transparent p-0 text-center text-sm focus-visible:ring-0"
+                                    min={1}
+                                    onChange={(e) =>
+                                      updateLineItem(
+                                        item.id,
+                                        "quantity",
+                                        Number.parseFloat(e.target.value) || 0
+                                      )
+                                    }
+                                    style={{ color: colors.text }}
+                                    type="number"
+                                    value={item.quantity}
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <Input
+                                    className="h-8 border-0 bg-transparent p-0 text-right text-sm focus-visible:ring-0"
+                                    min={0}
+                                    onChange={(e) =>
+                                      updateLineItem(
+                                        item.id,
+                                        "rate",
+                                        Number.parseFloat(e.target.value) || 0
+                                      )
+                                    }
+                                    step={0.01}
+                                    style={{ color: colors.text }}
+                                    type="number"
+                                    value={item.rate}
+                                  />
+                                </td>
+                                <td
+                                  className="px-3 py-2 text-right font-semibold text-sm"
+                                  style={{ color: colors.text }}
+                                >
+                                  {formatCurrency(
+                                    item.amount,
+                                    customization.currencySymbol,
+                                    customization.currencyPosition,
+                                    customization.showCurrencyCode,
+                                    customization.currency
+                                  )}
+                                </td>
+                                <td className="px-1 py-2 text-center">
+                                  <Button
+                                    className="size-6 opacity-0 transition-opacity group-hover:opacity-100"
+                                    onClick={() => removeLineItem(item.id)}
+                                    size="icon"
+                                    variant="ghost"
+                                  >
+                                    <X
+                                      className="size-3"
+                                      style={{ color: colors.textLight }}
+                                    />
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div
+                        className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center"
+                        style={{ borderColor: colors.border }}
+                      >
+                        <div
+                          className="mb-2 rounded-full p-2"
+                          style={{ backgroundColor: `${colors.primary}10` }}
+                        >
+                          <Plus
+                            className="size-5"
+                            style={{ color: colors.primary }}
+                          />
+                        </div>
+                        <p
+                          className="mb-3 font-medium text-sm"
+                          style={{ color: colors.text }}
+                        >
+                          No items added yet
+                        </p>
+                        <p
+                          className="mb-4 text-xs"
+                          style={{ color: colors.textLight }}
+                        >
+                          Use Quick Add to select from price book
+                        </p>
+                        <Button
+                          className="gap-1"
+                          onClick={() => setPriceBookOpen(true)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Plus className="size-3" />
+                          Quick Add
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ) : null}
 
@@ -773,7 +1040,13 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
                           fontSize: "1.0625rem",
                         }}
                       >
-                        ${subtotal.toFixed(2)}
+                        {formatCurrency(
+                          subtotal,
+                          customization.currencySymbol,
+                          customization.currencyPosition,
+                          customization.showCurrencyCode,
+                          customization.currency
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-3 py-2.5">
@@ -801,9 +1074,7 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
                             max={100}
                             min={0}
                             onChange={(e) =>
-                              setTaxRate(
-                                Number.parseFloat(e.target.value) || 0
-                              )
+                              setTaxRate(Number.parseFloat(e.target.value) || 0)
                             }
                             step={0.1}
                             style={{
@@ -831,9 +1102,69 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
                           fontSize: "1.0625rem",
                         }}
                       >
-                        ${taxAmount.toFixed(2)}
+                        {formatCurrency(
+                          taxAmount,
+                          customization.currencySymbol,
+                          customization.currencyPosition,
+                          customization.showCurrencyCode,
+                          customization.currency
+                        )}
                       </span>
                     </div>
+
+                    {/* VAT Section (if enabled) */}
+                    {customization.vatEnabled && customization.vatRate && (
+                      <>
+                        <div className="flex items-center justify-between gap-3 py-2.5">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="font-medium"
+                              style={{
+                                color: colors.textLight,
+                                fontSize: "0.9375rem",
+                              }}
+                            >
+                              VAT
+                            </span>
+                            <span
+                              style={{
+                                color: colors.textLight,
+                                fontSize: "0.9375rem",
+                              }}
+                            >
+                              ({customization.vatRate}%)
+                            </span>
+                            {customization.vatNumber && (
+                              <span
+                                className="text-xs"
+                                style={{
+                                  color: colors.textLight,
+                                  fontSize: "0.75rem",
+                                }}
+                              >
+                                {customization.vatNumber}
+                              </span>
+                            )}
+                          </div>
+                          <span
+                            className="font-semibold"
+                            style={{
+                              color: colors.text,
+                              fontSize: "1.0625rem",
+                            }}
+                          >
+                            {formatCurrency(
+                              subtotal * (customization.vatRate / 100),
+                              customization.currencySymbol,
+                              customization.currencyPosition,
+                              customization.showCurrencyCode,
+                              customization.currency
+                            )}
+                          </span>
+                        </div>
+                      </>
+                    )}
+
                     <div
                       className="border-t-2"
                       style={{ borderColor: colors.primary }}
@@ -862,9 +1193,95 @@ export function InvoiceBuilder({ invoice }: InvoiceBuilderProps) {
                           fontSize: "1.5rem",
                         }}
                       >
-                        ${total.toFixed(2)}
+                        {formatCurrency(
+                          customization.vatEnabled && customization.vatRate
+                            ? total + subtotal * (customization.vatRate / 100)
+                            : total,
+                          customization.currencySymbol,
+                          customization.currencyPosition,
+                          customization.showCurrencyCode,
+                          customization.currency
+                        )}
                       </span>
                     </div>
+
+                    {/* Payment Features (QR Code & Payment Link) */}
+                    {(customization.qrCodeEnabled ||
+                      customization.paymentLinkEnabled) && (
+                      <div
+                        className="mt-6 space-y-4 border-t pt-6"
+                        style={{ borderColor: colors.border }}
+                      >
+                        {customization.paymentLinkEnabled &&
+                          customization.paymentLinkURL && (
+                            <div className="text-center">
+                              <a
+                                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors hover:opacity-80"
+                                href={customization.paymentLinkURL}
+                                rel="noopener noreferrer"
+                                style={{
+                                  backgroundColor: colors.primary,
+                                  color: "white",
+                                }}
+                                target="_blank"
+                              >
+                                <CreditCard className="size-4" />
+                                Pay Online
+                              </a>
+                            </div>
+                          )}
+
+                        {customization.qrCodeEnabled &&
+                          customization.qrCodeData && (
+                            <div className="flex flex-col items-center gap-2">
+                              <div
+                                className="flex size-32 items-center justify-center rounded-lg border-2"
+                                style={{ borderColor: colors.border }}
+                              >
+                                <div
+                                  className="text-center text-xs"
+                                  style={{ color: colors.textLight }}
+                                >
+                                  [QR Code]
+                                  <br />
+                                  {customization.qrCodeType}
+                                </div>
+                              </div>
+                              <span
+                                className="text-xs"
+                                style={{ color: colors.textLight }}
+                              >
+                                Scan to pay
+                              </span>
+                            </div>
+                          )}
+                      </div>
+                    )}
+
+                    {/* Digital Signature */}
+                    {customization.digitalSignatureEnabled &&
+                      customization.digitalSignatureImage && (
+                        <div
+                          className="mt-6 border-t pt-6"
+                          style={{ borderColor: colors.border }}
+                        >
+                          <div className="space-y-2">
+                            <span
+                              className="font-medium text-xs"
+                              style={{ color: colors.textLight }}
+                            >
+                              Authorized Signature
+                            </span>
+                            <div>
+                              <img
+                                alt="Digital Signature"
+                                className="h-16 object-contain"
+                                src={customization.digitalSignatureImage}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                   </div>
                 ) : null}
 

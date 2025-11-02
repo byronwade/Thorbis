@@ -1,10 +1,7 @@
 /**
- * Settings > Profile > Notifications > Email Page - Client Component
+ * Settings > Profile > Notifications > Email Page
  *
- * Client-side features:
- * - Interactive state management and event handlers
- * - Form validation and user input handling
- * - Browser API access for enhanced UX
+ * Sub-page of notifications - uses same data
  */
 
 import {
@@ -19,6 +16,8 @@ import {
   Shield,
   Trash2,
   Users,
+  Loader2,
+  Save,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -39,20 +38,63 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { useSettings } from "@/hooks/use-settings";
+import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 
-export const revalidate = 3600; // Revalidate every 1 hour
 export default function EmailPreferencesPage() {
+  const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings } = useSettings({
+    getter: getNotificationPreferences,
+    setter: updateNotificationPreferences,
+    initialState: {
+      emailNewJobs: true,
+      emailJobUpdates: true,
+      emailMentions: true,
+      emailMessages: true,
+    },
+    settingsName: "email notifications",
+    transformLoad: (data) => ({
+      emailNewJobs: data.email_new_jobs ?? true,
+      emailJobUpdates: data.email_job_updates ?? true,
+      emailMentions: data.email_mentions ?? true,
+      emailMessages: data.email_messages ?? true,
+    }),
+    transformSave: (s) => {
+      const fd = new FormData();
+      fd.append("emailNewJobs", s.emailNewJobs.toString());
+      fd.append("emailJobUpdates", s.emailJobUpdates.toString());
+      fd.append("emailMentions", s.emailMentions.toString());
+      fd.append("emailMessages", s.emailMessages.toString());
+      fd.append("pushNewJobs", "true");
+      fd.append("pushJobUpdates", "true");
+      fd.append("pushMentions", "true");
+      fd.append("pushMessages", "true");
+      fd.append("smsUrgentJobs", "false");
+      fd.append("smsScheduleChanges", "false");
+      fd.append("inAppAll", "true");
+      fd.append("digestEnabled", "false");
+      fd.append("digestFrequency", "daily");
+      return fd;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button asChild size="icon" variant="outline">
           <Link href="/dashboard/settings/profile/notifications">
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight">
             Email Preferences
           </h1>
           <p className="text-muted-foreground">
@@ -392,7 +434,7 @@ export default function EmailPreferencesPage() {
               </div>
             </div>
             <Button size="sm" variant="destructive">
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 size-4" />
               Unsubscribe All
             </Button>
           </div>

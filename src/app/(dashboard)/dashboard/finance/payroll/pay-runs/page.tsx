@@ -134,7 +134,7 @@ export default function PayRunsPage() {
       render: (payRun) =>
         payRun.status === "completed" ? (
           <Button size="sm" variant="outline">
-            <Download className="h-4 w-4" />
+            <Download className="size-4" />
             <span className="sr-only">Download</span>
           </Button>
         ) : (
@@ -154,8 +154,9 @@ export default function PayRunsPage() {
           </p>
         </div>
         <Button>
-          <Play className="mr-2 h-4 w-4" />
-          Run Payroll
+          <Play className="mr-2 size-4" />
+          <span className="hidden sm:inline">Run Payroll</span>
+          <span className="sm:hidden">Run</span>
         </Button>
       </div>
 
@@ -205,7 +206,7 @@ export default function PayRunsPage() {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">This Month</CardTitle>

@@ -9,9 +9,11 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Phone, Save } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, Phone, Save, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { getPhoneSettings, updatePhoneSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -31,17 +33,55 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 export default function PhoneSettingsPage() {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [settings, setSettings] = useState({
-    businessPhoneNumber: "(555) 123-4567",
-    enableCallRecording: true,
+    businessPhoneNumber: "",
+    enableCallRecording: false,
     callRecordingDisclosure: true,
     enableVoicemail: true,
-    voicemailGreeting:
-      "Thank you for calling. We're unable to take your call right now. Please leave a message and we'll get back to you as soon as possible.",
+    voicemailGreeting: "",
     forwardAfterHours: false,
     forwardToNumber: "",
+    routingStrategy: "round_robin",
+    businessHoursOnly: false,
+    voicemailEmailNotifications: true,
+    voicemailTranscription: false,
   });
+
+  // Load settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      try {
+        const result = await getPhoneSettings();
+
+        if (result.success && result.data) {
+          setSettings({
+            businessPhoneNumber: result.data.fallback_number || "",
+            enableCallRecording: result.data.recording_enabled ?? false,
+            callRecordingDisclosure: result.data.recording_consent_required ?? true,
+            enableVoicemail: result.data.voicemail_enabled ?? true,
+            voicemailGreeting: result.data.voicemail_greeting_url || "",
+            forwardAfterHours: !result.data.business_hours_only,
+            forwardToNumber: result.data.fallback_number || "",
+            routingStrategy: result.data.routing_strategy || "round_robin",
+            businessHoursOnly: result.data.business_hours_only ?? false,
+            voicemailEmailNotifications: result.data.voicemail_email_notifications ?? true,
+            voicemailTranscription: result.data.voicemail_transcription_enabled ?? false,
+          });
+        }
+      } catch (error) {
+        toast.error("Failed to load phone settings");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadSettings();
+  }, [toast]);
 
   const updateSetting = (key: string, value: string | boolean) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -49,15 +89,43 @@ export default function PhoneSettingsPage() {
   };
 
   const handleSave = () => {
-    setHasUnsavedChanges(false);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("routingStrategy", settings.routingStrategy);
+      formData.append("fallbackNumber", settings.forwardToNumber);
+      formData.append("businessHoursOnly", settings.businessHoursOnly.toString());
+      formData.append("voicemailEnabled", settings.enableVoicemail.toString());
+      formData.append("voicemailGreetingUrl", settings.voicemailGreeting);
+      formData.append("voicemailEmailNotifications", settings.voicemailEmailNotifications.toString());
+      formData.append("voicemailTranscriptionEnabled", settings.voicemailTranscription.toString());
+      formData.append("recordingEnabled", settings.enableCallRecording.toString());
+      formData.append("recordingConsentRequired", settings.callRecordingDisclosure.toString());
+
+      const result = await updatePhoneSettings(formData);
+
+      if (result.success) {
+        setHasUnsavedChanges(false);
+        toast.success("Phone settings saved successfully");
+      } else {
+        toast.error(result.error || "Failed to save phone settings");
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-bold text-3xl tracking-tight">
+            <h1 className="font-bold text-4xl tracking-tight">
               Phone & Voice Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -65,9 +133,18 @@ export default function PhoneSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button onClick={handleSave} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -75,7 +152,7 @@ export default function PhoneSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Phone className="h-4 w-4" />
+              <Phone className="size-4" />
               Business Phone
             </CardTitle>
             <CardDescription>

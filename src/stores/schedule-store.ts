@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
+import { createClient } from "@/lib/supabase/client";
 
 interface ScheduleState {
   // Data
@@ -232,14 +233,86 @@ export const useScheduleStore = create<ScheduleState>()(
         syncWithServer: async () => {
           set({ isLoading: true, error: null });
           try {
-            // TODO: Replace with actual API call
-            const response = await fetch("/api/schedule");
-            if (!response.ok) throw new Error("Failed to sync");
+            const supabase = createClient();
 
-            const { technicians, jobs } = await response.json();
+            if (!supabase) {
+              throw new Error("Database connection not available");
+            }
 
-            get().setTechnicians(technicians);
-            get().setJobs(jobs);
+            // Fetch schedules from Supabase
+            const { data: schedules, error: schedulesError } = await supabase
+              .from("schedules")
+              .select(`
+                *,
+                customer:customers(first_name, last_name, email, phone),
+                job:jobs(job_number, title)
+              `)
+              .is("deleted_at", null)
+              .order("scheduled_start", { ascending: true });
+
+            if (schedulesError) throw schedulesError;
+
+            // Fetch team members (technicians)
+            const { data: teamMembers, error: teamError } = await supabase
+              .from("team_members")
+              .select("*")
+              .eq("is_active", true);
+
+            if (teamError) throw teamError;
+
+            // Convert schedules to Job format (filter out jobs without customers)
+            const convertedJobs = (schedules || [])
+              .filter((schedule: any) => schedule.customer)
+              .map((schedule: any) => ({
+                id: schedule.id,
+                technicianId: schedule.assigned_to || "",
+                customerId: schedule.customer_id || "",
+                customer: {
+                  id: schedule.customer_id,
+                  name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
+                  email: schedule.customer.email,
+                  phone: schedule.customer.phone,
+                  location: schedule.location || "",
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+                title: schedule.title || "",
+                description: schedule.description || "",
+                status: schedule.status || "scheduled",
+                priority: schedule.priority || "normal",
+                startTime: new Date(schedule.scheduled_start),
+                endTime: new Date(schedule.scheduled_end),
+                location: schedule.location || "",
+                notes: schedule.notes || "",
+                metadata: {},
+                createdAt: new Date(schedule.created_at),
+                updatedAt: new Date(schedule.updated_at),
+              }));
+
+            // Convert team members to Technician format
+            const convertedTechnicians = (teamMembers || []).map(
+              (member: any) => ({
+                id: member.user_id,
+                name: member.title || "Team Member",
+                email: "",
+                phone: "",
+                avatar: member.avatar_url,
+                color: "#3B82F6",
+                role: member.role,
+                isActive: member.is_active,
+                status: "available" as const,
+                schedule: {
+                  workingHours: { start: "08:00", end: "17:00" },
+                  daysOff: [],
+                  availableHours: { start: 0, end: 40 },
+                },
+                createdAt: new Date(member.created_at),
+                updatedAt: new Date(member.updated_at),
+              })
+            );
+
+            get().setTechnicians(convertedTechnicians);
+            get().setJobs(convertedJobs);
             set({ lastSync: new Date() });
           } catch (error) {
             set({
