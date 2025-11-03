@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File scripts/fix-onedrive-sync.ps1)",
+      "Bash(pnpm run dev)",
+      "Bash(powershell -ExecutionPolicy Bypass -File:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

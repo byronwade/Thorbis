@@ -8,6 +8,7 @@
 1. **Async Request APIs** - `cookies()`, `headers()`, `params`, `searchParams` are now async
 2. **Dynamic Route Segments** - All route params must be awaited
 3. **React 19 Features** - Use latest React patterns (ref as prop, actions)
+4. **Proxy Pattern** - Use `proxy.ts` instead of `middleware.ts` for auth/routing (security best practice)
 
 ### Required Patterns
 
@@ -84,6 +85,41 @@ const MyInput = React.forwardRef<HTMLInputElement>((props, ref) => {
 });
 ```
 
+#### ✅ Proxy Pattern (Next.js 16+) - REQUIRED for Auth/Routing
+```typescript
+// ✅ CORRECT - Next.js 16+ proxy.ts
+// proxy.ts (root level)
+import { NextResponse, type NextRequest } from "next/server";
+
+export async function proxy(request: NextRequest) {
+  // Handle auth, redirects, session refresh
+  // Runs on Node.js runtime (not Edge)
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"]
+};
+
+// ❌ WRONG - Next.js 14/15 middleware.ts pattern
+// middleware.ts (deprecated, security risks)
+export async function middleware(request: NextRequest) {
+  // This pattern is deprecated in Next.js 16
+}
+```
+
+**Why proxy.ts?**
+- **Security**: Fixes critical CVE where `x-middleware-subrequest` header could bypass all auth checks
+- **Clarity**: Explicitly shows network boundary and Node.js runtime
+- **Best Practice**: Vercel recommends NOT relying on middleware.ts for security/auth anymore
+- **Migration**: Use codemod: `npx @next/codemod@latest middleware-to-proxy`
+
+**Important Security Notes:**
+- NEVER rely solely on proxy.ts for authorization
+- ALWAYS validate auth in Server Actions and API routes
+- Use proxy.ts ONLY for lightweight interception (redirects, session refresh)
+- Implement proper Row Level Security (RLS) in Supabase
+
 ---
 
 ## 📚 REQUIRED CONTEXT
@@ -127,6 +163,9 @@ The AGENTS.md file contains 436 comprehensive linting rules covering:
    - Never trust client input
    - Use parameterized queries only
    - Use Server Actions for form submissions (not client-side state)
+   - **Use proxy.ts (NOT middleware.ts)** - Next.js 16+ security best practice
+   - NEVER rely solely on proxy.ts for auth - always validate in Server Actions/API routes
+   - Use proxy.ts ONLY for lightweight redirects and session refresh
 
 4. **STATE MANAGEMENT - ZUSTAND ONLY**
    - **NEVER use React Context** - always use Zustand for state management
@@ -898,6 +937,100 @@ export function MyComponent() {
 }
 ```
 
+### Proxy Template (Next.js 16+)
+```typescript
+/**
+ * Next.js 16+ Proxy - Auth & Route Protection
+ *
+ * SECURITY CRITICAL:
+ * - Use proxy.ts (NOT middleware.ts) in Next.js 16+
+ * - NEVER rely solely on proxy for authorization
+ * - ALWAYS validate auth in Server Actions and API routes
+ * - Use RLS (Row Level Security) in Supabase
+ *
+ * Performance:
+ * - Runs on Node.js runtime (not Edge)
+ * - Lightweight session refresh only
+ * - Minimal overhead on protected routes
+ */
+
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+
+export async function proxy(request: NextRequest) {
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Allow requests if Supabase not configured
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response;
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      get(name: string) {
+        return request.cookies.get(name)?.value;
+      },
+      set(name: string, value: string, options) {
+        request.cookies.set({ name, value, ...options });
+        response = NextResponse.next({ request: { headers: request.headers } });
+        response.cookies.set({ name, value, ...options });
+      },
+      remove(name: string, options) {
+        request.cookies.set({ name, value: "", ...options });
+        response = NextResponse.next({ request: { headers: request.headers } });
+        response.cookies.set({ name, value: "", ...options });
+      },
+    },
+  });
+
+  // Refresh session if expired
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // Protected routes
+  const protectedPaths = ["/dashboard"];
+  const isProtectedPath = protectedPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  // Auth pages
+  const authPaths = ["/login", "/signup", "/auth"];
+  const isAuthPath = authPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  // Redirect unauthenticated users to login
+  if (isProtectedPath && !session) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/login";
+    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // Redirect authenticated users to dashboard
+  if (isAuthPath && session) {
+    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = redirectTo || "/dashboard";
+    redirectUrl.search = "";
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  return response;
+}
+
+export const config = {
+  matcher: [
+    // Match all paths except static files
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};
+```
+
 ---
 
 ## 📈 PERFORMANCE MONITORING
@@ -920,6 +1053,15 @@ export function MyComponent() {
 ---
 
 ## 🔄 VERSION HISTORY
+
+- **v2.2** - Next.js 16 Proxy Pattern & Security Update (2025-11-02)
+  - **BREAKING**: Migrated from middleware.ts to proxy.ts (Next.js 16+ requirement)
+  - Added comprehensive proxy.ts documentation and template
+  - Updated security guidelines to reflect CVE fix (x-middleware-subrequest bypass)
+  - Emphasized NEVER relying solely on proxy for authorization
+  - Added "Why proxy.ts?" section explaining security benefits
+  - Updated all examples to use Next.js 16+ patterns
+  - Added codemod migration instructions
 
 - **v2.1** - Enhanced Component Reuse Guidelines (2025-10-29)
   - Strengthened "Extend Existing Infrastructure" rule (Critical Rule #5)
