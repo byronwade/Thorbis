@@ -27,6 +27,8 @@ import type { ReactNode } from "react";
 // Toolbar action components
 import { CommunicationToolbarActions } from "@/components/communication/communication-toolbar-actions";
 import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
+import { CustomerDetailToolbar } from "@/components/customers/customer-detail-toolbar";
+import { CustomerDetailBreadcrumbs } from "@/components/customers/customer-detail-breadcrumbs";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
@@ -34,6 +36,8 @@ import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
 import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions";
 import { ItemDetailToolbarWrapper } from "@/components/work/item-detail-toolbar-wrapper";
+import { JobDetailBreadcrumbs } from "@/components/work/job-details/job-detail-breadcrumbs";
+import { JobDetailToolbar } from "@/components/work/job-details/job-detail-toolbar";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 import type { SidebarConfig } from "@/lib/sidebar/types";
@@ -83,6 +87,7 @@ export const ROUTE_PATTERNS = {
 
   // Customers
   CUSTOMERS_LIST: /^\/dashboard\/customers$/,
+  CUSTOMER_DETAIL: /^\/dashboard\/customers\/[^/]+$/,
 
   // Finance
   FINANCE_ROOT: /^\/dashboard\/finance$/,
@@ -396,6 +401,28 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   },
 
   {
+    pattern: ROUTE_PATTERNS.CUSTOMER_DETAIL,
+    config: {
+      structure: {
+        maxWidth: "full",
+        padding: "none",
+        gap: "none",
+        fixedHeight: false,
+      },
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        breadcrumbs: <CustomerDetailBreadcrumbs />,
+        title: "Customer Details",
+        actions: <CustomerDetailToolbar />,
+      },
+      sidebar: { show: false },
+    },
+    priority: 98,
+    description: "Customer detail page with inline editing - full width no sidebars",
+  },
+
+  {
     pattern: ROUTE_PATTERNS.CUSTOMER_EDIT,
     config: {
       structure: {
@@ -664,25 +691,25 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.WORK_INVOICES_DETAILS,
     config: {
-      structure: FULL_WIDTH_STRUCTURE,
+      structure: DEFAULT_STRUCTURE, // Use default structure like other pages
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Invoice Builder",
-        subtitle: "Create and customize invoices",
+        title: "Invoice Editor",
+        subtitle: "Edit invoice details and manage payments",
         actions: <InvoiceToolbarActions />,
       },
       sidebar: DEFAULT_SIDEBAR,
       rightSidebar: {
         show: true,
         component: "invoice",
-        width: 320,
+        width: 380,
         collapsible: true,
         defaultOpen: true,
       },
     },
     priority: 75,
-    description: "Invoice builder with customization sidebar",
+    description: "Invoice editor with options sidebar and payment management",
   },
 
   // ========================================
@@ -720,6 +747,26 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 50,
     description: "Work hub/job board",
+  },
+
+  // Job details pages
+  {
+    pattern: ROUTE_PATTERNS.JOB_DETAILS,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        breadcrumbs: <JobDetailBreadcrumbs />,
+        title: "Job Details",
+        actions: <JobDetailToolbar />,
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Job detail pages - full width with toolbar and back button",
   },
 
   // Work list pages

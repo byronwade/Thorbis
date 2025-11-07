@@ -10,6 +10,7 @@
  */
 
 import {
+  Archive,
   ArrowUpDown,
   Building2,
   Check,
@@ -24,7 +25,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 type UserStatus = "active" | "invited" | "suspended";
 type SortField =
@@ -96,6 +98,7 @@ type Department = {
 };
 
 export default function TeamMembersPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [selectedRole, setSelectedRole] = useState<string>("all");
@@ -123,36 +126,80 @@ export default function TeamMembersPage() {
     { id: "4", name: "Technician", memberCount: 42 },
   ];
 
-  const teamMembers: TeamMember[] = Array.from({ length: 150 }, (_, i) => ({
-    id: `${i + 1}`,
-    name: `Team Member ${i + 1}`,
-    email: `member${i + 1}@company.com`,
-    roleId: customRoles[i % customRoles.length].id,
-    roleName: customRoles[i % customRoles.length].name,
-    roleColor:
-      i % 4 === 0
-        ? "#fbbf24"
-        : i % 4 === 1
-          ? "#3b82f6"
-          : i % 4 === 2
-            ? "#10b981"
-            : "#6b7280",
-    departmentId: departments[i % departments.length].id,
-    departmentName: departments[i % departments.length].name,
-    departmentColor:
-      i % 4 === 0
-        ? "#3b82f6"
-        : i % 4 === 1
-          ? "#10b981"
-          : i % 4 === 2
-            ? "#f59e0b"
-            : "#8b5cf6",
-    status: i % 10 === 0 ? "invited" : i % 15 === 0 ? "suspended" : "active",
-    jobTitle: i % 3 === 0 ? "Senior Technician" : "Technician",
-    joinedDate: "2024-01-15",
-    lastActive:
-      i % 5 === 0 ? "Just now" : i % 3 === 0 ? "5 min ago" : "2 hours ago",
-  }));
+  // Load real team members from database
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
+
+  useEffect(() => {
+    async function loadTeamMembers() {
+      setIsLoadingMembers(true);
+      try {
+        const { getTeamMembers } = await import("@/actions/team");
+        const result = await getTeamMembers();
+
+        if (result.success && result.data) {
+          // Transform database format to component format
+          const members = result.data.map((member: any) => ({
+            id: member.id,
+            name: member.user?.name || member.user?.email?.split("@")[0] || "Unknown",
+            email: member.user?.email || "",
+            roleId: member.role_id || "4",
+            roleName: member.role?.name || "Team Member",
+            roleColor: member.role?.color || getRoleColor(member.role?.name),
+            departmentId: member.department_id || "1",
+            departmentName: member.department?.name || "General",
+            departmentColor: member.department?.color || getDepartmentColor(member.department?.name),
+            status: member.status || "active",
+            jobTitle: member.job_title || "Team Member",
+            joinedDate: member.joined_at ? new Date(member.joined_at).toLocaleDateString() :
+                       member.invited_at ? new Date(member.invited_at).toLocaleDateString() : "",
+            lastActive: member.last_active_at ? getRelativeTime(new Date(member.last_active_at)) : "Never",
+          }));
+          setTeamMembers(members);
+        }
+      } catch (error) {
+        toast.error("Failed to load team members");
+        setTeamMembers([]);
+      } finally {
+        setIsLoadingMembers(false);
+      }
+    }
+    loadTeamMembers();
+  }, []);
+
+  // Helper functions for colors
+  function getRoleColor(roleName: string | undefined): string {
+    const colors: Record<string, string> = {
+      Owner: "#fbbf24",
+      Administrator: "#3b82f6",
+      Manager: "#10b981",
+      Technician: "#6b7280",
+    };
+    return colors[roleName || ""] || "#6b7280";
+  }
+
+  function getDepartmentColor(deptName: string | undefined): string {
+    const colors: Record<string, string> = {
+      Sales: "#3b82f6",
+      Operations: "#10b981",
+      Service: "#f59e0b",
+      Support: "#8b5cf6",
+    };
+    return colors[deptName || ""] || "#6b7280";
+  }
+
+  function getRelativeTime(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} min ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  }
 
   // Filtering
   const filteredMembers = teamMembers.filter((member) => {
@@ -532,10 +579,10 @@ export default function TeamMembersPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-destructive"
-                      onClick={() => handleBulkAction("remove")}
+                      onClick={() => handleBulkAction("archive")}
                     >
-                      <Trash2 className="mr-2 size-4" />
-                      Remove Members
+                      <Archive className="mr-2 size-4" />
+                      Archive Members
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -664,8 +711,8 @@ export default function TeamMembersPage() {
                       {member.status === "active" ? "Suspend" : "Activate"}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive">
-                      <Trash2 className="mr-2 size-4" />
-                      Remove
+                      <Archive className="mr-2 size-4" />
+                      Archive Member
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

@@ -35,7 +35,7 @@ export default async function JobsPage() {
 
   // Fetch jobs from Supabase with customer and property details
   // Note: Use the foreign key column name with ! to specify the exact relationship
-  const { data: jobs, error } = await supabase
+  const { data: jobsRaw, error } = await supabase
     .from("jobs")
     .select(`
       *,
@@ -52,6 +52,40 @@ export default async function JobsPage() {
     throw new Error(`Failed to load jobs: ${errorMessage}`);
   }
 
+  // Transform snake_case to camelCase for the component
+  const jobs = (jobsRaw || []).map((job: any) => ({
+    id: job.id,
+    companyId: job.company_id,
+    propertyId: job.property_id,
+    customerId: job.customer_id,
+    assignedTo: job.assigned_to,
+    jobNumber: job.job_number,
+    title: job.title,
+    description: job.description,
+    status: job.status,
+    priority: job.priority,
+    jobType: job.job_type,
+    aiCategories: job.ai_categories,
+    aiEquipment: job.ai_equipment,
+    aiServiceType: job.ai_service_type,
+    aiPriorityScore: job.ai_priority_score,
+    aiTags: job.ai_tags,
+    aiProcessedAt: job.ai_processed_at ? new Date(job.ai_processed_at) : null,
+    scheduledStart: job.scheduled_start ? new Date(job.scheduled_start) : null,
+    scheduledEnd: job.scheduled_end ? new Date(job.scheduled_end) : null,
+    actualStart: job.actual_start ? new Date(job.actual_start) : null,
+    actualEnd: job.actual_end ? new Date(job.actual_end) : null,
+    totalAmount: job.total_amount ?? 0,
+    paidAmount: job.paid_amount ?? 0,
+    notes: job.notes,
+    metadata: job.metadata,
+    createdAt: new Date(job.created_at),
+    updatedAt: new Date(job.updated_at),
+    // Include related data
+    customers: job.customers,
+    properties: job.properties,
+  }));
+
   return (
     <>
       {/* Job Flow Pipeline - Rendered on server, passed to client component */}
@@ -59,7 +93,7 @@ export default async function JobsPage() {
 
       {/* Jobs Table - Client component handles sorting, filtering, pagination */}
       <div>
-        <JobsTable itemsPerPage={50} jobs={jobs || []} />
+        <JobsTable itemsPerPage={50} jobs={jobs} />
       </div>
     </>
   );

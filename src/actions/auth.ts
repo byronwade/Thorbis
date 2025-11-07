@@ -81,8 +81,8 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-// Types
-export type AuthActionResult = {
+// Internal return type (not exported - Next.js 16 "use server" restriction)
+type AuthActionResult = {
   success: boolean;
   error?: string;
   data?: any;

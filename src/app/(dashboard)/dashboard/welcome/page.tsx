@@ -52,6 +52,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { completeOnboarding } from "@/actions/onboarding";
+import { useToast } from "@/hooks/use-toast";
 
 // Industry options for field service businesses
 const INDUSTRIES = [
@@ -110,9 +111,9 @@ const formSchema = z.object({
 
 export default function WelcomePage() {
 	const router = useRouter();
+	const { toast } = useToast();
 	const [currentStep, setCurrentStep] = useState<Step>(1);
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -150,7 +151,6 @@ export default function WelcomePage() {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
-		setError(null);
 
 		try {
 			const formData = new FormData();
@@ -163,12 +163,13 @@ export default function WelcomePage() {
 			const result = await completeOnboarding(formData);
 
 			if (result.success) {
+				toast.success("Onboarding completed successfully!");
 				router.push("/dashboard");
 			} else {
-				setError(result.error || "Failed to complete onboarding");
+				toast.error(result.error || "Failed to complete onboarding");
 			}
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "An unexpected error occurred");
+			toast.error(err instanceof Error ? err.message : "An unexpected error occurred");
 		} finally {
 			setIsLoading(false);
 		}
@@ -461,11 +462,6 @@ export default function WelcomePage() {
 										</div>
 									</div>
 
-									{error && (
-										<div className="rounded-lg bg-destructive/10 p-4 text-destructive text-sm">
-											{error}
-										</div>
-									)}
 								</div>
 							)}
 

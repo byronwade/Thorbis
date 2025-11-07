@@ -189,6 +189,22 @@ export function useResizableMulti(
     [minWidth, maxWidth, minHeight, maxHeight, applySnap]
   );
 
+  // Use refs for callbacks to prevent listener stacking (CRITICAL FIX)
+  const calculateResizeRef = useRef(calculateResize);
+  const onResizeRef = useRef(onResize);
+  const setPopoverWidthRef = useRef(setPopoverWidth);
+  const setPositionRef = useRef(setPosition);
+  const localStateRef = useRef(localState);
+
+  // Keep refs up to date
+  useEffect(() => {
+    calculateResizeRef.current = calculateResize;
+    onResizeRef.current = onResize;
+    setPopoverWidthRef.current = setPopoverWidth;
+    setPositionRef.current = setPosition;
+    localStateRef.current = localState;
+  });
+
   // Handle resize move
   useEffect(() => {
     if (!(isResizing && activeDirection)) return;
@@ -209,13 +225,14 @@ export function useResizableMulti(
         const deltaX = clientX - startRef.current.x;
         const deltaY = clientY - startRef.current.y;
 
-        const newState = calculateResize(deltaX, deltaY, activeDirection);
+        const newState = calculateResizeRef.current(deltaX, deltaY, activeDirection);
 
         // Update local state (no store update = fast)
         setLocalState(newState);
+        localStateRef.current = newState;
 
         // Trigger callback for other updates (like height state in parent)
-        onResize?.(newState.width, newState.height, newState.x, newState.y);
+        onResizeRef.current?.(newState.width, newState.height, newState.x, newState.y);
       });
     };
 
@@ -228,8 +245,9 @@ export function useResizableMulti(
       }
 
       // Save to store once at the end (prevents lag during resize)
-      setPopoverWidth(localState.width);
-      setPosition({ x: localState.x, y: localState.y });
+      const currentState = localStateRef.current;
+      setPopoverWidthRef.current(currentState.width);
+      setPositionRef.current({ x: currentState.x, y: currentState.y });
 
       isResizingRef.current = false;
       setIsResizing(false);
@@ -252,15 +270,7 @@ export function useResizableMulti(
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [
-    isResizing,
-    activeDirection,
-    calculateResize,
-    setPopoverWidth,
-    setPosition,
-    onResize,
-    localState,
-  ]);
+  }, [isResizing, activeDirection]); // ✅ Stable dependencies only
 
   // Create handle props for each direction
   const createHandleProps = useCallback(

@@ -28,9 +28,10 @@ import type { Job } from "@/lib/db/schema";
 
 interface ProfitabilityWidgetProps {
   job: Job;
+  materials?: unknown[];
 }
 
-// Mock cost breakdown type (in production, fetch from database)
+// Cost breakdown type
 interface CostBreakdown {
   labor: number;
   materials: number;
@@ -47,23 +48,48 @@ interface RevenueBreakdown {
   other: number;
 }
 
-export function ProfitabilityWidget({ job }: ProfitabilityWidgetProps) {
-  // Mock financial data (in production, fetch from database)
+export function ProfitabilityWidget({ job, materials: materialsData = [] }: ProfitabilityWidgetProps) {
+  // Calculate revenue and costs from job line items
+  const lineItems = materialsData as any[];
+
+  // Calculate revenue by item type
   const revenue: RevenueBreakdown = {
-    services: 4500.0,
-    materials: 1200.0,
-    equipment: 800.0,
-    other: 200.0,
+    services: lineItems
+      .filter((item) => item.item_type === "service" || item.item_type === "labor")
+      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    materials: lineItems
+      .filter((item) => item.item_type === "material" || item.item_type === "product")
+      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    equipment: lineItems
+      .filter((item) => item.item_type === "equipment")
+      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    other: lineItems
+      .filter((item) => !["service", "labor", "material", "product", "equipment"].includes(item.item_type))
+      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
   };
 
+  // Calculate costs (assuming cost is tracked separately, or use 60% of price as estimate)
   const costs: CostBreakdown = {
-    labor: 2100.0,
-    materials: 950.0,
-    equipment: 450.0,
-    permits: 250.0,
-    overhead: 380.0,
-    other: 120.0,
+    labor: lineItems
+      .filter((item) => item.item_type === "service" || item.item_type === "labor")
+      .reduce((sum, item) => sum + ((item.cost || item.total_price * 0.6) || 0), 0) / 100,
+    materials: lineItems
+      .filter((item) => item.item_type === "material" || item.item_type === "product")
+      .reduce((sum, item) => sum + ((item.cost || item.total_price * 0.7) || 0), 0) / 100,
+    equipment: lineItems
+      .filter((item) => item.item_type === "equipment")
+      .reduce((sum, item) => sum + ((item.cost || item.total_price * 0.7) || 0), 0) / 100,
+    permits: 0, // TODO: Track permit costs separately
+    overhead: (job.totalAmount || 0) * 0.1 / 100, // 10% overhead estimate
+    other: 0,
   };
+
+  // If no line items, use job total_amount
+  if (lineItems.length === 0 && job.totalAmount) {
+    revenue.services = job.totalAmount / 100;
+    costs.labor = (job.totalAmount * 0.6) / 100; // Estimate 60% labor cost
+    costs.overhead = (job.totalAmount * 0.1) / 100;
+  }
 
   // Calculate totals
   const totalRevenue = Object.values(revenue).reduce(
@@ -110,7 +136,7 @@ export function ProfitabilityWidget({ job }: ProfitabilityWidgetProps) {
           variant={isLoss ? "destructive" : isLowMargin ? "outline" : "default"}
         >
           {profitMargin > 0 ? "+" : ""}
-          {profitMargin.toFixed(1)}% margin
+          {profitMargin.toFixed(2)}% margin
         </Badge>
       </div>
 
@@ -195,7 +221,7 @@ export function ProfitabilityWidget({ job }: ProfitabilityWidgetProps) {
                   </span>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">
-                      {percentage.toFixed(1)}%
+                      {percentage.toFixed(2)}%
                     </span>
                     <span className="font-medium">
                       {formatCurrency(amount)}
@@ -225,7 +251,7 @@ export function ProfitabilityWidget({ job }: ProfitabilityWidgetProps) {
                   </span>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">
-                      {percentage.toFixed(1)}%
+                      {percentage.toFixed(2)}%
                     </span>
                     <span className="font-medium">
                       {formatCurrency(amount)}
@@ -289,7 +315,7 @@ export function ProfitabilityWidget({ job }: ProfitabilityWidgetProps) {
               </p>
               <p className="text-green-800 text-xs dark:text-green-200">
                 Great work! This job has a strong profit margin of{" "}
-                {profitMargin.toFixed(1)}
+                {profitMargin.toFixed(2)}
                 %.
               </p>
             </div>
@@ -317,19 +343,19 @@ export function ProfitabilityWidget({ job }: ProfitabilityWidgetProps) {
         <div className="space-y-1">
           <p className="text-muted-foreground">Labor Cost %</p>
           <p className="font-semibold">
-            {getCostPercentage(costs.labor).toFixed(1)}%
+            {getCostPercentage(costs.labor).toFixed(2)}%
           </p>
         </div>
         <div className="space-y-1">
           <p className="text-muted-foreground">Material Cost %</p>
           <p className="font-semibold">
-            {getCostPercentage(costs.materials).toFixed(1)}%
+            {getCostPercentage(costs.materials).toFixed(2)}%
           </p>
         </div>
         <div className="space-y-1">
           <p className="text-muted-foreground">Overhead %</p>
           <p className="font-semibold">
-            {getCostPercentage(costs.overhead).toFixed(1)}%
+            {getCostPercentage(costs.overhead).toFixed(2)}%
           </p>
         </div>
         <div className="space-y-1">

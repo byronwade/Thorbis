@@ -1,80 +1,35 @@
 /**
- * Invoice Details Page - Server Component
+ * Invoice Details Page - Full-Screen Editable View
  *
- * Performance optimizations:
- * - Server Component (no "use client" - uses params prop)
- * - Static content rendered on server
- * - Uses established AppToolbar pattern (configured via toolbar-config.tsx)
- * - Reduced JavaScript bundle size
- * - Better SEO and initial page load
+ * Modern invoice interface with:
+ * - Full-screen layout (no preview/edit toggle)
+ * - Inline editing for all fields
+ * - Real-time auto-save
+ * - AppToolbar integration
+ * - Adaptable for all construction industries
  *
- * Features:
- * - BlockNote-based invoice editor
- * - Custom invoice blocks (header, line items, totals)
- * - Customizable design (colors, fonts, spacing)
- * - Preset templates
- * - Export to PDF
+ * Performance:
+ * - Server Component wrapper
+ * - Client Component for editor
+ * - Auto-save debounced
  */
 
-import { InvoiceEditorClient } from "@/components/invoices/invoice-editor-client";
+import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { InvoiceEditorWrapper } from "@/components/invoices/invoice-editor-wrapper";
 
-// ============================================================================
-// Mock Data (Replace with real database queries)
-// ============================================================================
+export const dynamic = "force-dynamic";
 
-const mockInvoice = {
-  id: "1",
-  invoiceNumber: "INV-2025-001",
-  invoiceDate: "2025-01-31",
-  dueDate: "2025-02-28",
-  status: "draft",
-  customerId: "customer-1",
-  customerName: "John Smith",
-  customerEmail: "john.smith@example.com",
-  customerAddress: "123 Main Street",
-  customerCity: "San Francisco, CA 94102",
-  customerPhone: "(555) 123-4567",
-  companyName: "Thorbis",
-  companyAddress: "456 Business Ave",
-  companyCity: "San Francisco, CA 94103",
-  companyPhone: "(555) 987-6543",
-  companyEmail: "billing@thorbis.com",
-  lineItems: [
-    {
-      id: "1",
-      description: "HVAC Installation Services",
-      quantity: 1,
-      rate: 2500,
-      amount: 2500,
-    },
-    {
-      id: "2",
-      description: "Equipment - 3-Ton AC Unit",
-      quantity: 1,
-      rate: 3500,
-      amount: 3500,
-    },
-    {
-      id: "3",
-      description: "Labor - Installation (8 hours)",
-      quantity: 8,
-      rate: 125,
-      amount: 1000,
-    },
-  ],
-  subtotal: 7000,
-  taxRate: 8.5,
-  taxAmount: 595,
-  total: 7595,
-  notes: "Payment due within 30 days. Thank you for your business!",
-  paymentTerms: "Net 30",
-  createdAt: new Date("2025-01-31"),
-  updatedAt: new Date("2025-01-31"),
-};
-
-// ============================================================================
-// Page Component
-// ============================================================================
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return {
+    title: "Invoice Details",
+  };
+}
 
 export default async function InvoiceDetailsPage({
   params,
@@ -83,23 +38,134 @@ export default async function InvoiceDetailsPage({
 }) {
   const { id: invoiceId } = await params;
 
-  // ============================================================================
-  // Data Fetching (Server-side)
-  // ============================================================================
+  const supabase = await createClient();
 
-  // In production, replace with real database query
-  const invoice = mockInvoice;
+  if (!supabase) {
+    return notFound();
+  }
 
-  // ============================================================================
-  // Render
-  // ============================================================================
-  // Note: AppToolbar automatically renders based on route configuration
-  // See src/lib/toolbar-config.tsx for invoice toolbar configuration
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return notFound();
+  }
+
+  // Get user's company
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .single();
+
+  if (!teamMember?.company_id) {
+    return notFound();
+  }
+
+  // Fetch invoice
+  const { data: invoice, error: invoiceError } = await supabase
+    .from("invoices")
+    .select("*")
+    .eq("id", invoiceId)
+    .single();
+
+  if (invoiceError || !invoice) {
+    console.error("Invoice fetch error:", invoiceError);
+    return notFound();
+  }
+
+  // Verify company access
+  if (invoice.company_id !== teamMember.company_id) {
+    return notFound();
+  }
+
+  // Fetch related data in parallel
+  const [
+    { data: customer },
+    { data: company },
+    { data: job },
+    { data: property },
+    { data: paymentMethods },
+    { data: activities },
+  ] = await Promise.all([
+    // Fetch customer with full details
+    supabase
+      .from("customers")
+      .select("*")
+      .eq("id", invoice.customer_id)
+      .single(),
+
+    // Fetch company
+    supabase.from("companies").select("*").eq("id", teamMember.company_id).single(),
+
+    // Fetch job (if linked)
+    invoice.job_id
+      ? supabase
+          .from("jobs")
+          .select("id, job_number, title, property_id")
+          .eq("id", invoice.job_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
+    // Fetch property (if job has one)
+    invoice.job_id
+      ? supabase
+          .from("jobs")
+          .select("property_id")
+          .eq("id", invoice.job_id)
+          .single()
+          .then(async ({ data: jobData }) => {
+            if (jobData?.property_id) {
+              return supabase
+                .from("properties")
+                .select("*")
+                .eq("id", jobData.property_id)
+                .single();
+            }
+            return { data: null, error: null };
+          })
+      : Promise.resolve({ data: null, error: null }),
+
+    // Fetch customer payment methods
+    supabase
+      .from("customer_payment_methods")
+      .select("*")
+      .eq("customer_id", invoice.customer_id)
+      .eq("is_active", true)
+      .order("is_default", { ascending: false }),
+
+    // Fetch activity log for this invoice
+    supabase
+      .from("activity_log")
+      .select(
+        `
+        *,
+        user:users!user_id(
+          id,
+          email,
+          first_name,
+          last_name
+        )
+      `
+      )
+      .eq("entity_type", "invoice")
+      .eq("entity_id", invoiceId)
+      .order("created_at", { ascending: false })
+      .limit(50),
+  ]);
 
   return (
-    <div className="py-6">
-      {/* Invoice Editor */}
-      <InvoiceEditorClient invoice={invoice} invoiceId={invoiceId} />
-    </div>
+    <InvoiceEditorWrapper
+      invoice={invoice}
+      customer={customer}
+      company={company}
+      job={job}
+      property={property}
+      paymentMethods={paymentMethods || []}
+      activities={activities || []}
+    />
   );
 }

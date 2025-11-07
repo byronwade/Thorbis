@@ -431,3 +431,51 @@ Benefits: Smaller bundle size, better performance, no provider hell, simpler cod
 Anti-pattern: Creating Context + Provider when Zustand would work better
 Anti-pattern: Props drilling when state should be in a store
 Anti-pattern: Multiple useState calls that should be unified in a store
+**ALWAYS use Supabase MCP server for database operations - never make manual SQL changes**
+When editing features, update ALL related infrastructure: database schema, RLS policies, types, migrations
+Use mcp__supabase__apply_migration for ALL schema changes - track everything in migrations
+After database changes, ALWAYS regenerate TypeScript types with mcp__supabase__generate_typescript_types
+Update both code AND documentation when changing features - keep AGENTS.md and CLAUDE.md current
+Production-ready means: migrations applied, types updated, RLS policies tested, documentation updated
+Run mcp__supabase__get_advisors after schema changes to catch security/performance issues
+Never skip steps - incomplete updates cause production bugs and security vulnerabilities
+Use mcp__supabase__list_tables and mcp__supabase__execute_sql to verify changes before committing
+Database changes checklist: 1) Create migration 2) Apply migration 3) Update RLS 4) Generate types 5) Update docs
+Treat every change as production-critical - no shortcuts, no skipped steps, complete from start to finish
+**ALWAYS use PostgreSQL full-text search with ts_rank for best match results**
+Use search_vector tsvector columns with GIN indexes for sub-millisecond search performance
+Implement weighted search: A (names, IDs) > B (contact info) > C (descriptions) > D (notes)
+Use websearch_to_tsquery for natural language queries with AND/OR support
+Use pg_trgm similarity for fuzzy matching and typo tolerance
+Search across ALL relevant fields - never limit to single field searches
+Return results ordered by ts_rank DESC for best matches first
+Use RPC functions for complex ranked searches to reduce network overhead
+Implement fallback ILIKE search for backwards compatibility
+Always scope searches by company_id and respect RLS policies
+Limit results to 50-100 for performance (configurable per use case)
+Use searchCustomersFullText, searchJobsFullText utility functions from @/lib/search/full-text-search
+Implement universal searchAll() for global search across all entities
+Create search_vector triggers to auto-update on INSERT/UPDATE
+Add trigram indexes (gin_trgm_ops) for fuzzy matching on key text fields
+**ALWAYS use shadcn MCP to search for components before creating new UI elements**
+Use mcp__shadcn__search_items_in_registries to find existing components by keyword
+Use mcp__shadcn__get_item_examples_from_registries to view usage examples before implementing
+Use mcp__shadcn__view_items_in_registries to inspect component implementation details
+Use mcp__shadcn__get_add_command_for_items to get proper CLI commands for adding components
+Run mcp__shadcn__get_audit_checklist after creating new components to verify best practices
+Check shadcn registry for established UI patterns before building custom solutions
+Prefer shadcn/ui components over custom implementations for consistency and maintainability
+**ALWAYS use Next.js MCP runtime tools for debugging and diagnostics**
+Use mcp__next-devtools__nextjs_runtime with action='list_tools' to discover available runtime diagnostics
+Use mcp__next-devtools__nextjs_runtime to inspect errors, routes, and runtime state before making changes
+Use mcp__next-devtools__nextjs_docs to search official Next.js documentation instead of guessing
+Use mcp__next-devtools__browser_eval for testing pages in real browsers (detects runtime errors curl cannot catch)
+CRITICAL: Use browser automation to verify Next.js pages - curl only fetches HTML, doesn't execute JavaScript
+Use browser_eval to capture console errors, hydration issues, and client-side problems
+Prefer nextjs_runtime tools over browser console logs for Next.js-specific diagnostics
+Use mcp__next-devtools__upgrade_nextjs_16 when upgrading to Next.js 16 (runs official codemod first)
+Use browser automation after implementing features to verify they work in real user scenarios
+Check Next.js runtime state proactively before implementing changes to understand current app structure
+Query nextjs_runtime FIRST when asked to investigate or modify the running Next.js app
+Use browser automation for page verification during upgrades or testing (not curl/HTTP requests)
+Enable Next.js MCP by ensuring dev server runs with __NEXT_EXPERIMENTAL_MCP_SERVER=true (or default in v16+)

@@ -279,7 +279,7 @@ export function JobCreationWizard({
     if (result.success && result.data) {
       // Clear form and redirect
       reset();
-      router.push(`/dashboard/work/jobs/${result.data}`);
+      router.push(`/dashboard/work/${result.data}`);
     } else {
       setError("submit", (result as any).error || "Failed to create job");
       setIsSubmitting(false);

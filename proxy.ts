@@ -2,24 +2,19 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Next.js Proxy - Session Refresh & Route Protection (Next.js 16+)
+ * Next.js 16+ Proxy - Auth & Route Protection
  *
- * Next.js 16 Migration:
- * - Renamed from middleware.ts to proxy.ts
- * - Renamed function from middleware to proxy
+ * SECURITY CRITICAL:
+ * - Uses proxy.ts (NOT middleware.ts) per Next.js 16+ security best practices
+ * - Fixes CVE where x-middleware-subrequest header could bypass auth checks
+ * - NEVER rely solely on proxy for authorization
+ * - ALWAYS validate auth in Server Actions and API routes
+ * - Use RLS (Row Level Security) in Supabase
+ *
+ * Performance:
  * - Runs on Node.js runtime (not Edge)
- * - Clarifies network boundary behavior
- *
- * Critical Security Features:
- * - Automatic session refresh on every request
- * - Route protection for authenticated areas
- * - Cookie-based session management
- * - Prevents session expiration during active use
- *
- * Performance optimizations:
- * - Runs on Node.js runtime
- * - Minimal session validation overhead
- * - Only refreshes when necessary
+ * - Lightweight session refresh only
+ * - Minimal overhead on protected routes
  */
 
 export async function proxy(request: NextRequest) {

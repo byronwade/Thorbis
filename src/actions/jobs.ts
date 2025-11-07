@@ -37,6 +37,13 @@ const createJobSchema = z.object({
   scheduledEnd: z.string().optional(),
   assignedTo: z.string().uuid("Invalid user ID").optional(),
   notes: z.string().optional(),
+  // Enhanced scheduling fields
+  isRecurring: z.boolean().optional(),
+  schedulingMode: z.enum(["specific", "window"]).optional(),
+  timeWindow: z.string().optional(),
+  recurrenceType: z.enum(["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]).optional(),
+  recurrenceEndDate: z.string().optional(),
+  recurrenceCount: z.number().int().min(1).max(365).optional(),
 });
 
 const updateJobSchema = z.object({
@@ -44,10 +51,13 @@ const updateJobSchema = z.object({
   description: z.string().optional(),
   priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
   jobType: z
-    .enum(["service", "installation", "repair", "maintenance"])
+    .enum(["service", "installation", "repair", "maintenance", "inspection", "consultation"])
     .optional(),
   notes: z.string().optional(),
   totalAmount: z.number().min(0).optional(),
+  scheduledStart: z.string().optional(),
+  scheduledEnd: z.string().optional(),
+  assignedTo: z.string().uuid("Invalid user ID").optional().nullable(),
 });
 
 const scheduleJobSchema = z.object({
@@ -84,6 +94,100 @@ async function generateJobNumber(
 
   // Fallback
   return `JOB-${new Date().getFullYear()}-${Date.now().toString().slice(-3)}`;
+}
+
+/**
+ * Calculate next recurrence date
+ */
+function calculateNextRecurrence(
+  currentDate: Date,
+  recurrenceType: string
+): Date {
+  const nextDate = new Date(currentDate);
+
+  switch (recurrenceType) {
+    case "daily":
+      nextDate.setDate(nextDate.getDate() + 1);
+      break;
+    case "weekly":
+      nextDate.setDate(nextDate.getDate() + 7);
+      break;
+    case "biweekly":
+      nextDate.setDate(nextDate.getDate() + 14);
+      break;
+    case "monthly":
+      nextDate.setMonth(nextDate.getMonth() + 1);
+      break;
+    case "quarterly":
+      nextDate.setMonth(nextDate.getMonth() + 3);
+      break;
+    case "yearly":
+      nextDate.setFullYear(nextDate.getFullYear() + 1);
+      break;
+  }
+
+  return nextDate;
+}
+
+/**
+ * Create recurring jobs
+ */
+async function createRecurringJobs(
+  supabase: any,
+  companyId: string,
+  baseJob: any,
+  recurrenceType: string,
+  recurrenceEndDate?: string,
+  recurrenceCount?: number
+): Promise<void> {
+  if (!baseJob.scheduled_start) {
+    return; // Can't create recurring jobs without a start date
+  }
+
+  const startDate = new Date(baseJob.scheduled_start);
+  const endDate = new Date(baseJob.scheduled_end || baseJob.scheduled_start);
+  const duration = endDate.getTime() - startDate.getTime();
+
+  // Determine how many occurrences to create
+  const maxOccurrences = recurrenceCount || 52; // Default to 1 year of weekly jobs
+  const endDateLimit = recurrenceEndDate ? new Date(recurrenceEndDate) : null;
+
+  const recurringJobs = [];
+  let currentDate = new Date(startDate);
+
+  for (let i = 0; i < maxOccurrences - 1; i++) {
+    // -1 because we already created the first job
+    currentDate = calculateNextRecurrence(currentDate, recurrenceType);
+
+    // Stop if we've reached the end date
+    if (endDateLimit && currentDate > endDateLimit) {
+      break;
+    }
+
+    const currentEndDate = new Date(currentDate.getTime() + duration);
+
+    // Generate a unique job number for this occurrence
+    const jobNumber = await generateJobNumber(supabase, companyId);
+
+    recurringJobs.push({
+      ...baseJob,
+      job_number: jobNumber,
+      scheduled_start: currentDate.toISOString(),
+      scheduled_end: currentEndDate.toISOString(),
+      title: `${baseJob.title} (${i + 2}/${maxOccurrences})`, // Add occurrence number
+    });
+
+    // Create jobs in batches of 10 to avoid memory issues
+    if (recurringJobs.length >= 10) {
+      await supabase.from("jobs").insert(recurringJobs);
+      recurringJobs.length = 0; // Clear array
+    }
+  }
+
+  // Insert any remaining jobs
+  if (recurringJobs.length > 0) {
+    await supabase.from("jobs").insert(recurringJobs);
+  }
 }
 
 /**
@@ -133,6 +237,15 @@ export async function createJob(
       scheduledEnd: formData.get("scheduledEnd") || undefined,
       assignedTo: formData.get("assignedTo") || undefined,
       notes: formData.get("notes") || undefined,
+      // Enhanced scheduling fields
+      isRecurring: formData.get("isRecurring") === "true",
+      schedulingMode: formData.get("schedulingMode") as any || undefined,
+      timeWindow: formData.get("timeWindow") || undefined,
+      recurrenceType: formData.get("recurrenceType") as any || undefined,
+      recurrenceEndDate: formData.get("recurrenceEndDate") || undefined,
+      recurrenceCount: formData.get("recurrenceCount")
+        ? Number.parseInt(formData.get("recurrenceCount") as string)
+        : undefined,
     });
 
     // Verify property belongs to company
@@ -158,6 +271,13 @@ export async function createJob(
     // Generate unique job number
     const jobNumber = await generateJobNumber(supabase, teamMember.company_id);
 
+    // Add time window info to notes if applicable
+    let jobNotes = data.notes || "";
+    if (data.schedulingMode === "window" && data.timeWindow) {
+      const windowInfo = `\n\n[Scheduling] Customer preferred time window: ${data.timeWindow.charAt(0).toUpperCase() + data.timeWindow.slice(1)}`;
+      jobNotes = jobNotes ? `${jobNotes}${windowInfo}` : windowInfo.trim();
+    }
+
     // Create job
     const { data: newJob, error: createError } = await supabase
       .from("jobs")
@@ -174,7 +294,7 @@ export async function createJob(
         job_type: data.jobType,
         scheduled_start: data.scheduledStart,
         scheduled_end: data.scheduledEnd,
-        notes: data.notes,
+        notes: jobNotes,
       })
       .select("id")
       .single();
@@ -183,6 +303,33 @@ export async function createJob(
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("create job"),
         ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Create recurring jobs if requested
+    if (data.isRecurring && data.recurrenceType && data.scheduledStart) {
+      const baseJob = {
+        company_id: teamMember.company_id,
+        property_id: data.propertyId,
+        customer_id: customerId,
+        assigned_to: data.assignedTo,
+        title: data.title,
+        description: data.description,
+        status: "quoted",
+        priority: data.priority,
+        job_type: data.jobType,
+        scheduled_start: data.scheduledStart,
+        scheduled_end: data.scheduledEnd,
+        notes: data.notes,
+      };
+
+      await createRecurringJobs(
+        supabase,
+        teamMember.company_id,
+        baseJob,
+        data.recurrenceType,
+        data.recurrenceEndDate,
+        data.recurrenceCount
       );
     }
 
@@ -350,12 +497,27 @@ export async function updateJob(
       totalAmount: formData.get("totalAmount")
         ? Number.parseInt(formData.get("totalAmount") as string)
         : undefined,
+      scheduledStart: formData.get("scheduledStart") || undefined,
+      scheduledEnd: formData.get("scheduledEnd") || undefined,
+      assignedTo: formData.get("assignedTo") || null,
     });
+
+    // Build update object with only defined values
+    const updateData: any = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.priority !== undefined) updateData.priority = data.priority;
+    if (data.jobType !== undefined) updateData.job_type = data.jobType;
+    if (data.notes !== undefined) updateData.notes = data.notes;
+    if (data.totalAmount !== undefined) updateData.total_amount = data.totalAmount;
+    if (data.scheduledStart !== undefined) updateData.scheduled_start = data.scheduledStart;
+    if (data.scheduledEnd !== undefined) updateData.scheduled_end = data.scheduledEnd;
+    if (data.assignedTo !== undefined) updateData.assigned_to = data.assignedTo;
 
     // Update job
     const { error: updateError } = await supabase
       .from("jobs")
-      .update(data)
+      .update(updateData)
       .eq("id", jobId);
 
     if (updateError) {
@@ -366,8 +528,7 @@ export async function updateJob(
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/jobs");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
 
@@ -466,8 +627,7 @@ export async function updateJobStatus(
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/jobs");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
 
@@ -555,8 +715,7 @@ export async function assignJob(
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/jobs");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
 
@@ -639,7 +798,7 @@ export async function scheduleJob(
 
     revalidatePath("/dashboard/work");
     revalidatePath("/dashboard/work/schedule");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
 
@@ -719,8 +878,7 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/jobs");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
 
@@ -800,8 +958,7 @@ export async function completeJob(jobId: string): Promise<ActionResult<void>> {
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/jobs");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
 
@@ -889,7 +1046,298 @@ export async function cancelJob(
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/jobs");
-    revalidatePath(`/dashboard/work/jobs/${jobId}`);
+    revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
+
+/**
+ * Search jobs with full-text search and ranking
+ *
+ * Searches across: job_number, title, description, notes, job_type, status, priority, ai_service_type
+ * Returns results ordered by relevance (best matches first)
+ *
+ * @example
+ * const results = await searchJobs("HVAC repair");
+ * // Returns jobs matching "HVAC" AND "repair" ranked by relevance
+ */
+export async function searchJobs(
+  searchTerm: string,
+  options?: { limit?: number; offset?: number }
+): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Use full-text search with ranking for best matches
+    const { searchJobsFullText } = await import("@/lib/search/full-text-search");
+
+    const jobs = await searchJobsFullText(
+      supabase,
+      teamMember.company_id,
+      searchTerm,
+      {
+        limit: options?.limit || 50,
+        offset: options?.offset || 0,
+      }
+    );
+
+    return jobs;
+  });
+}
+
+/**
+ * Universal search across all entities
+ *
+ * Searches customers, jobs, properties, equipment, and price book items
+ * Returns top 5 results from each entity type
+ *
+ * @example
+ * const results = await searchAll("furnace");
+ * // Returns { customers: [...], jobs: [...], properties: [...], equipment: [...], priceBookItems: [...] }
+ */
+export async function searchAll(
+  searchTerm: string
+): Promise<ActionResult<any>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Use universal search RPC function
+    const { data, error } = await supabase.rpc("search_all_entities", {
+      company_id_param: teamMember.company_id,
+      search_query: searchTerm,
+      per_entity_limit: 5,
+    });
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("search"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return data;
+  });
+}
+
+// ============================================================================
+// JOB ARCHIVE & RESTORE
+// ============================================================================
+
+/**
+ * Archive job (soft delete)
+ *
+ * Archives a job instead of permanently deleting.
+ * Archived jobs can be restored within 90 days.
+ */
+export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify job belongs to company
+    const { data: job } = await supabase
+      .from("jobs")
+      .select("company_id, status")
+      .eq("id", jobId)
+      .single();
+
+    assertExists(job, "Job");
+
+    if (job.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("job"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Cannot archive completed/paid jobs (business rule)
+    if (job.status === "completed" || job.status === "invoiced") {
+      throw new ActionError(
+        "Cannot archive completed or invoiced jobs. These must be retained for records.",
+        ERROR_CODES.OPERATION_NOT_ALLOWED
+      );
+    }
+
+    // Archive job (soft delete)
+    const now = new Date().toISOString();
+    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+
+    const { error: archiveError } = await supabase
+      .from("jobs")
+      .update({
+        deleted_at: now,
+        deleted_by: user.id,
+        archived_at: now,
+        permanent_delete_scheduled_at: scheduledDeletion,
+        status: "archived",
+      })
+      .eq("id", jobId);
+
+    if (archiveError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("archive job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/work");
+    revalidatePath("/dashboard/work/schedule");
+    revalidatePath("/dashboard/settings/archive");
+  });
+}
+
+/**
+ * Restore archived job
+ */
+export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify job belongs to company and is archived
+    const { data: job } = await supabase
+      .from("jobs")
+      .select("company_id, deleted_at, status")
+      .eq("id", jobId)
+      .single();
+
+    assertExists(job, "Job");
+
+    if (job.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("job"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    if (!job.deleted_at) {
+      throw new ActionError(
+        "Job is not archived",
+        ERROR_CODES.OPERATION_NOT_ALLOWED
+      );
+    }
+
+    // Restore job
+    const { error: restoreError } = await supabase
+      .from("jobs")
+      .update({
+        deleted_at: null,
+        deleted_by: null,
+        archived_at: null,
+        permanent_delete_scheduled_at: null,
+        status: job.status === "archived" ? "scheduled" : job.status,
+      })
+      .eq("id", jobId);
+
+    if (restoreError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("restore job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/work");
+    revalidatePath("/dashboard/work/schedule");
+    revalidatePath("/dashboard/settings/archive");
+  });
+}
+

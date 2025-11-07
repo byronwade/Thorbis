@@ -62,6 +62,9 @@ interface WidgetGridProps {
   photos?: unknown[];
   documents?: unknown[];
   communications?: unknown[];
+  teamAssignments?: unknown[];
+  materials?: unknown[];
+  activities?: unknown[];
 }
 
 // ============================================================================
@@ -78,6 +81,9 @@ export function WidgetGrid({
   photos = [],
   documents = [],
   communications = [],
+  teamAssignments = [],
+  materials = [],
+  activities = [],
 }: WidgetGridProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [items, setItems] = useState<string[]>([]);
@@ -268,6 +274,9 @@ export function WidgetGrid({
                     property={property}
                     propertyEnrichment={propertyEnrichment}
                     widget={widget}
+                    teamAssignments={teamAssignments}
+                    materials={materials}
+                    activities={activities}
                   />
                 </WidgetContainer>
               </div>

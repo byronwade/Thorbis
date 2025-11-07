@@ -84,9 +84,9 @@
     0.555 0 0
   ); /* Secondary text (#7A7A7A) - graphite-500 */
 
-  /* Accent - Chrome gray for icons & UI controls */
-  --accent: oklch(0.68 0.005 250); /* Chrome gray tint (#9AA0A6) */
-  --accent-foreground: oklch(0.18 0 0); /* Graphite-900 text */
+  /* Accent - Light blue for hover states & UI controls */
+  --accent: oklch(0.965 0.02 251); /* Light blue hover (#E8F0FE) */
+  --accent-foreground: oklch(0.52 0.165 256); /* Darker blue (#2C63C5) */
 
   /* Feedback States - Soft, confident semantic colors */
   --destructive: oklch(0.615 0.175 25); /* Coral red (#E15B56) - pleasant */

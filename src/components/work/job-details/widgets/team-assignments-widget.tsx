@@ -21,9 +21,10 @@ import type { Job } from "@/lib/db/schema";
 
 interface TeamAssignmentsWidgetProps {
   job: Job;
+  teamAssignments?: unknown[];
 }
 
-// Mock team member type (in production, fetch from team_assignments table)
+// Team member type from database
 interface TeamMember {
   id: string;
   name: string;
@@ -35,40 +36,36 @@ interface TeamMember {
   skills: string[];
 }
 
-export function TeamAssignmentsWidget({ job }: TeamAssignmentsWidgetProps) {
-  // Mock team assignments (in production, fetch from database)
-  const teamMembers: TeamMember[] = [
-    {
-      id: "1",
-      name: "Mike Rodriguez",
-      role: "primary",
-      avatar: undefined,
-      email: "mike.rodriguez@example.com",
-      phone: "(555) 123-4567",
-      status: "on_job",
-      skills: ["HVAC", "Electrical", "Lead Technician"],
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      role: "assistant",
-      avatar: undefined,
-      email: "sarah.johnson@example.com",
-      phone: "(555) 234-5678",
-      status: "available",
-      skills: ["HVAC", "Customer Service"],
-    },
-    {
-      id: "3",
-      name: "Tom Martinez",
-      role: "crew",
-      avatar: undefined,
-      email: "tom.martinez@example.com",
-      phone: "(555) 345-6789",
-      status: "available",
-      skills: ["HVAC", "Installation"],
-    },
-  ];
+export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignmentsWidgetProps) {
+  // Transform team assignments from database
+  const teamMembers: TeamMember[] = (teamAssignments as any[]).map((assignment) => {
+    const teamMember = Array.isArray(assignment.team_member)
+      ? assignment.team_member[0]
+      : assignment.team_member;
+
+    const user = teamMember?.users
+      ? (Array.isArray(teamMember.users) ? teamMember.users[0] : teamMember.users)
+      : null;
+
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      name: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+      role: assignment.role || "crew",
+      avatar: user.avatar_url,
+      email: user.email || "",
+      phone: user.phone || "",
+      status: "available" as const,
+      skills: [], // TODO: Fetch skills from team member profile
+    };
+  }).filter(Boolean) as TeamMember[];
+
+  // If no team assignments from database, show assigned_to user
+  if (teamMembers.length === 0 && job.assignedTo) {
+    // Show empty state with option to assign team
+    // In a real scenario, we'd fetch the assigned user details
+  }
 
   const primaryAssignee = teamMembers.find(
     (member) => member.role === "primary"

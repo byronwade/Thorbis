@@ -175,7 +175,7 @@ export function FullWidthDataTable<T>({
   return (
     <div className="flex h-full flex-col">
       {/* Sticky Top Toolbar */}
-      <div className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b bg-background px-4 py-2">
+      <div className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b px-4 py-2">
         {enableSelection && (
           <Checkbox
             aria-label="Select all"

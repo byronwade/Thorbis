@@ -60,7 +60,6 @@ const WIDGET_ICONS: Record<JobWidgetType, LucideIcon> = {
   "purchase-orders": Package,
   "hvac-equipment": Wrench,
   "job-header": FileText,
-  "job-timeline": Activity,
   "payment-tracker": CircleDollarSign,
   permits: FileText,
   "plumbing-fixtures": Wrench,

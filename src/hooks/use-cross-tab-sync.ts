@@ -50,19 +50,42 @@ export function useCrossTabSync() {
   const isProcessingSyncRef = useRef(false); // Prevent echo when processing sync messages
 
   // Get store actions
-  const {
-    call,
-    answerCall,
-    endCall,
-    toggleMute,
-    toggleHold,
-    toggleRecording,
-    setIncomingCall,
-  } = useUIStore();
-  const { position, popoverWidth, setPosition, setPopoverWidth } =
-    useCallPreferencesStore();
+  const uiStore = useUIStore();
+  const callPrefsStore = useCallPreferencesStore();
 
-  // Handle incoming sync messages
+  // Use refs to stabilize callbacks and prevent circular dependency (CRITICAL FIX)
+  const callRef = useRef(uiStore.call);
+  const positionRef = useRef(callPrefsStore.position);
+  const popoverWidthRef = useRef(callPrefsStore.popoverWidth);
+  const actionsRef = useRef({
+    answerCall: uiStore.answerCall,
+    endCall: uiStore.endCall,
+    toggleMute: uiStore.toggleMute,
+    toggleHold: uiStore.toggleHold,
+    toggleRecording: uiStore.toggleRecording,
+    setIncomingCall: uiStore.setIncomingCall,
+    setPosition: callPrefsStore.setPosition,
+    setPopoverWidth: callPrefsStore.setPopoverWidth,
+  });
+
+  // Keep refs up to date without triggering re-renders
+  useEffect(() => {
+    callRef.current = uiStore.call;
+    positionRef.current = callPrefsStore.position;
+    popoverWidthRef.current = callPrefsStore.popoverWidth;
+    actionsRef.current = {
+      answerCall: uiStore.answerCall,
+      endCall: uiStore.endCall,
+      toggleMute: uiStore.toggleMute,
+      toggleHold: uiStore.toggleHold,
+      toggleRecording: uiStore.toggleRecording,
+      setIncomingCall: uiStore.setIncomingCall,
+      setPosition: callPrefsStore.setPosition,
+      setPopoverWidth: callPrefsStore.setPopoverWidth,
+    };
+  });
+
+  // Handle incoming sync messages - STABILIZED with refs to prevent circular loops
   const handleSyncMessage = useCallback(
     (message: CallSyncMessage) => {
       // Ignore old messages (more than 5 seconds old)
@@ -74,13 +97,18 @@ export function useCrossTabSync() {
       isProcessingSyncRef.current = true;
 
       try {
+        const call = callRef.current;
+        const position = positionRef.current;
+        const popoverWidth = popoverWidthRef.current;
+        const actions = actionsRef.current;
+
         switch (message.type) {
           case "CALL_INCOMING": {
             const callData = message.data as {
               caller: { name?: string; number: string; avatar?: string };
             };
             if (call.status === "idle") {
-              setIncomingCall({
+              actions.setIncomingCall({
                 number: callData.caller.number,
                 name: callData.caller.name || "Unknown",
                 avatar: callData.caller.avatar,
@@ -91,14 +119,14 @@ export function useCrossTabSync() {
 
           case "CALL_ANSWERED": {
             if (call.status === "incoming") {
-              answerCall();
+              actions.answerCall();
             }
             break;
           }
 
           case "CALL_ENDED": {
             if (call.status !== "idle" && call.status !== "ended") {
-              endCall();
+              actions.endCall();
             }
             break;
           }
@@ -107,22 +135,22 @@ export function useCrossTabSync() {
             const action = message.data as CallAction;
             switch (action) {
               case "mute":
-                if (!call.isMuted) toggleMute();
+                if (!call.isMuted) actions.toggleMute();
                 break;
               case "unmute":
-                if (call.isMuted) toggleMute();
+                if (call.isMuted) actions.toggleMute();
                 break;
               case "hold":
-                if (!call.isOnHold) toggleHold();
+                if (!call.isOnHold) actions.toggleHold();
                 break;
               case "unhold":
-                if (call.isOnHold) toggleHold();
+                if (call.isOnHold) actions.toggleHold();
                 break;
               case "record_start":
-                if (!call.isRecording) toggleRecording();
+                if (!call.isRecording) actions.toggleRecording();
                 break;
               case "record_stop":
-                if (call.isRecording) toggleRecording();
+                if (call.isRecording) actions.toggleRecording();
                 break;
             }
             break;
@@ -134,7 +162,7 @@ export function useCrossTabSync() {
               position !== "default" &&
               (position.x !== newPosition.x || position.y !== newPosition.y)
             ) {
-              setPosition(newPosition);
+              actions.setPosition(newPosition);
             }
             break;
           }
@@ -142,7 +170,7 @@ export function useCrossTabSync() {
           case "SIZE_UPDATE": {
             const newWidth = message.data as number;
             if (popoverWidth !== newWidth) {
-              setPopoverWidth(newWidth);
+              actions.setPopoverWidth(newWidth);
             }
             break;
           }
@@ -152,19 +180,7 @@ export function useCrossTabSync() {
         isProcessingSyncRef.current = false;
       }
     },
-    [
-      call,
-      answerCall,
-      endCall,
-      toggleMute,
-      toggleHold,
-      toggleRecording,
-      setIncomingCall,
-      position,
-      popoverWidth,
-      setPosition,
-      setPopoverWidth,
-    ]
+    [] // ✅ No dependencies - uses refs to prevent channel recreation
   );
 
   // Setup localStorage fallback for older browsers
@@ -216,19 +232,23 @@ export function useCrossTabSync() {
       if (e.key === "call-preferences-storage" && e.newValue) {
         try {
           const newState = JSON.parse(e.newValue);
+          const position = positionRef.current;
+          const popoverWidth = popoverWidthRef.current;
+          const actions = actionsRef.current;
+
           // Update position if changed
           if (
             newState.state?.position &&
             JSON.stringify(newState.state.position) !== JSON.stringify(position)
           ) {
-            setPosition(newState.state.position);
+            actions.setPosition(newState.state.position);
           }
           // Update width if changed
           if (
             newState.state?.popoverWidth &&
             newState.state.popoverWidth !== popoverWidth
           ) {
-            setPopoverWidth(newState.state.popoverWidth);
+            actions.setPopoverWidth(newState.state.popoverWidth);
           }
         } catch (error) {
           console.error("Failed to sync preferences:", error);
@@ -244,14 +264,7 @@ export function useCrossTabSync() {
       }
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [
-    handleSyncMessage,
-    setupLocalStorageFallback,
-    position,
-    popoverWidth,
-    setPosition,
-    setPopoverWidth,
-  ]);
+  }, [handleSyncMessage, setupLocalStorageFallback]); // ✅ Only stable callbacks
 
   // Broadcast a message to other tabs
   const broadcast = useCallback((message: CallSyncMessage) => {

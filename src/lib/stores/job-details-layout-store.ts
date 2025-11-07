@@ -24,7 +24,6 @@ import { devtools, persist } from "zustand/middleware";
 export type JobWidgetType =
   // Core job information
   | "job-header"
-  | "job-timeline"
   | "job-financials"
   | "job-details"
 
@@ -159,25 +158,6 @@ export const WIDGET_METADATA: Record<
     minSize: { width: 4, height: 1 },
     defaultSize: { width: 4, height: 1 },
     maxSize: { width: 4, height: 1 },
-    category: "core",
-    industries: [
-      "hvac",
-      "plumbing",
-      "electrical",
-      "roofing",
-      "landscaping",
-      "general_contractor",
-      "remodeling",
-      "commercial",
-      "custom",
-    ],
-  },
-  "job-timeline": {
-    title: "Process Timeline",
-    description: "Visual timeline of job progress stages",
-    minSize: { width: 2, height: 1 },
-    defaultSize: { width: 4, height: 1 },
-    maxSize: { width: 4, height: 2 },
     category: "core",
     industries: [
       "hvac",
@@ -764,7 +744,8 @@ interface JobDetailsLayoutStore {
 // Increment this when making breaking changes to initialWidgets
 // v2: Added new Priority 1 widgets (12 total)
 // v3: Removed job-timeline widget (redundant - built into page)
-const LAYOUT_VERSION = 3;
+// v4: Completely removed job-timeline from metadata and renderer
+const LAYOUT_VERSION = 4;
 
 const initialWidgets: JobWidget[] = [
   // Default layout - comprehensive view with newly implemented widgets

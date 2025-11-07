@@ -33,14 +33,8 @@ import {
   type NotificationPreference,
 } from "@/lib/notifications/types";
 
-// Re-export types for convenience (types are allowed)
-export type {
-  NotificationType,
-  NotificationPriority,
-  CreateNotificationInput,
-  GetNotificationsInput,
-  NotificationPreference,
-};
+// NOTE: Type re-exports removed to comply with Next.js 16 "use server" restrictions
+// Import types directly from @/lib/notifications/types instead
 
 const UpdateNotificationPreferencesSchema = z.array(NotificationPreferenceSchema);
 

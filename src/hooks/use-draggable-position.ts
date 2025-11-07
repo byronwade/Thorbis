@@ -165,6 +165,22 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
     [handleDragStart]
   );
 
+  // Use refs for callbacks to prevent listener stacking (CRITICAL FIX)
+  const constrainPositionRef = useRef(constrainPosition);
+  const checkBeyondBoundsRef = useRef(checkBeyondBounds);
+  const onBeyondBoundsRef = useRef(onBeyondBounds);
+  const onDragEndRef = useRef(onDragEnd);
+  const setPositionRef = useRef(setPosition);
+
+  // Keep refs up to date
+  useEffect(() => {
+    constrainPositionRef.current = constrainPosition;
+    checkBeyondBoundsRef.current = checkBeyondBounds;
+    onBeyondBoundsRef.current = onBeyondBounds;
+    onDragEndRef.current = onDragEnd;
+    setPositionRef.current = setPosition;
+  });
+
   // Handle dragging
   useEffect(() => {
     if (!isDragging) return;
@@ -185,11 +201,11 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
         };
 
         // Check if beyond bounds for pop-out
-        const isBeyond = checkBeyondBounds(newPos);
-        onBeyondBounds?.(isBeyond);
+        const isBeyond = checkBeyondBoundsRef.current(newPos);
+        onBeyondBoundsRef.current?.(isBeyond);
 
         // Allow position beyond bounds while dragging (for pop-out)
-        const constrainedPos = constrainPosition(newPos, true);
+        const constrainedPos = constrainPositionRef.current(newPos, true);
 
         // Update local state (no store update = fast)
         setCurrentPosition(constrainedPos);
@@ -209,20 +225,20 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
         y: e.clientY - dragOffsetRef.current.y,
       };
 
-      const isBeyond = checkBeyondBounds(finalPos);
+      const isBeyond = checkBeyondBoundsRef.current(finalPos);
 
       if (!isBeyond) {
         // Normal drop - constrain and save (only save to store on drop, not during drag)
-        const constrainedPos = constrainPosition(finalPos, false);
+        const constrainedPos = constrainPositionRef.current(finalPos, false);
 
         setCurrentPosition(constrainedPos);
-        setPosition(constrainedPos);
+        setPositionRef.current(constrainedPos);
       }
 
       isDraggingRef.current = false;
       setIsDragging(false);
-      onBeyondBounds?.(false);
-      onDragEnd?.();
+      onBeyondBoundsRef.current?.(false);
+      onDragEndRef.current?.();
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -241,10 +257,10 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
           y: touch.clientY - dragOffsetRef.current.y,
         };
 
-        const isBeyond = checkBeyondBounds(newPos);
-        onBeyondBounds?.(isBeyond);
+        const isBeyond = checkBeyondBoundsRef.current(newPos);
+        onBeyondBoundsRef.current?.(isBeyond);
 
-        const constrainedPos = constrainPosition(newPos, true);
+        const constrainedPos = constrainPositionRef.current(newPos, true);
 
         // Update local state (no store update = fast)
         setCurrentPosition(constrainedPos);
@@ -265,19 +281,19 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
         y: touch.clientY - dragOffsetRef.current.y,
       };
 
-      const isBeyond = checkBeyondBounds(finalPos);
+      const isBeyond = checkBeyondBoundsRef.current(finalPos);
 
       if (!isBeyond) {
-        const constrainedPos = constrainPosition(finalPos, false);
+        const constrainedPos = constrainPositionRef.current(finalPos, false);
 
         setCurrentPosition(constrainedPos);
-        setPosition(constrainedPos);
+        setPositionRef.current(constrainedPos);
       }
 
       isDraggingRef.current = false;
       setIsDragging(false);
-      onBeyondBounds?.(false);
-      onDragEnd?.();
+      onBeyondBoundsRef.current?.(false);
+      onDragEndRef.current?.();
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -296,14 +312,7 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [
-    isDragging,
-    constrainPosition,
-    checkBeyondBounds,
-    onBeyondBounds,
-    onDragEnd,
-    setPosition,
-  ]);
+  }, [isDragging]); // ✅ Only isDragging - uses refs for callbacks
 
   // Reset to default position
   const resetPosition = useCallback(() => {

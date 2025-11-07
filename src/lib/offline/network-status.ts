@@ -12,7 +12,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { countRecords } from "./indexed-db";
 import { processSyncQueue } from "./sync-queue";
 
@@ -47,6 +47,9 @@ export function useNetworkStatus(): NetworkStatus {
     }
   };
 
+  // Use ref to prevent concurrent sync operations (CRITICAL FIX)
+  const isSyncingRef = useRef(false);
+
   useEffect(() => {
     // SSR guard - only run in browser
     if (typeof window === "undefined") return;
@@ -55,11 +58,23 @@ export function useNetworkStatus(): NetworkStatus {
     updatePendingCount();
 
     // Poll for pending operations every 10 seconds
-    const interval = setInterval(updatePendingCount, 10_000);
+    const interval = setInterval(() => {
+      // Don't update count if sync is in progress to avoid race conditions
+      if (!isSyncingRef.current) {
+        updatePendingCount();
+      }
+    }, 10_000);
 
     const handleOnline = async () => {
+      // Guard: prevent concurrent sync operations
+      if (isSyncingRef.current) {
+        console.log("Sync already in progress, skipping online handler");
+        return;
+      }
+
       console.log("Network connection restored");
       setIsOnline(true);
+      isSyncingRef.current = true;
 
       // Trigger sync queue processing
       try {
@@ -71,6 +86,7 @@ export function useNetworkStatus(): NetworkStatus {
         console.error("Failed to process sync queue:", error);
       } finally {
         setIsSyncing(false);
+        isSyncingRef.current = false;
       }
     };
 
@@ -79,13 +95,12 @@ export function useNetworkStatus(): NetworkStatus {
       setIsOnline(false);
     };
 
-    // Listen for online/offline events
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
     // Listen for visibility change (page becomes visible after being hidden)
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === "visible" && navigator.onLine) {
+      // Guard: prevent concurrent sync operations
+      if (document.visibilityState === "visible" && navigator.onLine && !isSyncingRef.current) {
+        isSyncingRef.current = true;
+
         // Trigger sync when user returns to the tab
         try {
           setIsSyncing(true);
@@ -99,10 +114,14 @@ export function useNetworkStatus(): NetworkStatus {
           );
         } finally {
           setIsSyncing(false);
+          isSyncingRef.current = false;
         }
       }
     };
 
+    // Listen for online/offline events
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {

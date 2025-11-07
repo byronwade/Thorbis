@@ -1,0 +1,289 @@
+/**
+ * Billing Info Block - Custom Tiptap Node
+ *
+ * Displays and edits customer billing information:
+ * - Payment terms
+ * - Credit limit
+ * - Tax exempt status
+ * - Billing email
+ */
+
+import { Node, mergeAttributes } from "@tiptap/core";
+import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { CreditCard, Mail, Shield } from "lucide-react";
+import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+
+// React component that renders the block
+export function BillingInfoBlockComponent({ node, updateAttributes, editor }: any) {
+  const { billingEmail, paymentTerms, creditLimit, taxExempt, taxExemptNumber, paymentMethods } = node.attrs;
+  const isEditable = editor.isEditable;
+
+  const getCardIcon = (brand: string) => {
+    switch (brand.toLowerCase()) {
+      case "visa":
+        return "💳";
+      case "mastercard":
+        return "💳";
+      case "amex":
+        return "💳";
+      case "discover":
+        return "💳";
+      default:
+        return "💳";
+    }
+  };
+
+  const formatCurrency = (cents: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(cents / 100);
+  };
+
+  const paymentTermsLabels: Record<string, string> = {
+    due_on_receipt: "Due on Receipt",
+    net_15: "Net 15",
+    net_30: "Net 30",
+    net_60: "Net 60",
+    net_90: "Net 90",
+  };
+
+  return (
+    <NodeViewWrapper className="billing-info-block">
+      <CollapsibleSectionWrapper
+        title="Billing Information"
+        icon={<CreditCard className="size-5" />}
+        defaultOpen={false}
+        storageKey="customer-billing-section"
+        isEditable={isEditable}
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Billing Email */}
+          <div className="space-y-2">
+            <Label htmlFor={`billingEmail-${node.attrs.id}`} className="flex items-center gap-1">
+              <Mail className="size-3" />
+              Billing Email
+            </Label>
+            {isEditable ? (
+              <Input
+                id={`billingEmail-${node.attrs.id}`}
+                type="email"
+                value={billingEmail || ""}
+                onChange={(e) => updateAttributes({ billingEmail: e.target.value })}
+                placeholder="billing@example.com"
+              />
+            ) : (
+              <p className="text-sm">{billingEmail || "Same as primary email"}</p>
+            )}
+          </div>
+
+          {/* Payment Terms */}
+          <div className="space-y-2">
+            <Label htmlFor={`paymentTerms-${node.attrs.id}`}>Payment Terms</Label>
+            {isEditable ? (
+              <Select
+                value={paymentTerms || "due_on_receipt"}
+                onValueChange={(value) => updateAttributes({ paymentTerms: value })}
+              >
+                <SelectTrigger id={`paymentTerms-${node.attrs.id}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="due_on_receipt">Due on Receipt</SelectItem>
+                  <SelectItem value="net_15">Net 15</SelectItem>
+                  <SelectItem value="net_30">Net 30</SelectItem>
+                  <SelectItem value="net_60">Net 60</SelectItem>
+                  <SelectItem value="net_90">Net 90</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-sm">{paymentTermsLabels[paymentTerms] || "Due on Receipt"}</p>
+            )}
+          </div>
+
+          {/* Credit Limit */}
+          <div className="space-y-2">
+            <Label htmlFor={`creditLimit-${node.attrs.id}`}>Credit Limit</Label>
+            {isEditable ? (
+              <Input
+                id={`creditLimit-${node.attrs.id}`}
+                type="number"
+                value={creditLimit ? creditLimit / 100 : ""}
+                onChange={(e) => updateAttributes({ creditLimit: parseFloat(e.target.value) * 100 })}
+                placeholder="0.00"
+                step="0.01"
+              />
+            ) : (
+              <p className="text-sm">{formatCurrency(creditLimit || 0)}</p>
+            )}
+          </div>
+
+          {/* Tax Exempt */}
+          <div className="space-y-2">
+            <Label htmlFor={`taxExempt-${node.attrs.id}`} className="flex items-center gap-1">
+              <Shield className="size-3" />
+              Tax Status
+            </Label>
+            {isEditable ? (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`taxExempt-${node.attrs.id}`}
+                  checked={taxExempt}
+                  onCheckedChange={(checked) => updateAttributes({ taxExempt: checked })}
+                />
+                <label
+                  htmlFor={`taxExempt-${node.attrs.id}`}
+                  className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Tax Exempt
+                </label>
+              </div>
+            ) : (
+              <p className="text-sm">{taxExempt ? "Tax Exempt" : "Taxable"}</p>
+            )}
+          </div>
+
+          {/* Tax Exempt Number (only if tax exempt) */}
+          {taxExempt && (
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor={`taxExemptNumber-${node.attrs.id}`}>Tax Exempt Number</Label>
+              {isEditable ? (
+                <Input
+                  id={`taxExemptNumber-${node.attrs.id}`}
+                  value={taxExemptNumber || ""}
+                  onChange={(e) => updateAttributes({ taxExemptNumber: e.target.value })}
+                  placeholder="Enter tax exempt number"
+                />
+              ) : (
+                <p className="text-sm">{taxExemptNumber || "—"}</p>
+              )}
+            </div>
+          )}
+
+          {/* Saved Payment Methods */}
+          {paymentMethods && paymentMethods.length > 0 && (
+            <div className="mt-6 space-y-3 border-t pt-6">
+              <h4 className="font-semibold text-sm">Saved Payment Methods</h4>
+              <div className="space-y-2">
+                {paymentMethods.map((pm: any) => (
+                  <div
+                    key={pm.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{getCardIcon(pm.card_brand)}</span>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm">
+                            {pm.card_brand.toUpperCase()} •••• {pm.card_last4}
+                          </p>
+                          {pm.is_default && (
+                            <Badge variant="secondary" className="text-xs">Default</Badge>
+                          )}
+                        </div>
+                        <p className="text-muted-foreground text-xs">
+                          Expires {pm.card_exp_month}/{pm.card_exp_year}
+                          {pm.nickname && ` • ${pm.nickname}`}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      {pm.is_verified ? "✓ Verified" : "Pending"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* No Payment Methods State */}
+          {(!paymentMethods || paymentMethods.length === 0) && (
+            <div className="mt-6 rounded-lg border border-dashed bg-muted/30 p-6 text-center">
+              <p className="text-muted-foreground text-sm">No saved payment methods</p>
+              <p className="mt-1 text-muted-foreground text-xs">
+                Payment methods will be securely stored via Stripe
+              </p>
+            </div>
+          )}
+        </div>
+      </CollapsibleSectionWrapper>
+    </NodeViewWrapper>
+  );
+}
+
+// Tiptap Node Extension
+export const BillingInfoBlock = Node.create({
+  name: "billingInfoBlock",
+
+  group: "block",
+
+  atom: true,
+
+  draggable: true,
+
+  addAttributes() {
+    return {
+      id: {
+        default: null,
+      },
+      billingEmail: {
+        default: "",
+      },
+      paymentTerms: {
+        default: "due_on_receipt",
+      },
+      creditLimit: {
+        default: 0,
+      },
+      taxExempt: {
+        default: false,
+      },
+      taxExemptNumber: {
+        default: "",
+      },
+      paymentMethods: {
+        default: [],
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div[data-type="billing-info-block"]',
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "billing-info-block" }), 0];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(BillingInfoBlockComponent);
+  },
+
+  addCommands() {
+    return {
+      insertBillingInfoBlock:
+        (attributes: any) =>
+        ({ commands }: any) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: attributes,
+          });
+        },
+    };
+  },
+});

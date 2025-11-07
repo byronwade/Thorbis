@@ -1,0 +1,111 @@
+/**
+ * Notes Collapsible Block - Custom Tiptap Node
+ *
+ * Collapsible section containing rich text notes
+ * - Customer notes (visible to all)
+ * - Internal notes (team only)
+ * - Both editable inline with full Tiptap formatting
+ */
+
+import { Node, mergeAttributes } from "@tiptap/core";
+import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { FileText, Lock } from "lucide-react";
+import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
+
+// React component that renders the block
+export function NotesCollapsibleBlockComponent({ node, editor }: any) {
+  const { hasNotes, hasInternalNotes } = node.attrs;
+
+  const summary = !hasNotes && !hasInternalNotes
+    ? "No notes yet"
+    : hasNotes && hasInternalNotes
+    ? "Has customer notes and internal notes"
+    : hasNotes
+    ? "Has customer notes"
+    : "Has internal notes";
+
+  return (
+    <NodeViewWrapper className="notes-collapsible-block" data-drag-handle>
+      <CollapsibleSectionWrapper
+        title="Notes & Documentation"
+        icon={<FileText className="size-5" />}
+        defaultOpen={false}
+        storageKey="customer-notes-section"
+        summary={summary}
+      >
+        <div className="space-y-4">
+          <div className="rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-6">
+            <div className="mb-2 flex items-center gap-2">
+              <FileText className="size-4 text-primary" />
+              <h3 className="font-semibold text-base">Customer Notes</h3>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Continue editing below in the main document area. All notes are part of this rich text document.
+            </p>
+          </div>
+
+          <div className="rounded-lg border-2 border-dashed border-orange-500/20 bg-orange-500/5 p-6">
+            <div className="mb-2 flex items-center gap-2">
+              <Lock className="size-4 text-orange-600" />
+              <h3 className="font-semibold text-base">Internal Notes (Private)</h3>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Continue editing below in the main document area. Internal notes are never visible to customers.
+            </p>
+          </div>
+        </div>
+      </CollapsibleSectionWrapper>
+    </NodeViewWrapper>
+  );
+}
+
+// Tiptap Node Extension
+export const NotesCollapsibleBlock = Node.create({
+  name: "notesCollapsibleBlock",
+
+  group: "block",
+
+  atom: true,
+
+  draggable: true,
+
+  addAttributes() {
+    return {
+      hasNotes: {
+        default: false,
+      },
+      hasInternalNotes: {
+        default: false,
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div[data-type="notes-collapsible-block"]',
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "notes-collapsible-block" }), 0];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(NotesCollapsibleBlockComponent);
+  },
+
+  addCommands() {
+    return {
+      insertNotesCollapsibleBlock:
+        (attributes: any) =>
+        ({ commands }: any) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: attributes,
+          });
+        },
+    };
+  },
+});

@@ -1,174 +1,279 @@
 /**
- * Job Details Page - Server Component (New Widget-Based Version)
- *
- * Performance optimizations:
- * - Server Component (no "use client" - uses params prop)
- * - Static content rendered on server
- * - Reduced JavaScript bundle size
- * - Better SEO and initial page load
- * - Improved performance with server-side data fetching
- *
- * Features:
- * - Widget-based customizable layout
- * - Industry-specific presets
- * - Property data enrichment
- * - Drag-and-drop widget repositioning
+ * Job Details Page - Single Page with Collapsible Sections
+ * Matches customer details page pattern
  */
 
-import { WidgetGrid } from "@/components/work/job-details/widget-grid";
-import { JobProcessIndicatorEditable } from "@/components/work/job-process-indicator-editable";
-import type { Job, Property } from "@/lib/db/schema";
-import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
+import { notFound } from "next/navigation";
+import { JobPageContent } from "@/components/work/job-details/job-page-content";
+import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
+import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
+import { createClient } from "@/lib/supabase/server";
 
-// ============================================================================
-// Mock Data (Replace with real database queries)
-// ============================================================================
-
-const mockJob: Job = {
-  id: "1",
-  companyId: "company-1",
-  propertyId: "property-1",
-  customerId: "customer-1",
-  assignedTo: "user-1",
-  jobNumber: "JOB-2025-001",
-  title: "HVAC Installation - Main Street Office",
-  description:
-    "Install new HVAC system for commercial office space including ductwork, units, and controls",
-  status: "in_progress",
-  priority: "high",
-  jobType: "installation",
-  scheduledStart: new Date("2025-01-31"),
-  scheduledEnd: new Date("2025-02-04"),
-  actualStart: new Date("2025-02-01"),
-  actualEnd: null,
-  totalAmount: 1_250_000,
-  paidAmount: 625_000,
-  notes: "Customer requested early start time. Building access code: 1234#",
-  metadata: null,
-  createdAt: new Date("2025-01-15"),
-  updatedAt: new Date("2025-01-20"),
-  aiCategories: null,
-  aiEquipment: null,
-  aiServiceType: null,
-  aiPriorityScore: null,
-  aiTags: null,
-  aiProcessedAt: null,
-};
-
-const mockProperty: Property = {
-  id: "property-1",
-  companyId: "company-1",
-  customerId: "customer-1",
-  name: "Main Street Office Building",
-  address: "123 Main Street",
-  address2: "Suite 100",
-  city: "San Francisco",
-  state: "CA",
-  zipCode: "94102",
-  country: "USA",
-  propertyType: "commercial",
-  squareFootage: 5000,
-  yearBuilt: 1995,
-  notes: "Three-story office building with basement",
-  metadata: null,
-  createdAt: new Date("2024-01-01"),
-  updatedAt: new Date("2024-01-01"),
-};
-
-// Mock customer data matching User type from schema
-const mockCustomer = {
-  id: "customer-1",
-  name: "John Smith",
-  email: "john.smith@mainstreetoffice.com",
-  phone: "(555) 123-4567",
-  avatar: null,
-  bio: null,
-  emailVerified: true,
-  lastLoginAt: new Date("2024-06-15"),
-  isActive: true,
-  createdAt: new Date("2024-06-15"),
-  updatedAt: new Date("2024-06-15"),
-};
-
-// ============================================================================
-// Page Component
-// ============================================================================
-
-export default async function JobDetailsPageNew({
+export default async function JobDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id: jobId } = await params;
 
-  // ============================================================================
-  // Data Fetching (Server-side)
-  // ============================================================================
+  const supabase = await createClient();
 
-  // In production, replace these with real database queries
-  const job = mockJob;
-  const property = mockProperty;
-  const customer = mockCustomer;
+  if (!supabase) {
+    return notFound();
+  }
 
-  // Fetch enriched property data
-  const propertyEnrichment = await propertyEnrichmentService.enrichProperty(
-    property.address,
-    property.city,
-    property.state,
-    property.zipCode
-  );
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Mock additional data
-  const invoices: unknown[] = [];
-  const estimates: unknown[] = [];
-  const photos: unknown[] = [];
-  const documents: unknown[] = [];
-  const communications: unknown[] = [];
+  if (!user) {
+    return notFound();
+  }
 
-  // ============================================================================
-  // Render
-  // ============================================================================
+  // Get user's company
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .single();
+
+  if (!teamMember?.company_id) {
+    return notFound();
+  }
+
+  // Fetch job with all related data
+  const { data: job, error: jobError } = await supabase
+    .from("jobs")
+    .select(
+      `
+      *,
+      customer:customers!customer_id(*),
+      property:properties!property_id(*),
+      assigned_user:users!assigned_to(id, name, email, phone, avatar)
+    `
+    )
+    .eq("id", jobId)
+    .is("deleted_at", null)
+    .single();
+
+  if (jobError || !job || job.company_id !== teamMember.company_id) {
+    return notFound();
+  }
+
+  // Get primary customer and property
+  const customer = Array.isArray(job.customer) ? job.customer[0] : job.customer;
+  const property = Array.isArray(job.property) ? job.property[0] : job.property;
+  const assignedUser = Array.isArray(job.assigned_user)
+    ? job.assigned_user[0]
+    : job.assigned_user;
+
+  // Fetch all related data
+  const [
+    { data: teamAssignments },
+    { data: timeEntries },
+    { data: invoices },
+    { data: estimates },
+    { data: payments },
+    { data: purchaseOrders },
+    { data: tasks },
+    { data: photos },
+    { data: documents },
+    { data: signatures },
+    { data: activities },
+    { data: communications },
+    { data: equipment },
+    { data: jobEquipment },
+    { data: jobMaterials },
+    { data: jobNotes },
+  ] = await Promise.all([
+    supabase
+      .from("job_team_assignments")
+      .select("*, team_member:team_members!team_member_id(*, users!user_id(*))")
+      .eq("job_id", jobId),
+    supabase
+      .from("job_time_entries")
+      .select("*, user:users!user_id(*)")
+      .eq("job_id", jobId)
+      .order("clock_in", { ascending: false }),
+    supabase
+      .from("invoices")
+      .select("*")
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("estimates")
+      .select("*")
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("payments")
+      .select("*")
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("purchase_orders")
+      .select("*")
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("job_tasks")
+      .select(
+        "*, assigned_user:users!assigned_to(id, name, avatar), completed_by_user:users!completed_by(id, name)"
+      )
+      .eq("job_id", jobId)
+      .order("display_order", { ascending: true }),
+    supabase
+      .from("job_photos")
+      .select("*, uploaded_by_user:users!uploaded_by(*)")
+      .eq("job_id", jobId)
+      .order("taken_at", { ascending: false }),
+    supabase
+      .from("attachments")
+      .select("*")
+      .eq("entity_type", "job")
+      .eq("entity_id", jobId),
+    supabase
+      .from("job_signatures")
+      .select("*")
+      .eq("job_id", jobId)
+      .order("signed_at", { ascending: false }),
+    supabase
+      .from("activity_log")
+      .select("*, user:users!user_id(*)")
+      .eq("entity_type", "job")
+      .eq("entity_id", jobId)
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("communications")
+      .select("*, user:users!user_id(*)")
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("equipment")
+      .select("*")
+      .eq("property_id", property?.id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("job_equipment")
+      .select(`
+        *,
+        equipment:equipment_id(
+          id,
+          name,
+          type,
+          manufacturer,
+          model,
+          serial_number,
+          status,
+          condition
+        )
+      `)
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("job_materials")
+      .select(`
+        *,
+        price_book_item:price_book_items(id, name, sku, unit_price),
+        used_by:users(id, name, email)
+      `)
+      .eq("job_id", jobId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("job_notes")
+      .select(
+        `
+        *,
+        user:users!user_id(id, name, email, avatar)
+      `
+      )
+      .eq("job_id", jobId)
+      .is("deleted_at", null)
+      .order("is_pinned", { ascending: false })
+      .order("created_at", { ascending: false }),
+  ]);
+
+  // Calculate metrics
+  const totalLaborHours =
+    timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+
+  // Calculate materials cost from invoice line items
+  const materialsCost = (invoices || []).reduce((total, invoice) => {
+    const items = invoice.line_items || [];
+    const invoiceTotal = items.reduce(
+      (sum: number, item: any) =>
+        sum + item.quantity * (item.unit_price || item.price || 0),
+      0
+    );
+    return total + invoiceTotal;
+  }, 0);
+
+  const estimatedProfit = (job.total_amount || 0) - materialsCost;
+  const profitMargin =
+    job.total_amount > 0 ? (estimatedProfit / job.total_amount) * 100 : 0;
+
+  const statusCompletionMap: Record<string, number> = {
+    quoted: 10,
+    scheduled: 25,
+    in_progress: 50,
+    completed: 100,
+    cancelled: 0,
+    on_hold: 40,
+  };
+  const completionPercentage = statusCompletionMap[job.status as string] || 0;
+
+  const metrics = {
+    totalAmount: job.total_amount || 0,
+    paidAmount: job.paid_amount || 0,
+    totalLaborHours,
+    estimatedLaborHours: job.estimated_labor_hours || 0,
+    materialsCost,
+    profitMargin,
+    completionPercentage,
+  };
+
+  // Prepare data for client component
+  const jobData = {
+    job,
+    customer,
+    property,
+    assignedUser,
+    teamAssignments: teamAssignments || [],
+    timeEntries: timeEntries || [],
+    invoices: invoices || [],
+    estimates: estimates || [],
+    payments: payments || [],
+    purchaseOrders: purchaseOrders || [],
+    tasks: tasks || [],
+    photos: photos || [],
+    documents: documents || [],
+    signatures: signatures || [],
+    activities: activities || [],
+    communications: communications || [],
+    equipment: equipment || [], // Customer's equipment at the property
+    jobEquipment: jobEquipment || [], // Equipment serviced on this job
+    jobMaterials: jobMaterials || [], // Materials used on this job
+    jobNotes: jobNotes || [], // Job notes
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Process Timeline - Editable */}
-      <div className="rounded-lg border bg-card p-4">
-        <JobProcessIndicatorEditable
-          currentStatus={job.status as never}
-          dates={{
-            quoted: job.createdAt,
-            scheduled: job.scheduledStart,
-            inProgress: job.actualStart,
-            completed: job.actualEnd,
-          }}
-          jobId={job.id}
+    <div className="flex h-full w-full flex-col overflow-auto">
+      {/* Sticky Stats Bar - Becomes compact on scroll */}
+      <StickyStatsBar>
+        <JobStatsBar
+          jobId={jobId}
+          metrics={metrics}
+          status={job.status as string}
         />
-      </div>
+      </StickyStatsBar>
 
-      {/* Widget Grid */}
-      <WidgetGrid
-        communications={communications}
-        customer={customer}
-        documents={documents}
-        estimates={estimates}
-        invoices={invoices}
-        job={job}
-        photos={photos}
-        property={property}
-        propertyEnrichment={propertyEnrichment}
-      />
-
-      {/* Property Enrichment Debug (Remove in production) */}
-      {propertyEnrichment ? (
-        <details className="rounded-lg border p-4">
-          <summary className="cursor-pointer font-medium text-sm">
-            Property Enrichment Data (Debug)
-          </summary>
-          <pre className="mt-2 overflow-auto rounded bg-muted p-4 text-xs">
-            {JSON.stringify(propertyEnrichment, null, 2)}
-          </pre>
-        </details>
-      ) : null}
+      {/* Full-Width Content - No Padding */}
+      <JobPageContent jobData={jobData} metrics={metrics} />
     </div>
   );
 }

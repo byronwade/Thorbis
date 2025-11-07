@@ -55,6 +55,134 @@ const propertySchema = z.object({
 // ============================================================================
 
 /**
+ * Find existing property or create new one for customer
+ * Prevents duplicate properties for the same address
+ */
+export async function findOrCreateProperty(
+  formData: FormData
+): Promise<ActionResult<string>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Validate input
+    const data = propertySchema.parse({
+      customerId: formData.get("customerId"),
+      name: formData.get("name"),
+      address: formData.get("address"),
+      address2: formData.get("address2") || undefined,
+      city: formData.get("city"),
+      state: formData.get("state"),
+      zipCode: formData.get("zipCode"),
+      country: formData.get("country") || "USA",
+      propertyType: formData.get("propertyType") || undefined,
+      squareFootage: formData.get("squareFootage")
+        ? Number(formData.get("squareFootage"))
+        : undefined,
+      yearBuilt: formData.get("yearBuilt")
+        ? Number(formData.get("yearBuilt"))
+        : undefined,
+      notes: formData.get("notes") || undefined,
+    });
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", data.customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Customer not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Check if property already exists for this customer with the same address
+    const { data: existingProperty } = await supabase
+      .from("properties")
+      .select("id")
+      .eq("customer_id", data.customerId)
+      .eq("address", data.address)
+      .eq("city", data.city)
+      .eq("state", data.state)
+      .eq("zip_code", data.zipCode)
+      .eq("company_id", teamMember.company_id)
+      .maybeSingle();
+
+    // If property exists, return its ID
+    if (existingProperty) {
+      return existingProperty.id;
+    }
+
+    // Otherwise, create new property
+    const { data: property, error: createError } = await supabase
+      .from("properties")
+      .insert({
+        company_id: teamMember.company_id,
+        customer_id: data.customerId,
+        name: data.name,
+        address: data.address,
+        address2: data.address2,
+        city: data.city,
+        state: data.state,
+        zip_code: data.zipCode,
+        country: data.country,
+        type: data.propertyType || "residential",
+        square_footage: data.squareFootage,
+        year_built: data.yearBuilt,
+        notes: data.notes,
+      })
+      .select("id")
+      .single();
+
+    if (createError) {
+      console.error("Property creation error:", createError);
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("create property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    assertExists(property, "Property");
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${data.customerId}`);
+
+    return property.id;
+  });
+}
+
+/**
  * Create a new property for a customer
  */
 export async function createProperty(
@@ -126,6 +254,14 @@ export async function createProperty(
       );
     }
 
+    // Log data for debugging RLS issues
+    console.log("Creating property with:", {
+      company_id: teamMember.company_id,
+      customer_id: data.customerId,
+      user_id: user.id,
+      name: data.name,
+    });
+
     // Create property
     const { data: property, error: createError } = await supabase
       .from("properties")
@@ -148,9 +284,12 @@ export async function createProperty(
       .single();
 
     if (createError) {
+      console.error("Database error creating property:", createError);
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("create property"),
-        ERROR_CODES.DB_QUERY_ERROR
+        ERROR_CODES.DB_QUERY_ERROR,
+        400,
+        { dbError: createError.message, code: createError.code }
       );
     }
 
@@ -263,10 +402,12 @@ export async function updateProperty(
 }
 
 /**
- * Delete property
+ * Archive property (soft delete)
  * Only allowed if no equipment or jobs are associated
+ *
+ * Archives instead of permanently deleting. Can be restored within 90 days.
  */
-export async function deleteProperty(
+export async function archiveProperty(
   propertyId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -324,7 +465,7 @@ export async function deleteProperty(
 
     if (equipment && equipment.length > 0) {
       throw new ActionError(
-        "Cannot delete property with equipment. Remove or reassign equipment first.",
+        "Cannot archive property with equipment. Remove or reassign equipment first.",
         ERROR_CODES.BUSINESS_RULE_VIOLATION
       );
     }
@@ -334,31 +475,133 @@ export async function deleteProperty(
       .from("jobs")
       .select("id")
       .eq("property_id", propertyId)
+      .is("deleted_at", null)
       .limit(1);
 
     if (jobs && jobs.length > 0) {
       throw new ActionError(
-        "Cannot delete property with job history.",
+        "Cannot archive property with job history.",
         ERROR_CODES.BUSINESS_RULE_VIOLATION
       );
     }
 
-    // Delete property
-    const { error: deleteError } = await supabase
+    // Archive property (soft delete)
+    const now = new Date().toISOString();
+    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+
+    const { error: archiveError } = await supabase
       .from("properties")
-      .delete()
+      .update({
+        deleted_at: now,
+        deleted_by: user.id,
+        archived_at: now,
+        permanent_delete_scheduled_at: scheduledDeletion,
+      })
       .eq("id", propertyId);
 
-    if (deleteError) {
+    if (archiveError) {
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("delete property"),
+        ERROR_MESSAGES.operationFailed("archive property"),
         ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
     revalidatePath("/dashboard/customers");
     revalidatePath(`/dashboard/customers/${property.customer_id}`);
+    revalidatePath("/dashboard/settings/archive");
   });
+}
+
+/**
+ * Restore archived property
+ */
+export async function restoreProperty(
+  propertyId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify property belongs to company and is archived
+    const { data: property } = await supabase
+      .from("properties")
+      .select("id, company_id, customer_id, deleted_at")
+      .eq("id", propertyId)
+      .single();
+
+    assertExists(property, "Property");
+
+    if (property.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        "Property not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    if (!property.deleted_at) {
+      throw new ActionError(
+        "Property is not archived",
+        ERROR_CODES.OPERATION_NOT_ALLOWED
+      );
+    }
+
+    // Restore property
+    const { error: restoreError } = await supabase
+      .from("properties")
+      .update({
+        deleted_at: null,
+        deleted_by: null,
+        archived_at: null,
+        permanent_delete_scheduled_at: null,
+      })
+      .eq("id", propertyId);
+
+    if (restoreError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("restore property"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${property.customer_id}`);
+    revalidatePath("/dashboard/settings/archive");
+  });
+}
+
+/**
+ * Delete property (legacy - deprecated)
+ * @deprecated Use archiveProperty() instead
+ */
+export async function deleteProperty(
+  propertyId: string
+): Promise<ActionResult<void>> {
+  return archiveProperty(propertyId);
 }
 
 // ============================================================================

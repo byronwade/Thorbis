@@ -44,7 +44,9 @@ export default async function CustomersPage() {
     lastService: c.last_job_date
       ? new Date(c.last_job_date).toLocaleDateString()
       : "None",
-    nextService: "TBD", // TODO: Calculate from scheduled jobs
+    nextService: c.next_scheduled_job
+      ? new Date(c.next_scheduled_job).toLocaleDateString()
+      : "TBD",
     totalValue: c.total_revenue || 0,
   }));
 

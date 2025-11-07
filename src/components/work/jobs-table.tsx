@@ -43,6 +43,7 @@ type JobsTableProps = {
   jobs: Job[];
   itemsPerPage?: number;
   onJobClick?: (job: Job) => void;
+  showRefresh?: boolean;
 };
 
 function formatCurrency(cents: number | null): string {
@@ -158,6 +159,7 @@ export function JobsTable({
   jobs,
   itemsPerPage = 50,
   onJobClick,
+  showRefresh = true,
 }: JobsTableProps) {
   const columns: ColumnDef<Job>[] = [
     {
@@ -259,9 +261,21 @@ export function JobsTable({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete Job
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={async () => {
+                  if (!confirm("Archive this job? It can be restored within 90 days.")) {
+                    return;
+                  }
+                  const { archiveJob } = await import("@/actions/jobs");
+                  const result = await archiveJob(job.id);
+                  if (result.success) {
+                    window.location.reload();
+                  }
+                }}
+              >
+                <Archive className="mr-2 size-4" />
+                Archive Job
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -273,19 +287,25 @@ export function JobsTable({
   // Bulk actions
   const bulkActions: BulkAction[] = [
     {
-      label: "Archive",
+      label: "Archive Selected",
       icon: <Archive className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Archive jobs:", Array.from(selectedIds));
-        // TODO: Implement archive functionality
-      },
-    },
-    {
-      label: "Delete",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Delete jobs:", Array.from(selectedIds));
-        // TODO: Implement delete functionality
+      onClick: async (selectedIds) => {
+        if (!confirm(`Archive ${selectedIds.size} job(s)? They can be restored within 90 days.`)) {
+          return;
+        }
+
+        // Import dynamically to avoid circular dependencies
+        const { archiveJob } = await import("@/actions/jobs");
+
+        let archived = 0;
+        for (const id of selectedIds) {
+          const result = await archiveJob(id);
+          if (result.success) archived++;
+        }
+
+        if (archived > 0) {
+          window.location.reload(); // Reload to show updated list
+        }
       },
       variant: "destructive",
     },
@@ -353,7 +373,7 @@ export function JobsTable({
       onRowClick={handleRowClick}
       searchFilter={searchFilter}
       searchPlaceholder="Search jobs by customer, category, equipment, service type..."
-      showRefresh={true}
+      showRefresh={showRefresh}
     />
   );
 }

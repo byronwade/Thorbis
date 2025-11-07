@@ -31,9 +31,10 @@ export type StatCard = {
 export type StatsCardsProps = {
   stats: StatCard[];
   variant?: "chart" | "ticker";
+  compact?: boolean;
 };
 
-export function StatsCards({ stats, variant = "ticker" }: StatsCardsProps) {
+export function StatsCards({ stats, variant = "ticker", compact = false }: StatsCardsProps) {
   // Dynamically determine grid columns based on number of stats
   const gridColsClass =
     {
@@ -47,9 +48,9 @@ export function StatsCards({ stats, variant = "ticker" }: StatsCardsProps) {
 
   if (variant === "ticker") {
     return (
-      <div className="border-b bg-background">
+      <div className="w-full border-b bg-background">
         {/* Stats Grid - Stock ticker style */}
-        <div className={`grid ${gridColsClass} divide-x`}>
+        <div className={`grid w-full ${gridColsClass} divide-x`}>
           {stats.map((stat) => {
             const change = stat.change || 0;
             const isPositive = change > 0;
@@ -57,9 +58,18 @@ export function StatsCards({ stats, variant = "ticker" }: StatsCardsProps) {
             const isNeutral = change === 0;
 
             return (
-              <div className="px-4 py-3" key={stat.label}>
+              <div 
+                className={cn(
+                  "transition-all duration-300",
+                  compact ? "px-3 py-2" : "px-4 py-3"
+                )} 
+                key={stat.label}
+              >
                 <div className="flex items-baseline gap-2">
-                  <div className="font-semibold text-foreground text-xl tabular-nums">
+                  <div className={cn(
+                    "font-semibold text-foreground tabular-nums transition-all duration-300",
+                    compact ? "text-lg" : "text-xl"
+                  )}>
                     {stat.value}
                   </div>
                   {/* Stock ticker style change indicator */}
@@ -82,10 +92,13 @@ export function StatsCards({ stats, variant = "ticker" }: StatsCardsProps) {
                     </div>
                   )}
                 </div>
-                <div className="mt-1 text-muted-foreground text-sm">
+                <div className={cn(
+                  "text-muted-foreground transition-all duration-300",
+                  compact ? "mt-0.5 text-xs" : "mt-1 text-sm"
+                )}>
                   {stat.label}
                 </div>
-                {stat.changeLabel && (
+                {!compact && stat.changeLabel && (
                   <div className="mt-0.5 text-muted-foreground text-xs">
                     {stat.changeLabel}
                   </div>
@@ -100,9 +113,9 @@ export function StatsCards({ stats, variant = "ticker" }: StatsCardsProps) {
 
   // Chart variant (legacy)
   return (
-    <div className="border-b bg-background">
+    <div className="w-full border-b bg-background">
       {/* Stats Grid with inline area charts */}
-      <div className={`grid ${gridColsClass} divide-x`}>
+      <div className={`grid w-full ${gridColsClass} divide-x`}>
         {stats.map((stat) => (
           <div className="group relative overflow-hidden" key={stat.label}>
             {/* Content with padding */}

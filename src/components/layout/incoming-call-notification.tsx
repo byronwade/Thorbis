@@ -57,7 +57,7 @@ const User = dynamic(() => import("lucide-react").then((mod) => mod.User));
 const Video = dynamic(() => import("lucide-react").then((mod) => mod.Video));
 const VideoOff = dynamic(() => import("lucide-react").then((mod) => mod.VideoOff));
 const Voicemail = dynamic(() => import("lucide-react").then((mod) => mod.Voicemail));
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { CallIndicatorBadge } from "@/components/call/call-indicator-badge";
 
 /**
@@ -447,29 +447,29 @@ function MinimizedCallWidget({
   const [showKeypad, setShowKeypad] = useState(false);
   const [position, setPosition] = useState({ x: window.innerWidth - 350, y: window.innerHeight - 150 });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  // Use refs to avoid dependency issues and prevent listener stacking
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   // Dragging handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    setDragOffset({
+    dragOffsetRef.current = {
       x: e.clientX - position.x,
       y: e.clientY - position.y,
+    };
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    setPosition({
+      x: e.clientX - dragOffsetRef.current.x,
+      y: e.clientY - dragOffsetRef.current.y,
     });
-  };
+  }, []); // ✅ No dependencies - uses ref
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - dragOffset.x,
-        y: e.clientY - dragOffset.y,
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (isDragging) {
@@ -480,7 +480,7 @@ function MinimizedCallWidget({
         window.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isDragging, dragOffset]);
+  }, [isDragging, handleMouseMove, handleMouseUp]); // ✅ Stable callbacks
 
   const keypadButtons = [
     ["1", "2", "3"],

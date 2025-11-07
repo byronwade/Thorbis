@@ -917,7 +917,8 @@ export async function revokePortalAccess(
  * Search customers by name, email, phone, or company
  */
 export async function searchCustomers(
-  searchTerm: string
+  searchTerm: string,
+  options?: { limit?: number; offset?: number }
 ): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
@@ -947,26 +948,23 @@ export async function searchCustomers(
       );
     }
 
-    // Search across multiple fields
-    const { data: customers, error } = await supabase
-      .from("customers")
-      .select("*")
-      .eq("company_id", teamMember.company_id)
-      .is("deleted_at", null)
-      .or(
-        `display_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,company_name.ilike.%${searchTerm}%`
-      )
-      .order("display_name", { ascending: true })
-      .limit(50);
+    // Use full-text search with ranking for best matches
+    // Searches across: first_name, last_name, display_name, email, phone,
+    // secondary_phone, company_name, address, city, state
+    // Returns results ordered by relevance (weighted: name > contact > address)
+    const { searchCustomersFullText } = await import("@/lib/search/full-text-search");
 
-    if (error) {
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("search customers"),
-        ERROR_CODES.DB_QUERY_ERROR
-      );
-    }
+    const customers = await searchCustomersFullText(
+      supabase,
+      teamMember.company_id,
+      searchTerm,
+      {
+        limit: options?.limit || 50,
+        offset: options?.offset || 0,
+      }
+    );
 
-    return customers || [];
+    return customers;
   });
 }
 
@@ -1096,6 +1094,7 @@ type CustomerRecord = {
   total_invoices?: number;
   outstanding_balance?: number;
   last_job_date?: string;
+  next_scheduled_job?: string;
   created_at: string;
   updated_at: string;
 };
@@ -1149,6 +1148,132 @@ export async function getAllCustomers(): Promise<
       );
     }
 
-    return (customers || []) as CustomerRecord[];
+    // Enrich customers with real job data
+    const enrichedCustomers = await Promise.all(
+      (customers || []).map(async (customer) => {
+        // Get last completed job date
+        const { data: lastJob } = await supabase
+          .from("jobs")
+          .select("created_at, scheduled_end, actual_end")
+          .eq("customer_id", customer.id)
+          .eq("company_id", teamMember.company_id)
+          .eq("status", "completed")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        // Get next scheduled job
+        const { data: nextJob } = await supabase
+          .from("jobs")
+          .select("scheduled_start")
+          .eq("customer_id", customer.id)
+          .eq("company_id", teamMember.company_id)
+          .in("status", ["quoted", "scheduled"])
+          .not("scheduled_start", "is", null)
+          .order("scheduled_start", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        // Get total revenue and job count
+        const { data: jobStats } = await supabase
+          .from("jobs")
+          .select("total_amount")
+          .eq("customer_id", customer.id)
+          .eq("company_id", teamMember.company_id);
+
+        const total_jobs = jobStats?.length || 0;
+        const total_revenue = jobStats?.reduce(
+          (sum, job) => sum + (job.total_amount || 0),
+          0
+        ) || 0;
+
+        return {
+          ...customer,
+          last_job_date: lastJob?.actual_end || lastJob?.scheduled_end || lastJob?.created_at,
+          next_scheduled_job: nextJob?.scheduled_start,
+          total_jobs,
+          total_revenue,
+        };
+      })
+    );
+
+    return enrichedCustomers as CustomerRecord[];
   });
 }
+
+/**
+ * Update customer page content (Novel/Tiptap JSON)
+ *
+ * Saves the customer's editable page layout and content
+ * Used by the Novel editor for auto-save functionality
+ */
+export async function updateCustomerPageContent(
+  customerId: string,
+  pageContent: any
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify customer exists and belongs to company
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id")
+      .eq("id", customerId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(customer, "Customer");
+
+    if (customer.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("customer"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Update page content
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update({
+        page_content: pageContent,
+        content_updated_by: user.id,
+      })
+      .eq("id", customerId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update customer page"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath(`/dashboard/customers/${customerId}`);
+  });
+}
+

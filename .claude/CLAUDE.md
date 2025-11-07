@@ -122,11 +122,58 @@ export async function middleware(request: NextRequest) {
 
 ---
 
+## 🔧 MCP SERVERS AVAILABLE
+
+**This project has access to powerful MCP (Model Context Protocol) servers that enhance development capabilities.**
+
+### shadcn MCP Server
+Provides access to shadcn/ui component registry:
+- **Search Components**: `mcp__shadcn__search_items_in_registries` - Find components by keyword
+- **View Examples**: `mcp__shadcn__get_item_examples_from_registries` - Get usage examples and demos
+- **Inspect Details**: `mcp__shadcn__view_items_in_registries` - View implementation details
+- **Add Commands**: `mcp__shadcn__get_add_command_for_items` - Get CLI commands to add components
+- **Audit Checklist**: `mcp__shadcn__get_audit_checklist` - Verify component best practices
+
+**When to Use:**
+- Before creating any new UI component
+- To find existing patterns and established solutions
+- To get proper implementation examples
+- To ensure consistency with shadcn/ui standards
+
+### Next.js MCP Server (next-devtools)
+Provides Next.js runtime inspection and debugging:
+- **Runtime Diagnostics**: `mcp__next-devtools__nextjs_runtime` - Inspect errors, routes, and runtime state
+- **Documentation Search**: `mcp__next-devtools__nextjs_docs` - Search official Next.js docs
+- **Browser Automation**: `mcp__next-devtools__browser_eval` - Test pages in real browsers
+- **Upgrade Assistant**: `mcp__next-devtools__upgrade_nextjs_16` - Automated Next.js 16 upgrade
+- **Cache Components**: `mcp__next-devtools__enable_cache_components` - Setup cache components
+
+**When to Use:**
+- Before implementing ANY changes to understand current state
+- For debugging and investigating issues
+- To verify pages work correctly (not just HTTP 200)
+- When searching for Next.js best practices
+- During Next.js version upgrades
+
+**CRITICAL: Runtime-First Approach**
+- Query `nextjs_runtime` FIRST when asked to investigate or modify the running app
+- Use browser automation to verify pages (curl only fetches HTML, doesn't execute JS)
+- Check runtime state proactively before implementing changes
+
+### Supabase MCP Server
+Already documented - provides database operations:
+- Schema migrations and management
+- Type generation
+- Security advisors
+- Query execution
+
+---
+
 ## 📚 REQUIRED CONTEXT
 
-**IMPORTANT: ALWAYS reference and apply the complete linting rules from [AGENTS.md](../AGENTS.md) before writing any code.**
+**IMPORTANT: ALWAYS reference and apply the complete linting rules from [AGENTS.md](../docs/AGENTS.md) before writing any code.**
 
-The AGENTS.md file contains 436 comprehensive linting rules covering:
+The AGENTS.md file contains 481 comprehensive linting rules covering:
 - Accessibility (ARIA, WCAG compliance)
 - TypeScript/JavaScript best practices
 - React/Next.js patterns
@@ -182,11 +229,13 @@ The AGENTS.md file contains 436 comprehensive linting rules covering:
    - This project has established patterns that MUST be reused and extended
 
    ### Component Discovery Process (REQUIRED BEFORE ANY NEW COMPONENT)
-   1. Search for similar components in the codebase first
-   2. Review existing implementations in the same feature area
-   3. Check `/src/components/layout/` for shared infrastructure
-   4. Look at similar pages for established patterns
-   5. Only create new components if NO existing solution exists
+   1. **Use shadcn MCP to search registry** - `mcp__shadcn__search_items_in_registries` for existing components
+   2. **Check shadcn examples** - `mcp__shadcn__get_item_examples_from_registries` for usage patterns
+   3. Search for similar components in the codebase (Grep/Glob)
+   4. Review existing implementations in the same feature area
+   5. Check `/src/components/layout/` for shared infrastructure
+   6. Look at similar pages for established patterns
+   7. Only create new components if NO existing solution exists (shadcn or codebase)
 
    ### Key Infrastructure Components (ALWAYS REUSE)
    - **AppToolbar** (`src/components/layout/app-toolbar.tsx`) - Universal toolbar for all pages
@@ -276,6 +325,365 @@ The AGENTS.md file contains 436 comprehensive linting rules covering:
    - Review at least 2-3 similar pages in the same feature area
    - Consistency is MORE important than individual creativity
    - When in doubt, extend existing components rather than creating new ones
+
+6. **PRODUCTION-READY UPDATES - COMPLETE OR NOTHING**
+   - **CRITICAL: ALL changes must update the full stack - database, types, RLS, docs**
+   - **NEVER make partial updates** - incomplete changes cause production bugs
+   - This is a production system - every change must be production-ready
+
+   ### Database Changes - Mandatory Process (NO EXCEPTIONS)
+   1. **Use Supabase MCP server ONLY** - never make manual SQL changes
+   2. **Create migration** - `mcp__supabase__apply_migration` for ALL schema changes
+   3. **Update RLS policies** - Add/update policies for new tables/columns
+   4. **Regenerate types** - `mcp__supabase__generate_typescript_types` after every DB change
+   5. **Verify changes** - `mcp__supabase__get_advisors` to catch security/performance issues
+   6. **Update documentation** - Keep AGENTS.md and CLAUDE.md synchronized with changes
+
+   ### Production-Ready Checklist (REQUIRED)
+   ```
+   ✅ Migration created and applied via MCP server
+   ✅ RLS policies added/updated and tested
+   ✅ TypeScript types regenerated and imported
+   ✅ Code updated to use new schema/types
+   ✅ Security advisors run - no critical issues
+   ✅ Documentation updated (AGENTS.md, CLAUDE.md)
+   ✅ Related features updated (forms, actions, pages)
+   ✅ Error handling implemented
+   ✅ Loading states added
+   ✅ Validation added (Zod schemas)
+   ```
+
+   ### Available Supabase MCP Tools
+   - `mcp__supabase__apply_migration` - Create and apply schema migrations
+   - `mcp__supabase__execute_sql` - Execute SQL queries (read-only verification)
+   - `mcp__supabase__list_tables` - List all tables and columns
+   - `mcp__supabase__generate_typescript_types` - Generate types from schema
+   - `mcp__supabase__get_advisors` - Get security and performance recommendations
+   - `mcp__supabase__list_migrations` - List applied migrations
+   - `mcp__supabase__search_docs` - Search Supabase documentation
+
+   ### Why This Matters
+   - **Security**: Missing RLS policies = data breaches
+   - **Type Safety**: Outdated types = runtime errors in production
+   - **Maintainability**: Incomplete updates = technical debt
+   - **Reliability**: Skipped steps = production bugs
+   - **Documentation**: Out-of-sync docs = confusion and mistakes
+
+   ### Anti-Patterns (NEVER DO THIS)
+   ❌ Making SQL changes without migrations
+   ❌ Forgetting to regenerate types after schema changes
+   ❌ Adding tables without RLS policies
+   ❌ Updating code without updating documentation
+   ❌ Skipping security advisor checks
+   ❌ Partial implementations "to finish later"
+
+   ### Examples
+
+   **❌ WRONG - Incomplete Update:**
+   ```typescript
+   // Just adds a column via SQL - NO migration, NO types, NO RLS
+   await supabase.execute("ALTER TABLE jobs ADD COLUMN status TEXT");
+   ```
+
+   **✅ RIGHT - Complete Production-Ready Update:**
+   ```typescript
+   // 1. Create migration
+   await mcp__supabase__apply_migration({
+     name: "add_job_status_column",
+     query: `
+       ALTER TABLE jobs ADD COLUMN status TEXT NOT NULL DEFAULT 'pending';
+
+       -- Add RLS policy for new column
+       CREATE POLICY "Users can view job status"
+         ON jobs FOR SELECT
+         USING (company_id IN (
+           SELECT company_id FROM team_members WHERE user_id = auth.uid()
+         ));
+     `
+   });
+
+   // 2. Regenerate types
+   await mcp__supabase__generate_typescript_types();
+
+   // 3. Run security advisors
+   await mcp__supabase__get_advisors({ type: "security" });
+
+   // 4. Update code to use new column (with new types)
+   // 5. Update Zod schemas for validation
+   // 6. Update forms to include new field
+   // 7. Update documentation in AGENTS.md and CLAUDE.md
+   ```
+
+---
+
+## 🐛 DEBUGGING & TESTING WITH MCP TOOLS
+
+**CRITICAL: Use Next.js MCP runtime tools for all debugging, investigation, and testing tasks.**
+
+### Investigation Workflow (ALWAYS Follow)
+
+When asked to investigate, debug, or modify the running Next.js app:
+
+1. **Query Runtime State FIRST**
+   ```typescript
+   // Discover what diagnostics are available
+   mcp__next-devtools__nextjs_runtime({ action: "list_tools" })
+
+   // Get current errors, routes, and runtime information
+   mcp__next-devtools__nextjs_runtime({ action: "call_tool", toolName: "..." })
+   ```
+
+2. **Search Official Docs** (Not Guessing)
+   ```typescript
+   // Search for specific API patterns
+   mcp__next-devtools__nextjs_docs({
+     action: "search",
+     query: "async params",
+     routerType: "app"  // or "pages" or "all"
+   })
+   ```
+
+3. **Verify with Browser Automation** (Critical for Pages)
+   ```typescript
+   // Start browser
+   mcp__next-devtools__browser_eval({ action: "start", headless: true })
+
+   // Navigate and test
+   mcp__next-devtools__browser_eval({ action: "navigate", url: "http://localhost:3000/page" })
+
+   // Capture console errors (hydration, runtime issues)
+   mcp__next-devtools__browser_eval({ action: "console_messages", errorsOnly: true })
+
+   // Take screenshot for visual verification
+   mcp__next-devtools__browser_eval({ action: "screenshot" })
+   ```
+
+### Why Browser Automation? (CRITICAL)
+
+**NEVER use curl or simple HTTP requests to verify Next.js pages.**
+
+❌ **WRONG - Using curl:**
+```bash
+curl http://localhost:3000/page  # Only gets HTML, misses:
+# - JavaScript runtime errors
+# - Hydration issues
+# - Client-side crashes
+# - Console warnings
+# - React errors
+```
+
+✅ **RIGHT - Using Browser Automation:**
+```typescript
+// Renders page in real browser, catches everything:
+// - Runtime errors
+// - Hydration mismatches
+// - Client-side exceptions
+// - Console errors/warnings
+// - Visual rendering issues
+```
+
+### Component Discovery with shadcn MCP
+
+Before creating ANY UI component:
+
+1. **Search shadcn Registry**
+   ```typescript
+   mcp__shadcn__search_items_in_registries({
+     registries: ["@shadcn"],
+     query: "button dialog card table form"
+   })
+   ```
+
+2. **Get Usage Examples**
+   ```typescript
+   mcp__shadcn__get_item_examples_from_registries({
+     registries: ["@shadcn"],
+     query: "button-demo"  // Common patterns: {item}-demo, {item} example
+   })
+   ```
+
+3. **Inspect Implementation**
+   ```typescript
+   mcp__shadcn__view_items_in_registries({
+     items: ["@shadcn/button", "@shadcn/dialog"]
+   })
+   ```
+
+4. **Get Add Command**
+   ```typescript
+   mcp__shadcn__get_add_command_for_items({
+     items: ["@shadcn/button"]
+   })
+   // Returns: npx shadcn add button
+   ```
+
+5. **Run Audit After Creation**
+   ```typescript
+   mcp__shadcn__get_audit_checklist()
+   // Verify: accessibility, TypeScript, testing, documentation
+   ```
+
+### When to Use Each MCP Server
+
+**Use Next.js MCP when:**
+- Investigating bugs or errors
+- Understanding current app structure
+- Verifying pages work correctly
+- Searching for Next.js patterns/APIs
+- Upgrading Next.js versions
+- Testing runtime behavior
+
+**Use shadcn MCP when:**
+- Creating new UI components
+- Looking for design patterns
+- Ensuring component consistency
+- Getting proper TypeScript types
+- Learning component best practices
+
+**Use Supabase MCP when:**
+- Making database schema changes
+- Updating RLS policies
+- Generating TypeScript types
+- Running security audits
+- Verifying database state
+
+### Testing Patterns
+
+**After implementing features:**
+
+1. **Start dev server** (if not running)
+2. **Use browser automation to test**
+   - Navigate to the page
+   - Interact with the UI (click, type, etc.)
+   - Capture console messages
+   - Take screenshots
+   - Verify no errors
+3. **Check Next.js runtime**
+   - Query for errors
+   - Verify routes exist
+   - Check for warnings
+
+**Example: Testing a New Page**
+```typescript
+// 1. Check runtime state
+await mcp__next-devtools__nextjs_runtime({
+  action: "call_tool",
+  toolName: "get_errors"
+})
+
+// 2. Test in browser
+await mcp__next-devtools__browser_eval({ action: "start" })
+await mcp__next-devtools__browser_eval({
+  action: "navigate",
+  url: "http://localhost:3000/dashboard/new-feature"
+})
+
+// 3. Verify no errors
+const messages = await mcp__next-devtools__browser_eval({
+  action: "console_messages",
+  errorsOnly: true
+})
+
+// 4. Take screenshot
+await mcp__next-devtools__browser_eval({
+  action: "screenshot",
+  fullPage: true
+})
+```
+
+---
+
+## 🔍 SEARCH IMPLEMENTATION STANDARDS
+
+**This project uses enterprise-grade PostgreSQL full-text search. ALL search features must follow these patterns.**
+
+### Search Architecture
+
+1. **Full-Text Search with Ranking** (Primary)
+   - Use `search_vector` tsvector columns with GIN indexes
+   - Weighted fields: A (names, IDs) > B (contact) > C (descriptions) > D (notes)
+   - Results ordered by `ts_rank` DESC (best matches first)
+   - Auto-updated via triggers on INSERT/UPDATE
+
+2. **Fuzzy Matching** (Typo Tolerance)
+   - Use `pg_trgm` extension for similarity matching
+   - Trigram indexes on key text fields (names, emails, addresses)
+   - Handles typos and variations automatically
+
+3. **Fallback ILIKE Search** (Backwards Compatibility)
+   - Always implement fallback for compatibility
+   - Uses `.or()` across multiple fields with `.ilike.%term%`
+
+### Entities with Full-Text Search
+
+✅ **Customers**: first_name, last_name, display_name, email, phone, company_name, address, city, state
+✅ **Jobs**: job_number, title, description, notes, job_type, status, priority, ai_service_type
+✅ **Properties**: name, address, city, state, zip_code, notes
+✅ **Price Book Items**: name, sku, supplier_sku, description, category, subcategory
+✅ **Equipment**: equipment_number, name, type, manufacturer, model, serial_number, category, location, notes
+✅ **Invoices**: invoice_number, status, notes
+✅ **Estimates**: estimate_number, status, notes
+✅ **Contracts**: contract_number, title, status, description
+
+### Search Utilities
+
+**File**: `/src/lib/search/full-text-search.ts`
+
+```typescript
+// Entity-specific search
+import { searchCustomersFullText } from "@/lib/search/full-text-search";
+const results = await searchCustomersFullText(supabase, companyId, "john plumber");
+
+// Universal search across all entities
+import { searchAllEntities } from "@/lib/search/full-text-search";
+const results = await searchAllEntities(supabase, companyId, "furnace");
+// Returns { customers: [...], jobs: [...], properties: [...], equipment: [...], priceBookItems: [...] }
+```
+
+### Server Actions
+
+**Jobs**: `searchJobs(searchTerm, options?)` - `/src/actions/jobs.ts`
+**Jobs Universal**: `searchAll(searchTerm)` - `/src/actions/jobs.ts`
+**Customers**: `searchCustomers(searchTerm, options?)` - `/src/actions/customers.ts`
+
+### Database RPC Functions
+
+- `search_customers_ranked(company_id, search_query, limit, offset)`
+- `search_jobs_ranked(company_id, search_query, limit, offset)`
+- `search_properties_ranked(company_id, search_query, limit, offset)`
+- `search_price_book_items_ranked(company_id, search_query, limit, offset)`
+- `search_equipment_ranked(company_id, search_query, limit, offset)`
+- `search_all_entities(company_id, search_query, per_entity_limit)`
+
+### Search Query Syntax
+
+Users can use natural language with these operators:
+- **AND**: `"HVAC repair"` - matches both words
+- **OR**: `"furnace OR boiler"` - matches either
+- **Phrase**: `"annual maintenance"` - exact phrase
+- **Negation**: `"plumber -emergency"` - exclude word
+- **Prefix**: `"john*"` - matches john, johnny, johnson
+
+### Performance
+
+- **GIN Indexes**: Sub-millisecond search on millions of records
+- **Weighted Ranking**: Most relevant results first
+- **Company Scoped**: RLS enforced, only searches company's data
+- **Result Limits**: 50 default (configurable), prevents slow queries
+- **Fuzzy Tolerance**: Handles typos automatically with trigram similarity
+
+### Adding Search to New Tables
+
+When adding a new searchable table:
+
+1. Add `search_vector` column: `ALTER TABLE my_table ADD COLUMN search_vector tsvector;`
+2. Create update function with weighted fields
+3. Create trigger to auto-update on changes
+4. Create GIN index: `CREATE INDEX ON my_table USING GIN(search_vector);`
+5. Add trigram indexes for fuzzy match on key fields
+6. Create RPC function for ranked search
+7. Add utility function to `/lib/search/full-text-search.ts`
+8. Update universal `search_all_entities` function
 
 ## 📋 Linting Rules
 
@@ -743,6 +1151,14 @@ pnpm lint:fix
 
 Before committing code, verify:
 
+### MCP Server Usage
+- [ ] **Did you search shadcn registry before creating UI components?**
+- [ ] **Did you check Next.js runtime state before implementing changes?**
+- [ ] **Did you use browser automation to verify pages (not just curl)?**
+- [ ] **Did you search Next.js docs for patterns instead of guessing?**
+- [ ] **Did you run shadcn audit checklist after creating components?**
+- [ ] If using Supabase MCP: migration created, types regenerated, advisors run?
+
 ### Infrastructure & Patterns
 - [ ] **Did you search for existing components before creating new ones?**
 - [ ] **Are you using AppToolbar instead of custom toolbars?**
@@ -1053,6 +1469,36 @@ export const config = {
 ---
 
 ## 🔄 VERSION HISTORY
+
+- **v2.4** - MCP Server Integration (2025-11-04)
+  - **NEW**: Added comprehensive MCP server documentation and guidelines
+  - Added shadcn MCP server for component discovery and best practices
+  - Added Next.js MCP server (next-devtools) for runtime diagnostics and debugging
+  - **CRITICAL**: Introduced runtime-first debugging approach with nextjs_runtime
+  - Added browser automation guidelines for proper page verification
+  - Enhanced component discovery process to include shadcn registry search
+  - Added debugging & testing patterns using MCP tools
+  - Updated code review checklist with MCP server usage checks
+  - Documented when to use each MCP server (shadcn, Next.js, Supabase)
+  - Added 22 new rules to AGENTS.md (460-481) covering MCP tool usage
+  - Emphasized browser automation over curl for Next.js page verification
+
+- **v2.3** - Production-Ready Updates & Enterprise Search (2025-11-03)
+  - **BREAKING**: Added Critical Rule #6 - Production-Ready Updates
+  - **NEW**: Comprehensive full-text search implementation across all entities
+  - Implemented PostgreSQL full-text search with ts_rank and pg_trgm
+  - Added search_vector columns to 8 major tables (customers, jobs, properties, equipment, etc.)
+  - Created RPC functions for ranked search with weighted relevance
+  - Built search utility library at `/src/lib/search/full-text-search.ts`
+  - Added universal `searchAll()` for global search across all entities
+  - GIN indexes for sub-millisecond search performance
+  - Fuzzy matching with trigram similarity for typo tolerance
+  - Mandatory use of Supabase MCP server for ALL database operations
+  - Comprehensive update process: migrations → RLS → types → code → docs
+  - Added production-ready checklist with 10 required verification steps
+  - Documented all available Supabase MCP tools and their usage
+  - New search documentation section with implementation standards
+  - Updated AGENTS.md with 27 new rules (16 search + 11 production infrastructure)
 
 - **v2.2** - Next.js 16 Proxy Pattern & Security Update (2025-11-02)
   - **BREAKING**: Migrated from middleware.ts to proxy.ts (Next.js 16+ requirement)

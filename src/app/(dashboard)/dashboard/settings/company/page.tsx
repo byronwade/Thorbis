@@ -212,11 +212,32 @@ export default function CompanyProfilePage() {
   useEffect(() => {
     async function loadCompanyData() {
       setIsLoading(true);
-      // TODO: Load from getCompanyInfo action when available
-      setIsLoading(false);
+      try {
+        const { getCompanyInfo } = await import("@/actions/company");
+        const result = await getCompanyInfo();
+
+        if (result.success && result.data) {
+          form.reset({
+            companyName: result.data.name || "",
+            legalName: result.data.legalName || "",
+            email: result.data.email || "",
+            phone: result.data.phone || "",
+            website: result.data.website || "",
+            taxId: result.data.taxId || "",
+            address: result.data.address || "",
+            city: result.data.city || "",
+            state: result.data.state || "",
+            zipCode: result.data.zipCode || "",
+          });
+        }
+      } catch (error) {
+        toast.error("Failed to load company data");
+      } finally {
+        setIsLoading(false);
+      }
     }
     loadCompanyData();
-  }, []);
+  }, [form]);
 
   async function onSubmit(values: CompanyProfileFormData) {
     startTransition(async () => {

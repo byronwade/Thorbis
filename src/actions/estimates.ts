@@ -719,9 +719,12 @@ export async function convertEstimateToJob(
 }
 
 /**
- * Delete estimate (only drafts)
+ * Archive estimate (soft delete)
+ *
+ * Replaces deleteEstimate - now archives instead of permanently deleting.
+ * Archived estimates can be restored within 90 days.
  */
-export async function deleteEstimate(
+export async function archiveEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -769,27 +772,129 @@ export async function deleteEstimate(
       );
     }
 
-    // Only drafts can be deleted
-    if (estimate.status !== "draft") {
+    // Cannot archive accepted estimates (business rule)
+    if (estimate.status === "accepted") {
       throw new ActionError(
-        "Only draft estimates can be deleted",
+        "Cannot archive accepted estimates. Accepted estimates must be retained for records.",
         ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
-    // Delete estimate
-    const { error: deleteError } = await supabase
+    // Archive estimate (soft delete)
+    const now = new Date().toISOString();
+    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+
+    const { error: archiveError } = await supabase
       .from("estimates")
-      .delete()
+      .update({
+        deleted_at: now,
+        deleted_by: user.id,
+        archived_at: now,
+        permanent_delete_scheduled_at: scheduledDeletion,
+        status: "archived",
+      })
       .eq("id", estimateId);
 
-    if (deleteError) {
+    if (archiveError) {
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("delete estimate"),
+        ERROR_MESSAGES.operationFailed("archive estimate"),
         ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
     revalidatePath("/dashboard/work/estimates");
+    revalidatePath("/dashboard/settings/archive");
   });
+}
+
+/**
+ * Restore archived estimate
+ */
+export async function restoreEstimate(
+  estimateId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify estimate belongs to company and is archived
+    const { data: estimate } = await supabase
+      .from("estimates")
+      .select("company_id, deleted_at, status")
+      .eq("id", estimateId)
+      .single();
+
+    assertExists(estimate, "Estimate");
+
+    if (estimate.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("estimate"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    if (!estimate.deleted_at) {
+      throw new ActionError(
+        "Estimate is not archived",
+        ERROR_CODES.OPERATION_NOT_ALLOWED
+      );
+    }
+
+    // Restore estimate
+    const { error: restoreError } = await supabase
+      .from("estimates")
+      .update({
+        deleted_at: null,
+        deleted_by: null,
+        archived_at: null,
+        permanent_delete_scheduled_at: null,
+        status: estimate.status === "archived" ? "draft" : estimate.status,
+      })
+      .eq("id", estimateId);
+
+    if (restoreError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("restore estimate"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/work/estimates");
+    revalidatePath("/dashboard/settings/archive");
+  });
+}
+
+/**
+ * Delete estimate (legacy - deprecated)
+ * @deprecated Use archiveEstimate() instead
+ */
+export async function deleteEstimate(
+  estimateId: string
+): Promise<ActionResult<void>> {
+  return archiveEstimate(estimateId);
 }

@@ -1,7 +1,7 @@
-import { HonestSalesHomepage } from "@/components/home/honest-sales-homepage";
+import { ModernHomepage } from "@/components/home/modern-homepage";
 
 export const revalidate = 900; // Revalidate every 15 minutes
 
-const Home = () => <HonestSalesHomepage />;
+const Home = () => <ModernHomepage />;
 
 export default Home;

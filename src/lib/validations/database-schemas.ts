@@ -181,6 +181,11 @@ export const paymentInsertSchema = z.object({
   check_number: z.string().max(50).optional().nullable(),
   transaction_id: z.string().max(200).optional().nullable(),
   processor: z.string().max(50).optional().nullable(),
+  processor_name: z.string().max(50).optional().nullable(),
+  processor_transaction_id: z.string().max(200).optional().nullable(),
+  processor_fee: z.number().int().default(0),
+  net_amount: z.number().int().default(0),
+  processor_metadata: z.record(z.string(), z.unknown()).optional().nullable(),
   processor_response: z.record(z.string(), z.unknown()).optional().nullable(),
   refunded_amount: z.number().int().default(0),
   original_payment_id: z.string().uuid().optional().nullable(),
@@ -430,3 +435,370 @@ export type TagSelect = z.infer<typeof tagSelectSchema>;
 export type AttachmentInsert = z.infer<typeof attachmentInsertSchema>;
 export type AttachmentUpdate = z.infer<typeof attachmentUpdateSchema>;
 export type AttachmentSelect = z.infer<typeof attachmentSelectSchema>;
+
+// ============================================================================
+// JOB TIME ENTRIES
+// ============================================================================
+
+export const jobTimeEntryInsertSchema = z.object({
+  job_id: z.string().uuid(),
+  company_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  clock_in: z.date(),
+  clock_out: z.date().optional().nullable(),
+  break_minutes: z.number().int().min(0).max(1439).default(0),
+  clock_in_location: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+      accuracy: z.number().optional(),
+      address: z.string().optional(),
+    })
+    .optional()
+    .nullable(),
+  clock_out_location: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+      accuracy: z.number().optional(),
+      address: z.string().optional(),
+    })
+    .optional()
+    .nullable(),
+  gps_verified: z.boolean().default(false),
+  entry_type: z.enum(["manual", "auto", "gps"]).default("manual"),
+  notes: z.string().optional().nullable(),
+  is_overtime: z.boolean().default(false),
+  is_billable: z.boolean().default(true),
+  hourly_rate: z.number().int().optional().nullable(),
+  metadata: z.any().optional().nullable(),
+});
+
+export const jobTimeEntryUpdateSchema = jobTimeEntryInsertSchema
+  .partial()
+  .omit({ job_id: true, company_id: true, user_id: true });
+
+export const jobTimeEntrySelectSchema = jobTimeEntryInsertSchema.extend({
+  id: z.string().uuid(),
+  total_hours: z.number().optional().nullable(),
+  created_at: z.date(),
+  updated_at: z.date(),
+});
+
+// ============================================================================
+// JOB PHOTOS
+// ============================================================================
+
+export const jobPhotoInsertSchema = z.object({
+  job_id: z.string().uuid(),
+  company_id: z.string().uuid(),
+  uploaded_by: z.string().uuid(),
+  storage_path: z.string().min(1, "Storage path is required"),
+  thumbnail_path: z.string().optional().nullable(),
+  file_name: z.string().min(1, "File name is required").max(255),
+  file_size: z.number().int().min(1).max(52428800), // 50MB max
+  mime_type: z.string().optional().nullable(),
+  category: z.enum([
+    "before",
+    "during",
+    "after",
+    "issue",
+    "equipment",
+    "completion",
+    "other",
+  ]),
+  subcategory: z.string().max(100).optional().nullable(),
+  title: z.string().max(200).optional().nullable(),
+  description: z.string().optional().nullable(),
+  is_customer_visible: z.boolean().default(true),
+  is_required_photo: z.boolean().default(false),
+  photo_location: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+      accuracy: z.number().optional(),
+      address: z.string().optional(),
+    })
+    .optional()
+    .nullable(),
+  taken_at: z.date().optional().nullable(),
+  device_info: z.any().optional().nullable(),
+  exif_data: z.any().optional().nullable(),
+  annotations: z.array(z.any()).optional().nullable(),
+  tags: z.array(z.string()).optional().nullable(),
+  display_order: z.number().int().default(0),
+  metadata: z.any().optional().nullable(),
+});
+
+export const jobPhotoUpdateSchema = jobPhotoInsertSchema
+  .partial()
+  .omit({ job_id: true, company_id: true, uploaded_by: true });
+
+export const jobPhotoSelectSchema = jobPhotoInsertSchema.extend({
+  id: z.string().uuid(),
+  created_at: z.date(),
+  updated_at: z.date(),
+});
+
+// ============================================================================
+// JOB WORKFLOW STAGES
+// ============================================================================
+
+export const jobWorkflowStageInsertSchema = z.object({
+  company_id: z.string().uuid(),
+  stage_name: z.string().min(1, "Stage name is required").max(100),
+  stage_key: z.string().min(1, "Stage key is required").max(100),
+  display_order: z.number().int().min(0).default(0),
+  stage_color: z.string().max(20).optional().nullable(),
+  stage_icon: z.string().max(50).optional().nullable(),
+  is_start_stage: z.boolean().default(false),
+  is_end_stage: z.boolean().default(false),
+  requires_approval: z.boolean().default(false),
+  approval_roles: z.array(z.any()).optional().nullable(),
+  required_fields: z.array(z.string()).optional().nullable(),
+  required_photos_count: z.number().int().min(0).default(0),
+  required_time_entry: z.boolean().default(false),
+  auto_send_email: z.boolean().default(false),
+  email_template_id: z.string().uuid().optional().nullable(),
+  auto_send_sms: z.boolean().default(false),
+  sms_template_id: z.string().uuid().optional().nullable(),
+  auto_create_invoice: z.boolean().default(false),
+  allowed_next_stages: z.array(z.string()).optional().nullable(),
+  industry_type: z.string().max(50).optional().nullable(),
+  is_active: z.boolean().default(true),
+  metadata: z.any().optional().nullable(),
+});
+
+export const jobWorkflowStageUpdateSchema = jobWorkflowStageInsertSchema
+  .partial()
+  .omit({ company_id: true });
+
+export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
+  {
+    id: z.string().uuid(),
+    created_at: z.date(),
+    updated_at: z.date(),
+  }
+);
+
+// ============================================================================
+// JOB SIGNATURES
+// ============================================================================
+
+export const jobSignatureInsertSchema = z.object({
+  job_id: z.string().uuid(),
+  company_id: z.string().uuid(),
+  signature_type: z.enum([
+    "customer",
+    "technician",
+    "inspector",
+    "supervisor",
+    "other",
+  ]),
+  signer_name: z.string().min(1, "Signer name is required").max(200),
+  signer_email: z.string().email().optional().nullable(),
+  signer_phone: z.string().max(20).optional().nullable(),
+  signer_role: z.string().max(100).optional().nullable(),
+  signature_data_url: z.string().min(1, "Signature data is required"),
+  signature_hash: z.string().optional().nullable(),
+  signed_at: z.date().default(() => new Date()),
+  signed_location: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+      accuracy: z.number().optional(),
+      address: z.string().optional(),
+    })
+    .optional()
+    .nullable(),
+  ip_address: z.string().max(45).optional().nullable(),
+  user_agent: z.string().optional().nullable(),
+  device_info: z.any().optional().nullable(),
+  document_type: z.enum([
+    "job_completion",
+    "estimate",
+    "change_order",
+    "work_authorization",
+    "inspection",
+    "other",
+  ]),
+  document_content: z.any().optional().nullable(),
+  agreement_text: z.string().optional().nullable(),
+  is_verified: z.boolean().default(false),
+  verified_at: z.date().optional().nullable(),
+  verified_by: z.string().uuid().optional().nullable(),
+  metadata: z.any().optional().nullable(),
+});
+
+export const jobSignatureUpdateSchema = jobSignatureInsertSchema
+  .partial()
+  .omit({ job_id: true, company_id: true });
+
+export const jobSignatureSelectSchema = jobSignatureInsertSchema.extend({
+  id: z.string().uuid(),
+  created_at: z.date(),
+});
+
+// ============================================================================
+// ENHANCED JOBS SCHEMA
+// ============================================================================
+
+export const jobInsertSchema = z.object({
+  company_id: z.string().uuid(),
+  job_number: z.string().min(1, "Job number is required").max(50),
+  title: z.string().min(1, "Title is required").max(200),
+  description: z.string().optional().nullable(),
+  status: z
+    .enum([
+      "quoted",
+      "scheduled",
+      "in_progress",
+      "on_hold",
+      "completed",
+      "cancelled",
+    ])
+    .default("quoted"),
+  priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
+  job_type: z.string().max(100).optional().nullable(),
+  property_id: z.string().uuid(),
+  customer_id: z.string().uuid().optional().nullable(),
+  assigned_to: z.string().uuid().optional().nullable(),
+  primary_customer_id: z.string().uuid().optional().nullable(),
+  primary_property_id: z.string().uuid().optional().nullable(),
+  requires_multiple_properties: z.boolean().default(false),
+  requires_multiple_customers: z.boolean().default(false),
+  scheduled_start: z.date().optional().nullable(),
+  scheduled_end: z.date().optional().nullable(),
+  actual_start: z.date().optional().nullable(),
+  actual_end: z.date().optional().nullable(),
+  total_amount: z.number().int().default(0),
+  paid_amount: z.number().int().default(0),
+  notes: z.string().optional().nullable(),
+  metadata: z.any().optional().nullable(),
+
+  // Template & Workflow
+  template_id: z.string().uuid().optional().nullable(),
+  workflow_stage: z.string().max(100).optional().nullable(),
+  workflow_completed_stages: z.array(z.any()).optional().nullable(),
+  workflow_stage_changed_at: z.date().optional().nullable(),
+
+  // Time Tracking
+  technician_clock_in: z.date().optional().nullable(),
+  technician_clock_out: z.date().optional().nullable(),
+  total_labor_hours: z.number().optional().nullable(),
+  estimated_labor_hours: z.number().optional().nullable(),
+  break_time_minutes: z.number().int().default(0),
+
+  // Photos
+  before_photos: z.array(z.string()).optional().nullable(),
+  during_photos: z.array(z.string()).optional().nullable(),
+  after_photos: z.array(z.string()).optional().nullable(),
+  completion_photos_required: z.boolean().default(false),
+  completion_photos_count: z.number().int().default(0),
+
+  // Customer Interaction
+  customer_signature: z.any().optional().nullable(),
+  customer_approval_status: z
+    .enum(["pending", "approved", "rejected"])
+    .default("pending"),
+  customer_approval_timestamp: z.date().optional().nullable(),
+  customer_notes: z.string().optional().nullable(),
+
+  // Service Tracking
+  job_warranty_info: z.any().optional().nullable(),
+  job_service_agreement_id: z.string().uuid().optional().nullable(),
+  job_recurrence_id: z.string().uuid().optional().nullable(),
+  service_type: z.string().max(100).optional().nullable(),
+
+  // Equipment
+  primary_equipment_id: z.string().uuid().optional().nullable(),
+  equipment_service_history: z.array(z.any()).optional().nullable(),
+  equipment_serviced: z.array(z.any()).optional().nullable(),
+
+  // Dispatch & Routing
+  dispatch_zone: z.string().max(100).optional().nullable(),
+  travel_time_minutes: z.number().int().optional().nullable(),
+  route_order: z.number().int().optional().nullable(),
+  previous_job_id: z.string().uuid().optional().nullable(),
+  next_job_id: z.string().uuid().optional().nullable(),
+
+  // Billing
+  invoice_generated_at: z.date().optional().nullable(),
+  payment_terms: z.string().max(200).optional().nullable(),
+  deposit_amount: z.number().int().default(0),
+  deposit_paid_at: z.date().optional().nullable(),
+  payment_due_date: z.date().optional().nullable(),
+
+  // Quality & Compliance
+  inspection_required: z.boolean().default(false),
+  inspection_completed_at: z.date().optional().nullable(),
+  quality_score: z.number().int().min(0).max(100).optional().nullable(),
+  customer_satisfaction_rating: z
+    .number()
+    .int()
+    .min(1)
+    .max(5)
+    .optional()
+    .nullable(),
+  quality_notes: z.string().optional().nullable(),
+
+  // Internal Tracking
+  internal_priority_score: z.number().int().optional().nullable(),
+  requires_permit: z.boolean().default(false),
+  permit_obtained_at: z.date().optional().nullable(),
+  hazards_identified: z.string().optional().nullable(),
+  safety_notes: z.string().optional().nullable(),
+
+  // AI Fields
+  ai_categories: z.any().optional().nullable(),
+  ai_equipment: z.any().optional().nullable(),
+  ai_service_type: z.string().optional().nullable(),
+  ai_priority_score: z.number().int().optional().nullable(),
+  ai_tags: z.any().optional().nullable(),
+  ai_processed_at: z.date().optional().nullable(),
+});
+
+export const jobUpdateSchema = jobInsertSchema
+  .partial()
+  .omit({ company_id: true });
+
+export const jobSelectSchema = jobInsertSchema.extend({
+  id: z.string().uuid(),
+  created_at: z.date(),
+  updated_at: z.date(),
+  deleted_at: z.date().nullable(),
+  deleted_by: z.string().uuid().nullable(),
+  archived_at: z.date().nullable(),
+  permanent_delete_scheduled_at: z.date().nullable(),
+  search_vector: z.any().nullable(),
+});
+
+// ============================================================================
+// HELPER TYPES
+// ============================================================================
+
+export type JobTimeEntryInsert = z.infer<typeof jobTimeEntryInsertSchema>;
+export type JobTimeEntryUpdate = z.infer<typeof jobTimeEntryUpdateSchema>;
+export type JobTimeEntrySelect = z.infer<typeof jobTimeEntrySelectSchema>;
+
+export type JobPhotoInsert = z.infer<typeof jobPhotoInsertSchema>;
+export type JobPhotoUpdate = z.infer<typeof jobPhotoUpdateSchema>;
+export type JobPhotoSelect = z.infer<typeof jobPhotoSelectSchema>;
+
+export type JobWorkflowStageInsert = z.infer<
+  typeof jobWorkflowStageInsertSchema
+>;
+export type JobWorkflowStageUpdate = z.infer<
+  typeof jobWorkflowStageUpdateSchema
+>;
+export type JobWorkflowStageSelect = z.infer<
+  typeof jobWorkflowStageSelectSchema
+>;
+
+export type JobSignatureInsert = z.infer<typeof jobSignatureInsertSchema>;
+export type JobSignatureUpdate = z.infer<typeof jobSignatureUpdateSchema>;
+export type JobSignatureSelect = z.infer<typeof jobSignatureSelectSchema>;
+
+export type JobInsert = z.infer<typeof jobInsertSchema>;
+export type JobUpdate = z.infer<typeof jobUpdateSchema>;
+export type JobSelect = z.infer<typeof jobSelectSchema>;

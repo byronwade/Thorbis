@@ -70,6 +70,91 @@ const businessHoursSchema = z.object({
 });
 
 /**
+ * Get company information for current user's company
+ *
+ * Returns company data from companies + company_settings tables
+ */
+export async function getCompanyInfo(): Promise<ActionResult<any>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get user's company
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Fetch company data
+    const { data: company, error: companyError } = await supabase
+      .from("companies")
+      .select("*")
+      .eq("id", teamMember.company_id)
+      .single();
+
+    if (companyError) {
+      throw new ActionError(
+        ERROR_MESSAGES.notFound("Company"),
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    // Fetch company settings
+    const { data: settings } = await supabase
+      .from("company_settings")
+      .select("*")
+      .eq("company_id", teamMember.company_id)
+      .single();
+
+    // Return combined data
+    return {
+      id: company.id,
+      name: company.name,
+      slug: company.slug,
+      logo: company.logo,
+      // From company_settings table
+      address: settings?.address || "",
+      city: settings?.city || "",
+      state: settings?.state || "",
+      zipCode: settings?.zip_code || "",
+      hoursOfOperation: settings?.hours_of_operation || null,
+      serviceAreaType: settings?.service_area_type || "locations",
+      serviceRadius: settings?.service_radius || 25,
+      serviceAreas: settings?.service_areas || [],
+      // Note: These fields don't exist in schema yet
+      // Will return empty strings until schema is updated
+      legalName: "",
+      email: "",
+      phone: "",
+      website: "",
+      taxId: "",
+      licenseNumber: "",
+    };
+  });
+}
+
+/**
  * Update company information
  *
  * NOTE: Current schema limitations:

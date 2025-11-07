@@ -620,7 +620,7 @@ export async function reserveStock(
     // This would require a stock_reservations table in the schema
 
     if (data.jobId) {
-      revalidatePath(`/dashboard/work/jobs/${data.jobId}`);
+      revalidatePath(`/dashboard/work/${data.jobId}`);
     }
     revalidatePath("/dashboard/work/materials");
   });
@@ -806,7 +806,7 @@ export async function useReservedStock(
     }
 
     if (jobId) {
-      revalidatePath(`/dashboard/work/jobs/${jobId}`);
+      revalidatePath(`/dashboard/work/${jobId}`);
     }
     revalidatePath("/dashboard/work/materials");
   });

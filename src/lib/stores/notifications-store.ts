@@ -204,17 +204,20 @@ export const useNotificationsStore = create<NotificationsState>()(
         try {
           const state = get();
 
-          // Don't subscribe if already subscribed
+          // Don't subscribe if already subscribed (CRITICAL: Check before any async operations)
           if (state.isSubscribed || state.realtimeChannel) {
             console.log("Already subscribed to notifications");
             return;
           }
 
+          // CRITICAL FIX: Set flag immediately to prevent race condition
+          set({ isSubscribed: true });
+
           const supabase = createClient();
 
           if (!supabase) {
             console.error("Supabase client not configured");
-            set({ error: "Failed to initialize realtime updates" });
+            set({ error: "Failed to initialize realtime updates", isSubscribed: false });
             return;
           }
 
@@ -304,13 +307,13 @@ export const useNotificationsStore = create<NotificationsState>()(
             .subscribe((status) => {
               if (status === "SUBSCRIBED") {
                 console.log("Successfully subscribed to notifications channel");
-                set({ isSubscribed: true });
+                // isSubscribed already set to true above
               } else if (status === "CHANNEL_ERROR") {
                 console.error("Error subscribing to notifications channel");
-                set({ error: "Failed to subscribe to real-time updates" });
+                set({ error: "Failed to subscribe to real-time updates", isSubscribed: false, realtimeChannel: null });
               } else if (status === "TIMED_OUT") {
                 console.error("Subscription timed out");
-                set({ error: "Real-time subscription timed out" });
+                set({ error: "Real-time subscription timed out", isSubscribed: false, realtimeChannel: null });
               }
             });
 

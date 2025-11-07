@@ -65,10 +65,7 @@ export const hvacPreset: LayoutPreset = {
       isDraggable: false,
     }),
 
-    // Row 2: Timeline
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
-
-    // Row 3-4: Main content
+    // Row 2: Main content (Timeline is permanent at top of page)
     createWidget(
       "hvac-equipment",
       "hvac-equipment",
@@ -123,7 +120,6 @@ export const plumbingPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget(
       "plumbing-fixtures",
       "plumbing-fixtures",
@@ -164,7 +160,6 @@ export const electricalPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget(
       "electrical-panels",
       "electrical-panels",
@@ -205,7 +200,6 @@ export const roofingPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget(
       "roofing-materials",
       "roofing-materials",
@@ -247,7 +241,6 @@ export const landscapingPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget(
       "landscape-zones",
       "landscape-zones",
@@ -280,7 +273,6 @@ export const generalContractorPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget("job-details", "job-details", "Job Information", 0, 2, 2, 3),
     createWidget(
       "property-enrichment",
@@ -315,7 +307,6 @@ export const remodelingPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget("photos", "photos", "Photo Gallery", 0, 2, 2, 3),
     createWidget("job-details", "job-details", "Job Information", 2, 2, 2, 3),
     createWidget("change-orders", "change-orders", "Change Orders", 0, 5, 2, 2),
@@ -340,7 +331,6 @@ export const commercialPreset: LayoutPreset = {
       isResizable: false,
       isDraggable: false,
     }),
-    createWidget("timeline", "job-timeline", "Process Timeline", 0, 1, 4, 1),
     createWidget("job-details", "job-details", "Job Information", 0, 2, 2, 3),
     createWidget(
       "property-enrichment",

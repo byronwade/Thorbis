@@ -129,6 +129,7 @@ export interface CreateActivityData {
 export interface ActivityFilters {
   entityType?: EntityType;
   entityId?: string;
+  companyId?: string;
   activityType?: ActivityType | ActivityType[];
   category?: ActivityCategory | ActivityCategory[];
   actorId?: string;
@@ -136,6 +137,7 @@ export interface ActivityFilters {
   endDate?: Date;
   isImportant?: boolean;
   isSystemGenerated?: boolean;
+  limit?: number;
 }
 
 // Activity timeline view model (for UI display)

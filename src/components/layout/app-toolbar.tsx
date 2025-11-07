@@ -36,7 +36,6 @@ export function AppToolbar({
   onToggleRightSidebar,
   isRightSidebarOpen = false,
 }: AppToolbarProps) {
-  // Show toolbar with configuration
   return (
     <header className="sticky top-0 z-40 flex w-full shrink-0 border-border/50 border-b bg-background/90 backdrop-blur-md md:rounded-t-2xl">
       <div className="flex min-h-14 w-full flex-wrap items-center gap-2 px-4 py-2 md:gap-4">

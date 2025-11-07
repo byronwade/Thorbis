@@ -27,9 +27,10 @@ import type { Job } from "@/lib/db/schema";
 
 interface MaterialsListWidgetProps {
   job: Job;
+  materials?: unknown[];
 }
 
-// Mock material type (in production, fetch from job_materials table)
+// Material type from database
 interface Material {
   id: string;
   name: string;
@@ -45,74 +46,23 @@ interface Material {
   notes?: string;
 }
 
-export function MaterialsListWidget({ job }: MaterialsListWidgetProps) {
-  // Mock materials (in production, fetch from database)
-  const materials: Material[] = [
-    {
-      id: "1",
-      name: "3.5 Ton HVAC Unit",
-      sku: "HVAC-35T-001",
-      category: "HVAC Equipment",
-      quantity: 1,
-      unit: "unit",
-      unitCost: 3500.0,
-      totalCost: 3500.0,
-      supplier: "HVAC Supply Co.",
-      status: "received",
-    },
-    {
-      id: "2",
-      name: 'Copper Refrigerant Line Set (3/8" x 3/4")',
-      sku: "COP-LN-3875",
-      category: "Piping",
-      quantity: 25,
-      unit: "ft",
-      unitCost: 12.5,
-      totalCost: 312.5,
-      supplier: "HVAC Supply Co.",
-      status: "in_stock",
-    },
-    {
-      id: "3",
-      name: "R-410A Refrigerant",
-      sku: "REF-410A-25",
-      category: "Refrigerants",
-      quantity: 2,
-      unit: "lbs",
-      unitCost: 45.0,
-      totalCost: 90.0,
-      supplier: "HVAC Supply Co.",
-      status: "low_stock",
-      notes: "Need to order more",
-    },
-    {
-      id: "4",
-      name: "Thermostat (Smart WiFi)",
-      sku: "THERM-WIFI-100",
-      category: "Controls",
-      quantity: 1,
-      unit: "unit",
-      unitCost: 250.0,
-      totalCost: 250.0,
-      supplier: "Tech Distributors",
-      status: "ordered",
-      estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
-    },
-    {
-      id: "5",
-      name: "Condensate Drain Pan",
-      sku: "DRAIN-PAN-24",
-      category: "Drainage",
-      quantity: 1,
-      unit: "unit",
-      unitCost: 85.0,
-      totalCost: 85.0,
-      supplier: "HVAC Supply Co.",
-      status: "out_of_stock",
-      estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      notes: "Back-ordered",
-    },
-  ];
+export function MaterialsListWidget({ job, materials: materialsData = [] }: MaterialsListWidgetProps) {
+  // Transform materials from database (job_line_items)
+  const materials: Material[] = (materialsData as any[])
+    .filter((item) => item.item_type === "material" || item.item_type === "product")
+    .map((item) => ({
+      id: item.id,
+      name: item.name || item.description || "Unnamed Material",
+      sku: item.sku || undefined,
+      category: item.category || "General",
+      quantity: item.quantity || 1,
+      unit: item.unit || "unit",
+      unitCost: (item.unit_price || 0) / 100, // Convert from cents
+      totalCost: (item.total_price || 0) / 100, // Convert from cents
+      supplier: undefined, // TODO: Add supplier to job_line_items
+      status: "in_stock" as const, // TODO: Add inventory status tracking
+      notes: item.notes,
+    }));
 
   const statusConfig = {
     in_stock: {

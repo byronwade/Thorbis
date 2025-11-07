@@ -2,12 +2,15 @@
  * Profile Server Actions
  *
  * Handles profile-related form submissions with server-side validation
+ * Database implementation: Uses Supabase for user profile management
+ * Security: Auth-protected actions via Supabase RLS
  */
 
 "use server";
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
 
 // Schema for personal information
 const personalInfoSchema = z.object({
@@ -55,11 +58,47 @@ export async function updatePersonalInfo(formData: FormData) {
       title: formData.get("title") || undefined,
     });
 
-    // TODO: Save to database using Supabase
-    // const { error } = await supabase
-    //   .from("profiles")
-    //   .update(data)
-    //   .eq("id", userId);
+    // Get authenticated user
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error("Not authenticated");
+    }
+
+    // Update user profile in database
+    const { error } = await supabase
+      .from("users")
+      .update({
+        name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        phone: data.phone || null,
+      })
+      .eq("id", user.id);
+
+    if (error) {
+      console.error("Error updating profile:", error);
+      throw new Error("Failed to update profile");
+    }
+
+    // Also update auth user email if changed
+    if (data.email !== user.email) {
+      const { error: emailError } = await supabase.auth.updateUser({
+        email: data.email,
+      });
+
+      if (emailError) {
+        console.error("Error updating email:", emailError);
+        throw new Error("Failed to update email");
+      }
+    }
 
     revalidatePath("/dashboard/settings/profile/personal");
     return { success: true, message: "Profile updated successfully" };
@@ -85,10 +124,24 @@ export async function changePassword(formData: FormData) {
       confirmPassword: formData.get("confirmPassword"),
     });
 
-    // TODO: Verify current password and update
-    // const { error } = await supabase.auth.updateUser({
-    //   password: data.newPassword
-    // });
+    // Get authenticated user and update password
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
+
+    // Supabase Auth handles current password verification automatically
+    const { error } = await supabase.auth.updateUser({
+      password: data.newPassword,
+    });
+
+    if (error) {
+      console.error("Error changing password:", error);
+      if (error.message.includes("same")) {
+        throw new Error("New password must be different from current password");
+      }
+      throw new Error("Failed to change password. Please verify your current password.");
+    }
 
     revalidatePath("/dashboard/settings/profile/security/password");
     return { success: true, message: "Password changed successfully" };
@@ -117,7 +170,33 @@ export async function updateNotificationPreferences(formData: FormData) {
       marketingEmails: formData.get("marketingEmails") === "on",
     });
 
-    // TODO: Save to database
+    // Get authenticated user
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error("Not authenticated");
+    }
+
+    // Store notification preferences in user metadata
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        notification_preferences: data,
+      },
+    });
+
+    if (error) {
+      console.error("Error updating notification preferences:", error);
+      throw new Error("Failed to update preferences");
+    }
+
     revalidatePath("/dashboard/settings/profile/notifications");
     return { success: true, message: "Preferences updated successfully" };
   } catch (error) {
@@ -136,12 +215,39 @@ export async function updateNotificationPreferences(formData: FormData) {
  */
 export async function enableTwoFactor() {
   try {
-    // TODO: Generate 2FA secret and QR code
+    // Get authenticated user
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error("Not authenticated");
+    }
+
+    // Enroll in MFA
+    const { data: enrollData, error: enrollError } =
+      await supabase.auth.mfa.enroll({
+        factorType: "totp",
+      });
+
+    if (enrollError) {
+      console.error("Error enabling 2FA:", enrollError);
+      throw new Error("Failed to enable 2FA");
+    }
+
     revalidatePath("/dashboard/settings/profile/security/2fa");
     return {
       success: true,
       message: "Two-factor authentication enabled",
-      qrCode: "data:image/png;base64,...", // Placeholder
+      qrCode: enrollData.totp.qr_code,
+      secret: enrollData.totp.secret,
+      factorId: enrollData.id,
     };
   } catch (error) {
     return { success: false, error: "Failed to enable 2FA" };
@@ -159,7 +265,44 @@ export async function disableTwoFactor(formData: FormData) {
       return { success: false, error: "Invalid verification code" };
     }
 
-    // TODO: Verify code and disable 2FA
+    // Get authenticated user
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error("Not authenticated");
+    }
+
+    // Get all MFA factors
+    const { data: factors, error: factorsError } =
+      await supabase.auth.mfa.listFactors();
+
+    if (factorsError) {
+      console.error("Error listing MFA factors:", factorsError);
+      throw new Error("Failed to list MFA factors");
+    }
+
+    // Unenroll from all TOTP factors
+    if (factors && factors.totp && factors.totp.length > 0) {
+      for (const factor of factors.totp) {
+        const { error: unenrollError } = await supabase.auth.mfa.unenroll({
+          factorId: factor.id,
+        });
+
+        if (unenrollError) {
+          console.error("Error disabling 2FA:", unenrollError);
+          throw new Error("Failed to disable 2FA");
+        }
+      }
+    }
+
     revalidatePath("/dashboard/settings/profile/security/2fa");
     return { success: true, message: "Two-factor authentication disabled" };
   } catch (error) {

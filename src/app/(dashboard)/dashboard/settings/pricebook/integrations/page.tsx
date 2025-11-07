@@ -79,13 +79,29 @@ const suppliers: SupplierStatus[] = [
 ];
 
 export default async function SupplierIntegrationsPage() {
-  // TODO: Fetch real supplier statuses from database
-  // const suppliers = await getSupplierStatuses(companyId);
+  // Fetch real supplier integrations from database
+  const { getSupplierIntegrations } = await import("@/actions/suppliers");
+  const result = await getSupplierIntegrations();
 
-  const connectedCount = suppliers.filter(
+  // Transform database format to match UI expectations
+  const dbSuppliers = result.success && result.data ? result.data : [];
+
+  const suppliersData = dbSuppliers.length > 0
+    ? dbSuppliers.map((s: any) => ({
+        id: s.id,
+        name: s.supplier_name,
+        status: s.api_key ? "connected" : "available",
+        lastSync: s.last_sync_at ? new Date(s.last_sync_at).toLocaleString() : null,
+        itemsImported: s.items_imported || 0,
+        errorMessage: s.last_error || null,
+        apiEnabled: !!s.api_key,
+      }))
+    : suppliers; // Fallback to hardcoded list if no DB data
+
+  const connectedCount = suppliersData.filter(
     (s) => s.status === "connected"
   ).length;
-  const totalItems = suppliers.reduce((sum, s) => sum + s.itemsImported, 0);
+  const totalItems = suppliersData.reduce((sum, s) => sum + s.itemsImported, 0);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">

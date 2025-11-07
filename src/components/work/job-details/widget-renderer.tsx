@@ -22,7 +22,6 @@ import { InvoicesWidget } from "./widgets/invoices-widget";
 import { JobCostingWidget } from "./widgets/job-costing-widget";
 import { JobDetailsWidget } from "./widgets/job-details-widget";
 import { JobFinancialsWidget } from "./widgets/job-financials-widget";
-import { JobTimelineWidget } from "./widgets/job-timeline-widget";
 import { LocationMapWidget } from "./widgets/location-map-widget";
 import { MaterialsListWidget } from "./widgets/materials-list-widget";
 import { PaymentTrackerWidget } from "./widgets/payment-tracker-widget";
@@ -77,6 +76,9 @@ interface WidgetRendererProps {
   photos?: unknown[];
   documents?: unknown[];
   communications?: unknown[];
+  teamAssignments?: unknown[];
+  materials?: unknown[];
+  activities?: unknown[];
 }
 
 // ============================================================================
@@ -94,6 +96,9 @@ export function WidgetRenderer({
   photos = [],
   documents = [],
   communications = [],
+  teamAssignments = [],
+  materials = [],
+  activities = [],
 }: WidgetRendererProps) {
   // Map widget types to components
   switch (widget.type) {
@@ -101,9 +106,6 @@ export function WidgetRenderer({
     case "job-header":
       // This is handled separately in the main page
       return <PlaceholderWidget title="Job Header" />;
-
-    case "job-timeline":
-      return <JobTimelineWidget job={job} />;
 
     case "job-financials":
       return <JobFinancialsWidget job={job} />;
@@ -147,7 +149,7 @@ export function WidgetRenderer({
       return <JobCostingWidget job={job} />;
 
     case "profitability":
-      return <ProfitabilityWidget job={job} />;
+      return <ProfitabilityWidget job={job} materials={materials} />;
 
     case "payment-tracker":
       return <PaymentTrackerWidget job={job} />;
@@ -157,10 +159,10 @@ export function WidgetRenderer({
       return <ScheduleWidget job={job} />;
 
     case "team-assignments":
-      return <TeamAssignmentsWidget job={job} />;
+      return <TeamAssignmentsWidget job={job} teamAssignments={teamAssignments} />;
 
     case "materials-list":
-      return <MaterialsListWidget job={job} />;
+      return <MaterialsListWidget job={job} materials={materials} />;
 
     case "equipment-list":
       return <PlaceholderWidget title="Equipment List" />;
@@ -184,7 +186,7 @@ export function WidgetRenderer({
       );
 
     case "activity-log":
-      return <ActivityLogWidget job={job} />;
+      return <ActivityLogWidget job={job} activities={activities} />;
 
     // Industry-specific
     case "hvac-equipment":

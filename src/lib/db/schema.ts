@@ -7,9 +7,27 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-const isProduction = process.env.NODE_ENV === "production";
+// Production Supabase (PostgreSQL) only - SQLite support removed
+const isProduction = true; // Always use PostgreSQL/Supabase
+
+// Type-safe fallback for SQLite (will never be used in production)
+// This allows the code to compile but throws if SQLite is ever attempted
+const sqliteTable = (...args: any[]): any => {
+  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+};
+const sqliteInteger = (...args: any[]): any => {
+  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+};
+const sqliteText = (...args: any[]): any => {
+  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+};
+const text = (...args: any[]): any => {
+  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+};
+const integer = (...args: any[]): any => {
+  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+};
 
 /**
  * Users table - works with both SQLite (dev) and PostgreSQL (prod)

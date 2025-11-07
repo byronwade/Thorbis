@@ -14,6 +14,7 @@
 import { render } from "@react-email/components";
 import type { ReactElement } from "react";
 import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
 import type {
   EmailSendResult,
   EmailTemplate as EmailTemplateEnum,
@@ -103,8 +104,26 @@ export async function sendEmail({
     if (error) {
       console.error("Failed to send email:", error);
 
-      // TODO: Log failed email to database for retry
-      // await logEmailToDatabase({ ... status: "failed" })
+      // Log failed email to database for retry queue
+      try {
+        const supabase = await createClient();
+        if (supabase) {
+          await supabase.from("email_logs").insert({
+            to: Array.isArray(validatedData.to) ? validatedData.to.join(", ") : validatedData.to,
+            from: emailConfig.from,
+            subject: validatedData.subject,
+            html_body: html,
+            status: "failed",
+            error_message: error.message || "Unknown error",
+            metadata: { template: templateType, tags },
+            retry_count: 0,
+            max_retries: 3,
+            next_retry_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+          });
+        }
+      } catch (logError) {
+        console.error("Failed to log email error:", logError);
+      }
 
       return {
         success: false,
@@ -112,8 +131,25 @@ export async function sendEmail({
       };
     }
 
-    // TODO: Log successful email to database
-    // await logEmailToDatabase({ ... status: "sent" })
+    // Log successful email to database
+    try {
+      const supabase = await createClient();
+      if (supabase) {
+        await supabase.from("email_logs").insert({
+          to: Array.isArray(validatedData.to) ? validatedData.to.join(", ") : validatedData.to,
+          from: emailConfig.from,
+          subject: validatedData.subject,
+          html_body: html,
+          status: "sent",
+          message_id: data?.id,
+          metadata: { template: templateType, tags },
+          sent_at: new Date().toISOString(),
+        });
+      }
+    } catch (logError) {
+      console.error("Failed to log successful email:", logError);
+      // Don't throw - email was sent successfully even if logging failed
+    }
 
     return {
       success: true,

@@ -2,22 +2,107 @@
  * Invoices Page - Server Component
  *
  * Performance optimizations:
- * - Server Component calculates statistics before rendering (no loading flash)
- * - Uses established DataTablePageHeader pattern
- * - Only InvoicesTable component is client-side for sorting/filtering/pagination
+ * - Server Component fetches data before rendering (no loading flash)
+ * - Real-time data from Supabase
+ * - Only InvoicesTable component is client-side for interactivity
  * - Better SEO and initial page load performance
- * - Follows consistent design system with other work pages
+ * - Matches jobs page structure: stats pipeline + table
  */
 
-import { Download, FileText, Plus, Send, Upload } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
-import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
+import { notFound } from "next/navigation";
+import { InvoicesTable, type Invoice } from "@/components/work/invoices-table";
+import { InvoiceStatusPipeline } from "@/components/invoices/invoice-status-pipeline";
+import { createClient } from "@/lib/supabase/server";
 
-// Mock data - replace with real data from database
-const mockInvoices: Invoice[] = [
+// Configuration constants
+const MAX_INVOICES_PER_PAGE = 100;
+
+export default async function InvoicesPage() {
+  const supabase = await createClient();
+
+  if (!supabase) {
+    return notFound();
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return notFound();
+  }
+
+  // Get user's company
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!teamMember?.company_id) {
+    return notFound();
+  }
+
+  // Fetch invoices from Supabase with customer details
+  const { data: invoicesRaw, error } = await supabase
+    .from("invoices")
+    .select(`
+      *,
+      customer:customers!customer_id(
+        first_name,
+        last_name,
+        display_name,
+        email
+      )
+    `)
+    .eq("company_id", teamMember.company_id)
+    .order("created_at", { ascending: false })
+    .limit(MAX_INVOICES_PER_PAGE);
+
+  if (error) {
+    const errorMessage = error.message || JSON.stringify(error) || "Unknown database error";
+    throw new Error(`Failed to load invoices: ${errorMessage}`);
+  }
+
+  // Transform for table component
+  const invoices: Invoice[] = (invoicesRaw || []).map((inv: any) => ({
+    id: inv.id,
+    invoiceNumber: inv.invoice_number,
+    customer: inv.customer?.display_name ||
+              `${inv.customer?.first_name || ""} ${inv.customer?.last_name || ""}`.trim() ||
+              "Unknown Customer",
+    date: new Date(inv.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    dueDate: inv.due_date
+      ? new Date(inv.due_date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "-",
+    amount: inv.total_amount,
+    status: inv.status as "paid" | "pending" | "draft" | "overdue",
+  }));
+
+  return (
+    <>
+      {/* Invoice Status Pipeline - Like JobStatusPipeline */}
+      <InvoiceStatusPipeline invoices={invoices} />
+
+      {/* Invoices Table - Client component handles sorting, filtering, pagination */}
+      <div>
+        <InvoicesTable itemsPerPage={50} invoices={invoices} />
+      </div>
+    </>
+  );
+}
+
+// Old mock data below - will be removed
+const OLD_mockInvoices = [
   {
     id: "1",
     invoiceNumber: "INV-2025-001",
@@ -82,177 +167,3 @@ const mockInvoices: Invoice[] = [
     status: "pending",
   },
 ];
-
-export default function InvoicesPage() {
-  // Calculate stats from data
-  const totalInvoices = mockInvoices.length;
-  const totalAmount = mockInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-  const paidAmount = mockInvoices
-    .filter((inv) => inv.status === "paid")
-    .reduce((sum, inv) => sum + inv.amount, 0);
-  const pendingAmount = mockInvoices
-    .filter((inv) => inv.status === "pending")
-    .reduce((sum, inv) => sum + inv.amount, 0);
-  const overdueAmount = mockInvoices
-    .filter((inv) => inv.status === "overdue")
-    .reduce((sum, inv) => sum + inv.amount, 0);
-  const draftCount = mockInvoices.filter(
-    (inv) => inv.status === "draft"
-  ).length;
-
-  return (
-    <div className="flex h-full flex-col">
-      <DataTablePageHeader
-        actions={
-          <>
-            <Button
-              className="md:hidden"
-              size="sm"
-              title="Import"
-              variant="outline"
-            >
-              <Upload className="size-4" />
-            </Button>
-            <Button
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Upload className="mr-2 size-4" />
-              Import
-            </Button>
-
-            <Button
-              className="md:hidden"
-              size="sm"
-              title="Export"
-              variant="outline"
-            >
-              <Download className="size-4" />
-            </Button>
-            <Button
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Download className="mr-2 size-4" />
-              Export
-            </Button>
-
-            <Button
-              className="md:hidden"
-              size="sm"
-              title="Send Batch"
-              variant="outline"
-            >
-              <Send className="size-4" />
-            </Button>
-            <Button
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Send className="mr-2 size-4" />
-              Send Batch
-            </Button>
-
-            <Button asChild size="sm">
-              <Link href="/dashboard/work/invoices/new">
-                <Plus className="mr-2 size-4" />
-                <span className="hidden sm:inline">New Invoice</span>
-                <span className="sm:hidden">New</span>
-              </Link>
-            </Button>
-          </>
-        }
-        description="Create, track, and manage customer invoices and payments"
-        stats={
-          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">
-                  <div className="flex items-center gap-2">
-                    <FileText className="size-4 text-muted-foreground" />
-                    Total Invoiced
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">
-                  ${(totalAmount / 100).toFixed(2)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {totalInvoices} invoices
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Paid</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl text-green-600">
-                  ${(paidAmount / 100).toFixed(2)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {mockInvoices.filter((inv) => inv.status === "paid").length}{" "}
-                  invoices
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Pending</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl text-yellow-600">
-                  ${(pendingAmount / 100).toFixed(2)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {
-                    mockInvoices.filter((inv) => inv.status === "pending")
-                      .length
-                  }{" "}
-                  invoices
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Overdue</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl text-red-600">
-                  ${(overdueAmount / 100).toFixed(2)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {
-                    mockInvoices.filter((inv) => inv.status === "overdue")
-                      .length
-                  }{" "}
-                  invoices
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Drafts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl text-muted-foreground">
-                  {draftCount}
-                </div>
-                <p className="text-muted-foreground text-xs">Unsent invoices</p>
-              </CardContent>
-            </Card>
-          </div>
-        }
-        title="Invoices"
-      />
-
-      <div className="flex-1 overflow-auto">
-        <InvoicesTable invoices={mockInvoices} itemsPerPage={50} />
-      </div>
-    </div>
-  );
-}

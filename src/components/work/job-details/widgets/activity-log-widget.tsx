@@ -29,6 +29,7 @@ import type { Job } from "@/lib/db/schema";
 
 interface ActivityLogWidgetProps {
   job: Job;
+  activities?: unknown[];
 }
 
 // Activity types and their icons/colors
@@ -82,66 +83,36 @@ interface Activity {
   metadata?: Record<string, unknown>;
 }
 
-export function ActivityLogWidget({ job }: ActivityLogWidgetProps) {
-  // Mock activities (in production, fetch from activities table)
-  const activities: Activity[] = [
-    {
-      id: "7",
-      type: "communication",
-      title: "Email sent to customer",
-      description: "Invoice #INV-2025-001 sent",
-      user: "Sarah Johnson",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    },
-    {
-      id: "6",
-      type: "work",
-      title: "Work completed",
-      description: "HVAC unit installation finished",
-      user: "Mike Rodriguez",
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-    },
-    {
-      id: "5",
-      type: "payment",
-      title: "Payment received",
-      description: "Progress payment of $5,000 deposited",
-      user: "System",
-      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    },
-    {
-      id: "4",
-      type: "schedule",
-      title: "Schedule updated",
-      description: "Completion date moved to Feb 4, 2025",
-      user: "David Chen",
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    },
-    {
-      id: "3",
-      type: "document",
-      title: "Photo uploaded",
-      description: "Before installation - 3 photos",
-      user: "Mike Rodriguez",
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    },
-    {
-      id: "2",
-      type: "status_change",
-      title: "Status changed to In Progress",
-      description: "Work started on site",
-      user: "Mike Rodriguez",
-      timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
-    },
-    {
-      id: "1",
-      type: "assignment",
-      title: "Technician assigned",
-      description: "Mike Rodriguez assigned to job",
-      user: "David Chen",
-      timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-    },
-  ];
+export function ActivityLogWidget({ job, activities: activitiesData = [] }: ActivityLogWidgetProps) {
+  // Transform activities from database
+  const activities: Activity[] = (activitiesData as any[]).map((activity) => {
+    const user = activity.user
+      ? (Array.isArray(activity.user) ? activity.user[0] : activity.user)
+      : null;
+
+    const userName = user
+      ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+      : "System";
+
+    // Map activity_type from database to our widget types
+    let type: ActivityType = "work";
+    if (activity.activity_type?.includes("status")) type = "status_change";
+    else if (activity.activity_type?.includes("payment")) type = "payment";
+    else if (activity.activity_type?.includes("schedule")) type = "schedule";
+    else if (activity.activity_type?.includes("communication")) type = "communication";
+    else if (activity.activity_type?.includes("document")) type = "document";
+    else if (activity.activity_type?.includes("assign")) type = "assignment";
+
+    return {
+      id: activity.id,
+      type,
+      title: activity.title || activity.activity_type || "Activity",
+      description: activity.description || activity.details,
+      user: userName,
+      timestamp: new Date(activity.created_at),
+      metadata: activity.metadata,
+    };
+  });
 
   function formatTimestamp(date: Date): string {
     const now = new Date();

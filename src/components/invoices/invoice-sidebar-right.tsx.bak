@@ -70,40 +70,40 @@ export function InvoiceSidebarRight() {
   const loadPreset = useInvoiceLayoutStore((state) => state.loadPreset);
   const updateColors = useInvoiceLayoutStore((state) => state.updateColors);
   const updateTypography = useInvoiceLayoutStore(
-    (state) => state.updateTypography
+    (state) => state.updateTypography,
   );
   const updateSpacing = useInvoiceLayoutStore((state) => state.updateSpacing);
   const updateLogo = useInvoiceLayoutStore((state) => state.updateLogo);
   const updateLogoPosition = useInvoiceLayoutStore(
-    (state) => state.updateLogoPosition
+    (state) => state.updateLogoPosition,
   );
   const updateLogoSize = useInvoiceLayoutStore((state) => state.updateLogoSize);
   const updateBorderSettings = useInvoiceLayoutStore(
-    (state) => state.updateBorderSettings
+    (state) => state.updateBorderSettings,
   );
   const resetToDefault = useInvoiceLayoutStore((state) => state.resetToDefault);
 
   // New store actions
   const updateWatermark = useInvoiceLayoutStore(
-    (state) => state.updateWatermark
+    (state) => state.updateWatermark,
   );
   const updateQRCode = useInvoiceLayoutStore((state) => state.updateQRCode);
   const updatePaymentLink = useInvoiceLayoutStore(
-    (state) => state.updatePaymentLink
+    (state) => state.updatePaymentLink,
   );
   const updateCurrency = useInvoiceLayoutStore((state) => state.updateCurrency);
   const updateDigitalSignature = useInvoiceLayoutStore(
-    (state) => state.updateDigitalSignature
+    (state) => state.updateDigitalSignature,
   );
   const updateVAT = useInvoiceLayoutStore((state) => state.updateVAT);
   const updatePageSettings = useInvoiceLayoutStore(
-    (state) => state.updatePageSettings
+    (state) => state.updatePageSettings,
   );
   const updateColumnLayout = useInvoiceLayoutStore(
-    (state) => state.updateColumnLayout
+    (state) => state.updateColumnLayout,
   );
   const updateIndustryType = useInvoiceLayoutStore(
-    (state) => state.updateIndustryType
+    (state) => state.updateIndustryType,
   );
 
   return (
@@ -465,7 +465,7 @@ export function InvoiceSidebarRight() {
                   updateBorderSettings(
                     customization.showBorder,
                     value,
-                    customization.shadowEnabled
+                    customization.shadowEnabled,
                   )
                 }
                 step={1}
@@ -499,7 +499,7 @@ export function InvoiceSidebarRight() {
                     checked,
                     customization.watermarkText,
                     customization.watermarkOpacity,
-                    customization.watermarkPosition
+                    customization.watermarkPosition,
                   )
                 }
               />
@@ -519,7 +519,7 @@ export function InvoiceSidebarRight() {
                         customization.watermarkEnabled,
                         e.target.value,
                         customization.watermarkOpacity,
-                        customization.watermarkPosition
+                        customization.watermarkPosition,
                       )
                     }
                     placeholder="DRAFT"
@@ -541,7 +541,7 @@ export function InvoiceSidebarRight() {
                         customization.watermarkEnabled,
                         customization.watermarkText,
                         value,
-                        customization.watermarkPosition
+                        customization.watermarkPosition,
                       )
                     }
                     step={5}
@@ -562,7 +562,7 @@ export function InvoiceSidebarRight() {
                         customization.watermarkEnabled,
                         customization.watermarkText,
                         customization.watermarkOpacity,
-                        value as "center" | "diagonal" | "top-right"
+                        value as "center" | "diagonal" | "top-right",
                       )
                     }
                     value={customization.watermarkPosition}
@@ -602,7 +602,7 @@ export function InvoiceSidebarRight() {
                   updateQRCode(
                     checked,
                     customization.qrCodeType,
-                    customization.qrCodeData
+                    customization.qrCodeData,
                   )
                 }
               />
@@ -619,7 +619,7 @@ export function InvoiceSidebarRight() {
                       updateQRCode(
                         customization.qrCodeEnabled,
                         value as "payment-link" | "venmo" | "crypto" | "custom",
-                        customization.qrCodeData
+                        customization.qrCodeData,
                       )
                     }
                     value={customization.qrCodeType}
@@ -647,7 +647,7 @@ export function InvoiceSidebarRight() {
                       updateQRCode(
                         customization.qrCodeEnabled,
                         customization.qrCodeType,
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     placeholder="Payment URL or data"
@@ -683,7 +683,7 @@ export function InvoiceSidebarRight() {
                   onChange={(e) =>
                     updatePaymentLink(
                       customization.paymentLinkEnabled,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   placeholder="https://pay.example.com"
@@ -714,7 +714,7 @@ export function InvoiceSidebarRight() {
                     value,
                     customization.currencySymbol,
                     customization.currencyPosition,
-                    customization.showCurrencyCode
+                    customization.showCurrencyCode,
                   )
                 }
                 value={customization.currency}
@@ -748,7 +748,7 @@ export function InvoiceSidebarRight() {
                     customization.currency,
                     e.target.value,
                     customization.currencyPosition,
-                    customization.showCurrencyCode
+                    customization.showCurrencyCode,
                   )
                 }
                 placeholder="$"
@@ -766,7 +766,7 @@ export function InvoiceSidebarRight() {
                     customization.currency,
                     customization.currencySymbol,
                     value as "before" | "after",
-                    customization.showCurrencyCode
+                    customization.showCurrencyCode,
                   )
                 }
                 value={customization.currencyPosition}
@@ -793,7 +793,7 @@ export function InvoiceSidebarRight() {
                     customization.currency,
                     customization.currencySymbol,
                     customization.currencyPosition,
-                    checked
+                    checked,
                   )
                 }
               />
@@ -820,7 +820,7 @@ export function InvoiceSidebarRight() {
                 onCheckedChange={(checked) =>
                   updateDigitalSignature(
                     checked,
-                    customization.digitalSignatureImage
+                    customization.digitalSignatureImage,
                   )
                 }
               />
@@ -837,7 +837,7 @@ export function InvoiceSidebarRight() {
                   onChange={(e) =>
                     updateDigitalSignature(
                       customization.digitalSignatureEnabled,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   placeholder="https://example.com/signature.png"
@@ -860,7 +860,7 @@ export function InvoiceSidebarRight() {
                   updateVAT(
                     checked,
                     customization.vatNumber,
-                    customization.vatRate
+                    customization.vatRate,
                   )
                 }
               />
@@ -879,7 +879,7 @@ export function InvoiceSidebarRight() {
                       updateVAT(
                         customization.vatEnabled,
                         e.target.value,
-                        customization.vatRate
+                        customization.vatRate,
                       )
                     }
                     placeholder="GB123456789"
@@ -898,7 +898,7 @@ export function InvoiceSidebarRight() {
                       updateVAT(
                         customization.vatEnabled,
                         customization.vatNumber,
-                        Number.parseFloat(e.target.value) || 0
+                        Number.parseFloat(e.target.value) || 0,
                       )
                     }
                     placeholder="20"
@@ -930,7 +930,7 @@ export function InvoiceSidebarRight() {
                     value as "A4" | "Letter" | "Legal" | "A5",
                     customization.pageOrientation,
                     customization.showPageNumbers,
-                    customization.pageNumberPosition
+                    customization.pageNumberPosition,
                   )
                 }
                 value={customization.pageSize}
@@ -957,7 +957,7 @@ export function InvoiceSidebarRight() {
                     customization.pageSize,
                     value as "portrait" | "landscape",
                     customization.showPageNumbers,
-                    customization.pageNumberPosition
+                    customization.pageNumberPosition,
                   )
                 }
                 value={customization.pageOrientation}
@@ -984,7 +984,7 @@ export function InvoiceSidebarRight() {
                     customization.pageSize,
                     customization.pageOrientation,
                     checked,
-                    customization.pageNumberPosition
+                    customization.pageNumberPosition,
                   )
                 }
               />
@@ -1001,7 +1001,7 @@ export function InvoiceSidebarRight() {
                       customization.pageSize,
                       customization.pageOrientation,
                       customization.showPageNumbers,
-                      value as "top" | "bottom"
+                      value as "top" | "bottom",
                     )
                   }
                   value={customization.pageNumberPosition}
@@ -1035,7 +1035,7 @@ export function InvoiceSidebarRight() {
               <Select
                 onValueChange={(value) =>
                   updateColumnLayout(
-                    value as "single" | "two-column" | "three-column"
+                    value as "single" | "two-column" | "three-column",
                   )
                 }
                 value={customization.columnLayout}
@@ -1075,7 +1075,7 @@ export function InvoiceSidebarRight() {
                       | "retail"
                       | "healthcare"
                       | "tech"
-                      | "general"
+                      | "general",
                   )
                 }
                 value={customization.industryType || "general"}

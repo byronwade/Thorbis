@@ -28,7 +28,8 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/session";
 
-export type BillingActionResult = {
+// Internal return type (not exported - Next.js 16 "use server" restriction)
+type BillingActionResult = {
   success: boolean;
   error?: string;
   url?: string;

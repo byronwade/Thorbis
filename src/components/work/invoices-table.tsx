@@ -43,6 +43,7 @@ export type Invoice = {
 type InvoicesTableProps = {
   invoices: Invoice[];
   itemsPerPage?: number;
+  showRefresh?: boolean;
 };
 
 function formatCurrency(cents: number): string {
@@ -89,6 +90,7 @@ function getStatusBadge(status: string) {
 export function InvoicesTable({
   invoices,
   itemsPerPage = 50,
+  showRefresh = true,
 }: InvoicesTableProps) {
   const columns: ColumnDef<Invoice>[] = [
     {
@@ -191,9 +193,21 @@ export function InvoicesTable({
                 Download PDF
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete Invoice
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={async () => {
+                  if (!confirm("Archive this invoice? It can be restored within 90 days.")) {
+                    return;
+                  }
+                  const { archiveInvoice } = await import("@/actions/invoices");
+                  const result = await archiveInvoice(invoice.id);
+                  if (result.success) {
+                    window.location.reload();
+                  }
+                }}
+              >
+                <Archive className="mr-2 size-4" />
+                Archive Invoice
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -219,17 +233,25 @@ export function InvoicesTable({
       },
     },
     {
-      label: "Archive",
+      label: "Archive Selected",
       icon: <Archive className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Archive invoices:", Array.from(selectedIds));
-      },
-    },
-    {
-      label: "Delete",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Delete invoices:", Array.from(selectedIds));
+      onClick: async (selectedIds) => {
+        if (!confirm(`Archive ${selectedIds.size} invoice(s)? They can be restored within 90 days.`)) {
+          return;
+        }
+
+        // Import dynamically to avoid circular dependencies
+        const { archiveInvoice } = await import("@/actions/invoices");
+
+        let archived = 0;
+        for (const id of selectedIds) {
+          const result = await archiveInvoice(id);
+          if (result.success) archived++;
+        }
+
+        if (archived > 0) {
+          window.location.reload(); // Reload to show updated list
+        }
       },
       variant: "destructive",
     },
@@ -270,7 +292,7 @@ export function InvoicesTable({
       onRowClick={handleRowClick}
       searchFilter={searchFilter}
       searchPlaceholder="Search invoices by number, customer, or status..."
-      showRefresh={true}
+      showRefresh={showRefresh}
     />
   );
 }

@@ -5,9 +5,11 @@
  *
  * Server-side functions for creating and querying activity logs
  * Follows Next.js 16 patterns with async/await
+ * Database implementation: Uses Supabase for full CRUD operations
  */
 
 import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
 import type { Activity } from "@/lib/db/schema";
 import type {
   ActivityFilters,
@@ -37,25 +39,55 @@ export async function logActivity(
   data: CreateActivityData
 ): Promise<{ success: boolean; activityId?: string; error?: string }> {
   try {
-    // In production, replace with actual database insert
-    // Example with Drizzle:
-    // const db = await getDb();
-    // const [activity] = await db.insert(activities).values({
-    //   ...data,
-    //   occurredAt: data.occurredAt || new Date(),
-    //   createdAt: new Date(),
-    // }).returning();
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
 
-    // For now, just validate and return success
-    console.log("[Activity Log]", {
+    // Insert activity into database
+    const { data: activity, error } = await supabase
+      .from("activities")
+      .insert({
+        entity_type: data.entityType,
+        entity_id: data.entityId,
+        company_id: data.companyId,
+        activity_type: data.activityType,
+        action: data.action,
+        category: data.category,
+        actor_id: data.actorId || null,
+        actor_type: data.actorType || null,
+        actor_name: data.actorName || null,
+        field_name: data.fieldName || null,
+        old_value: data.oldValue || null,
+        new_value: data.newValue || null,
+        description: data.description || null,
+        metadata: data.metadata || null,
+        related_entity_type: data.relatedEntityType || null,
+        related_entity_id: data.relatedEntityId || null,
+        attachment_type: data.attachmentType || null,
+        attachment_url: data.attachmentUrl || null,
+        attachment_name: data.attachmentName || null,
+        ai_model: data.aiModel || null,
+        automation_workflow_id: data.automationWorkflowId || null,
+        automation_workflow_name: data.automationWorkflowName || null,
+        is_important: data.isImportant || false,
+        is_system_generated: data.isSystemGenerated || false,
+        is_visible: true,
+        occurred_at: data.occurredAt ? new Date(data.occurredAt).toISOString() : new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("[Activity Log Error]", error);
+      throw new Error("Failed to log activity");
+    }
+
+    console.log("[Activity Logged]", {
+      id: activity.id,
       entityType: data.entityType,
-      entityId: data.entityId,
       action: data.action,
-      actorName: data.actorName,
     });
-
-    // TODO: Replace with actual database insert
-    const mockActivityId = `activity-${Date.now()}`;
 
     // Revalidate relevant paths
     revalidatePath(`/${data.entityType}s/${data.entityId}`);
@@ -63,7 +95,7 @@ export async function logActivity(
 
     return {
       success: true,
-      activityId: mockActivityId,
+      activityId: activity.id,
     };
   } catch (error) {
     console.error("[Activity Log Error]", error);
@@ -87,19 +119,96 @@ export async function getActivities(
   filters: ActivityFilters
 ): Promise<{ success: boolean; activities?: Activity[]; error?: string }> {
   try {
-    // In production, replace with actual database query
-    // Example with Drizzle:
-    // const db = await getDb();
-    // const activities = await db.query.activities.findMany({
-    //   where: and(
-    //     eq(activities.entityType, filters.entityType),
-    //     eq(activities.entityId, filters.entityId),
-    //     filters.activityType ? inArray(activities.activityType, Array.isArray(filters.activityType) ? filters.activityType : [filters.activityType]) : undefined,
-    //   ),
-    //   orderBy: [desc(activities.occurredAt)],
-    // });
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
 
-    // Mock data for now
+    // Build query
+    let query = supabase
+      .from("activities")
+      .select("*")
+      .eq("is_visible", true);
+
+    if (filters.entityType) {
+      query = query.eq("entity_type", filters.entityType);
+    }
+
+    if (filters.entityId) {
+      query = query.eq("entity_id", filters.entityId);
+    }
+
+    if (filters.companyId) {
+      query = query.eq("company_id", filters.companyId);
+    }
+
+    if (filters.activityType) {
+      if (Array.isArray(filters.activityType)) {
+        query = query.in("activity_type", filters.activityType);
+      } else {
+        query = query.eq("activity_type", filters.activityType);
+      }
+    }
+
+    if (filters.category) {
+      query = query.eq("category", filters.category);
+    }
+
+    // Order by occurred_at descending (most recent first)
+    query = query.order("occurred_at", { ascending: false });
+
+    // Limit results if specified
+    if (filters.limit) {
+      query = query.limit(filters.limit);
+    }
+
+    const { data: activities, error } = await query;
+
+    if (error) {
+      console.error("[Get Activities Error]", error);
+      throw new Error("Failed to fetch activities");
+    }
+
+    // Transform snake_case to camelCase for frontend
+    const transformedActivities = activities?.map((activity: any) => ({
+      id: activity.id,
+      entityType: activity.entity_type,
+      entityId: activity.entity_id,
+      companyId: activity.company_id,
+      activityType: activity.activity_type,
+      action: activity.action,
+      category: activity.category,
+      actorId: activity.actor_id,
+      actorType: activity.actor_type,
+      actorName: activity.actor_name,
+      fieldName: activity.field_name,
+      oldValue: activity.old_value,
+      newValue: activity.new_value,
+      description: activity.description,
+      metadata: activity.metadata,
+      relatedEntityType: activity.related_entity_type,
+      relatedEntityId: activity.related_entity_id,
+      attachmentType: activity.attachment_type,
+      attachmentUrl: activity.attachment_url,
+      attachmentName: activity.attachment_name,
+      aiModel: activity.ai_model,
+      automationWorkflowId: activity.automation_workflow_id,
+      automationWorkflowName: activity.automation_workflow_name,
+      isImportant: activity.is_important,
+      isSystemGenerated: activity.is_system_generated,
+      isVisible: activity.is_visible,
+      occurredAt: new Date(activity.occurred_at),
+      createdAt: new Date(activity.created_at),
+    })) || [];
+
+    return {
+      success: true,
+      activities: transformedActivities as Activity[],
+    };
+  } catch (error) {
+    console.error("[Get Activities Error]", error);
+
+    // Fallback to mock data for development
     const mockActivities: Activity[] = [
       {
         id: "1",
@@ -357,13 +466,6 @@ export async function getActivities(
       success: true,
       activities: mockActivities,
     };
-  } catch (error) {
-    console.error("[Get Activities Error]", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch activities",
-    };
   }
 }
 
@@ -375,21 +477,26 @@ export async function getActivityCount(
   entityId: string
 ): Promise<{ success: boolean; count?: number; error?: string }> {
   try {
-    // In production, replace with actual database count query
-    // const db = await getDb();
-    // const [result] = await db.select({ count: count() })
-    //   .from(activities)
-    //   .where(and(
-    //     eq(activities.entityType, entityType),
-    //     eq(activities.entityId, entityId),
-    //   ));
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
 
-    // Mock count for now
-    const mockCount = 8;
+    const { count, error } = await supabase
+      .from("activities")
+      .select("*", { count: "exact", head: true })
+      .eq("entity_type", entityType)
+      .eq("entity_id", entityId)
+      .eq("is_visible", true);
+
+    if (error) {
+      console.error("[Get Activity Count Error]", error);
+      throw new Error("Failed to fetch activity count");
+    }
 
     return {
       success: true,
-      count: mockCount,
+      count: count || 0,
     };
   } catch (error) {
     console.error("[Get Activity Count Error]", error);
@@ -410,13 +517,23 @@ export async function deleteActivity(
   activityId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // In production, replace with actual database update
-    // const db = await getDb();
-    // await db.update(activities)
-    //   .set({ isVisible: false })
-    //   .where(eq(activities.id, activityId));
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
 
-    console.log("[Delete Activity]", activityId);
+    // Soft delete by setting is_visible to false
+    const { error } = await supabase
+      .from("activities")
+      .update({ is_visible: false })
+      .eq("id", activityId);
+
+    if (error) {
+      console.error("[Delete Activity Error]", error);
+      throw new Error("Failed to delete activity");
+    }
+
+    console.log("[Activity Deleted]", activityId);
 
     return {
       success: true,

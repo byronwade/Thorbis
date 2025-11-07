@@ -108,21 +108,29 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
   // Refs
   const clientRef = useRef<TelnyxRTC | null>(null);
   const activeCallRef = useRef<Call | null>(null);
+  const optionsRef = useRef(options);
+
+  // Keep options ref up to date
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   /**
    * Initialize WebRTC client
+   * Uses ref to avoid circular dependencies
    */
   const initializeClient = useCallback(() => {
     if (clientRef.current) {
       return clientRef.current;
     }
 
+    const currentOptions = optionsRef.current;
     const client = new TelnyxRTC({
-      login: options.username,
-      password: options.password,
+      login: currentOptions.username,
+      password: currentOptions.password,
       ringtoneFile: undefined, // Use browser default
       ringbackFile: undefined,
-      debug: options.debug || false,
+      debug: currentOptions.debug || false,
     });
 
     // Handle ready event
@@ -180,12 +188,12 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
 
         // Notify parent component
         if (call.direction === "inbound" && call.state === "ringing") {
-          options.onIncomingCall?.(callInfo);
+          optionsRef.current.onIncomingCall?.(callInfo);
         }
 
         // Handle call ended
         if (call.state === "destroy" || call.state === "hangup") {
-          options.onCallEnded?.(callInfo);
+          optionsRef.current.onCallEnded?.(callInfo);
           setCurrentCall(null);
           activeCallRef.current = null;
         }
@@ -194,7 +202,7 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
 
     clientRef.current = client;
     return client;
-  }, [options]);
+  }, []); // ✅ No dependencies - uses ref
 
   /**
    * Connect to Telnyx
@@ -399,23 +407,36 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
 
   /**
    * Auto-connect on mount if enabled
+   * Uses ref pattern to prevent infinite loop from dependency chain
    */
   useEffect(() => {
-    if (options.autoConnect) {
-      connect();
-    }
-
-    // Load audio devices
+    // Load audio devices on mount
     loadAudioDevices();
 
     // Listen for device changes
-    navigator.mediaDevices.addEventListener("devicechange", loadAudioDevices);
+    const deviceChangeHandler = () => {
+      loadAudioDevices();
+    };
+    navigator.mediaDevices.addEventListener("devicechange", deviceChangeHandler);
 
     return () => {
-      disconnect();
-      navigator.mediaDevices.removeEventListener("devicechange", loadAudioDevices);
+      navigator.mediaDevices.removeEventListener("devicechange", deviceChangeHandler);
     };
-  }, [options.autoConnect, connect, disconnect, loadAudioDevices]);
+  }, []); // ✅ Runs once on mount only
+
+  /**
+   * Separate effect for auto-connect to prevent dependency loop
+   */
+  useEffect(() => {
+    if (optionsRef.current.autoConnect) {
+      connect();
+    }
+
+    return () => {
+      // Cleanup on unmount
+      disconnect();
+    };
+  }, []); // ✅ Runs once - uses ref for options
 
   return {
     isConnected,
