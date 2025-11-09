@@ -13,7 +13,7 @@
 
 import { formatDistance } from "date-fns";
 import { Archive, FileText, Lock, Pin, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createJobNote, deleteJobNote, getJobNotes } from "@/actions/job-notes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,19 +56,8 @@ export function JobNotesTable({ jobId, triggerAdd }: JobNotesTableProps) {
 
   const pageSize = 20;
 
-  // Load notes
-  useEffect(() => {
-    loadNotes();
-  }, [jobId, filterType, page]);
-
-  // Respond to external trigger
-  useEffect(() => {
-    if (triggerAdd && triggerAdd > 0) {
-      setShowAddNote(true);
-    }
-  }, [triggerAdd]);
-
-  const loadNotes = async () => {
+  // Memoized loadNotes function to prevent infinite loops
+  const loadNotes = useCallback(async () => {
     setIsLoading(true);
     const result = await getJobNotes({
       jobId,
@@ -82,7 +71,19 @@ export function JobNotesTable({ jobId, triggerAdd }: JobNotesTableProps) {
       setTotalCount(result.count || 0);
     }
     setIsLoading(false);
-  };
+  }, [jobId, filterType, page, pageSize]);
+
+  // Load notes when dependencies change
+  useEffect(() => {
+    loadNotes();
+  }, [loadNotes]);
+
+  // Respond to external trigger
+  useEffect(() => {
+    if (triggerAdd && triggerAdd > 0) {
+      setShowAddNote(true);
+    }
+  }, [triggerAdd]);
 
   const handleAddNote = async () => {
     if (!newNoteContent.trim()) return;

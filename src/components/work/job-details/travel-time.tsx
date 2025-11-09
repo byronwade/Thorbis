@@ -16,7 +16,7 @@ import {
   RefreshCw,
   Route,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type TravelTimeData = {
@@ -88,7 +88,6 @@ export function TravelTime({ property, className }: TravelTimeProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
   const fetchTravelTime = useCallback(async () => {
     const hasRequiredFields =
@@ -138,27 +137,31 @@ export function TravelTime({ property, className }: TravelTimeProps) {
     property?.lon,
   ]);
 
+  // Use ref to always get latest fetchTravelTime without triggering effect
+  const fetchTravelTimeRef = useRef(fetchTravelTime);
+  useEffect(() => {
+    fetchTravelTimeRef.current = fetchTravelTime;
+  }, [fetchTravelTime]);
+
   // Fetch on mount and set up periodic refresh (every 5 minutes)
   useEffect(() => {
-    // Only fetch once on initial mount, then rely on manual refresh or interval
-    if (!hasFetchedOnce && property) {
-      fetchTravelTime();
-      setHasFetchedOnce(true);
-    }
-
-    // Set up periodic refresh interval (every 5 minutes)
-    // Only if we have property data
-    if (!property) {
+    // Don't do anything if no property
+    if (!property?.address) {
+      setIsLoading(false);
       return;
     }
 
+    // Fetch immediately on mount
+    fetchTravelTimeRef.current();
+
+    // Set up periodic refresh interval (every 5 minutes)
     const interval = setInterval(() => {
-      fetchTravelTime();
+      fetchTravelTimeRef.current();
     }, REFRESH_INTERVAL_MS);
 
+    // Always return cleanup function
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount only, interval handles periodic updates
+  }, [property?.address]); // Only re-run if address changes (component remounts basically)
 
   if (!property?.address) {
     return null;
