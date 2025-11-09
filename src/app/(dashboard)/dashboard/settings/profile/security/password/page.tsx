@@ -24,7 +24,6 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useToast } from "@/hooks/use-toast";
 import { updatePassword } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +45,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const MIN_PASSWORD_LENGTH = 8;
@@ -366,7 +366,7 @@ export default function PasswordPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button type="submit" disabled={isPending}>
+                  <Button disabled={isPending} type="submit">
                     <Shield className="mr-2 size-4" />
                     {isPending ? "Updating..." : "Update Password"}
                   </Button>

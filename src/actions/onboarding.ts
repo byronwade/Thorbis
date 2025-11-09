@@ -19,6 +19,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
 import { initiatePorting } from "@/lib/telnyx/numbers";
 import { updateNotificationSettings } from "./settings/communications";
@@ -547,6 +548,30 @@ export async function saveOnboardingProgress(
       taxId: data.orgTaxId || "",
     };
 
+    // Geocode company address
+    let companyLat: number | null = null;
+    let companyLon: number | null = null;
+
+    const geocodeResult = await geocodeAddressSilent(
+      data.orgAddress,
+      data.orgCity,
+      data.orgState,
+      data.orgZip,
+      "USA"
+    );
+
+    if (geocodeResult) {
+      companyLat = geocodeResult.lat;
+      companyLon = geocodeResult.lon;
+      console.log(
+        `Geocoded company address: ${geocodeResult.lat}, ${geocodeResult.lon}`
+      );
+    } else {
+      console.warn(
+        "Failed to geocode company address - coordinates will be null"
+      );
+    }
+
     let createdCompany = false;
 
     if (companyId) {
@@ -556,8 +581,13 @@ export async function saveOnboardingProgress(
         company_size: data.orgSize,
         phone: data.orgPhone,
         address: fullAddress,
+        city: data.orgCity,
+        state: data.orgState,
+        zip_code: data.orgZip,
         website: data.orgWebsite || null,
         tax_id: data.orgTaxId || null,
+        lat: companyLat,
+        lon: companyLon,
       };
 
       const { error: updateError } = await serviceSupabase
@@ -588,8 +618,13 @@ export async function saveOnboardingProgress(
           company_size: data.orgSize,
           phone: data.orgPhone,
           address: fullAddress,
+          city: data.orgCity,
+          state: data.orgState,
+          zip_code: data.orgZip,
           website: data.orgWebsite || null,
           tax_id: data.orgTaxId || null,
+          lat: companyLat,
+          lon: companyLon,
           created_by: userId,
           owner_id: userId,
           stripe_subscription_status: "incomplete",

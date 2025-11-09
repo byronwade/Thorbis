@@ -116,7 +116,9 @@ export default function PortalInvitationEmail({
           </div>
           <div style={step}>
             <div style={stepNumber}>2</div>
-            <Text style={stepText}>Create a secure password for your account</Text>
+            <Text style={stepText}>
+              Create a secure password for your account
+            </Text>
           </div>
           <div style={step}>
             <div style={stepNumber}>3</div>

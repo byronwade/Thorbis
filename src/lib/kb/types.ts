@@ -4,7 +4,7 @@
  * Type definitions for the knowledge base system
  */
 
-import type { KBArticle, KBCategory, KBTag, KBFeedback } from "@/lib/db/schema";
+import type { KBArticle, KBCategory, KBTag } from "@/lib/db/schema";
 
 /**
  * Article with populated relations
@@ -86,4 +86,3 @@ export interface KBFeedbackSubmission {
   comment?: string;
   userEmail?: string;
 }
-

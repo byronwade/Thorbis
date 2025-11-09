@@ -103,11 +103,11 @@ export function QuickCustomerAdd({
   if (!isExpanded) {
     return (
       <Button
+        className="w-full"
+        onClick={() => setIsExpanded(true)}
+        size="sm"
         type="button"
         variant="outline"
-        size="sm"
-        onClick={() => setIsExpanded(true)}
-        className="w-full"
       >
         <Plus className="mr-2 size-4" />
         Quick Add New Customer
@@ -120,145 +120,145 @@ export function QuickCustomerAdd({
       <div className="mb-3 flex items-center justify-between">
         <h4 className="font-semibold text-sm">New Customer</h4>
         <Button
+          className="h-8 w-8 p-0"
+          onClick={handleCancel}
+          size="sm"
           type="button"
           variant="ghost"
-          size="sm"
-          onClick={handleCancel}
-          className="h-8 w-8 p-0"
         >
           <X className="size-4" />
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form className="space-y-3" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <Label htmlFor="quick-firstName" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-firstName">
               First Name *
             </Label>
             <Input
-              id="quick-firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
               autoFocus
-              placeholder="John"
               className="h-9"
+              id="quick-firstName"
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="John"
+              required
+              value={firstName}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="quick-lastName" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-lastName">
               Last Name *
             </Label>
             <Input
-              id="quick-lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-              placeholder="Smith"
               className="h-9"
+              id="quick-lastName"
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Smith"
+              required
+              value={lastName}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <Label htmlFor="quick-phone" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-phone">
               Phone *
             </Label>
             <Input
+              className="h-9"
               id="quick-phone"
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="(555) 123-4567"
+              required
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              placeholder="(555) 123-4567"
-              className="h-9"
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="quick-email" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-email">
               Email
             </Label>
             <Input
+              className="h-9"
               id="quick-email"
-              type="email"
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="john@example.com"
-              className="h-9"
+              type="email"
+              value={email}
             />
           </div>
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="quick-address" className="text-xs">
+          <Label className="text-xs" htmlFor="quick-address">
             Address
           </Label>
           <Input
+            className="h-9"
             id="quick-address"
-            value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="123 Main St"
-            className="h-9"
+            value={address}
           />
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
-            <Label htmlFor="quick-city" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-city">
               City
             </Label>
             <Input
+              className="h-9"
               id="quick-city"
-              value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="Portland"
-              className="h-9"
+              value={city}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="quick-state" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-state">
               State
             </Label>
             <Input
+              className="h-9"
               id="quick-state"
-              value={state}
+              maxLength={2}
               onChange={(e) => setState(e.target.value)}
               placeholder="OR"
-              maxLength={2}
-              className="h-9"
+              value={state}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="quick-zipCode" className="text-xs">
+            <Label className="text-xs" htmlFor="quick-zipCode">
               ZIP
             </Label>
             <Input
+              className="h-9"
               id="quick-zipCode"
-              value={zipCode}
               onChange={(e) => setZipCode(e.target.value)}
               placeholder="97201"
-              className="h-9"
+              value={zipCode}
             />
           </div>
         </div>
 
         <div className="flex gap-2 pt-2">
           <Button
-            type="submit"
-            size="sm"
-            disabled={isLoading}
             className="flex-1"
+            disabled={isLoading}
+            size="sm"
+            type="submit"
           >
             {isLoading ? "Creating..." : "Create & Select"}
           </Button>
           <Button
+            disabled={isLoading}
+            onClick={handleCancel}
+            size="sm"
             type="button"
             variant="ghost"
-            size="sm"
-            onClick={handleCancel}
-            disabled={isLoading}
           >
             Cancel
           </Button>

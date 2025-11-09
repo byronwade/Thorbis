@@ -9,11 +9,13 @@
  * - Browser API access for enhanced UX
  */
 
-import { Bell, HelpCircle, Save, Smartphone, Loader2 } from "lucide-react";
+import { Bell, HelpCircle, Loader2, Save, Smartphone } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { getNotificationSettings, updateNotificationSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -38,6 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 export default function NotificationsSettingsPage() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -88,7 +91,8 @@ export default function NotificationsSettingsPage() {
             notifyJobCompleted: result.data.notify_job_completions ?? true,
             notifyNewLeads: result.data.notify_new_customers ?? false,
             notifyPaymentReceived: result.data.notify_invoice_paid ?? true,
-            notifyTechnicianAssignment: result.data.notify_technician_assigned ?? true,
+            notifyTechnicianAssignment:
+              result.data.notify_technician_assigned ?? true,
             emailNotifications: result.data.email_notifications ?? true,
             smsNotifications: result.data.sms_notifications ?? false,
             pushNotifications: result.data.push_notifications ?? true,
@@ -114,20 +118,41 @@ export default function NotificationsSettingsPage() {
     startTransition(async () => {
       const formData = new FormData();
       formData.append("notifyNewJobs", settings.notifyJobScheduled.toString());
-      formData.append("notifyJobUpdates", settings.notifyTechnicianJobUpdate.toString());
-      formData.append("notifyJobCompletions", settings.notifyJobCompleted.toString());
+      formData.append(
+        "notifyJobUpdates",
+        settings.notifyTechnicianJobUpdate.toString()
+      );
+      formData.append(
+        "notifyJobCompletions",
+        settings.notifyJobCompleted.toString()
+      );
       formData.append("notifyNewCustomers", settings.notifyNewLeads.toString());
       formData.append("notifyInvoiceSent", "true");
-      formData.append("notifyInvoicePaid", settings.notifyPaymentReceived.toString());
+      formData.append(
+        "notifyInvoicePaid",
+        settings.notifyPaymentReceived.toString()
+      );
       formData.append("notifyInvoiceOverdue", "true");
       formData.append("notifyEstimateSent", "true");
       formData.append("notifyEstimateApproved", "true");
       formData.append("notifyScheduleChanges", "true");
-      formData.append("notifyTechnicianAssigned", settings.notifyTechnicianAssignment.toString());
-      formData.append("emailNotifications", settings.emailNotifications.toString());
+      formData.append(
+        "notifyTechnicianAssigned",
+        settings.notifyTechnicianAssignment.toString()
+      );
+      formData.append(
+        "emailNotifications",
+        settings.emailNotifications.toString()
+      );
       formData.append("smsNotifications", settings.smsNotifications.toString());
-      formData.append("pushNotifications", settings.pushNotifications.toString());
-      formData.append("inAppNotifications", settings.inAppNotifications.toString());
+      formData.append(
+        "pushNotifications",
+        settings.pushNotifications.toString()
+      );
+      formData.append(
+        "inAppNotifications",
+        settings.inAppNotifications.toString()
+      );
 
       const result = await updateNotificationSettings(formData);
 
@@ -161,7 +186,7 @@ export default function NotificationsSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave} disabled={isPending}>
+            <Button disabled={isPending} onClick={handleSave}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

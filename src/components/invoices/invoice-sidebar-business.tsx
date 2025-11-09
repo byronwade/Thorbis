@@ -13,8 +13,8 @@
 
 "use client";
 
+import { DollarSign, FileText, Palette, Settings } from "lucide-react";
 import { useState } from "react";
-import { FileText, DollarSign, Settings, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LineItemsEditor } from "./line-items-editor";
 import { PaymentsManager } from "./payments-manager";
@@ -34,7 +34,8 @@ export function InvoiceSidebarBusiness({
   payments = [],
   onUpdate,
 }: InvoiceSidebarBusinessProps) {
-  const [activeSection, setActiveSection] = useState<SidebarSection>("line-items");
+  const [activeSection, setActiveSection] =
+    useState<SidebarSection>("line-items");
 
   const sections = [
     {
@@ -66,18 +67,18 @@ export function InvoiceSidebarBusiness({
         <div className="flex flex-col gap-1 p-2">
           {sections.map((section) => (
             <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
               className={cn(
                 "flex flex-col items-center gap-1 rounded-lg p-3 transition-colors",
                 activeSection === section.id
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
+              key={section.id}
+              onClick={() => setActiveSection(section.id)}
               title={section.label}
             >
               <section.icon className="size-5" />
-              <span className="text-[10px] font-medium">{section.label}</span>
+              <span className="font-medium text-[10px]">{section.label}</span>
             </button>
           ))}
         </div>
@@ -89,31 +90,35 @@ export function InvoiceSidebarBusiness({
           <LineItemsEditor
             invoiceId={invoice.id}
             lineItems={lineItems}
-            subtotal={invoice.subtotal || 0}
             onUpdate={onUpdate}
+            subtotal={invoice.subtotal || 0}
           />
         )}
 
         {activeSection === "payments" && (
           <PaymentsManager
-            invoiceId={invoice.id}
             invoice={invoice}
-            payments={payments}
+            invoiceId={invoice.id}
             onUpdate={onUpdate}
+            payments={payments}
           />
         )}
 
         {activeSection === "settings" && (
           <div className="p-4">
             <h3 className="mb-4 font-semibold text-sm">Invoice Settings</h3>
-            <p className="text-muted-foreground text-sm">Settings coming soon...</p>
+            <p className="text-muted-foreground text-sm">
+              Settings coming soon...
+            </p>
           </div>
         )}
 
         {activeSection === "design" && (
           <div className="p-4">
             <h3 className="mb-4 font-semibold text-sm">Design Customization</h3>
-            <p className="text-muted-foreground text-sm">Design controls coming soon...</p>
+            <p className="text-muted-foreground text-sm">
+              Design controls coming soon...
+            </p>
           </div>
         )}
       </div>

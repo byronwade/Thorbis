@@ -8,26 +8,25 @@
  */
 
 import {
+  AlertCircle,
+  ArrowRightLeft,
+  Banknote,
+  BarChart3,
+  Bell,
   Building2,
   Calculator,
+  Calendar,
+  CheckCircle2,
+  Clock,
   CreditCard,
   DollarSign,
-  PieChart,
-  Clock,
-  Receipt,
-  Users,
-  Banknote,
-  Shield,
   FileText,
-  Zap,
+  Receipt,
+  Shield,
   TrendingUp,
-  CheckCircle2,
-  AlertCircle,
-  Bell,
-  Calendar,
+  Users,
   Wallet,
-  ArrowRightLeft,
-  BarChart3,
+  Zap,
 } from "lucide-react";
 
 export function FinanceComingSoon() {
@@ -68,7 +67,9 @@ export function FinanceComingSoon() {
             </span>
           </h1>
           <p className="mx-auto max-w-3xl text-foreground/60 text-lg leading-relaxed">
-            Manage your entire financial operation from a single, powerful platform. From banking and payments to accounting and payroll - everything integrated seamlessly into your workflow.
+            Manage your entire financial operation from a single, powerful
+            platform. From banking and payments to accounting and payroll -
+            everything integrated seamlessly into your workflow.
           </p>
         </div>
 
@@ -89,7 +90,8 @@ export function FinanceComingSoon() {
                   Banking & Payments
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Connect multiple bank accounts, process payments, manage cash flow with intelligent virtual buckets
+                  Connect multiple bank accounts, process payments, manage cash
+                  flow with intelligent virtual buckets
                 </p>
               </div>
 
@@ -103,7 +105,8 @@ export function FinanceComingSoon() {
                   Bookkeeping & Accounting
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Full chart of accounts, general ledger, AR/AP, automated reconciliation, QuickBooks sync
+                  Full chart of accounts, general ledger, AR/AP, automated
+                  reconciliation, QuickBooks sync
                 </p>
               </div>
 
@@ -117,7 +120,8 @@ export function FinanceComingSoon() {
                   Business Financing
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Access loans, lines of credit, equipment financing with integrated approval workflows
+                  Access loans, lines of credit, equipment financing with
+                  integrated approval workflows
                 </p>
               </div>
 
@@ -131,7 +135,8 @@ export function FinanceComingSoon() {
                   Payroll Management
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Complete payroll processing with automatic tax calculations, direct deposit, compliance reporting
+                  Complete payroll processing with automatic tax calculations,
+                  direct deposit, compliance reporting
                 </p>
               </div>
 
@@ -145,7 +150,8 @@ export function FinanceComingSoon() {
                   Invoicing & Estimates
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Create professional invoices, track payment status, automate reminders, accept online payments
+                  Create professional invoices, track payment status, automate
+                  reminders, accept online payments
                 </p>
               </div>
 
@@ -159,7 +165,8 @@ export function FinanceComingSoon() {
                   Expense Tracking
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Track all expenses, categorize automatically, capture receipts with mobile app, generate reports
+                  Track all expenses, categorize automatically, capture receipts
+                  with mobile app, generate reports
                 </p>
               </div>
 
@@ -169,11 +176,10 @@ export function FinanceComingSoon() {
                     <Shield className="size-6 text-red-600 dark:text-red-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-base">
-                  Tax Compliance
-                </h3>
+                <h3 className="mb-2 font-semibold text-base">Tax Compliance</h3>
                 <p className="text-muted-foreground text-sm">
-                  Automated tax calculations, quarterly estimates, 1099 generation, sales tax management
+                  Automated tax calculations, quarterly estimates, 1099
+                  generation, sales tax management
                 </p>
               </div>
 
@@ -187,7 +193,8 @@ export function FinanceComingSoon() {
                   Automated Workflows
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Set up automated payment schedules, recurring invoices, expense approvals, smart financial alerts
+                  Set up automated payment schedules, recurring invoices,
+                  expense approvals, smart financial alerts
                 </p>
               </div>
             </div>
@@ -212,7 +219,9 @@ export function FinanceComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;Your checking account will drop below $5,000 next Tuesday based on scheduled payments. Consider moving $10,000 from savings or delaying vendor payment #234.&quot;
+                  &quot;Your checking account will drop below $5,000 next
+                  Tuesday based on scheduled payments. Consider moving $10,000
+                  from savings or delaying vendor payment #234.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
                   <Bell className="size-3" />
@@ -233,7 +242,8 @@ export function FinanceComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;Fuel expense for Truck #3 is 2.5x normal this week ($485 vs usual $195). Would you like to review transactions?&quot;
+                  &quot;Fuel expense for Truck #3 is 2.5x normal this week ($485
+                  vs usual $195). Would you like to review transactions?&quot;
                 </p>
                 <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
                   <Zap className="size-3" />
@@ -254,7 +264,9 @@ export function FinanceComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;Your savings is getting low. Transferring $13,450 from checking account. We noticed you had this to spare after reviewing bills and existing totals.&quot;
+                  &quot;Your savings is getting low. Transferring $13,450 from
+                  checking account. We noticed you had this to spare after
+                  reviewing bills and existing totals.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
                   <CheckCircle2 className="size-3" />
@@ -275,7 +287,9 @@ export function FinanceComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;Insurance payment due in 3 days ($2,450). Rent due next week ($3,200). QuickBooks subscription renews tomorrow ($79). Total upcoming: $5,729.&quot;
+                  &quot;Insurance payment due in 3 days ($2,450). Rent due next
+                  week ($3,200). QuickBooks subscription renews tomorrow ($79).
+                  Total upcoming: $5,729.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
                   <TrendingUp className="size-3" />
@@ -297,7 +311,8 @@ export function FinanceComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">QuickBooks Sync</h3>
                 <p className="text-muted-foreground text-sm">
-                  Two-way sync with QuickBooks Online and Desktop for seamless accounting
+                  Two-way sync with QuickBooks Online and Desktop for seamless
+                  accounting
                 </p>
               </div>
 
@@ -307,7 +322,8 @@ export function FinanceComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Payment Processing</h3>
                 <p className="text-muted-foreground text-sm">
-                  Accept credit cards, ACH, and digital payments with competitive rates
+                  Accept credit cards, ACH, and digital payments with
+                  competitive rates
                 </p>
               </div>
 
@@ -317,7 +333,8 @@ export function FinanceComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Financial Reports</h3>
                 <p className="text-muted-foreground text-sm">
-                  Comprehensive P&L, balance sheet, cash flow, and custom financial analytics
+                  Comprehensive P&L, balance sheet, cash flow, and custom
+                  financial analytics
                 </p>
               </div>
             </div>
@@ -340,7 +357,8 @@ export function FinanceComingSoon() {
                   <span className="font-medium text-foreground">
                     All-In-One Platform:
                   </span>{" "}
-                  Manage banking, accounting, payroll, and reporting from a single integrated system
+                  Manage banking, accounting, payroll, and reporting from a
+                  single integrated system
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -349,7 +367,8 @@ export function FinanceComingSoon() {
                   <span className="font-medium text-foreground">
                     Real-Time Insights:
                   </span>{" "}
-                  See your financial position instantly with live dashboards and automated reporting
+                  See your financial position instantly with live dashboards and
+                  automated reporting
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -358,7 +377,8 @@ export function FinanceComingSoon() {
                   <span className="font-medium text-foreground">
                     Intelligent Automation:
                   </span>{" "}
-                  Automate invoicing, payments, reconciliation, and financial workflows to save time
+                  Automate invoicing, payments, reconciliation, and financial
+                  workflows to save time
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -367,7 +387,8 @@ export function FinanceComingSoon() {
                   <span className="font-medium text-foreground">
                     Proactive Monitoring:
                   </span>{" "}
-                  Get alerted to cash flow issues, unusual expenses, and opportunities before they impact your business
+                  Get alerted to cash flow issues, unusual expenses, and
+                  opportunities before they impact your business
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -376,7 +397,8 @@ export function FinanceComingSoon() {
                   <span className="font-medium text-foreground">
                     Seamless Integrations:
                   </span>{" "}
-                  Connect with QuickBooks, banks, payment processors, and other financial tools you already use
+                  Connect with QuickBooks, banks, payment processors, and other
+                  financial tools you already use
                 </p>
               </div>
             </div>

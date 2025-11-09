@@ -12,8 +12,8 @@
 "use client";
 
 import { useState } from "react";
-import { InvoicePreviewToggle } from "./invoice-preview-toggle";
 import { InvoiceMainContent } from "./invoice-main-content";
+import { InvoicePreviewToggle } from "./invoice-preview-toggle";
 import { InvoiceSidebarBusiness } from "./invoice-sidebar-business";
 
 interface InvoicePageWrapperProps {
@@ -47,13 +47,13 @@ export function InvoicePageWrapper({
       <div className="flex-1 overflow-auto p-8">
         <InvoicePreviewToggle
           mode={mode}
-          onModeChange={setMode}
           onExportPDF={handleExportPDF}
+          onModeChange={setMode}
         />
         <InvoiceMainContent
-          invoice={invoice}
-          customer={customer}
           company={company}
+          customer={customer}
+          invoice={invoice}
           mode={mode}
           onUpdate={handleUpdate}
         />

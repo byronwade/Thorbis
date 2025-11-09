@@ -44,9 +44,9 @@ export function JobPhotoGalleryWrapper({
 
   return (
     <PhotoGallery
-      jobId={jobId}
-      companyId={companyId}
       className={className}
+      companyId={companyId}
+      jobId={jobId}
       onDelete={handleDelete}
       onDownloadAll={handleDownloadAll}
       onUpload={handleUpload}

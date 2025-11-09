@@ -3,11 +3,9 @@
 import {
   Calendar,
   CheckCircle,
-  Clock,
   Eye,
   MapPin,
   MoreHorizontal,
-  User,
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -67,7 +65,9 @@ export function JobAppointmentsTable({
 }: JobAppointmentsTableProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null);
+  const [loadingAppointmentId, setLoadingAppointmentId] = useState<
+    string | null
+  >(null);
 
   // Check if appointment is scheduled for today
   const isToday = useCallback((dateString: string) => {
@@ -82,81 +82,92 @@ export function JobAppointmentsTable({
   }, []);
 
   // Handle dispatch
-  const handleDispatch = useCallback(async (appointmentId: string) => {
-    setLoadingAppointmentId(appointmentId);
-    try {
-      const result = await updateSchedule(appointmentId, {
-        dispatch_time: new Date(),
-        status: "confirmed",
-      });
-      if (result.success) {
-        toast.success("Appointment dispatched");
-        router.refresh();
-      } else {
-        toast.error(result.error || "Failed to dispatch appointment");
+  const handleDispatch = useCallback(
+    async (appointmentId: string) => {
+      setLoadingAppointmentId(appointmentId);
+      try {
+        const result = await updateSchedule(appointmentId, {
+          dispatch_time: new Date(),
+          status: "confirmed",
+        });
+        if (result.success) {
+          toast.success("Appointment dispatched");
+          router.refresh();
+        } else {
+          toast.error(result.error || "Failed to dispatch appointment");
+        }
+      } catch (error) {
+        toast.error("Failed to dispatch appointment");
+      } finally {
+        setLoadingAppointmentId(null);
       }
-    } catch (error) {
-      toast.error("Failed to dispatch appointment");
-    } finally {
-      setLoadingAppointmentId(null);
-    }
-  }, [router, toast]);
+    },
+    [router, toast]
+  );
 
   // Handle arrive
-  const handleArrive = useCallback(async (appointmentId: string) => {
-    setLoadingAppointmentId(appointmentId);
-    try {
-      const result = await updateSchedule(appointmentId, {
-        actual_start_time: new Date(),
-        status: "in_progress",
-      });
-      if (result.success) {
-        toast.success("Technician arrived");
-        router.refresh();
-      } else {
-        toast.error(result.error || "Failed to mark as arrived");
+  const handleArrive = useCallback(
+    async (appointmentId: string) => {
+      setLoadingAppointmentId(appointmentId);
+      try {
+        const result = await updateSchedule(appointmentId, {
+          actual_start_time: new Date(),
+          status: "in_progress",
+        });
+        if (result.success) {
+          toast.success("Technician arrived");
+          router.refresh();
+        } else {
+          toast.error(result.error || "Failed to mark as arrived");
+        }
+      } catch (error) {
+        toast.error("Failed to mark as arrived");
+      } finally {
+        setLoadingAppointmentId(null);
       }
-    } catch (error) {
-      toast.error("Failed to mark as arrived");
-    } finally {
-      setLoadingAppointmentId(null);
-    }
-  }, [router, toast]);
+    },
+    [router, toast]
+  );
 
   // Handle close
-  const handleClose = useCallback(async (appointment: Appointment) => {
-    setLoadingAppointmentId(appointment.id);
-    try {
-      const now = new Date();
-      const startTime = appointment.actual_start_time
-        ? new Date(appointment.actual_start_time)
-        : appointment.start_time
-          ? new Date(appointment.start_time)
-          : null;
-      
-      // Calculate duration in minutes
-      let duration: number | null = null;
-      if (startTime) {
-        duration = Math.round((now.getTime() - startTime.getTime()) / (1000 * 60));
-      }
+  const handleClose = useCallback(
+    async (appointment: Appointment) => {
+      setLoadingAppointmentId(appointment.id);
+      try {
+        const now = new Date();
+        const startTime = appointment.actual_start_time
+          ? new Date(appointment.actual_start_time)
+          : appointment.start_time
+            ? new Date(appointment.start_time)
+            : null;
 
-      const result = await updateSchedule(appointment.id, {
-        actual_end_time: now,
-        actual_duration: duration,
-        status: "completed",
-      });
-      if (result.success) {
-        toast.success("Appointment closed");
-        router.refresh();
-      } else {
-        toast.error(result.error || "Failed to close appointment");
+        // Calculate duration in minutes
+        let duration: number | null = null;
+        if (startTime) {
+          duration = Math.round(
+            (now.getTime() - startTime.getTime()) / (1000 * 60)
+          );
+        }
+
+        const result = await updateSchedule(appointment.id, {
+          actual_end_time: now,
+          actual_duration: duration,
+          status: "completed",
+        });
+        if (result.success) {
+          toast.success("Appointment closed");
+          router.refresh();
+        } else {
+          toast.error(result.error || "Failed to close appointment");
+        }
+      } catch (error) {
+        toast.error("Failed to close appointment");
+      } finally {
+        setLoadingAppointmentId(null);
       }
-    } catch (error) {
-      toast.error("Failed to close appointment");
-    } finally {
-      setLoadingAppointmentId(null);
-    }
-  }, [router, toast]);
+    },
+    [router, toast]
+  );
 
   const formatDate = useCallback((date: string | null) => {
     if (!date) return "—";
@@ -229,11 +240,12 @@ export function JobAppointmentsTable({
         shrink: true,
         render: (appointment) => (
           <div className="space-y-1">
-            <div className="text-sm font-medium">
+            <div className="font-medium text-sm">
               {formatDate(appointment.start_time)}
             </div>
             <div className="text-muted-foreground text-xs">
-              {formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}
+              {formatTime(appointment.start_time)} -{" "}
+              {formatTime(appointment.end_time)}
             </div>
           </div>
         ),
@@ -277,9 +289,7 @@ export function JobAppointmentsTable({
                 </div>
               </div>
             ) : (
-              <span className="text-muted-foreground text-xs">
-                Not arrived
-              </span>
+              <span className="text-muted-foreground text-xs">Not arrived</span>
             )}
           </div>
         ),
@@ -300,9 +310,7 @@ export function JobAppointmentsTable({
                 </div>
               </div>
             ) : (
-              <span className="text-muted-foreground text-xs">
-                Not closed
-              </span>
+              <span className="text-muted-foreground text-xs">Not closed</span>
             )}
           </div>
         ),
@@ -346,7 +354,9 @@ export function JobAppointmentsTable({
                     .slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm">{assignedUser.name || "Unassigned"}</span>
+              <span className="text-sm">
+                {assignedUser.name || "Unassigned"}
+              </span>
             </div>
           ) : (
             <span className="text-muted-foreground text-sm">Unassigned</span>
@@ -383,8 +393,14 @@ export function JobAppointmentsTable({
           const appointmentIsToday = isToday(appointment.start_time);
           const isLoading = loadingAppointmentId === appointment.id;
           const canDispatch = appointmentIsToday && !appointment.dispatch_time;
-          const canArrive = appointmentIsToday && appointment.dispatch_time && !appointment.actual_start_time;
-          const canClose = appointmentIsToday && appointment.actual_start_time && !appointment.actual_end_time;
+          const canArrive =
+            appointmentIsToday &&
+            appointment.dispatch_time &&
+            !appointment.actual_start_time;
+          const canClose =
+            appointmentIsToday &&
+            appointment.actual_start_time &&
+            !appointment.actual_end_time;
 
           if (!appointmentIsToday) {
             return (
@@ -444,7 +460,7 @@ export function JobAppointmentsTable({
                   Close
                 </Button>
               )}
-              {!canDispatch && !canArrive && !canClose && (
+              {!(canDispatch || canArrive || canClose) && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button className="size-8 p-0" size="sm" variant="ghost">
@@ -469,7 +485,17 @@ export function JobAppointmentsTable({
         },
       },
     ],
-    [formatDate, formatTime, formatDuration, getStatusBadge, isToday, loadingAppointmentId, handleDispatch, handleArrive, handleClose]
+    [
+      formatDate,
+      formatTime,
+      formatDuration,
+      getStatusBadge,
+      isToday,
+      loadingAppointmentId,
+      handleDispatch,
+      handleArrive,
+      handleClose,
+    ]
   );
 
   return (
@@ -485,18 +511,10 @@ export function JobAppointmentsTable({
           ? appointment.assigned_user[0]?.name || ""
           : appointment.assigned_user?.name || "";
         return (
-          (appointment.title || "")
-            .toLowerCase()
-            .includes(searchLower) ||
-          (appointment.description || "")
-            .toLowerCase()
-            .includes(searchLower) ||
-          (appointment.status || "")
-            .toLowerCase()
-            .includes(searchLower) ||
-          (appointment.type || "")
-            .toLowerCase()
-            .includes(searchLower) ||
+          (appointment.title || "").toLowerCase().includes(searchLower) ||
+          (appointment.description || "").toLowerCase().includes(searchLower) ||
+          (appointment.status || "").toLowerCase().includes(searchLower) ||
+          (appointment.type || "").toLowerCase().includes(searchLower) ||
           assignedUserName.toLowerCase().includes(searchLower)
         );
       }}
@@ -505,4 +523,3 @@ export function JobAppointmentsTable({
     />
   );
 }
-

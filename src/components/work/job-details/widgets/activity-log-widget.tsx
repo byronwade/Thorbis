@@ -83,11 +83,16 @@ interface Activity {
   metadata?: Record<string, unknown>;
 }
 
-export function ActivityLogWidget({ job, activities: activitiesData = [] }: ActivityLogWidgetProps) {
+export function ActivityLogWidget({
+  job,
+  activities: activitiesData = [],
+}: ActivityLogWidgetProps) {
   // Transform activities from database
   const activities: Activity[] = (activitiesData as any[]).map((activity) => {
     const user = activity.user
-      ? (Array.isArray(activity.user) ? activity.user[0] : activity.user)
+      ? Array.isArray(activity.user)
+        ? activity.user[0]
+        : activity.user
       : null;
 
     const userName = user
@@ -99,7 +104,8 @@ export function ActivityLogWidget({ job, activities: activitiesData = [] }: Acti
     if (activity.activity_type?.includes("status")) type = "status_change";
     else if (activity.activity_type?.includes("payment")) type = "payment";
     else if (activity.activity_type?.includes("schedule")) type = "schedule";
-    else if (activity.activity_type?.includes("communication")) type = "communication";
+    else if (activity.activity_type?.includes("communication"))
+      type = "communication";
     else if (activity.activity_type?.includes("document")) type = "document";
     else if (activity.activity_type?.includes("assign")) type = "assignment";
 

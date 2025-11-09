@@ -24,6 +24,11 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { CustomerAddressesManager } from "@/components/customers/customer-addresses-manager";
+import { CustomerContactsManager } from "@/components/customers/customer-contacts-manager";
+import { CustomerDataTables } from "@/components/customers/customer-data-tables";
+import { InvitePortalButton } from "@/components/customers/invite-portal-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,13 +39,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CustomerDataTables } from "@/components/customers/customer-data-tables";
-import { CustomerContactsManager } from "@/components/customers/customer-contacts-manager";
-import { CustomerAddressesManager } from "@/components/customers/customer-addresses-manager";
-import { InvitePortalButton } from "@/components/customers/invite-portal-button";
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
-import type { Invoice, Job, Property } from "@/lib/db/schema";
 
 const CENTS_DIVISOR = 100;
 
@@ -125,7 +124,7 @@ export default async function CustomerDetailsPage({
     { data: invoices },
     { data: contacts },
     { data: addresses },
-    { data: paymentPlans }
+    { data: paymentPlans },
   ] = await Promise.all([
     supabase
       .from("jobs")
@@ -161,15 +160,15 @@ export default async function CustomerDetailsPage({
       .select("*")
       .eq("customer_id", customerId)
       .is("deleted_at", null)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false }),
   ]);
 
   // Calculate stats from real data
   const totalRevenue = customer.total_revenue || 0;
   const totalJobs = jobs?.length || 0;
-  const activeJobs = jobs?.filter(
-    (j) => j.status === "in_progress" || j.status === "scheduled"
-  ).length || 0;
+  const activeJobs =
+    jobs?.filter((j) => j.status === "in_progress" || j.status === "scheduled")
+      .length || 0;
 
   return (
     <div className="space-y-6">
@@ -332,8 +331,7 @@ export default async function CustomerDetailsPage({
                     {customer.address2 ? `, ${customer.address2}` : ""}
                   </div>
                   <div className="text-muted-foreground">
-                    {customer.city}, {customer.state}{" "}
-                    {customer.zip_code}
+                    {customer.city}, {customer.state} {customer.zip_code}
                   </div>
                 </div>
               </div>
@@ -419,37 +417,54 @@ export default async function CustomerDetailsPage({
               </CardHeader>
               <CardContent className="space-y-3">
                 {paymentPlans.map((plan: any) => (
-                  <div
-                    key={plan.id}
-                    className="rounded-lg border p-4"
-                  >
+                  <div className="rounded-lg border p-4" key={plan.id}>
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold">{plan.plan_name || plan.plan_number}</p>
+                        <p className="font-semibold">
+                          {plan.plan_name || plan.plan_number}
+                        </p>
                         <p className="text-muted-foreground text-sm">
-                          {formatCurrency(plan.total_amount)} • {plan.number_of_payments} {plan.payment_frequency} payments
+                          {formatCurrency(plan.total_amount)} •{" "}
+                          {plan.number_of_payments} {plan.payment_frequency}{" "}
+                          payments
                         </p>
                         <p className="mt-1 text-xs">
-                          <span className="text-muted-foreground">Next Due:</span>{" "}
+                          <span className="text-muted-foreground">
+                            Next Due:
+                          </span>{" "}
                           {plan.next_payment_due_date || "N/A"}
                         </p>
                       </div>
-                      <Badge variant={plan.status === "active" ? "default" : "outline"}>
+                      <Badge
+                        variant={
+                          plan.status === "active" ? "default" : "outline"
+                        }
+                      >
                         {plan.status}
                       </Badge>
                     </div>
                     <div className="mt-3 grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <p className="text-muted-foreground text-xs">Paid</p>
-                        <p className="font-medium">{formatCurrency(plan.amount_paid)}</p>
+                        <p className="font-medium">
+                          {formatCurrency(plan.amount_paid)}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground text-xs">Remaining</p>
-                        <p className="font-medium">{formatCurrency(plan.amount_remaining)}</p>
+                        <p className="text-muted-foreground text-xs">
+                          Remaining
+                        </p>
+                        <p className="font-medium">
+                          {formatCurrency(plan.amount_remaining)}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground text-xs">Payments Made</p>
-                        <p className="font-medium">{plan.payments_made}/{plan.number_of_payments}</p>
+                        <p className="text-muted-foreground text-xs">
+                          Payments Made
+                        </p>
+                        <p className="font-medium">
+                          {plan.payments_made}/{plan.number_of_payments}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -461,8 +476,8 @@ export default async function CustomerDetailsPage({
           {/* Jobs and Invoices Tables */}
           <CustomerDataTables
             customerId={customerId}
-            jobs={jobs || []}
             invoices={invoices || []}
+            jobs={jobs || []}
           />
 
           {/* Properties Section */}
@@ -611,7 +626,7 @@ export default async function CustomerDetailsPage({
               <InvitePortalButton
                 customerId={customerId}
                 customerName={customer.display_name}
-                portalEnabled={customer.portal_enabled || false}
+                portalEnabled={customer.portal_enabled}
                 portalInvitedAt={customer.portal_invited_at}
               />
               <Button asChild className="w-full" variant="outline">

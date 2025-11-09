@@ -159,7 +159,9 @@ export function WidgetRenderer({
       return <ScheduleWidget job={job} />;
 
     case "team-assignments":
-      return <TeamAssignmentsWidget job={job} teamAssignments={teamAssignments} />;
+      return (
+        <TeamAssignmentsWidget job={job} teamAssignments={teamAssignments} />
+      );
 
     case "materials-list":
       return <MaterialsListWidget job={job} materials={materials} />;
@@ -186,7 +188,7 @@ export function WidgetRenderer({
       );
 
     case "activity-log":
-      return <ActivityLogWidget job={job} activities={activities} />;
+      return <ActivityLogWidget activities={activities} job={job} />;
 
     // Industry-specific
     case "hvac-equipment":

@@ -8,19 +8,14 @@
  * - Priority routing rules
  */
 
+import { Plus } from "lucide-react";
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
 import { BusinessHoursEditor } from "@/components/telnyx/business-hours-editor";
 import { CallRoutingRulesList } from "@/components/telnyx/call-routing-rules-list";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const metadata = {
   title: "Call Routing | Communications Settings",
@@ -35,13 +30,13 @@ export default function CallRoutingPage() {
         config={{
           show: true,
           title: "Call Routing",
-          subtitle: "Configure how incoming calls are routed to your team"
+          subtitle: "Configure how incoming calls are routed to your team",
         }}
       />
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        <Tabs defaultValue="routing-rules" className="h-full flex flex-col">
+        <Tabs className="flex h-full flex-col" defaultValue="routing-rules">
           <div className="border-b px-6 pt-4">
             <TabsList>
               <TabsTrigger value="routing-rules">Routing Rules</TabsTrigger>
@@ -51,16 +46,19 @@ export default function CallRoutingPage() {
             </TabsList>
           </div>
 
-          <TabsContent value="routing-rules" className="flex-1 mt-0 data-[state=active]:flex data-[state=active]:flex-col">
-            <div className="border-b px-6 py-4 flex items-center justify-between bg-muted/30">
+          <TabsContent
+            className="mt-0 flex-1 data-[state=active]:flex data-[state=active]:flex-col"
+            value="routing-rules"
+          >
+            <div className="flex items-center justify-between border-b bg-muted/30 px-6 py-4">
               <div>
-                <h3 className="text-sm font-medium">Routing Rules</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-medium text-sm">Routing Rules</h3>
+                <p className="text-muted-foreground text-sm">
                   Define how incoming calls are distributed to your team
                 </p>
               </div>
               <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Create Rule
               </Button>
             </div>
@@ -71,28 +69,30 @@ export default function CallRoutingPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="business-hours" className="flex-1 mt-0 p-6">
+          <TabsContent className="mt-0 flex-1 p-6" value="business-hours">
             <Suspense fallback={<Skeleton className="h-96 w-full" />}>
               <BusinessHoursEditor />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="after-hours" className="flex-1 mt-0 p-6">
+          <TabsContent className="mt-0 flex-1 p-6" value="after-hours">
             {/* After-hours routing will be added here */}
             <div className="rounded-lg border border-dashed p-12 text-center">
-              <h3 className="text-lg font-semibold mb-2">After Hours Routing</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="mb-2 font-semibold text-lg">
+                After Hours Routing
+              </h3>
+              <p className="mb-4 text-muted-foreground">
                 Configure what happens when calls come in outside business hours
               </p>
               <Button variant="outline">Configure After Hours</Button>
             </div>
           </TabsContent>
 
-          <TabsContent value="holidays" className="flex-1 mt-0 p-6">
+          <TabsContent className="mt-0 flex-1 p-6" value="holidays">
             {/* Holiday exceptions will be added here */}
             <div className="rounded-lg border border-dashed p-12 text-center">
-              <h3 className="text-lg font-semibold mb-2">Holiday Exceptions</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="mb-2 font-semibold text-lg">Holiday Exceptions</h3>
+              <p className="mb-4 text-muted-foreground">
                 Set special routing for holidays and company closures
               </p>
               <Button variant="outline">Add Holiday</Button>
@@ -108,7 +108,7 @@ function RoutingRulesListSkeleton() {
   return (
     <div className="space-y-4 p-6">
       {[...Array(3)].map((_, i) => (
-        <Skeleton key={i} className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" key={i} />
       ))}
     </div>
   );

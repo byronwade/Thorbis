@@ -7,14 +7,14 @@
  * Used in organization creation wizard
  */
 
-import { useState } from "react";
 import {
   PaymentElement,
-  useStripe,
   useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type StripePaymentFormProps = {
   onSuccess: (paymentMethodId: string) => void;
@@ -36,7 +36,7 @@ export function StripePaymentForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
+    if (!(stripe && elements)) {
       return;
     }
 
@@ -65,19 +65,21 @@ export function StripePaymentForm({
         setIsProcessing(false);
       }
     } catch (err) {
-      onError(err instanceof Error ? err.message : "An unexpected error occurred");
+      onError(
+        err instanceof Error ? err.message : "An unexpected error occurred"
+      );
       setIsProcessing(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit}>
       <PaymentElement />
 
       <Button
-        type="submit"
-        disabled={!stripe || isProcessing || isSubmitting}
         className="w-full"
+        disabled={!stripe || isProcessing || isSubmitting}
+        type="submit"
       >
         {(isProcessing || isSubmitting) && (
           <Loader2 className="mr-2 size-4 animate-spin" />

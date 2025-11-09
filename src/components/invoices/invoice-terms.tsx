@@ -21,15 +21,15 @@ export function InvoiceTerms({ terms, notes, onUpdate }: InvoiceTermsProps) {
     <div className="mb-8 grid gap-6 md:grid-cols-2">
       {/* Terms and Conditions */}
       <Card className="p-6">
-        <Label htmlFor="terms" className="text-base font-semibold">
+        <Label className="font-semibold text-base" htmlFor="terms">
           Terms and Conditions
         </Label>
         <Textarea
+          className="mt-2 min-h-[150px]"
           id="terms"
-          value={terms || ""}
           onChange={(e) => onUpdate("terms", e.target.value)}
           placeholder="Payment terms, late fees, warranty information, etc."
-          className="mt-2 min-h-[150px]"
+          value={terms || ""}
         />
         <p className="mt-2 text-muted-foreground text-xs">
           Standard payment terms, late fees, warranties, and other conditions
@@ -38,15 +38,15 @@ export function InvoiceTerms({ terms, notes, onUpdate }: InvoiceTermsProps) {
 
       {/* Notes */}
       <Card className="p-6">
-        <Label htmlFor="notes" className="text-base font-semibold">
+        <Label className="font-semibold text-base" htmlFor="notes">
           Notes
         </Label>
         <Textarea
+          className="mt-2 min-h-[150px]"
           id="notes"
-          value={notes || ""}
           onChange={(e) => onUpdate("notes", e.target.value)}
           placeholder="Additional notes or instructions for the customer..."
-          className="mt-2 min-h-[150px]"
+          value={notes || ""}
         />
         <p className="mt-2 text-muted-foreground text-xs">
           Internal notes or special instructions for this invoice

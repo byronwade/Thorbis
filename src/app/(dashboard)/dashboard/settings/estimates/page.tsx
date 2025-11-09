@@ -23,10 +23,12 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import {
+  getEstimateSettings,
+  updateEstimateSettings,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getEstimateSettings, updateEstimateSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -45,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -184,7 +187,8 @@ export default function EstimatesSettingsPage() {
             requireCustomerApproval: result.data.require_approval ?? false,
             autoConvertToInvoice: result.data.auto_convert_to_job ?? false,
             sendExpirationReminder: result.data.send_reminder_enabled ?? true,
-            reminderDaysBeforeExpiration: result.data.reminder_days_before_expiry ?? 7,
+            reminderDaysBeforeExpiration:
+              result.data.reminder_days_before_expiry ?? 7,
           }));
         }
       } catch (error) {
@@ -220,15 +224,33 @@ export default function EstimatesSettingsPage() {
       const formData = new FormData();
 
       formData.append("estimateNumberPrefix", settings.estimatePrefix);
-      formData.append("nextEstimateNumber", settings.nextEstimateNumber.toString());
-      formData.append("defaultValidForDays", settings.defaultValidityDays.toString());
+      formData.append(
+        "nextEstimateNumber",
+        settings.nextEstimateNumber.toString()
+      );
+      formData.append(
+        "defaultValidForDays",
+        settings.defaultValidityDays.toString()
+      );
       formData.append("showExpiryDate", settings.showExpirationDate.toString());
       formData.append("includeTermsAndConditions", "true");
       formData.append("defaultTerms", settings.defaultEstimateTerms);
-      formData.append("requireApproval", settings.requireCustomerApproval.toString());
-      formData.append("autoConvertToJob", settings.autoConvertToInvoice.toString());
-      formData.append("sendReminderEnabled", settings.sendExpirationReminder.toString());
-      formData.append("reminderDaysBeforeExpiry", settings.reminderDaysBeforeExpiration.toString());
+      formData.append(
+        "requireApproval",
+        settings.requireCustomerApproval.toString()
+      );
+      formData.append(
+        "autoConvertToJob",
+        settings.autoConvertToInvoice.toString()
+      );
+      formData.append(
+        "sendReminderEnabled",
+        settings.sendExpirationReminder.toString()
+      );
+      formData.append(
+        "reminderDaysBeforeExpiry",
+        settings.reminderDaysBeforeExpiration.toString()
+      );
 
       const result = await updateEstimateSettings(formData);
 

@@ -13,9 +13,9 @@
  * - Improves Time to Interactive (TTI)
  */
 
+import type { LucideProps } from "lucide-react";
 import dynamic from "next/dynamic";
-import { LucideProps } from "lucide-react";
-import { Suspense, ComponentType } from "react";
+import { type ComponentType, Suspense } from "react";
 
 // Icon name type for type safety
 export type IconName =
@@ -91,12 +91,20 @@ const iconMap: Record<IconName, ComponentType<LucideProps>> = {
   Mail: dynamic(() => import("lucide-react").then((mod) => mod.Mail)),
   MailOpen: dynamic(() => import("lucide-react").then((mod) => mod.MailOpen)),
   Phone: dynamic(() => import("lucide-react").then((mod) => mod.Phone)),
-  MessageSquare: dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare)),
+  MessageSquare: dynamic(() =>
+    import("lucide-react").then((mod) => mod.MessageSquare)
+  ),
   Calendar: dynamic(() => import("lucide-react").then((mod) => mod.Calendar)),
-  ClipboardList: dynamic(() => import("lucide-react").then((mod) => mod.ClipboardList)),
+  ClipboardList: dynamic(() =>
+    import("lucide-react").then((mod) => mod.ClipboardList)
+  ),
   FileText: dynamic(() => import("lucide-react").then((mod) => mod.FileText)),
-  FileSignature: dynamic(() => import("lucide-react").then((mod) => mod.FileSignature)),
-  FileSpreadsheet: dynamic(() => import("lucide-react").then((mod) => mod.FileSpreadsheet)),
+  FileSignature: dynamic(() =>
+    import("lucide-react").then((mod) => mod.FileSignature)
+  ),
+  FileSpreadsheet: dynamic(() =>
+    import("lucide-react").then((mod) => mod.FileSpreadsheet)
+  ),
   FileEdit: dynamic(() => import("lucide-react").then((mod) => mod.FileEdit)),
   Receipt: dynamic(() => import("lucide-react").then((mod) => mod.Receipt)),
   Inbox: dynamic(() => import("lucide-react").then((mod) => mod.Inbox)),
@@ -106,42 +114,66 @@ const iconMap: Record<IconName, ComponentType<LucideProps>> = {
   Hash: dynamic(() => import("lucide-react").then((mod) => mod.Hash)),
   Ticket: dynamic(() => import("lucide-react").then((mod) => mod.Ticket)),
   Wrench: dynamic(() => import("lucide-react").then((mod) => mod.Wrench)),
-  ShieldCheck: dynamic(() => import("lucide-react").then((mod) => mod.ShieldCheck)),
-  ShieldAlert: dynamic(() => import("lucide-react").then((mod) => mod.ShieldAlert)),
+  ShieldCheck: dynamic(() =>
+    import("lucide-react").then((mod) => mod.ShieldCheck)
+  ),
+  ShieldAlert: dynamic(() =>
+    import("lucide-react").then((mod) => mod.ShieldAlert)
+  ),
   Shield: dynamic(() => import("lucide-react").then((mod) => mod.Shield)),
   BookOpen: dynamic(() => import("lucide-react").then((mod) => mod.BookOpen)),
   Book: dynamic(() => import("lucide-react").then((mod) => mod.Book)),
   Box: dynamic(() => import("lucide-react").then((mod) => mod.Box)),
   Package: dynamic(() => import("lucide-react").then((mod) => mod.Package)),
-  DollarSign: dynamic(() => import("lucide-react").then((mod) => mod.DollarSign)),
-  CreditCard: dynamic(() => import("lucide-react").then((mod) => mod.CreditCard)),
-  TrendingUp: dynamic(() => import("lucide-react").then((mod) => mod.TrendingUp)),
+  DollarSign: dynamic(() =>
+    import("lucide-react").then((mod) => mod.DollarSign)
+  ),
+  CreditCard: dynamic(() =>
+    import("lucide-react").then((mod) => mod.CreditCard)
+  ),
+  TrendingUp: dynamic(() =>
+    import("lucide-react").then((mod) => mod.TrendingUp)
+  ),
   BarChart: dynamic(() => import("lucide-react").then((mod) => mod.BarChart)),
   Target: dynamic(() => import("lucide-react").then((mod) => mod.Target)),
   Trophy: dynamic(() => import("lucide-react").then((mod) => mod.Trophy)),
-  "Badge Check": dynamic(() => import("lucide-react").then((mod) => mod.BadgeCheck)),
+  "Badge Check": dynamic(() =>
+    import("lucide-react").then((mod) => mod.BadgeCheck)
+  ),
   Sparkles: dynamic(() => import("lucide-react").then((mod) => mod.Sparkles)),
   Zap: dynamic(() => import("lucide-react").then((mod) => mod.Zap)),
   Globe: dynamic(() => import("lucide-react").then((mod) => mod.Globe)),
   MapPin: dynamic(() => import("lucide-react").then((mod) => mod.MapPin)),
   Building2: dynamic(() => import("lucide-react").then((mod) => mod.Building2)),
   Briefcase: dynamic(() => import("lucide-react").then((mod) => mod.Briefcase)),
-  Calculator: dynamic(() => import("lucide-react").then((mod) => mod.Calculator)),
+  Calculator: dynamic(() =>
+    import("lucide-react").then((mod) => mod.Calculator)
+  ),
   Clock: dynamic(() => import("lucide-react").then((mod) => mod.Clock)),
   Camera: dynamic(() => import("lucide-react").then((mod) => mod.Camera)),
   QrCode: dynamic(() => import("lucide-react").then((mod) => mod.QrCode)),
   Search: dynamic(() => import("lucide-react").then((mod) => mod.Search)),
   Tag: dynamic(() => import("lucide-react").then((mod) => mod.Tag)),
   List: dynamic(() => import("lucide-react").then((mod) => mod.List)),
-  CheckCircle2: dynamic(() => import("lucide-react").then((mod) => mod.CheckCircle2)),
+  CheckCircle2: dynamic(() =>
+    import("lucide-react").then((mod) => mod.CheckCircle2)
+  ),
   ArrowLeft: dynamic(() => import("lucide-react").then((mod) => mod.ArrowLeft)),
-  ArrowUpFromLine: dynamic(() => import("lucide-react").then((mod) => mod.ArrowUpFromLine)),
-  ArrowDownToLine: dynamic(() => import("lucide-react").then((mod) => mod.ArrowDownToLine)),
+  ArrowUpFromLine: dynamic(() =>
+    import("lucide-react").then((mod) => mod.ArrowUpFromLine)
+  ),
+  ArrowDownToLine: dynamic(() =>
+    import("lucide-react").then((mod) => mod.ArrowDownToLine)
+  ),
   Megaphone: dynamic(() => import("lucide-react").then((mod) => mod.Megaphone)),
   Palette: dynamic(() => import("lucide-react").then((mod) => mod.Palette)),
   Paperclip: dynamic(() => import("lucide-react").then((mod) => mod.Paperclip)),
-  ShoppingCart: dynamic(() => import("lucide-react").then((mod) => mod.ShoppingCart)),
-  GraduationCap: dynamic(() => import("lucide-react").then((mod) => mod.GraduationCap)),
+  ShoppingCart: dynamic(() =>
+    import("lucide-react").then((mod) => mod.ShoppingCart)
+  ),
+  GraduationCap: dynamic(() =>
+    import("lucide-react").then((mod) => mod.GraduationCap)
+  ),
   Bug: dynamic(() => import("lucide-react").then((mod) => mod.Bug)),
   X: dynamic(() => import("lucide-react").then((mod) => mod.X)),
 };
@@ -186,9 +218,9 @@ export function DynamicIcon({
     <Suspense
       fallback={
         <div
+          aria-hidden="true"
           className={className}
           style={{ width: size, height: size }}
-          aria-hidden="true"
         />
       }
     >

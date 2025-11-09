@@ -9,10 +9,12 @@
  * - Browser API access for enhanced UX
  */
 
-import { Calendar, HelpCircle, Save, Loader2 } from "lucide-react";
+import { Calendar, HelpCircle, Loader2, Save } from "lucide-react";
+import {
+  getCalendarSettings,
+  updateCalendarSettings,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getCalendarSettings, updateCalendarSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,23 +39,31 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 export default function CalendarSettingsPage() {
-  const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings } = useSettings({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings({
     getter: getCalendarSettings,
     setter: updateCalendarSettings,
     initialState: {
-    timeZone: "America/New_York",
-    firstDayOfWeek: "sunday",
-    timeFormat: "12",
-    dateFormat: "MM/DD/YYYY",
-    businessHoursStart: "08:00",
-    businessHoursEnd: "17:00",
-    defaultAppointmentDuration: 60,
-    timeSlotInterval: 15,
-    showWeekends: true,
-    showCanceledJobs: false,
-    colorCodeByStatus: true,
-    colorCodeByTechnician: false,
+      timeZone: "America/New_York",
+      firstDayOfWeek: "sunday",
+      timeFormat: "12",
+      dateFormat: "MM/DD/YYYY",
+      businessHoursStart: "08:00",
+      businessHoursEnd: "17:00",
+      defaultAppointmentDuration: 60,
+      timeSlotInterval: 15,
+      showWeekends: true,
+      showCanceledJobs: false,
+      colorCodeByStatus: true,
+      colorCodeByTechnician: false,
     },
     settingsName: "calendar",
     transformLoad: (data) => ({
@@ -66,10 +76,22 @@ export default function CalendarSettingsPage() {
     transformSave: (settings) => {
       const formData = new FormData();
       formData.append("defaultView", "week");
-      formData.append("startDayOfWeek", settings.firstDayOfWeek === "sunday" ? "0" : "1");
-      formData.append("timeSlotDurationMinutes", settings.timeSlotInterval.toString());
-      formData.append("showTechnicianColors", settings.colorCodeByTechnician.toString());
-      formData.append("showJobStatusColors", settings.colorCodeByStatus.toString());
+      formData.append(
+        "startDayOfWeek",
+        settings.firstDayOfWeek === "sunday" ? "0" : "1"
+      );
+      formData.append(
+        "timeSlotDurationMinutes",
+        settings.timeSlotInterval.toString()
+      );
+      formData.append(
+        "showTechnicianColors",
+        settings.colorCodeByTechnician.toString()
+      );
+      formData.append(
+        "showJobStatusColors",
+        settings.colorCodeByStatus.toString()
+      );
       formData.append("showTravelTime", "true");
       formData.append("showCustomerName", "true");
       formData.append("showJobType", "true");
@@ -100,7 +122,7 @@ export default function CalendarSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={() => saveSettings()} disabled={isPending}>
+            <Button disabled={isPending} onClick={() => saveSettings()}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

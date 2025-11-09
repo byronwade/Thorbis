@@ -10,10 +10,10 @@
  * - Shows success/error toast notifications
  */
 
+import { Check, KeyRound, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { KeyRound, Check, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { inviteToPortal } from "@/actions/customers";
+import { Button } from "@/components/ui/button";
 
 type InvitePortalButtonProps = {
   customerId: string;

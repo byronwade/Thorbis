@@ -28,37 +28,41 @@ export default function BusinessFinancingPage() {
   if (isProduction) {
     return (
       <ComingSoon
-        icon={Building2}
-        title="Business Financing"
-        titleGradient="from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
         description="Access capital to grow your business with term loans, lines of credit, equipment financing, and more - all integrated directly into your workflow."
         features={[
           {
             icon: DollarSign,
             title: "Term Loans",
-            description: "Fixed-rate business loans with flexible repayment terms to fund expansion and growth",
+            description:
+              "Fixed-rate business loans with flexible repayment terms to fund expansion and growth",
             color: "blue-500",
           },
           {
             icon: CreditCard,
             title: "Lines of Credit",
-            description: "Revolving credit lines for working capital and seasonal cash flow needs",
+            description:
+              "Revolving credit lines for working capital and seasonal cash flow needs",
             color: "green-500",
           },
           {
             icon: Building2,
             title: "Equipment Financing",
-            description: "Finance trucks, tools, and equipment with low down payments and competitive rates",
+            description:
+              "Finance trucks, tools, and equipment with low down payments and competitive rates",
             color: "purple-500",
           },
           {
             icon: FileText,
             title: "SBA & More",
-            description: "SBA loans, invoice factoring, and merchant cash advances for every situation",
+            description:
+              "SBA loans, invoice factoring, and merchant cash advances for every situation",
             color: "orange-500",
           },
         ]}
+        icon={Building2}
         showViewAllLink={false}
+        title="Business Financing"
+        titleGradient="from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
       />
     );
   }

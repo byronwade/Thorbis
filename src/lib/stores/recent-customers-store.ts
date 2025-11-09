@@ -28,11 +28,16 @@ export const useRecentCustomersStore = create<RecentCustomersStore>()(
       addRecentCustomer: (customerId) =>
         set((state) => {
           // Remove if already exists
-          const filtered = state.recentCustomerIds.filter((id) => id !== customerId);
+          const filtered = state.recentCustomerIds.filter(
+            (id) => id !== customerId
+          );
 
           // Add to front, limit to max
           return {
-            recentCustomerIds: [customerId, ...filtered].slice(0, MAX_RECENT_CUSTOMERS),
+            recentCustomerIds: [customerId, ...filtered].slice(
+              0,
+              MAX_RECENT_CUSTOMERS
+            ),
           };
         }),
 

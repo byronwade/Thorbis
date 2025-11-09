@@ -11,7 +11,6 @@ import {
   FileText,
   MoreHorizontal,
   Send,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -196,7 +195,11 @@ export function InvoicesTable({
               <DropdownMenuItem
                 className="text-destructive"
                 onClick={async () => {
-                  if (!confirm("Archive this invoice? It can be restored within 90 days.")) {
+                  if (
+                    !confirm(
+                      "Archive this invoice? It can be restored within 90 days."
+                    )
+                  ) {
                     return;
                   }
                   const { archiveInvoice } = await import("@/actions/invoices");
@@ -236,7 +239,11 @@ export function InvoicesTable({
       label: "Archive Selected",
       icon: <Archive className="h-4 w-4" />,
       onClick: async (selectedIds) => {
-        if (!confirm(`Archive ${selectedIds.size} invoice(s)? They can be restored within 90 days.`)) {
+        if (
+          !confirm(
+            `Archive ${selectedIds.size} invoice(s)? They can be restored within 90 days.`
+          )
+        ) {
           return;
         }
 

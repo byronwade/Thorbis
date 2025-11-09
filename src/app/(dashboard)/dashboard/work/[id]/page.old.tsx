@@ -16,11 +16,11 @@
  */
 
 import { notFound } from "next/navigation";
-import { WidgetGrid } from "@/components/work/job-details/widget-grid";
 import { JobHeaderPermanent } from "@/components/work/job-details/job-header-permanent";
+import { WidgetGrid } from "@/components/work/job-details/widget-grid";
 import { JobProcessIndicatorEditable } from "@/components/work/job-process-indicator-editable";
-import { createClient } from "@/lib/supabase/server";
 import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
+import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
 // Page Component
@@ -129,24 +129,41 @@ export default async function JobDetailsPageNew({
       property:properties(*)
     `)
     .eq("job_id", jobId)
-    .order("is_primary", { ascending: false});
+    .order("is_primary", { ascending: false });
 
   // Get primary customer and property (for backward compatibility)
-  const customer = jobCustomers && jobCustomers.length > 0
-    ? (Array.isArray(jobCustomers[0].customer) ? jobCustomers[0].customer[0] : jobCustomers[0].customer)
-    : (Array.isArray(job.customer) && job.customer.length > 0 ? job.customer[0] : job.customer);
+  const customer =
+    jobCustomers && jobCustomers.length > 0
+      ? Array.isArray(jobCustomers[0].customer)
+        ? jobCustomers[0].customer[0]
+        : jobCustomers[0].customer
+      : Array.isArray(job.customer) && job.customer.length > 0
+        ? job.customer[0]
+        : job.customer;
 
-  const property = jobProperties && jobProperties.length > 0
-    ? (Array.isArray(jobProperties[0].property) ? jobProperties[0].property[0] : jobProperties[0].property)
-    : (Array.isArray(job.property) && job.property.length > 0 ? job.property[0] : job.property);
+  const property =
+    jobProperties && jobProperties.length > 0
+      ? Array.isArray(jobProperties[0].property)
+        ? jobProperties[0].property[0]
+        : jobProperties[0].property
+      : Array.isArray(job.property) && job.property.length > 0
+        ? job.property[0]
+        : job.property;
 
-  const assignedUser = Array.isArray(job.assigned_user) && job.assigned_user.length > 0
-    ? job.assigned_user[0]
-    : job.assigned_user;
+  const assignedUser =
+    Array.isArray(job.assigned_user) && job.assigned_user.length > 0
+      ? job.assigned_user[0]
+      : job.assigned_user;
 
   // Fetch enriched property data if property exists
   let propertyEnrichment = null;
-  if (property && property.address && property.city && property.state && property.zip_code) {
+  if (
+    property &&
+    property.address &&
+    property.city &&
+    property.state &&
+    property.zip_code
+  ) {
     try {
       propertyEnrichment = await propertyEnrichmentService.enrichProperty(
         property.address,
@@ -228,40 +245,48 @@ export default async function JobDetailsPageNew({
   const communications: unknown[] = [];
 
   // Transform customer for widget grid (matching expected User type)
-  const customerForWidget = customer ? {
-    id: customer.id,
-    name: `${customer.first_name} ${customer.last_name}`,
-    email: customer.email || "",
-    phone: customer.phone || null,
-    avatar: null,
-    bio: null,
-    emailVerified: true,
-    lastLoginAt: null,
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } : undefined;
+  const customerForWidget = customer
+    ? {
+        id: customer.id,
+        name: `${customer.first_name} ${customer.last_name}`,
+        email: customer.email || "",
+        phone: customer.phone || null,
+        avatar: null,
+        bio: null,
+        emailVerified: true,
+        lastLoginAt: null,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    : undefined;
 
   // Transform property for widget grid
-  const propertyForWidget = property ? {
-    id: property.id,
-    companyId: job.company_id,
-    customerId: job.customer_id || "",
-    name: property.name || null,
-    address: property.address,
-    address2: property.address2 || null,
-    city: property.city,
-    state: property.state,
-    zipCode: property.zip_code,
-    country: property.country || "USA",
-    propertyType: property.property_type as "residential" | "commercial" | "industrial" | null,
-    squareFootage: property.square_footage || null,
-    yearBuilt: property.year_built || null,
-    notes: property.notes || null,
-    metadata: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } : undefined;
+  const propertyForWidget = property
+    ? {
+        id: property.id,
+        companyId: job.company_id,
+        customerId: job.customer_id || "",
+        name: property.name || null,
+        address: property.address,
+        address2: property.address2 || null,
+        city: property.city,
+        state: property.state,
+        zipCode: property.zip_code,
+        country: property.country || "USA",
+        propertyType: property.property_type as
+          | "residential"
+          | "commercial"
+          | "industrial"
+          | null,
+        squareFootage: property.square_footage || null,
+        yearBuilt: property.year_built || null,
+        notes: property.notes || null,
+        metadata: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    : undefined;
 
   // Transform job for widget grid
   const jobForWidget = {
@@ -302,13 +327,13 @@ export default async function JobDetailsPageNew({
     <div className="space-y-6">
       {/* Permanent Job Header - Always Visible */}
       <JobHeaderPermanent
-        job={jobForWidget}
-        customer={customer}
-        property={property}
-        assignedUser={assignedUser}
-        teamAssignments={teamAssignments || []}
         allCustomers={jobCustomers || []}
         allProperties={jobProperties || []}
+        assignedUser={assignedUser}
+        customer={customer}
+        job={jobForWidget}
+        property={property}
+        teamAssignments={teamAssignments || []}
       />
 
       {/* Process Timeline - Editable */}
@@ -327,18 +352,18 @@ export default async function JobDetailsPageNew({
 
       {/* Widget Grid */}
       <WidgetGrid
+        activities={activities || []}
         communications={communications}
         customer={customerForWidget}
         documents={documents}
         estimates={estimates || []}
         invoices={invoices || []}
         job={jobForWidget}
+        materials={materials || []}
         photos={photos}
         property={propertyForWidget}
         propertyEnrichment={propertyEnrichment}
         teamAssignments={teamAssignments || []}
-        materials={materials || []}
-        activities={activities || []}
       />
 
       {/* Property Enrichment Debug (Remove in production) */}

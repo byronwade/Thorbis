@@ -46,10 +46,15 @@ interface Material {
   notes?: string;
 }
 
-export function MaterialsListWidget({ job, materials: materialsData = [] }: MaterialsListWidgetProps) {
+export function MaterialsListWidget({
+  job,
+  materials: materialsData = [],
+}: MaterialsListWidgetProps) {
   // Transform materials from database (job_line_items)
   const materials: Material[] = (materialsData as any[])
-    .filter((item) => item.item_type === "material" || item.item_type === "product")
+    .filter(
+      (item) => item.item_type === "material" || item.item_type === "product"
+    )
     .map((item) => ({
       id: item.id,
       name: item.name || item.description || "Unnamed Material",

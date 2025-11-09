@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronsUpDown, Plus, User, Clock } from "lucide-react";
+import { Check, ChevronsUpDown, Clock, Plus, User } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,7 +76,8 @@ export function CustomerCombobox({
     if (!searchQuery) return true;
 
     const query = searchQuery.toLowerCase();
-    const fullName = `${customer.first_name} ${customer.last_name}`.toLowerCase();
+    const fullName =
+      `${customer.first_name} ${customer.last_name}`.toLowerCase();
     const phone = customer.phone?.toLowerCase() || "";
     const email = customer.email?.toLowerCase() || "";
     const company = customer.company_name?.toLowerCase() || "";
@@ -107,15 +108,15 @@ export function CustomerCombobox({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
-          ref={ref}
-          variant="outline"
-          role="combobox"
           aria-expanded={open}
-          disabled={disabled}
           className="w-full justify-between"
+          disabled={disabled}
+          ref={ref}
+          role="combobox"
+          variant="outline"
         >
           {selectedCustomer ? (
             <span className="flex items-center gap-2">
@@ -133,12 +134,12 @@ export function CustomerCombobox({
           <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[500px] p-0" align="start">
+      <PopoverContent align="start" className="w-[500px] p-0">
         <Command shouldFilter={false}>
           <CommandInput
+            onValueChange={setSearchQuery}
             placeholder="Search by name, company, phone, or email..."
             value={searchQuery}
-            onValueChange={setSearchQuery}
           />
           <CommandList>
             <CommandEmpty>
@@ -148,13 +149,13 @@ export function CustomerCombobox({
                 </p>
                 {onAddNew && (
                   <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => {
                       setOpen(false);
                       onAddNew();
                     }}
+                    size="sm"
+                    type="button"
+                    variant="outline"
                   >
                     <Plus className="mr-2 size-4" />
                     Add New Customer
@@ -169,10 +170,10 @@ export function CustomerCombobox({
                 <CommandGroup heading="Recent">
                   {recentMatches.map((customer) => (
                     <CommandItem
-                      key={customer.id}
-                      value={customer.id}
-                      onSelect={() => handleSelect(customer.id)}
                       className="cursor-pointer"
+                      key={customer.id}
+                      onSelect={() => handleSelect(customer.id)}
+                      value={customer.id}
                     >
                       <Check
                         className={cn(
@@ -187,7 +188,8 @@ export function CustomerCombobox({
                           </span>
                           <span className="text-muted-foreground text-xs">
                             {customer.phone}
-                            {customer.company_name && ` • ${customer.company_name}`}
+                            {customer.company_name &&
+                              ` • ${customer.company_name}`}
                           </span>
                         </div>
                         <Clock className="size-3 text-muted-foreground" />
@@ -208,30 +210,33 @@ export function CustomerCombobox({
                     : `Customers (${Math.min(50, otherMatches.length)})`
                 }
               >
-                {otherMatches.slice(0, 50 - recentMatches.length).map((customer) => (
-                  <CommandItem
-                    key={customer.id}
-                    value={customer.id}
-                    onSelect={() => handleSelect(customer.id)}
-                    className="cursor-pointer"
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 size-4",
-                        value === customer.id ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <div className="flex flex-col">
-                      <span className="font-medium">
-                        {customer.first_name} {customer.last_name}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {customer.phone}
-                        {customer.company_name && ` • ${customer.company_name}`}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
+                {otherMatches
+                  .slice(0, 50 - recentMatches.length)
+                  .map((customer) => (
+                    <CommandItem
+                      className="cursor-pointer"
+                      key={customer.id}
+                      onSelect={() => handleSelect(customer.id)}
+                      value={customer.id}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 size-4",
+                          value === customer.id ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {customer.first_name} {customer.last_name}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {customer.phone}
+                          {customer.company_name &&
+                            ` • ${customer.company_name}`}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
               </CommandGroup>
             )}
 
@@ -241,11 +246,11 @@ export function CustomerCombobox({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
+                    className="cursor-pointer"
                     onSelect={() => {
                       setOpen(false);
                       onAddNew();
                     }}
-                    className="cursor-pointer"
                   >
                     <Plus className="mr-2 size-4" />
                     Add New Customer

@@ -18,7 +18,7 @@ import {
   Edit,
   Eye,
   MoreHorizontal,
-  Trash2,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -264,7 +264,11 @@ export function JobsTable({
               <DropdownMenuItem
                 className="text-destructive"
                 onClick={async () => {
-                  if (!confirm("Archive this job? It can be restored within 90 days.")) {
+                  if (
+                    !confirm(
+                      "Archive this job? It can be restored within 90 days."
+                    )
+                  ) {
                     return;
                   }
                   const { archiveJob } = await import("@/actions/jobs");
@@ -290,7 +294,11 @@ export function JobsTable({
       label: "Archive Selected",
       icon: <Archive className="h-4 w-4" />,
       onClick: async (selectedIds) => {
-        if (!confirm(`Archive ${selectedIds.size} job(s)? They can be restored within 90 days.`)) {
+        if (
+          !confirm(
+            `Archive ${selectedIds.size} job(s)? They can be restored within 90 days.`
+          )
+        ) {
           return;
         }
 
@@ -359,11 +367,21 @@ export function JobsTable({
     window.location.reload();
   };
 
+  const handleAddJob = () => {
+    window.location.href = "/dashboard/work/new";
+  };
+
   return (
     <FullWidthDataTable
       bulkActions={bulkActions}
       columns={columns}
       data={jobs}
+      emptyAction={
+        <Button onClick={handleAddJob} size="sm">
+          <Plus className="mr-2 size-4" />
+          Add Job
+        </Button>
+      }
       emptyIcon={<Briefcase className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No jobs found"
       enableSelection={true}

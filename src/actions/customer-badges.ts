@@ -113,7 +113,13 @@ export async function generateAutoBadges(customerId: string) {
 
     const autoBadges: Array<{
       label: string;
-      variant: "default" | "destructive" | "warning" | "success" | "secondary" | "outline";
+      variant:
+        | "default"
+        | "destructive"
+        | "warning"
+        | "success"
+        | "secondary"
+        | "outline";
       auto_generated_key: string;
       metadata?: any;
     }> = [];
@@ -131,7 +137,9 @@ export async function generateAutoBadges(customerId: string) {
     // Always Pays On Time Badge (if no late invoices)
     const invoices = customer.invoices || [];
     const hasLatePayments = invoices.some((inv: any) => inv.is_overdue);
-    const paidInvoicesCount = invoices.filter((inv: any) => inv.status === "paid").length;
+    const paidInvoicesCount = invoices.filter(
+      (inv: any) => inv.status === "paid"
+    ).length;
 
     if (paidInvoicesCount >= 5 && !hasLatePayments) {
       autoBadges.push({
@@ -142,7 +150,7 @@ export async function generateAutoBadges(customerId: string) {
     }
 
     // High Value Customer (total revenue > $10k)
-    if (customer.total_revenue && customer.total_revenue > 1000000) {
+    if (customer.total_revenue && customer.total_revenue > 1_000_000) {
       autoBadges.push({
         label: `High Value $${(customer.total_revenue / 100).toFixed(0)}`,
         variant: "success",
@@ -185,7 +193,8 @@ export async function generateAutoBadges(customerId: string) {
     console.error("Error in generateAutoBadges:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to generate badges",
+      error:
+        error instanceof Error ? error.message : "Failed to generate badges",
     };
   }
 }
@@ -202,7 +211,13 @@ export async function addCustomerBadge({
 }: {
   customerId: string;
   label: string;
-  variant?: "default" | "destructive" | "warning" | "success" | "secondary" | "outline";
+  variant?:
+    | "default"
+    | "destructive"
+    | "warning"
+    | "success"
+    | "secondary"
+    | "outline";
   badgeType?: "custom" | "premade";
   icon?: string;
 }) {

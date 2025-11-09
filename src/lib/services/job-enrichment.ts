@@ -22,6 +22,7 @@ import { propertyDataService } from "./property-data-service";
 import { routingService } from "./routing-service";
 import { schoolsService } from "./schools-service";
 import { timeZoneService } from "./timezone-service";
+import { trafficService } from "./traffic-service";
 import { walkabilityService } from "./walkability-service";
 import { waterQualityService } from "./water-quality-service";
 import { weatherService } from "./weather-service";
@@ -85,6 +86,9 @@ export const JobEnrichmentSchema = z.object({
   // NEW: Time Zone
   timeZone: z.any().optional(), // TimeZoneInfo
 
+  // NEW: Traffic incidents
+  traffic: z.any().optional(), // TrafficData
+
   // Recommendations
   recommendations: z.object({
     shouldReschedule: z.boolean(),
@@ -105,9 +109,24 @@ export type JobEnrichment = z.infer<typeof JobEnrichmentSchema>;
 // Job Enrichment Service
 // ============================================================================
 
+// Cache for enrichment results (5 minute TTL)
+const enrichmentCache = new Map<
+  string,
+  { data: JobEnrichment; expires: number }
+>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 export class JobEnrichmentService {
   /**
+   * Get cache key for job enrichment
+   */
+  private getCacheKey(job: { id: string; lat?: number; lon?: number }): string {
+    return `enrichment:${job.id}:${job.lat || 0}:${job.lon || 0}`;
+  }
+
+  /**
    * Enrich a job with all available operational intelligence
+   * Optimized for speed with caching and parallel execution
    */
   async enrichJob(job: {
     id: string;
@@ -119,6 +138,13 @@ export class JobEnrichmentService {
     lat?: number;
     lon?: number;
   }): Promise<JobEnrichment> {
+    // Check cache first for instant response
+    const cacheKey = this.getCacheKey(job);
+    const cached = enrichmentCache.get(cacheKey);
+    if (cached && cached.expires > Date.now()) {
+      return cached.data;
+    }
+
     const sources: string[] = [];
     const upsellOpportunities: string[] = [];
     const safetyWarnings: string[] = [];
@@ -199,6 +225,7 @@ export class JobEnrichmentService {
         streetView,
         googlePlaces,
         timeZone,
+        traffic,
       ] = await Promise.all([
         propertyDataService
           .getPropertyData(
@@ -298,10 +325,15 @@ export class JobEnrichmentService {
           console.error("[Job Enrichment] Time Zone failed:", e.message);
           return null;
         }),
+        trafficService.getTrafficIncidents(lat, lon).catch((e) => {
+          console.error("[Job Enrichment] Traffic failed:", e.message);
+          return null;
+        }),
       ]);
 
-      // Track sources
-      if (propertyData) sources.push(propertyData.dataSource);
+      if (propertyData)
+        // Track sources
+        sources.push(propertyData.dataSource);
       if (buildingData) sources.push("osm");
       if (weather) sources.push("nws");
       if (waterQuality) sources.push("usgs");
@@ -316,29 +348,29 @@ export class JobEnrichmentService {
       if (streetView?.available) sources.push("google-streetview");
       if (googlePlaces) sources.push("google-places");
       if (timeZone) sources.push("google-timezone");
+      if (traffic) sources.push("google-traffic");
 
       console.log(
         `[Job Enrichment] Successfully enriched with sources: ${sources.join(", ")}`
       );
 
-      // Step 3: Generate recommendations
-
-      // Weather-based recommendations
-      if (weather) {
-        if (weather.hasActiveAlerts) {
-          const highestAlert = weather.alerts[0];
-          if (
-            weather.highestSeverity === "Extreme" ||
-            weather.highestSeverity === "Severe"
-          ) {
-            shouldReschedule = true;
-            rescheduleReason = `Severe weather alert: ${highestAlert.headline}`;
-            safetyWarnings.push(highestAlert.headline);
-          } else {
-            safetyWarnings.push(`Weather advisory: ${highestAlert.headline}`);
-          }
+      if (weather && weather.alerts.length > 0) {
+        // Step 3: Generate recommendations
+        // Weather-based recommendations
+        const highestAlert = weather.alerts[0];
+        if (
+          weather.highestSeverity === "Extreme" ||
+          weather.highestSeverity === "Severe"
+        ) {
+          shouldReschedule = true;
+          rescheduleReason = `Severe weather alert: ${highestAlert.headline}`;
+          safetyWarnings.push(highestAlert.headline);
+        } else {
+          safetyWarnings.push(`Weather advisory: ${highestAlert.headline}`);
         }
+      }
 
+      if (weather) {
         // Check outdoor work suitability
         const suitability = weatherService.isSuitableForOutdoorWork(weather);
         if (!suitability.suitable) {
@@ -348,30 +380,30 @@ export class JobEnrichmentService {
         }
       }
 
-      // Water quality upsell
-      if (waterQuality?.recommendations.shouldInstallSoftener) {
+      if (waterQuality?.recommendations?.shouldInstallSoftener) {
+        // Water quality upsell
         upsellOpportunities.push(
           `Water Softener: ${waterQuality.recommendations.reason} (Save $${(waterQuality.recommendations.estimatedAnnualSavings || 0) / 100}/year)`
         );
       }
 
-      // Flood zone warning
       if (locationIntelligence?.floodZone?.inFloodZone) {
+        // Flood zone warning
         const zone = locationIntelligence.floodZone;
         if (zone.riskLevel === "high") {
           safetyWarnings.push(`Flood Zone ${zone.zone}: ${zone.description}`);
         }
       }
 
-      // Address validation warning
       if (addressValidation && !addressValidation.isValid) {
+        // Address validation warning
         safetyWarnings.push(
           `Address validation failed: ${addressValidation.error || "Invalid address"}`
         );
       }
 
-      // Property data-based upsells
       if (propertyData) {
+        // Property data-based upsells
         const estimates =
           propertyDataService.estimateCharacteristics(propertyData);
 
@@ -386,7 +418,7 @@ export class JobEnrichmentService {
         }
       }
 
-      return JobEnrichmentSchema.parse({
+      const enrichment: JobEnrichment = JobEnrichmentSchema.parse({
         jobId: job.id,
         location: {
           lat,
@@ -408,6 +440,7 @@ export class JobEnrichmentService {
         streetView,
         googlePlaces,
         timeZone,
+        traffic,
         recommendations: {
           shouldReschedule,
           rescheduleReason,
@@ -418,6 +451,14 @@ export class JobEnrichmentService {
         enrichedAt: new Date().toISOString(),
         sources,
       });
+
+      // Cache the result for 5 minutes
+      enrichmentCache.set(cacheKey, {
+        data: enrichment,
+        expires: Date.now() + CACHE_TTL_MS,
+      });
+
+      return enrichment;
     } catch (error) {
       console.error("Job enrichment error:", error);
 

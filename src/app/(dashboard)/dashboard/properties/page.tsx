@@ -1,7 +1,6 @@
 import { Building2 } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { notFound, redirect } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -41,7 +40,9 @@ export default async function PropertiesPage() {
     .single();
 
   if (!teamMember?.company_id) {
-    return notFound();
+    // User hasn't completed onboarding or doesn't have an active company membership
+    // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
   }
 
   // Fetch all properties
@@ -85,11 +86,10 @@ export default async function PropertiesPage() {
           {!properties || properties.length === 0 ? (
             <div className="py-8 text-center">
               <Building2 className="mx-auto size-12 text-muted-foreground" />
-              <p className="mt-4 text-muted-foreground">
-                No properties found
-              </p>
+              <p className="mt-4 text-muted-foreground">No properties found</p>
               <p className="mt-1 text-muted-foreground text-sm">
-                Properties are created automatically when you add customers or create jobs
+                Properties are created automatically when you add customers or
+                create jobs
               </p>
             </div>
           ) : (
@@ -101,9 +101,9 @@ export default async function PropertiesPage() {
 
                 return (
                   <Link
-                    key={property.id}
-                    href={`/dashboard/properties/${property.id}`}
                     className="block rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                    href={`/dashboard/properties/${property.id}`}
+                    key={property.id}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -112,7 +112,7 @@ export default async function PropertiesPage() {
                           <p className="font-medium">
                             {property.name || property.address}
                           </p>
-                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200 capitalize">
+                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-800 text-xs capitalize dark:bg-gray-800 dark:text-gray-200">
                             {property.type || "residential"}
                           </span>
                         </div>
@@ -124,7 +124,8 @@ export default async function PropertiesPage() {
                         {customer && (
                           <p className="mt-1 text-muted-foreground text-xs">
                             Owner: {customer.first_name} {customer.last_name}
-                            {customer.company_name && ` (${customer.company_name})`}
+                            {customer.company_name &&
+                              ` (${customer.company_name})`}
                           </p>
                         )}
                       </div>

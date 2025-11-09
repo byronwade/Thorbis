@@ -113,11 +113,7 @@ export async function searchJobsFullText(
   searchTerm: string,
   options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
-  const {
-    limit = 50,
-    offset = 0,
-    useFullTextSearch = true,
-  } = options;
+  const { limit = 50, offset = 0, useFullTextSearch = true } = options;
 
   if (!searchTerm || searchTerm.trim().length === 0) {
     return [];
@@ -167,11 +163,7 @@ export async function searchPropertiesFullText(
   searchTerm: string,
   options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
-  const {
-    limit = 50,
-    offset = 0,
-    useFullTextSearch = true,
-  } = options;
+  const { limit = 50, offset = 0, useFullTextSearch = true } = options;
 
   if (!searchTerm || searchTerm.trim().length === 0) {
     return [];
@@ -220,11 +212,7 @@ export async function searchPriceBookItemsFullText(
   searchTerm: string,
   options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
-  const {
-    limit = 100,
-    offset = 0,
-    useFullTextSearch = true,
-  } = options;
+  const { limit = 100, offset = 0, useFullTextSearch = true } = options;
 
   if (!searchTerm || searchTerm.trim().length === 0) {
     return [];
@@ -234,12 +222,15 @@ export async function searchPriceBookItemsFullText(
 
   // Use full-text search with ranking
   if (useFullTextSearch) {
-    const { data, error } = await supabase.rpc("search_price_book_items_ranked", {
-      company_id_param: companyId,
-      search_query: query,
-      result_limit: limit,
-      result_offset: offset,
-    });
+    const { data, error } = await supabase.rpc(
+      "search_price_book_items_ranked",
+      {
+        company_id_param: companyId,
+        search_query: query,
+        result_limit: limit,
+        result_offset: offset,
+      }
+    );
 
     if (!error && data) {
       return data;
@@ -273,11 +264,7 @@ export async function searchEquipmentFullText(
   searchTerm: string,
   options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
-  const {
-    limit = 50,
-    offset = 0,
-    useFullTextSearch = true,
-  } = options;
+  const { limit = 50, offset = 0, useFullTextSearch = true } = options;
 
   if (!searchTerm || searchTerm.trim().length === 0) {
     return [];
@@ -335,13 +322,29 @@ export async function searchAllEntities(
 }> {
   const defaultLimit = options.limit || 10; // Limit per entity
 
-  const [customers, jobs, properties, equipment, priceBookItems] = await Promise.all([
-    searchCustomersFullText(supabase, companyId, searchTerm, { ...options, limit: defaultLimit }),
-    searchJobsFullText(supabase, companyId, searchTerm, { ...options, limit: defaultLimit }),
-    searchPropertiesFullText(supabase, companyId, searchTerm, { ...options, limit: defaultLimit }),
-    searchEquipmentFullText(supabase, companyId, searchTerm, { ...options, limit: defaultLimit }),
-    searchPriceBookItemsFullText(supabase, companyId, searchTerm, { ...options, limit: defaultLimit }),
-  ]);
+  const [customers, jobs, properties, equipment, priceBookItems] =
+    await Promise.all([
+      searchCustomersFullText(supabase, companyId, searchTerm, {
+        ...options,
+        limit: defaultLimit,
+      }),
+      searchJobsFullText(supabase, companyId, searchTerm, {
+        ...options,
+        limit: defaultLimit,
+      }),
+      searchPropertiesFullText(supabase, companyId, searchTerm, {
+        ...options,
+        limit: defaultLimit,
+      }),
+      searchEquipmentFullText(supabase, companyId, searchTerm, {
+        ...options,
+        limit: defaultLimit,
+      }),
+      searchPriceBookItemsFullText(supabase, companyId, searchTerm, {
+        ...options,
+        limit: defaultLimit,
+      }),
+    ]);
 
   return {
     customers,

@@ -11,6 +11,21 @@
  */
 
 import {
+  AlertCircle,
+  AlertTriangle,
+  Check,
+  CreditCard,
+  Loader2,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  getInvoicePaymentDetails,
+  payInvoiceWithSavedCard,
+} from "@/actions/invoice-payments";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -18,21 +33,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import {
-  CreditCard,
-  Check,
-  AlertCircle,
-  Loader2,
-  AlertTriangle,
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import {
-  getInvoicePaymentDetails,
-  payInvoiceWithSavedCard,
-} from "@/actions/invoice-payments";
 
 interface QuickPayDialogProps {
   open: boolean;
@@ -78,7 +78,7 @@ export function QuickPayDialog({
         setDefaultPaymentMethod(result.paymentMethods[0]);
       } else {
         setError(
-          "No payment methods found. Please add a payment method first.",
+          "No payment methods found. Please add a payment method first."
         );
       }
     } else {
@@ -88,12 +88,11 @@ export function QuickPayDialog({
     setIsLoading(false);
   };
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   const handleConfirmPayment = async () => {
     if (!defaultPaymentMethod) {
@@ -125,7 +124,7 @@ export function QuickPayDialog({
 
   if (isLoading) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog onOpenChange={onOpenChange} open={open}>
         <DialogContent className="sm:max-w-[450px]">
           <div className="flex items-center justify-center py-8">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -137,7 +136,7 @@ export function QuickPayDialog({
 
   if (success) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog onOpenChange={onOpenChange} open={open}>
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
             <DialogTitle>Payment Successful</DialogTitle>
@@ -146,7 +145,7 @@ export function QuickPayDialog({
             <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-success/10">
               <Check className="size-8 text-success" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Payment Successful!</h3>
+            <h3 className="mb-2 font-semibold text-lg">Payment Successful!</h3>
             <p className="text-center text-muted-foreground text-sm">
               {formatCurrency(amount)} paid for invoice {invoiceNumber}
             </p>
@@ -157,7 +156,7 @@ export function QuickPayDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle>Confirm Payment</DialogTitle>
@@ -171,7 +170,7 @@ export function QuickPayDialog({
           <div className="rounded-lg border bg-muted/30 p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm">Amount to Pay:</span>
-              <span className="text-xl font-bold">
+              <span className="font-bold text-xl">
                 {formatCurrency(amount)}
               </span>
             </div>
@@ -186,7 +185,7 @@ export function QuickPayDialog({
               <div className="flex items-center gap-3">
                 <span className="text-2xl">💳</span>
                 <div>
-                  <p className="text-sm font-medium">
+                  <p className="font-medium text-sm">
                     {defaultPaymentMethod.card_brand.toUpperCase()} ••••{" "}
                     {defaultPaymentMethod.card_last4}
                   </p>
@@ -194,7 +193,7 @@ export function QuickPayDialog({
                     Expires{" "}
                     {String(defaultPaymentMethod.card_exp_month).padStart(
                       2,
-                      "0",
+                      "0"
                     )}
                     /{defaultPaymentMethod.card_exp_year}
                     {defaultPaymentMethod.nickname &&
@@ -202,7 +201,7 @@ export function QuickPayDialog({
                   </p>
                 </div>
                 {defaultPaymentMethod.is_default && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
+                  <Badge className="ml-auto text-xs" variant="secondary">
                     Default
                   </Badge>
                 )}
@@ -239,15 +238,15 @@ export function QuickPayDialog({
 
         <DialogFooter>
           <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
             disabled={isProcessing}
+            onClick={() => onOpenChange(false)}
+            variant="outline"
           >
             Cancel
           </Button>
           <Button
-            onClick={handleConfirmPayment}
             disabled={isProcessing || !defaultPaymentMethod}
+            onClick={handleConfirmPayment}
           >
             {isProcessing ? (
               <>

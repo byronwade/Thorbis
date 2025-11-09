@@ -11,7 +11,12 @@
 
 "use client";
 
+import { Check, DollarSign, Loader2, Phone, Search } from "lucide-react";
 import { useState } from "react";
+import { purchasePhoneNumber, searchPhoneNumbers } from "@/actions/telnyx";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -29,17 +33,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Phone, DollarSign, Check, Loader2 } from "lucide-react";
-import { searchPhoneNumbers, purchasePhoneNumber } from "@/actions/telnyx";
 
 interface PhoneNumberSearchModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearchModalProps) {
+export function PhoneNumberSearchModal({
+  open,
+  onOpenChange,
+}: PhoneNumberSearchModalProps) {
   const [areaCode, setAreaCode] = useState("831");
   const [numberType, setNumberType] = useState<"local" | "toll-free">("local");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
@@ -88,7 +91,7 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Search Phone Numbers</DialogTitle>
@@ -104,19 +107,22 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
               <Label htmlFor="areaCode">Area Code (Optional)</Label>
               <Input
                 id="areaCode"
+                maxLength={3}
+                onChange={(e) => setAreaCode(e.target.value)}
                 placeholder="e.g., 831, 650, 415"
                 value={areaCode}
-                onChange={(e) => setAreaCode(e.target.value)}
-                maxLength={3}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Leave empty to search all area codes
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="numberType">Number Type</Label>
-              <Select value={numberType} onValueChange={(v: any) => setNumberType(v)}>
+              <Select
+                onValueChange={(v: any) => setNumberType(v)}
+                value={numberType}
+              >
                 <SelectTrigger id="numberType">
                   <SelectValue />
                 </SelectTrigger>
@@ -124,13 +130,17 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
                   <SelectItem value="local">
                     <div className="flex items-center justify-between gap-4">
                       <span>Local Number</span>
-                      <span className="text-xs text-muted-foreground">$1/month</span>
+                      <span className="text-muted-foreground text-xs">
+                        $1/month
+                      </span>
                     </div>
                   </SelectItem>
                   <SelectItem value="toll-free">
                     <div className="flex items-center justify-between gap-4">
                       <span>Toll-Free (800/888/877/866/855)</span>
-                      <span className="text-xs text-muted-foreground">$2/month</span>
+                      <span className="text-muted-foreground text-xs">
+                        $2/month
+                      </span>
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -144,26 +154,26 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  id="voice"
                   checked={voiceEnabled}
+                  id="voice"
                   onCheckedChange={(checked) => setVoiceEnabled(!!checked)}
                 />
                 <label
+                  className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   htmlFor="voice"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   Voice Calling
                 </label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  id="sms"
                   checked={smsEnabled}
+                  id="sms"
                   onCheckedChange={(checked) => setSmsEnabled(!!checked)}
                 />
                 <label
+                  className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   htmlFor="sms"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   SMS/MMS Messaging
                 </label>
@@ -173,9 +183,9 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
 
           {/* Search Button */}
           <Button
-            onClick={handleSearch}
-            disabled={searching}
             className="w-full"
+            disabled={searching}
+            onClick={handleSearch}
             size="lg"
           >
             {searching ? (
@@ -196,7 +206,7 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Available Numbers ({results.length})</Label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Click to purchase instantly
                 </p>
               </div>
@@ -204,8 +214,8 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
               <div className="max-h-[400px] space-y-2 overflow-y-auto rounded-lg border p-2">
                 {results.map((number: any) => (
                   <div
-                    key={number.phone_number}
                     className="flex items-center justify-between rounded-md border bg-card p-3 transition-colors hover:bg-accent"
+                    key={number.phone_number}
                   >
                     <div className="flex items-center gap-3">
                       <Phone className="size-4 text-muted-foreground" />
@@ -215,7 +225,11 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {number.features?.map((feature: string) => (
-                            <Badge key={feature} variant="secondary" className="text-xs">
+                            <Badge
+                              className="text-xs"
+                              key={feature}
+                              variant="secondary"
+                            >
                               {feature.toUpperCase()}
                             </Badge>
                           ))}
@@ -225,18 +239,18 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
 
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <div className="flex items-center gap-1 text-sm font-medium">
+                        <div className="flex items-center gap-1 font-medium text-sm">
                           <DollarSign className="size-3" />
                           {numberType === "toll-free" ? "2.00" : "1.00"}/mo
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           $0 setup fee
                         </div>
                       </div>
 
                       <Button
-                        onClick={() => handlePurchase(number.phone_number)}
                         disabled={!!purchasing}
+                        onClick={() => handlePurchase(number.phone_number)}
                         size="sm"
                       >
                         {purchasing === number.phone_number ? (
@@ -262,7 +276,7 @@ export function PhoneNumberSearchModal({ open, onOpenChange }: PhoneNumberSearch
           {!searching && results.length === 0 && areaCode && (
             <div className="rounded-lg border border-dashed p-8 text-center">
               <Phone className="mx-auto mb-2 size-8 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 No numbers found. Try a different area code or search all areas.
               </p>
             </div>

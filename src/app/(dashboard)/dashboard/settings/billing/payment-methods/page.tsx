@@ -7,13 +7,13 @@
  * - Only interactive parts are client components
  */
 
-import { Suspense } from "react";
 import { Plus } from "lucide-react";
+import { Suspense } from "react";
+import { getPaymentMethods } from "@/actions/payment-methods";
+import { PaymentMethodsList } from "@/components/billing/payment-methods-list";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PaymentMethodsList } from "@/components/billing/payment-methods-list";
-import { getPaymentMethods } from "@/actions/payment-methods";
 
 /**
  * Payment Methods Loading Skeleton
@@ -22,7 +22,7 @@ function PaymentMethodsLoading() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
-        <Card key={i} className="p-4">
+        <Card className="p-4" key={i}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Skeleton className="size-4" />
@@ -74,7 +74,7 @@ export default function PaymentMethodsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Payment Methods</h1>
+          <h1 className="font-bold text-4xl tracking-tight">Payment Methods</h1>
           <p className="text-muted-foreground">
             Manage your saved payment methods and set defaults
           </p>
@@ -89,16 +89,18 @@ export default function PaymentMethodsPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="p-4">
           <h3 className="font-semibold">Apple Pay & Google Pay</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            When you use Apple Pay or Google Pay, your payment details are securely saved for
-            future purchases. You can manage these payment methods below.
+          <p className="mt-2 text-muted-foreground text-sm">
+            When you use Apple Pay or Google Pay, your payment details are
+            securely saved for future purchases. You can manage these payment
+            methods below.
           </p>
         </Card>
         <Card className="p-4">
           <h3 className="font-semibold">Default Payment Methods</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Set a default payment method for one-time purchases and a separate default for
-            subscription payments. This makes checkout faster and more convenient.
+          <p className="mt-2 text-muted-foreground text-sm">
+            Set a default payment method for one-time purchases and a separate
+            default for subscription payments. This makes checkout faster and
+            more convenient.
           </p>
         </Card>
       </div>
@@ -111,22 +113,23 @@ export default function PaymentMethodsPage() {
       {/* Additional Info */}
       <Card className="border-muted-foreground/20 bg-muted/50 p-4">
         <h3 className="font-semibold">How it works</h3>
-        <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+        <ul className="mt-2 space-y-2 text-muted-foreground text-sm">
           <li>
-            • <strong>Apple Pay & Google Pay:</strong> When you complete a payment using Apple Pay
-            or Google Pay, the underlying card is securely saved to your account.
+            • <strong>Apple Pay & Google Pay:</strong> When you complete a
+            payment using Apple Pay or Google Pay, the underlying card is
+            securely saved to your account.
           </li>
           <li>
-            • <strong>Default Payment:</strong> Your default payment method is automatically
-            selected for one-time purchases to speed up checkout.
+            • <strong>Default Payment:</strong> Your default payment method is
+            automatically selected for one-time purchases to speed up checkout.
           </li>
           <li>
-            • <strong>Subscription Default:</strong> Set a separate default payment method for
-            recurring subscription charges.
+            • <strong>Subscription Default:</strong> Set a separate default
+            payment method for recurring subscription charges.
           </li>
           <li>
-            • <strong>Security:</strong> All payment information is securely stored with Stripe and
-            protected by bank-level encryption.
+            • <strong>Security:</strong> All payment information is securely
+            stored with Stripe and protected by bank-level encryption.
           </li>
         </ul>
       </Card>

@@ -24,14 +24,10 @@ export function KBTableOfContents({
   }
 
   return (
-    <nav
-      className={cn("space-y-1", className)}
-      aria-label="Table of contents"
-    >
+    <nav aria-label="Table of contents" className={cn("space-y-1", className)}>
       <ul className="space-y-1">
         {toc.map((item) => (
           <li
-            key={item.id}
             className={cn(
               "text-sm",
               item.level === 1 && "font-medium",
@@ -39,10 +35,11 @@ export function KBTableOfContents({
               item.level === 3 && "pl-8",
               item.level >= 4 && "pl-12"
             )}
+            key={item.id}
           >
             <Link
+              className="block rounded-md px-2 py-1 text-muted-foreground transition-colors hover:text-sidebar-accent-foreground"
               href={`#${item.id}`}
-              className="text-muted-foreground hover:text-sidebar-accent-foreground block rounded-md px-2 py-1 transition-colors"
             >
               {item.text}
             </Link>
@@ -52,4 +49,3 @@ export function KBTableOfContents({
     </nav>
   );
 }
-

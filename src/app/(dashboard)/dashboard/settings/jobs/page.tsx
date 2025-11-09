@@ -24,9 +24,8 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import { getJobSettings, updateJobSettings } from "@/actions/settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -51,6 +50,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const MIN_JOB_NUMBER = 1000;
@@ -158,14 +158,19 @@ export default function JobsSettingsPage() {
             jobNumberPrefix: result.data.job_number_prefix || "JOB",
             nextJobNumber: result.data.next_job_number || 1,
             defaultJobStatus: result.data.default_job_status || "scheduled",
-            requireCustomerSignature: result.data.require_customer_signature ?? false,
+            requireCustomerSignature:
+              result.data.require_customer_signature ?? false,
             requirePhotoBefore: result.data.require_photo_completion ?? false,
             requirePhotoAfter: result.data.require_photo_completion ?? false,
-            autoGenerateInvoiceOnComplete: result.data.auto_invoice_on_completion ?? false,
-            sendJobCompletionEmail: result.data.auto_send_completion_email ?? true,
+            autoGenerateInvoiceOnComplete:
+              result.data.auto_invoice_on_completion ?? false,
+            sendJobCompletionEmail:
+              result.data.auto_send_completion_email ?? true,
             requireTimeTracking: result.data.track_technician_time ?? true,
-            requireArrivalConfirmation: result.data.require_arrival_confirmation ?? false,
-            requireCompletionNotes: result.data.require_completion_notes ?? true,
+            requireArrivalConfirmation:
+              result.data.require_arrival_confirmation ?? false,
+            requireCompletionNotes:
+              result.data.require_completion_notes ?? true,
           }));
         }
       } catch (error) {
@@ -194,13 +199,34 @@ export default function JobsSettingsPage() {
       formData.append("jobNumberPrefix", settings.jobNumberPrefix);
       formData.append("nextJobNumber", settings.nextJobNumber.toString());
       formData.append("defaultJobStatus", settings.defaultJobStatus);
-      formData.append("requireCustomerSignature", settings.requireCustomerSignature.toString());
-      formData.append("requirePhotoCompletion", settings.requirePhotoAfter.toString());
-      formData.append("autoInvoiceOnCompletion", settings.autoGenerateInvoiceOnComplete.toString());
-      formData.append("autoSendCompletionEmail", settings.sendJobCompletionEmail.toString());
-      formData.append("trackTechnicianTime", settings.requireTimeTracking.toString());
-      formData.append("requireArrivalConfirmation", settings.requireArrivalConfirmation.toString());
-      formData.append("requireCompletionNotes", settings.requireCompletionNotes.toString());
+      formData.append(
+        "requireCustomerSignature",
+        settings.requireCustomerSignature.toString()
+      );
+      formData.append(
+        "requirePhotoCompletion",
+        settings.requirePhotoAfter.toString()
+      );
+      formData.append(
+        "autoInvoiceOnCompletion",
+        settings.autoGenerateInvoiceOnComplete.toString()
+      );
+      formData.append(
+        "autoSendCompletionEmail",
+        settings.sendJobCompletionEmail.toString()
+      );
+      formData.append(
+        "trackTechnicianTime",
+        settings.requireTimeTracking.toString()
+      );
+      formData.append(
+        "requireArrivalConfirmation",
+        settings.requireArrivalConfirmation.toString()
+      );
+      formData.append(
+        "requireCompletionNotes",
+        settings.requireCompletionNotes.toString()
+      );
 
       const result = await updateJobSettings(formData);
 

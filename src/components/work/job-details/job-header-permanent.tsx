@@ -122,8 +122,25 @@ export function JobHeaderPermanent({
 
   // Get full address
   const fullAddress = property
-    ? `${property.address}${property.address2 ? `, ${property.address2}` : ""}, ${property.city}, ${property.state} ${property.zipCode}`
+    ? `${property.address}${property.address2 ? `, ${property.address2}` : ""}, ${property.city}, ${property.state} ${property.zip_code || property.zipCode || ""}`
     : null;
+
+  // Build Google Maps URL - prefer coordinates if available
+  const getDirectionsUrl = () => {
+    if (!property) return null;
+
+    if (property.lat && property.lon) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lon}`;
+    }
+
+    if (fullAddress) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
+    }
+
+    return null;
+  };
+
+  const directionsUrl = getDirectionsUrl();
 
   // Get customer display name
   const customerName = customer
@@ -170,9 +187,6 @@ export function JobHeaderPermanent({
       : null;
 
   // Map URL for navigation
-  const mapUrl = fullAddress
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`
-    : null;
 
   return (
     <div className="space-y-4">
@@ -272,18 +286,25 @@ export function JobHeaderPermanent({
                         {property.address}
                         {property.address2 && `, ${property.address2}`}
                         <br />
-                        {property.city}, {property.state} {property.zipCode}
+                        {property.city}, {property.state}{" "}
+                        {property.zip_code || property.zipCode}
                       </p>
-                      {mapUrl && (
-                        <a
-                          className="mt-1 inline-flex items-center gap-1 text-primary text-xs hover:underline"
-                          href={mapUrl}
-                          rel="noopener noreferrer"
-                          target="_blank"
+                      {directionsUrl && (
+                        <Button
+                          asChild
+                          className="mt-2 h-8 gap-1.5 text-xs"
+                          size="sm"
+                          variant="outline"
                         >
-                          <Navigation className="size-3" />
-                          Get Directions
-                        </a>
+                          <a
+                            href={directionsUrl}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            <Navigation className="size-3.5" />
+                            Get Directions
+                          </a>
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -294,9 +315,22 @@ export function JobHeaderPermanent({
               )}
 
               {/* Operational Intelligence - Inline */}
-              {enrichmentData && (
-                <JobEnrichmentInline enrichmentData={enrichmentData} />
-              )}
+              <JobEnrichmentInline
+                enrichmentData={enrichmentData}
+                jobId={job.id}
+                property={
+                  property
+                    ? {
+                        address: property.address,
+                        city: property.city,
+                        state: property.state,
+                        zip_code: property.zip_code,
+                        lat: property.lat,
+                        lon: property.lon,
+                      }
+                    : undefined
+                }
+              />
             </div>
 
             {/* Center Section - Appointment Card */}
@@ -449,15 +483,11 @@ export function JobHeaderPermanent({
           </Button>
         )}
 
-        {fullAddress && (
+        {directionsUrl && (
           <Button asChild size="sm" variant="outline">
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <a href={directionsUrl} rel="noopener noreferrer" target="_blank">
               <Navigation className="mr-2 size-4" />
-              Navigate
+              Get Directions
             </a>
           </Button>
         )}

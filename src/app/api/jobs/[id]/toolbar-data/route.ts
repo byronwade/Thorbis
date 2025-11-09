@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/auth/session";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { getCurrentUser } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Get job data for toolbar statistics
@@ -29,10 +29,7 @@ export async function GET(
 
     const activeCompanyId = await getActiveCompanyId();
     if (!activeCompanyId) {
-      return NextResponse.json(
-        { error: "No active company" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "No active company" }, { status: 403 });
     }
 
     // Fetch job
@@ -68,7 +65,9 @@ export async function GET(
         .is("deleted_at", null),
       supabase
         .from("job_team_assignments")
-        .select("*, team_member:team_members!team_member_id(*, users!user_id(*))")
+        .select(
+          "*, team_member:team_members!team_member_id(*, users!user_id(*))"
+        )
         .eq("job_id", jobId),
       supabase
         .from("invoices")
@@ -89,7 +88,8 @@ export async function GET(
 
     // Calculate metrics
     const totalLaborHours =
-      timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+      timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) ||
+      0;
 
     const materialsCost = (invoices || []).reduce((total, invoice) => {
       const items = invoice.line_items || [];
@@ -142,4 +142,3 @@ export async function GET(
     );
   }
 }
-

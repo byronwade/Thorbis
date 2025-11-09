@@ -20,12 +20,11 @@ import {
   MoreVertical,
   Search,
   Shield,
-  Trash2,
   UserPlus,
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,19 +140,29 @@ export default function TeamMembersPage() {
           // Transform database format to component format
           const members = result.data.map((member: any) => ({
             id: member.id,
-            name: member.user?.name || member.user?.email?.split("@")[0] || "Unknown",
+            name:
+              member.user?.name ||
+              member.user?.email?.split("@")[0] ||
+              "Unknown",
             email: member.user?.email || "",
             roleId: member.role_id || "4",
             roleName: member.role?.name || "Team Member",
             roleColor: member.role?.color || getRoleColor(member.role?.name),
             departmentId: member.department_id || "1",
             departmentName: member.department?.name || "General",
-            departmentColor: member.department?.color || getDepartmentColor(member.department?.name),
+            departmentColor:
+              member.department?.color ||
+              getDepartmentColor(member.department?.name),
             status: member.status || "active",
             jobTitle: member.job_title || "Team Member",
-            joinedDate: member.joined_at ? new Date(member.joined_at).toLocaleDateString() :
-                       member.invited_at ? new Date(member.invited_at).toLocaleDateString() : "",
-            lastActive: member.last_active_at ? getRelativeTime(new Date(member.last_active_at)) : "Never",
+            joinedDate: member.joined_at
+              ? new Date(member.joined_at).toLocaleDateString()
+              : member.invited_at
+                ? new Date(member.invited_at).toLocaleDateString()
+                : "",
+            lastActive: member.last_active_at
+              ? getRelativeTime(new Date(member.last_active_at))
+              : "Never",
           }));
           setTeamMembers(members);
         }
@@ -191,12 +200,13 @@ export default function TeamMembersPage() {
   function getRelativeTime(date: Date): string {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
+    const diffMins = Math.floor(diffMs / 60_000);
 
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins} min ago`;
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    if (diffHours < 24)
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   }

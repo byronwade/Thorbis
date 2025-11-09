@@ -12,8 +12,7 @@ const siteName = "Thorbis";
 export async function GET() {
   const result = await getKBArticles({ limit: 50 });
 
-  const articles =
-    result.success && result.articles ? result.articles : [];
+  const articles = result.success && result.articles ? result.articles : [];
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -40,7 +39,10 @@ export async function GET() {
       <pubDate>${pubDate}</pubDate>
       <category><![CDATA[${article.category.title}]]></category>
       ${article.tags
-        ?.map((tag: { name: string }) => `<category><![CDATA[${tag.name}]]></category>`)
+        ?.map(
+          (tag: { name: string }) =>
+            `<category><![CDATA[${tag.name}]]></category>`
+        )
         .join("\n      ")}
     </item>`;
       })
@@ -55,4 +57,3 @@ export async function GET() {
     },
   });
 }
-

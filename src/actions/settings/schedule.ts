@@ -79,13 +79,15 @@ export async function updateAvailabilitySettings(
 
     const data = availabilitySettingsSchema.parse({
       defaultWorkHours: formData.get("defaultWorkHours") as string,
-      defaultAppointmentDurationMinutes: formData.get("defaultAppointmentDurationMinutes") || "60",
+      defaultAppointmentDurationMinutes:
+        formData.get("defaultAppointmentDurationMinutes") || "60",
       bufferTimeMinutes: formData.get("bufferTimeMinutes") || "15",
       minBookingNoticeHours: formData.get("minBookingNoticeHours") || "24",
       maxBookingAdvanceDays: formData.get("maxBookingAdvanceDays") || "90",
       lunchBreakEnabled: formData.get("lunchBreakEnabled") !== "false",
       lunchBreakStart: formData.get("lunchBreakStart") || "12:00",
-      lunchBreakDurationMinutes: formData.get("lunchBreakDurationMinutes") || "60",
+      lunchBreakDurationMinutes:
+        formData.get("lunchBreakDurationMinutes") || "60",
     });
 
     let workHoursJson;
@@ -103,7 +105,8 @@ export async function updateAvailabilitySettings(
       .upsert({
         company_id: companyId,
         default_work_hours: workHoursJson,
-        default_appointment_duration_minutes: data.defaultAppointmentDurationMinutes,
+        default_appointment_duration_minutes:
+          data.defaultAppointmentDurationMinutes,
         buffer_time_minutes: data.bufferTimeMinutes,
         min_booking_notice_hours: data.minBookingNoticeHours,
         max_booking_advance_days: data.maxBookingAdvanceDays,
@@ -206,21 +209,19 @@ export async function updateCalendarSettings(
       syncWithOutlook: formData.get("syncWithOutlook") === "true",
     });
 
-    const { error } = await supabase
-      .from("schedule_calendar_settings")
-      .upsert({
-        company_id: companyId,
-        default_view: data.defaultView,
-        start_day_of_week: data.startDayOfWeek,
-        time_slot_duration_minutes: data.timeSlotDurationMinutes,
-        show_technician_colors: data.showTechnicianColors,
-        show_job_status_colors: data.showJobStatusColors,
-        show_travel_time: data.showTravelTime,
-        show_customer_name: data.showCustomerName,
-        show_job_type: data.showJobType,
-        sync_with_google_calendar: data.syncWithGoogleCalendar,
-        sync_with_outlook: data.syncWithOutlook,
-      });
+    const { error } = await supabase.from("schedule_calendar_settings").upsert({
+      company_id: companyId,
+      default_view: data.defaultView,
+      start_day_of_week: data.startDayOfWeek,
+      time_slot_duration_minutes: data.timeSlotDurationMinutes,
+      show_technician_colors: data.showTechnicianColors,
+      show_job_status_colors: data.showJobStatusColors,
+      show_travel_time: data.showTravelTime,
+      show_customer_name: data.showCustomerName,
+      show_job_type: data.showJobType,
+      sync_with_google_calendar: data.syncWithGoogleCalendar,
+      sync_with_outlook: data.syncWithOutlook,
+    });
 
     if (error) {
       throw new ActionError(
@@ -316,21 +317,19 @@ export async function updateTeamSchedulingRules(
       breakDurationMinutes: formData.get("breakDurationMinutes") || "15",
     });
 
-    const { error } = await supabase
-      .from("schedule_team_rules")
-      .upsert({
-        company_id: companyId,
-        max_jobs_per_day: data.maxJobsPerDay,
-        max_jobs_per_week: data.maxJobsPerWeek,
-        allow_overtime: data.allowOvertime,
-        prefer_same_technician: data.preferSameTechnician,
-        balance_workload: data.balanceWorkload,
-        optimize_for_travel_time: data.optimizeForTravelTime,
-        max_travel_time_minutes: data.maxTravelTimeMinutes,
-        require_breaks: data.requireBreaks,
-        break_after_hours: data.breakAfterHours,
-        break_duration_minutes: data.breakDurationMinutes,
-      });
+    const { error } = await supabase.from("schedule_team_rules").upsert({
+      company_id: companyId,
+      max_jobs_per_day: data.maxJobsPerDay,
+      max_jobs_per_week: data.maxJobsPerWeek,
+      allow_overtime: data.allowOvertime,
+      prefer_same_technician: data.preferSameTechnician,
+      balance_workload: data.balanceWorkload,
+      optimize_for_travel_time: data.optimizeForTravelTime,
+      max_travel_time_minutes: data.maxTravelTimeMinutes,
+      require_breaks: data.requireBreaks,
+      break_after_hours: data.breakAfterHours,
+      break_duration_minutes: data.breakDurationMinutes,
+    });
 
     if (error) {
       throw new ActionError(
@@ -383,7 +382,9 @@ export async function getTeamSchedulingRules(): Promise<ActionResult<any>> {
 
 const serviceAreaSchema = z.object({
   areaName: z.string().min(1, "Area name is required"),
-  areaType: z.enum(["zip_code", "radius", "polygon", "city", "state"]).default("zip_code"),
+  areaType: z
+    .enum(["zip_code", "radius", "polygon", "city", "state"])
+    .default("zip_code"),
   zipCodes: z.string().optional(), // Comma-separated
   centerLat: z.coerce.number().optional(),
   centerLng: z.coerce.number().optional(),
@@ -424,7 +425,8 @@ export async function createServiceArea(
       polygonCoordinates: formData.get("polygonCoordinates") || undefined,
       serviceFee: formData.get("serviceFee") || "0",
       minimumJobAmount: formData.get("minimumJobAmount") || undefined,
-      estimatedTravelTimeMinutes: formData.get("estimatedTravelTimeMinutes") || undefined,
+      estimatedTravelTimeMinutes:
+        formData.get("estimatedTravelTimeMinutes") || undefined,
       isActive: formData.get("isActive") !== "false",
     });
 
@@ -507,7 +509,8 @@ export async function updateServiceArea(
       polygonCoordinates: formData.get("polygonCoordinates") || undefined,
       serviceFee: formData.get("serviceFee") || "0",
       minimumJobAmount: formData.get("minimumJobAmount") || undefined,
-      estimatedTravelTimeMinutes: formData.get("estimatedTravelTimeMinutes") || undefined,
+      estimatedTravelTimeMinutes:
+        formData.get("estimatedTravelTimeMinutes") || undefined,
       isActive: formData.get("isActive") !== "false",
     });
 
@@ -556,7 +559,9 @@ export async function updateServiceArea(
   });
 }
 
-export async function deleteServiceArea(areaId: string): Promise<ActionResult<void>> {
+export async function deleteServiceArea(
+  areaId: string
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

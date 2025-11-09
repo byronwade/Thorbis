@@ -6,8 +6,8 @@
  * Shows back button to jobs list
  */
 
-import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export function JobDetailBreadcrumbs() {
@@ -16,10 +16,10 @@ export function JobDetailBreadcrumbs() {
   return (
     <div className="flex items-center gap-2">
       <Button
+        className="gap-2"
+        onClick={() => router.push("/dashboard/work")}
         size="sm"
         variant="ghost"
-        onClick={() => router.push("/dashboard/work")}
-        className="gap-2"
       >
         <ArrowLeft className="size-4" />
         Jobs
@@ -29,4 +29,3 @@ export function JobDetailBreadcrumbs() {
     </div>
   );
 }
-

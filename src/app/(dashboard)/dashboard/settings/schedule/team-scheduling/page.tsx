@@ -9,10 +9,12 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Save, Users, Loader2 } from "lucide-react";
+import { HelpCircle, Loader2, Save, Users } from "lucide-react";
+import {
+  getTeamSchedulingRules,
+  updateTeamSchedulingRules,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getTeamSchedulingRules, updateTeamSchedulingRules } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,34 +39,42 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 export default function TeamSchedulingSettingsPage() {
-  const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings } = useSettings({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings({
     getter: getTeamSchedulingRules,
     setter: updateTeamSchedulingRules,
     initialState: {
-    allowTechnicianScheduleView: true,
-    allowTechnicianScheduleEdit: false,
-    technicianCanSwapJobs: true,
-    technicianCanRequestTimeOff: true,
-    requireTimeOffApproval: true,
-    timeOffLeadTime: 7,
-    allowMultipleTechniciansPerJob: true,
-    defaultCrewSize: 1,
-    maxCrewSize: 4,
-    enforceCrewSkillRequirements: true,
-    shareJobNotesBetweenCrew: true,
-    trackIndividualTimeForCrew: true,
-    allowSplitCommission: true,
-    showTeamCalendar: true,
-    calendarDefaultView: "week",
-    colorCodeByTechnician: true,
-    showTechnicianPhoto: true,
-    showJobDetails: true,
-    enableDragDropRescheduling: true,
-    sendRescheduleNotifications: true,
-    allowOvertimeBooking: false,
-    overtimeThreshold: 40,
-    overtimeApprovalRequired: true,
+      allowTechnicianScheduleView: true,
+      allowTechnicianScheduleEdit: false,
+      technicianCanSwapJobs: true,
+      technicianCanRequestTimeOff: true,
+      requireTimeOffApproval: true,
+      timeOffLeadTime: 7,
+      allowMultipleTechniciansPerJob: true,
+      defaultCrewSize: 1,
+      maxCrewSize: 4,
+      enforceCrewSkillRequirements: true,
+      shareJobNotesBetweenCrew: true,
+      trackIndividualTimeForCrew: true,
+      allowSplitCommission: true,
+      showTeamCalendar: true,
+      calendarDefaultView: "week",
+      colorCodeByTechnician: true,
+      showTechnicianPhoto: true,
+      showJobDetails: true,
+      enableDragDropRescheduling: true,
+      sendRescheduleNotifications: true,
+      allowOvertimeBooking: false,
+      overtimeThreshold: 40,
+      overtimeApprovalRequired: true,
     },
     settingsName: "team scheduling",
     transformLoad: (data) => ({
@@ -77,7 +87,10 @@ export default function TeamSchedulingSettingsPage() {
       const formData = new FormData();
       formData.append("maxJobsPerDay", "8");
       formData.append("maxJobsPerWeek", settings.overtimeThreshold.toString());
-      formData.append("allowOvertime", settings.allowOvertimeBooking.toString());
+      formData.append(
+        "allowOvertime",
+        settings.allowOvertimeBooking.toString()
+      );
       formData.append("preferSameTechnician", "true");
       formData.append("balanceWorkload", "true");
       formData.append("optimizeForTravelTime", "true");
@@ -111,7 +124,7 @@ export default function TeamSchedulingSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={() => saveSettings()} disabled={isPending}>
+            <Button disabled={isPending} onClick={() => saveSettings()}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

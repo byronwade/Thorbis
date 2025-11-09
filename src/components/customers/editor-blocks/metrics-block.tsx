@@ -10,23 +10,22 @@
  * Read-only display block (metrics calculated from database)
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
-import type { NodeViewProps } from "@tiptap/react";
-import { DollarSign, Briefcase, MapPin, AlertCircle } from "lucide-react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
+import { AlertCircle, Briefcase, DollarSign, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 // React component that renders the block
 export function MetricsBlockComponent({ node }: any) {
-  const { totalRevenue, totalJobs, totalProperties, outstandingBalance } = node.attrs;
+  const { totalRevenue, totalJobs, totalProperties, outstandingBalance } =
+    node.attrs;
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   const metrics = [
     {
@@ -55,7 +54,10 @@ export function MetricsBlockComponent({ node }: any) {
       value: formatCurrency(outstandingBalance || 0),
       icon: AlertCircle,
       iconColor: outstandingBalance > 0 ? "text-orange-600" : "text-gray-600",
-      bgColor: outstandingBalance > 0 ? "bg-orange-50 dark:bg-orange-950" : "bg-gray-50 dark:bg-gray-950",
+      bgColor:
+        outstandingBalance > 0
+          ? "bg-orange-50 dark:bg-orange-950"
+          : "bg-gray-50 dark:bg-gray-950",
     },
   ];
 
@@ -67,11 +69,11 @@ export function MetricsBlockComponent({ node }: any) {
           {metrics.map((metric) => {
             const Icon = metric.icon;
             return (
-              <Card key={metric.label} className="overflow-hidden">
+              <Card className="overflow-hidden" key={metric.label}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-muted-foreground text-sm font-medium">
+                      <p className="font-medium text-muted-foreground text-sm">
                         {metric.label}
                       </p>
                       <p className="mt-2 font-bold text-2xl">{metric.value}</p>
@@ -124,7 +126,11 @@ export const MetricsBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "metrics-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, { "data-type": "metrics-block" }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -135,12 +141,11 @@ export const MetricsBlock = Node.create({
     return {
       insertMetricsBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

@@ -6,17 +6,16 @@
 
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Briefcase,
   Building2,
   DollarSign,
-  Home,
   MapPin,
   Star,
   TrendingUp,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface EnrichmentPreviewCardProps {
   enrichmentData: any;
@@ -48,27 +47,27 @@ export function EnrichmentPreviewCard({
     return (
       <div className="flex flex-wrap gap-2">
         {personData?.jobTitle && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge className="text-xs" variant="secondary">
             <Briefcase className="mr-1 h-3 w-3" />
             {personData.jobTitle}
           </Badge>
         )}
         {personData?.company?.name && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge className="text-xs" variant="secondary">
             <Building2 className="mr-1 h-3 w-3" />
             {personData.company.name}
           </Badge>
         )}
         {businessData?.rating && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge className="text-xs" variant="secondary">
             <Star className="mr-1 h-3 w-3 fill-yellow-500 text-yellow-500" />
             {businessData.rating}/5
           </Badge>
         )}
         {propertyData?.ownership?.marketValue && (
-          <Badge variant="secondary" className="text-xs">
-            <DollarSign className="mr-1 h-3 w-3" />
-            ${(propertyData.ownership.marketValue / 100).toLocaleString()}
+          <Badge className="text-xs" variant="secondary">
+            <DollarSign className="mr-1 h-3 w-3" />$
+            {(propertyData.ownership.marketValue / 100).toLocaleString()}
           </Badge>
         )}
       </div>
@@ -77,10 +76,10 @@ export function EnrichmentPreviewCard({
 
   return (
     <Card>
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="space-y-3 p-4">
         <div className="flex items-center justify-between">
           <h4 className="font-medium text-sm">Enrichment Summary</h4>
-          <Badge variant="outline" className="text-xs">
+          <Badge className="text-xs" variant="outline">
             {enrichmentData.overallConfidence}% confidence
           </Badge>
         </div>
@@ -100,7 +99,7 @@ export function EnrichmentPreviewCard({
           )}
           {businessData?.rating && (
             <div className="flex items-center gap-2">
-              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+              <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
               <span>{businessData.rating}/5</span>
             </div>
           )}
@@ -113,13 +112,10 @@ export function EnrichmentPreviewCard({
             </div>
           )}
           {personData?.location && (
-            <div className="flex items-center gap-2 col-span-2">
+            <div className="col-span-2 flex items-center gap-2">
               <MapPin className="h-3 w-3 text-muted-foreground" />
               <span className="truncate text-muted-foreground">
-                {[
-                  personData.location.city,
-                  personData.location.state,
-                ]
+                {[personData.location.city, personData.location.state]
                   .filter(Boolean)
                   .join(", ")}
               </span>
@@ -130,4 +126,3 @@ export function EnrichmentPreviewCard({
     </Card>
   );
 }
-

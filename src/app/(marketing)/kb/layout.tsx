@@ -8,11 +8,7 @@
 import { MarketingHeader } from "@/components/hero/marketing-header";
 import { Footer } from "@/components/layout/footer";
 
-export default function KBLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function KBLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <MarketingHeader />
@@ -21,4 +17,3 @@ export default function KBLayout({
     </div>
   );
 }
-

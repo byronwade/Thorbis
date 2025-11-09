@@ -8,85 +8,84 @@
  * import { sendSMS, initiateCall, searchAvailableNumbers } from "@/lib/telnyx";
  */
 
-// Client
-export { telnyxClient, TELNYX_CONFIG, type TelnyxClient } from "./client";
-
 // Calls
 export {
-  initiateCall,
   answerCall,
-  rejectCall,
-  hangupCall,
-  startRecording,
-  stopRecording,
-  playAudio,
-  speakText,
-  transferCall,
-  sendDTMF,
-  gatherInput,
   type CallCommand,
   type CallStatus,
+  gatherInput,
+  hangupCall,
+  initiateCall,
+  playAudio,
+  rejectCall,
+  sendDTMF,
+  speakText,
+  startRecording,
+  stopRecording,
+  transferCall,
 } from "./calls";
+// Client
+export { TELNYX_CONFIG, type TelnyxClient, telnyxClient } from "./client";
 
 // Messaging
 export {
-  sendSMS,
-  sendMMS,
+  formatPhoneNumber,
   getMessage,
   listMessages,
-  sendBulkSMS,
-  validatePhoneNumber,
-  formatPhoneNumber,
-  type MessageType,
   type MessageStatus,
+  type MessageType,
+  sendBulkSMS,
+  sendMMS,
+  sendSMS,
+  validatePhoneNumber,
 } from "./messaging";
 
 // Phone Numbers
 export {
-  searchAvailableNumbers,
-  purchaseNumber,
-  listOwnedNumbers,
-  getNumberDetails,
-  updateNumber,
-  releaseNumber,
-  initiatePorting,
-  getPortingStatus,
   estimateNumberCost,
-  validatePortability,
-  type NumberType,
+  getNumberDetails,
+  getPortingStatus,
+  initiatePorting,
+  listOwnedNumbers,
   type NumberFeature,
+  type NumberType,
+  purchaseNumber,
+  releaseNumber,
+  searchAvailableNumbers,
+  updateNumber,
+  validatePortability,
 } from "./numbers";
 
 // Webhooks
 export {
-  verifyWebhookSignature,
-  parseWebhookPayload,
+  type CallAnsweredPayload,
+  type CallHangupPayload,
+  type CallInitiatedPayload,
+  calculateCallDuration,
+  createWebhookResponse,
   getEventType,
   isCallEvent,
   isMessageEvent,
   isNumberEvent,
-  calculateCallDuration,
-  createWebhookResponse,
   isWebhookTimestampValid,
+  type MessageReceivedPayload,
+  parseWebhookPayload,
+  verifyWebhookSignature,
   type WebhookEventType,
   type WebhookPayload,
-  type CallInitiatedPayload,
-  type CallAnsweredPayload,
-  type CallHangupPayload,
-  type MessageReceivedPayload,
 } from "./webhooks";
 
 // WebRTC
 export {
-  generateWebRTCToken,
-  isCredentialExpired,
-  getCredentialTimeToLive,
-  formatSIPUri,
-  createWebRTCConfig,
-  createReactNativeWebRTCConfig,
   createBrowserWebRTCConfig,
+  createReactNativeWebRTCConfig,
+  createWebRTCConfig,
+  formatSIPUri,
+  generateWebRTCToken,
+  getCredentialTimeToLive,
+  isCredentialExpired,
   testWebRTCConnectivity,
+  type WebRTCClientConfig,
   type WebRTCConnectionOptions,
   type WebRTCCredential,
-  type WebRTCClientConfig,
 } from "./webrtc";

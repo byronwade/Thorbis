@@ -388,8 +388,8 @@ export function PhotoGallery({
         <Dialog onOpenChange={setShowUploader} open={showUploader}>
           <DialogContent className="max-w-3xl">
             <PhotoUploader
-              jobId={jobId}
               companyId={companyId}
+              jobId={jobId}
               onCancel={() => setShowUploader(false)}
               onUpload={async (files) => {
                 setShowUploader(false);

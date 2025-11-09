@@ -1,6 +1,6 @@
 /**
  * Document Uploader Component
- * 
+ *
  * Feature-rich file upload component with:
  * - Drag and drop support
  * - Multiple file selection
@@ -12,16 +12,27 @@
 
 "use client";
 
-import { useState, useCallback, useRef } from "react";
-import { Upload, X, FileIcon, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  FileIcon,
+  Loader2,
+  Upload,
+  X,
+} from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { uploadDocument } from "@/actions/documents";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { uploadDocument } from "@/actions/documents";
-import { validateFile, formatFileSize, type ValidationResult } from "@/lib/storage/file-validator";
-import { cn } from "@/lib/utils";
 import type { DocumentContext } from "@/lib/storage/document-manager";
+import {
+  formatFileSize,
+  type ValidationResult,
+  validateFile,
+} from "@/lib/storage/file-validator";
+import { cn } from "@/lib/utils";
 
 // ============================================================================
 // TYPES
@@ -233,7 +244,8 @@ export function DocumentUploader({
                   ...f,
                   status: "error",
                   progress: 0,
-                  error: error instanceof Error ? error.message : "Upload failed",
+                  error:
+                    error instanceof Error ? error.message : "Upload failed",
                 }
               : f
           )
@@ -303,24 +315,24 @@ export function DocumentUploader({
     <div className={cn("space-y-4", className)}>
       {/* Drop Zone */}
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={openFilePicker}
         className={cn(
-          "relative rounded-lg border-2 border-dashed p-8 text-center transition-colors cursor-pointer",
+          "relative cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
           isDragging
             ? "border-primary bg-primary/5"
             : "border-muted-foreground/25 hover:border-primary/50 hover:bg-accent/50"
         )}
+        onClick={openFilePicker}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
         <input
+          accept={acceptedTypes?.join(",")}
+          className="hidden"
+          multiple
+          onChange={handleFileInputChange}
           ref={fileInputRef}
           type="file"
-          multiple
-          accept={acceptedTypes?.join(",")}
-          onChange={handleFileInputChange}
-          className="hidden"
         />
 
         <div className="flex flex-col items-center gap-2">
@@ -329,10 +341,10 @@ export function DocumentUploader({
           </div>
 
           <div className="space-y-1">
-            <p className="text-sm font-medium">
+            <p className="font-medium text-sm">
               Drop files here or click to browse
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Max {maxFiles} files, up to {formatFileSize(maxSize)} each
             </p>
           </div>
@@ -346,16 +358,14 @@ export function DocumentUploader({
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium">
-                  Files ({files.length})
-                </h3>
+                <h3 className="font-medium text-sm">Files ({files.length})</h3>
                 {successCount > 0 && (
-                  <Badge variant="default" className="text-xs">
+                  <Badge className="text-xs" variant="default">
                     {successCount} uploaded
                   </Badge>
                 )}
                 {errorCount > 0 && (
-                  <Badge variant="destructive" className="text-xs">
+                  <Badge className="text-xs" variant="destructive">
                     {errorCount} failed
                   </Badge>
                 )}
@@ -363,16 +373,12 @@ export function DocumentUploader({
 
               <div className="flex gap-2">
                 {successCount > 0 && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={clearCompleted}
-                  >
+                  <Button onClick={clearCompleted} size="sm" variant="ghost">
                     Clear completed
                   </Button>
                 )}
                 {pendingCount > 0 && (
-                  <Button size="sm" onClick={uploadAllFiles}>
+                  <Button onClick={uploadAllFiles} size="sm">
                     Upload {pendingCount} file{pendingCount > 1 ? "s" : ""}
                   </Button>
                 )}
@@ -383,8 +389,8 @@ export function DocumentUploader({
             <div className="space-y-2">
               {files.map((file) => (
                 <FileUploadItem
-                  key={file.id}
                   file={file}
+                  key={file.id}
                   onRemove={removeFile}
                   onRetry={retryFile}
                 />
@@ -427,47 +433,39 @@ function FileUploadItem({ file, onRemove, onRetry }: FileUploadItemProps) {
       <div className="flex-shrink-0">{getStatusIcon()}</div>
 
       {/* File Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{file.file.name}</p>
-        <p className="text-xs text-muted-foreground">
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium text-sm">{file.file.name}</p>
+        <p className="text-muted-foreground text-xs">
           {formatFileSize(file.file.size)}
         </p>
 
         {/* Progress */}
         {file.status === "uploading" && (
-          <Progress value={file.progress} className="mt-2 h-1" />
+          <Progress className="mt-2 h-1" value={file.progress} />
         )}
 
         {/* Error */}
         {file.status === "error" && file.error && (
-          <p className="text-xs text-destructive mt-1">{file.error}</p>
+          <p className="mt-1 text-destructive text-xs">{file.error}</p>
         )}
 
         {/* Warnings */}
         {file.warnings && file.warnings.length > 0 && (
-          <p className="text-xs text-yellow-600 mt-1">
+          <p className="mt-1 text-xs text-yellow-600">
             {file.warnings.join("; ")}
           </p>
         )}
       </div>
 
       {/* Actions */}
-      <div className="flex-shrink-0 flex gap-1">
+      <div className="flex flex-shrink-0 gap-1">
         {file.status === "error" && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onRetry(file.id)}
-          >
+          <Button onClick={() => onRetry(file.id)} size="sm" variant="ghost">
             Retry
           </Button>
         )}
         {file.status !== "uploading" && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onRemove(file.id)}
-          >
+          <Button onClick={() => onRemove(file.id)} size="sm" variant="ghost">
             <X className="h-4 w-4" />
           </Button>
         )}
@@ -475,4 +473,3 @@ function FileUploadItem({ file, onRemove, onRetry }: FileUploadItemProps) {
     </div>
   );
 }
-

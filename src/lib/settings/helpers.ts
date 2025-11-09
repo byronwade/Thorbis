@@ -267,7 +267,7 @@ export function validateRequiredFields(
  */
 export function exportSettingsAsJson(
   settings: Record<string, any>,
-  filename: string = "settings.json"
+  filename = "settings.json"
 ): void {
   const json = JSON.stringify(settings, null, 2);
   const blob = new Blob([json], { type: "application/json" });

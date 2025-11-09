@@ -25,15 +25,17 @@ interface CustomerStatsBarProps {
   compact?: boolean;
 }
 
-export function CustomerStatsBar({ metrics, compact = false }: CustomerStatsBarProps) {
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+export function CustomerStatsBar({
+  metrics,
+  compact = false,
+}: CustomerStatsBarProps) {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(cents / 100);
-  };
 
   const customerStats: StatCard[] = [
     {
@@ -62,5 +64,7 @@ export function CustomerStatsBar({ metrics, compact = false }: CustomerStatsBarP
     },
   ];
 
-  return <StatsCards stats={customerStats} variant="ticker" compact={compact} />;
+  return (
+    <StatsCards compact={compact} stats={customerStats} variant="ticker" />
+  );
 }

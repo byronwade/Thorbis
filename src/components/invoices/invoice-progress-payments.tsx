@@ -12,12 +12,23 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { Check, Clock, Trash2, DollarSign, ChevronDown, ChevronRight, Plus } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  DollarSign,
+  Plus,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { FullWidthDataTable, type ColumnDef } from "@/components/ui/full-width-datatable";
+import {
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type ProgressPayment = {
   id: string;
@@ -34,7 +45,9 @@ interface InvoiceProgressPaymentsProps {
   };
 }
 
-export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProps) {
+export function InvoiceProgressPayments({
+  invoice,
+}: InvoiceProgressPaymentsProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   // Load state from localStorage
@@ -53,12 +66,11 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
   };
 
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   // Progress payments (mock data - replace with real data)
   const progressPayments: ProgressPayment[] = [
@@ -83,14 +95,18 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
     {
       key: "description",
       header: "Description",
-      render: (payment) => <div className="font-medium">{payment.description}</div>,
+      render: (payment) => (
+        <div className="font-medium">{payment.description}</div>
+      ),
       width: "flex-1",
     },
     {
       key: "amount",
       header: "Amount",
       render: (payment) => (
-        <div className="font-medium tabular-nums">{formatCurrency(payment.amount)}</div>
+        <div className="font-medium tabular-nums">
+          {formatCurrency(payment.amount)}
+        </div>
       ),
       width: "w-40",
       align: "right",
@@ -98,19 +114,18 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
     {
       key: "status",
       header: "Status",
-      render: (payment) => {
-        return payment.status === "paid" ? (
-          <Badge variant="default" className="gap-1">
+      render: (payment) =>
+        payment.status === "paid" ? (
+          <Badge className="gap-1" variant="default">
             <Check className="h-3 w-3" />
             Paid
           </Badge>
         ) : (
-          <Badge variant="outline" className="gap-1">
+          <Badge className="gap-1" variant="outline">
             <Clock className="h-3 w-3" />
             Pending
           </Badge>
-        );
-      },
+        ),
       width: "w-32",
     },
     {
@@ -156,18 +171,19 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
     .filter((p) => p.status === "paid")
     .reduce((sum, p) => sum + p.amount, 0);
 
-  const summary = paidCount > 0
-    ? `${paidCount}/${progressPayments.length} paid - ${formatCurrency(totalPaid)} received`
-    : `${progressPayments.length} payments pending`;
+  const summary =
+    paidCount > 0
+      ? `${paidCount}/${progressPayments.length} paid - ${formatCurrency(totalPaid)} received`
+      : `${progressPayments.length} payments pending`;
 
   return (
     <div className="not-prose my-6 rounded-lg border bg-card">
       {/* Header - Clickable to toggle */}
       <div className="flex w-full items-center justify-between gap-4 p-4">
         <button
-          type="button"
-          onClick={toggleOpen}
           className="flex flex-1 items-center gap-2 text-left transition-colors hover:bg-muted/50"
+          onClick={toggleOpen}
+          type="button"
         >
           {/* Collapse/Expand Chevron */}
           {isOpen ? (
@@ -181,7 +197,7 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-lg">Progress Payments</h3>
-              <Badge variant="secondary" className="text-xs">
+              <Badge className="text-xs" variant="secondary">
                 {paidCount}/{progressPayments.length} paid
               </Badge>
             </div>
@@ -192,12 +208,12 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
         </button>
 
         {/* Action Buttons - Always visible */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           <Button
+            className="gap-1"
+            onClick={() => toast.info("Add payment milestone")}
             size="sm"
             variant="outline"
-            onClick={() => toast.info("Add payment milestone")}
-            className="gap-1"
           >
             <Plus className="size-4" />
             Add Milestone
@@ -207,25 +223,25 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
 
       {/* Content - Collapsible Full-Width Datatable */}
       {isOpen && (
-        <div className="border-t animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fade-in slide-in-from-top-2 animate-in border-t duration-200">
           <FullWidthDataTable
-            data={progressPayments}
-            columns={columns}
-            getItemId={(payment) => payment.id}
-            enableSelection={true}
             bulkActions={bulkActions}
-            searchPlaceholder="Search progress payments..."
-            searchFilter={(payment, query) =>
-              payment.description.toLowerCase().includes(query.toLowerCase())
-            }
-            showRefresh={true}
+            columns={columns}
+            data={progressPayments}
+            emptyMessage="No progress payments configured for this invoice"
+            enableSelection={true}
+            getItemId={(payment) => payment.id}
+            itemsPerPage={10}
             onRefresh={() => {
               toast.info("Refreshing payments...");
               // TODO: Implement refresh
             }}
+            searchFilter={(payment, query) =>
+              payment.description.toLowerCase().includes(query.toLowerCase())
+            }
+            searchPlaceholder="Search progress payments..."
             showPagination={true}
-            itemsPerPage={10}
-            emptyMessage="No progress payments configured for this invoice"
+            showRefresh={true}
           />
         </div>
       )}

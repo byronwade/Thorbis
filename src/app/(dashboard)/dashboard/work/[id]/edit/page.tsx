@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { JobForm } from "@/components/work/job-form";
 import { createClient } from "@/lib/supabase/server";
@@ -50,13 +50,9 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
     .single();
 
   if (!teamMember?.company_id) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground">
-          You must be part of a company to edit jobs
-        </p>
-      </div>
-    );
+    // User hasn't completed onboarding or doesn't have an active company membership
+    // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
   }
 
   // Fetch the job to edit
@@ -75,7 +71,9 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
   // Fetch customers for dropdown
   const { data: customers } = await supabase
     .from("customers")
-    .select("id, first_name, last_name, email, phone, company_name, address, city, state, zip_code")
+    .select(
+      "id, first_name, last_name, email, phone, company_name, address, city, state, zip_code"
+    )
     .eq("company_id", teamMember.company_id)
     .is("deleted_at", null)
     .order("first_name", { ascending: true });
@@ -98,9 +96,10 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
   // Transform properties to match expected type
   const properties = propertiesRaw?.map((property: any) => ({
     ...property,
-    customers: Array.isArray(property.customers) && property.customers.length > 0
-      ? property.customers[0]
-      : null,
+    customers:
+      Array.isArray(property.customers) && property.customers.length > 0
+        ? property.customers[0]
+        : null,
   }));
 
   // Fetch team members for assignment dropdown
@@ -116,9 +115,10 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
   // Transform team members to match expected type
   const teamMembers = teamMembersRaw?.map((member: any) => ({
     ...member,
-    users: Array.isArray(member.users) && member.users.length > 0
-      ? member.users[0]
-      : null,
+    users:
+      Array.isArray(member.users) && member.users.length > 0
+        ? member.users[0]
+        : null,
   }));
 
   return (
@@ -135,7 +135,7 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
               </Link>
             </Button>
             <h1 className="font-bold text-3xl tracking-tight">Edit Job</h1>
-            <p className="mt-2 text-muted-foreground text-lg">
+            <p className="mt-2 text-lg text-muted-foreground">
               Update job details for {job.job_number}
             </p>
           </div>
@@ -143,12 +143,12 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
           {/* Form */}
           <JobForm
             customers={customers || []}
-            properties={properties || []}
-            teamMembers={teamMembers || []}
-            preselectedCustomerId={job.customer_id || undefined}
-            preselectedPropertyId={job.property_id}
             existingJob={job}
             mode="edit"
+            preselectedCustomerId={job.customer_id || undefined}
+            preselectedPropertyId={job.property_id}
+            properties={properties || []}
+            teamMembers={teamMembers || []}
           />
         </div>
       </div>

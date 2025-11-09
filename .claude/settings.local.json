@@ -57,7 +57,11 @@
       "Bash(pnpm exec next:*)",
       "Bash(timeout 30 pnpm exec next build:*)",
       "Bash(tee:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(pnpm analyze:circular:*)",
+      "Bash(pnpm lint:fix:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

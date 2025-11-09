@@ -4,7 +4,7 @@
  * Tests for enrichment-related server actions
  */
 
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 // Mock Supabase and Next.js modules
 jest.mock("@/lib/supabase/server", () => ({
@@ -66,4 +66,3 @@ describe("Customer Enrichment Actions", () => {
     });
   });
 });
-

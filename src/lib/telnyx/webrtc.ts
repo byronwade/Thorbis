@@ -47,28 +47,86 @@ export interface WebRTCCredential {
 export async function generateWebRTCToken(params: {
   username: string;
   ttl?: number; // Time to live in seconds (default: 86400 = 24 hours)
-}): Promise<{ success: boolean; credential?: WebRTCCredential; error?: string }> {
+}): Promise<{
+  success: boolean;
+  credential?: WebRTCCredential;
+  error?: string;
+}> {
   try {
-    // In a real implementation, you would call:
-    // const credential = await telnyxClient.credential_connections.create({
-    //   connection_name: params.username,
-    //   ttl: params.ttl || 86400,
-    // });
+    const credentialConnections = (telnyxClient as any)?.credential_connections;
 
-    // For now, we'll return a mock structure matching Telnyx's format
-    // You'll need to implement the actual API call when ready
-    const credential: WebRTCCredential = {
-      username: params.username,
-      password: generateRandomPassword(),
-      expires_at: Date.now() + (params.ttl || 86400) * 1000,
-      realm: "sip.telnyx.com",
-      sip_uri: `sip:${params.username}@sip.telnyx.com`,
-      stun_servers: ["stun:stun.telnyx.com:3478", "stun:stun.telnyx.com:3479"],
-      turn_servers: [
-        {
-          urls: ["turn:turn.telnyx.com:3478?transport=udp", "turn:turn.telnyx.com:3478?transport=tcp"],
+    if (
+      !credentialConnections ||
+      typeof credentialConnections.create !== "function"
+    ) {
+      if (process.env.NODE_ENV !== "production") {
+        const fallbackCredential: WebRTCCredential = {
           username: params.username,
-          credential: generateRandomPassword(),
+          password: generateRandomPassword(),
+          expires_at: Date.now() + (params.ttl || 86_400) * 1000,
+          realm: "sip.telnyx.com",
+          sip_uri: `sip:${params.username}@sip.telnyx.com`,
+          stun_servers: [
+            "stun:stun.telnyx.com:3478",
+            "stun:stun.telnyx.com:3479",
+          ],
+          turn_servers: [
+            {
+              urls: [
+                "turn:turn.telnyx.com:3478?transport=udp",
+                "turn:turn.telnyx.com:3478?transport=tcp",
+              ],
+              username: params.username,
+              credential: generateRandomPassword(24),
+            },
+          ],
+        };
+
+        return {
+          success: true,
+          credential: fallbackCredential,
+        };
+      }
+
+      return {
+        success: false,
+        error: "Telnyx WebRTC credential API is not available",
+      };
+    }
+
+    // Generate real WebRTC credentials from Telnyx API
+    const response = await credentialConnections.create({
+      connection_name: params.username,
+      ttl: params.ttl || 86_400,
+    });
+
+    if (!(response && response.data)) {
+      throw new Error("Invalid response from Telnyx API");
+    }
+
+    const data = response.data;
+
+    // Map Telnyx API response to our credential format
+    const credential: WebRTCCredential = {
+      username: data.username || params.username,
+      password: data.password,
+      expires_at: data.expires_at
+        ? new Date(data.expires_at).getTime()
+        : Date.now() + (params.ttl || 86_400) * 1000,
+      realm: data.realm || "sip.telnyx.com",
+      sip_uri: data.sip_uri || `sip:${params.username}@sip.telnyx.com`,
+      stun_servers: data.stun_servers || [
+        "stun:stun.telnyx.com:3478",
+        "stun:stun.telnyx.com:3479",
+      ],
+      turn_servers: data.turn_servers || [
+        {
+          urls: [
+            "turn:turn.telnyx.com:3478?transport=udp",
+            "turn:turn.telnyx.com:3478?transport=tcp",
+          ],
+          username: data.username || params.username,
+          credential: data.password,
         },
       ],
     };
@@ -81,7 +139,10 @@ export async function generateWebRTCToken(params: {
     console.error("Error generating WebRTC token:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to generate WebRTC token",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to generate WebRTC token",
     };
   }
 }
@@ -104,7 +165,10 @@ export function getCredentialTimeToLive(credential: WebRTCCredential): number {
 /**
  * Format SIP URI for calling
  */
-export function formatSIPUri(phoneNumber: string, realm: string = "sip.telnyx.com"): string {
+export function formatSIPUri(
+  phoneNumber: string,
+  realm = "sip.telnyx.com"
+): string {
   // Remove any non-digit characters
   const cleanNumber = phoneNumber.replace(/\D/g, "");
 
@@ -115,12 +179,15 @@ export function formatSIPUri(phoneNumber: string, realm: string = "sip.telnyx.co
 /**
  * Generate a random password for WebRTC credentials
  */
-function generateRandomPassword(length: number = 32): string {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+function generateRandomPassword(length = 32): string {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
   let password = "";
 
   for (let i = 0; i < length; i++) {
-    password += characters.charAt(Math.floor(Math.random() * characters.length));
+    password += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
   }
 
   return password;
@@ -140,7 +207,10 @@ export interface WebRTCClientConfig {
 /**
  * Create WebRTC client configuration
  */
-export function createWebRTCConfig(credential: WebRTCCredential, debug: boolean = false): WebRTCClientConfig {
+export function createWebRTCConfig(
+  credential: WebRTCCredential,
+  debug = false
+): WebRTCClientConfig {
   // Convert Telnyx credential format to RTCIceServer format
   const iceServers: RTCIceServer[] = [
     // STUN servers
@@ -167,14 +237,18 @@ export function createWebRTCConfig(credential: WebRTCCredential, debug: boolean 
  *
  * Provides configuration specific to React Native apps
  */
-export function createReactNativeWebRTCConfig(credential: WebRTCCredential): WebRTCClientConfig {
+export function createReactNativeWebRTCConfig(
+  credential: WebRTCCredential
+): WebRTCClientConfig {
   return createWebRTCConfig(credential, true); // Enable debug for mobile
 }
 
 /**
  * Web browser WebRTC configuration helper
  */
-export function createBrowserWebRTCConfig(credential: WebRTCCredential): WebRTCClientConfig {
+export function createBrowserWebRTCConfig(
+  credential: WebRTCCredential
+): WebRTCClientConfig {
   return createWebRTCConfig(credential, false);
 }
 
@@ -183,7 +257,9 @@ export function createBrowserWebRTCConfig(credential: WebRTCCredential): WebRTCC
  *
  * Checks if the browser/device can connect to STUN/TURN servers
  */
-export async function testWebRTCConnectivity(credential: WebRTCCredential): Promise<{
+export async function testWebRTCConnectivity(
+  credential: WebRTCCredential
+): Promise<{
   success: boolean;
   stunReachable: boolean;
   turnReachable: boolean;
@@ -244,7 +320,8 @@ export async function testWebRTCConnectivity(credential: WebRTCCredential): Prom
       success: false,
       stunReachable: false,
       turnReachable: false,
-      error: error instanceof Error ? error.message : "Failed to test connectivity",
+      error:
+        error instanceof Error ? error.message : "Failed to test connectivity",
     };
   }
 }

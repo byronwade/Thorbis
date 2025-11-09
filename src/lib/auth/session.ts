@@ -55,10 +55,13 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   } catch (error) {
     // Catch any unexpected errors (network issues, etc.)
     // The error might be thrown instead of returned in some cases
-    if (error && typeof error === "object" && "name" in error) {
-      if (error.name === "AuthSessionMissingError") {
-        return null;
-      }
+    if (
+      error &&
+      typeof error === "object" &&
+      "name" in error &&
+      error.name === "AuthSessionMissingError"
+    ) {
+      return null;
     }
 
     console.error("Unexpected error getting current user:", error);

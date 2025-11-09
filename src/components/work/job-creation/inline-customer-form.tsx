@@ -2,6 +2,7 @@
 
 import { Loader2, Save, X } from "lucide-react";
 import { useState } from "react";
+import { createCustomer } from "@/actions/customers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createCustomer } from "@/actions/customers";
 import { cn } from "@/lib/utils";
 
 /**
@@ -64,7 +64,8 @@ export function InlineCustomerForm({
 
     // Client-side validation
     const newErrors: Record<string, string> = {};
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.phone.trim()) newErrors.phone = "Phone is required";
@@ -101,7 +102,9 @@ export function InlineCustomerForm({
       };
       onSuccess(newCustomer);
     } else {
-      setErrors({ submit: (result as any).error || "Failed to create customer" });
+      setErrors({
+        submit: (result as any).error || "Failed to create customer",
+      });
       setIsLoading(false);
     }
   };
@@ -120,19 +123,14 @@ export function InlineCustomerForm({
   return (
     <form
       className={cn(
-        "rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-4",
+        "space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4",
         className
       )}
       onSubmit={handleSubmit}
     >
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-sm">Create New Customer</h3>
-        <Button
-          onClick={onCancel}
-          size="sm"
-          type="button"
-          variant="ghost"
-        >
+        <Button onClick={onCancel} size="sm" type="button" variant="ghost">
           <X className="size-4" />
         </Button>
       </div>

@@ -10,9 +10,9 @@ import { SettingsComingSoon } from "@/components/settings/settings-coming-soon";
 export default function BookkeepingSettingsPage() {
   return (
     <SettingsComingSoon
+      description="Configure your bookkeeping preferences, reconciliation rules, and transaction categorization."
       icon={BookOpen}
       title="Bookkeeping Settings"
-      description="Configure your bookkeeping preferences, reconciliation rules, and transaction categorization."
     />
   );
 }

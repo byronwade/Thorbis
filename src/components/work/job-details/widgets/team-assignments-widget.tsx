@@ -36,30 +36,37 @@ interface TeamMember {
   skills: string[];
 }
 
-export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignmentsWidgetProps) {
+export function TeamAssignmentsWidget({
+  job,
+  teamAssignments = [],
+}: TeamAssignmentsWidgetProps) {
   // Transform team assignments from database
-  const teamMembers: TeamMember[] = (teamAssignments as any[]).map((assignment) => {
-    const teamMember = Array.isArray(assignment.team_member)
-      ? assignment.team_member[0]
-      : assignment.team_member;
+  const teamMembers: TeamMember[] = (teamAssignments as any[])
+    .map((assignment) => {
+      const teamMember = Array.isArray(assignment.team_member)
+        ? assignment.team_member[0]
+        : assignment.team_member;
 
-    const user = teamMember?.users
-      ? (Array.isArray(teamMember.users) ? teamMember.users[0] : teamMember.users)
-      : null;
+      const user = teamMember?.users
+        ? Array.isArray(teamMember.users)
+          ? teamMember.users[0]
+          : teamMember.users
+        : null;
 
-    if (!user) return null;
+      if (!user) return null;
 
-    return {
-      id: user.id,
-      name: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
-      role: assignment.role || "crew",
-      avatar: user.avatar_url,
-      email: user.email || "",
-      phone: user.phone || "",
-      status: "available" as const,
-      skills: [], // TODO: Fetch skills from team member profile
-    };
-  }).filter(Boolean) as TeamMember[];
+      return {
+        id: user.id,
+        name: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+        role: assignment.role || "crew",
+        avatar: user.avatar_url,
+        email: user.email || "",
+        phone: user.phone || "",
+        status: "available" as const,
+        skills: [], // TODO: Fetch skills from team member profile
+      };
+    })
+    .filter(Boolean) as TeamMember[];
 
   // If no team assignments from database, show assigned_to user
   if (teamMembers.length === 0 && job.assignedTo) {

@@ -9,19 +9,24 @@
  * section when there's only one address.
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { MapPin, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+import {
+  CollapsibleActionButton,
+  CollapsibleDataSection,
+} from "@/components/ui/collapsible-data-section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
-import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamically import PropertiesTable to avoid SSR issues with Tiptap
 const PropertiesTable = dynamic(
-  () => import("@/components/customers/properties-table").then((mod) => ({ default: mod.PropertiesTable })),
+  () =>
+    import("@/components/customers/properties-table").then((mod) => ({
+      default: mod.PropertiesTable,
+    })),
   {
     ssr: false,
     loading: () => <Skeleton className="h-[200px] w-full" />,
@@ -29,7 +34,11 @@ const PropertiesTable = dynamic(
 );
 
 // React component that renders the block
-export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes, editor }: any) {
+export function AddressPropertiesAdaptiveBlockComponent({
+  node,
+  updateAttributes,
+  editor,
+}: any) {
   const {
     // Primary address from customer record
     address,
@@ -66,83 +75,87 @@ export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes
 
     return (
       <NodeViewWrapper className="address-properties-block">
-        <CollapsibleSectionWrapper
-          title="Address"
-          icon={<MapPin className="size-5" />}
+        <CollapsibleDataSection
           defaultOpen={true}
+          icon={<MapPin className="size-5" />}
+          standalone={true}
           storageKey="customer-address-section"
+          title="Address"
+          value="customer-address"
         >
           <div className="space-y-4">
-              {/* Address Line 1 */}
+            {/* Address Line 1 */}
+            <div className="space-y-2">
+              <Label htmlFor={`address-${node.attrs.id}`}>Street Address</Label>
+              <Input
+                id={`address-${node.attrs.id}`}
+                onChange={(e) => updateAttributes({ address: e.target.value })}
+                placeholder="123 Main Street"
+                value={address || ""}
+              />
+            </div>
+
+            {/* Address Line 2 */}
+            <div className="space-y-2">
+              <Label htmlFor={`address2-${node.attrs.id}`}>
+                Apartment, suite, etc. (optional)
+              </Label>
+              <Input
+                id={`address2-${node.attrs.id}`}
+                onChange={(e) => updateAttributes({ address2: e.target.value })}
+                placeholder="Suite 100"
+                value={address2 || ""}
+              />
+            </div>
+
+            {/* City, State, ZIP */}
+            <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor={`address-${node.attrs.id}`}>Street Address</Label>
+                <Label htmlFor={`city-${node.attrs.id}`}>City</Label>
                 <Input
-                  id={`address-${node.attrs.id}`}
-                  value={address || ""}
-                  onChange={(e) => updateAttributes({ address: e.target.value })}
-                  placeholder="123 Main Street"
+                  id={`city-${node.attrs.id}`}
+                  onChange={(e) => updateAttributes({ city: e.target.value })}
+                  placeholder="San Francisco"
+                  value={city || ""}
                 />
               </div>
 
-              {/* Address Line 2 */}
               <div className="space-y-2">
-                <Label htmlFor={`address2-${node.attrs.id}`}>
-                  Apartment, suite, etc. (optional)
-                </Label>
+                <Label htmlFor={`state-${node.attrs.id}`}>State</Label>
                 <Input
-                  id={`address2-${node.attrs.id}`}
-                  value={address2 || ""}
-                  onChange={(e) => updateAttributes({ address2: e.target.value })}
-                  placeholder="Suite 100"
+                  id={`state-${node.attrs.id}`}
+                  maxLength={2}
+                  onChange={(e) => updateAttributes({ state: e.target.value })}
+                  placeholder="CA"
+                  value={state || ""}
                 />
               </div>
 
-              {/* City, State, ZIP */}
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor={`city-${node.attrs.id}`}>City</Label>
-                  <Input
-                    id={`city-${node.attrs.id}`}
-                    value={city || ""}
-                    onChange={(e) => updateAttributes({ city: e.target.value })}
-                    placeholder="San Francisco"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor={`state-${node.attrs.id}`}>State</Label>
-                  <Input
-                    id={`state-${node.attrs.id}`}
-                    value={state || ""}
-                    onChange={(e) => updateAttributes({ state: e.target.value })}
-                    placeholder="CA"
-                    maxLength={2}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor={`zipCode-${node.attrs.id}`}>ZIP Code</Label>
-                  <Input
-                    id={`zipCode-${node.attrs.id}`}
-                    value={zipCode || ""}
-                    onChange={(e) => updateAttributes({ zipCode: e.target.value })}
-                    placeholder="94102"
-                  />
-                </div>
-              </div>
-
-              {/* Country */}
               <div className="space-y-2">
-                <Label htmlFor={`country-${node.attrs.id}`}>Country</Label>
+                <Label htmlFor={`zipCode-${node.attrs.id}`}>ZIP Code</Label>
                 <Input
-                  id={`country-${node.attrs.id}`}
-                  value={country || "USA"}
-                  onChange={(e) => updateAttributes({ country: e.target.value })}
-                  placeholder="USA"
+                  id={`zipCode-${node.attrs.id}`}
+                  onChange={(e) =>
+                    updateAttributes({ zipCode: e.target.value })
+                  }
+                  placeholder="94102"
+                  value={zipCode || ""}
                 />
               </div>
             </div>
-        </CollapsibleSectionWrapper>
+
+            {/* Country */}
+            <div className="space-y-2">
+              <Label htmlFor={`country-${node.attrs.id}`}>Country</Label>
+              <Input
+                id={`country-${node.attrs.id}`}
+                onChange={(e) => updateAttributes({ country: e.target.value })}
+                placeholder="USA"
+                value={country || "USA"}
+              />
+            </div>
+          </div>
+        </CollapsibleDataSection>
       </NodeViewWrapper>
     );
   }
@@ -160,35 +173,39 @@ export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes
   };
 
   // Calculate total property value
-  const totalValue = properties.reduce((sum: number, p: any) =>
-    sum + (p.enrichment?.ownership?.marketValue || 0), 0
+  const totalValue = properties.reduce(
+    (sum: number, p: any) => sum + (p.enrichment?.ownership?.marketValue || 0),
+    0
   );
 
   return (
     <NodeViewWrapper className="address-properties-block">
-      <CollapsibleSectionWrapper
-        title={`Properties (${properties.length})`}
-        icon={<MapPin className="size-5" />}
-        defaultOpen={false}
-        storageKey="customer-properties-section"
-        summary={totalValue > 0 ? `Total value: ${formatCurrency(totalValue)}` : `${properties.length} locations`}
+      <CollapsibleDataSection
         actions={
-          <Button
-            size="sm"
-            variant="ghost"
+          <CollapsibleActionButton
+            icon={<Plus className="size-4" />}
             onClick={handleAddProperty}
-            className="h-8 px-3 text-xs gap-1.5"
           >
-            <Plus className="size-4" />
             Add Property
-          </Button>
+          </CollapsibleActionButton>
         }
+        count={properties.length}
+        defaultOpen={false}
+        fullWidthContent={true}
+        icon={<MapPin className="size-5" />}
+        standalone={true}
+        storageKey="customer-properties-section"
+        summary={
+          totalValue > 0
+            ? `Total value: ${formatCurrency(totalValue)}`
+            : `${properties.length} locations`
+        }
+        title={`Properties (${properties.length})`}
+        value="customer-properties"
       >
         {/* Full-width datatable with search/sort/pagination and hover maps */}
-        <div className="-mx-6 -mt-6 -mb-6">
-          <PropertiesTable properties={properties} itemsPerPage={10} />
-        </div>
-      </CollapsibleSectionWrapper>
+        <PropertiesTable itemsPerPage={10} properties={properties} />
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -248,7 +265,9 @@ export const AddressPropertiesAdaptiveBlock = Node.create({
   renderHTML({ HTMLAttributes }) {
     return [
       "div",
-      mergeAttributes(HTMLAttributes, { "data-type": "address-properties-adaptive-block" }),
+      mergeAttributes(HTMLAttributes, {
+        "data-type": "address-properties-adaptive-block",
+      }),
       0,
     ];
   },
@@ -261,12 +280,11 @@ export const AddressPropertiesAdaptiveBlock = Node.create({
     return {
       insertAddressPropertiesAdaptiveBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

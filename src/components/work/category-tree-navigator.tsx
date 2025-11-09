@@ -178,7 +178,9 @@ export function CategoryTreeNavigator({
     if (category.name.toLowerCase().includes(lowerQuery)) {
       return true;
     }
-    return category.children?.some((child) => matchesSearch(child, query)) ?? false;
+    return (
+      category.children?.some((child) => matchesSearch(child, query)) ?? false
+    );
   }
 
   return (

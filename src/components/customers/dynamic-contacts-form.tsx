@@ -11,9 +11,9 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { SmartContactInput } from "@/components/customers/smart-contact-input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SmartContactInput } from "@/components/customers/smart-contact-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -69,9 +69,7 @@ export function DynamicContactsForm() {
 
   const updateContact = (id: string, field: keyof Contact, value: string) => {
     setContacts(
-      contacts.map((c) =>
-        c.id === id ? { ...c, [field]: value } : c
-      )
+      contacts.map((c) => (c.id === id ? { ...c, [field]: value } : c))
     );
   };
 
@@ -90,7 +88,9 @@ export function DynamicContactsForm() {
                 </Badge>
               )}
               <h3 className="font-semibold">
-                {contact.isPrimary ? "Primary Contact" : `Additional Contact ${index}`}
+                {contact.isPrimary
+                  ? "Primary Contact"
+                  : `Additional Contact ${index}`}
               </h3>
             </div>
             {!contact.isPrimary && (
@@ -126,9 +126,7 @@ export function DynamicContactsForm() {
             <>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor={`${contact.id}-firstName`}>
-                    First Name
-                  </Label>
+                  <Label htmlFor={`${contact.id}-firstName`}>First Name</Label>
                   <Input
                     id={`${contact.id}-firstName`}
                     onChange={(e) =>
@@ -140,9 +138,7 @@ export function DynamicContactsForm() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${contact.id}-lastName`}>
-                    Last Name
-                  </Label>
+                  <Label htmlFor={`${contact.id}-lastName`}>Last Name</Label>
                   <Input
                     id={`${contact.id}-lastName`}
                     onChange={(e) =>
@@ -220,11 +216,7 @@ export function DynamicContactsForm() {
       </Button>
 
       {/* Hidden input to pass contacts data to server action */}
-      <input
-        name="contacts"
-        type="hidden"
-        value={JSON.stringify(contacts)}
-      />
+      <input name="contacts" type="hidden" value={JSON.stringify(contacts)} />
     </div>
   );
 }

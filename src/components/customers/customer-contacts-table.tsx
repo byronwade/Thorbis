@@ -10,7 +10,25 @@
  * - Add/edit/remove functionality
  */
 
-import { useState, useEffect } from "react";
+import { Plus, Star, Trash2, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  addCustomerContact,
+  type CustomerContact,
+  getCustomerContacts,
+  removeCustomerContact,
+} from "@/actions/customer-contacts";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -19,38 +37,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  getCustomerContacts,
-  addCustomerContact,
-  removeCustomerContact,
-  type CustomerContact,
-} from "@/actions/customer-contacts";
-import { User, Mail, Phone, Plus, Trash2, Star } from "lucide-react";
 
 interface CustomerContactsTableProps {
   customerId: string;
   triggerAdd?: number;
 }
 
-export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContactsTableProps) {
+export function CustomerContactsTable({
+  customerId,
+  triggerAdd,
+}: CustomerContactsTableProps) {
   const [contacts, setContacts] = useState<CustomerContact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -89,7 +85,7 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
   };
 
   const handleAddContact = async () => {
-    if (!formData.firstName || !formData.lastName) {
+    if (!(formData.firstName && formData.lastName)) {
       alert("First name and last name are required");
       return;
     }
@@ -138,7 +134,11 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
   };
 
   if (isLoading) {
-    return <div className="p-8 text-center text-muted-foreground text-sm">Loading contacts...</div>;
+    return (
+      <div className="p-8 text-center text-muted-foreground text-sm">
+        Loading contacts...
+      </div>
+    );
   }
 
   return (
@@ -159,10 +159,12 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
           <TableBody>
             {contacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell className="h-24 text-center" colSpan={6}>
                   <div className="flex flex-col items-center gap-2">
                     <User className="size-8 text-muted-foreground/50" />
-                    <p className="text-muted-foreground text-sm">No additional contacts</p>
+                    <p className="text-muted-foreground text-sm">
+                      No additional contacts
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -172,13 +174,21 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
                   <TableCell className="font-medium">
                     {contact.first_name} {contact.last_name}
                     {contact.is_primary && (
-                      <Star className="ml-1 inline-block size-3 text-warning" fill="currentColor" />
+                      <Star
+                        className="ml-1 inline-block size-3 text-warning"
+                        fill="currentColor"
+                      />
                     )}
                   </TableCell>
-                  <TableCell className="text-sm">{contact.title || "—"}</TableCell>
+                  <TableCell className="text-sm">
+                    {contact.title || "—"}
+                  </TableCell>
                   <TableCell className="text-sm">
                     {contact.email ? (
-                      <a href={`mailto:${contact.email}`} className="text-primary hover:underline">
+                      <a
+                        className="text-primary hover:underline"
+                        href={`mailto:${contact.email}`}
+                      >
                         {contact.email}
                       </a>
                     ) : (
@@ -187,7 +197,10 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
                   </TableCell>
                   <TableCell className="text-sm">
                     {contact.phone ? (
-                      <a href={`tel:${contact.phone}`} className="text-primary hover:underline">
+                      <a
+                        className="text-primary hover:underline"
+                        href={`tel:${contact.phone}`}
+                      >
                         {contact.phone}
                       </a>
                     ) : (
@@ -197,19 +210,23 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {contact.is_billing_contact && (
-                        <Badge variant="secondary" className="text-xs">Billing</Badge>
+                        <Badge className="text-xs" variant="secondary">
+                          Billing
+                        </Badge>
                       )}
                       {contact.is_emergency_contact && (
-                        <Badge variant="destructive" className="text-xs">Emergency</Badge>
+                        <Badge className="text-xs" variant="destructive">
+                          Emergency
+                        </Badge>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <Button
+                      className="size-8 p-0"
+                      onClick={() => handleRemoveContact(contact.id)}
                       size="sm"
                       variant="ghost"
-                      onClick={() => handleRemoveContact(contact.id)}
-                      className="size-8 p-0"
                     >
                       <Trash2 className="size-4 text-destructive" />
                     </Button>
@@ -222,7 +239,7 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
       </div>
 
       {/* Add Contact Dialog */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <Dialog onOpenChange={setShowAddDialog} open={showAddDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Add Contact</DialogTitle>
@@ -232,86 +249,110 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
               <div className="space-y-2">
                 <Label>First Name *</Label>
                 <Input
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   placeholder="John"
+                  value={formData.firstName}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Last Name *</Label>
                 <Input
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   placeholder="Smith"
+                  value={formData.lastName}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Title</Label>
                 <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   placeholder="Mr., Ms., Dr., etc."
+                  value={formData.title}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Email</Label>
                 <Input
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="john@example.com"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="john@example.com"
                 />
               </div>
               <div className="space-y-2">
                 <Label>Phone</Label>
                 <Input
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="(555) 123-4567"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="(555) 123-4567"
                 />
               </div>
               <div className="space-y-2">
                 <Label>Secondary Phone</Label>
                 <Input
+                  onChange={(e) =>
+                    setFormData({ ...formData, secondaryPhone: e.target.value })
+                  }
+                  placeholder="(555) 987-6543"
                   type="tel"
                   value={formData.secondaryPhone}
-                  onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
-                  placeholder="(555) 987-6543"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Contact Roles</Label>
+              <Label className="font-medium text-sm">Contact Roles</Label>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="isPrimary"
                     checked={formData.isPrimary}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: !!checked })}
+                    id="isPrimary"
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, isPrimary: !!checked })
+                    }
                   />
-                  <label htmlFor="isPrimary" className="cursor-pointer text-sm">
+                  <label className="cursor-pointer text-sm" htmlFor="isPrimary">
                     Primary Contact
                   </label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="isBilling"
                     checked={formData.isBillingContact}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isBillingContact: !!checked })}
+                    id="isBilling"
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, isBillingContact: !!checked })
+                    }
                   />
-                  <label htmlFor="isBilling" className="cursor-pointer text-sm">
+                  <label className="cursor-pointer text-sm" htmlFor="isBilling">
                     Billing Contact
                   </label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="isEmergency"
                     checked={formData.isEmergencyContact}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isEmergencyContact: !!checked })}
+                    id="isEmergency"
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        isEmergencyContact: !!checked,
+                      })
+                    }
                   />
-                  <label htmlFor="isEmergency" className="cursor-pointer text-sm">
+                  <label
+                    className="cursor-pointer text-sm"
+                    htmlFor="isEmergency"
+                  >
                     Emergency Contact
                   </label>
                 </div>
@@ -320,13 +361,13 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 
             <div className="flex gap-2 pt-4">
               <Button
-                variant="outline"
-                onClick={() => setShowAddDialog(false)}
                 className="flex-1"
+                onClick={() => setShowAddDialog(false)}
+                variant="outline"
               >
                 Cancel
               </Button>
-              <Button onClick={handleAddContact} className="flex-1">
+              <Button className="flex-1" onClick={handleAddContact}>
                 <Plus className="mr-2 size-4" />
                 Add Contact
               </Button>

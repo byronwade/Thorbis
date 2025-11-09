@@ -49,12 +49,16 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 // ============================================================================
 
 const accountingSettingsSchema = z.object({
-  provider: z.enum(["quickbooks", "xero", "sage", "freshbooks", "manual", "none"]).optional(),
+  provider: z
+    .enum(["quickbooks", "xero", "sage", "freshbooks", "manual", "none"])
+    .optional(),
   providerEnabled: z.boolean().default(false),
   apiKey: z.string().optional(),
   apiSecret: z.string().optional(),
   autoSyncEnabled: z.boolean().default(false),
-  syncFrequency: z.enum(["realtime", "hourly", "daily", "weekly", "manual"]).default("daily"),
+  syncFrequency: z
+    .enum(["realtime", "hourly", "daily", "weekly", "manual"])
+    .default("daily"),
   incomeAccount: z.string().optional(),
   expenseAccount: z.string().optional(),
   assetAccount: z.string().optional(),
@@ -185,7 +189,9 @@ const bookkeepingSettingsSchema = z.object({
   defaultIncomeCategory: z.string().default("Service Revenue"),
   defaultExpenseCategory: z.string().default("Operating Expenses"),
   defaultTaxCategory: z.string().default("Sales Tax"),
-  reportFrequency: z.enum(["weekly", "monthly", "quarterly", "yearly"]).default("monthly"),
+  reportFrequency: z
+    .enum(["weekly", "monthly", "quarterly", "yearly"])
+    .default("monthly"),
   emailReports: z.boolean().default(false),
   reportRecipients: z.string().optional(),
   fiscalYearStartMonth: z.coerce.number().min(1).max(12).default(1),
@@ -219,18 +225,23 @@ export async function updateBookkeepingSettings(
       : [];
 
     const data = bookkeepingSettingsSchema.parse({
-      autoCategorizeTransactions: formData.get("autoCategorizeTransactions") !== "false",
+      autoCategorizeTransactions:
+        formData.get("autoCategorizeTransactions") !== "false",
       autoReconcilePayments: formData.get("autoReconcilePayments") === "true",
       autoGenerateReports: formData.get("autoGenerateReports") === "true",
-      defaultIncomeCategory: formData.get("defaultIncomeCategory") || "Service Revenue",
-      defaultExpenseCategory: formData.get("defaultExpenseCategory") || "Operating Expenses",
+      defaultIncomeCategory:
+        formData.get("defaultIncomeCategory") || "Service Revenue",
+      defaultExpenseCategory:
+        formData.get("defaultExpenseCategory") || "Operating Expenses",
       defaultTaxCategory: formData.get("defaultTaxCategory") || "Sales Tax",
       reportFrequency: formData.get("reportFrequency") || "monthly",
       emailReports: formData.get("emailReports") === "true",
       fiscalYearStartMonth: formData.get("fiscalYearStartMonth") || "1",
       fiscalYearStartDay: formData.get("fiscalYearStartDay") || "1",
-      requireReceiptAttachment: formData.get("requireReceiptAttachment") === "true",
-      allowManualJournalEntries: formData.get("allowManualJournalEntries") === "true",
+      requireReceiptAttachment:
+        formData.get("requireReceiptAttachment") === "true",
+      allowManualJournalEntries:
+        formData.get("allowManualJournalEntries") === "true",
     });
 
     const { error } = await supabase
@@ -304,7 +315,9 @@ export async function getBookkeepingSettings(): Promise<ActionResult<any>> {
 const bankAccountSchema = z.object({
   accountName: z.string().min(1, "Account name is required"),
   bankName: z.string().min(1, "Bank name is required"),
-  accountType: z.enum(["checking", "savings", "business_checking", "credit_card"]).default("checking"),
+  accountType: z
+    .enum(["checking", "savings", "business_checking", "credit_card"])
+    .default("checking"),
   accountNumberLast4: z.string().max(4).optional(),
   currentBalance: z.coerce.number().default(0),
   availableBalance: z.coerce.number().default(0),
@@ -539,10 +552,12 @@ export async function updateBusinessFinancingSettings(
     const data = businessFinancingSchema.parse({
       enableBusinessLoans: formData.get("enableBusinessLoans") === "true",
       enableLineOfCredit: formData.get("enableLineOfCredit") === "true",
-      enableEquipmentFinancing: formData.get("enableEquipmentFinancing") === "true",
+      enableEquipmentFinancing:
+        formData.get("enableEquipmentFinancing") === "true",
       financingProvider: formData.get("financingProvider") || undefined,
       providerApiKey: formData.get("providerApiKey") || undefined,
-      autoCalculateEligibility: formData.get("autoCalculateEligibility") === "true",
+      autoCalculateEligibility:
+        formData.get("autoCalculateEligibility") === "true",
       showOffersInDashboard: formData.get("showOffersInDashboard") !== "false",
       annualRevenue: formData.get("annualRevenue") || undefined,
       yearsInBusiness: formData.get("yearsInBusiness") || undefined,
@@ -586,7 +601,9 @@ export async function updateBusinessFinancingSettings(
   });
 }
 
-export async function getBusinessFinancingSettings(): Promise<ActionResult<any>> {
+export async function getBusinessFinancingSettings(): Promise<
+  ActionResult<any>
+> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -626,11 +643,13 @@ export async function getBusinessFinancingSettings(): Promise<ActionResult<any>>
 
 const consumerFinancingSchema = z.object({
   financingEnabled: z.boolean().default(false),
-  provider: z.enum(["affirm", "wisetack", "greensky", "servicefinance", "other"]).optional(),
+  provider: z
+    .enum(["affirm", "wisetack", "greensky", "servicefinance", "other"])
+    .optional(),
   providerApiKey: z.string().optional(),
   providerMerchantId: z.string().optional(),
   minAmount: z.coerce.number().default(500),
-  maxAmount: z.coerce.number().default(25000),
+  maxAmount: z.coerce.number().default(25_000),
   availableTerms: z.string().optional(), // Comma-separated numbers
   showInEstimates: z.boolean().default(true),
   showInInvoices: z.boolean().default(true),
@@ -639,7 +658,9 @@ const consumerFinancingSchema = z.object({
   allowInstantApproval: z.boolean().default(true),
   requireCreditCheck: z.boolean().default(true),
   collectSsn: z.boolean().default(false),
-  marketingMessage: z.string().default("Finance your service with flexible payment plans"),
+  marketingMessage: z
+    .string()
+    .default("Finance your service with flexible payment plans"),
 });
 
 export async function updateConsumerFinancingSettings(
@@ -663,7 +684,7 @@ export async function updateConsumerFinancingSettings(
 
     const termsStr = formData.get("availableTerms") as string;
     const availableTerms = termsStr
-      ? termsStr.split(",").map((term) => parseInt(term.trim()))
+      ? termsStr.split(",").map((term) => Number.parseInt(term.trim()))
       : [6, 12, 24, 36, 48, 60];
 
     const data = consumerFinancingSchema.parse({
@@ -680,7 +701,9 @@ export async function updateConsumerFinancingSettings(
       allowInstantApproval: formData.get("allowInstantApproval") !== "false",
       requireCreditCheck: formData.get("requireCreditCheck") !== "false",
       collectSsn: formData.get("collectSsn") === "true",
-      marketingMessage: formData.get("marketingMessage") || "Finance your service with flexible payment plans",
+      marketingMessage:
+        formData.get("marketingMessage") ||
+        "Finance your service with flexible payment plans",
     });
 
     const encryptedApiKey = data.providerApiKey
@@ -719,7 +742,9 @@ export async function updateConsumerFinancingSettings(
   });
 }
 
-export async function getConsumerFinancingSettings(): Promise<ActionResult<any>> {
+export async function getConsumerFinancingSettings(): Promise<
+  ActionResult<any>
+> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -876,7 +901,7 @@ export async function updateGiftCardSettings(
 
     const amountsStr = formData.get("availableAmounts") as string;
     const availableAmounts = amountsStr
-      ? amountsStr.split(",").map((amount) => parseFloat(amount.trim()))
+      ? amountsStr.split(",").map((amount) => Number.parseFloat(amount.trim()))
       : [25, 50, 100, 250, 500];
 
     const data = giftCardSettingsSchema.parse({
@@ -890,40 +915,44 @@ export async function updateGiftCardSettings(
       requireRecipientEmail: formData.get("requireRecipientEmail") === "true",
       cardsExpire: formData.get("cardsExpire") === "true",
       expirationMonths: formData.get("expirationMonths") || "24",
-      sendExpirationReminder: formData.get("sendExpirationReminder") !== "false",
+      sendExpirationReminder:
+        formData.get("sendExpirationReminder") !== "false",
       reminderDaysBefore: formData.get("reminderDaysBefore") || "30",
-      allowPartialRedemption: formData.get("allowPartialRedemption") !== "false",
-      allowMultipleCardsPerTransaction: formData.get("allowMultipleCardsPerTransaction") !== "false",
-      combineWithOtherDiscounts: formData.get("combineWithOtherDiscounts") === "true",
+      allowPartialRedemption:
+        formData.get("allowPartialRedemption") !== "false",
+      allowMultipleCardsPerTransaction:
+        formData.get("allowMultipleCardsPerTransaction") !== "false",
+      combineWithOtherDiscounts:
+        formData.get("combineWithOtherDiscounts") === "true",
       allowCustomMessage: formData.get("allowCustomMessage") !== "false",
       maxMessageLength: formData.get("maxMessageLength") || "200",
-      trackRedemptionAnalytics: formData.get("trackRedemptionAnalytics") !== "false",
+      trackRedemptionAnalytics:
+        formData.get("trackRedemptionAnalytics") !== "false",
     });
 
-    const { error } = await supabase
-      .from("finance_gift_card_settings")
-      .upsert({
-        company_id: companyId,
-        gift_cards_enabled: data.giftCardsEnabled,
-        program_name: data.programName,
-        fixed_denominations: data.fixedDenominations,
-        available_amounts: availableAmounts,
-        min_custom_amount: data.minCustomAmount,
-        max_custom_amount: data.maxCustomAmount,
-        allow_online_purchase: data.allowOnlinePurchase,
-        allow_in_person_purchase: data.allowInPersonPurchase,
-        require_recipient_email: data.requireRecipientEmail,
-        cards_expire: data.cardsExpire,
-        expiration_months: data.expirationMonths,
-        send_expiration_reminder: data.sendExpirationReminder,
-        reminder_days_before: data.reminderDaysBefore,
-        allow_partial_redemption: data.allowPartialRedemption,
-        allow_multiple_cards_per_transaction: data.allowMultipleCardsPerTransaction,
-        combine_with_other_discounts: data.combineWithOtherDiscounts,
-        allow_custom_message: data.allowCustomMessage,
-        max_message_length: data.maxMessageLength,
-        track_redemption_analytics: data.trackRedemptionAnalytics,
-      });
+    const { error } = await supabase.from("finance_gift_card_settings").upsert({
+      company_id: companyId,
+      gift_cards_enabled: data.giftCardsEnabled,
+      program_name: data.programName,
+      fixed_denominations: data.fixedDenominations,
+      available_amounts: availableAmounts,
+      min_custom_amount: data.minCustomAmount,
+      max_custom_amount: data.maxCustomAmount,
+      allow_online_purchase: data.allowOnlinePurchase,
+      allow_in_person_purchase: data.allowInPersonPurchase,
+      require_recipient_email: data.requireRecipientEmail,
+      cards_expire: data.cardsExpire,
+      expiration_months: data.expirationMonths,
+      send_expiration_reminder: data.sendExpirationReminder,
+      reminder_days_before: data.reminderDaysBefore,
+      allow_partial_redemption: data.allowPartialRedemption,
+      allow_multiple_cards_per_transaction:
+        data.allowMultipleCardsPerTransaction,
+      combine_with_other_discounts: data.combineWithOtherDiscounts,
+      allow_custom_message: data.allowCustomMessage,
+      max_message_length: data.maxMessageLength,
+      track_redemption_analytics: data.trackRedemptionAnalytics,
+    });
 
     if (error) {
       throw new ActionError(
@@ -977,13 +1006,15 @@ export async function getGiftCardSettings(): Promise<ActionResult<any>> {
 const virtualBucketSettingsSchema = z.object({
   virtualBucketsEnabled: z.boolean().default(false),
   autoAllocateFunds: z.boolean().default(false),
-  allocationFrequency: z.enum(["daily", "weekly", "biweekly", "monthly"]).default("weekly"),
+  allocationFrequency: z
+    .enum(["daily", "weekly", "biweekly", "monthly"])
+    .default("weekly"),
   operatingExpensesPercentage: z.coerce.number().default(50),
   taxReservePercentage: z.coerce.number().default(25),
   profitPercentage: z.coerce.number().default(15),
   emergencyFundPercentage: z.coerce.number().default(10),
   minOperatingBalance: z.coerce.number().default(5000),
-  emergencyFundTarget: z.coerce.number().default(10000),
+  emergencyFundTarget: z.coerce.number().default(10_000),
   notifyLowBalance: z.boolean().default(true),
   lowBalanceThreshold: z.coerce.number().default(1000),
   notifyBucketGoalsMet: z.boolean().default(true),
@@ -1012,7 +1043,8 @@ export async function updateVirtualBucketSettings(
       virtualBucketsEnabled: formData.get("virtualBucketsEnabled") === "true",
       autoAllocateFunds: formData.get("autoAllocateFunds") === "true",
       allocationFrequency: formData.get("allocationFrequency") || "weekly",
-      operatingExpensesPercentage: formData.get("operatingExpensesPercentage") || "50",
+      operatingExpensesPercentage:
+        formData.get("operatingExpensesPercentage") || "50",
       taxReservePercentage: formData.get("taxReservePercentage") || "25",
       profitPercentage: formData.get("profitPercentage") || "15",
       emergencyFundPercentage: formData.get("emergencyFundPercentage") || "10",

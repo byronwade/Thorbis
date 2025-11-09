@@ -2,6 +2,7 @@
 
 import {
   BadgeCheck,
+  CheckCircle2,
   CreditCard,
   LogOut,
   type LucideIcon,
@@ -11,7 +12,6 @@ import {
   ShoppingCart,
   Sun,
   Wrench,
-  CheckCircle2,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { signOut } from "@/actions/auth";
 import { switchCompany } from "@/actions/company-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +33,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 
 /**
  * UserMenu - Client Component
@@ -67,14 +67,15 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   // Find the active team based on activeCompanyId, fallback to first team
-  const initialActiveTeam = teams.find((t) => t.id === activeCompanyId) || teams[0];
+  const initialActiveTeam =
+    teams.find((t) => t.id === activeCompanyId) || teams[0];
   const [activeTeam, setActiveTeam] = useState(initialActiveTeam);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleCompanySwitch = async (team: typeof teams[0]) => {
+  const handleCompanySwitch = async (team: (typeof teams)[0]) => {
     // Don't switch if already active
     if (activeTeam?.id === team.id) {
       return;
@@ -84,10 +85,10 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
     if (result.success) {
       setActiveTeam(team);
       // If onboarding is not complete, redirect to onboarding page
-      if (!team.onboardingComplete) {
-        router.push("/dashboard/welcome");
-      } else {
+      if (team.onboardingComplete) {
         router.push("/dashboard");
+      } else {
+        router.push("/dashboard/welcome");
       }
     }
   };
@@ -164,19 +165,27 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
               <div className="flex size-6 items-center justify-center rounded-sm border">
                 <team.logo className="size-4 shrink-0" />
               </div>
-                <div className="flex flex-1 flex-col">
+              <div className="flex flex-1 flex-col">
                 <span className="font-medium text-sm">{team.name}</span>
                 <div className="flex items-center gap-2">
                   {team.onboardingComplete !== undefined ? (
                     team.onboardingComplete ? (
-                      <Badge variant="default" className="h-4 px-1.5 text-[10px]">
+                      <Badge
+                        className="h-4 px-1.5 text-[10px]"
+                        variant="default"
+                      >
                         <CheckCircle2 className="mr-1 size-3" />
                         Complete
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
+                      <Badge
+                        className="h-4 px-1.5 text-[10px]"
+                        variant="secondary"
+                      >
                         <XCircle className="mr-1 size-3" />
-                        {team.plan === "Incomplete Onboarding" ? "Incomplete Onboarding" : "Not Complete"}
+                        {team.plan === "Incomplete Onboarding"
+                          ? "Incomplete Onboarding"
+                          : "Not Complete"}
                       </Badge>
                     )
                   ) : (

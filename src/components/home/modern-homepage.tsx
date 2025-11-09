@@ -21,13 +21,11 @@ import {
   Star,
   TrendingUp,
   Users,
-  Zap,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export function ModernHomepage() {
   return (
@@ -73,7 +71,7 @@ export function ModernHomepage() {
             {/* Social proof */}
             <div className="mb-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
               <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
+                <div className="-space-x-2 flex">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <div
                       className="size-10 rounded-full border-2 border-background bg-gradient-to-br from-primary/40 to-primary/20"
@@ -144,7 +142,7 @@ export function ModernHomepage() {
             <div className="relative mx-auto mt-20 max-w-6xl">
               <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-background/80 shadow-2xl backdrop-blur-sm">
                 {/* Browser chrome */}
-                <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-3">
+                <div className="flex items-center gap-2 border-border border-b bg-muted/50 px-4 py-3">
                   <div className="flex gap-2">
                     <div className="size-3 rounded-full bg-red-500" />
                     <div className="size-3 rounded-full bg-yellow-500" />
@@ -186,7 +184,7 @@ export function ModernHomepage() {
       </section>
 
       {/* KEY FEATURES SECTION */}
-      <section className="border-y border-border/50 bg-background py-24">
+      <section className="border-border/50 border-y bg-background py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="mb-16 text-center">
@@ -345,7 +343,7 @@ export function ModernHomepage() {
       </section>
 
       {/* TESTIMONIALS SECTION */}
-      <section className="border-y border-border/50 bg-background py-24">
+      <section className="border-border/50 border-y bg-background py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="mb-16 text-center">
@@ -463,5 +461,3 @@ export function ModernHomepage() {
     </div>
   );
 }
-
-

@@ -3,7 +3,13 @@
 import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 /**
  * Settings Error Boundary - Client Component
@@ -32,14 +38,20 @@ export default function SettingsError({
         <CardContent className="space-y-4">
           {process.env.NODE_ENV === "development" && (
             <div className="rounded-lg bg-muted p-4">
-              <p className="text-sm font-mono text-muted-foreground">{error.message}</p>
+              <p className="font-mono text-muted-foreground text-sm">
+                {error.message}
+              </p>
             </div>
           )}
           <div className="flex gap-2">
             <Button className="flex-1" onClick={reset}>
               Try again
             </Button>
-            <Button className="flex-1" onClick={() => (window.location.href = "/dashboard")} variant="outline">
+            <Button
+              className="flex-1"
+              onClick={() => (window.location.href = "/dashboard")}
+              variant="outline"
+            >
               Go to Dashboard
             </Button>
           </div>

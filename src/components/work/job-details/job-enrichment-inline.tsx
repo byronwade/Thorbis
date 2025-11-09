@@ -1,6 +1,6 @@
 /**
  * Inline Job Enrichment Component
- * 
+ *
  * Displays critical operational intelligence inline with job details
  * No cards, minimal UI, important data only
  */
@@ -8,7 +8,13 @@
 "use client";
 
 import { AlertTriangle, CloudRain, MapPin, Thermometer } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 type EnrichmentData = {
   enrichmentStatus?: string;
@@ -37,6 +43,23 @@ type EnrichmentData = {
       }>;
     };
   };
+  traffic?: {
+    incidents: Array<{
+      type:
+        | "crash"
+        | "construction"
+        | "road_closed"
+        | "police"
+        | "congestion"
+        | "other";
+      severity: "minor" | "moderate" | "major";
+      description: string;
+      distance: number;
+      affectsRoute: boolean;
+    }>;
+    nearbyIncidents: number;
+    routeAffectingIncidents: number;
+  };
   timeZone?: {
     timeZoneId: string;
     timeZoneName: string;
@@ -50,115 +73,299 @@ type EnrichmentData = {
 };
 
 type JobEnrichmentInlineProps = {
-  enrichmentData: EnrichmentData | null;
+  enrichmentData?: EnrichmentData | null;
+  jobId?: string;
+  property?: {
+    address?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    lat?: number | null;
+    lon?: number | null;
+  };
 };
 
-export function JobEnrichmentInline({ enrichmentData }: JobEnrichmentInlineProps) {
-  if (!enrichmentData || enrichmentData.enrichmentStatus === "failed") {
+export function JobEnrichmentInline({
+  enrichmentData: initialData,
+  jobId,
+  property,
+}: JobEnrichmentInlineProps) {
+  const [enrichmentData, setEnrichmentData] = useState<EnrichmentData | null>(
+    initialData || null
+  );
+  const [isLoading, setIsLoading] = useState(!initialData);
+  const [hasFetched, setHasFetched] = useState(false);
+
+  const fetchEnrichment = useCallback(async () => {
+    if (!(jobId && property?.address && property?.city && property?.state)) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Prevent re-fetching if already fetched
+    if (hasFetched) {
+      return;
+    }
+
+    setHasFetched(true);
+
+    try {
+      const params = new URLSearchParams({
+        jobId,
+        address: property.address,
+        city: property.city,
+        state: property.state,
+        zipCode: property.zip_code || "",
+      });
+
+      if (property.lat && property.lon) {
+        params.set("lat", property.lat.toString());
+        params.set("lon", property.lon.toString());
+      }
+
+      const response = await fetch(`/api/job-enrichment?${params.toString()}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setEnrichmentData(data);
+      }
+    } catch (error) {
+      // Silently fail - enrichment is non-critical
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    jobId,
+    property?.address,
+    property?.city,
+    property?.state,
+    property?.zip_code,
+    property?.lat,
+    property?.lon,
+    hasFetched,
+  ]);
+
+  useEffect(() => {
+    // Only fetch once on mount if no initial data
+    if (!initialData && !hasFetched && jobId && property) {
+      fetchEnrichment();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount only
+
+  if (
+    isLoading ||
+    !enrichmentData ||
+    enrichmentData.enrichmentStatus === "failed"
+  ) {
     return null;
   }
 
-  const { weather, recommendations, timeZone } = enrichmentData;
+  const { weather, traffic, recommendations, timeZone } = enrichmentData;
 
   // Log full data to console for debugging
   if (enrichmentData) {
     console.log("[Job Enrichment] Full data:", enrichmentData);
   }
 
-  const hasWeatherAlerts = weather?.hasActiveAlerts && weather?.alerts && weather.alerts.length > 0;
+  const hasWeatherAlerts =
+    weather?.hasActiveAlerts && weather?.alerts && weather.alerts.length > 0;
+  const hasTrafficIncidents =
+    traffic?.incidents && traffic.incidents.length > 0;
   const todayForecast = weather?.forecast?.periods?.[0];
   const shouldReschedule = recommendations?.shouldReschedule;
-  const hasSafetyWarnings = recommendations?.safetyWarnings && recommendations.safetyWarnings.length > 0;
+  const hasSafetyWarnings =
+    recommendations?.safetyWarnings &&
+    recommendations.safetyWarnings.length > 0;
 
   // If no important data, don't render anything
-  if (!hasWeatherAlerts && !todayForecast && !shouldReschedule && !hasSafetyWarnings && !timeZone) {
+  if (
+    !(
+      hasWeatherAlerts ||
+      hasTrafficIncidents ||
+      todayForecast ||
+      shouldReschedule ||
+      hasSafetyWarnings ||
+      timeZone
+    )
+  ) {
     return null;
   }
 
-  const getSeverityStyles = (severity: string) => {
+  // Deduplicate alerts by event type
+  const uniqueAlerts =
+    hasWeatherAlerts && weather.alerts
+      ? weather.alerts.filter(
+          (alert, index, self) =>
+            index === self.findIndex((a) => a.event === alert.event)
+        )
+      : [];
+
+  const getSeverityVariant = (severity: string) => {
     switch (severity) {
       case "Extreme":
-        return {
-          container: "border-red-500/50 bg-red-50 dark:bg-red-950/50",
-          icon: "text-red-600 dark:text-red-400",
-          text: "text-red-900 dark:text-red-100",
-          badge: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-        };
+        return "destructive";
       case "Severe":
-        return {
-          container: "border-orange-500/50 bg-orange-50 dark:bg-orange-950/50",
-          icon: "text-orange-600 dark:text-orange-400",
-          text: "text-orange-900 dark:text-orange-100",
-          badge: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-        };
+        return "default";
       default:
-        return {
-          container: "border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/50",
-          icon: "text-yellow-600 dark:text-yellow-400",
-          text: "text-yellow-900 dark:text-yellow-100",
-          badge: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-        };
+        return "secondary";
+    }
+  };
+
+  const getTrafficIcon = (type: string) => {
+    // Using AlertTriangle for all types for now, could customize
+    return AlertTriangle;
+  };
+
+  const getTrafficVariant = (severity: string) => {
+    switch (severity) {
+      case "major":
+        return "destructive";
+      case "moderate":
+        return "default";
+      default:
+        return "secondary";
+    }
+  };
+
+  const getTrafficLabel = (type: string) => {
+    switch (type) {
+      case "crash":
+        return "Crash";
+      case "construction":
+        return "Construction";
+      case "road_closed":
+        return "Road Closed";
+      case "police":
+        return "Police Activity";
+      case "congestion":
+        return "Heavy Traffic";
+      default:
+        return "Incident";
     }
   };
 
   return (
-    <div className="space-y-3">
-      {/* Weather Alerts - Critical */}
-      {hasWeatherAlerts && weather.alerts && weather.alerts.map((alert, index) => {
-        const styles = getSeverityStyles(alert.severity);
-        return (
-          <div
-            key={index}
-            className={`flex items-start gap-3 rounded-lg border-l-4 p-4 shadow-sm ${styles.container}`}
-          >
-            <AlertTriangle className={`mt-0.5 size-5 flex-shrink-0 ${styles.icon}`} />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className={`font-semibold text-sm ${styles.text}`}>
+    <div className="space-y-2">
+      {/* Weather Alerts, Traffic & Safety Warnings - Badges inline */}
+      {(uniqueAlerts.length > 0 ||
+        hasTrafficIncidents ||
+        hasSafetyWarnings) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Weather Alerts */}
+          {uniqueAlerts.map((alert, index) => (
+            <HoverCard key={index} openDelay={200}>
+              <HoverCardTrigger asChild>
+                <Badge
+                  className="cursor-help gap-1"
+                  variant={getSeverityVariant(alert.severity)}
+                >
+                  <AlertTriangle className="size-3" />
                   {alert.event}
-                </h4>
-                <Badge className={`text-xs ${styles.badge}`} variant="secondary">
-                  {alert.severity}
                 </Badge>
-              </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">
-                {alert.headline}
-              </p>
-            </div>
-          </div>
-        );
-      })}
+              </HoverCardTrigger>
+              <HoverCardContent className="w-96">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="size-4" />
+                    <h4 className="font-semibold text-sm">{alert.event}</h4>
+                    <Badge className="ml-auto text-xs" variant="outline">
+                      {alert.severity}
+                    </Badge>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    {alert.headline}
+                  </p>
+                  {alert.urgency && (
+                    <p className="text-muted-foreground text-xs">
+                      <span className="font-medium">Urgency:</span>{" "}
+                      {alert.urgency}
+                    </p>
+                  )}
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          ))}
 
-      {/* Reschedule Recommendation - Critical */}
-      {shouldReschedule && recommendations?.rescheduleReason && (
-        <div className="flex items-start gap-3 rounded-lg border-l-4 border-yellow-500/50 bg-yellow-50 p-4 shadow-sm dark:bg-yellow-950/50">
-          <AlertTriangle className="mt-0.5 size-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
-          <div className="flex-1">
-            <p className="text-sm text-yellow-900 dark:text-yellow-100">
-              <span className="font-semibold">Reschedule Recommended:</span>{" "}
-              <span className="text-muted-foreground">{recommendations.rescheduleReason}</span>
-            </p>
-          </div>
+          {/* Traffic Incidents */}
+          {hasTrafficIncidents &&
+            traffic.incidents.map((incident, index) => {
+              const Icon = getTrafficIcon(incident.type);
+              return (
+                <HoverCard key={`traffic-${index}`} openDelay={200}>
+                  <HoverCardTrigger asChild>
+                    <Badge
+                      className="cursor-help gap-1"
+                      variant={getTrafficVariant(incident.severity)}
+                    >
+                      <Icon className="size-3" />
+                      {getTrafficLabel(incident.type)}
+                      {incident.affectsRoute && " (On Route)"}
+                    </Badge>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-96">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Icon className="size-4" />
+                        <h4 className="font-semibold text-sm">
+                          {getTrafficLabel(incident.type)}
+                        </h4>
+                        <Badge className="ml-auto text-xs" variant="outline">
+                          {incident.severity}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground text-xs leading-relaxed">
+                        {incident.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-muted-foreground text-xs">
+                        <span>
+                          <span className="font-medium">Distance:</span>{" "}
+                          {incident.distance.toFixed(1)} mi
+                        </span>
+                        {incident.affectsRoute && (
+                          <span className="font-medium text-orange-600 dark:text-orange-400">
+                            Affects your route
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              );
+            })}
+
+          {/* Safety Warnings Badge */}
+          {hasSafetyWarnings && recommendations?.safetyWarnings && (
+            <HoverCard openDelay={200}>
+              <HoverCardTrigger asChild>
+                <Badge className="cursor-help gap-1" variant="destructive">
+                  <AlertTriangle className="size-3" />
+                  {recommendations.safetyWarnings.length} Safety Warning
+                  {recommendations.safetyWarnings.length > 1 ? "s" : ""}
+                </Badge>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-96">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="size-4" />
+                    <h4 className="font-semibold text-sm">Safety Warnings</h4>
+                  </div>
+                  <ul className="space-y-2">
+                    {recommendations.safetyWarnings.map((warning, idx) => (
+                      <li
+                        className="text-muted-foreground text-xs leading-relaxed"
+                        key={idx}
+                      >
+                        • {warning}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          )}
         </div>
       )}
-
-      {/* Safety Warnings - Critical */}
-      {hasSafetyWarnings && recommendations?.safetyWarnings && recommendations.safetyWarnings.map((warning, index) => (
-        <div
-          key={index}
-          className="flex items-start gap-3 rounded-lg border-l-4 border-red-500/50 bg-red-50 p-4 shadow-sm dark:bg-red-950/50"
-        >
-          <AlertTriangle className="mt-0.5 size-5 flex-shrink-0 text-red-600 dark:text-red-400" />
-          <div className="flex-1">
-            <p className="font-semibold text-red-900 text-sm dark:text-red-100">
-              Safety Warning
-            </p>
-            <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-              {warning}
-            </p>
-          </div>
-        </div>
-      ))}
 
       {/* Today's Forecast & Time Zone - Info */}
       <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
@@ -183,7 +390,9 @@ export function JobEnrichmentInline({ enrichmentData }: JobEnrichmentInlineProps
         {timeZone && (
           <div className="flex items-center gap-1.5">
             <span className="font-medium">Local Time:</span>
-            <span>{new Date(timeZone.currentLocalTime).toLocaleTimeString()}</span>
+            <span>
+              {new Date(timeZone.currentLocalTime).toLocaleTimeString()}
+            </span>
             <span className="text-xs">({timeZone.timeZoneId})</span>
           </div>
         )}
@@ -191,4 +400,3 @@ export function JobEnrichmentInline({ enrichmentData }: JobEnrichmentInlineProps
     </div>
   );
 }
-

@@ -24,7 +24,6 @@ import {
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
 import { getPersonalInfo, updatePersonalInfo } from "@/actions/settings";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +45,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const MIN_NAME_LENGTH = 2;
@@ -116,8 +116,8 @@ export default function PersonalInformationPage() {
       const result = await getPersonalInfo();
       if (result.success && result.data) {
         form.reset({
-          firstName: result.data.name?.split(' ')[0] || "",
-          lastName: result.data.name?.split(' ')[1] || "",
+          firstName: result.data.name?.split(" ")[0] || "",
+          lastName: result.data.name?.split(" ")[1] || "",
           email: result.data.email || "",
           phone: result.data.phone || "",
         });

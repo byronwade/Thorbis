@@ -8,10 +8,10 @@
  * - Apple Pay and Google Pay
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/server";
+import { createClient } from "@/lib/supabase/server";
 
 const createIntentSchema = z.object({
   amount: z.number().int().positive(),
@@ -26,7 +26,10 @@ export async function POST(request: NextRequest) {
     // Get authenticated user
     const supabase = await createClient();
     if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+      return NextResponse.json(
+        { error: "Service unavailable" },
+        { status: 503 }
+      );
     }
     const {
       data: { user },
@@ -38,7 +41,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!stripe) {
-      return NextResponse.json({ error: "Payment service unavailable" }, { status: 503 });
+      return NextResponse.json(
+        { error: "Payment service unavailable" },
+        { status: 503 }
+      );
     }
 
     // Parse and validate request body
@@ -98,7 +104,8 @@ export async function POST(request: NextRequest) {
       paymentIntentParams.setup_future_usage = data.setupFutureUsage;
     }
 
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+    const paymentIntent =
+      await stripe.paymentIntents.create(paymentIntentParams);
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
@@ -114,6 +121,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

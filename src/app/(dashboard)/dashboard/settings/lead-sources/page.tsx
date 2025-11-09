@@ -28,10 +28,9 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { getLeadSources } from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getLeadSources, createLeadSource, updateLeadSource, deleteLeadSource } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -56,6 +55,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;

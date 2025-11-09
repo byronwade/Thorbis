@@ -16,11 +16,23 @@
 
 "use client";
 
+import {
+  Calendar,
+  Clock,
+  Mail,
+  MapPin,
+  Phone,
+  Play,
+  Shield,
+  Square,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -30,19 +42,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Users,
-  Clock,
-  Play,
-  Square,
-  Calendar,
-  MapPin,
-  TrendingUp,
-  User,
-  Mail,
-  Phone,
-  Shield,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TeamScheduleTabProps {
@@ -79,14 +78,13 @@ export function TeamScheduleTab({
   const activeEntry = timeEntries.find((e) => !e.clock_out);
 
   // Format date/time
-  const formatDateTime = (date: string) => {
-    return new Intl.DateTimeFormat("en-US", {
+  const formatDateTime = (date: string) =>
+    new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
     }).format(new Date(date));
-  };
 
   // Handle clock in
   const handleClockIn = async () => {
@@ -127,11 +125,11 @@ export function TeamScheduleTab({
                 </Avatar>
                 <div>
                   <p className="font-semibold">{assignedUser.name}</p>
-                  <div className="flex gap-4 text-sm text-muted-foreground">
+                  <div className="flex gap-4 text-muted-foreground text-sm">
                     {assignedUser.email && (
                       <a
-                        href={`mailto:${assignedUser.email}`}
                         className="flex items-center gap-1 hover:text-blue-600"
+                        href={`mailto:${assignedUser.email}`}
                       >
                         <Mail className="h-3 w-3" />
                         {assignedUser.email}
@@ -139,8 +137,8 @@ export function TeamScheduleTab({
                     )}
                     {assignedUser.phone && (
                       <a
-                        href={`tel:${assignedUser.phone}`}
                         className="flex items-center gap-1 hover:text-blue-600"
+                        href={`tel:${assignedUser.phone}`}
                       >
                         <Phone className="h-3 w-3" />
                         {assignedUser.phone}
@@ -151,7 +149,7 @@ export function TeamScheduleTab({
               </div>
 
               {isEditMode && (
-                <Button variant="outline" size="sm">
+                <Button size="sm" variant="outline">
                   Change
                 </Button>
               )}
@@ -179,17 +177,14 @@ export function TeamScheduleTab({
               <div className="rounded-lg border border-green-200 bg-green-50 p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-green-900">
+                    <p className="font-medium text-green-900 text-sm">
                       Currently Working
                     </p>
-                    <p className="text-xs text-green-700">
+                    <p className="text-green-700 text-xs">
                       Clocked in at {formatDateTime(activeEntry.clock_in)}
                     </p>
                   </div>
-                  <Button
-                    variant="destructive"
-                    onClick={handleClockOut}
-                  >
+                  <Button onClick={handleClockOut} variant="destructive">
                     <Square className="mr-2 h-4 w-4" />
                     Clock Out
                   </Button>
@@ -199,15 +194,15 @@ export function TeamScheduleTab({
           ) : (
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
-                <p className="text-sm font-medium">Ready to start work?</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="font-medium text-sm">Ready to start work?</p>
+                <p className="text-muted-foreground text-xs">
                   Clock in to begin tracking time
                 </p>
               </div>
               <Button
-                variant="default"
-                onClick={handleClockIn}
                 disabled={isClockingIn}
+                onClick={handleClockIn}
+                variant="default"
               >
                 <Play className="mr-2 h-4 w-4" />
                 {isClockingIn ? "Clocking In..." : "Clock In"}
@@ -218,13 +213,13 @@ export function TeamScheduleTab({
           {/* Total Hours Summary */}
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Total Hours</p>
-              <p className="text-2xl font-bold">{formatHours(totalHours)}</p>
+              <p className="text-muted-foreground text-xs">Total Hours</p>
+              <p className="font-bold text-2xl">{formatHours(totalHours)}</p>
             </div>
 
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Estimated</p>
-              <p className="text-2xl font-bold">
+              <p className="text-muted-foreground text-xs">Estimated</p>
+              <p className="font-bold text-2xl">
                 {job.estimated_labor_hours
                   ? formatHours(job.estimated_labor_hours)
                   : "N/A"}
@@ -232,10 +227,10 @@ export function TeamScheduleTab({
             </div>
 
             <div className="rounded-lg border p-3">
-              <p className="text-xs text-muted-foreground">Variance</p>
+              <p className="text-muted-foreground text-xs">Variance</p>
               <p
                 className={cn(
-                  "text-2xl font-bold",
+                  "font-bold text-2xl",
                   totalHours > (job.estimated_labor_hours || 0)
                     ? "text-orange-600"
                     : "text-green-600"
@@ -259,7 +254,7 @@ export function TeamScheduleTab({
               <CardTitle>Team Assignments</CardTitle>
             </div>
             {isEditMode && (
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 Add Team Member
               </Button>
             )}
@@ -276,8 +271,8 @@ export function TeamScheduleTab({
 
                 return (
                   <div
-                    key={assignment.id}
                     className="flex items-center justify-between rounded-lg border p-3"
+                    key={assignment.id}
                   >
                     <div className="flex items-center gap-3">
                       <Avatar>
@@ -291,7 +286,7 @@ export function TeamScheduleTab({
                       </Avatar>
                       <div>
                         <p className="font-medium">{user?.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           {member?.job_title || "Team Member"}
                         </p>
                       </div>
@@ -302,7 +297,7 @@ export function TeamScheduleTab({
                         {assignment.role || "Assigned"}
                       </Badge>
                       {isEditMode && (
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           Remove
                         </Button>
                       )}
@@ -312,10 +307,10 @@ export function TeamScheduleTab({
               })}
             </div>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No team members assigned
               {isEditMode && (
-                <Button variant="outline" size="sm" className="ml-2 mt-2">
+                <Button className="mt-2 ml-2" size="sm" variant="outline">
                   Assign Team
                 </Button>
               )}
@@ -343,7 +338,7 @@ export function TeamScheduleTab({
                   <TableHead>Break</TableHead>
                   <TableHead>Total</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -377,9 +372,7 @@ export function TeamScheduleTab({
                           : "-"}
                       </TableCell>
                       <TableCell className="text-sm">
-                        {entry.break_minutes
-                          ? `${entry.break_minutes}m`
-                          : "-"}
+                        {entry.break_minutes ? `${entry.break_minutes}m` : "-"}
                       </TableCell>
                       <TableCell className="font-medium">
                         {entry.total_hours
@@ -389,12 +382,12 @@ export function TeamScheduleTab({
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Badge
+                            className="text-xs"
                             variant={
                               entry.entry_type === "gps"
                                 ? "default"
                                 : "secondary"
                             }
-                            className="text-xs"
                           >
                             {entry.entry_type}
                           </Badge>
@@ -405,7 +398,7 @@ export function TeamScheduleTab({
                       </TableCell>
                       <TableCell>
                         {isEditMode && (
-                          <Button variant="ghost" size="sm">
+                          <Button size="sm" variant="ghost">
                             Edit
                           </Button>
                         )}
@@ -416,7 +409,7 @@ export function TeamScheduleTab({
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No time entries recorded yet
             </div>
           )}
@@ -434,8 +427,8 @@ export function TeamScheduleTab({
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-xs text-muted-foreground">Scheduled Start</p>
-              <p className="text-sm font-medium">
+              <p className="text-muted-foreground text-xs">Scheduled Start</p>
+              <p className="font-medium text-sm">
                 {job.scheduled_start
                   ? formatDateTime(job.scheduled_start)
                   : "Not scheduled"}
@@ -443,8 +436,8 @@ export function TeamScheduleTab({
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground">Scheduled End</p>
-              <p className="text-sm font-medium">
+              <p className="text-muted-foreground text-xs">Scheduled End</p>
+              <p className="font-medium text-sm">
                 {job.scheduled_end
                   ? formatDateTime(job.scheduled_end)
                   : "Not scheduled"}
@@ -456,17 +449,17 @@ export function TeamScheduleTab({
 
           {job.dispatch_zone && (
             <div>
-              <p className="text-xs text-muted-foreground">Dispatch Zone</p>
-              <p className="text-sm font-medium">{job.dispatch_zone}</p>
+              <p className="text-muted-foreground text-xs">Dispatch Zone</p>
+              <p className="font-medium text-sm">{job.dispatch_zone}</p>
             </div>
           )}
 
           {job.travel_time_minutes && (
             <div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Estimated Travel Time
               </p>
-              <p className="text-sm font-medium">
+              <p className="font-medium text-sm">
                 {job.travel_time_minutes} minutes
               </p>
             </div>
@@ -474,8 +467,8 @@ export function TeamScheduleTab({
 
           {job.route_order && (
             <div>
-              <p className="text-xs text-muted-foreground">Route Order</p>
-              <p className="text-sm font-medium">
+              <p className="text-muted-foreground text-xs">Route Order</p>
+              <p className="font-medium text-sm">
                 Position #{job.route_order} in route
               </p>
             </div>

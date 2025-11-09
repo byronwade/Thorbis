@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * Next.js 16+ Proxy - Auth & Route Protection
@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   // If Supabase is not configured, allow request to continue
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!(supabaseUrl && supabaseAnonKey)) {
     return response;
   }
 

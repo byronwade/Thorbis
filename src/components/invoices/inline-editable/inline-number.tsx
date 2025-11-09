@@ -7,8 +7,8 @@
 
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface InlineNumberProps {
   value: number;
@@ -33,14 +33,12 @@ export function InlineNumber({
 }: InlineNumberProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const formatValue = (val: number) => {
-    return val.toFixed(decimals);
-  };
+  const formatValue = (val: number) => val.toFixed(decimals);
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     setIsEditing(false);
     const text = e.currentTarget.textContent || "0";
-    let newValue = parseFloat(text.replace(/[^0-9.-]/g, "")) || 0;
+    let newValue = Number.parseFloat(text.replace(/[^0-9.-]/g, "")) || 0;
 
     // Apply min/max constraints
     if (min !== undefined && newValue < min) newValue = min;
@@ -84,11 +82,6 @@ export function InlineNumber({
 
   return (
     <div
-      contentEditable={isEditable}
-      suppressContentEditableWarning
-      onBlur={handleBlur}
-      onFocus={handleFocus}
-      onKeyDown={handleKeyDown}
       className={cn(
         "font-mono tabular-nums outline-none transition-all duration-150",
         isEditable && [
@@ -102,8 +95,13 @@ export function InlineNumber({
           "-mx-1",
         ],
         !value && "text-gray-400",
-        className,
+        className
       )}
+      contentEditable={isEditable}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      onKeyDown={handleKeyDown}
+      suppressContentEditableWarning
     >
       {isEditing ? value : formatValue(value)}
     </div>

@@ -14,7 +14,10 @@ export async function generateInvoicePDFBuffer(
   customization?: any
 ): Promise<Buffer> {
   // Create the PDF document element
-  const pdfElement = createElement(InvoicePDFDocument, { content, customization });
+  const pdfElement = createElement(InvoicePDFDocument, {
+    content,
+    customization,
+  });
 
   // Render to buffer
   const buffer = await renderToBuffer(pdfElement as any);

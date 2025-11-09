@@ -14,8 +14,8 @@
 
 import type { Lead } from "@/components/marketing/leads-datatable";
 import { LeadsDataTable } from "@/components/marketing/leads-datatable";
-import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 import { MarketingComingSoon } from "@/components/marketing/marketing-coming-soon";
+import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
 // Mock leads data - replace with real data from database
 const mockLeads: Lead[] = [

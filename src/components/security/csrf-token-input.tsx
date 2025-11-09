@@ -20,11 +20,6 @@ type CSRFTokenInputProps = {
 
 export function CSRFTokenInput({ token }: CSRFTokenInputProps) {
   return (
-    <input
-      type="hidden"
-      name="csrf_token"
-      value={token}
-      aria-hidden="true"
-    />
+    <input aria-hidden="true" name="csrf_token" type="hidden" value={token} />
   );
 }

@@ -6,14 +6,14 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { Loader2, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 import { searchKBArticles } from "@/actions/kb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { KBArticleWithRelations } from "@/lib/kb/types";
+import { cn } from "@/lib/utils";
 
 interface KBSearchProps {
   className?: string;
@@ -85,25 +85,25 @@ export function KBSearch({
   };
 
   return (
-    <div ref={searchRef} className={cn("relative w-full", className)}>
-      <form onSubmit={handleSubmit} className="flex gap-2">
+    <div className={cn("relative w-full", className)} ref={searchRef}>
+      <form className="flex gap-2" onSubmit={handleSubmit}>
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
-            ref={inputRef}
-            type="search"
-            placeholder={placeholder}
-            value={query}
+            className="pl-10"
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => query.trim() && setShowResults(true)}
-            className="pl-10"
+            placeholder={placeholder}
+            ref={inputRef}
+            type="search"
+            value={query}
           />
           {isSearching && (
-            <Loader2 className="absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+            <Loader2 className="-translate-y-1/2 absolute top-1/2 right-3 size-4 animate-spin text-muted-foreground" />
           )}
         </div>
         {showButton && (
-          <Button type="submit" disabled={!query.trim() || isSearching}>
+          <Button disabled={!query.trim() || isSearching} type="submit">
             Search
           </Button>
         )}
@@ -114,16 +114,16 @@ export function KBSearch({
             <div className="max-h-96 space-y-1 overflow-y-auto p-2">
               {results.map((article) => (
                 <button
+                  className="w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent"
                   key={article.id}
-                  type="button"
                   onClick={() =>
                     handleResultClick(article.category.slug, article.slug)
                   }
-                  className="w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent"
+                  type="button"
                 >
                   <div className="font-medium">{article.title}</div>
                   {article.excerpt && (
-                    <div className="text-muted-foreground text-xs line-clamp-1">
+                    <div className="line-clamp-1 text-muted-foreground text-xs">
                       {article.excerpt}
                     </div>
                   )}
@@ -134,9 +134,9 @@ export function KBSearch({
               ))}
               <div className="border-t pt-2">
                 <button
-                  type="button"
+                  className="w-full rounded-md px-3 py-2 text-left font-medium text-primary text-sm hover:bg-accent"
                   onClick={handleSubmit}
-                  className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-primary hover:bg-accent"
+                  type="button"
                 >
                   View all results for "{query}"
                 </button>
@@ -148,4 +148,3 @@ export function KBSearch({
     </div>
   );
 }
-

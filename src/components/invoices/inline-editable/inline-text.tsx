@@ -51,10 +51,6 @@ export function InlineText({
 
   return (
     <Component
-      contentEditable={isEditable}
-      suppressContentEditableWarning
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
       className={cn(
         "outline-none transition-all duration-150",
         isEditable && [
@@ -68,8 +64,12 @@ export function InlineText({
           "-mx-1",
         ],
         !value && "text-gray-400 italic",
-        className,
+        className
       )}
+      contentEditable={isEditable}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      suppressContentEditableWarning
     >
       {value || placeholder}
     </Component>

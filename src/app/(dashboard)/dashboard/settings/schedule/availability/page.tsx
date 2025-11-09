@@ -9,11 +9,13 @@
  * - Browser API access for enhanced UX
  */
 
-import { Clock, HelpCircle, Plus, Save, Trash2, Loader2 } from "lucide-react";
+import { Clock, HelpCircle, Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
+import {
+  getAvailabilitySettings,
+  updateAvailabilitySettings,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getAvailabilitySettings, updateAvailabilitySettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -38,6 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 type DayAvailability = {
   day: string;
@@ -139,14 +142,14 @@ export default function AvailabilitySettingsPage() {
     getter: getAvailabilitySettings,
     setter: updateAvailabilitySettings,
     initialState: {
-    allowOnlineBooking: true,
-    bookingLeadTime: 24,
-    maxAdvanceBooking: 90,
-    allowEmergencyBooking: true,
-    emergencyFeeAmount: 100,
-    emergencyFeeType: "flat",
-    allowSameDayBooking: true,
-    sameDayLeadTime: 4,
+      allowOnlineBooking: true,
+      bookingLeadTime: 24,
+      maxAdvanceBooking: 90,
+      allowEmergencyBooking: true,
+      emergencyFeeAmount: 100,
+      emergencyFeeType: "flat",
+      allowSameDayBooking: true,
+      sameDayLeadTime: 4,
     },
     settingsName: "schedule availability",
     transformLoad: (data) => ({
@@ -155,19 +158,27 @@ export default function AvailabilitySettingsPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      const workHours = JSON.stringify(availability.reduce((acc, day) => {
-        acc[day.day.toLowerCase()] = {
-          start: day.startTime,
-          end: day.endTime,
-          enabled: day.enabled
-        };
-        return acc;
-      }, {} as any));
+      const workHours = JSON.stringify(
+        availability.reduce((acc, day) => {
+          acc[day.day.toLowerCase()] = {
+            start: day.startTime,
+            end: day.endTime,
+            enabled: day.enabled,
+          };
+          return acc;
+        }, {} as any)
+      );
       formData.append("defaultWorkHours", workHours);
       formData.append("defaultAppointmentDurationMinutes", "60");
       formData.append("bufferTimeMinutes", "15");
-      formData.append("minBookingNoticeHours", settings.bookingLeadTime.toString());
-      formData.append("maxBookingAdvanceDays", settings.maxAdvanceBooking.toString());
+      formData.append(
+        "minBookingNoticeHours",
+        settings.bookingLeadTime.toString()
+      );
+      formData.append(
+        "maxBookingAdvanceDays",
+        settings.maxAdvanceBooking.toString()
+      );
       formData.append("lunchBreakEnabled", "true");
       formData.append("lunchBreakStart", "12:00");
       formData.append("lunchBreakDurationMinutes", "60");
@@ -238,7 +249,7 @@ export default function AvailabilitySettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={() => saveSettings()} disabled={isPending}>
+            <Button disabled={isPending} onClick={() => saveSettings()}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

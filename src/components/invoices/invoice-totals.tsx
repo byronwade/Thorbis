@@ -31,12 +31,11 @@ interface InvoiceTotalsProps {
 
 export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   return (
     <Card className="mb-8 ml-auto max-w-md p-6">
@@ -74,7 +73,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
         {/* Total */}
         <div className="flex justify-between">
           <span className="font-semibold">Total</span>
-          <span className="text-lg font-bold">
+          <span className="font-bold text-lg">
             {formatCurrency(invoice.total_amount)}
           </span>
         </div>
@@ -97,7 +96,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
           <div className="flex justify-between">
             <span className="font-semibold">Balance Due</span>
             <span
-              className={`text-lg font-bold ${
+              className={`font-bold text-lg ${
                 invoice.status === "overdue"
                   ? "text-destructive"
                   : "text-primary"
@@ -110,7 +109,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 
         {/* Paid in Full */}
         {invoice.balance_amount === 0 && invoice.paid_amount > 0 && (
-          <div className="rounded-md bg-green-50 p-3 text-center text-green-800 text-sm font-medium dark:bg-green-950 dark:text-green-200">
+          <div className="rounded-md bg-green-50 p-3 text-center font-medium text-green-800 text-sm dark:bg-green-950 dark:text-green-200">
             Paid in Full
           </div>
         )}

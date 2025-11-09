@@ -1,6 +1,5 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import {
   ActionError,
   ERROR_CODES,
@@ -11,6 +10,7 @@ import {
   assertAuthenticated,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Get all supplier integrations for current user's company

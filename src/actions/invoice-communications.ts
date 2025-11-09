@@ -10,10 +10,12 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
+import { createClient } from "@/lib/supabase/server";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 /**
  * Send invoice via email
@@ -67,7 +69,9 @@ export async function sendInvoiceEmail(invoiceId: string) {
     revalidatePath(`/dashboard/customers/${invoice.customer_id}`);
 
     // Simulate email sending
-    console.log(`Would send invoice ${invoice.invoice_number} to ${invoice.customer.email}`);
+    console.log(
+      `Would send invoice ${invoice.invoice_number} to ${invoice.customer.email}`
+    );
 
     return {
       success: true,

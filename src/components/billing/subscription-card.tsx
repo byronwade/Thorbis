@@ -18,8 +18,8 @@ import { AlertCircle, CheckCircle, CreditCard, XCircle } from "lucide-react";
 import { useState } from "react";
 import {
   cancelCompanySubscription,
-  reactivateCompanySubscription,
   createBillingPortal,
+  reactivateCompanySubscription,
 } from "@/actions/billing";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -100,7 +100,9 @@ export function SubscriptionCard({
     const result = await cancelCompanySubscription(companyId);
 
     if (result.success) {
-      setSuccess("Subscription will be canceled at the end of the billing period");
+      setSuccess(
+        "Subscription will be canceled at the end of the billing period"
+      );
       setTimeout(() => window.location.reload(), 2000);
     } else {
       setError(result.error || "Failed to cancel subscription");
@@ -211,10 +213,10 @@ export function SubscriptionCard({
             {/* Trial Period */}
             {status === "trialing" && trialEndsAt && (
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950">
-                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                <p className="font-medium text-blue-900 text-sm dark:text-blue-100">
                   Trial Period
                 </p>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="text-blue-700 text-sm dark:text-blue-300">
                   Trial ends on {formatDate(trialEndsAt)}
                 </p>
               </div>
@@ -225,12 +227,15 @@ export function SubscriptionCard({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Current period:</span>
                 <span className="font-medium">
-                  {formatDate(currentPeriodStart)} - {formatDate(currentPeriodEnd)}
+                  {formatDate(currentPeriodStart)} -{" "}
+                  {formatDate(currentPeriodEnd)}
                 </span>
               </div>
               {subscriptionId && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subscription ID:</span>
+                  <span className="text-muted-foreground">
+                    Subscription ID:
+                  </span>
                   <span className="font-mono text-xs">{subscriptionId}</span>
                 </div>
               )}
@@ -241,7 +246,8 @@ export function SubscriptionCard({
               <Alert>
                 <AlertCircle className="size-4" />
                 <AlertDescription>
-                  This subscription will be canceled on {formatDate(currentPeriodEnd)}
+                  This subscription will be canceled on{" "}
+                  {formatDate(currentPeriodEnd)}
                 </AlertDescription>
               </Alert>
             )}
@@ -249,7 +255,7 @@ export function SubscriptionCard({
         ) : (
           <div className="rounded-lg border border-dashed p-6 text-center">
             <CreditCard className="mx-auto mb-2 size-8 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               No active subscription for this organization
             </p>
           </div>

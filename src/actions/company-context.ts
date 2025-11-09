@@ -9,10 +9,10 @@
 
 import { revalidatePath } from "next/cache";
 import {
-  setActiveCompany,
   clearActiveCompany,
-  getUserCompanies,
   getActiveCompany,
+  getUserCompanies,
+  setActiveCompany,
 } from "@/lib/auth/company-context";
 
 /**
@@ -55,9 +55,7 @@ export async function switchCompany(
     return {
       success: false,
       error:
-        error instanceof Error
-          ? error.message
-          : "Failed to switch company",
+        error instanceof Error ? error.message : "Failed to switch company",
     };
   }
 }
@@ -111,10 +109,7 @@ export async function getCompanies(): Promise<
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to get companies",
+      error: error instanceof Error ? error.message : "Failed to get companies",
     };
   }
 }
@@ -140,9 +135,7 @@ export async function getActiveCompanyDetails(): Promise<
     return {
       success: false,
       error:
-        error instanceof Error
-          ? error.message
-          : "Failed to get active company",
+        error instanceof Error ? error.message : "Failed to get active company",
     };
   }
 }

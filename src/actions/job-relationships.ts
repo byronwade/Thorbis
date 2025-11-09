@@ -30,7 +30,9 @@ import { createClient } from "@/lib/supabase/server";
 
 const addCustomerToJobSchema = z.object({
   customerId: z.string().uuid("Invalid customer ID"),
-  role: z.enum(["primary", "secondary", "billing", "property_owner"]).default("secondary"),
+  role: z
+    .enum(["primary", "secondary", "billing", "property_owner"])
+    .default("secondary"),
   isPrimary: z.boolean().default(false),
   isBillingContact: z.boolean().default(false),
   billingPercentage: z.number().min(0).max(100).default(100),
@@ -581,7 +583,9 @@ export async function setPrimaryProperty(
 /**
  * Get all customers for a job
  */
-export async function getJobCustomers(jobId: string): Promise<ActionResult<any[]>> {
+export async function getJobCustomers(
+  jobId: string
+): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -634,7 +638,9 @@ export async function getJobCustomers(jobId: string): Promise<ActionResult<any[]
 /**
  * Get all properties for a job
  */
-export async function getJobProperties(jobId: string): Promise<ActionResult<any[]>> {
+export async function getJobProperties(
+  jobId: string
+): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

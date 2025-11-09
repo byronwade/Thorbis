@@ -11,34 +11,26 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   Archive,
+  Briefcase,
+  Clock,
+  FileText,
+  Home,
   RotateCcw,
   Trash2,
-  AlertTriangle,
-  FileText,
-  Briefcase,
   Users,
-  Home,
   Wrench,
-  Clock,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
-  FullWidthDataTable,
-  type ColumnDef,
-  type BulkAction,
-} from "@/components/ui/full-width-datatable";
-import {
-  getArchivedItems,
-  bulkRestore,
-  type ArchivedItem,
   type ArchivableEntityType,
+  type ArchivedItem,
+  bulkRestore,
+  getArchivedItems,
 } from "@/actions/archive";
 import {
   AlertDialog,
@@ -50,6 +42,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import {
+  type BulkAction,
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ArchiveDataTableProps {
   entityFilter?: string;
@@ -158,7 +157,9 @@ export function ArchiveDataTable({
         <div>
           <div className="font-medium">{item.displayName}</div>
           {item.entityNumber && (
-            <div className="text-muted-foreground text-xs">{item.entityNumber}</div>
+            <div className="text-muted-foreground text-xs">
+              {item.entityNumber}
+            </div>
           )}
         </div>
       ),
@@ -192,7 +193,7 @@ export function ArchiveDataTable({
               </span>
             </>
           ) : (
-            <Badge variant="destructive" className="gap-1">
+            <Badge className="gap-1" variant="destructive">
               <AlertTriangle className="h-3 w-3" />
               Ready to delete
             </Badge>
@@ -261,7 +262,7 @@ export function ArchiveDataTable({
   return (
     <>
       {/* Entity Type Tabs */}
-      <Tabs value={selectedEntity} onValueChange={setSelectedEntity}>
+      <Tabs onValueChange={setSelectedEntity} value={selectedEntity}>
         <TabsList>
           <TabsTrigger value="all">All Items</TabsTrigger>
           <TabsTrigger value="invoice">Invoices</TabsTrigger>
@@ -276,12 +277,15 @@ export function ArchiveDataTable({
 
       {/* Data Table */}
       <FullWidthDataTable
-        data={data}
-        columns={columns}
-        getItemId={(item) => item.id}
-        enableSelection={true}
         bulkActions={bulkActions}
-        searchPlaceholder="Search archived items..."
+        columns={columns}
+        data={data}
+        emptyIcon={<Archive className="h-12 w-12 text-muted-foreground" />}
+        emptyMessage="No archived items found"
+        enableSelection={true}
+        getItemId={(item) => item.id}
+        itemsPerPage={50}
+        onRefresh={fetchData}
         searchFilter={(item, query) => {
           const q = query.toLowerCase();
           return (
@@ -290,19 +294,18 @@ export function ArchiveDataTable({
             item.entityType.toLowerCase().includes(q)
           );
         }}
-        showRefresh={true}
-        onRefresh={fetchData}
+        searchPlaceholder="Search archived items..."
         showPagination={true}
-        itemsPerPage={50}
-        emptyMessage="No archived items found"
-        emptyIcon={<Archive className="h-12 w-12 text-muted-foreground" />}
+        showRefresh={true}
       />
 
       {/* Restore Confirmation Dialog */}
-      <AlertDialog open={showRestoreDialog} onOpenChange={setShowRestoreDialog}>
+      <AlertDialog onOpenChange={setShowRestoreDialog} open={showRestoreDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Restore {selectedItems.size} Item(s)?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Restore {selectedItems.size} Item(s)?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               This will restore the selected items to their active state. They
               will reappear in their original locations.

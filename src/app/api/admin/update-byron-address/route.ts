@@ -3,8 +3,8 @@
  * DELETE THIS FILE AFTER TESTING
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
   try {
@@ -36,7 +36,7 @@ export async function POST() {
 
     if (!teamMembers || teamMembers.length === 0) {
       return NextResponse.json(
-        { 
+        {
           error: "No company found for user",
           hint: "Please complete onboarding first at /dashboard/welcome",
           userId: user.id,
@@ -46,7 +46,7 @@ export async function POST() {
     }
 
     // Use first company (prefer active status)
-    const activeTeamMember = teamMembers.find(tm => tm.status === "active");
+    const activeTeamMember = teamMembers.find((tm) => tm.status === "active");
     const companyId = activeTeamMember?.company_id || teamMembers[0].company_id;
 
     console.log("Using company ID:", companyId);
@@ -100,9 +100,10 @@ export async function POST() {
       propertiesUpdated: updatedProperties?.length || 0,
       newAddress: "165 Rock Building Lane, Talking Rock, GA 30175",
       properties: updatedProperties?.slice(0, 10), // Return first 10 as sample
-      note: updatedProperties && updatedProperties.length > 10 
-        ? `Showing first 10 of ${updatedProperties.length} properties` 
-        : undefined,
+      note:
+        updatedProperties && updatedProperties.length > 10
+          ? `Showing first 10 of ${updatedProperties.length} properties`
+          : undefined,
     });
   } catch (error: any) {
     console.error("Update addresses error:", error);
@@ -112,4 +113,3 @@ export async function POST() {
     );
   }
 }
-

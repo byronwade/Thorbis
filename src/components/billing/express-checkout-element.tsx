@@ -23,11 +23,13 @@
  * - Minimal bundle impact
  */
 
-import { useEffect, useState } from "react";
-import { Elements } from "@stripe/react-stripe-js";
-import { ExpressCheckoutElement as StripeExpressCheckout } from "@stripe/react-stripe-js";
-import { getStripe } from "@/lib/stripe/client";
+import {
+  Elements,
+  ExpressCheckoutElement as StripeExpressCheckout,
+} from "@stripe/react-stripe-js";
 import type { Stripe, StripeElementsOptions } from "@stripe/stripe-js";
+import { useEffect, useState } from "react";
+import { getStripe } from "@/lib/stripe/client";
 
 interface ExpressCheckoutElementProps {
   /** Amount in cents (e.g., 1000 = $10.00) */
@@ -70,27 +72,12 @@ function ExpressCheckoutInner({
   const [isReady, setIsReady] = useState(false);
 
   return (
-    <div className={`transition-opacity duration-300 ${isReady ? "opacity-100" : "opacity-0"}`}>
+    <div
+      className={`transition-opacity duration-300 ${isReady ? "opacity-100" : "opacity-0"}`}
+    >
       <StripeExpressCheckout
-        options={{
-          wallets: {
-            applePay: "auto",
-            googlePay: "auto",
-          },
-          layout: {
-            maxColumns: 2,
-            maxRows: 1,
-            overflow: "auto",
-          },
-          buttonTheme: {
-            applePay: "black",
-            googlePay: "black",
-          },
-          buttonHeight: 48,
-        }}
-        onReady={(event) => {
-          setIsReady(true);
-          console.log("Express Checkout ready with:", event.availablePaymentMethods);
+        onCancel={() => {
+          console.log("Payment cancelled");
         }}
         onConfirm={async (event) => {
           try {
@@ -140,11 +127,17 @@ function ExpressCheckoutInner({
           } catch (error) {
             console.error("Payment error:", error);
             (event as any).complete("fail");
-            onPaymentError?.(error instanceof Error ? error : new Error("Payment failed"));
+            onPaymentError?.(
+              error instanceof Error ? error : new Error("Payment failed")
+            );
           }
         }}
-        onCancel={() => {
-          console.log("Payment cancelled");
+        onReady={(event) => {
+          setIsReady(true);
+          console.log(
+            "Express Checkout ready with:",
+            event.availablePaymentMethods
+          );
         }}
         onShippingAddressChange={
           collectShipping
@@ -164,6 +157,22 @@ function ExpressCheckoutInner({
               }
             : undefined
         }
+        options={{
+          wallets: {
+            applePay: "auto",
+            googlePay: "auto",
+          },
+          layout: {
+            maxColumns: 2,
+            maxRows: 1,
+            overflow: "auto",
+          },
+          buttonTheme: {
+            applePay: "black",
+            googlePay: "black",
+          },
+          buttonHeight: 48,
+        }}
       />
     </div>
   );
@@ -180,7 +189,8 @@ function ExpressCheckoutInner({
  * - Country restrictions
  */
 export function ExpressCheckoutElement(props: ExpressCheckoutElementProps) {
-  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+  const [stripePromise, setStripePromise] =
+    useState<Promise<Stripe | null> | null>(null);
 
   useEffect(() => {
     setStripePromise(getStripe());
@@ -206,7 +216,7 @@ export function ExpressCheckoutElement(props: ExpressCheckoutElementProps) {
   };
 
   return (
-    <Elements stripe={stripePromise} options={elementsOptions}>
+    <Elements options={elementsOptions} stripe={stripePromise}>
       <ExpressCheckoutInner {...props} />
     </Elements>
   );

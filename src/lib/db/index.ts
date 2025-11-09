@@ -6,18 +6,18 @@ const isProduction = process.env.NODE_ENV === "production";
 
 /**
  * Database client - uses PostgreSQL/Supabase in production
- * 
+ *
  * Note: SQLite support removed - this project uses Supabase (PostgreSQL) only
  */
 export const db = (() => {
-      if (!process.env.DATABASE_URL) {
-        throw new Error(
+  if (!process.env.DATABASE_URL) {
+    throw new Error(
       "DATABASE_URL environment variable is required. Use Supabase connection string."
-        );
-      }
-      const client = postgres(process.env.DATABASE_URL);
-      return drizzlePostgres(client, { schema });
-    })();
+    );
+  }
+  const client = postgres(process.env.DATABASE_URL);
+  return drizzlePostgres(client, { schema });
+})();
 
 /**
  * Export the schema for use in queries

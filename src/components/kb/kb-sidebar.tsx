@@ -8,8 +8,9 @@
  * - Quick links
  */
 
-import Link from "next/link";
 import { BookOpen, HelpCircle, Search } from "lucide-react";
+import Link from "next/link";
+import { getKBArticles, getKBCategories } from "@/actions/kb";
 import {
   SidebarContent,
   SidebarGroup,
@@ -19,9 +20,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { KBTableOfContents } from "./kb-table-of-contents";
-import { getKBCategories, getKBArticles } from "@/actions/kb";
 import type { KBArticleWithRelations } from "@/lib/kb/types";
+import { KBTableOfContents } from "./kb-table-of-contents";
 
 interface KBSidebarContentProps {
   currentCategory?: string;
@@ -58,8 +58,8 @@ export async function KBSidebarContent({
           <SidebarGroupContent>
             <div className="space-y-1">
               <KBTableOfContents
-                htmlContent={htmlContent}
                 className="border-0 bg-transparent p-0 shadow-none"
+                htmlContent={htmlContent}
               />
             </div>
           </SidebarGroupContent>
@@ -87,19 +87,26 @@ export async function KBSidebarContent({
                 {/* Render children if they exist */}
                 {category.children && category.children.length > 0 && (
                   <SidebarMenu>
-                    {category.children.map((child: { id: string; slug: string; title: string; children?: unknown[] }) => (
-                      <SidebarMenuItem key={child.id}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={currentCategory === child.slug}
-                          className="pl-8"
-                        >
-                          <Link href={`/kb/${child.slug}`}>
-                            <span>{child.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
+                    {category.children.map(
+                      (child: {
+                        id: string;
+                        slug: string;
+                        title: string;
+                        children?: unknown[];
+                      }) => (
+                        <SidebarMenuItem key={child.id}>
+                          <SidebarMenuButton
+                            asChild
+                            className="pl-8"
+                            isActive={currentCategory === child.slug}
+                          >
+                            <Link href={`/kb/${child.slug}`}>
+                              <span>{child.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      )
+                    )}
                   </SidebarMenu>
                 )}
               </SidebarMenuItem>
@@ -116,16 +123,16 @@ export async function KBSidebarContent({
             <div className="space-y-2">
               {relatedArticles.map((article) => (
                 <Link
-                  key={article.id}
-                  href={`/kb/${article.category.slug}/${article.slug}`}
                   className="block"
+                  href={`/kb/${article.category.slug}/${article.slug}`}
+                  key={article.id}
                 >
                   <div className="rounded-md border border-sidebar-border bg-sidebar p-3 transition-colors hover:bg-sidebar-accent">
-                    <h4 className="font-medium text-sm leading-tight line-clamp-2">
+                    <h4 className="line-clamp-2 font-medium text-sm leading-tight">
                       {article.title}
                     </h4>
                     {article.excerpt && (
-                      <p className="text-muted-foreground mt-1 text-xs line-clamp-2">
+                      <p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
                         {article.excerpt}
                       </p>
                     )}
@@ -145,16 +152,16 @@ export async function KBSidebarContent({
             <div className="space-y-2">
               {popularArticles.map((article) => (
                 <Link
-                  key={article.id}
-                  href={`/kb/${article.category.slug}/${article.slug}`}
                   className="block"
+                  href={`/kb/${article.category.slug}/${article.slug}`}
+                  key={article.id}
                 >
                   <div className="rounded-md border border-sidebar-border bg-sidebar p-3 transition-colors hover:bg-sidebar-accent">
-                    <h4 className="font-medium text-sm leading-tight line-clamp-2">
+                    <h4 className="line-clamp-2 font-medium text-sm leading-tight">
                       {article.title}
                     </h4>
                     {article.excerpt && (
-                      <p className="text-muted-foreground mt-1 text-xs line-clamp-2">
+                      <p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
                         {article.excerpt}
                       </p>
                     )}
@@ -201,4 +208,3 @@ export async function KBSidebarContent({
     </SidebarContent>
   );
 }
-

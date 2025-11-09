@@ -62,7 +62,10 @@ const emailSettingsSchema = z.object({
   trackOpens: z.boolean().default(true),
   trackClicks: z.boolean().default(true),
   emailLogoUrl: z.string().optional(),
-  primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).default("#3b82f6"),
+  primaryColor: z
+    .string()
+    .regex(/^#[0-9A-F]{6}$/i)
+    .default("#3b82f6"),
 });
 
 export async function updateEmailSettings(
@@ -139,9 +142,7 @@ export async function updateEmailSettings(
   });
 }
 
-export async function getEmailSettings(): Promise<
-  ActionResult<any>
-> {
+export async function getEmailSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -227,19 +228,17 @@ export async function updateSmsSettings(
       ? Buffer.from(data.providerApiKey).toString("base64")
       : null;
 
-    const { error } = await supabase
-      .from("communication_sms_settings")
-      .upsert({
-        company_id: companyId,
-        provider: data.provider,
-        provider_api_key_encrypted: encryptedApiKey,
-        sender_number: data.senderNumber,
-        auto_reply_enabled: data.autoReplyEnabled,
-        auto_reply_message: data.autoReplyMessage,
-        opt_out_message: data.optOutMessage,
-        include_opt_out: data.includeOptOut,
-        consent_required: data.consentRequired,
-      });
+    const { error } = await supabase.from("communication_sms_settings").upsert({
+      company_id: companyId,
+      provider: data.provider,
+      provider_api_key_encrypted: encryptedApiKey,
+      sender_number: data.senderNumber,
+      auto_reply_enabled: data.autoReplyEnabled,
+      auto_reply_message: data.autoReplyMessage,
+      opt_out_message: data.optOutMessage,
+      include_opt_out: data.includeOptOut,
+      consent_required: data.consentRequired,
+    });
 
     if (error) {
       throw new ActionError(
@@ -485,7 +484,8 @@ export async function updateNotificationSettings(
       notifyInvoicePaid: formData.get("notifyInvoicePaid") !== "false",
       notifyInvoiceOverdue: formData.get("notifyInvoiceOverdue") !== "false",
       notifyEstimateSent: formData.get("notifyEstimateSent") !== "false",
-      notifyEstimateApproved: formData.get("notifyEstimateApproved") !== "false",
+      notifyEstimateApproved:
+        formData.get("notifyEstimateApproved") !== "false",
       notifyEstimateDeclined: formData.get("notifyEstimateDeclined") === "true",
       notifyScheduleChanges: formData.get("notifyScheduleChanges") !== "false",
       notifyTechnicianAssigned:

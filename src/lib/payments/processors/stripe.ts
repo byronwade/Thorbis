@@ -9,7 +9,14 @@
  */
 
 import { stripe } from "@/lib/stripe/server";
-import type { PaymentProcessor, ProcessPaymentRequest, ProcessPaymentResponse, RefundPaymentRequest, RefundPaymentResponse, PaymentChannel } from "../processor";
+import type {
+  PaymentChannel,
+  PaymentProcessor,
+  ProcessPaymentRequest,
+  ProcessPaymentResponse,
+  RefundPaymentRequest,
+  RefundPaymentResponse,
+} from "../processor";
 
 interface StripeConfig {
   companyId: string;
@@ -27,7 +34,9 @@ export class StripeProcessor implements PaymentProcessor {
     return ["online"];
   }
 
-  async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
+  async processPayment(
+    request: ProcessPaymentRequest
+  ): Promise<ProcessPaymentResponse> {
     if (!stripe) {
       return {
         success: false,
@@ -39,7 +48,7 @@ export class StripeProcessor implements PaymentProcessor {
     try {
       // WARNING: Stripe has limitations on high-value payments
       // This should only be used for platform billing, not contractor payments
-      if (request.amount > 100000) {
+      if (request.amount > 100_000) {
         // $1,000 - warn but allow (for platform billing)
         console.warn(
           `High-value payment ($${request.amount / 100}) processed through Stripe. Consider using Adyen for amounts > $10,000.`
@@ -86,7 +95,9 @@ export class StripeProcessor implements PaymentProcessor {
     }
   }
 
-  async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
+  async refundPayment(
+    request: RefundPaymentRequest
+  ): Promise<RefundPaymentResponse> {
     if (!stripe) {
       return {
         success: false,
@@ -156,5 +167,3 @@ export class StripeProcessor implements PaymentProcessor {
     }
   }
 }
-
-

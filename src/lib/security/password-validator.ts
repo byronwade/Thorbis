@@ -29,9 +29,7 @@ import { createHash } from "crypto";
  * }
  * ```
  */
-export async function isPasswordBreached(
-  password: string
-): Promise<boolean> {
+export async function isPasswordBreached(password: string): Promise<boolean> {
   try {
     // Generate SHA-1 hash of password
     const hash = createHash("sha1")
@@ -121,7 +119,7 @@ export function isCommonPassword(password: string): boolean {
  */
 export async function validatePasswordStrength(
   password: string,
-  checkBreaches: boolean = true
+  checkBreaches = true
 ): Promise<{
   isValid: boolean;
   error?: string;
@@ -146,7 +144,7 @@ export async function validatePasswordStrength(
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
 
-  if (!hasUppercase || !hasLowercase || !hasNumber) {
+  if (!(hasUppercase && hasLowercase && hasNumber)) {
     return {
       isValid: false,
       error:

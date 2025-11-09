@@ -22,10 +22,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import {
+  getPricebookSettings,
+  updatePricebookSettings,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getPricebookSettings, updatePricebookSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -58,6 +60,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -452,8 +455,14 @@ export default function PriceBookSettingsPage() {
     startTransition(async () => {
       const formData = new FormData();
       formData.append("showCostPrices", settings.showCostToTechs.toString());
-      formData.append("markupDefaultPercentage", settings.defaultMarkupPercent.toString());
-      formData.append("requireCategories", settings.requireDescription.toString());
+      formData.append(
+        "markupDefaultPercentage",
+        settings.defaultMarkupPercent.toString()
+      );
+      formData.append(
+        "requireCategories",
+        settings.requireDescription.toString()
+      );
       formData.append("allowCustomItems", "true");
       formData.append("showItemCodes", "true");
       formData.append("showItemDescriptions", "true");

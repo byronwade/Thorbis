@@ -1,5 +1,5 @@
-import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
 import { notFound } from "next/navigation";
+import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
 import { JobsTable } from "@/components/work/jobs-table";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,7 +48,11 @@ export default async function JobsPage() {
 
   if (error) {
     // Supabase PostgREST errors may not have standard structure
-    const errorMessage = error.message || error.hint || JSON.stringify(error) || "Unknown database error";
+    const errorMessage =
+      error.message ||
+      error.hint ||
+      JSON.stringify(error) ||
+      "Unknown database error";
     throw new Error(`Failed to load jobs: ${errorMessage}`);
   }
 

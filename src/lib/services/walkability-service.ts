@@ -1,11 +1,11 @@
 /**
  * Walkability Service
- * 
+ *
  * Calculates walkability score based on nearby amenities from OpenStreetMap
  * - Nearby amenities (restaurants, shops, schools, parks)
  * - Distance to transit
  * - Walkability score (0-100)
- * 
+ *
  * API: FREE, no key required (using Overpass API)
  * Data: OpenStreetMap
  */
@@ -33,7 +33,8 @@ export const WalkabilitySchema = z.object({
 export type Walkability = z.infer<typeof WalkabilitySchema>;
 
 export class WalkabilityService {
-  private cache: Map<string, { data: Walkability; timestamp: number }> = new Map();
+  private cache: Map<string, { data: Walkability; timestamp: number }> =
+    new Map();
   private cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days
 
   async getWalkability(lat: number, lon: number): Promise<Walkability | null> {
@@ -90,25 +91,40 @@ export class WalkabilityService {
       if (data.elements) {
         for (const element of data.elements) {
           const tags = element.tags || {};
-          
+
           if (tags.amenity) {
-            if (["restaurant", "cafe", "fast_food", "bar", "pub"].includes(tags.amenity)) {
+            if (
+              ["restaurant", "cafe", "fast_food", "bar", "pub"].includes(
+                tags.amenity
+              )
+            ) {
               amenityCounts.restaurants++;
-            } else if (["school", "kindergarten", "college", "university"].includes(tags.amenity)) {
+            } else if (
+              ["school", "kindergarten", "college", "university"].includes(
+                tags.amenity
+              )
+            ) {
               amenityCounts.schools++;
-            } else if (["hospital", "clinic", "doctors", "pharmacy"].includes(tags.amenity)) {
+            } else if (
+              ["hospital", "clinic", "doctors", "pharmacy"].includes(
+                tags.amenity
+              )
+            ) {
               amenityCounts.healthcare++;
             }
           }
-          
+
           if (tags.shop) {
             amenityCounts.shops++;
           }
-          
-          if (tags.leisure && ["park", "playground", "garden"].includes(tags.leisure)) {
+
+          if (
+            tags.leisure &&
+            ["park", "playground", "garden"].includes(tags.leisure)
+          ) {
             amenityCounts.parks++;
           }
-          
+
           if (tags.public_transport) {
             amenityCounts.transit++;
           }
@@ -117,13 +133,14 @@ export class WalkabilityService {
 
       // Calculate walkability score (0-100)
       // Based on weighted amenity counts
-      const score = Math.min(100, 
+      const score = Math.min(
+        100,
         amenityCounts.restaurants * 2 +
-        amenityCounts.shops * 2 +
-        amenityCounts.schools * 5 +
-        amenityCounts.parks * 3 +
-        amenityCounts.transit * 10 +
-        amenityCounts.healthcare * 5
+          amenityCounts.shops * 2 +
+          amenityCounts.schools * 5 +
+          amenityCounts.parks * 3 +
+          amenityCounts.transit * 10 +
+          amenityCounts.healthcare * 5
       );
 
       const category = this.getWalkabilityCategory(score);
@@ -137,8 +154,10 @@ export class WalkabilityService {
       };
 
       this.cache.set(cacheKey, { data: walkability, timestamp: Date.now() });
-      console.log(`[Walkability] Score: ${walkability.score} (${walkability.category})`);
-      
+      console.log(
+        `[Walkability] Score: ${walkability.score} (${walkability.category})`
+      );
+
       return walkability;
     } catch (error) {
       console.error("[Walkability] Error:", error);
@@ -156,4 +175,3 @@ export class WalkabilityService {
 }
 
 export const walkabilityService = new WalkabilityService();
-

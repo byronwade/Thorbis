@@ -5,10 +5,10 @@
  * Called from the client after Express Checkout Element confirms payment
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/server";
+import { createClient } from "@/lib/supabase/server";
 
 const saveMethodSchema = z.object({
   paymentMethodId: z.string().min(1),
@@ -22,7 +22,10 @@ export async function POST(request: NextRequest) {
     // Get authenticated user
     const supabase = await createClient();
     if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+      return NextResponse.json(
+        { error: "Service unavailable" },
+        { status: 503 }
+      );
     }
     const {
       data: { user },
@@ -34,7 +37,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!stripe) {
-      return NextResponse.json({ error: "Payment service unavailable" }, { status: 503 });
+      return NextResponse.json(
+        { error: "Payment service unavailable" },
+        { status: 503 }
+      );
     }
 
     // Parse and validate request body
@@ -42,7 +48,9 @@ export async function POST(request: NextRequest) {
     const data = saveMethodSchema.parse(body);
 
     // Get payment method from Stripe
-    const paymentMethod = await stripe.paymentMethods.retrieve(data.paymentMethodId);
+    const paymentMethod = await stripe.paymentMethods.retrieve(
+      data.paymentMethodId
+    );
 
     // Extract payment method details
     const type = paymentMethod.type;
@@ -70,7 +78,9 @@ export async function POST(request: NextRequest) {
         }
       }
     } else {
-      displayName = type.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      displayName = type
+        .replace("_", " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase());
     }
 
     // Check if payment method already exists
@@ -89,21 +99,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Save to database
-    const { error: insertError } = await supabase.from("payment_methods").insert({
-      user_id: user.id,
-      stripe_payment_method_id: data.paymentMethodId,
-      type: walletType || type,
-      brand,
-      last4,
-      exp_month: expMonth,
-      exp_year: expYear,
-      wallet_type: walletType,
-      display_name: displayName,
-      is_default: data.isDefault,
-      is_default_for_subscription: data.isDefaultForSubscription,
-      billing_details: paymentMethod.billing_details,
-      allow_redisplay: "always",
-    });
+    const { error: insertError } = await supabase
+      .from("payment_methods")
+      .insert({
+        user_id: user.id,
+        stripe_payment_method_id: data.paymentMethodId,
+        type: walletType || type,
+        brand,
+        last4,
+        exp_month: expMonth,
+        exp_year: expYear,
+        wallet_type: walletType,
+        display_name: displayName,
+        is_default: data.isDefault,
+        is_default_for_subscription: data.isDefaultForSubscription,
+        billing_details: paymentMethod.billing_details,
+        allow_redisplay: "always",
+      });
 
     if (insertError) {
       console.error("Error saving payment method:", insertError);
@@ -129,7 +141,10 @@ export async function POST(request: NextRequest) {
           });
         }
       } catch (stripeError) {
-        console.error("Error attaching payment method to customer:", stripeError);
+        console.error(
+          "Error attaching payment method to customer:",
+          stripeError
+        );
         // Don't fail - payment method is saved in our DB
       }
     }
@@ -145,6 +160,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

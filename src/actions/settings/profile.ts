@@ -46,7 +46,9 @@ const notificationPreferencesSchema = z.object({
 
   // Digest Settings
   digestEnabled: z.boolean().default(false),
-  digestFrequency: z.enum(["realtime", "hourly", "daily", "weekly"]).default("daily"),
+  digestFrequency: z
+    .enum(["realtime", "hourly", "daily", "weekly"])
+    .default("daily"),
 });
 
 export async function updateNotificationPreferences(
@@ -198,21 +200,19 @@ export async function updateUserPreferences(
       calendarStartDay: formData.get("calendarStartDay") || "0",
     });
 
-    const { error } = await supabase
-      .from("user_preferences")
-      .upsert({
-        user_id: user.id,
-        theme: data.theme,
-        language: data.language,
-        timezone: data.timezone,
-        date_format: data.dateFormat,
-        time_format: data.timeFormat,
-        default_dashboard_view: data.defaultDashboardView,
-        show_welcome_banner: data.showWelcomeBanner,
-        default_page_size: parseInt(data.defaultPageSize, 10),
-        calendar_view: data.calendarView,
-        calendar_start_day: data.calendarStartDay,
-      });
+    const { error } = await supabase.from("user_preferences").upsert({
+      user_id: user.id,
+      theme: data.theme,
+      language: data.language,
+      timezone: data.timezone,
+      date_format: data.dateFormat,
+      time_format: data.timeFormat,
+      default_dashboard_view: data.defaultDashboardView,
+      show_welcome_banner: data.showWelcomeBanner,
+      default_page_size: Number.parseInt(data.defaultPageSize, 10),
+      calendar_view: data.calendarView,
+      calendar_start_day: data.calendarStartDay,
+    });
 
     if (error) {
       throw new ActionError(
@@ -364,14 +364,18 @@ export async function getPersonalInfo(): Promise<ActionResult<any>> {
 // PASSWORD UPDATE
 // ============================================================================
 
-const passwordUpdateSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const passwordUpdateSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export async function updatePassword(
   formData: FormData

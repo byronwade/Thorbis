@@ -20,28 +20,34 @@ import { z } from "zod";
 
 export const SocialEnrichmentSchema = z.object({
   profiles: z.object({
-    linkedin: z.object({
-      url: z.string().url().optional(),
-      headline: z.string().optional(),
-      connections: z.number().optional(),
-      verified: z.boolean().optional(),
-    }).optional(),
-    
-    twitter: z.object({
-      url: z.string().url().optional(),
-      username: z.string().optional(),
-      followers: z.number().optional(),
-      verified: z.boolean().optional(),
-      bio: z.string().optional(),
-    }).optional(),
-    
-    facebook: z.object({
-      url: z.string().url().optional(),
-      name: z.string().optional(),
-      verified: z.boolean().optional(),
-    }).optional(),
+    linkedin: z
+      .object({
+        url: z.string().url().optional(),
+        headline: z.string().optional(),
+        connections: z.number().optional(),
+        verified: z.boolean().optional(),
+      })
+      .optional(),
+
+    twitter: z
+      .object({
+        url: z.string().url().optional(),
+        username: z.string().optional(),
+        followers: z.number().optional(),
+        verified: z.boolean().optional(),
+        bio: z.string().optional(),
+      })
+      .optional(),
+
+    facebook: z
+      .object({
+        url: z.string().url().optional(),
+        name: z.string().optional(),
+        verified: z.boolean().optional(),
+      })
+      .optional(),
   }),
-  
+
   // Metadata
   confidence: z.number().min(0).max(100),
   enrichedAt: z.string(),
@@ -157,7 +163,7 @@ export class SocialEnrichmentService {
       url: profile.url,
       headline: profile.headline,
       connections: profile.connections,
-      verified: profile.verified || false,
+      verified: profile.verified,
     };
   }
 
@@ -214,7 +220,7 @@ export class SocialEnrichmentService {
   private async findFacebookProfile(
     email: string
   ): Promise<SocialEnrichment["profiles"]["facebook"] | null> {
-    if (!this.facebookAppId || !this.facebookAppSecret) {
+    if (!(this.facebookAppId && this.facebookAppSecret)) {
       console.log("Facebook credentials not configured");
       return null;
     }
@@ -242,27 +248,33 @@ export class SocialEnrichmentService {
   /**
    * Extract username from social media URLs
    */
-  extractUsername(url: string, platform: "linkedin" | "twitter" | "facebook"): string | null {
+  extractUsername(
+    url: string,
+    platform: "linkedin" | "twitter" | "facebook"
+  ): string | null {
     try {
       const urlObj = new URL(url);
       const pathname = urlObj.pathname;
 
       switch (platform) {
-        case "linkedin":
+        case "linkedin": {
           // Extract from /in/username or /company/companyname
-          const linkedinMatch = pathname.match(/\/(in|company)\/([^\/]+)/);
+          const linkedinMatch = pathname.match(/\/(in|company)\/([^/]+)/);
           return linkedinMatch?.[2] || null;
-        
-        case "twitter":
+        }
+
+        case "twitter": {
           // Extract from /username
-          const twitterMatch = pathname.match(/\/([^\/]+)/);
+          const twitterMatch = pathname.match(/\/([^/]+)/);
           return twitterMatch?.[1] || null;
-        
-        case "facebook":
+        }
+
+        case "facebook": {
           // Extract from /username or /profile.php?id=
-          const facebookMatch = pathname.match(/\/([^\/\?]+)/);
+          const facebookMatch = pathname.match(/\/([^/?]+)/);
           return facebookMatch?.[1] || null;
-        
+        }
+
         default:
           return null;
       }
@@ -274,4 +286,3 @@ export class SocialEnrichmentService {
 
 // Singleton instance
 export const socialEnrichmentService = new SocialEnrichmentService();
-

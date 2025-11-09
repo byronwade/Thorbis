@@ -1,28 +1,28 @@
 "use server";
 
+import { checkBotId } from "botid/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { clearActiveCompany } from "@/lib/auth/company-context";
 import {
   createEmailVerificationToken,
   verifyAndConsumeToken,
 } from "@/lib/auth/tokens";
 import { emailConfig } from "@/lib/email/resend-client";
+import { clearCSRFToken } from "@/lib/security/csrf";
+import {
+  authRateLimiter,
+  checkRateLimit,
+  passwordResetRateLimiter,
+  RateLimitError,
+} from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import {
   sendEmailVerification,
   sendPasswordChanged,
   sendWelcomeEmail,
 } from "./emails";
-import {
-  checkRateLimit,
-  authRateLimiter,
-  passwordResetRateLimiter,
-  RateLimitError,
-} from "@/lib/security/rate-limit";
-import { clearCSRFToken } from "@/lib/security/csrf";
-import { clearActiveCompany } from "@/lib/auth/company-context";
-import { checkBotId } from "botid/server";
 
 /**
  * Authentication Server Actions - Supabase Auth + Resend Email Integration
@@ -752,7 +752,10 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
         .eq("id", tokenRecord.userId);
 
       if (updateError) {
-        console.error("Failed to update email verification status:", updateError);
+        console.error(
+          "Failed to update email verification status:",
+          updateError
+        );
         return {
           success: false,
           error: "Failed to verify email. Please contact support.",

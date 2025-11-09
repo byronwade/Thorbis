@@ -12,11 +12,11 @@ export async function POST() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (!(supabaseUrl && serviceRoleKey)) {
       return NextResponse.json(
-        { 
+        {
           error: "Missing environment variables",
-          hint: "Set SUPABASE_SERVICE_ROLE_KEY in .env.local"
+          hint: "Set SUPABASE_SERVICE_ROLE_KEY in .env.local",
         },
         { status: 500 }
       );
@@ -140,7 +140,8 @@ export async function POST() {
         customer_id: customer.id,
         property_id: property.id,
         title: "Test Job - Enrichment Demo",
-        description: "This job will show operational intelligence with weather, water quality, flood zones, and nearby suppliers",
+        description:
+          "This job will show operational intelligence with weather, water quality, flood zones, and nearby suppliers",
         status: "scheduled",
         priority: "medium",
         job_type: "service",
@@ -193,4 +194,3 @@ export async function POST() {
     );
   }
 }
-

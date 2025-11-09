@@ -24,10 +24,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import {
+  getNotificationPreferences,
+  updateNotificationPreferences,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -37,6 +39,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { useSettings } from "@/hooks/use-settings";
 export default function PushNotificationsPage() {
   const { settings, isLoading } = useSettings({
     getter: getNotificationPreferences,

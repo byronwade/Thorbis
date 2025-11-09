@@ -12,14 +12,21 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import type { AdyenProcessor } from "./processors/adyen";
-import type { PlaidProcessor } from "./processors/plaid";
-import type { ProfitStarsProcessor } from "./processors/profitstars";
-import type { StripeProcessor } from "./processors/stripe";
 
-export type PaymentProcessorType = "stripe" | "adyen" | "plaid" | "profitstars" | "manual";
+export type PaymentProcessorType =
+  | "stripe"
+  | "adyen"
+  | "plaid"
+  | "profitstars"
+  | "manual";
 
-export type PaymentChannel = "online" | "card_present" | "tap_to_pay" | "ach" | "wire" | "check";
+export type PaymentChannel =
+  | "online"
+  | "card_present"
+  | "tap_to_pay"
+  | "ach"
+  | "wire"
+  | "check";
 
 export interface PaymentProcessorConfig {
   companyId: string;
@@ -70,7 +77,9 @@ export interface PaymentProcessor {
   /**
    * Process a payment
    */
-  processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse>;
+  processPayment(
+    request: ProcessPaymentRequest
+  ): Promise<ProcessPaymentResponse>;
 
   /**
    * Refund a payment
@@ -132,7 +141,9 @@ export async function getPaymentProcessor(
 
   // If force processor specified, use it
   if (options?.forceProcessor) {
-    const processor = processors.find((p) => p.processor_type === options.forceProcessor);
+    const processor = processors.find(
+      (p) => p.processor_type === options.forceProcessor
+    );
     if (processor) {
       return createProcessorInstance(processor);
     }
@@ -143,7 +154,10 @@ export async function getPaymentProcessor(
   const channel = options?.channel || "online";
 
   // High-value payments (>$10k) should use Adyen
-  if (amount > 1000000 && processors.some((p) => p.processor_type === "adyen")) {
+  if (
+    amount > 1_000_000 &&
+    processors.some((p) => p.processor_type === "adyen")
+  ) {
     const adyenProcessor = processors.find((p) => p.processor_type === "adyen");
     if (adyenProcessor) {
       return createProcessorInstance(adyenProcessor);
@@ -167,7 +181,9 @@ export async function getPaymentProcessor(
     if (plaidProcessor) {
       return createProcessorInstance(plaidProcessor);
     }
-    const profitstarsProcessor = processors.find((p) => p.processor_type === "profitstars");
+    const profitstarsProcessor = processors.find(
+      (p) => p.processor_type === "profitstars"
+    );
     if (profitstarsProcessor) {
       return createProcessorInstance(profitstarsProcessor);
     }
@@ -191,7 +207,7 @@ async function createProcessorInstance(
         accountId: config.adyen_account_id,
         apiKey: config.adyen_api_key_encrypted, // Will need decryption
         merchantAccount: config.adyen_merchant_account,
-        liveMode: config.adyen_live_mode || false,
+        liveMode: config.adyen_live_mode,
       });
     }
     case "plaid": {
@@ -216,7 +232,7 @@ async function createProcessorInstance(
       const { StripeProcessor } = await import("./processors/stripe");
       return new StripeProcessor({
         companyId: config.company_id,
-        liveMode: config.adyen_live_mode || false,
+        liveMode: config.adyen_live_mode,
       });
     }
     default:
@@ -240,7 +256,12 @@ export async function calculatePaymentTrustScore(
 }> {
   const supabase = await createClient();
   if (!supabase) {
-    return { score: 0, allowed: false, requiresApproval: true, reason: "Database unavailable" };
+    return {
+      score: 0,
+      allowed: false,
+      requiresApproval: true,
+      reason: "Database unavailable",
+    };
   }
 
   // Get company's trust score
@@ -251,7 +272,12 @@ export async function calculatePaymentTrustScore(
     .single();
 
   if (!trustScore) {
-    return { score: 50, allowed: false, requiresApproval: true, reason: "No trust score found" };
+    return {
+      score: 50,
+      allowed: false,
+      requiresApproval: true,
+      reason: "No trust score found",
+    };
   }
 
   const score = Number(trustScore.overall_score);
@@ -264,8 +290,8 @@ export async function calculatePaymentTrustScore(
     .eq("status", "active")
     .single();
 
-  const maxAmount = processor?.max_payment_amount || 100000; // Default $1,000
-  const approvalThreshold = processor?.requires_approval_above || 50000; // Default $500
+  const maxAmount = processor?.max_payment_amount || 100_000; // Default $1,000
+  const approvalThreshold = processor?.requires_approval_above || 50_000; // Default $500
 
   // Calculate if payment is allowed based on trust score
   // Trust score 90+: Allow up to configured max
@@ -281,7 +307,7 @@ export async function calculatePaymentTrustScore(
   } else if (score >= 50) {
     allowedAmount = Math.floor(maxAmount * 0.25);
   } else {
-    allowedAmount = 10000; // $100 minimum
+    allowedAmount = 10_000; // $100 minimum
   }
 
   const allowed = amount <= allowedAmount;
@@ -291,11 +317,11 @@ export async function calculatePaymentTrustScore(
     score,
     allowed,
     requiresApproval,
-    reason: !allowed
-      ? `Payment amount exceeds allowed limit for trust score. Max allowed: $${allowedAmount / 100}`
-      : requiresApproval
+    reason: allowed
+      ? requiresApproval
         ? "Payment requires manual approval"
-        : undefined,
+        : undefined
+      : `Payment amount exceeds allowed limit for trust score. Max allowed: $${allowedAmount / 100}`,
   };
 }
 
@@ -326,7 +352,8 @@ export async function updateTrustScoreAfterPayment(
   };
 
   if (success) {
-    updates.successful_payments_count = (trustScore.successful_payments_count || 0) + 1;
+    updates.successful_payments_count =
+      (trustScore.successful_payments_count || 0) + 1;
   } else {
     updates.failed_payments_count = (trustScore.failed_payments_count || 0) + 1;
   }
@@ -338,18 +365,26 @@ export async function updateTrustScoreAfterPayment(
 
   // Recalculate overall score
   const totalPayments = updates.total_payments_count;
-  const successfulPayments = updates.successful_payments_count || trustScore.successful_payments_count || 0;
-  const failedPayments = updates.failed_payments_count || trustScore.failed_payments_count || 0;
+  const successfulPayments =
+    updates.successful_payments_count ||
+    trustScore.successful_payments_count ||
+    0;
+  const failedPayments =
+    updates.failed_payments_count || trustScore.failed_payments_count || 0;
 
   // Success rate (0-100)
-  const successRate = totalPayments > 0 ? (successfulPayments / totalPayments) * 100 : 50;
+  const successRate =
+    totalPayments > 0 ? (successfulPayments / totalPayments) * 100 : 50;
 
   // Volume factor (higher volume = higher trust, capped at 100)
-  const volumeFactor = Math.min(100, Math.log10((updates.total_payments_volume || 0) / 100 + 1) * 20);
+  const volumeFactor = Math.min(
+    100,
+    Math.log10((updates.total_payments_volume || 0) / 100 + 1) * 20
+  );
 
   // Account age factor (older accounts = higher trust)
   const accountAgeDays = trustScore.account_age_days || 0;
-  const ageFactor = Math.min(100, accountAgeDays / 30 * 10); // 100 points after 300 days
+  const ageFactor = Math.min(100, (accountAgeDays / 30) * 10); // 100 points after 300 days
 
   // Calculate weighted overall score
   const overallScore =
@@ -363,10 +398,12 @@ export async function updateTrustScoreAfterPayment(
   updates.overall_score = Math.min(100, Math.max(0, overallScore));
   updates.refund_rate =
     totalPayments > 0
-      ? ((trustScore.refunded_amount || 0) / updates.total_payments_volume) * 100
+      ? ((trustScore.refunded_amount || 0) / updates.total_payments_volume) *
+        100
       : 0;
 
-  await supabase.from("payment_trust_scores").update(updates).eq("company_id", companyId);
+  await supabase
+    .from("payment_trust_scores")
+    .update(updates)
+    .eq("company_id", companyId);
 }
-
-

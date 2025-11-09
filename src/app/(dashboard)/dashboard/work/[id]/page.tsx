@@ -4,11 +4,11 @@
  */
 
 import { notFound, redirect } from "next/navigation";
+import { getCompanyPhoneNumbers } from "@/actions/telnyx";
+import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
-import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { createClient } from "@/lib/supabase/server";
-import { jobEnrichmentService } from "@/lib/services/job-enrichment";
 
 export default async function JobDetailsPage({
   params,
@@ -76,13 +76,13 @@ export default async function JobDetailsPage({
   }
 
   if (!teamMember?.company_id) {
-    console.log(
+    console.error(
       "[Job Details] User doesn't have access to active company:",
-      activeCompanyId,
-      "- redirecting to onboarding"
+      activeCompanyId
     );
-    // Redirect to onboarding if user doesn't have access to active company
-    redirect("/dashboard/welcome");
+    // Show 404 instead of redirecting to avoid redirect loops
+    // The dashboard layout handles onboarding redirects
+    return notFound();
   }
 
   // Fetch job with all related data
@@ -318,26 +318,18 @@ export default async function JobDetailsPage({
     completionPercentage,
   };
 
-  // Prepare data for client component
-  // Enrich job with operational intelligence
-  let jobEnrichment = null;
-  try {
-    if (property?.address && property?.city && property?.state && property?.zip_code) {
-      jobEnrichment = await jobEnrichmentService.enrichJob({
-        id: jobId,
-        address: property.address,
-        address2: property.address2 || undefined,
-        city: property.city,
-        state: property.state,
-        zipCode: property.zip_code,
-        lat: property.lat || undefined,
-        lon: property.lon || undefined,
-      });
-      console.log("[Job Details] Job enrichment completed with sources:", jobEnrichment.sources);
-    }
-  } catch (error) {
-    console.error("[Job Details] Job enrichment failed:", error);
-  }
+  // Enrichment is now loaded client-side for optimistic rendering
+  // Page loads immediately, enrichment happens in background
+
+  // Fetch company phone numbers for calling/SMS
+  const phoneNumbersResult = await getCompanyPhoneNumbers(activeCompanyId);
+  const companyPhones = phoneNumbersResult.success
+    ? (phoneNumbersResult.data || []).map((phone: any) => ({
+        id: phone.id,
+        number: phone.phone_number,
+        label: phone.formatted_number || phone.phone_number,
+      }))
+    : [];
 
   const jobData = {
     job,
@@ -363,7 +355,8 @@ export default async function JobDetailsPage({
     schedules: schedules || [], // Appointments for this job
     allCustomers: allCustomers || [], // All customers for selection
     allProperties: allProperties || [], // All properties for selection
-    enrichmentData: jobEnrichment, // Operational intelligence
+    companyPhones, // Company phone numbers from Telnyx
+    enrichmentData: null, // Loaded client-side for optimistic rendering
   };
 
   return (

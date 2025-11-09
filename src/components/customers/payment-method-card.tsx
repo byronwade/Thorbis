@@ -11,10 +11,10 @@
  * - Delete button
  */
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Check, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Trash2, Check, Building2, Landmark } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface PaymentMethodCardProps {
@@ -57,10 +57,12 @@ export function PaymentMethodCard({
   const brandIcon = CARD_BRAND_ICONS[card_brand?.toLowerCase()] || "💳";
 
   return (
-    <Card className={cn(
-      "transition-all hover:shadow-md",
-      is_default && "border-primary ring-2 ring-primary/20"
-    )}>
+    <Card
+      className={cn(
+        "transition-all hover:shadow-md",
+        is_default && "border-primary ring-2 ring-primary/20"
+      )}
+    >
       <CardContent className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-lg bg-muted text-2xl">
@@ -72,14 +74,17 @@ export function PaymentMethodCard({
                 {card_brand?.toUpperCase()} •••• {card_last4}
               </p>
               {is_default && (
-                <Badge variant="default" className="gap-1 text-xs">
+                <Badge className="gap-1 text-xs" variant="default">
                   <Check className="size-3" />
                   Default
                 </Badge>
               )}
             </div>
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <span>Expires {String(card_exp_month).padStart(2, "0")}/{card_exp_year}</span>
+              <span>
+                Expires {String(card_exp_month).padStart(2, "0")}/
+                {card_exp_year}
+              </span>
               {nickname && (
                 <>
                   <span>•</span>
@@ -99,22 +104,22 @@ export function PaymentMethodCard({
         <div className="flex items-center gap-2">
           {!is_default && onSetDefault && (
             <Button
+              className="text-xs"
+              disabled={disabled}
+              onClick={onSetDefault}
               size="sm"
               variant="ghost"
-              onClick={onSetDefault}
-              disabled={disabled}
-              className="text-xs"
             >
               Set Default
             </Button>
           )}
           {onRemove && (
             <Button
+              className="text-destructive hover:bg-destructive/10"
+              disabled={disabled}
+              onClick={onRemove}
               size="sm"
               variant="ghost"
-              onClick={onRemove}
-              disabled={disabled}
-              className="text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="size-4" />
             </Button>

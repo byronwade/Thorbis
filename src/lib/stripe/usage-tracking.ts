@@ -14,8 +14,8 @@
 
 "use server";
 
-import { stripe } from "./server";
 import { createClient } from "@/lib/supabase/server";
+import { stripe } from "./server";
 
 /**
  * Meter event names matching Stripe Dashboard configuration
@@ -156,7 +156,7 @@ export async function trackEstimateCreated(
  */
 export async function trackSmsSent(
   customerId: string,
-  count: number = 1
+  count = 1
 ): Promise<{ success: boolean; error?: string }> {
   return trackUsage(customerId, "thorbis_sms", count);
 }
@@ -166,7 +166,7 @@ export async function trackSmsSent(
  */
 export async function trackEmailSent(
   customerId: string,
-  count: number = 1
+  count = 1
 ): Promise<{ success: boolean; error?: string }> {
   return trackUsage(customerId, "thorbis_emails", count);
 }
@@ -217,7 +217,7 @@ export async function trackPaymentCollected(
  */
 export async function trackWorkflowExecuted(
   customerId: string,
-  count: number = 1
+  count = 1
 ): Promise<{ success: boolean; error?: string }> {
   return trackUsage(customerId, "thorbis_workflows", count);
 }
@@ -227,7 +227,7 @@ export async function trackWorkflowExecuted(
  */
 export async function trackApiCall(
   customerId: string,
-  count: number = 1
+  count = 1
 ): Promise<{ success: boolean; error?: string }> {
   return trackUsage(customerId, "thorbis_api_calls", count);
 }
@@ -267,9 +267,7 @@ export async function trackUsageBatch(
 
   results.forEach((result, index) => {
     if (result.status === "rejected") {
-      errors.push(
-        `Failed to track ${events[index].event}: ${result.reason}`
-      );
+      errors.push(`Failed to track ${events[index].event}: ${result.reason}`);
     } else if (!result.value.success) {
       errors.push(
         `Failed to track ${events[index].event}: ${result.value.error}`

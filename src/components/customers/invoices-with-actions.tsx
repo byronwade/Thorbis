@@ -9,19 +9,22 @@
  * - Send Estimate (email to customer)
  */
 
+import { CreditCard, FileText, Mail, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import {
+  sendEstimateEmail,
+  sendInvoiceEmail,
+} from "@/actions/invoice-communications";
+import { QuickPayDialog } from "@/components/invoices/quick-pay-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CreditCard, Send, FileText, MoreHorizontal, Mail } from "lucide-react";
-import { QuickPayDialog } from "@/components/invoices/quick-pay-dialog";
-import { sendInvoiceEmail, sendEstimateEmail } from "@/actions/invoice-communications";
-import { toast } from "sonner";
 
 interface InvoiceActionsProps {
   invoice: {
@@ -70,17 +73,17 @@ export function InvoiceActions({ invoice, onUpdate }: InvoiceActionsProps) {
   return (
     <>
       <QuickPayDialog
-        open={showQuickPay}
-        onOpenChange={setShowQuickPay}
+        amount={invoice.balance_amount}
         invoiceId={invoice.id}
         invoiceNumber={invoice.invoice_number}
-        amount={invoice.balance_amount}
+        onOpenChange={setShowQuickPay}
         onSuccess={onUpdate}
+        open={showQuickPay}
       />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="ghost" className="size-8 p-0">
+          <Button className="size-8 p-0" size="sm" variant="ghost">
             <MoreHorizontal className="size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -88,8 +91,8 @@ export function InvoiceActions({ invoice, onUpdate }: InvoiceActionsProps) {
           {canPay && (
             <>
               <DropdownMenuItem
-                onClick={() => setShowQuickPay(true)}
                 className="cursor-pointer"
+                onClick={() => setShowQuickPay(true)}
               >
                 <CreditCard className="mr-2 size-4" />
                 Quick Pay
@@ -100,17 +103,17 @@ export function InvoiceActions({ invoice, onUpdate }: InvoiceActionsProps) {
           {canSend && (
             <>
               <DropdownMenuItem
-                onClick={handleSendInvoice}
-                disabled={isSending}
                 className="cursor-pointer"
+                disabled={isSending}
+                onClick={handleSendInvoice}
               >
                 <Mail className="mr-2 size-4" />
                 Send Invoice
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={handleSendEstimate}
-                disabled={isSending}
                 className="cursor-pointer"
+                disabled={isSending}
+                onClick={handleSendEstimate}
               >
                 <FileText className="mr-2 size-4" />
                 Send as Estimate

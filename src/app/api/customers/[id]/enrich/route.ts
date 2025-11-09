@@ -5,12 +5,12 @@
  * POST /api/customers/[id]/enrich - Trigger new enrichment
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { type NextRequest, NextResponse } from "next/server";
 import {
   enrichCustomerData,
   getEnrichmentData,
 } from "@/actions/customer-enrichment";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -87,7 +87,7 @@ export async function POST(
 
     // Parse request body for options
     const body = await request.json().catch(() => ({}));
-    const forceRefresh = body.forceRefresh || false;
+    const forceRefresh = body.forceRefresh;
 
     const result = await enrichCustomerData(id, forceRefresh);
 
@@ -111,4 +111,3 @@ export async function POST(
     );
   }
 }
-

@@ -10,12 +10,12 @@
 
 "use client";
 
-import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -76,7 +76,9 @@ export function InvoiceLineItems({
   const removeItem = (index: number) => {
     if (items.length === 1) {
       // Keep at least one item
-      const newItems = [{ description: "", quantity: 1, unitPrice: 0, total: 0 }];
+      const newItems = [
+        { description: "", quantity: 1, unitPrice: 0, total: 0 },
+      ];
       setItems(newItems);
       onUpdate(newItems);
     } else {
@@ -87,17 +89,16 @@ export function InvoiceLineItems({
   };
 
   // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(value);
-  };
 
   return (
     <Card className="mb-8 p-6">
       <div className="mb-4 flex items-center justify-between">
-        <Label className="text-base font-semibold">Line Items</Label>
+        <Label className="font-semibold text-base">Line Items</Label>
         <Button onClick={addItem} size="sm" variant="outline">
           <Plus className="mr-2 h-4 w-4" />
           Add Item
@@ -112,7 +113,7 @@ export function InvoiceLineItems({
               <TableHead className="w-[15%]">Quantity</TableHead>
               <TableHead className="w-[20%]">Unit Price</TableHead>
               <TableHead className="w-[20%] text-right">Total</TableHead>
-              <TableHead className="w-[5%]"></TableHead>
+              <TableHead className="w-[5%]" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,46 +121,46 @@ export function InvoiceLineItems({
               <TableRow key={index}>
                 <TableCell>
                   <Input
-                    value={item.description}
+                    className="border-0 p-2 focus-visible:ring-1"
                     onChange={(e) =>
                       updateItem(index, "description", e.target.value)
                     }
                     placeholder="e.g., HVAC Unit Installation, Labor, Materials"
-                    className="border-0 p-2 focus-visible:ring-1"
+                    value={item.description}
                   />
                 </TableCell>
                 <TableCell>
                   <Input
-                    type="number"
+                    className="border-0 p-2 focus-visible:ring-1"
                     min="0"
-                    step="0.01"
-                    value={item.quantity}
                     onChange={(e) =>
                       updateItem(
                         index,
                         "quantity",
-                        parseFloat(e.target.value) || 0
+                        Number.parseFloat(e.target.value) || 0
                       )
                     }
-                    className="border-0 p-2 focus-visible:ring-1"
+                    step="0.01"
+                    type="number"
+                    value={item.quantity}
                   />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center">
                     <span className="mr-1 text-muted-foreground">$</span>
                     <Input
-                      type="number"
+                      className="border-0 p-2 focus-visible:ring-1"
                       min="0"
-                      step="0.01"
-                      value={item.unitPrice}
                       onChange={(e) =>
                         updateItem(
                           index,
                           "unitPrice",
-                          parseFloat(e.target.value) || 0
+                          Number.parseFloat(e.target.value) || 0
                         )
                       }
-                      className="border-0 p-2 focus-visible:ring-1"
+                      step="0.01"
+                      type="number"
+                      value={item.unitPrice}
                     />
                   </div>
                 </TableCell>
@@ -168,10 +169,10 @@ export function InvoiceLineItems({
                 </TableCell>
                 <TableCell>
                   <Button
+                    className="h-8 w-8"
                     onClick={() => removeItem(index)}
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8"
                   >
                     <Trash2 className="h-4 w-4 text-muted-foreground" />
                   </Button>

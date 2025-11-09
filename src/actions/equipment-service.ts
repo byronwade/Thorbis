@@ -33,13 +33,21 @@ const equipmentServiceSchema = z.object({
   equipmentId: z.string().uuid("Invalid equipment ID"),
   jobId: z.string().uuid("Invalid job ID").optional(),
   serviceDate: z.string(),
-  serviceType: z.enum(["inspection", "repair", "replacement", "maintenance", "install"]),
+  serviceType: z.enum([
+    "inspection",
+    "repair",
+    "replacement",
+    "maintenance",
+    "install",
+  ]),
   serviceDescription: z.string().min(1, "Service description is required"),
   technicianId: z.string().uuid().optional(),
   hoursSpent: z.number().min(0).default(0),
   partsCost: z.number().min(0).default(0),
   laborCost: z.number().min(0).default(0),
-  equipmentCondition: z.enum(["excellent", "good", "fair", "poor", "failed"]).optional(),
+  equipmentCondition: z
+    .enum(["excellent", "good", "fair", "poor", "failed"])
+    .optional(),
   warrantyWork: z.boolean().default(false),
   warrantyClaimNumber: z.string().optional(),
   technicianNotes: z.string().optional(),
@@ -99,7 +107,8 @@ export async function addEquipmentService(
       laborCost: formData.get("laborCost")
         ? Number.parseFloat(formData.get("laborCost") as string)
         : 0,
-      equipmentCondition: formData.get("equipmentCondition") as any || undefined,
+      equipmentCondition:
+        (formData.get("equipmentCondition") as any) || undefined,
       warrantyWork: formData.get("warrantyWork") === "true",
       warrantyClaimNumber: formData.get("warrantyClaimNumber") || undefined,
       technicianNotes: formData.get("technicianNotes") || undefined,

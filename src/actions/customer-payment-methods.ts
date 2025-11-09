@@ -61,7 +61,10 @@ export async function getCustomerPaymentMethods(customerId: string) {
     console.error("Error in getCustomerPaymentMethods:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch payment methods",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch payment methods",
       data: [],
     };
   }
@@ -70,7 +73,10 @@ export async function getCustomerPaymentMethods(customerId: string) {
 /**
  * Set a payment method as default for a customer
  */
-export async function setDefaultCustomerPaymentMethod(paymentMethodId: string, customerId: string) {
+export async function setDefaultCustomerPaymentMethod(
+  paymentMethodId: string,
+  customerId: string
+) {
   try {
     const supabase = await createClient();
 
@@ -136,7 +142,10 @@ export async function setDefaultCustomerPaymentMethod(paymentMethodId: string, c
 /**
  * Remove a customer payment method
  */
-export async function removeCustomerPaymentMethod(paymentMethodId: string, customerId: string) {
+export async function removeCustomerPaymentMethod(
+  paymentMethodId: string,
+  customerId: string
+) {
   try {
     const supabase = await createClient();
 
@@ -210,7 +219,10 @@ export async function removeCustomerPaymentMethod(paymentMethodId: string, custo
     console.error("Error in removeCustomerPaymentMethod:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to remove payment method",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to remove payment method",
     };
   }
 }

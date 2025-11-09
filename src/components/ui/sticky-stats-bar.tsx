@@ -2,7 +2,7 @@
 
 /**
  * StickyStatsBar - Wrapper for stats that makes them sticky and compact on scroll
- * 
+ *
  * Features:
  * - Becomes sticky when scrolling down
  * - Compacts into a smaller row on scroll
@@ -11,8 +11,14 @@
  * - Uses Intersection Observer for reliable scroll detection
  */
 
-import { useEffect, useState, useRef, cloneElement, isValidElement } from "react";
 import type { ReactElement } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "@/lib/utils";
 
 interface StickyStatsBarProps {
@@ -20,10 +26,7 @@ interface StickyStatsBarProps {
   className?: string;
 }
 
-export function StickyStatsBar({ 
-  children, 
-  className
-}: StickyStatsBarProps) {
+export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,22 +38,22 @@ export function StickyStatsBar({
     // Find the scrollable parent container
     const findScrollableParent = (element: HTMLElement): HTMLElement | null => {
       let parent = element.parentElement;
-      
+
       while (parent) {
         const { overflow, overflowY } = window.getComputedStyle(parent);
-        const isScrollable = 
-          overflow === "auto" || 
-          overflow === "scroll" || 
-          overflowY === "auto" || 
+        const isScrollable =
+          overflow === "auto" ||
+          overflow === "scroll" ||
+          overflowY === "auto" ||
           overflowY === "scroll";
-        
+
         if (isScrollable && parent.scrollHeight > parent.clientHeight) {
           return parent;
         }
-        
+
         parent = parent.parentElement;
       }
-      
+
       return null;
     };
 
@@ -91,20 +94,19 @@ export function StickyStatsBar({
   return (
     <>
       {/* Sentinel element - minimal height, used to detect scroll */}
-      <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />
-      
+      <div aria-hidden="true" className="h-px w-full" ref={sentinelRef} />
+
       {/* Stats bar container - no margins or padding */}
       <div
-        ref={containerRef}
         className={cn(
           "top-0 z-40 w-full bg-background transition-all duration-300 ease-in-out",
           isScrolled && "sticky shadow-md",
           className
         )}
+        ref={containerRef}
       >
         {childWithProps}
       </div>
     </>
   );
 }
-

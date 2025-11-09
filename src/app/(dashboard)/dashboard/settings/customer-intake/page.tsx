@@ -9,7 +9,6 @@
  * - Browser API access for enhanced UX
  */
 
-import { useState } from "react";
 import {
   Building,
   FileText,
@@ -23,9 +22,9 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
+import { useState } from "react";
 import { getIntakeSettings, updateIntakeSettings } from "@/actions/settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -43,6 +42,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -100,36 +100,36 @@ export default function CustomerIntakePage() {
     getter: getIntakeSettings,
     setter: updateIntakeSettings,
     initialState: {
-    // Required
-    requireFirstName: true,
-    requireLastName: true,
-    requireEmail: true,
-    requirePhone: true,
-    requireAddress: true,
-    requirePropertyType: false,
+      // Required
+      requireFirstName: true,
+      requireLastName: true,
+      requireEmail: true,
+      requirePhone: true,
+      requireAddress: true,
+      requirePropertyType: false,
 
-    // Optional Contact
-    collectSecondaryPhone: true,
-    collectCompanyName: true,
-    collectPreferredContactMethod: true,
-    collectBestTimeToCall: true,
+      // Optional Contact
+      collectSecondaryPhone: true,
+      collectCompanyName: true,
+      collectPreferredContactMethod: true,
+      collectBestTimeToCall: true,
 
-    // Property
-    collectPropertyDetails: true,
-    requirePropertyAccess: true,
-    collectParkingInfo: true,
-    collectPetInfo: true,
+      // Property
+      collectPropertyDetails: true,
+      requirePropertyAccess: true,
+      collectParkingInfo: true,
+      collectPetInfo: true,
 
-    // Communication
-    sendWelcomeEmail: true,
-    sendSMSConfirmation: true,
-    collectMarketingPreferences: true,
-    requireServiceAgreement: false,
+      // Communication
+      sendWelcomeEmail: true,
+      sendSMSConfirmation: true,
+      collectMarketingPreferences: true,
+      requireServiceAgreement: false,
 
-    welcomeMessage:
-      "Welcome! We're excited to serve you. Our team is committed to providing excellent service.",
-    customIntakeInstructions:
-      "Please provide as much detail as possible to help us serve you better.",
+      welcomeMessage:
+        "Welcome! We're excited to serve you. Our team is committed to providing excellent service.",
+      customIntakeInstructions:
+        "Please provide as much detail as possible to help us serve you better.",
     },
     settingsName: "customer intake",
     transformLoad: (data) => ({
@@ -144,7 +144,10 @@ export default function CustomerIntakePage() {
       formData.append("requirePhone", settings.requirePhone.toString());
       formData.append("requireEmail", settings.requireEmail.toString());
       formData.append("requireAddress", settings.requireAddress.toString());
-      formData.append("requirePropertyType", settings.requirePropertyType.toString());
+      formData.append(
+        "requirePropertyType",
+        settings.requirePropertyType.toString()
+      );
       formData.append("sendWelcomeEmail", settings.sendWelcomeEmail.toString());
       formData.append("trackLeadSource", "true");
       formData.append("requireLeadSource", "false");
@@ -968,7 +971,11 @@ export default function CustomerIntakePage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+          <Button
+            disabled={isPending}
+            onClick={() => saveSettings()}
+            type="button"
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />

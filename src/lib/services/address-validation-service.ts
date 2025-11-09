@@ -128,7 +128,7 @@ export class AddressValidationService {
   }): string {
     return (
       `<AddressValidateRequest USERID="${this.uspsUserId}">` +
-      `<Revision>1</Revision>` +
+      "<Revision>1</Revision>" +
       `<Address ID="0">` +
       `<Address1>${this.escapeXML(address.address1 || "")}</Address1>` +
       `<Address2>${this.escapeXML(address.address2)}</Address2>` +
@@ -136,8 +136,8 @@ export class AddressValidationService {
       `<State>${this.escapeXML(address.state || "")}</State>` +
       `<Zip5>${address.zip5 || ""}</Zip5>` +
       `<Zip4>${address.zip4 || ""}</Zip4>` +
-      `</Address>` +
-      `</AddressValidateRequest>`
+      "</Address>" +
+      "</AddressValidateRequest>"
     );
   }
 
@@ -171,7 +171,7 @@ export class AddressValidationService {
       const zip4Match = xml.match(/<Zip4>(.*?)<\/Zip4>/);
       const dpvMatch = xml.match(/<DPVConfirmation>(.*?)<\/DPVConfirmation>/);
 
-      if (!address2Match || !cityMatch || !stateMatch || !zip5Match) {
+      if (!(address2Match && cityMatch && stateMatch && zip5Match)) {
         return {
           isValid: false,
           input,
@@ -216,7 +216,10 @@ export class AddressValidationService {
       suggestions.push("Verify ZIP code is correct for this city/state");
     }
 
-    if (errorMsg.toLowerCase().includes("apartment") || errorMsg.toLowerCase().includes("unit")) {
+    if (
+      errorMsg.toLowerCase().includes("apartment") ||
+      errorMsg.toLowerCase().includes("unit")
+    ) {
       suggestions.push("Include apartment or unit number if applicable");
     }
 
@@ -256,4 +259,3 @@ export class AddressValidationService {
 
 // Singleton instance
 export const addressValidationService = new AddressValidationService();
-

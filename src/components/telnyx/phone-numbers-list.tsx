@@ -10,6 +10,16 @@
 
 "use client";
 
+import {
+  DollarSign,
+  Edit,
+  MessageSquare,
+  MoreVertical,
+  Phone,
+  Settings,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,17 +37,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Phone,
-  MessageSquare,
-  Settings,
-  MoreVertical,
-  TrendingUp,
-  DollarSign,
-  Trash2,
-  Edit,
-  Upload,
-} from "lucide-react";
 
 // Mock data - will be replaced with real data from server actions
 const mockPhoneNumbers = [
@@ -115,14 +114,14 @@ export function PhoneNumbersList() {
   );
 }
 
-function PhoneNumberCard({ number }: { number: typeof mockPhoneNumbers[0] }) {
+function PhoneNumberCard({ number }: { number: (typeof mockPhoneNumbers)[0] }) {
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <CardTitle className="text-2xl font-semibold">
+              <CardTitle className="font-semibold text-2xl">
                 {number.formattedNumber}
               </CardTitle>
               <Badge variant={getStatusVariant(number.status)}>
@@ -133,13 +132,14 @@ function PhoneNumberCard({ number }: { number: typeof mockPhoneNumbers[0] }) {
               )}
             </div>
             <CardDescription>
-              {number.routingRule} {number.voicemailEnabled && "• Voicemail enabled"}
+              {number.routingRule}{" "}
+              {number.voicemailEnabled && "• Voicemail enabled"}
             </CardDescription>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button size="icon" variant="ghost">
                 <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -171,11 +171,11 @@ function PhoneNumberCard({ number }: { number: typeof mockPhoneNumbers[0] }) {
                 <div className="font-medium text-blue-900 dark:text-blue-100">
                   Porting {number.portingStatus}
                 </div>
-                <div className="text-sm text-blue-700 dark:text-blue-300">
+                <div className="text-blue-700 text-sm dark:text-blue-300">
                   Estimated completion: {number.portingEta}
                 </div>
               </div>
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 View Status
               </Button>
             </div>
@@ -185,35 +185,35 @@ function PhoneNumberCard({ number }: { number: typeof mockPhoneNumbers[0] }) {
         {/* Usage Metrics */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <MetricCard
+            color="text-green-600 dark:text-green-400"
             icon={Phone}
             label="Incoming Calls"
             value={number.incomingCallsCount.toLocaleString()}
-            color="text-green-600 dark:text-green-400"
           />
           <MetricCard
+            color="text-blue-600 dark:text-blue-400"
             icon={Phone}
             label="Outgoing Calls"
             value={number.outgoingCallsCount.toLocaleString()}
-            color="text-blue-600 dark:text-blue-400"
           />
           <MetricCard
+            color="text-purple-600 dark:text-purple-400"
             icon={MessageSquare}
             label="SMS Sent"
             value={number.smsSentCount.toLocaleString()}
-            color="text-purple-600 dark:text-purple-400"
           />
           <MetricCard
+            color="text-amber-600 dark:text-amber-400"
             icon={DollarSign}
             label="Monthly Cost"
             value={`$${number.monthlyCost.toFixed(2)}`}
-            color="text-amber-600 dark:text-amber-400"
           />
         </div>
 
         {/* Features */}
         <div className="mt-4 flex flex-wrap gap-2">
           {number.features.map((feature) => (
-            <Badge key={feature} variant="outline" className="capitalize">
+            <Badge className="capitalize" key={feature} variant="outline">
               {feature}
             </Badge>
           ))}
@@ -236,11 +236,11 @@ function MetricCard({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-muted-foreground text-sm">
         <Icon className={`size-4 ${color}`} />
         {label}
       </div>
-      <div className="text-xl font-semibold">{value}</div>
+      <div className="font-semibold text-xl">{value}</div>
     </div>
   );
 }
@@ -250,8 +250,8 @@ function EmptyState() {
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-12">
         <Phone className="mb-4 size-12 text-muted-foreground" />
-        <h3 className="mb-2 text-lg font-semibold">No phone numbers yet</h3>
-        <p className="mb-6 text-center text-sm text-muted-foreground">
+        <h3 className="mb-2 font-semibold text-lg">No phone numbers yet</h3>
+        <p className="mb-6 text-center text-muted-foreground text-sm">
           Get started by purchasing a new number or porting an existing one
         </p>
         <div className="flex gap-3">
@@ -269,7 +269,9 @@ function EmptyState() {
   );
 }
 
-function getStatusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
+function getStatusVariant(
+  status: string
+): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
     case "active":
       return "default";

@@ -4,30 +4,41 @@
  * Displays individual article with content, TOC, and related articles
  */
 
-import { notFound } from "next/navigation";
+import { ArrowLeft, Calendar, Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Eye, ArrowLeft } from "lucide-react";
-import { getKBArticle, getKBRelatedArticles, incrementArticleViews } from "@/actions/kb";
-import { generateArticleMetadata, generateArticleStructuredData, generateBreadcrumbStructuredData } from "@/lib/kb/metadata";
+import { notFound } from "next/navigation";
+import Script from "next/script";
+import {
+  getKBArticle,
+  getKBRelatedArticles,
+  incrementArticleViews,
+} from "@/actions/kb";
 import { KBArticleContent } from "@/components/kb/kb-article-content";
 import { KBFeedback } from "@/components/kb/kb-feedback";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { markdownToHtml } from "@/lib/kb/markdown";
+import {
+  generateArticleMetadata,
+  generateArticleStructuredData,
+  generateBreadcrumbStructuredData,
+} from "@/lib/kb/metadata";
+
+const RELATED_ARTICLE_LIMIT = 5;
 
 export const revalidate = 3600; // Revalidate every hour
 
-interface ArticlePageProps {
+type ArticlePageProps = {
   params: Promise<{ category: string; slug: string }>;
-}
+};
 
 export async function generateMetadata({ params }: ArticlePageProps) {
   const { category: categorySlug, slug: articleSlug } = await params;
   const result = await getKBArticle(categorySlug, articleSlug);
 
-  if (!result.success || !result.article) {
+  if (!(result.success && result.article)) {
     return {};
   }
 
@@ -39,7 +50,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   const articleResult = await getKBArticle(categorySlug, articleSlug);
 
-  if (!articleResult.success || !articleResult.article) {
+  if (!(articleResult.success && articleResult.article)) {
     notFound();
   }
 
@@ -47,10 +58,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const htmlContent = await markdownToHtml(article.content);
 
   // Track view (fire and forget)
-  incrementArticleViews(article.id).catch(console.error);
+  incrementArticleViews(article.id).catch(() => {
+    /* noop */
+  });
 
   // Get related articles
-  const relatedArticlesResult = await getKBRelatedArticles(article.id, 5);
+  const relatedArticlesResult = await getKBRelatedArticles(
+    article.id,
+    RELATED_ARTICLE_LIMIT
+  );
   const relatedArticles =
     relatedArticlesResult.success && relatedArticlesResult.articles
       ? relatedArticlesResult.articles
@@ -63,27 +79,29 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <>
       {/* Structured Data */}
-      <script
+      <Script
+        id={`kb-article-schema-${article.id}`}
+        strategy="afterInteractive"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateArticleStructuredData(article)),
-        }}
-      />
-      <script
+      >
+        {JSON.stringify(generateArticleStructuredData(article))}
+      </Script>
+      <Script
+        id={`kb-article-breadcrumb-${article.id}`}
+        strategy="afterInteractive"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            generateBreadcrumbStructuredData(article.category, {
-              slug: article.slug,
-              title: article.title,
-            })
-          ),
-        }}
-      />
+      >
+        {JSON.stringify(
+          generateBreadcrumbStructuredData(article.category, {
+            slug: article.slug,
+            title: article.title,
+          })
+        )}
+      </Script>
 
       <KBSidebarWrapper
-        currentCategory={article.category.slug}
         currentArticleId={article.id}
+        currentCategory={article.category.slug}
         htmlContent={htmlContent}
         relatedArticles={relatedArticles}
       >
@@ -91,15 +109,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {/* Breadcrumb */}
           <nav className="mb-8 flex items-center gap-2 text-sm">
             <Link
-              href="/kb"
               className="text-muted-foreground hover:text-foreground"
+              href="/kb"
             >
               Knowledge Base
             </Link>
             <span className="text-muted-foreground">/</span>
             <Link
-              href={`/kb/${article.category.slug}`}
               className="text-muted-foreground hover:text-foreground"
+              href={`/kb/${article.category.slug}`}
             >
               {article.category.title}
             </Link>
@@ -115,15 +133,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 <Link href={`/kb/${article.category.slug}`}>
                   <Badge variant="secondary">{article.category.title}</Badge>
                 </Link>
-                {article.featured && (
-                  <Badge variant="default">Featured</Badge>
-                )}
+                {article.featured && <Badge variant="default">Featured</Badge>}
               </div>
-              <h1 className="mb-4 text-4xl font-bold tracking-tight">
+              <h1 className="mb-4 font-bold text-4xl tracking-tight">
                 {article.title}
               </h1>
               {article.excerpt && (
-                <p className="text-muted-foreground mb-6 text-xl">
+                <p className="mb-6 text-muted-foreground text-xl">
                   {article.excerpt}
                 </p>
               )}
@@ -158,12 +174,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {article.featuredImage && (
               <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
                 <Image
-                  src={article.featuredImage}
                   alt={article.title}
-                  fill
                   className="object-cover"
+                  fill
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                  src={article.featuredImage}
                 />
               </div>
             )}
@@ -174,15 +190,17 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {/* Tags */}
             {article.tags && article.tags.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-2">
-                {article.tags.map((tag: { id: string; slug: string; name: string }) => (
-                  <Link
-                    key={tag.id}
-                    href={`/kb/search?tag=${tag.slug}`}
-                    className="text-primary hover:underline text-sm"
-                  >
-                    #{tag.name}
-                  </Link>
-                ))}
+                {article.tags.map(
+                  (tag: { id: string; slug: string; name: string }) => (
+                    <Link
+                      className="text-primary text-sm hover:underline"
+                      href={`/kb/search?tag=${tag.slug}`}
+                      key={tag.id}
+                    >
+                      #{tag.name}
+                    </Link>
+                  )
+                )}
               </div>
             )}
 
@@ -208,4 +226,3 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     </>
   );
 }
-

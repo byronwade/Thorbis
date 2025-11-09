@@ -47,7 +47,13 @@ export type PropertyData = {
 export type JobData = {
   title: string;
   description: string;
-  jobType?: "service" | "installation" | "repair" | "maintenance" | "inspection" | "consultation";
+  jobType?:
+    | "service"
+    | "installation"
+    | "repair"
+    | "maintenance"
+    | "inspection"
+    | "consultation";
   priority: "low" | "medium" | "high" | "urgent";
   scheduledStart?: string;
   scheduledEnd?: string;

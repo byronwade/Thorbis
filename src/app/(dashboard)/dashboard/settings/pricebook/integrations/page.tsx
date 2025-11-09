@@ -86,17 +86,20 @@ export default async function SupplierIntegrationsPage() {
   // Transform database format to match UI expectations
   const dbSuppliers = result.success && result.data ? result.data : [];
 
-  const suppliersData = dbSuppliers.length > 0
-    ? dbSuppliers.map((s: any) => ({
-        id: s.id,
-        name: s.supplier_name,
-        status: s.api_key ? "connected" : "available",
-        lastSync: s.last_sync_at ? new Date(s.last_sync_at).toLocaleString() : null,
-        itemsImported: s.items_imported || 0,
-        errorMessage: s.last_error || null,
-        apiEnabled: !!s.api_key,
-      }))
-    : suppliers; // Fallback to hardcoded list if no DB data
+  const suppliersData =
+    dbSuppliers.length > 0
+      ? dbSuppliers.map((s: any) => ({
+          id: s.id,
+          name: s.supplier_name,
+          status: s.api_key ? "connected" : "available",
+          lastSync: s.last_sync_at
+            ? new Date(s.last_sync_at).toLocaleString()
+            : null,
+          itemsImported: s.items_imported || 0,
+          errorMessage: s.last_error || null,
+          apiEnabled: !!s.api_key,
+        }))
+      : suppliers; // Fallback to hardcoded list if no DB data
 
   const connectedCount = suppliersData.filter(
     (s) => s.status === "connected"

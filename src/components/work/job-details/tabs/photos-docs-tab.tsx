@@ -4,12 +4,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { Camera, FileText, Pen, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Camera, FileText, Upload, Pen, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InlinePhotoUploader } from "../InlinePhotoUploader";
 
 interface PhotosDocsTabProps {
@@ -40,8 +40,8 @@ export function PhotosDocsTab({
       {/* Upload Section */}
       {isEditMode && showUploader && (
         <InlinePhotoUploader
-          jobId={job.id}
           companyId={job.company_id}
+          jobId={job.id}
           onCancel={() => setShowUploader(false)}
           onUploadComplete={() => {
             setShowUploader(false);
@@ -60,7 +60,7 @@ export function PhotosDocsTab({
               <Badge variant="secondary">{photos.length}</Badge>
             </div>
             {isEditMode && !showUploader && (
-              <Button size="sm" onClick={() => setShowUploader(true)}>
+              <Button onClick={() => setShowUploader(true)} size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Upload
               </Button>
@@ -69,12 +69,16 @@ export function PhotosDocsTab({
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
-            {Object.entries(photosByCategory).map(([category, categoryPhotos]) => (
-              <div key={category} className="rounded-lg border p-4">
-                <p className="mb-2 text-sm font-medium capitalize">{category}</p>
-                <p className="text-2xl font-bold">{categoryPhotos.length}</p>
-              </div>
-            ))}
+            {Object.entries(photosByCategory).map(
+              ([category, categoryPhotos]) => (
+                <div className="rounded-lg border p-4" key={category}>
+                  <p className="mb-2 font-medium text-sm capitalize">
+                    {category}
+                  </p>
+                  <p className="font-bold text-2xl">{categoryPhotos.length}</p>
+                </div>
+              )
+            )}
           </div>
         </CardContent>
       </Card>
@@ -89,7 +93,11 @@ export function PhotosDocsTab({
               <Badge variant="secondary">{documents.length}</Badge>
             </div>
             {isEditMode && !showUploader && (
-              <Button size="sm" variant="outline" onClick={() => setShowUploader(true)}>
+              <Button
+                onClick={() => setShowUploader(true)}
+                size="sm"
+                variant="outline"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Upload
               </Button>
@@ -100,14 +108,19 @@ export function PhotosDocsTab({
           {documents.length > 0 ? (
             <div className="space-y-2">
               {documents.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div
+                  className="flex items-center justify-between rounded-lg border p-3"
+                  key={doc.id}
+                >
                   <span className="text-sm">{doc.file_name}</span>
-                  <Button variant="ghost" size="sm">View</Button>
+                  <Button size="sm" variant="ghost">
+                    View
+                  </Button>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No documents uploaded
             </div>
           )}
@@ -125,7 +138,7 @@ export function PhotosDocsTab({
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-lg border p-4">
-              <p className="mb-2 text-sm font-medium">Customer Signature</p>
+              <p className="mb-2 font-medium text-sm">Customer Signature</p>
               {customerSignature ? (
                 <Badge variant="default">Signed</Badge>
               ) : (
@@ -133,7 +146,7 @@ export function PhotosDocsTab({
               )}
             </div>
             <div className="rounded-lg border p-4">
-              <p className="mb-2 text-sm font-medium">Technician Signature</p>
+              <p className="mb-2 font-medium text-sm">Technician Signature</p>
               {technicianSignature ? (
                 <Badge variant="default">Signed</Badge>
               ) : (

@@ -1,9 +1,9 @@
+import { getAllCustomers } from "@/actions/customers";
 import {
   type Customer,
   CustomersTable,
 } from "@/components/customers/customers-table";
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
-import { getAllCustomers } from "@/actions/customers";
 
 /**
  * Customers Page - Server Component
@@ -87,7 +87,7 @@ export default async function CustomersPage() {
       label: "Avg Customer Value",
       value:
         totalCustomers > 0
-          ? `$${((totalRevenue / totalCustomers) / 100).toLocaleString()}`
+          ? `$${(totalRevenue / totalCustomers / 100).toLocaleString()}`
           : "$0",
       change: 0,
       changeLabel: "vs last month",
@@ -106,4 +106,3 @@ export default async function CustomersPage() {
     </>
   );
 }
-

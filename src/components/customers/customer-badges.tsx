@@ -10,24 +10,42 @@
  * - Dropdown to add new badges
  */
 
-import { useState, useEffect } from "react";
+import {
+  AlertTriangle,
+  Calendar,
+  FileCheck,
+  Heart,
+  LayoutGrid,
+  Plus,
+  Receipt,
+  ShieldCheck,
+  Star,
+  UserPlus,
+  X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  addCustomerBadge,
+  generateAutoBadges,
+  getCustomerBadges,
+  removeCustomerBadge,
+} from "@/actions/customer-badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -37,15 +55,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, X, AlertTriangle, Star, Calendar, Receipt, ShieldCheck, FileCheck, Heart, UserPlus, LayoutGrid } from "lucide-react";
-import {
-  getCustomerBadges,
-  addCustomerBadge,
-  removeCustomerBadge,
-  generateAutoBadges,
-} from "@/actions/customer-badges";
-import { PREMADE_BADGES, type CustomerBadge } from "@/types/customer-badges";
 import { cn } from "@/lib/utils";
+import { type CustomerBadge, PREMADE_BADGES } from "@/types/customer-badges";
 
 interface CustomerBadgesProps {
   customerId: string;
@@ -83,7 +94,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
     setIsLoading(false);
   };
 
-  const handleAddPremadeBadge = async (premade: typeof PREMADE_BADGES[0]) => {
+  const handleAddPremadeBadge = async (premade: (typeof PREMADE_BADGES)[0]) => {
     const result = await addCustomerBadge({
       customerId,
       label: premade.label,
@@ -142,26 +153,28 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
     <div className="flex flex-wrap items-center gap-2 px-8 py-6">
       {/* Display Badges */}
       {badges.length === 0 && (
-        <p className="text-muted-foreground text-sm">No badges yet — add badges to highlight important customer attributes</p>
+        <p className="text-muted-foreground text-sm">
+          No badges yet — add badges to highlight important customer attributes
+        </p>
       )}
       {badges.map((badge) => {
         const Icon = badge.icon ? ICON_MAP[badge.icon] : null;
         return (
-          <div key={badge.id} className="group relative">
+          <div className="group relative" key={badge.id}>
             <Badge
-              variant={badge.variant as any}
               className={cn(
-                "gap-1.5 pr-7 text-xs font-medium",
+                "gap-1.5 pr-7 font-medium text-xs",
                 badge.badge_type === "auto_generated" && "opacity-90"
               )}
+              variant={badge.variant as any}
             >
               {Icon && <Icon className="size-3.5" />}
               {badge.label}
               <button
-                type="button"
+                className="-translate-y-1/2 absolute top-1/2 right-1.5 rounded-sm p-0.5 opacity-0 transition-opacity hover:bg-background/20 group-hover:opacity-100"
                 onClick={() => handleRemoveBadge(badge.id)}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-sm p-0.5 opacity-0 transition-opacity hover:bg-background/20 group-hover:opacity-100"
                 title="Remove badge"
+                type="button"
               >
                 <X className="size-3" />
               </button>
@@ -173,20 +186,22 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
       {/* Add Badge Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+          <Button className="gap-1.5 text-xs" size="sm" variant="outline">
             <Plus className="size-3.5" />
             Add Badge
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-64">
-          <DropdownMenuLabel className="text-xs">Premade Badges</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs">
+            Premade Badges
+          </DropdownMenuLabel>
           {PREMADE_BADGES.map((premade) => {
             const Icon = ICON_MAP[premade.icon];
             return (
               <DropdownMenuItem
+                className="cursor-pointer"
                 key={premade.label}
                 onClick={() => handleAddPremadeBadge(premade)}
-                className="cursor-pointer"
               >
                 {Icon && <Icon className="mr-2 size-4" />}
                 <span className="text-sm">{premade.label}</span>
@@ -194,12 +209,18 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
             );
           })}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setShowCustomDialog(true)} className="cursor-pointer">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => setShowCustomDialog(true)}
+          >
             <Plus className="mr-2 size-4" />
             <span className="text-sm">Custom Badge</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleGenerateAuto} className="cursor-pointer">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={handleGenerateAuto}
+          >
             <LayoutGrid className="mr-2 size-4" />
             <span className="text-sm">Generate Auto Badges</span>
           </DropdownMenuItem>
@@ -207,42 +228,58 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
       </DropdownMenu>
 
       {/* Custom Badge Dialog */}
-      <Dialog open={showCustomDialog} onOpenChange={setShowCustomDialog}>
+      <Dialog onOpenChange={setShowCustomDialog} open={showCustomDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="text-lg">Add Custom Badge</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Badge Label</Label>
+              <Label className="font-medium text-sm">Badge Label</Label>
               <Input
+                className="text-sm"
+                onChange={(e) => setCustomLabel(e.target.value)}
                 placeholder="e.g., Preferred Vendor"
                 value={customLabel}
-                onChange={(e) => setCustomLabel(e.target.value)}
-                className="text-sm"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Badge Style</Label>
-              <Select value={customVariant} onValueChange={setCustomVariant}>
+              <Label className="font-medium text-sm">Badge Style</Label>
+              <Select onValueChange={setCustomVariant} value={customVariant}>
                 <SelectTrigger className="text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="default" className="text-sm">Default (Gray)</SelectItem>
-                  <SelectItem value="success" className="text-sm">Success (Green)</SelectItem>
-                  <SelectItem value="warning" className="text-sm">Warning (Yellow)</SelectItem>
-                  <SelectItem value="destructive" className="text-sm">Destructive (Red)</SelectItem>
-                  <SelectItem value="secondary" className="text-sm">Secondary (Blue)</SelectItem>
-                  <SelectItem value="outline" className="text-sm">Outline</SelectItem>
+                  <SelectItem className="text-sm" value="default">
+                    Default (Gray)
+                  </SelectItem>
+                  <SelectItem className="text-sm" value="success">
+                    Success (Green)
+                  </SelectItem>
+                  <SelectItem className="text-sm" value="warning">
+                    Warning (Yellow)
+                  </SelectItem>
+                  <SelectItem className="text-sm" value="destructive">
+                    Destructive (Red)
+                  </SelectItem>
+                  <SelectItem className="text-sm" value="secondary">
+                    Secondary (Blue)
+                  </SelectItem>
+                  <SelectItem className="text-sm" value="outline">
+                    Outline
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex gap-2 pt-2">
-              <Button onClick={() => setShowCustomDialog(false)} variant="outline" className="flex-1">
+              <Button
+                className="flex-1"
+                onClick={() => setShowCustomDialog(false)}
+                variant="outline"
+              >
                 Cancel
               </Button>
-              <Button onClick={handleAddCustomBadge} className="flex-1">
+              <Button className="flex-1" onClick={handleAddCustomBadge}>
                 <Plus className="mr-2 size-4" />
                 Add Badge
               </Button>

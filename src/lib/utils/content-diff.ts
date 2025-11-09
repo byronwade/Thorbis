@@ -51,7 +51,7 @@ export function extractChanges(
 ): Change[] {
   const changes: Change[] = [];
 
-  if (!originalContent || !newContent) {
+  if (!(originalContent && newContent)) {
     return changes;
   }
 

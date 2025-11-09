@@ -9,11 +9,13 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Save, UserCircle, Loader2 } from "lucide-react";
+import { HelpCircle, Loader2, Save, UserCircle } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import {
+  getCustomerPreferences,
+  updateCustomerPreferences,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { getCustomerPreferences, updateCustomerPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -38,6 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 export default function CustomerPreferencesPage() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -111,11 +114,20 @@ export default function CustomerPreferencesPage() {
       formData.append("defaultContactMethod", "email"); // UI doesn't have this field yet
       formData.append("allowMarketingEmails", "true"); // UI doesn't have this field yet
       formData.append("allowMarketingSms", "false"); // UI doesn't have this field yet
-      formData.append("requestFeedback", settings.allowCustomerFeedback.toString());
-      formData.append("feedbackDelayHours", settings.feedbackRequestDelay.toString());
+      formData.append(
+        "requestFeedback",
+        settings.allowCustomerFeedback.toString()
+      );
+      formData.append(
+        "feedbackDelayHours",
+        settings.feedbackRequestDelay.toString()
+      );
       formData.append("sendAppointmentReminders", "true"); // UI doesn't have this field yet
       formData.append("reminderHoursBefore", "24"); // UI doesn't have this field yet
-      formData.append("requireServiceAddress", settings.requireServiceAddress.toString());
+      formData.append(
+        "requireServiceAddress",
+        settings.requireServiceAddress.toString()
+      );
       formData.append("autoTagCustomers", "false"); // UI doesn't have this field yet
 
       const result = await updateCustomerPreferences(formData);
@@ -150,7 +162,7 @@ export default function CustomerPreferencesPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave} disabled={isPending}>
+            <Button disabled={isPending} onClick={handleSave}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

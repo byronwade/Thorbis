@@ -2,11 +2,11 @@
 
 import { Loader2, Save, X } from "lucide-react";
 import { useState } from "react";
+import { createProperty } from "@/actions/properties";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createProperty } from "@/actions/properties";
 import { cn } from "@/lib/utils";
 
 /**
@@ -88,7 +88,8 @@ export function InlinePropertyForm({
     serverFormData.append("city", formData.city);
     serverFormData.append("state", formData.state);
     serverFormData.append("zipCode", formData.zipCode);
-    if (formData.accessNotes) serverFormData.append("notes", formData.accessNotes);
+    if (formData.accessNotes)
+      serverFormData.append("notes", formData.accessNotes);
 
     const result = await createProperty(serverFormData);
 
@@ -109,7 +110,9 @@ export function InlinePropertyForm({
       };
       onSuccess(newProperty);
     } else {
-      setErrors({ submit: (result as any).error || "Failed to create property" });
+      setErrors({
+        submit: (result as any).error || "Failed to create property",
+      });
       setIsLoading(false);
     }
   };
@@ -128,14 +131,16 @@ export function InlinePropertyForm({
   return (
     <form
       className={cn(
-        "rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-4",
+        "space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4",
         className
       )}
       onSubmit={handleSubmit}
     >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-sm">Add Property for {customerName}</h3>
+          <h3 className="font-semibold text-sm">
+            Add Property for {customerName}
+          </h3>
           <p className="text-muted-foreground text-xs">
             Create a service location for this customer
           </p>

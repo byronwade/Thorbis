@@ -7,13 +7,15 @@
  * - Click to view invoice details
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
-import type { NodeViewProps } from "@tiptap/react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { FileText, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
+import {
+  CollapsibleActionButton,
+  CollapsibleDataSection,
+  EmptyStateActionButton,
+} from "@/components/ui/collapsible-data-section";
 
 // React component that renders the block
 export function InvoicesTableBlockComponent({ node, editor }: any) {
@@ -25,21 +27,28 @@ export function InvoicesTableBlockComponent({ node, editor }: any) {
   };
 
   // Calculate invoice summary
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(cents / 100);
-  };
 
-  const pastDueInvoices = (invoices || []).filter((inv: any) => inv.status === "overdue");
-  const pastDueTotal = pastDueInvoices.reduce((sum: number, inv: any) => sum + (inv.balance_due || 0), 0);
-  const unpaidInvoices = (invoices || []).filter((inv: any) =>
-    inv.status !== "paid" && inv.status !== "cancelled"
+  const pastDueInvoices = (invoices || []).filter(
+    (inv: any) => inv.status === "overdue"
   );
-  const unpaidTotal = unpaidInvoices.reduce((sum: number, inv: any) => sum + (inv.balance_due || 0), 0);
+  const pastDueTotal = pastDueInvoices.reduce(
+    (sum: number, inv: any) => sum + (inv.balance_due || 0),
+    0
+  );
+  const unpaidInvoices = (invoices || []).filter(
+    (inv: any) => inv.status !== "paid" && inv.status !== "cancelled"
+  );
+  const unpaidTotal = unpaidInvoices.reduce(
+    (sum: number, inv: any) => sum + (inv.balance_due || 0),
+    0
+  );
 
   let summary = "";
   if (invoices.length === 0) {
@@ -54,60 +63,48 @@ export function InvoicesTableBlockComponent({ node, editor }: any) {
 
   // No transformation needed - CustomerInvoicesTable handles raw data
 
-  if (!invoices || invoices.length === 0) {
-    return (
-      <NodeViewWrapper className="invoices-table-block">
-        <CollapsibleSectionWrapper
-          title="Invoices (0)"
-          icon={<FileText className="size-5" />}
-          defaultOpen={false}
-          storageKey="customer-invoices-section"
-          actions={
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleAddInvoice}
-              className="h-8 px-3 text-xs gap-1.5"
-            >
-              <Plus className="size-4" />
-              Add Invoice
-            </Button>
-          }
-        >
-          <div className="rounded-lg border bg-muted/30 p-8 text-center">
-            <FileText className="mx-auto mb-3 size-12 text-muted-foreground/50" />
-            <p className="text-muted-foreground">No invoices yet</p>
-          </div>
-        </CollapsibleSectionWrapper>
-      </NodeViewWrapper>
-    );
-  }
-
   return (
     <NodeViewWrapper className="invoices-table-block">
-      <CollapsibleSectionWrapper
-        title={`Invoices (${invoices.length})`}
-        icon={<FileText className="size-5" />}
+      <CollapsibleDataSection
+        actions={
+          <CollapsibleActionButton
+            icon={<Plus className="size-4" />}
+            onClick={handleAddInvoice}
+          >
+            Add Invoice
+          </CollapsibleActionButton>
+        }
+        count={invoices.length}
         defaultOpen={false}
+        emptyState={
+          !invoices || invoices.length === 0
+            ? {
+                show: true,
+                icon: <FileText className="h-8 w-8 text-muted-foreground" />,
+                title: "No invoices found",
+                description: "Get started by creating your first invoice.",
+                action: (
+                  <EmptyStateActionButton
+                    icon={<Plus className="size-4" />}
+                    onClick={handleAddInvoice}
+                  >
+                    Add Invoice
+                  </EmptyStateActionButton>
+                ),
+              }
+            : undefined
+        }
+        fullWidthContent={true}
+        icon={<FileText className="size-5" />}
+        standalone={true}
         storageKey="customer-invoices-section"
         summary={summary}
-        actions={
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleAddInvoice}
-            className="gap-1"
-          >
-            <Plus className="size-4" />
-            Add Invoice
-          </Button>
-        }
+        title={`Invoices (${invoices.length})`}
+        value="customer-invoices"
       >
         {/* Customer invoices table with quick actions - uses FullWidthDatatable */}
-        <div className="-mx-6 -mt-6 -mb-6">
-          <CustomerInvoicesTable invoices={invoices || []} />
-        </div>
-      </CollapsibleSectionWrapper>
+        <CustomerInvoicesTable invoices={invoices || []} />
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -142,7 +139,11 @@ export const InvoicesTableBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "invoices-table-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, { "data-type": "invoices-table-block" }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -153,12 +154,11 @@ export const InvoicesTableBlock = Node.create({
     return {
       insertInvoicesTableBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

@@ -1,6 +1,6 @@
 /**
  * Virus Scanner Service
- * 
+ *
  * Provides virus/malware scanning capabilities for uploaded files
  * Supports multiple scanning backends:
  * - ClamAV (self-hosted)
@@ -14,7 +14,13 @@ import { createClient } from "@/lib/supabase/server";
 // TYPES
 // ============================================================================
 
-export type ScanStatus = 'pending' | 'scanning' | 'clean' | 'infected' | 'failed' | 'skipped';
+export type ScanStatus =
+  | "pending"
+  | "scanning"
+  | "clean"
+  | "infected"
+  | "failed"
+  | "skipped";
 
 export interface ScanResult {
   status: ScanStatus;
@@ -26,7 +32,7 @@ export interface ScanResult {
 
 export interface ScannerConfig {
   enabled: boolean;
-  backend: 'clamav' | 'virustotal' | 'mock';
+  backend: "clamav" | "virustotal" | "mock";
   apiKey?: string;
   endpoint?: string;
   timeout?: number;
@@ -43,13 +49,16 @@ export interface ScannerConfig {
  */
 function getScannerConfig(): ScannerConfig {
   return {
-    enabled: process.env.VIRUS_SCAN_ENABLED === 'true',
-    backend: (process.env.VIRUS_SCAN_BACKEND || 'mock') as ScannerConfig['backend'],
+    enabled: process.env.VIRUS_SCAN_ENABLED === "true",
+    backend: (process.env.VIRUS_SCAN_BACKEND ||
+      "mock") as ScannerConfig["backend"],
     apiKey: process.env.VIRUSTOTAL_API_KEY,
     endpoint: process.env.CLAMAV_ENDPOINT,
-    timeout: Number.parseInt(process.env.VIRUS_SCAN_TIMEOUT || '30000'),
-    skipLargeFiles: process.env.VIRUS_SCAN_SKIP_LARGE === 'true',
-    maxFileSize: Number.parseInt(process.env.VIRUS_SCAN_MAX_SIZE || '104857600'), // 100MB
+    timeout: Number.parseInt(process.env.VIRUS_SCAN_TIMEOUT || "30000"),
+    skipLargeFiles: process.env.VIRUS_SCAN_SKIP_LARGE === "true",
+    maxFileSize: Number.parseInt(
+      process.env.VIRUS_SCAN_MAX_SIZE || "104857600"
+    ), // 100MB
   };
 }
 
@@ -59,7 +68,7 @@ function getScannerConfig(): ScannerConfig {
 
 /**
  * Scan file for viruses/malware
- * 
+ *
  * @param file - File to scan (File or Buffer)
  * @param fileName - Original filename
  * @returns Scan result
@@ -73,8 +82,8 @@ export async function scanFile(
   // Check if scanning is enabled
   if (!config.enabled) {
     return {
-      status: 'skipped',
-      metadata: { reason: 'Scanning disabled' },
+      status: "skipped",
+      metadata: { reason: "Scanning disabled" },
     };
   }
 
@@ -82,31 +91,35 @@ export async function scanFile(
   const fileSize = file instanceof File ? file.size : file.length;
 
   // Skip large files if configured
-  if (config.skipLargeFiles && config.maxFileSize && fileSize > config.maxFileSize) {
+  if (
+    config.skipLargeFiles &&
+    config.maxFileSize &&
+    fileSize > config.maxFileSize
+  ) {
     return {
-      status: 'skipped',
-      metadata: { reason: 'File too large for scanning', size: fileSize },
+      status: "skipped",
+      metadata: { reason: "File too large for scanning", size: fileSize },
     };
   }
 
   // Route to appropriate scanner
   try {
     switch (config.backend) {
-      case 'clamav':
+      case "clamav":
         return await scanWithClamAV(file, fileName, config);
-      case 'virustotal':
+      case "virustotal":
         return await scanWithVirusTotal(file, fileName, config);
-      case 'mock':
+      case "mock":
         return await mockScan(file, fileName);
       default:
         throw new Error(`Unsupported scan backend: ${config.backend}`);
     }
   } catch (error) {
-    console.error('Virus scan error:', error);
+    console.error("Virus scan error:", error);
     return {
-      status: 'failed',
+      status: "failed",
       metadata: {
-        error: error instanceof Error ? error.message : 'Scan failed',
+        error: error instanceof Error ? error.message : "Scan failed",
       },
     };
   }
@@ -125,20 +138,20 @@ async function scanWithClamAV(
   config: ScannerConfig
 ): Promise<ScanResult> {
   if (!config.endpoint) {
-    throw new Error('ClamAV endpoint not configured');
+    throw new Error("ClamAV endpoint not configured");
   }
 
   const fileBuffer = file instanceof File ? await file.arrayBuffer() : file;
 
   const formData = new FormData();
-  formData.append('file', new Blob([fileBuffer as BlobPart]), fileName);
+  formData.append("file", new Blob([fileBuffer as BlobPart]), fileName);
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), config.timeout);
 
   try {
     const response = await fetch(`${config.endpoint}/scan`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
       signal: controller.signal,
     });
@@ -152,9 +165,9 @@ async function scanWithClamAV(
     const result = await response.json();
 
     return {
-      status: result.infected ? 'infected' : 'clean',
+      status: result.infected ? "infected" : "clean",
       threats: result.viruses || [],
-      scanEngine: 'ClamAV',
+      scanEngine: "ClamAV",
       scanDate: new Date(),
       metadata: result,
     };
@@ -177,22 +190,25 @@ async function scanWithVirusTotal(
   config: ScannerConfig
 ): Promise<ScanResult> {
   if (!config.apiKey) {
-    throw new Error('VirusTotal API key not configured');
+    throw new Error("VirusTotal API key not configured");
   }
 
   const fileBuffer = file instanceof File ? await file.arrayBuffer() : file;
 
   // Step 1: Upload file
   const formData = new FormData();
-  formData.append('file', new Blob([fileBuffer as BlobPart]), fileName);
+  formData.append("file", new Blob([fileBuffer as BlobPart]), fileName);
 
-  const uploadResponse = await fetch('https://www.virustotal.com/api/v3/files', {
-    method: 'POST',
-    headers: {
-      'x-apikey': config.apiKey,
-    },
-    body: formData,
-  });
+  const uploadResponse = await fetch(
+    "https://www.virustotal.com/api/v3/files",
+    {
+      method: "POST",
+      headers: {
+        "x-apikey": config.apiKey,
+      },
+      body: formData,
+    }
+  );
 
   if (!uploadResponse.ok) {
     throw new Error(`VirusTotal upload failed: ${uploadResponse.statusText}`);
@@ -207,33 +223,38 @@ async function scanWithVirusTotal(
   const pollInterval = 3000; // 3 seconds
 
   while (attempts < maxAttempts) {
-    await new Promise(resolve => setTimeout(resolve, pollInterval));
+    await new Promise((resolve) => setTimeout(resolve, pollInterval));
 
     const analysisResponse = await fetch(
       `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
       {
         headers: {
-          'x-apikey': config.apiKey,
+          "x-apikey": config.apiKey,
         },
       }
     );
 
     if (!analysisResponse.ok) {
-      throw new Error(`VirusTotal analysis check failed: ${analysisResponse.statusText}`);
+      throw new Error(
+        `VirusTotal analysis check failed: ${analysisResponse.statusText}`
+      );
     }
 
     const analysisResult = await analysisResponse.json();
     const status = analysisResult.data.attributes.status;
 
-    if (status === 'completed') {
+    if (status === "completed") {
       const stats = analysisResult.data.attributes.stats;
       const malicious = stats.malicious || 0;
       const suspicious = stats.suspicious || 0;
 
       return {
-        status: malicious > 0 || suspicious > 0 ? 'infected' : 'clean',
-        threats: malicious > 0 || suspicious > 0 ? ['Detected by VirusTotal engines'] : [],
-        scanEngine: 'VirusTotal',
+        status: malicious > 0 || suspicious > 0 ? "infected" : "clean",
+        threats:
+          malicious > 0 || suspicious > 0
+            ? ["Detected by VirusTotal engines"]
+            : [],
+        scanEngine: "VirusTotal",
         scanDate: new Date(),
         metadata: {
           malicious,
@@ -249,8 +270,8 @@ async function scanWithVirusTotal(
 
   // Timeout
   return {
-    status: 'failed',
-    metadata: { error: 'VirusTotal analysis timeout' },
+    status: "failed",
+    metadata: { error: "VirusTotal analysis timeout" },
   };
 }
 
@@ -267,28 +288,28 @@ async function mockScan(
   fileName: string
 ): Promise<ScanResult> {
   // Simulate scanning delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   // Check for test virus signature (EICAR test file)
   const fileBuffer = file instanceof File ? await file.arrayBuffer() : file;
   const content = new TextDecoder().decode(fileBuffer.slice(0, 100));
 
-  if (content.includes('EICAR-STANDARD-ANTIVIRUS-TEST-FILE')) {
+  if (content.includes("EICAR-STANDARD-ANTIVIRUS-TEST-FILE")) {
     return {
-      status: 'infected',
-      threats: ['EICAR-Test-File'],
-      scanEngine: 'Mock Scanner',
+      status: "infected",
+      threats: ["EICAR-Test-File"],
+      scanEngine: "Mock Scanner",
       scanDate: new Date(),
-      metadata: { note: 'This is a test virus signature' },
+      metadata: { note: "This is a test virus signature" },
     };
   }
 
   // All other files are clean
   return {
-    status: 'clean',
-    scanEngine: 'Mock Scanner',
+    status: "clean",
+    scanEngine: "Mock Scanner",
     scanDate: new Date(),
-    metadata: { note: 'Development mode - real scanning disabled' },
+    metadata: { note: "Development mode - real scanning disabled" },
   };
 }
 
@@ -309,7 +330,7 @@ export async function updateScanStatus(
   }
 
   await supabase
-    .from('attachments')
+    .from("attachments")
     .update({
       virus_scan_status: result.status,
       virus_scan_result: {
@@ -320,7 +341,7 @@ export async function updateScanStatus(
       },
       virus_scanned_at: new Date().toISOString(),
     })
-    .eq('id', attachmentId);
+    .eq("id", attachmentId);
 }
 
 /**
@@ -343,13 +364,15 @@ export async function quarantineFile(
       .download(path);
 
     if (downloadError) {
-      throw new Error(`Failed to download file for quarantine: ${downloadError.message}`);
+      throw new Error(
+        `Failed to download file for quarantine: ${downloadError.message}`
+      );
     }
 
     // Upload to quarantine bucket
     const quarantinePath = `${attachmentId}/${path}`;
     const { error: uploadError } = await supabase.storage
-      .from('quarantine')
+      .from("quarantine")
       .upload(quarantinePath, fileData, { upsert: true });
 
     if (uploadError) {
@@ -362,14 +385,14 @@ export async function quarantineFile(
       .remove([path]);
 
     if (deleteError) {
-      console.error('Failed to remove original file:', deleteError);
+      console.error("Failed to remove original file:", deleteError);
     }
 
     // Update database record
     await supabase
-      .from('attachments')
+      .from("attachments")
       .update({
-        storage_bucket: 'quarantine',
+        storage_bucket: "quarantine",
         storage_path: quarantinePath,
         metadata: {
           quarantined_at: new Date().toISOString(),
@@ -377,10 +400,9 @@ export async function quarantineFile(
           original_path: path,
         },
       })
-      .eq('id', attachmentId);
-
+      .eq("id", attachmentId);
   } catch (error) {
-    console.error('Quarantine failed:', error);
+    console.error("Quarantine failed:", error);
     throw error;
   }
 }
@@ -413,14 +435,14 @@ export async function scanPendingFiles(limit = 10): Promise<{
 
   // Get pending files
   const { data: pendingFiles, error } = await supabase
-    .from('attachments')
-    .select('id, storage_bucket, storage_path, file_name')
-    .eq('virus_scan_status', 'pending')
-    .is('deleted_at', null)
+    .from("attachments")
+    .select("id, storage_bucket, storage_path, file_name")
+    .eq("virus_scan_status", "pending")
+    .is("deleted_at", null)
     .limit(limit);
 
   if (error || !pendingFiles) {
-    console.error('Failed to fetch pending files:', error);
+    console.error("Failed to fetch pending files:", error);
     return stats;
   }
 
@@ -429,9 +451,9 @@ export async function scanPendingFiles(limit = 10): Promise<{
     try {
       // Update status to scanning
       await supabase
-        .from('attachments')
-        .update({ virus_scan_status: 'scanning' })
-        .eq('id', file.id);
+        .from("attachments")
+        .update({ virus_scan_status: "scanning" })
+        .eq("id", file.id);
 
       // Download file
       const { data: fileData, error: downloadError } = await supabase.storage
@@ -450,31 +472,30 @@ export async function scanPendingFiles(limit = 10): Promise<{
       await updateScanStatus(file.id, result);
 
       // Quarantine if infected
-      if (result.status === 'infected') {
+      if (result.status === "infected") {
         await quarantineFile(file.id, file.storage_bucket, file.storage_path);
         stats.infected++;
-      } else if (result.status === 'clean') {
+      } else if (result.status === "clean") {
         stats.clean++;
       } else {
         stats.failed++;
       }
 
       stats.scanned++;
-
     } catch (error) {
       console.error(`Scan failed for ${file.id}:`, error);
       stats.failed++;
 
       // Update status to failed
       await supabase
-        .from('attachments')
+        .from("attachments")
         .update({
-          virus_scan_status: 'failed',
+          virus_scan_status: "failed",
           virus_scan_result: {
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? error.message : "Unknown error",
           },
         })
-        .eq('id', file.id);
+        .eq("id", file.id);
     }
   }
 
@@ -496,17 +517,16 @@ export function shouldScanFile(mimeType: string, fileSize: number): boolean {
   }
 
   // Skip very large files
-  if (config.skipLargeFiles && config.maxFileSize && fileSize > config.maxFileSize) {
+  if (
+    config.skipLargeFiles &&
+    config.maxFileSize &&
+    fileSize > config.maxFileSize
+  ) {
     return false;
   }
 
   // Skip certain safe file types (optional optimization)
-  const safeMimeTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-  ];
+  const safeMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
   // You can choose to scan everything or skip known-safe image types
   // For maximum security, scan everything
@@ -529,21 +549,21 @@ export async function getScanStatistics(companyId?: string): Promise<{
   }
 
   let query = supabase
-    .from('attachments')
-    .select('virus_scan_status', { count: 'exact' })
-    .is('deleted_at', null);
+    .from("attachments")
+    .select("virus_scan_status", { count: "exact" })
+    .is("deleted_at", null);
 
   if (companyId) {
-    query = query.eq('company_id', companyId);
+    query = query.eq("company_id", companyId);
   }
 
   const { count: total } = await query;
 
   const statusCounts = await Promise.all([
-    query.eq('virus_scan_status', 'pending').then(r => r.count || 0),
-    query.eq('virus_scan_status', 'clean').then(r => r.count || 0),
-    query.eq('virus_scan_status', 'infected').then(r => r.count || 0),
-    query.eq('virus_scan_status', 'failed').then(r => r.count || 0),
+    query.eq("virus_scan_status", "pending").then((r) => r.count || 0),
+    query.eq("virus_scan_status", "clean").then((r) => r.count || 0),
+    query.eq("virus_scan_status", "infected").then((r) => r.count || 0),
+    query.eq("virus_scan_status", "failed").then((r) => r.count || 0),
   ]);
 
   return {
@@ -554,4 +574,3 @@ export async function getScanStatistics(companyId?: string): Promise<{
     failed: statusCounts[3],
   };
 }
-

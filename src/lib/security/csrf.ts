@@ -28,8 +28,8 @@
  * ```
  */
 
-import { cookies, headers } from "next/headers";
 import { randomBytes } from "crypto";
+import { cookies, headers } from "next/headers";
 
 const CSRF_TOKEN_COOKIE = "csrf_token";
 const CSRF_HEADER = "x-csrf-token";
@@ -104,9 +104,7 @@ export async function getCSRFToken(): Promise<string> {
  *   // Your logic here
  * }
  */
-export async function verifyCSRFToken(
-  formData?: FormData
-): Promise<void> {
+export async function verifyCSRFToken(formData?: FormData): Promise<void> {
   const cookieStore = await cookies();
   const headersList = await headers();
 

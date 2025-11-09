@@ -27,12 +27,18 @@ interface InvoiceStatusPipelineProps {
   invoices: Invoice[];
 }
 
-export function InvoiceStatusPipeline({ invoices }: InvoiceStatusPipelineProps) {
+export function InvoiceStatusPipeline({
+  invoices,
+}: InvoiceStatusPipelineProps) {
   // Calculate stats from invoices
   const draftCount = invoices.filter((inv) => inv.status === "draft").length;
-  const pendingCount = invoices.filter((inv) => inv.status === "pending").length;
+  const pendingCount = invoices.filter(
+    (inv) => inv.status === "pending"
+  ).length;
   const paidCount = invoices.filter((inv) => inv.status === "paid").length;
-  const overdueCount = invoices.filter((inv) => inv.status === "overdue").length;
+  const overdueCount = invoices.filter(
+    (inv) => inv.status === "overdue"
+  ).length;
 
   const totalRevenue = invoices
     .filter((inv) => inv.status === "paid")
@@ -69,7 +75,8 @@ export function InvoiceStatusPipeline({ invoices }: InvoiceStatusPipelineProps) 
       label: "Overdue",
       value: `$${(overdueRevenue / 100).toLocaleString()}`,
       change: overdueCount > 0 ? -1 : 1,
-      changeLabel: overdueCount > 0 ? `${overdueCount} need attention` : "all current",
+      changeLabel:
+        overdueCount > 0 ? `${overdueCount} need attention` : "all current",
     },
     {
       label: "Total Invoices",

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { CustomFieldsContent } from "./custom-fields-content";
 import { getCustomFields } from "@/actions/settings/customers";
+import { CustomFieldsContent } from "./custom-fields-content";
 
 /**
  * Settings > Customers > Custom Fields Page - Server Component

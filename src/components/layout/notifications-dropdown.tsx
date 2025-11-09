@@ -26,17 +26,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
-import type {
-  NotificationType,
-  NotificationPriority,
-} from "@/lib/stores/notifications-store";
 import {
-  getNotifications,
-  markAsRead as markAsReadAction,
-  markAllAsRead as markAllAsReadAction,
   deleteNotification as deleteNotificationAction,
+  getNotifications,
+  markAllAsRead as markAllAsReadAction,
+  markAsRead as markAsReadAction,
 } from "@/actions/notifications";
+import type { NotificationType } from "@/lib/stores/notifications-store";
+import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { createClient } from "@/lib/supabase/client";
 
 // Time constants in milliseconds
@@ -128,14 +125,18 @@ export function NotificationsDropdown() {
   // Get notifications from Zustand store
   const notifications = useNotificationsStore((state) => state.notifications);
   const unreadCount = useNotificationsStore((state) => state.unreadCount);
-  const setNotifications = useNotificationsStore((state) => state.setNotifications);
+  const setNotifications = useNotificationsStore(
+    (state) => state.setNotifications
+  );
   const optimisticMarkAsRead = useNotificationsStore(
     (state) => state.optimisticMarkAsRead
   );
   const optimisticMarkAllAsRead = useNotificationsStore(
     (state) => state.optimisticMarkAllAsRead
   );
-  const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
+  const optimisticDelete = useNotificationsStore(
+    (state) => state.optimisticDelete
+  );
   const subscribe = useNotificationsStore((state) => state.subscribe);
   const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -333,7 +334,9 @@ export function NotificationsDropdown() {
                           <div className="flex items-center justify-between gap-2 pt-1">
                             <div className="flex items-center gap-1 text-muted-foreground text-xs">
                               <Clock className="size-3" />
-                              {formatTimestamp(new Date(notification.created_at))}
+                              {formatTimestamp(
+                                new Date(notification.created_at)
+                              )}
                             </div>
 
                             {/* Actions */}

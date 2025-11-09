@@ -72,6 +72,8 @@ export type FullWidthDataTableProps<T> = {
   emptyMessage?: string;
   /** Empty state icon */
   emptyIcon?: React.ReactNode;
+  /** Empty state action button (e.g., "Add Job") */
+  emptyAction?: React.ReactNode;
   /** Show refresh button */
   showRefresh?: boolean;
   /** Refresh handler */
@@ -100,6 +102,7 @@ export function FullWidthDataTable<T>({
   searchFilter,
   emptyMessage = "No items found",
   emptyIcon,
+  emptyAction,
   showRefresh = true,
   onRefresh,
   showPagination = true,
@@ -310,9 +313,16 @@ export function FullWidthDataTable<T>({
                   </p>
                 )}
                 {!searchQuery && (
-                  <p className="text-muted-foreground text-sm">
-                    Get started by creating your first item.
-                  </p>
+                  <>
+                    <p className="text-muted-foreground text-sm">
+                      Get started by creating your first item.
+                    </p>
+                    {emptyAction && (
+                      <div className="flex justify-center pt-2">
+                        {emptyAction}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

@@ -6,8 +6,8 @@
  * Shows back button and customer name
  */
 
-import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export function CustomerDetailBreadcrumbs() {
@@ -16,10 +16,10 @@ export function CustomerDetailBreadcrumbs() {
   return (
     <div className="flex items-center gap-2">
       <Button
+        className="gap-2"
+        onClick={() => router.push("/dashboard/customers")}
         size="sm"
         variant="ghost"
-        onClick={() => router.push("/dashboard/customers")}
-        className="gap-2"
       >
         <ArrowLeft className="size-4" />
         Customers

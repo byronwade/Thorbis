@@ -19,11 +19,11 @@ import {
   assertExists,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
 import {
-  getOrCreateStripeCustomer,
   attachPaymentMethodToCustomer,
+  getOrCreateStripeCustomer,
 } from "@/lib/stripe/server";
+import { createClient } from "@/lib/supabase/server";
 
 // Schema for company information
 const companyInfoSchema = z.object({
@@ -701,7 +701,8 @@ const createOrganizationSchema = z.object({
   zipCode: z.string().min(1, "ZIP code is required"),
   country: z.string().min(1, "Country is required"),
   confirmPricing: z.literal(true).refine((val) => val === true, {
-    message: "You must acknowledge the $100/month charge for additional organizations",
+    message:
+      "You must acknowledge the $100/month charge for additional organizations",
   }),
 });
 
@@ -800,14 +801,16 @@ export async function createOrganization(
     const hasExistingCompanies = (existingMemberships?.length || 0) > 0;
 
     // Generate slug from company name
-    let baseSlug = data.name
+    const baseSlug = data.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
     // Create the company using service role to bypass RLS
     // We need service role because regular users don't have INSERT permission on companies table
-    const { createClient: createServiceClient } = await import("@supabase/supabase-js");
+    const { createClient: createServiceClient } = await import(
+      "@supabase/supabase-js"
+    );
     const serviceSupabase = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -825,11 +828,11 @@ export async function createOrganization(
         .eq("slug", slug)
         .single();
 
-      if (!existingCompany) {
-        slugExists = false;
-      } else {
+      if (existingCompany) {
         slug = `${baseSlug}-${counter}`;
         counter++;
+      } else {
+        slugExists = false;
       }
     }
 
@@ -838,31 +841,32 @@ export async function createOrganization(
     if (logoFile && logoFile.size > 0) {
       try {
         // Create unique filename
-        const fileExt = logoFile.name.split('.').pop();
+        const fileExt = logoFile.name.split(".").pop();
         const fileName = `${slug}-${Date.now()}.${fileExt}`;
         const filePath = `company-logos/${fileName}`;
 
         // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await serviceSupabase
-          .storage
-          .from('company-assets')
-          .upload(filePath, logoFile, {
-            cacheControl: '3600',
-            upsert: false
-          });
+        const { data: uploadData, error: uploadError } =
+          await serviceSupabase.storage
+            .from("company-assets")
+            .upload(filePath, logoFile, {
+              cacheControl: "3600",
+              upsert: false,
+            });
 
         if (uploadError) {
-          console.warn('Failed to upload logo:', uploadError.message);
+          console.warn("Failed to upload logo:", uploadError.message);
         } else {
           // Get public URL
-          const { data: { publicUrl } } = serviceSupabase
-            .storage
-            .from('company-assets')
+          const {
+            data: { publicUrl },
+          } = serviceSupabase.storage
+            .from("company-assets")
             .getPublicUrl(filePath);
           logoUrl = publicUrl;
         }
       } catch (uploadErr) {
-        console.warn('Error uploading logo:', uploadErr);
+        console.warn("Error uploading logo:", uploadErr);
         // Continue with organization creation even if logo upload fails
       }
     }
@@ -871,7 +875,7 @@ export async function createOrganization(
       .from("companies")
       .insert({
         name: data.name,
-        slug: slug,
+        slug,
         owner_id: user.id,
         logo: logoUrl,
         industry: data.industry,
@@ -887,17 +891,12 @@ export async function createOrganization(
       const errorMessage = companyError
         ? `Failed to create organization: ${companyError.message}`
         : ERROR_MESSAGES.operationFailed("create organization");
-      throw new ActionError(
-        errorMessage,
-        ERROR_CODES.DB_QUERY_ERROR,
-        500,
-        {
-          organizationName: data.name,
-          slug,
-          dbError: companyError?.message || "No company returned",
-          code: companyError?.code,
-        }
-      );
+      throw new ActionError(errorMessage, ERROR_CODES.DB_QUERY_ERROR, 500, {
+        organizationName: data.name,
+        slug,
+        dbError: companyError?.message || "No company returned",
+        code: companyError?.code,
+      });
     }
 
     // Get the owner role ID
@@ -913,12 +912,14 @@ export async function createOrganization(
     }
 
     // Add current user as owner of the new company using service role to bypass RLS
-    const { error: memberError } = await serviceSupabase.from("team_members").insert({
-      company_id: newCompany.id,
-      user_id: user.id,
-      role_id: ownerRole?.id || null,
-      status: "active",
-    });
+    const { error: memberError } = await serviceSupabase
+      .from("team_members")
+      .insert({
+        company_id: newCompany.id,
+        user_id: user.id,
+        role_id: ownerRole?.id || null,
+        status: "active",
+      });
 
     if (memberError) {
       // Clean up: delete the company we just created since we couldn't add the owner

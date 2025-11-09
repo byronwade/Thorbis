@@ -51,14 +51,18 @@ export const WeatherDataSchema = z.object({
     gridX: z.number().optional(),
     gridY: z.number().optional(),
   }),
-  forecast: z.object({
-    periods: z.array(WeatherPeriodSchema),
-    updated: z.string().optional(), // Made optional as API doesn't always return it
-  }).optional(),
-  hourly: z.object({
-    periods: z.array(WeatherPeriodSchema),
-    updated: z.string().optional(), // Made optional as API doesn't always return it
-  }).optional(),
+  forecast: z
+    .object({
+      periods: z.array(WeatherPeriodSchema),
+      updated: z.string().optional(), // Made optional as API doesn't always return it
+    })
+    .optional(),
+  hourly: z
+    .object({
+      periods: z.array(WeatherPeriodSchema),
+      updated: z.string().optional(), // Made optional as API doesn't always return it
+    })
+    .optional(),
   alerts: z.array(WeatherAlertSchema),
   hasActiveAlerts: z.boolean(),
   highestSeverity: z.enum(["Extreme", "Severe", "Moderate", "Minor", "None"]),
@@ -74,7 +78,8 @@ export type WeatherPeriod = z.infer<typeof WeatherPeriodSchema>;
 // ============================================================================
 
 export class WeatherService {
-  private cache: Map<string, { data: WeatherData; timestamp: number }> = new Map();
+  private cache: Map<string, { data: WeatherData; timestamp: number }> =
+    new Map();
   private cacheTTL = 1000 * 60 * 30; // 30 minutes
 
   /**
@@ -82,7 +87,7 @@ export class WeatherService {
    */
   async getWeatherData(lat: number, lon: number): Promise<WeatherData | null> {
     const cacheKey = `${lat.toFixed(4)},${lon.toFixed(4)}`;
-    
+
     // Check cache
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
@@ -142,7 +147,11 @@ export class WeatherService {
           alerts.push(alert);
 
           // Track highest severity
-          if (alert.severity !== "Unknown" && this.severityRank(alert.severity) > this.severityRank(highestSeverity)) {
+          if (
+            alert.severity !== "Unknown" &&
+            this.severityRank(alert.severity) >
+              this.severityRank(highestSeverity)
+          ) {
             highestSeverity = alert.severity as WeatherData["highestSeverity"];
           }
         }
@@ -170,24 +179,30 @@ export class WeatherService {
                 startTime: p.startTime,
                 endTime: p.endTime,
               })),
-              updated: forecastData.properties.updated || forecastData.properties.generatedAt,
+              updated:
+                forecastData.properties.updated ||
+                forecastData.properties.generatedAt,
             }
           : undefined,
         hourly: hourlyData
           ? {
-              periods: hourlyData.properties.periods.slice(0, 24).map((p: any) => ({
-                number: p.number,
-                name: p.name,
-                temperature: p.temperature,
-                temperatureUnit: p.temperatureUnit,
-                windSpeed: p.windSpeed,
-                windDirection: p.windDirection,
-                shortForecast: p.shortForecast,
-                detailedForecast: p.detailedForecast,
-                startTime: p.startTime,
-                endTime: p.endTime,
-              })),
-              updated: hourlyData.properties.updated || hourlyData.properties.generatedAt,
+              periods: hourlyData.properties.periods
+                .slice(0, 24)
+                .map((p: any) => ({
+                  number: p.number,
+                  name: p.name,
+                  temperature: p.temperature,
+                  temperatureUnit: p.temperatureUnit,
+                  windSpeed: p.windSpeed,
+                  windDirection: p.windDirection,
+                  shortForecast: p.shortForecast,
+                  detailedForecast: p.detailedForecast,
+                  startTime: p.startTime,
+                  endTime: p.endTime,
+                })),
+              updated:
+                hourlyData.properties.updated ||
+                hourlyData.properties.generatedAt,
             }
           : undefined,
         alerts,
@@ -243,7 +258,10 @@ export class WeatherService {
     reason?: string;
   } {
     // Check for severe weather alerts
-    if (weather.highestSeverity === "Extreme" || weather.highestSeverity === "Severe") {
+    if (
+      weather.highestSeverity === "Extreme" ||
+      weather.highestSeverity === "Severe"
+    ) {
       return {
         suitable: false,
         reason: "Severe weather alert in effect",
@@ -253,7 +271,7 @@ export class WeatherService {
     // Check current/upcoming conditions
     if (weather.hourly?.periods?.[0]) {
       const current = weather.hourly.periods[0];
-      
+
       // Check for precipitation
       if (
         current.shortForecast.toLowerCase().includes("rain") ||
@@ -361,4 +379,3 @@ export class WeatherService {
 
 // Singleton instance
 export const weatherService = new WeatherService();
-

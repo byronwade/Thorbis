@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Archive } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +32,7 @@ export function ArchiveConfirmDialog({
   const pluralEntity = itemCount === 1 ? entityType : `${entityType}s`;
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog onOpenChange={onOpenChange} open={open}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-3">
@@ -46,9 +46,8 @@ export function ArchiveConfirmDialog({
           <AlertDialogDescription className="space-y-3 pt-4">
             <p>
               {itemCount === 1 ? "This item" : "These items"} will be moved to
-              the archive and{" "}
-              {itemCount === 1 ? "will" : "will"} no longer appear in your
-              active lists.
+              the archive and {itemCount === 1 ? "will" : "will"} no longer
+              appear in your active lists.
             </p>
             <div className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-900 dark:bg-orange-950/30">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400" />
@@ -90,4 +89,3 @@ export function ArchiveConfirmDialog({
     </AlertDialog>
   );
 }
-

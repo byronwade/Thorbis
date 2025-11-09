@@ -31,10 +31,10 @@
  * ```
  */
 
-import { ReactNode } from "react";
-import { Loader2, Save, Check, HelpCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, HelpCircle, Loader2, Save } from "lucide-react";
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -104,7 +104,7 @@ export function SettingsPageLayout({
             {helpText && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button type="button" className="flex-shrink-0">
+                  <button className="flex-shrink-0" type="button">
                     <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 </TooltipTrigger>
@@ -124,9 +124,7 @@ export function SettingsPageLayout({
       </div>
 
       {/* CONTENT (Cards, forms, etc.) - space-y-6 automatically applied to children */}
-      <div className="space-y-6">
-        {children}
-      </div>
+      <div className="space-y-6">{children}</div>
 
       {/* STICKY BOTTOM ACTION BAR */}
       <div className="sticky bottom-0 z-10 rounded-xl border bg-card p-6 shadow-lg">
@@ -163,17 +161,17 @@ export function SettingsPageLayout({
           {/* Action buttons */}
           <div className="flex gap-3">
             <Button
+              disabled={isPending}
+              onClick={onCancel || (() => window.location.reload())}
               type="button"
               variant="outline"
-              onClick={onCancel || (() => window.location.reload())}
-              disabled={isPending}
             >
               Cancel
             </Button>
             <Button
-              type="button"
-              onClick={onSave}
               disabled={isPending || !hasChanges}
+              onClick={onSave}
+              type="button"
             >
               {isPending ? (
                 <>
@@ -210,8 +208,8 @@ export function SettingsPageLayout({
  * ```
  */
 
+import type { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { LucideIcon } from "lucide-react";
 
 interface SettingsInfoBannerProps {
   /** Icon to display (Lucide icon component) */

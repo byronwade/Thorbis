@@ -11,26 +11,32 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
 import {
-  Phone,
-  Clock,
-  CheckCircle2,
   AlertCircle,
-  XCircle,
-  Loader2,
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Mail,
-  MessageSquare,
+  Clock,
   ExternalLink,
   HelpCircle,
+  Loader2,
+  Mail,
+  MessageSquare,
+  Phone,
+  XCircle,
 } from "lucide-react";
+import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 // Porting request status types
@@ -87,7 +93,8 @@ const mockPortingRequests: PortingRequest[] = [
       {
         id: "submitted",
         label: "Request Submitted",
-        description: "Your porting request has been received and is being processed",
+        description:
+          "Your porting request has been received and is being processed",
         status: "completed",
         completedAt: "2025-01-29T10:00:00Z",
       },
@@ -129,7 +136,8 @@ const mockPortingRequests: PortingRequest[] = [
     status: "validation_failed",
     createdAt: "2025-01-28T15:30:00Z",
     estimatedCompletionDate: "2025-02-06T17:00:00Z",
-    failureReason: "Account number mismatch. Please verify your account number with AT&T.",
+    failureReason:
+      "Account number mismatch. Please verify your account number with AT&T.",
     currentStage: 1,
     stages: [
       {
@@ -176,7 +184,7 @@ export function PortingStatusDashboard() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold">Number Porting Status</h2>
+        <h2 className="font-bold text-2xl">Number Porting Status</h2>
         <p className="text-muted-foreground">
           Track the progress of your phone number port requests
         </p>
@@ -189,12 +197,14 @@ export function PortingStatusDashboard() {
         <div className="space-y-4">
           {requests.map((request) => (
             <PortingRequestCard
-              key={request.id}
-              request={request}
               isExpanded={expandedRequest === request.id}
+              key={request.id}
               onToggle={() =>
-                setExpandedRequest(expandedRequest === request.id ? null : request.id)
+                setExpandedRequest(
+                  expandedRequest === request.id ? null : request.id
+                )
               }
+              request={request}
             />
           ))}
         </div>
@@ -210,11 +220,11 @@ export function PortingStatusDashboard() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Button variant="outline" className="justify-start">
+            <Button className="justify-start" variant="outline">
               <Mail className="mr-2 size-4" />
               Email Support
             </Button>
-            <Button variant="outline" className="justify-start">
+            <Button className="justify-start" variant="outline">
               <MessageSquare className="mr-2 size-4" />
               Live Chat
             </Button>
@@ -224,9 +234,15 @@ export function PortingStatusDashboard() {
             <AlertDescription>
               <ul className="mt-2 space-y-1 text-sm">
                 <li>• Account number mismatch - Verify with current carrier</li>
-                <li>• Address doesn't match - Must match billing address exactly</li>
-                <li>• PIN/Password incorrect - Check account security settings</li>
-                <li>• Number not portable - May be under contract or restricted</li>
+                <li>
+                  • Address doesn't match - Must match billing address exactly
+                </li>
+                <li>
+                  • PIN/Password incorrect - Check account security settings
+                </li>
+                <li>
+                  • Number not portable - May be under contract or restricted
+                </li>
               </ul>
             </AlertDescription>
           </Alert>
@@ -247,7 +263,10 @@ function PortingRequestCard({
 }) {
   const statusColor = getStatusColor(request.status);
   const statusIcon = getStatusIcon(request.status);
-  const progress = calculateProgress(request.currentStage, request.stages.length);
+  const progress = calculateProgress(
+    request.currentStage,
+    request.stages.length
+  );
   const daysRemaining = calculateDaysRemaining(request.estimatedCompletionDate);
 
   return (
@@ -256,8 +275,13 @@ function PortingRequestCard({
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <CardTitle className="text-xl">{formatPhoneNumber(request.phoneNumber)}</CardTitle>
-              <Badge variant={statusColor as any} className="flex items-center gap-1">
+              <CardTitle className="text-xl">
+                {formatPhoneNumber(request.phoneNumber)}
+              </CardTitle>
+              <Badge
+                className="flex items-center gap-1"
+                variant={statusColor as any}
+              >
                 {statusIcon}
                 {getStatusLabel(request.status)}
               </Badge>
@@ -268,7 +292,7 @@ function PortingRequestCard({
             </CardDescription>
           </div>
 
-          <Button variant="ghost" size="icon" onClick={onToggle}>
+          <Button onClick={onToggle} size="icon" variant="ghost">
             {isExpanded ? (
               <ChevronUp className="size-4" />
             ) : (
@@ -285,37 +309,40 @@ function PortingRequestCard({
             <span className="font-medium">Overall Progress</span>
             <span className="text-muted-foreground">{progress}% complete</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress className="h-2" value={progress} />
         </div>
 
         {/* Estimated Completion */}
-        {request.status !== "porting_complete" && request.status !== "failed" && (
-          <div className="mb-4 rounded-lg border bg-muted/50 p-4">
-            <div className="flex items-center gap-3">
-              <Clock className="size-5 text-muted-foreground" />
-              <div>
-                <div className="font-medium">
-                  {daysRemaining > 0
-                    ? `Estimated completion in ${daysRemaining} ${daysRemaining === 1 ? "day" : "days"}`
-                    : "Completing soon"}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {new Date(request.estimatedCompletionDate).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
+        {request.status !== "porting_complete" &&
+          request.status !== "failed" && (
+            <div className="mb-4 rounded-lg border bg-muted/50 p-4">
+              <div className="flex items-center gap-3">
+                <Clock className="size-5 text-muted-foreground" />
+                <div>
+                  <div className="font-medium">
+                    {daysRemaining > 0
+                      ? `Estimated completion in ${daysRemaining} ${daysRemaining === 1 ? "day" : "days"}`
+                      : "Completing soon"}
+                  </div>
+                  <div className="text-muted-foreground text-sm">
+                    {new Date(
+                      request.estimatedCompletionDate
+                    ).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Failure Alert */}
         {request.status === "validation_failed" && request.failureReason && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert className="mb-4" variant="destructive">
             <AlertCircle className="size-4" />
             <AlertTitle>Action Required</AlertTitle>
             <AlertDescription className="mt-2">
@@ -341,8 +368,8 @@ function PortingRequestCard({
             </AlertTitle>
             <AlertDescription className="text-green-700 dark:text-green-300">
               <p className="mb-3">
-                Your number is now active on Telnyx and ready to use. You can safely cancel your
-                service with {request.currentCarrier}.
+                Your number is now active on Telnyx and ready to use. You can
+                safely cancel your service with {request.currentCarrier}.
               </p>
               <Button size="sm" variant="outline">
                 View Phone Number Settings
@@ -358,9 +385,9 @@ function PortingRequestCard({
             <div className="space-y-4">
               {request.stages.map((stage, index) => (
                 <TimelineStageItem
+                  isLast={index === request.stages.length - 1}
                   key={stage.id}
                   stage={stage}
-                  isLast={index === request.stages.length - 1}
                 />
               ))}
             </div>
@@ -379,7 +406,9 @@ function PortingRequestCard({
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Account Number:</dt>
-                  <dd className="font-mono">***{request.accountNumber.slice(-4)}</dd>
+                  <dd className="font-mono">
+                    ***{request.accountNumber.slice(-4)}
+                  </dd>
                 </div>
                 {request.focDate && (
                   <div className="flex justify-between">
@@ -392,11 +421,11 @@ function PortingRequestCard({
 
             {/* Actions */}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <Mail className="mr-2 size-3" />
                 Email Updates
               </Button>
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <ExternalLink className="mr-2 size-3" />
                 Carrier Portal
               </Button>
@@ -408,7 +437,13 @@ function PortingRequestCard({
   );
 }
 
-function TimelineStageItem({ stage, isLast }: { stage: TimelineStage; isLast: boolean }) {
+function TimelineStageItem({
+  stage,
+  isLast,
+}: {
+  stage: TimelineStage;
+  isLast: boolean;
+}) {
   const getStageIcon = () => {
     switch (stage.status) {
       case "completed":
@@ -418,7 +453,9 @@ function TimelineStageItem({ stage, isLast }: { stage: TimelineStage; isLast: bo
       case "failed":
         return <XCircle className="size-5 text-red-600" />;
       default:
-        return <div className="size-5 rounded-full border-2 border-muted-foreground" />;
+        return (
+          <div className="size-5 rounded-full border-2 border-muted-foreground" />
+        );
     }
   };
 
@@ -441,7 +478,7 @@ function TimelineStageItem({ stage, isLast }: { stage: TimelineStage; isLast: bo
       {!isLast && (
         <div
           className={cn(
-            "absolute left-[10px] top-8 w-0.5 h-[calc(100%+1rem)]",
+            "absolute top-8 left-[10px] h-[calc(100%+1rem)] w-0.5",
             stage.status === "completed" ? "bg-green-600" : "bg-muted"
           )}
         />
@@ -453,10 +490,10 @@ function TimelineStageItem({ stage, isLast }: { stage: TimelineStage; isLast: bo
       {/* Content */}
       <div className="flex-1 pb-4">
         <div className="font-medium">{stage.label}</div>
-        <div className="text-sm text-muted-foreground">{stage.description}</div>
+        <div className="text-muted-foreground text-sm">{stage.description}</div>
 
         {stage.completedAt && (
-          <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
             <CheckCircle2 className="size-3" />
             Completed {new Date(stage.completedAt).toLocaleDateString()} at{" "}
             {new Date(stage.completedAt).toLocaleTimeString([], {
@@ -467,7 +504,7 @@ function TimelineStageItem({ stage, isLast }: { stage: TimelineStage; isLast: bo
         )}
 
         {stage.estimatedDate && stage.status !== "completed" && (
-          <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
             <Clock className="size-3" />
             {stage.status === "current" ? "Expected" : "Estimated"}{" "}
             {new Date(stage.estimatedDate).toLocaleDateString()}
@@ -483,8 +520,8 @@ function EmptyState() {
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-12">
         <Phone className="mb-4 size-12 text-muted-foreground" />
-        <h3 className="mb-2 text-lg font-semibold">No porting requests</h3>
-        <p className="mb-6 text-center text-sm text-muted-foreground">
+        <h3 className="mb-2 font-semibold text-lg">No porting requests</h3>
+        <p className="mb-6 text-center text-muted-foreground text-sm">
           You haven't submitted any number porting requests yet
         </p>
         <Button>

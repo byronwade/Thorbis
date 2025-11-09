@@ -278,8 +278,8 @@ export class RoutingService {
         if (res.status === 429) {
           const retryAfter = res.headers.get("Retry-After");
           const waitTime = retryAfter
-            ? parseInt(retryAfter, 10) * 1000
-            : Math.pow(2, attempt) * 1000; // Exponential backoff
+            ? Number.parseInt(retryAfter, 10) * 1000
+            : 2 ** attempt * 1000; // Exponential backoff
 
           console.warn(
             `[Overpass API] Rate limited (429) on ${instanceUrl}, waiting ${Math.ceil(waitTime / 1000)}s before retry ${attempt + 1}/${maxRetries}...`
@@ -306,12 +306,11 @@ export class RoutingService {
           (instanceIndex + 1) % OVERPASS_INSTANCES.length;
         return res;
       } catch (error) {
-        lastError =
-          error instanceof Error ? error : new Error(String(error));
+        lastError = error instanceof Error ? error : new Error(String(error));
 
         if (attempt < maxRetries) {
           // Exponential backoff for other errors
-          const waitTime = Math.pow(2, attempt) * 1000;
+          const waitTime = 2 ** attempt * 1000;
           console.warn(
             `[Overpass API] Request failed on ${instanceUrl}, retrying in ${Math.ceil(waitTime / 1000)}s... (${attempt + 1}/${maxRetries})`
           );
@@ -373,7 +372,7 @@ export class RoutingService {
           const supplierLat = e.lat ?? e.center?.lat;
           const supplierLon = e.lon ?? e.center?.lon;
 
-          if (!supplierLat || !supplierLon) return null;
+          if (!(supplierLat && supplierLon)) return null;
 
           const distance = this.calculateDistance(
             lat,
@@ -418,9 +417,7 @@ export class RoutingService {
 
       // Return cached data if available, even if expired
       if (cached) {
-        console.warn(
-          "[Overpass API] Using expired cache due to API error"
-        );
+        console.warn("[Overpass API] Using expired cache due to API error");
         return cached.data;
       }
 
@@ -437,7 +434,7 @@ export class RoutingService {
   ): Route {
     const distance = this.calculateDistance(from.lat, from.lon, to.lat, to.lon);
     // Rough estimate: 40 km/h average speed in city
-    const duration = (distance / 40000) * 3600;
+    const duration = (distance / 40_000) * 3600;
 
     return {
       distance,
@@ -498,4 +495,3 @@ export class RoutingService {
 
 // Singleton instance
 export const routingService = new RoutingService();
-

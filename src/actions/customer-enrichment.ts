@@ -57,16 +57,26 @@ export async function enrichCustomerData(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
+    // Get the active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError("No active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+    }
+
+    // Verify user has access to the active company
     const { data: teamMember } = await supabase
       .from("team_members")
       .select("company_id")
       .eq("user_id", user.id)
-      .single();
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
 
     if (!teamMember?.company_id) {
       throw new ActionError(
-        "User not in any company",
+        "User not in active company",
         ERROR_CODES.AUTH_UNAUTHORIZED
       );
     }
@@ -185,16 +195,26 @@ export async function getEnrichmentData(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
+    // Get the active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError("No active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+    }
+
+    // Verify user has access to the active company
     const { data: teamMember } = await supabase
       .from("team_members")
       .select("company_id")
       .eq("user_id", user.id)
-      .single();
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
 
     if (!teamMember?.company_id) {
       throw new ActionError(
-        "User not in any company",
+        "User not in active company",
         ERROR_CODES.AUTH_UNAUTHORIZED
       );
     }
@@ -214,27 +234,35 @@ export async function getEnrichmentData(
       );
     }
 
-    // Get all enrichment data for customer
-    const { data: enrichmentData, error } = await supabase
+    // Get all enrichment data for customer (optional, non-critical)
+    const { data: enrichmentRows, error: enrichmentError } = await supabase
       .from("customer_enrichment_data")
       .select("*")
       .eq("customer_id", customerId)
       .order("created_at", { ascending: false });
 
-    if (error) {
-      throw new ActionError(
-        "Failed to fetch enrichment data",
-        ERROR_CODES.DB_QUERY_ERROR
+    // If enrichment data fetch fails, return null instead of throwing
+    if (enrichmentError) {
+      // Enrichment is optional and shouldn't block page load
+      console.warn(
+        `[getEnrichmentData] Failed to fetch enrichment for customer ${customerId}:`,
+        enrichmentError
       );
+      return null;
+    }
+
+    if (!enrichmentRows || enrichmentRows.length === 0) {
+      // If no enrichment data exists, return null
+      return null;
     }
 
     // Group by data type
     const grouped = {
-      combined: enrichmentData.find((e) => e.data_type === "combined"),
-      person: enrichmentData.find((e) => e.data_type === "person"),
-      business: enrichmentData.find((e) => e.data_type === "business"),
-      social: enrichmentData.find((e) => e.data_type === "social"),
-      property: enrichmentData.filter((e) => e.data_type === "property"),
+      combined: enrichmentRows.find((e) => e.data_type === "combined"),
+      person: enrichmentRows.find((e) => e.data_type === "person"),
+      business: enrichmentRows.find((e) => e.data_type === "business"),
+      social: enrichmentRows.find((e) => e.data_type === "social"),
+      property: enrichmentRows.filter((e) => e.data_type === "property"),
     };
 
     return grouped;
@@ -279,16 +307,26 @@ export async function getEnrichmentUsageStats(): Promise<
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
+    // Get the active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError("No active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+    }
+
+    // Verify user has access to the active company
     const { data: teamMember } = await supabase
       .from("team_members")
       .select("company_id")
       .eq("user_id", user.id)
-      .single();
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
 
     if (!teamMember?.company_id) {
       throw new ActionError(
-        "User not in any company",
+        "User not in active company",
         ERROR_CODES.AUTH_UNAUTHORIZED
       );
     }
@@ -334,16 +372,26 @@ export async function checkEnrichmentQuota(): Promise<
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
+    // Get the active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError("No active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+    }
+
+    // Verify user has access to the active company
     const { data: teamMember } = await supabase
       .from("team_members")
       .select("company_id")
       .eq("user_id", user.id)
-      .single();
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
 
     if (!teamMember?.company_id) {
       throw new ActionError(
-        "User not in any company",
+        "User not in active company",
         ERROR_CODES.AUTH_UNAUTHORIZED
       );
     }
@@ -391,16 +439,26 @@ export async function updateEnrichmentTier(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company and role
+    // Get the active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError("No active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+    }
+
+    // Verify user has access to the active company and get role
     const { data: teamMember } = await supabase
       .from("team_members")
       .select("company_id, role")
       .eq("user_id", user.id)
-      .single();
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
 
     if (!teamMember?.company_id) {
       throw new ActionError(
-        "User not in any company",
+        "User not in active company",
         ERROR_CODES.AUTH_UNAUTHORIZED
       );
     }

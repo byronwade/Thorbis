@@ -33,7 +33,7 @@ export function NotificationsListSkeleton() {
 
       {/* Notifications list skeleton */}
       {Array.from({ length: 5 }).map((_, i) => (
-        <Card key={i} className="p-4">
+        <Card className="p-4" key={i}>
           <div className="flex gap-4">
             <Skeleton className="mt-1 size-5 shrink-0 rounded-full" />
             <div className="min-w-0 flex-1 space-y-2">

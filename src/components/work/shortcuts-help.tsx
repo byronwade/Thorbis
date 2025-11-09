@@ -1,7 +1,6 @@
 "use client";
 
-import { Command, Keyboard, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Keyboard } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -66,7 +65,8 @@ const SHORTCUTS = [
 ];
 
 export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
-  const isMac = typeof navigator !== "undefined" && navigator.platform.includes("Mac");
+  const isMac =
+    typeof navigator !== "undefined" && navigator.platform.includes("Mac");
 
   const formatKey = (key: string) => {
     if (key === "⌘" && !isMac) return "Ctrl";
@@ -74,7 +74,7 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog onOpenChange={onClose} open={isOpen}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -88,21 +88,21 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 
         <div className="grid gap-6 md:grid-cols-2">
           {SHORTCUTS.map((category) => (
-            <div key={category.category} className="space-y-3">
+            <div className="space-y-3" key={category.category}>
               <h4 className="font-semibold text-sm">{category.category}</h4>
               <div className="space-y-2">
                 {category.shortcuts.map((shortcut, index) => (
                   <div
-                    key={index}
                     className="flex items-center justify-between text-sm"
+                    key={index}
                   >
                     <span className="text-muted-foreground">
                       {shortcut.description}
                     </span>
                     <div className="flex items-center gap-1">
                       {shortcut.keys.map((key, keyIndex) => (
-                        <span key={keyIndex} className="flex items-center">
-                          <kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium">
+                        <span className="flex items-center" key={keyIndex}>
+                          <kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-medium font-mono text-xs">
                             {formatKey(key)}
                           </kbd>
                           {keyIndex < shortcut.keys.length - 1 && (

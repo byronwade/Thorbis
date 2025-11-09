@@ -7,8 +7,8 @@
 
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface InlineCurrencyProps {
   value: number; // in cents
@@ -27,17 +27,16 @@ export function InlineCurrency({
 }: InlineCurrencyProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     setIsEditing(false);
     const text = e.currentTarget.textContent || "0";
-    const dollars = parseFloat(text.replace(/[^0-9.-]/g, "")) || 0;
+    const dollars = Number.parseFloat(text.replace(/[^0-9.-]/g, "")) || 0;
     const cents = Math.round(dollars * 100);
 
     if (cents !== value) {
@@ -89,11 +88,6 @@ export function InlineCurrency({
 
   return (
     <div
-      contentEditable={isEditable && !readOnly}
-      suppressContentEditableWarning
-      onBlur={handleBlur}
-      onFocus={handleFocus}
-      onKeyDown={handleKeyDown}
       className={cn(
         "font-mono tabular-nums outline-none transition-all duration-150",
         isEditable &&
@@ -107,8 +101,13 @@ export function InlineCurrency({
             "px-1",
             "-mx-1",
           ],
-        className,
+        className
       )}
+      contentEditable={isEditable && !readOnly}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      onKeyDown={handleKeyDown}
+      suppressContentEditableWarning
     >
       {isEditing ? (value / 100).toFixed(2) : formatCurrency(value)}
     </div>

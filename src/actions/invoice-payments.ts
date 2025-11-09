@@ -12,8 +12,8 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/server";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Create a Stripe Payment Intent for an invoice
@@ -100,7 +100,10 @@ export async function createInvoicePaymentIntent(invoiceId: string) {
     console.error("Error creating payment intent:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to create payment intent",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to create payment intent",
     };
   }
 }
@@ -147,7 +150,7 @@ export async function payInvoiceWithSavedCard({
       .eq("id", paymentMethodId)
       .single();
 
-    if (!invoice || !paymentMethod) {
+    if (!(invoice && paymentMethod)) {
       return { success: false, error: "Invoice or payment method not found" };
     }
 
@@ -198,7 +201,8 @@ export async function payInvoiceWithSavedCard({
         paymentIntentId: paymentIntent.id,
         status: "succeeded",
       };
-    } else if (paymentIntent.status === "requires_action") {
+    }
+    if (paymentIntent.status === "requires_action") {
       // 3D Secure or other authentication required
       return {
         success: false,
@@ -206,13 +210,12 @@ export async function payInvoiceWithSavedCard({
         requiresAction: true,
         clientSecret: paymentIntent.client_secret,
       };
-    } else {
-      return {
-        success: false,
-        error: "Payment failed",
-        status: paymentIntent.status,
-      };
     }
+    return {
+      success: false,
+      error: "Payment failed",
+      status: paymentIntent.status,
+    };
   } catch (error) {
     console.error("Error processing payment:", error);
     return {
@@ -280,7 +283,8 @@ export async function confirmInvoicePayment({
     console.error("Error confirming payment:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to confirm payment",
+      error:
+        error instanceof Error ? error.message : "Failed to confirm payment",
     };
   }
 }
@@ -333,7 +337,10 @@ export async function getInvoicePaymentDetails(invoiceId: string) {
     console.error("Error getting invoice payment details:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to load payment details",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to load payment details",
     };
   }
 }

@@ -10,9 +10,9 @@ import { SettingsComingSoon } from "@/components/settings/settings-coming-soon";
 export default function ReportingSettingsPage() {
   return (
     <SettingsComingSoon
+      description="Configure custom reports, dashboards, and analytics preferences."
       icon={BarChart3}
       title="Reporting Settings"
-      description="Configure custom reports, dashboards, and analytics preferences."
     />
   );
 }

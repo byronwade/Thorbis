@@ -32,7 +32,11 @@ export function InvoiceMainContent({
   // Always show PDF preview for now (edit mode removed - all editing happens in sidebar)
   return (
     <div className="mx-auto" style={{ maxWidth: "8.5in" }}>
-      <InvoicePDFPreview invoice={invoice} customer={customer} company={company} />
+      <InvoicePDFPreview
+        company={company}
+        customer={customer}
+        invoice={invoice}
+      />
     </div>
   );
 }

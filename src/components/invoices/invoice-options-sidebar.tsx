@@ -14,22 +14,26 @@
 
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
 import {
-  FileText,
-  Palette,
-  Eye,
-  Mail,
-  Plus,
-  Trash2,
-  Settings,
   ChevronDown,
+  Eye,
+  FileText,
+  Mail,
+  Palette,
+  Plus,
+  Settings,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -37,22 +41,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { toast } from "sonner";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 
 // PDF Layout Templates
 const PDF_LAYOUTS = [
@@ -120,7 +118,7 @@ export function InvoiceOptionsSidebar() {
   };
 
   return (
-    <Sidebar side="right" variant="sidebar" collapsible="offcanvas">
+    <Sidebar collapsible="offcanvas" side="right" variant="sidebar">
       {/* Sidebar Header */}
       <SidebarHeader className="border-b">
         <div className="p-4">
@@ -135,230 +133,233 @@ export function InvoiceOptionsSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <div className="space-y-4 p-4">
-          {/* PDF Layout Templates */}
-          <Collapsible open={layoutOpen} onOpenChange={setLayoutOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex w-full justify-between p-0"
-              >
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span className="font-medium">PDF Layout</span>
-                </div>
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${layoutOpen ? "rotate-180" : ""}`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 space-y-3">
-              <Select value={selectedLayout} onValueChange={handleLayoutChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PDF_LAYOUTS.map((layout) => (
-                    <SelectItem key={layout.id} value={layout.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{layout.name}</span>
-                        <span className="text-muted-foreground text-xs">
-                          {layout.description}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Selected Layout Preview */}
-              <Card className="p-3">
-                <div className="aspect-[8.5/11] rounded-sm border bg-muted" />
-                <p className="mt-2 text-center text-muted-foreground text-xs">
-                  {
-                    PDF_LAYOUTS.find((l) => l.id === selectedLayout)
-                      ?.description
-                  }
-                </p>
-              </Card>
-            </CollapsibleContent>
-          </Collapsible>
-
-          <Separator />
-
-          {/* Design Options */}
-          <Collapsible open={designOpen} onOpenChange={setDesignOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex w-full justify-between p-0"
-              >
-                <div className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  <span className="font-medium">Design</span>
-                </div>
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${designOpen ? "rotate-180" : ""}`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 space-y-4">
-              {/* Color Theme */}
-              <div className="space-y-2">
-                <Label className="text-sm">Color Theme</Label>
-                <div className="grid grid-cols-6 gap-2">
-                  {[
-                    "bg-blue-500",
-                    "bg-green-500",
-                    "bg-purple-500",
-                    "bg-red-500",
-                    "bg-orange-500",
-                    "bg-gray-500",
-                  ].map((color) => (
-                    <button
-                      key={color}
-                      className={`h-8 w-8 rounded-md border-2 border-transparent hover:border-primary ${color}`}
-                      type="button"
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Logo/Branding */}
-              <div className="space-y-2">
-                <Label className="text-sm">Logo Opacity</Label>
-                <Slider
-                  value={brandingOpacity}
-                  onValueChange={setBrandingOpacity}
-                  min={0}
-                  max={100}
-                  step={10}
-                  className="w-full"
-                />
-                <p className="text-muted-foreground text-xs">
-                  {brandingOpacity[0]}%
-                </p>
-              </div>
-
-              {/* Font Size */}
-              <div className="space-y-2">
-                <Label className="text-sm">Font Size</Label>
-                <Select defaultValue="medium">
+            {/* PDF Layout Templates */}
+            <Collapsible onOpenChange={setLayoutOpen} open={layoutOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  className="flex w-full justify-between p-0"
+                  variant="ghost"
+                >
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span className="font-medium">PDF Layout</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${layoutOpen ? "rotate-180" : ""}`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3 space-y-3">
+                <Select
+                  onValueChange={handleLayoutChange}
+                  value={selectedLayout}
+                >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select template" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="small">Small</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
+                    {PDF_LAYOUTS.map((layout) => (
+                      <SelectItem key={layout.id} value={layout.id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{layout.name}</span>
+                          <span className="text-muted-foreground text-xs">
+                            {layout.description}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
 
-          <Separator />
+                {/* Selected Layout Preview */}
+                <Card className="p-3">
+                  <div className="aspect-[8.5/11] rounded-sm border bg-muted" />
+                  <p className="mt-2 text-center text-muted-foreground text-xs">
+                    {
+                      PDF_LAYOUTS.find((l) => l.id === selectedLayout)
+                        ?.description
+                    }
+                  </p>
+                </Card>
+              </CollapsibleContent>
+            </Collapsible>
 
-          {/* Line Items Options */}
-          <Collapsible open={itemsOpen} onOpenChange={setItemsOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex w-full justify-between p-0"
-              >
-                <div className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  <span className="font-medium">Line Items</span>
+            <Separator />
+
+            {/* Design Options */}
+            <Collapsible onOpenChange={setDesignOpen} open={designOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  className="flex w-full justify-between p-0"
+                  variant="ghost"
+                >
+                  <div className="flex items-center gap-2">
+                    <Palette className="h-4 w-4" />
+                    <span className="font-medium">Design</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${designOpen ? "rotate-180" : ""}`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3 space-y-4">
+                {/* Color Theme */}
+                <div className="space-y-2">
+                  <Label className="text-sm">Color Theme</Label>
+                  <div className="grid grid-cols-6 gap-2">
+                    {[
+                      "bg-blue-500",
+                      "bg-green-500",
+                      "bg-purple-500",
+                      "bg-red-500",
+                      "bg-orange-500",
+                      "bg-gray-500",
+                    ].map((color) => (
+                      <button
+                        className={`h-8 w-8 rounded-md border-2 border-transparent hover:border-primary ${color}`}
+                        key={color}
+                        type="button"
+                      />
+                    ))}
+                  </div>
                 </div>
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${itemsOpen ? "rotate-180" : ""}`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 space-y-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Show Line Numbers</Label>
-                <Switch
-                  checked={showLineNumbers}
-                  onCheckedChange={setShowLineNumbers}
-                />
-              </div>
 
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Show Item Codes</Label>
-                <Switch
-                  checked={showItemCodes}
-                  onCheckedChange={setShowItemCodes}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Show Subtotals</Label>
-                <Switch
-                  checked={showSubtotals}
-                  onCheckedChange={setShowSubtotals}
-                />
-              </div>
-
-              <Separator />
-
-              <Button
-                onClick={handleAddLineItem}
-                variant="outline"
-                className="w-full"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Line Item
-              </Button>
-            </CollapsibleContent>
-          </Collapsible>
-
-          <Separator />
-
-          {/* Customer View Options */}
-          <Collapsible open={customerOpen} onOpenChange={setCustomerOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex w-full justify-between p-0"
-              >
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  <span className="font-medium">Customer View</span>
+                {/* Logo/Branding */}
+                <div className="space-y-2">
+                  <Label className="text-sm">Logo Opacity</Label>
+                  <Slider
+                    className="w-full"
+                    max={100}
+                    min={0}
+                    onValueChange={setBrandingOpacity}
+                    step={10}
+                    value={brandingOpacity}
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    {brandingOpacity[0]}%
+                  </p>
                 </div>
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${customerOpen ? "rotate-180" : ""}`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 space-y-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Allow Online Payment</Label>
-                <Switch defaultChecked />
-              </div>
 
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Show Payment Methods</Label>
-                <Switch defaultChecked />
-              </div>
+                {/* Font Size */}
+                <div className="space-y-2">
+                  <Label className="text-sm">Font Size</Label>
+                  <Select defaultValue="medium">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="small">Small</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="large">Large</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
 
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Enable Comments</Label>
-                <Switch />
-              </div>
+            <Separator />
 
-              <Separator />
+            {/* Line Items Options */}
+            <Collapsible onOpenChange={setItemsOpen} open={itemsOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  className="flex w-full justify-between p-0"
+                  variant="ghost"
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span className="font-medium">Line Items</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${itemsOpen ? "rotate-180" : ""}`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3 space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Show Line Numbers</Label>
+                  <Switch
+                    checked={showLineNumbers}
+                    onCheckedChange={setShowLineNumbers}
+                  />
+                </div>
 
-              <Button variant="outline" className="w-full">
-                <Eye className="mr-2 h-4 w-4" />
-                Preview Customer View
-              </Button>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Show Item Codes</Label>
+                  <Switch
+                    checked={showItemCodes}
+                    onCheckedChange={setShowItemCodes}
+                  />
+                </div>
 
-              <Button variant="outline" className="w-full">
-                <Mail className="mr-2 h-4 w-4" />
-                Send Test Email
-              </Button>
-            </CollapsibleContent>
-          </Collapsible>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Show Subtotals</Label>
+                  <Switch
+                    checked={showSubtotals}
+                    onCheckedChange={setShowSubtotals}
+                  />
+                </div>
+
+                <Separator />
+
+                <Button
+                  className="w-full"
+                  onClick={handleAddLineItem}
+                  variant="outline"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Line Item
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Separator />
+
+            {/* Customer View Options */}
+            <Collapsible onOpenChange={setCustomerOpen} open={customerOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  className="flex w-full justify-between p-0"
+                  variant="ghost"
+                >
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    <span className="font-medium">Customer View</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${customerOpen ? "rotate-180" : ""}`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3 space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Allow Online Payment</Label>
+                  <Switch defaultChecked />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Show Payment Methods</Label>
+                  <Switch defaultChecked />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Enable Comments</Label>
+                  <Switch />
+                </div>
+
+                <Separator />
+
+                <Button className="w-full" variant="outline">
+                  <Eye className="mr-2 h-4 w-4" />
+                  Preview Customer View
+                </Button>
+
+                <Button className="w-full" variant="outline">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Send Test Email
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </SidebarGroup>
       </SidebarContent>
@@ -369,7 +370,7 @@ export function InvoiceOptionsSidebar() {
           <Button className="w-full" size="sm">
             Apply Changes
           </Button>
-          <Button variant="ghost" className="w-full" size="sm">
+          <Button className="w-full" size="sm" variant="ghost">
             Reset to Default
           </Button>
         </div>

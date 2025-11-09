@@ -22,37 +22,43 @@ export const PersonEnrichmentSchema = z.object({
   lastName: z.string().optional(),
   email: z.string().email(),
   emailVerified: z.boolean().optional(),
-  
+
   // Professional info
   jobTitle: z.string().optional(),
   seniority: z.string().optional(), // 'executive', 'director', 'manager', 'individual'
-  
+
   // Company info
-  company: z.object({
-    name: z.string().optional(),
-    domain: z.string().optional(),
-    industry: z.string().optional(),
-    size: z.string().optional(),
-    location: z.string().optional(),
-    description: z.string().optional(),
-  }).optional(),
-  
+  company: z
+    .object({
+      name: z.string().optional(),
+      domain: z.string().optional(),
+      industry: z.string().optional(),
+      size: z.string().optional(),
+      location: z.string().optional(),
+      description: z.string().optional(),
+    })
+    .optional(),
+
   // Social profiles
-  socialProfiles: z.object({
-    linkedin: z.string().url().optional(),
-    twitter: z.string().url().optional(),
-    facebook: z.string().url().optional(),
-    github: z.string().url().optional(),
-  }).optional(),
-  
+  socialProfiles: z
+    .object({
+      linkedin: z.string().url().optional(),
+      twitter: z.string().url().optional(),
+      facebook: z.string().url().optional(),
+      github: z.string().url().optional(),
+    })
+    .optional(),
+
   // Contact info
   phone: z.string().optional(),
-  location: z.object({
-    city: z.string().optional(),
-    state: z.string().optional(),
-    country: z.string().optional(),
-  }).optional(),
-  
+  location: z
+    .object({
+      city: z.string().optional(),
+      state: z.string().optional(),
+      country: z.string().optional(),
+    })
+    .optional(),
+
   // Metadata
   source: z.enum(["hunter"]),
   confidence: z.number().min(0).max(100),
@@ -79,7 +85,7 @@ export class PersonEnrichmentService {
     try {
       return await this.enrichWithHunter(email);
     } catch (error) {
-      console.error(`Error enriching with Hunter:`, error);
+      console.error("Error enriching with Hunter:", error);
       return null;
     }
   }
@@ -137,4 +143,3 @@ export class PersonEnrichmentService {
 
 // Singleton instance
 export const personEnrichmentService = new PersonEnrichmentService();
-

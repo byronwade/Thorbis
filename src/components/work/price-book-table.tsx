@@ -406,7 +406,8 @@ export function PriceBookTable({
       (item.subcategory?.toLowerCase() || "").includes(searchLower) ||
       (item.description?.toLowerCase() || "").includes(searchLower) ||
       (item.supplierName?.toLowerCase() || "").includes(searchLower) ||
-      (item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ?? false)
+      (item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ??
+        false)
     );
   };
 

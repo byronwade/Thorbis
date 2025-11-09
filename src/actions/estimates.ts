@@ -782,7 +782,9 @@ export async function archiveEstimate(
 
     // Archive estimate (soft delete)
     const now = new Date().toISOString();
-    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    const scheduledDeletion = new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000
+    ).toISOString();
 
     const { error: archiveError } = await supabase
       .from("estimates")

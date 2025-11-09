@@ -8,27 +8,25 @@
  */
 
 import {
-  BarChart3,
-  FileText,
-  LineChart,
-  PieChart,
-  TrendingUp,
   Activity,
+  AlertCircle,
+  BarChart3,
+  Bell,
   Brain,
   Calendar,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  Download,
+  FileText,
+  Filter,
+  LineChart,
+  PieChart,
+  Settings,
   Target,
+  TrendingUp,
   Users,
   Zap,
-  DollarSign,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  Bell,
-  Database,
-  Filter,
-  Download,
-  Share2,
-  Settings,
 } from "lucide-react";
 
 export function ReportingComingSoon() {
@@ -69,7 +67,10 @@ export function ReportingComingSoon() {
             </span>
           </h1>
           <p className="mx-auto max-w-3xl text-foreground/60 text-lg leading-relaxed">
-            Transform raw data into actionable insights with our powerful reporting suite. Real-time dashboards, custom reports, and AI-powered analytics to drive data-informed decisions across your entire operation.
+            Transform raw data into actionable insights with our powerful
+            reporting suite. Real-time dashboards, custom reports, and
+            AI-powered analytics to drive data-informed decisions across your
+            entire operation.
           </p>
         </div>
 
@@ -90,7 +91,8 @@ export function ReportingComingSoon() {
                   Real-Time Dashboards
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Live KPIs, performance metrics, and business intelligence updated in real-time with customizable widgets
+                  Live KPIs, performance metrics, and business intelligence
+                  updated in real-time with customizable widgets
                 </p>
               </div>
 
@@ -104,7 +106,8 @@ export function ReportingComingSoon() {
                   Custom Report Builder
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Build unlimited custom reports with advanced filters, grouping, pivot tables, and scheduled delivery
+                  Build unlimited custom reports with advanced filters,
+                  grouping, pivot tables, and scheduled delivery
                 </p>
               </div>
 
@@ -118,7 +121,8 @@ export function ReportingComingSoon() {
                   AI-Powered Insights
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Get intelligent recommendations, anomaly detection, predictive analytics, and natural language queries
+                  Get intelligent recommendations, anomaly detection, predictive
+                  analytics, and natural language queries
                 </p>
               </div>
 
@@ -132,7 +136,8 @@ export function ReportingComingSoon() {
                   Data Visualization
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Interactive charts, graphs, heat maps, and visual dashboards with drill-down capabilities
+                  Interactive charts, graphs, heat maps, and visual dashboards
+                  with drill-down capabilities
                 </p>
               </div>
 
@@ -146,7 +151,8 @@ export function ReportingComingSoon() {
                   Performance Analytics
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Track team performance, technician productivity, job completion rates, customer satisfaction scores
+                  Track team performance, technician productivity, job
+                  completion rates, customer satisfaction scores
                 </p>
               </div>
 
@@ -160,11 +166,12 @@ export function ReportingComingSoon() {
                   Financial Reports
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Comprehensive P&L, balance sheets, cash flow analysis, revenue forecasting, profitability tracking
+                  Comprehensive P&L, balance sheets, cash flow analysis, revenue
+                  forecasting, profitability tracking
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-cyan-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-cyan-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-cyan-500/20 hover:shadow-cyan-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-cyan-500/10">
                     <Users className="size-6 text-cyan-600 dark:text-cyan-400" />
@@ -174,7 +181,8 @@ export function ReportingComingSoon() {
                   Customer Analytics
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Analyze acquisition costs, lifetime value, retention rates, churn analysis, cohort performance
+                  Analyze acquisition costs, lifetime value, retention rates,
+                  churn analysis, cohort performance
                 </p>
               </div>
 
@@ -188,7 +196,8 @@ export function ReportingComingSoon() {
                   Operations Reporting
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Schedule efficiency, dispatch performance, job duration analysis, capacity planning metrics
+                  Schedule efficiency, dispatch performance, job duration
+                  analysis, capacity planning metrics
                 </p>
               </div>
             </div>
@@ -213,7 +222,10 @@ export function ReportingComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;You're 87% toward your monthly revenue goal of $50,000 with 5 days left. Based on current pace, you'll finish at $48,200. Consider pushing 2 pending quotes to close the gap.&quot;
+                  &quot;You're 87% toward your monthly revenue goal of $50,000
+                  with 5 days left. Based on current pace, you'll finish at
+                  $48,200. Consider pushing 2 pending quotes to close the
+                  gap.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
                   <Target className="size-3" />
@@ -234,7 +246,9 @@ export function ReportingComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;Tech #5 has completed 12 jobs today vs usual average of 6. Job quality may be compromised. Running quality check on recent completions.&quot;
+                  &quot;Tech #5 has completed 12 jobs today vs usual average of
+                  6. Job quality may be compromised. Running quality check on
+                  recent completions.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
                   <Zap className="size-3" />
@@ -255,7 +269,9 @@ export function ReportingComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;HVAC calls up 40% this week compared to last month. Weather forecast shows heat wave continuing. Consider running targeted campaign for AC tune-ups.&quot;
+                  &quot;HVAC calls up 40% this week compared to last month.
+                  Weather forecast shows heat wave continuing. Consider running
+                  targeted campaign for AC tune-ups.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
                   <CheckCircle2 className="size-3" />
@@ -276,7 +292,9 @@ export function ReportingComingSoon() {
                   </div>
                 </div>
                 <p className="mb-3 text-muted-foreground text-sm">
-                  &quot;Customer satisfaction score dropped from 4.8 to 4.2 stars this month. Reviewing recent reviews shows 3 mentions of 'late arrival'. Addressing dispatch timing.&quot;
+                  &quot;Customer satisfaction score dropped from 4.8 to 4.2
+                  stars this month. Reviewing recent reviews shows 3 mentions of
+                  'late arrival'. Addressing dispatch timing.&quot;
                 </p>
                 <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
                   <TrendingUp className="size-3" />
@@ -298,7 +316,8 @@ export function ReportingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Advanced Filtering</h3>
                 <p className="text-muted-foreground text-sm">
-                  Filter by date ranges, technicians, services, locations, and custom criteria
+                  Filter by date ranges, technicians, services, locations, and
+                  custom criteria
                 </p>
               </div>
 
@@ -308,7 +327,8 @@ export function ReportingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Export & Share</h3>
                 <p className="text-muted-foreground text-sm">
-                  Export to PDF, Excel, CSV with scheduled delivery via email or Slack
+                  Export to PDF, Excel, CSV with scheduled delivery via email or
+                  Slack
                 </p>
               </div>
 
@@ -318,7 +338,8 @@ export function ReportingComingSoon() {
                 </div>
                 <h3 className="mb-2 font-semibold">Custom Dashboards</h3>
                 <p className="text-muted-foreground text-sm">
-                  Build role-specific dashboards with drag-and-drop widgets and saved views
+                  Build role-specific dashboards with drag-and-drop widgets and
+                  saved views
                 </p>
               </div>
             </div>
@@ -341,7 +362,8 @@ export function ReportingComingSoon() {
                   <span className="font-medium text-foreground">
                     Real-Time Visibility:
                   </span>{" "}
-                  See what's happening in your business right now with live dashboards and instant updates
+                  See what's happening in your business right now with live
+                  dashboards and instant updates
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -350,7 +372,8 @@ export function ReportingComingSoon() {
                   <span className="font-medium text-foreground">
                     Custom Reports:
                   </span>{" "}
-                  Build exactly the reports you need with advanced filtering, grouping, and scheduling
+                  Build exactly the reports you need with advanced filtering,
+                  grouping, and scheduling
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -359,7 +382,8 @@ export function ReportingComingSoon() {
                   <span className="font-medium text-foreground">
                     AI-Powered Insights:
                   </span>{" "}
-                  Get intelligent recommendations and anomaly detection to catch issues before they impact your business
+                  Get intelligent recommendations and anomaly detection to catch
+                  issues before they impact your business
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -368,7 +392,8 @@ export function ReportingComingSoon() {
                   <span className="font-medium text-foreground">
                     Predictive Analytics:
                   </span>{" "}
-                  Forecast revenue, identify trends, and make proactive decisions based on historical data
+                  Forecast revenue, identify trends, and make proactive
+                  decisions based on historical data
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -377,7 +402,8 @@ export function ReportingComingSoon() {
                   <span className="font-medium text-foreground">
                     Executive Summaries:
                   </span>{" "}
-                  High-level dashboards and board-ready reports with one-click export to presentations
+                  High-level dashboards and board-ready reports with one-click
+                  export to presentations
                 </p>
               </div>
             </div>

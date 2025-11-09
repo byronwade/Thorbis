@@ -4,10 +4,10 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Calendar, Plus, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Plus, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -24,7 +24,12 @@ interface EquipmentTabProps {
   isEditMode: boolean;
 }
 
-export function EquipmentTab({ job, equipment, property, isEditMode }: EquipmentTabProps) {
+export function EquipmentTab({
+  job,
+  equipment,
+  property,
+  isEditMode,
+}: EquipmentTabProps) {
   const formatDate = (date: string | null) => {
     if (!date) return "N/A";
     return new Intl.DateTimeFormat("en-US", {
@@ -63,7 +68,7 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
                   <TableHead>Model</TableHead>
                   <TableHead>Serial #</TableHead>
                   <TableHead>Last Service</TableHead>
-                  {isEditMode && <TableHead></TableHead>}
+                  {isEditMode && <TableHead />}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -79,7 +84,7 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
                     <TableCell>{formatDate(item.last_service_date)}</TableCell>
                     {isEditMode && (
                       <TableCell>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           Service
                         </Button>
                       </TableCell>
@@ -89,10 +94,10 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No equipment recorded at this property
               {isEditMode && (
-                <Button variant="outline" size="sm" className="ml-2 mt-2">
+                <Button className="mt-2 ml-2" size="sm" variant="outline">
                   Add First Equipment
                 </Button>
               )}
@@ -113,9 +118,11 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
           <CardContent>
             <div className="space-y-2">
               {job.equipment_serviced.map((item: any, index: number) => (
-                <div key={index} className="rounded-lg border p-3">
+                <div className="rounded-lg border p-3" key={index}>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">{item.service_performed}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {item.service_performed}
+                  </p>
                 </div>
               ))}
             </div>

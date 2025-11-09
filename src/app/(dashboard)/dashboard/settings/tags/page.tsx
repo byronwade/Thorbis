@@ -27,10 +27,9 @@ import {
   Wrench,
 } from "lucide-react";
 import { useState } from "react";
+import { getTagSettings, updateTagSettings } from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getTagSettings, updateTagSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -55,6 +54,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -118,29 +118,29 @@ export default function TagsPage() {
     getter: getTagSettings,
     setter: updateTagSettings,
     initialState: {
-    // General Settings
-    enableTags: true,
-    allowMultipleTags: true,
-    requireAtLeastOneTag: false,
-    allowCustomTagCreation: true,
-    restrictTagsByRole: false,
+      // General Settings
+      enableTags: true,
+      allowMultipleTags: true,
+      requireAtLeastOneTag: false,
+      allowCustomTagCreation: true,
+      restrictTagsByRole: false,
 
-    // Display Settings
-    showTagsOnInvoices: true,
-    showTagsInPortal: true,
-    showTagColors: true,
-    sortTagsAlphabetically: true,
+      // Display Settings
+      showTagsOnInvoices: true,
+      showTagsInPortal: true,
+      showTagColors: true,
+      sortTagsAlphabetically: true,
 
-    // Automation
-    autoTagByLocation: true,
-    autoTagByServiceType: true,
-    autoTagByValue: true,
-    highValueThreshold: 1000,
+      // Automation
+      autoTagByLocation: true,
+      autoTagByServiceType: true,
+      autoTagByValue: true,
+      highValueThreshold: 1000,
 
-    // Analytics
-    trackTagPerformance: true,
-    showTagReports: true,
-    trackRevenueByTag: true,
+      // Analytics
+      trackTagPerformance: true,
+      showTagReports: true,
+      trackRevenueByTag: true,
     },
     settingsName: "tags",
     transformLoad: (data) => ({
@@ -151,8 +151,14 @@ export default function TagsPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      formData.append("allowCustomTags", settings.allowCustomTagCreation.toString());
-      formData.append("requireTagApproval", settings.requireAtLeastOneTag.toString());
+      formData.append(
+        "allowCustomTags",
+        settings.allowCustomTagCreation.toString()
+      );
+      formData.append(
+        "requireTagApproval",
+        settings.requireAtLeastOneTag.toString()
+      );
       formData.append("maxTagsPerItem", "10");
       formData.append("useColorCoding", settings.showTagColors.toString());
       formData.append("autoAssignColors", "true");

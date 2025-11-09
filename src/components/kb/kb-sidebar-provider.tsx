@@ -6,22 +6,20 @@
 
 "use client";
 
+import React, { type ReactNode } from "react";
 import {
   Sidebar,
-  SidebarProvider,
   SidebarInset,
-  SidebarTrigger,
+  SidebarProvider,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import React, { type ReactNode } from "react";
 
 interface KBSidebarProviderProps {
   children: ReactNode;
 }
 
-export function KBSidebarProvider({
-  children,
-}: KBSidebarProviderProps) {
+export function KBSidebarProvider({ children }: KBSidebarProviderProps) {
   // Extract sidebar content and main content from children
   // The first child should be the sidebar content, rest is main content
   const childrenArray = React.Children.toArray(children);
@@ -48,4 +46,3 @@ export function KBSidebarProvider({
     </SidebarProvider>
   );
 }
-

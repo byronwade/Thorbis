@@ -97,7 +97,8 @@ export async function updateOvertimeSettings(
       weeklyThresholdHours: formData.get("weeklyThresholdHours") || "40",
       consecutiveDaysThreshold: formData.get("consecutiveDaysThreshold") || "7",
       dailyOvertimeMultiplier: formData.get("dailyOvertimeMultiplier") || "1.5",
-      weeklyOvertimeMultiplier: formData.get("weeklyOvertimeMultiplier") || "1.5",
+      weeklyOvertimeMultiplier:
+        formData.get("weeklyOvertimeMultiplier") || "1.5",
       doubleTimeMultiplier: formData.get("doubleTimeMultiplier") || "2.0",
       doubleTimeEnabled: formData.get("doubleTimeEnabled") === "true",
       doubleTimeAfterHours: formData.get("doubleTimeAfterHours") || "12",
@@ -106,42 +107,45 @@ export async function updateOvertimeSettings(
       saturdayMultiplier: formData.get("saturdayMultiplier") || "1.5",
       sundayMultiplier: formData.get("sundayMultiplier") || "2.0",
       holidayMultiplier: formData.get("holidayMultiplier") || "2.5",
-      requireOvertimeApproval: formData.get("requireOvertimeApproval") !== "false",
+      requireOvertimeApproval:
+        formData.get("requireOvertimeApproval") !== "false",
       autoCalculateOvertime: formData.get("autoCalculateOvertime") !== "false",
       trackByJob: formData.get("trackByJob") !== "false",
       trackByDay: formData.get("trackByDay") !== "false",
-      notifyApproachingOvertime: formData.get("notifyApproachingOvertime") !== "false",
-      overtimeThresholdNotificationHours: formData.get("overtimeThresholdNotificationHours") || "7.5",
-      notifyManagersOnOvertime: formData.get("notifyManagersOnOvertime") !== "false",
+      notifyApproachingOvertime:
+        formData.get("notifyApproachingOvertime") !== "false",
+      overtimeThresholdNotificationHours:
+        formData.get("overtimeThresholdNotificationHours") || "7.5",
+      notifyManagersOnOvertime:
+        formData.get("notifyManagersOnOvertime") !== "false",
     });
 
-    const { error } = await supabase
-      .from("payroll_overtime_settings")
-      .upsert({
-        company_id: companyId,
-        overtime_enabled: data.overtimeEnabled,
-        daily_threshold_hours: data.dailyThresholdHours,
-        weekly_threshold_hours: data.weeklyThresholdHours,
-        consecutive_days_threshold: data.consecutiveDaysThreshold,
-        daily_overtime_multiplier: data.dailyOvertimeMultiplier,
-        weekly_overtime_multiplier: data.weeklyOvertimeMultiplier,
-        double_time_multiplier: data.doubleTimeMultiplier,
-        double_time_enabled: data.doubleTimeEnabled,
-        double_time_after_hours: data.doubleTimeAfterHours,
-        double_time_on_seventh_day: data.doubleTimeOnSeventhDay,
-        weekend_overtime_enabled: data.weekendOvertimeEnabled,
-        saturday_multiplier: data.saturdayMultiplier,
-        sunday_multiplier: data.sundayMultiplier,
-        holiday_multiplier: data.holidayMultiplier,
-        require_overtime_approval: data.requireOvertimeApproval,
-        auto_calculate_overtime: data.autoCalculateOvertime,
-        track_by_job: data.trackByJob,
-        track_by_day: data.trackByDay,
-        notify_approaching_overtime: data.notifyApproachingOvertime,
-        overtime_threshold_notification_hours: data.overtimeThresholdNotificationHours,
-        notify_managers_on_overtime: data.notifyManagersOnOvertime,
-        updated_by: user.id,
-      });
+    const { error } = await supabase.from("payroll_overtime_settings").upsert({
+      company_id: companyId,
+      overtime_enabled: data.overtimeEnabled,
+      daily_threshold_hours: data.dailyThresholdHours,
+      weekly_threshold_hours: data.weeklyThresholdHours,
+      consecutive_days_threshold: data.consecutiveDaysThreshold,
+      daily_overtime_multiplier: data.dailyOvertimeMultiplier,
+      weekly_overtime_multiplier: data.weeklyOvertimeMultiplier,
+      double_time_multiplier: data.doubleTimeMultiplier,
+      double_time_enabled: data.doubleTimeEnabled,
+      double_time_after_hours: data.doubleTimeAfterHours,
+      double_time_on_seventh_day: data.doubleTimeOnSeventhDay,
+      weekend_overtime_enabled: data.weekendOvertimeEnabled,
+      saturday_multiplier: data.saturdayMultiplier,
+      sunday_multiplier: data.sundayMultiplier,
+      holiday_multiplier: data.holidayMultiplier,
+      require_overtime_approval: data.requireOvertimeApproval,
+      auto_calculate_overtime: data.autoCalculateOvertime,
+      track_by_job: data.trackByJob,
+      track_by_day: data.trackByDay,
+      notify_approaching_overtime: data.notifyApproachingOvertime,
+      overtime_threshold_notification_hours:
+        data.overtimeThresholdNotificationHours,
+      notify_managers_on_overtime: data.notifyManagersOnOvertime,
+      updated_by: user.id,
+    });
 
     if (error) {
       throw new ActionError(
@@ -210,8 +214,12 @@ const commissionRuleSchema = z.object({
   eligibleDepartments: z.string().optional(), // JSON string
   eligibleJobTypes: z.string().optional(), // JSON string
   minJobValue: z.coerce.number().optional(),
-  payoutFrequency: z.enum(["per_job", "weekly", "biweekly", "monthly", "quarterly"]).default("monthly"),
-  payoutTiming: z.enum(["on_job_completion", "on_invoice", "on_payment", "on_full_payment"]).default("on_payment"),
+  payoutFrequency: z
+    .enum(["per_job", "weekly", "biweekly", "monthly", "quarterly"])
+    .default("monthly"),
+  payoutTiming: z
+    .enum(["on_job_completion", "on_invoice", "on_payment", "on_full_payment"])
+    .default("on_payment"),
   allowCommissionSplits: z.boolean().default(true),
   primaryTechnicianPercentage: z.coerce.number().default(100),
   effectiveStartDate: z.string().optional(),
@@ -251,7 +259,8 @@ export async function createCommissionRule(
       payoutFrequency: formData.get("payoutFrequency") || "monthly",
       payoutTiming: formData.get("payoutTiming") || "on_payment",
       allowCommissionSplits: formData.get("allowCommissionSplits") !== "false",
-      primaryTechnicianPercentage: formData.get("primaryTechnicianPercentage") || "100",
+      primaryTechnicianPercentage:
+        formData.get("primaryTechnicianPercentage") || "100",
       effectiveStartDate: formData.get("effectiveStartDate") || undefined,
       effectiveEndDate: formData.get("effectiveEndDate") || undefined,
     });
@@ -266,9 +275,15 @@ export async function createCommissionRule(
         commission_basis: data.commissionBasis,
         rate_type: data.rateType,
         flat_percentage: data.flatPercentage,
-        eligible_roles: data.eligibleRoles ? JSON.parse(data.eligibleRoles) : [],
-        eligible_departments: data.eligibleDepartments ? JSON.parse(data.eligibleDepartments) : [],
-        eligible_job_types: data.eligibleJobTypes ? JSON.parse(data.eligibleJobTypes) : [],
+        eligible_roles: data.eligibleRoles
+          ? JSON.parse(data.eligibleRoles)
+          : [],
+        eligible_departments: data.eligibleDepartments
+          ? JSON.parse(data.eligibleDepartments)
+          : [],
+        eligible_job_types: data.eligibleJobTypes
+          ? JSON.parse(data.eligibleJobTypes)
+          : [],
         min_job_value: data.minJobValue,
         payout_frequency: data.payoutFrequency,
         payout_timing: data.payoutTiming,
@@ -327,7 +342,8 @@ export async function updateCommissionRule(
       payoutFrequency: formData.get("payoutFrequency") || "monthly",
       payoutTiming: formData.get("payoutTiming") || "on_payment",
       allowCommissionSplits: formData.get("allowCommissionSplits") !== "false",
-      primaryTechnicianPercentage: formData.get("primaryTechnicianPercentage") || "100",
+      primaryTechnicianPercentage:
+        formData.get("primaryTechnicianPercentage") || "100",
       effectiveStartDate: formData.get("effectiveStartDate") || undefined,
       effectiveEndDate: formData.get("effectiveEndDate") || undefined,
     });
@@ -341,9 +357,15 @@ export async function updateCommissionRule(
         commission_basis: data.commissionBasis,
         rate_type: data.rateType,
         flat_percentage: data.flatPercentage,
-        eligible_roles: data.eligibleRoles ? JSON.parse(data.eligibleRoles) : [],
-        eligible_departments: data.eligibleDepartments ? JSON.parse(data.eligibleDepartments) : [],
-        eligible_job_types: data.eligibleJobTypes ? JSON.parse(data.eligibleJobTypes) : [],
+        eligible_roles: data.eligibleRoles
+          ? JSON.parse(data.eligibleRoles)
+          : [],
+        eligible_departments: data.eligibleDepartments
+          ? JSON.parse(data.eligibleDepartments)
+          : [],
+        eligible_job_types: data.eligibleJobTypes
+          ? JSON.parse(data.eligibleJobTypes)
+          : [],
         min_job_value: data.minJobValue,
         payout_frequency: data.payoutFrequency,
         payout_timing: data.payoutTiming,
@@ -470,15 +492,13 @@ export async function createCommissionTier(
       commissionPercentage: formData.get("commissionPercentage"),
     });
 
-    const { error } = await supabase
-      .from("payroll_commission_tiers")
-      .insert({
-        commission_rule_id: ruleId,
-        tier_level: data.tierLevel,
-        min_amount: data.minAmount,
-        max_amount: data.maxAmount,
-        commission_percentage: data.commissionPercentage,
-      });
+    const { error } = await supabase.from("payroll_commission_tiers").insert({
+      commission_rule_id: ruleId,
+      tier_level: data.tierLevel,
+      min_amount: data.minAmount,
+      max_amount: data.maxAmount,
+      commission_percentage: data.commissionPercentage,
+    });
 
     if (error) {
       throw new ActionError(
@@ -694,9 +714,13 @@ const payrollScheduleSchema = z.object({
   requireManagerApproval: z.boolean().default(true),
   requireFinanceApproval: z.boolean().default(true),
   approvalDeadlineDays: z.coerce.number().default(2),
-  timeTrackingMethod: z.enum(["clock_in_out", "job_based", "manual_entry", "gps_verified"]).default("clock_in_out"),
+  timeTrackingMethod: z
+    .enum(["clock_in_out", "job_based", "manual_entry", "gps_verified"])
+    .default("clock_in_out"),
   roundTimeToNearestMinutes: z.coerce.number().default(15),
-  overtimeCalculationPeriod: z.enum(["daily", "weekly", "pay_period"]).default("weekly"),
+  overtimeCalculationPeriod: z
+    .enum(["daily", "weekly", "pay_period"])
+    .default("weekly"),
   paidHolidaysEnabled: z.boolean().default(true),
   holidayPayRateMultiplier: z.coerce.number().default(1.0),
   ptoAccrualEnabled: z.boolean().default(true),
@@ -736,51 +760,59 @@ export async function updatePayrollSchedule(
       payPeriodEndDay: formData.get("payPeriodEndDay") || "sunday",
       daysInArrears: formData.get("daysInArrears") || "0",
       autoProcessPayroll: formData.get("autoProcessPayroll") === "true",
-      requireManagerApproval: formData.get("requireManagerApproval") !== "false",
-      requireFinanceApproval: formData.get("requireFinanceApproval") !== "false",
+      requireManagerApproval:
+        formData.get("requireManagerApproval") !== "false",
+      requireFinanceApproval:
+        formData.get("requireFinanceApproval") !== "false",
       approvalDeadlineDays: formData.get("approvalDeadlineDays") || "2",
       timeTrackingMethod: formData.get("timeTrackingMethod") || "clock_in_out",
-      roundTimeToNearestMinutes: formData.get("roundTimeToNearestMinutes") || "15",
-      overtimeCalculationPeriod: formData.get("overtimeCalculationPeriod") || "weekly",
+      roundTimeToNearestMinutes:
+        formData.get("roundTimeToNearestMinutes") || "15",
+      overtimeCalculationPeriod:
+        formData.get("overtimeCalculationPeriod") || "weekly",
       paidHolidaysEnabled: formData.get("paidHolidaysEnabled") !== "false",
-      holidayPayRateMultiplier: formData.get("holidayPayRateMultiplier") || "1.0",
+      holidayPayRateMultiplier:
+        formData.get("holidayPayRateMultiplier") || "1.0",
       ptoAccrualEnabled: formData.get("ptoAccrualEnabled") !== "false",
-      ptoAccrualRateHoursPerPayPeriod: formData.get("ptoAccrualRateHoursPerPayPeriod") || "3.08",
+      ptoAccrualRateHoursPerPayPeriod:
+        formData.get("ptoAccrualRateHoursPerPayPeriod") || "3.08",
       ptoMaxAccrualHours: formData.get("ptoMaxAccrualHours") || "120",
-      notifyTeamBeforePayrollDays: formData.get("notifyTeamBeforePayrollDays") || "3",
-      notifyOnTimesheetApproval: formData.get("notifyOnTimesheetApproval") !== "false",
-      notifyOnPayrollProcessed: formData.get("notifyOnPayrollProcessed") !== "false",
+      notifyTeamBeforePayrollDays:
+        formData.get("notifyTeamBeforePayrollDays") || "3",
+      notifyOnTimesheetApproval:
+        formData.get("notifyOnTimesheetApproval") !== "false",
+      notifyOnPayrollProcessed:
+        formData.get("notifyOnPayrollProcessed") !== "false",
     });
 
-    const { error } = await supabase
-      .from("payroll_schedule_settings")
-      .upsert({
-        company_id: companyId,
-        payroll_frequency: data.payrollFrequency,
-        weekly_pay_day: data.weeklyPayDay,
-        biweekly_start_date: data.biweeklyStartDate,
-        semi_monthly_first_day: data.semiMonthlyFirstDay,
-        semi_monthly_second_day: data.semiMonthlySecondDay,
-        monthly_pay_day: data.monthlyPayDay,
-        pay_period_end_day: data.payPeriodEndDay,
-        days_in_arrears: data.daysInArrears,
-        auto_process_payroll: data.autoProcessPayroll,
-        require_manager_approval: data.requireManagerApproval,
-        require_finance_approval: data.requireFinanceApproval,
-        approval_deadline_days: data.approvalDeadlineDays,
-        time_tracking_method: data.timeTrackingMethod,
-        round_time_to_nearest_minutes: data.roundTimeToNearestMinutes,
-        overtime_calculation_period: data.overtimeCalculationPeriod,
-        paid_holidays_enabled: data.paidHolidaysEnabled,
-        holiday_pay_rate_multiplier: data.holidayPayRateMultiplier,
-        pto_accrual_enabled: data.ptoAccrualEnabled,
-        pto_accrual_rate_hours_per_pay_period: data.ptoAccrualRateHoursPerPayPeriod,
-        pto_max_accrual_hours: data.ptoMaxAccrualHours,
-        notify_team_before_payroll_days: data.notifyTeamBeforePayrollDays,
-        notify_on_timesheet_approval: data.notifyOnTimesheetApproval,
-        notify_on_payroll_processed: data.notifyOnPayrollProcessed,
-        updated_by: user.id,
-      });
+    const { error } = await supabase.from("payroll_schedule_settings").upsert({
+      company_id: companyId,
+      payroll_frequency: data.payrollFrequency,
+      weekly_pay_day: data.weeklyPayDay,
+      biweekly_start_date: data.biweeklyStartDate,
+      semi_monthly_first_day: data.semiMonthlyFirstDay,
+      semi_monthly_second_day: data.semiMonthlySecondDay,
+      monthly_pay_day: data.monthlyPayDay,
+      pay_period_end_day: data.payPeriodEndDay,
+      days_in_arrears: data.daysInArrears,
+      auto_process_payroll: data.autoProcessPayroll,
+      require_manager_approval: data.requireManagerApproval,
+      require_finance_approval: data.requireFinanceApproval,
+      approval_deadline_days: data.approvalDeadlineDays,
+      time_tracking_method: data.timeTrackingMethod,
+      round_time_to_nearest_minutes: data.roundTimeToNearestMinutes,
+      overtime_calculation_period: data.overtimeCalculationPeriod,
+      paid_holidays_enabled: data.paidHolidaysEnabled,
+      holiday_pay_rate_multiplier: data.holidayPayRateMultiplier,
+      pto_accrual_enabled: data.ptoAccrualEnabled,
+      pto_accrual_rate_hours_per_pay_period:
+        data.ptoAccrualRateHoursPerPayPeriod,
+      pto_max_accrual_hours: data.ptoMaxAccrualHours,
+      notify_team_before_payroll_days: data.notifyTeamBeforePayrollDays,
+      notify_on_timesheet_approval: data.notifyOnTimesheetApproval,
+      notify_on_payroll_processed: data.notifyOnPayrollProcessed,
+      updated_by: user.id,
+    });
 
     if (error) {
       throw new ActionError(

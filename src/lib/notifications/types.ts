@@ -61,4 +61,6 @@ export type NotificationType = z.infer<typeof NotificationTypeSchema>;
 export type NotificationPriority = z.infer<typeof NotificationPrioritySchema>;
 export type CreateNotificationInput = z.infer<typeof CreateNotificationSchema>;
 export type GetNotificationsInput = z.infer<typeof GetNotificationsSchema>;
-export type NotificationPreference = z.infer<typeof NotificationPreferenceSchema>;
+export type NotificationPreference = z.infer<
+  typeof NotificationPreferenceSchema
+>;

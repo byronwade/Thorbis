@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import { CalendarIcon, Plus, SlidersHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -164,6 +165,8 @@ export function ScheduleToolbarActions() {
           <Plus className="mr-2 size-4" />
           New Job
         </Button>
+
+        <ImportExportDropdown dataType="schedule" />
       </div>
     </div>
   );

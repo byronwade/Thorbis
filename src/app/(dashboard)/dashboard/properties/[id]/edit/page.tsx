@@ -30,7 +30,7 @@ export default async function PropertyEditPage({
     <div className="container mx-auto max-w-4xl space-y-6 p-6">
       {/* Header */}
       <div>
-        <Button variant="ghost" size="sm" asChild className="mb-4">
+        <Button asChild className="mb-4" size="sm" variant="ghost">
           <Link href={`/dashboard/properties/${id}`}>
             <ArrowLeft className="mr-2 size-4" />
             Back to Property
@@ -52,16 +52,15 @@ export default async function PropertyEditPage({
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            For now, properties are managed automatically when you create jobs or customers.
-            If you need to update property information, please contact support.
+            For now, properties are managed automatically when you create jobs
+            or customers. If you need to update property information, please
+            contact support.
           </p>
           <div className="mt-4 flex gap-2">
             <Button asChild>
-              <Link href={`/dashboard/properties/${id}`}>
-                View Property
-              </Link>
+              <Link href={`/dashboard/properties/${id}`}>View Property</Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button asChild variant="outline">
               <Link href={`/dashboard/work/new?propertyId=${id}`}>
                 Create Job
               </Link>

@@ -5,7 +5,7 @@
  * Provides search ranking, autocomplete, and result highlighting
  */
 
-import type { KBSearchResult, KBSearchFilters } from "./types";
+import type { KBSearchFilters, KBSearchResult } from "./types";
 
 /**
  * Build search query from filters
@@ -69,4 +69,3 @@ export function generateAutocompleteQuery(query: string): string {
 
   return terms.join(" & ");
 }
-

@@ -21,11 +21,11 @@
  * ```
  */
 
-import { createClient } from "@/lib/supabase/server";
 import type {
-  NotificationType,
   NotificationPriority,
+  NotificationType,
 } from "@/lib/notifications/types";
+import { createClient } from "@/lib/supabase/server";
 
 // =====================================================================================
 // Types
@@ -191,7 +191,7 @@ export async function notifyJobCreated(params: JobNotificationParams) {
     "New Job Assignment",
     `Job "${params.jobTitle}" has been assigned to you at ${params.address}`,
     params.priority || "medium",
-    params.actionUrl || `/dashboard/work`,
+    params.actionUrl || "/dashboard/work",
     "View Job",
     {
       job_id: params.jobId,
@@ -221,7 +221,7 @@ export async function notifyJobUpdated(params: JobNotificationParams) {
     "Job Updated",
     `Job "${params.jobTitle}" has been updated`,
     params.priority || "low",
-    params.actionUrl || `/dashboard/work`,
+    params.actionUrl || "/dashboard/work",
     "View Job",
     {
       job_id: params.jobId,
@@ -250,7 +250,7 @@ export async function notifyJobCompleted(params: JobNotificationParams) {
     "Job Completed",
     `Job "${params.jobTitle}" at ${params.address} has been completed`,
     params.priority || "low",
-    params.actionUrl || `/dashboard/work`,
+    params.actionUrl || "/dashboard/work",
     "View Job",
     {
       job_id: params.jobId,
@@ -284,7 +284,7 @@ export async function notifyPaymentReceived(params: PaymentNotificationParams) {
     "Payment Received",
     `Payment of $${params.amount.toFixed(2)} received from ${params.customerName}`,
     params.priority || "high",
-    params.actionUrl || `/dashboard/finance/invoices`,
+    params.actionUrl || "/dashboard/finance/invoices",
     "View Invoice",
     {
       amount: params.amount,
@@ -297,7 +297,9 @@ export async function notifyPaymentReceived(params: PaymentNotificationParams) {
 /**
  * Notify user when an invoice payment is due soon
  */
-export async function notifyPaymentDue(params: PaymentNotificationParams & { daysUntilDue: number }) {
+export async function notifyPaymentDue(
+  params: PaymentNotificationParams & { daysUntilDue: number }
+) {
   const enabled = await isNotificationEnabled(
     params.userId,
     params.companyId,
@@ -315,7 +317,7 @@ export async function notifyPaymentDue(params: PaymentNotificationParams & { day
     "Payment Reminder",
     `Invoice payment of $${params.amount.toFixed(2)} from ${params.customerName} is due in ${params.daysUntilDue} days`,
     params.priority || "medium",
-    params.actionUrl || `/dashboard/finance/invoices`,
+    params.actionUrl || "/dashboard/finance/invoices",
     "View Invoice",
     {
       amount: params.amount,
@@ -351,7 +353,7 @@ export async function notifyNewMessage(params: MessageNotificationParams) {
     `New Message from ${params.from}`,
     params.messagePreview,
     params.priority || "medium",
-    params.actionUrl || `/dashboard/communication`,
+    params.actionUrl || "/dashboard/communication",
     "Reply",
     {
       from: params.from,
@@ -381,7 +383,7 @@ export async function notifyMissedCall(params: MessageNotificationParams) {
     "Missed Call",
     `You missed a call from ${params.from}`,
     params.priority || "high",
-    params.actionUrl || `/dashboard/communication`,
+    params.actionUrl || "/dashboard/communication",
     "View Details",
     {
       from: params.from,
@@ -415,7 +417,7 @@ export async function notifyTeamMemberAdded(params: TeamNotificationParams) {
     "New Team Member",
     `${params.memberName} has joined your team${params.role ? ` as a ${params.role}` : ""}`,
     params.priority || "low",
-    params.actionUrl || `/dashboard/settings/team`,
+    params.actionUrl || "/dashboard/settings/team",
     "View Team",
     {
       member_name: params.memberName,
@@ -445,7 +447,7 @@ export async function notifyTeamAssignment(params: TeamNotificationParams) {
     "Team Assignment",
     `You've been assigned to work with ${params.memberName}`,
     params.priority || "medium",
-    params.actionUrl || `/dashboard/settings/team`,
+    params.actionUrl || "/dashboard/settings/team",
     "View Details",
     {
       member_name: params.memberName,

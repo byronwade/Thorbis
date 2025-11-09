@@ -1,0 +1,1683 @@
+import type { MarketingFeatureContent } from "./types";
+
+export const FEATURE_CONTENT: MarketingFeatureContent[] = [
+  {
+    kind: "feature",
+    slug: "ai-assistant",
+    name: "AI Service Assistant",
+    heroEyebrow: "Call Handling • Smart Triage • CRM Automation",
+    heroTitle: "Let an AI dispatcher capture every opportunity",
+    heroDescription:
+      "Route inbound calls, website chats, and text messages through a conversational AI assistant that sounds like your best coordinator. Thorbis captures service details, books jobs, and updates the CRM before a human ever lifts a finger.",
+    heroImage:
+      "https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Thorbis AI Assistant blends natural language processing with your pricebook, technician roster, and schedule commitments to keep the board full without adding headcount.",
+    primaryCta: {
+      label: "Book a live AI demo",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download the AI playbook",
+      href: "/templates?tag=ai",
+    },
+    seo: {
+      title: "AI Dispatch Assistant for Service Businesses | Thorbis",
+      description:
+        "Answer every call, qualify leads, and schedule jobs automatically with the Thorbis AI Assistant. Reduce missed calls and boost conversion without hiring.",
+      keywords: [
+        "ai answering service",
+        "field service virtual agent",
+        "24/7 dispatch assistant",
+        "service business automation",
+      ],
+    },
+    painPoints: [
+      "Missed after-hours calls create lost revenue and frustrated customers.",
+      "CSRs spend valuable time on repetitive intake questions instead of nurturing top opportunities.",
+      "Manual call logging leads to incomplete records and inaccurate reporting.",
+    ],
+    valueProps: [
+      {
+        title: "Answered 24/7 with brand voice",
+        description:
+          "Custom prompts mirror your greeting, service areas, and etiquette so homeowners feel like they’re speaking with your in-house coordinator.",
+        icon: "bot",
+      },
+      {
+        title: "Real-time booking & capacity checks",
+        description:
+          "AI reviews technician availability, travel buffers, and job requirements to suggest the right appointment window without double-booking.",
+        icon: "calendar-check",
+      },
+      {
+        title: "Automatic CRM updates",
+        description:
+          "Every interaction is logged with transcripts, tags, and outcomes so your office team and field techs have immediate context.",
+        icon: "database",
+      },
+    ],
+    workflows: [
+      {
+        title: "Inbound phone orchestration",
+        description:
+          "AI greets the caller, captures job details, confirms location within the service area, and creates a work order or schedules a visit.",
+        steps: [
+          "Intent detection and script selection",
+          "Address and job-type validation",
+          "Presentation of slots with travel buffers",
+          "Appointment confirmation + SMS recap",
+        ],
+      },
+      {
+        title: "Escalation to live agents",
+        description:
+          "When a situation requires a human, Thorbis AI summarizes the conversation, attaches sentiment analysis, and transfers with context.",
+      },
+    ],
+    stats: [
+      {
+        label: "Call coverage",
+        value: "98%",
+        description:
+          "of inbound calls answered across business hours and after-hours.",
+      },
+      {
+        label: "Booking speed",
+        value: "3 min",
+        description:
+          "average time to log, qualify, and schedule a job from new leads.",
+      },
+      {
+        label: "CSR efficiency",
+        value: "40%",
+        description:
+          "reduction in manual intake and follow-up tasks for your office staff.",
+      },
+    ],
+    integrations: ["OpenAI", "Twilio Voice", "Stripe", "Google Calendar"],
+    testimonial: {
+      quote:
+        "Thorbis AI handles 80% of our inbound call volume and books clean work orders. Our coordinators now focus on high-value commercial bids.",
+      attribution: "Renee Mitchell",
+      role: "Operations Manager, ClimateWorks HVAC",
+    },
+    faq: [
+      {
+        question: "Can I control what the AI says?",
+        answer:
+          "Yes. You provide approved scripts, service policies, and pricebook data. The AI follows guardrails you define and reroutes to humans when needed.",
+      },
+      {
+        question: "Does it work with my phone system?",
+        answer:
+          "Thorbis connects through standardized SIP or Twilio integrations. We port your main line or forward overflow calls in minutes.",
+      },
+      {
+        question: "How does billing work?",
+        answer:
+          "You pay a flat platform fee plus usage that scales with answered minutes. No multilingual upcharge or weekend premium.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "crm",
+    name: "Customer Relationship Management",
+    heroEyebrow: "Customer Profiles • Activity Timeline • Smart Segments",
+    heroTitle: "Give every dispatcher the full customer story",
+    heroDescription:
+      "Thorbis CRM unifies service history, communication logs, and billing status so your team knows exactly how to take care of every account.",
+    heroImage:
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Replace fragmented spreadsheets with a CRM designed for high-volume service operations. Track households, properties, and commercial accounts in one workspace.",
+    primaryCta: {
+      label: "Explore CRM capabilities",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Import your customer list",
+      href: "/contact",
+    },
+    seo: {
+      title: "Field Service CRM Software | Thorbis",
+      description:
+        "Centralize customer profiles, job history, and communication logs with Thorbis CRM. Empower office staff and technicians with unified insights.",
+      keywords: [
+        "field service crm",
+        "service business customer database",
+        "contractor crm software",
+      ],
+    },
+    painPoints: [
+      "Customer data is spread between spreadsheets, QuickBooks, and personal notes.",
+      "Technicians arrive on site without knowledge of past issues or warranties.",
+      "Marketing campaigns are blind because contacts lack tagging and segmentation.",
+    ],
+    valueProps: [
+      {
+        title: "360° customer profiles",
+        description:
+          "View service agreements, installed equipment, open estimates, and payment standing without leaving the record.",
+        icon: "layers",
+      },
+      {
+        title: "Timeline of every interaction",
+        description:
+          "Auto-log calls, SMS, emails, and portal activity so your team can pick up any conversation with context.",
+        icon: "message-circle",
+      },
+      {
+        title: "Powerful segments & automations",
+        description:
+          "Filter by service plan, region, equipment age, or lifecycle stage to drive targeted follow-up campaigns.",
+        icon: "filter",
+      },
+    ],
+    workflows: [
+      {
+        title: "Commercial account management",
+        description:
+          "Assign account owners, manage multi-site contracts, and track SLAs or compliance documentation in one record.",
+      },
+      {
+        title: "Customer health dashboards",
+        description:
+          "Measure churn risk, recurring revenue, and outstanding balances to prioritize proactive outreach.",
+        steps: [
+          "Real-time data pulls from jobs, invoices, and plans",
+          "Weighted scoring model per account",
+          "Trigger alerts for coordinators when thresholds are met",
+        ],
+      },
+    ],
+    stats: [
+      {
+        label: "Duplicate records",
+        value: "-92%",
+        description:
+          "reduction after migrating to Thorbis automated import tools.",
+      },
+      {
+        label: "Technician prep time",
+        value: "-15 min",
+        description:
+          "saved before each visit thanks to consolidated job history.",
+      },
+      {
+        label: "Campaign ROI",
+        value: "3.4x",
+        description:
+          "increase from targeted upsell segments built in Thorbis CRM.",
+      },
+    ],
+    integrations: ["QuickBooks Online", "HubSpot", "Mailchimp", "Zapier"],
+    testimonial: {
+      quote:
+        "Every customer touch point lives in Thorbis. Dispatchers see the full picture and our marketing team finally trusts the data.",
+      attribution: "Luis Ortega",
+      role: "General Manager, BrightHome Services",
+    },
+    faq: [
+      {
+        question: "Can Thorbis import my legacy CRM?",
+        answer:
+          "Yes. We map your existing fields, deduplicate records, and preserve service history with guided migration templates.",
+      },
+      {
+        question: "Does the CRM sync with accounting?",
+        answer:
+          "Thorbis keeps customer and invoice updates in sync with QuickBooks, including addresses, balances, and notes.",
+      },
+      {
+        question: "How granular are permissions?",
+        answer:
+          "Set role-based visibility down to property-level details, or hide financial data from technicians while keeping job context.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "online-booking",
+    name: "Online Booking",
+    heroEyebrow:
+      "Self-Service Scheduling • Smart Capacity • Instant Confirmation",
+    heroTitle: "Turn website visitors into scheduled jobs 24/7",
+    heroDescription:
+      "Embed a branded scheduler that lets homeowners pick times, attach photos, and pay deposits without calling the office.",
+    heroImage:
+      "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Thorbis online booking brings the convenience of consumer apps to your service company—safely respecting technician capacity and travel buffers.",
+    primaryCta: {
+      label: "Launch your scheduling portal",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "View installation guide",
+      href: "/kb/user-guides",
+    },
+    seo: {
+      title: "Online Booking Software for Contractors | Thorbis",
+      description:
+        "Allow customers to schedule service, choose technicians, and pay deposits from any device. Thorbis online booking syncs directly with your dispatch board.",
+      keywords: [
+        "online booking for contractors",
+        "self service scheduling",
+        "field service booking portal",
+      ],
+    },
+    painPoints: [
+      "Website forms collect requests but leave the office calling back to confirm availability.",
+      "Homeowners expect instant confirmation and status updates.",
+      "Manual scheduling leads to double booked technicians and inefficient routes.",
+    ],
+    valueProps: [
+      {
+        title: "Real-time availability",
+        description:
+          "Expose only the slots that work with technician skills, drive time, and existing commitments.",
+        icon: "clock",
+      },
+      {
+        title: "Customizable intake forms",
+        description:
+          "Capture service type, equipment details, urgency, and photos so techs arrive prepared.",
+        icon: "clipboard-list",
+      },
+      {
+        title: "Automatic confirmations & reminders",
+        description:
+          "Send branded emails and SMS updates as soon as the customer books, plus pre-visit reminders.",
+        icon: "bell",
+      },
+    ],
+    workflows: [
+      {
+        title: "Website embed & lead capture",
+        description:
+          "Add a single line of JavaScript to your site or landing pages to embed the Thorbis scheduler with conversion tracking.",
+      },
+      {
+        title: "Upsell follow-up",
+        description:
+          "Trigger automated campaigns for maintenance plans, financing offers, or product bundles after the booking is confirmed.",
+      },
+    ],
+    stats: [
+      {
+        label: "Conversion rate",
+        value: "+38%",
+        description:
+          "increase in scheduled jobs after enabling self-service booking.",
+      },
+      {
+        label: "Call volume",
+        value: "-27%",
+        description:
+          "reduction in manual scheduling calls handled by office staff.",
+      },
+      {
+        label: "Deposit capture",
+        value: "68%",
+        description:
+          "of bookings secure a pre-visit deposit through the portal.",
+      },
+    ],
+    integrations: ["WordPress", "Webflow", "Squarespace", "Zapier"],
+    testimonial: {
+      quote:
+        "The online scheduler books two weeks of tune-ups in hours. Customers pick times, pay deposits, and we simply show up.",
+      attribution: "Maya Lewis",
+      role: "Owner, Evergreen Heating & Air",
+    },
+    faq: [
+      {
+        question: "Can I limit bookings to certain services?",
+        answer:
+          "Yes. Create booking rules that require approval for complex jobs or restrict offering to high-margin services.",
+      },
+      {
+        question: "Does it handle recurring service plans?",
+        answer:
+          "Customers can enroll in maintenance agreements, choose visit frequency, and pick preferred technicians.",
+      },
+      {
+        question: "What if a technician schedule changes?",
+        answer:
+          "Thorbis revalidates bookings in real time. If a conflict arises, customers receive alternative slots instantly.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "marketing",
+    name: "Marketing Automation",
+    heroEyebrow: "Campaign Builder • Lifecycle Journeys • ROI Analytics",
+    heroTitle: "Run campaigns that fill the board automatically",
+    heroDescription:
+      "Thorbis marketing automation keeps your brand top-of-mind with seasonal promotions, service reminders, and review requests—all tied to revenue attribution.",
+    heroImage:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Trigger intelligent campaigns using customer behavior, equipment age, and plan renewals so every contact receives the right message at the right time.",
+    primaryCta: {
+      label: "See automation templates",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Access campaign calendar",
+      href: "/templates?tag=marketing",
+    },
+    seo: {
+      title: "Marketing Automation for Service Businesses | Thorbis",
+      description:
+        "Automate review requests, service reminders, and promotional campaigns with Thorbis marketing automation. Track revenue from every touch.",
+      keywords: [
+        "service business marketing automation",
+        "field service email campaigns",
+        "review request automation",
+      ],
+    },
+    painPoints: [
+      "Manual spreadsheets and generic email blasts deliver poor engagement.",
+      "Review requests slip through the cracks, hurting local SEO.",
+      "Marketing spend is disconnected from completed jobs and invoices.",
+    ],
+    valueProps: [
+      {
+        title: "Lifecycle journeys",
+        description:
+          "Prebuilt flows for new customers, inactive accounts, warranty follow-ups, and plan renewals keep your pipeline warm.",
+        icon: "workflow",
+      },
+      {
+        title: "Multichannel campaigns",
+        description:
+          "Launch coordinated email, SMS, and postcard campaigns that reference dynamic customer data fields.",
+        icon: "megaphone",
+      },
+      {
+        title: "Revenue attribution",
+        description:
+          "Trace booked jobs, estimates, and collected revenue back to specific campaigns and automations.",
+        icon: "line-chart",
+      },
+    ],
+    workflows: [
+      {
+        title: "Seasonal tune-up sequence",
+        description:
+          "Automatically target customers with equipment older than three years and a pending maintenance visit.",
+      },
+      {
+        title: "Review + referral loop",
+        description:
+          "Send review requests after completed jobs, then trigger referral incentives for promoters.",
+      },
+    ],
+    stats: [
+      {
+        label: "Campaign ROI",
+        value: "5.2x",
+        description: "average return from automated seasonal promotions.",
+      },
+      {
+        label: "Review response rate",
+        value: "74%",
+        description:
+          "of completed jobs generate a public review within 24 hours.",
+      },
+      {
+        label: "Dormant customer reactivation",
+        value: "32%",
+        description:
+          "of dormant accounts rebook within 60 days of an automation journey.",
+      },
+    ],
+    integrations: ["Mailchimp", "Constant Contact", "Meta Ads", "Google Ads"],
+    testimonial: {
+      quote:
+        "Our marketing finally ties to revenue. Thorbis handles renewals, review requests, and seasonal blasts automatically.",
+      attribution: "Hannah Li",
+      role: "Marketing Director, Apex Mechanical",
+    },
+    faq: [
+      {
+        question: "Can I build my own journeys?",
+        answer:
+          "Absolutely. Drag-and-drop builders let you create segments, triggers, and branching logic without code.",
+      },
+      {
+        question: "Is texting compliant?",
+        answer:
+          "Thorbis manages opt-ins, quiet hours, and autoresponder keywords to comply with TCPA regulations.",
+      },
+      {
+        question: "Do you support postcards?",
+        answer:
+          "Yes. Launch targeted direct-mail campaigns with dynamic QR codes that sync responses back to Thorbis.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "customer-portal",
+    name: "Customer Portal",
+    heroEyebrow: "Self-Service • Payments • Real-Time Updates",
+    heroTitle: "Provide a modern portal customers actually use",
+    heroDescription:
+      "Thorbis gives homeowners and facility managers a secure branded portal to track jobs, approve estimates, pay invoices, and communicate with your team.",
+    heroImage:
+      "https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Deliver a white-glove experience without additional staff. Customers log in from any device to view history, upcoming visits, and documents.",
+    primaryCta: {
+      label: "Preview the portal",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Send login invites",
+      href: "/kb/user-guides",
+    },
+    seo: {
+      title: "Customer Portal for Field Service Companies | Thorbis",
+      description:
+        "Offer customers an on-brand portal with job tracking, document storage, and payments. Improve transparency and speed up cash flow.",
+      keywords: [
+        "customer portal for contractors",
+        "field service client portal",
+        "service business payments portal",
+      ],
+    },
+    painPoints: [
+      "Customers constantly call to request updates, copy invoices, or ask about technician arrival times.",
+      "Collecting approvals and signatures requires manual email threads.",
+      "Payments are delayed because customers must call the office or mail checks.",
+    ],
+    valueProps: [
+      {
+        title: "Real-time job tracking",
+        description:
+          "Share technician ETAs, status updates, and photos as soon as teams are en route or onsite.",
+        icon: "map-pin",
+      },
+      {
+        title: "Digital approvals",
+        description:
+          "Capture e-signatures on estimates, change orders, and service agreements without chasing paperwork.",
+        icon: "signature",
+      },
+      {
+        title: "One-click payments & autopay",
+        description:
+          "Allow ACH, credit card, and stored payment methods with automatic receipts and synced ledger entries.",
+        icon: "credit-card",
+      },
+    ],
+    workflows: [
+      {
+        title: "Commercial account access",
+        description:
+          "Provide facility managers role-based access to multiple locations, invoices, and compliance documents.",
+      },
+      {
+        title: "Customer feedback loop",
+        description:
+          "Trigger satisfaction surveys inside the portal after invoices are paid and escalate negative feedback to management.",
+      },
+    ],
+    stats: [
+      {
+        label: "Call volume",
+        value: "-35%",
+        description: "fewer status calls after adopting the customer portal.",
+      },
+      {
+        label: "Invoice collection time",
+        value: "-8 days",
+        description: "reduction in average days sales outstanding (DSO).",
+      },
+      {
+        label: "Portal adoption",
+        value: "82%",
+        description: "of active customers log in at least once per quarter.",
+      },
+    ],
+    integrations: ["Stripe", "Authorised.Net", "Square", "Google Pay"],
+    testimonial: {
+      quote:
+        "Customers rave about the Thorbis portal. They approve work, see technician ETAs, and pay invoices without waiting on our office.",
+      attribution: "Sonia Patel",
+      role: "Customer Experience Lead, Skyline Electric",
+    },
+    faq: [
+      {
+        question: "Can we brand the portal?",
+        answer:
+          "Yes. Upload your logo, colors, and messaging. The portal lives on your domain for a seamless experience.",
+      },
+      {
+        question: "Is the portal secure?",
+        answer:
+          "Thorbis uses SSO, multifactor authentication, and encrypted payment tokenization to protect customer data.",
+      },
+      {
+        question: "Do customers need separate logins per property?",
+        answer:
+          "No. Residential customers manage multiple properties and contacts within a single account.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "scheduling",
+    name: "Scheduling & Dispatch",
+    heroEyebrow: "Drag-and-Drop Board • Skill Routing • Real-Time Visibility",
+    heroTitle: "Keep the board balanced while technicians stay on time",
+    heroDescription:
+      "Thorbis scheduling brings together drag-and-drop dispatch, AI-assisted capacity planning, and live technician tracking.",
+    heroImage:
+      "https://images.unsplash.com/photo-1525186402429-b4ff38bedbec?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "See every crew, truck, and commitment on one responsive board. Adjust on the fly with travel times and skill requirements built in.",
+    primaryCta: {
+      label: "Watch the dispatch demo",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download scheduling checklist",
+      href: "/templates?tag=scheduling",
+    },
+    seo: {
+      title: "Scheduling Software for Service Dispatchers | Thorbis",
+      description:
+        "Balance workload, reduce windshield time, and keep technicians on schedule with Thorbis drag-and-drop dispatch board.",
+      keywords: [
+        "field service scheduling",
+        "dispatch board software",
+        "contractor scheduling app",
+      ],
+    },
+    painPoints: [
+      "Whiteboards and spreadsheets make it impossible to rebalance the schedule in real time.",
+      "Dispatchers can’t see technician status, causing overbooking or idle time.",
+      "Emergencies disrupt the entire day because manual routing takes too long.",
+    ],
+    valueProps: [
+      {
+        title: "Skill-aware scheduling",
+        description:
+          "Tag technicians by certifications, equipment expertise, and shift availability. Thorbis highlights best-fit slots instantly.",
+        icon: "badge-check",
+      },
+      {
+        title: "Live technician map",
+        description:
+          "Track en route, onsite, and completed statuses. Automatically adjust ETAs and notify customers.",
+        icon: "navigation",
+      },
+      {
+        title: "Exception alerts",
+        description:
+          "Detect overlaps, overtime risks, or SLA violations before they become customer issues.",
+        icon: "alert-triangle",
+      },
+    ],
+    workflows: [
+      {
+        title: "Emergency squeeze-in",
+        description:
+          "Use AI recommendations to slot urgent jobs into the best route while respecting technician drive times.",
+      },
+      {
+        title: "Crew scheduling",
+        description:
+          "Build multi-tech jobs with shared tasks, staging, and equipment dependencies.",
+      },
+    ],
+    stats: [
+      {
+        label: "Dispatch adjustments",
+        value: "-45%",
+        description: "fewer manual schedule edits needed after go-live.",
+      },
+      {
+        label: "On-time arrival",
+        value: "96%",
+        description: "average on-time rate achieved by Thorbis operators.",
+      },
+      {
+        label: "Dispatcher productivity",
+        value: "+28%",
+        description: "more jobs managed per coordinator each day.",
+      },
+    ],
+    integrations: ["Google Maps", "Waze", "Fleetio", "Verizon Connect"],
+    testimonial: {
+      quote:
+        "Thorbis scheduling keeps five dispatchers coordinated. Emergencies slot in automatically and we stay on time.",
+      attribution: "Jermaine Collins",
+      role: "Dispatch Supervisor, BlueSky Plumbing",
+    },
+    faq: [
+      {
+        question: "Can I customize the board?",
+        answer:
+          "Yes. Create views by team, region, revenue, or job status. Save filters per dispatcher.",
+      },
+      {
+        question: "Does it sync with technician mobile apps?",
+        answer:
+          "Technicians receive instant updates, route directions, and job notes through the Thorbis mobile app.",
+      },
+      {
+        question: "Do you support recurring jobs?",
+        answer:
+          "Generate recurring visits with seasonal rules, service plan commitments, and auto-assigned techs.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "mobile-app",
+    name: "Technician Mobile App",
+    heroEyebrow: "Offline-ready • Guided Workflows • Upsell Tools",
+    heroTitle: "Equip technicians with everything they need on-site",
+    heroDescription:
+      "Thorbis mobile app keeps jobs, checklists, and customer information at technicians’ fingertips—even without signal.",
+    heroImage:
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Deliver a digital job folder with workflows, parts availability, and payment collection to turn every visit into a five-star experience.",
+    primaryCta: {
+      label: "Request a technician walkthrough",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download mobile onboarding kit",
+      href: "/templates?tag=technician",
+    },
+    seo: {
+      title: "Technician Mobile App for Field Service | Thorbis",
+      description:
+        "Provide technicians with digital checklists, parts availability, photos, and payments. Thorbis mobile app works offline and syncs instantly.",
+      keywords: [
+        "field service mobile app",
+        "technician workflow app",
+        "contractor mobile software",
+      ],
+    },
+    painPoints: [
+      "Technicians rely on paper forms and duplicate entry after returning to the shop.",
+      "No signal means jobs stall because key info is stuck in the office.",
+      "Upsell opportunities are missed because techs lack pricing and financing knowledge.",
+    ],
+    valueProps: [
+      {
+        title: "Offline workflows",
+        description:
+          "Download jobs, checklists, and asset history before arriving. Sync automatically once connected.",
+        icon: "download",
+      },
+      {
+        title: "Visual documentation",
+        description:
+          "Capture photos, videos, and notes that flow directly into job history and customer portals.",
+        icon: "camera",
+      },
+      {
+        title: "On-site sales tools",
+        description:
+          "Present financing options, proposal templates, and dynamic pricebook items to increase close rates.",
+        icon: "handshake",
+      },
+    ],
+    workflows: [
+      {
+        title: "Guided checklists",
+        description:
+          "Enforce safety steps, equipment diagnostics, and quality checks with required photos.",
+      },
+      {
+        title: "Instant invoicing",
+        description:
+          "Generate invoices, collect signatures, and process payments before leaving the driveway.",
+      },
+    ],
+    stats: [
+      {
+        label: "Paperwork time",
+        value: "-30 min",
+        description: "eliminated per job by technicians using Thorbis mobile.",
+      },
+      {
+        label: "Average ticket size",
+        value: "+18%",
+        description: "increase after enabling on-site proposals and financing.",
+      },
+      {
+        label: "Photo documentation",
+        value: "12",
+        description:
+          "average rich media files captured per job for proof and training.",
+      },
+    ],
+    integrations: ["Stripe Terminal", "Sunbit", "GreenSky", "CompanyCam"],
+    testimonial: {
+      quote:
+        "Technicians rave about Thorbis mobile. Checklists, photos, and payments happen without chasing office staff.",
+      attribution: "Andre Wilson",
+      role: "Field Operations Director, FlowRight Plumbing",
+    },
+    faq: [
+      {
+        question: "Which devices are supported?",
+        answer:
+          "Thorbis mobile runs on iOS and Android phones or tablets. We provide rugged device recommendations.",
+      },
+      {
+        question: "Can I restrict what techs see?",
+        answer:
+          "Role-based controls hide financial data or limit editing while still granting job context.",
+      },
+      {
+        question: "How do updates deploy?",
+        answer:
+          "Apps receive over-the-air updates through the App Store and Google Play with release notes for technicians.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "routing",
+    name: "Route Optimization",
+    heroEyebrow: "Smart Sequencing • Live Re-Route • Fuel Savings",
+    heroTitle: "Turn chaotic routes into profitable days",
+    heroDescription:
+      "Thorbis optimizes routes across technicians, considering urgency, skills, traffic, and parts availability to cut windshield time.",
+    heroImage:
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Keep every truck moving efficiently with dynamic routing algorithms tuned for service businesses, not parcel delivery.",
+    primaryCta: {
+      label: "Optimize your routes",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Review routing benchmarks",
+      href: "/case-studies",
+    },
+    seo: {
+      title: "Route Optimization for Field Service | Thorbis",
+      description:
+        "Reduce drive time, lower fuel spend, and hit SLAs with Thorbis route optimization. Adapt to emergencies in real time.",
+      keywords: [
+        "field service routing",
+        "technician route optimization",
+        "contractor fleet routing",
+      ],
+    },
+    painPoints: [
+      "Manual routing ignores traffic and technician skills, causing delays and callbacks.",
+      "Emergencies throw off the entire day because routes can’t be recalculated quickly.",
+      "Fuel and overtime costs climb without visibility into route efficiency.",
+    ],
+    valueProps: [
+      {
+        title: "AI-powered sequencing",
+        description:
+          "Optimize across technicians using service windows, drive times, and promised SLAs.",
+        icon: "route",
+      },
+      {
+        title: "Live re-routing",
+        description:
+          "Drag-and-drop emergencies into the schedule and let Thorbis adjust every route instantly.",
+        icon: "refresh-cw",
+      },
+      {
+        title: "Fleet analytics",
+        description:
+          "Track drive time vs. on-site time, mileage, and fuel impact per technician or crew.",
+        icon: "gauge",
+      },
+    ],
+    workflows: [
+      {
+        title: "Morning route planning",
+        description:
+          "Dispatchers approve AI-generated routes, then push to technician mobile apps with turn-by-turn directions.",
+      },
+      {
+        title: "Emergency insertion",
+        description:
+          "Thorbis identifies the nearest qualified technician, recalculates the route, and notifies affected customers automatically.",
+      },
+    ],
+    stats: [
+      {
+        label: "Windshield time",
+        value: "-22%",
+        description: "average reduction reported by Thorbis routing customers.",
+      },
+      {
+        label: "Fuel consumption",
+        value: "-17%",
+        description: "savings from optimized routing and reduced idle time.",
+      },
+      {
+        label: "Same-day completion",
+        value: "+14%",
+        description: "increase in jobs completed without overtime.",
+      },
+    ],
+    integrations: ["Google Maps", "HERE Maps", "Fleetmatics", "Teletrac"],
+    testimonial: {
+      quote:
+        "Routing with Thorbis is night and day. Emergencies slot in, customers stay informed, and our trucks drive fewer miles.",
+      attribution: "Evelyn Carter",
+      role: "Dispatch Lead, RapidRooter",
+    },
+    faq: [
+      {
+        question: "Does Thorbis consider technician skills?",
+        answer:
+          "Yes. Routes respect skill tags, certifications, and equipment requirements you define.",
+      },
+      {
+        question: "How often can routes refresh?",
+        answer:
+          "Routes recalculate in seconds whenever jobs are added, canceled, or technicians change status.",
+      },
+      {
+        question: "Can technicians override routes?",
+        answer:
+          "Permissions allow technicians to request swaps. Dispatchers approve changes with full visibility.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "inventory",
+    name: "Inventory & Asset Management",
+    heroEyebrow: "Truck Stock • Warehouse Control • Purchase Orders",
+    heroTitle: "Keep the right part on every truck, every time",
+    heroDescription:
+      "Thorbis tracks parts across warehouses, trucks, and vendor orders so you always know what’s on hand and what needs replenishment.",
+    heroImage:
+      "https://images.unsplash.com/photo-1604933762019-d4b3fea8b1b8?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Eliminate callbacks caused by missing parts. Track serialized equipment, automate reorder points, and push purchase orders to vendors instantly.",
+    primaryCta: {
+      label: "See inventory control",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download truck stock template",
+      href: "/templates?tag=inventory",
+    },
+    seo: {
+      title: "Inventory Management for Service Contractors | Thorbis",
+      description:
+        "Manage truck stock, warehouses, purchase orders, and serialized assets with Thorbis inventory. Integrates directly with job costing.",
+      keywords: [
+        "field service inventory",
+        "truck stock management",
+        "purchase order software contractor",
+      ],
+    },
+    painPoints: [
+      "Technicians arrive without parts, forcing return trips and unplanned labor.",
+      "Warehouse counts live in spreadsheets, making it impossible to reconcile fast.",
+      "Managers lack visibility into costly non-billable inventory shrinkage.",
+    ],
+    valueProps: [
+      {
+        title: "Multi-location visibility",
+        description:
+          "Track inventory across warehouses, trucks, and consignment sites with permissions and audit logs.",
+        icon: "boxes",
+      },
+      {
+        title: "Automated reorder points",
+        description:
+          "Set min/max levels per location. Thorbis suggests purchase orders or transfers before stockouts occur.",
+        icon: "repeat-2",
+      },
+      {
+        title: "Serialized asset tracking",
+        description:
+          "Record warranties, install dates, and maintenance history for high-value equipment.",
+        icon: "scan",
+      },
+    ],
+    workflows: [
+      {
+        title: "Technician truck stock replenishment",
+        description:
+          "Technicians request replenishment from the mobile app; warehouse managers approve and track transfers.",
+      },
+      {
+        title: "Purchase order automation",
+        description:
+          "Generate vendor-specific POs based on reorder rules, then sync receipts back to inventory and job costing.",
+      },
+    ],
+    stats: [
+      {
+        label: "Stockouts",
+        value: "-60%",
+        description:
+          "reduction after implementing Thorbis inventory automation.",
+      },
+      {
+        label: "Truck roll-backs",
+        value: "-23%",
+        description: "fewer return visits due to missing parts.",
+      },
+      {
+        label: "Inventory reconciliation",
+        value: "2 hrs",
+        description:
+          "average weekly time to validate counts across all locations.",
+      },
+    ],
+    integrations: ["QuickBooks", "SOS Inventory", "Unleashed", "Ferguson"],
+    testimonial: {
+      quote:
+        "Thorbis inventory killed our spreadsheets. Techs always know what’s on their truck and warehouse counts stay accurate.",
+      attribution: "Omar Reyes",
+      role: "Inventory Manager, Prime Electric",
+    },
+    faq: [
+      {
+        question: "Can we barcode scan parts?",
+        answer:
+          "Yes. The mobile app scans manufacturer barcodes or Thorbis-generated labels for transfers and counts.",
+      },
+      {
+        question: "Do you support vendor integrations?",
+        answer:
+          "We integrate with major distributors for electronic purchase orders and pricing updates.",
+      },
+      {
+        question: "How do adjustments work?",
+        answer:
+          "Thorbis tracks cycle counts, adjustments, and reasons so you maintain clean audit trails.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "team-management",
+    name: "Team Management & Scheduling",
+    heroEyebrow: "Availability • Certifications • Performance Insights",
+    heroTitle:
+      "Manage every technician, apprentice, and coordinator in one hub",
+    heroDescription:
+      "Thorbis team management keeps credentials current, tracks availability, and highlights coaching opportunities.",
+    heroImage:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Centralize HR essentials for field teams—onboarding checklists, certifications, PTO, and productivity metrics.",
+    primaryCta: {
+      label: "Tour workforce tools",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download onboarding checklist",
+      href: "/templates?tag=people",
+    },
+    seo: {
+      title: "Team Management for Field Service Companies | Thorbis",
+      description:
+        "Track technician credentials, availability, and performance with Thorbis team management. Align HR and operations in one system.",
+      keywords: [
+        "field service workforce management",
+        "technician scheduling hr",
+        "service business team management",
+      ],
+    },
+    painPoints: [
+      "Certification expirations catch teams off guard, causing compliance headaches.",
+      "Schedulers have no visibility into PTO, training days, or light-duty assignments.",
+      "Leaders can’t measure technician productivity or sales performance.",
+    ],
+    valueProps: [
+      {
+        title: "Centralized roster",
+        description:
+          "Work from one roster with contact info, pay rates, skills, and shift preferences.",
+        icon: "users",
+      },
+      {
+        title: "Certification tracking",
+        description:
+          "Set reminders for license renewals, safety training, and background checks with automated alerts.",
+        icon: "shield-check",
+      },
+      {
+        title: "Performance dashboards",
+        description:
+          "Compare revenue, callback rate, customer satisfaction, and upsells per technician.",
+        icon: "trophy",
+      },
+    ],
+    workflows: [
+      {
+        title: "Onboarding program",
+        description:
+          "Assign tasks, track equipment issued, and monitor progress for new hires across departments.",
+      },
+      {
+        title: "Availability sync",
+        description:
+          "PTO requests, training days, and certifications automatically update scheduling rules.",
+      },
+    ],
+    stats: [
+      {
+        label: "Compliance violations",
+        value: "-95%",
+        description:
+          "reduction in missed license renewals with automated reminders.",
+      },
+      {
+        label: "Technician retention",
+        value: "+12%",
+        description: "increase after implementing structured onboarding.",
+      },
+      {
+        label: "Leadership visibility",
+        value: "100%",
+        description:
+          "of managers review technician scorecards weekly inside Thorbis.",
+      },
+    ],
+    integrations: ["BambooHR", "ADP Workforce Now", "Gusto", "Trainual"],
+    testimonial: {
+      quote:
+        "We finally have a live roster with certifications and productivity. Thorbis keeps operations and HR aligned.",
+      attribution: "Katie Nguyen",
+      role: "People Operations, Metro Service Group",
+    },
+    faq: [
+      {
+        question: "Does Thorbis handle timesheets?",
+        answer:
+          "Timesheets feed into payroll exports, with configurable rules for overtime and shift differentials.",
+      },
+      {
+        question: "Can technicians request PTO?",
+        answer:
+          "Yes. Requests flow through an approval process and update scheduling once approved.",
+      },
+      {
+        question: "How granular are roles?",
+        answer:
+          "Define custom roles for apprentices, installers, service techs, and office staff with tailored permissions.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "invoicing",
+    name: "Invoicing & Payments",
+    heroEyebrow: "Progress Billing • Payment Plans • Automated Reminders",
+    heroTitle: "Collect revenue faster with frictionless invoicing",
+    heroDescription:
+      "Thorbis generates accurate invoices, offers flexible payment options, and syncs payments back to accounting automatically.",
+    heroImage:
+      "https://images.unsplash.com/photo-1581622554612-7eb89c7518d0?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Create professional invoices onsite or in the office, support progress billing, and let customers pay the way they prefer.",
+    primaryCta: {
+      label: "Streamline billing",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Review payment integrations",
+      href: "/kb/user-guides",
+    },
+    seo: {
+      title: "Invoicing Software for Service Contractors | Thorbis",
+      description:
+        "Generate invoices, collect payments, and sync to QuickBooks automatically with Thorbis invoicing. Reduce DSO and eliminate manual entry.",
+      keywords: [
+        "service business invoicing",
+        "field service payments",
+        "contractor billing software",
+      ],
+    },
+    painPoints: [
+      "Invoices hit the accounting system days after work is complete, delaying cash flow.",
+      "Customers demand modern payment methods and installment options.",
+      "Teams duplicate data between field tools and accounting, causing errors.",
+    ],
+    valueProps: [
+      {
+        title: "Instant invoice creation",
+        description:
+          "Pull parts, labor, and discounts directly from jobs. Generate invoices with one click.",
+        icon: "file-text",
+      },
+      {
+        title: "Flexible payment options",
+        description:
+          "Accept ACH, credit card, stored payment methods, and subscription billing with autopay.",
+        icon: "wallet",
+      },
+      {
+        title: "Automated reminders",
+        description:
+          "Follow up on outstanding balances with smart reminders that stop when payment is received.",
+        icon: "mail",
+      },
+    ],
+    workflows: [
+      {
+        title: "Progress billing",
+        description:
+          "Split large projects into deposit, progress, and final invoices with retention tracking.",
+      },
+      {
+        title: "On-site payment capture",
+        description:
+          "Technicians present invoices, collect signatures, and process payments via mobile card readers.",
+      },
+    ],
+    stats: [
+      {
+        label: "Days sales outstanding",
+        value: "-9 days",
+        description: "average improvement after enabling Thorbis invoicing.",
+      },
+      {
+        label: "Payment completion",
+        value: "89%",
+        description: "of invoices paid within seven days of job completion.",
+      },
+      {
+        label: "Accounting errors",
+        value: "-75%",
+        description: "reduction in posting mistakes thanks to automation.",
+      },
+    ],
+    integrations: ["QuickBooks", "Stripe", "Plaid", "Authorised.Net"],
+    testimonial: {
+      quote:
+        "Our office closes invoices the same day. Customers choose autopay or payment plans, and accounting stays in sync.",
+      attribution: "Tom Hwang",
+      role: "Controller, Beacon Mechanical",
+    },
+    faq: [
+      {
+        question: "Do you support multi-tax jurisdictions?",
+        answer:
+          "Yes. Configure tax codes per location, service, or customer and Thorbis calculates automatically.",
+      },
+      {
+        question: "Can customers set up autopay?",
+        answer:
+          "Customers enroll in autopay for recurring invoices and maintenance plans directly from the portal.",
+      },
+      {
+        question: "Does Thorbis handle surcharges?",
+        answer:
+          "Configure convenience fees or automatically discount ACH to offset processing costs.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "quickbooks",
+    name: "QuickBooks Integration",
+    heroEyebrow: "Two-Way Sync • Job Costing • Financial Accuracy",
+    heroTitle: "Keep operations and accounting perfectly in sync",
+    heroDescription:
+      "Thorbis integrates deeply with QuickBooks Online to sync customers, invoices, payments, and items in near real-time.",
+    heroImage:
+      "https://images.unsplash.com/photo-1586880244502-311a4aa06d3a?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Empower your finance team with accurate, timely data while letting operations run in Thorbis without double entry.",
+    primaryCta: {
+      label: "Connect QuickBooks",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Read implementation guide",
+      href: "/kb/user-guides",
+    },
+    seo: {
+      title:
+        "QuickBooks Integration for Thorbis | Field Service Accounting Sync",
+      description:
+        "Sync customers, invoices, payments, and items between Thorbis and QuickBooks. Maintain accurate books without manual entry.",
+      keywords: [
+        "quickbooks field service integration",
+        "thorbis quickbooks sync",
+        "contractor accounting software",
+      ],
+    },
+    painPoints: [
+      "Operations updates don’t make it to accounting until days later.",
+      "Accounting spends hours reconciling duplicate or inconsistent records.",
+      "Job costing is delayed because labor and material costs live in separate systems.",
+    ],
+    valueProps: [
+      {
+        title: "Two-way data sync",
+        description:
+          "Customers, invoices, payments, vendors, and items stay aligned between Thorbis and QuickBooks in minutes.",
+        icon: "link",
+      },
+      {
+        title: "Job costing visibility",
+        description:
+          "Push labor, materials, and expenses into QuickBooks with job references for accurate profitability.",
+        icon: "scale",
+      },
+      {
+        title: "Error prevention",
+        description:
+          "Map chart of accounts and classes once. Thorbis enforces rules to prevent duplicates or improper posting.",
+        icon: "shield",
+      },
+    ],
+    workflows: [
+      {
+        title: "Daily sync reconciliation",
+        description:
+          "Review sync dashboards highlighting exceptions, then resolve with guided tools.",
+      },
+      {
+        title: "Vendor bill processing",
+        description:
+          "Create purchase orders in Thorbis, receive items, and push associated bills directly to QuickBooks.",
+      },
+    ],
+    stats: [
+      {
+        label: "Manual entry hours",
+        value: "-20 hrs",
+        description: "saved per week by finance teams using Thorbis sync.",
+      },
+      {
+        label: "Posting accuracy",
+        value: "99.8%",
+        description:
+          "accuracy rate across payments and invoices after go-live.",
+      },
+      {
+        label: "Job costing speed",
+        value: "Same day",
+        description:
+          "visibility into job profitability without waiting for month-end.",
+      },
+    ],
+    integrations: ["QuickBooks Online", "QuickBooks Desktop (connector)"],
+    testimonial: {
+      quote:
+        "Operations lives in Thorbis while accounting trusts QuickBooks. The sync just works, and job costing is always current.",
+      attribution: "Melissa Grant",
+      role: "Director of Finance, TrueNorth Services",
+    },
+    faq: [
+      {
+        question: "Do you support QuickBooks Desktop?",
+        answer:
+          "We provide a secure connector for QuickBooks Desktop Enterprise if you’re not ready for Online.",
+      },
+      {
+        question: "Can we map custom fields?",
+        answer:
+          "Yes. Map Thorbis fields to QuickBooks custom fields, classes, or locations during onboarding.",
+      },
+      {
+        question: "How often does data sync?",
+        answer:
+          "You control sync frequency. Most teams choose every five minutes or hourly schedules.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "estimates",
+    name: "Estimates & Proposals",
+    heroEyebrow: "Good-Better-Best • Visual Proposals • Digital Approvals",
+    heroTitle: "Close more deals with professional proposals",
+    heroDescription:
+      "Thorbis empowers technicians and sales reps to build polished proposals with pricing, photos, and financing options on the spot.",
+    heroImage:
+      "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Present tiered recommendations, upsell accessories, and capture signatures instantly from any device.",
+    primaryCta: {
+      label: "Build a proposal",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download proposal templates",
+      href: "/templates?tag=estimates",
+    },
+    seo: {
+      title: "Estimating Software for Service Contractors | Thorbis",
+      description:
+        "Create professional proposals with pricing, photos, and financing. Thorbis estimates help service companies close more deals faster.",
+      keywords: [
+        "field service estimating",
+        "contractor proposal software",
+        "good better best proposals",
+      ],
+    },
+    painPoints: [
+      "Technicians scribble prices on paper or rely on spreadsheets that create inconsistency.",
+      "Customers need clear options and financing to move forward quickly.",
+      "Approvals and signatures get lost in email threads.",
+    ],
+    valueProps: [
+      {
+        title: "Tiered proposals",
+        description:
+          "Offer good-better-best packages with dynamic pricing tied to your pricebook.",
+        icon: "layers",
+      },
+      {
+        title: "Visual storytelling",
+        description:
+          "Embed product photos, videos, and comparison charts to justify premium options.",
+        icon: "image",
+      },
+      {
+        title: "Instant approvals",
+        description:
+          "Capture e-signatures and convert winning proposals directly into jobs with deposits collected.",
+        icon: "check-circle",
+      },
+    ],
+    workflows: [
+      {
+        title: "In-home sales presentation",
+        description:
+          "Sales reps build proposals on tablets, present financing, and collect signatures before leaving the home.",
+      },
+      {
+        title: "Commercial bidding",
+        description:
+          "Attach scope documents, schedule milestones, and create approval routing for facility managers.",
+      },
+    ],
+    stats: [
+      {
+        label: "Close rate",
+        value: "+21%",
+        description: "average increase after implementing Thorbis proposals.",
+      },
+      {
+        label: "Average ticket",
+        value: "+16%",
+        description: "lift driven by premium package adoption.",
+      },
+      {
+        label: "Proposal turnaround",
+        value: "Same visit",
+        description: "average time to produce a signed proposal with deposit.",
+      },
+    ],
+    integrations: ["Sunbit", "GreenSky", "GoodLeap", "CompanyCam"],
+    testimonial: {
+      quote:
+        "Thorbis proposals close deals in the living room. Customers see financing, choose options, and sign within minutes.",
+      attribution: "Alexia Romero",
+      role: "Sales Manager, Prime Comfort",
+    },
+    faq: [
+      {
+        question: "Can I standardize templates?",
+        answer:
+          "Yes. Build reusable templates with recommended upsells and branded content for your teams.",
+      },
+      {
+        question: "Do you track follow-ups?",
+        answer:
+          "Thorbis notifies reps of open proposals and automates follow-up sequences by email or SMS.",
+      },
+      {
+        question: "What about multi-phase jobs?",
+        answer:
+          "Break proposals into phases or alternates and convert each accepted phase into its own job plan.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "financing",
+    name: "Customer Financing",
+    heroEyebrow: "Instant Offers • Soft Credit Check • Approval Tracking",
+    heroTitle: "Give customers flexible financing without leaving Thorbis",
+    heroDescription:
+      "Integrate leading financing providers to present offers, capture approvals, and close upgrades on-site.",
+    heroImage:
+      "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Thorbis makes it simple to embed financing into every estimate, increasing conversion and average ticket value.",
+    primaryCta: {
+      label: "Enable financing partners",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download financing guide",
+      href: "/templates?tag=financing",
+    },
+    seo: {
+      title: "Customer Financing for Service Businesses | Thorbis",
+      description:
+        "Present instant financing offers, track approvals, and close high-ticket jobs with Thorbis financing integrations.",
+      keywords: [
+        "service business financing",
+        "contractor financing solutions",
+        "hvac customer financing",
+      ],
+    },
+    painPoints: [
+      "Customers hesitate on premium solutions because financing is an afterthought.",
+      "Technicians juggle multiple portals to submit financing applications.",
+      "Approvals and funding statuses aren’t visible to coordinators.",
+    ],
+    valueProps: [
+      {
+        title: "Embedded application workflow",
+        description:
+          "Submit financing applications directly from proposals or invoices with customer consent.",
+        icon: "clipboard-check",
+      },
+      {
+        title: "Offer comparison",
+        description:
+          "Show multiple plans—same-as-cash, low monthly payment, or revolving credit—in a single view.",
+        icon: "scale",
+      },
+      {
+        title: "Approval tracking",
+        description:
+          "Monitor application statuses, funding dates, and documents inside Thorbis without logging into separate portals.",
+        icon: "timeline",
+      },
+    ],
+    workflows: [
+      {
+        title: "In-home financing presentation",
+        description:
+          "Technicians walk homeowners through options on tablets, capture signatures, and get instant approvals.",
+      },
+      {
+        title: "Post-approval coordination",
+        description:
+          "Once approved, Thorbis notifies operations to schedule installation and updates invoices with financing terms.",
+      },
+    ],
+    stats: [
+      {
+        label: "Average project size",
+        value: "+22%",
+        description: "increase when financing is presented on every proposal.",
+      },
+      {
+        label: "Same-day approvals",
+        value: "89%",
+        description: "of applications receive decisions within minutes.",
+      },
+      {
+        label: "Team adoption",
+        value: "95%",
+        description:
+          "of technicians present financing in Thorbis without additional training.",
+      },
+    ],
+    integrations: ["Sunbit", "GreenSky", "GoodLeap", "Synchrony"],
+    testimonial: {
+      quote:
+        "Financing used to be awkward. Now Thorbis bakes it into every proposal and our close rate skyrocketed.",
+      attribution: "Brian Foster",
+      role: "Sales Director, Precision Home Services",
+    },
+    faq: [
+      {
+        question: "Which lenders are supported?",
+        answer:
+          "We partner with national providers like Sunbit, GreenSky, GoodLeap, and regional credit unions.",
+      },
+      {
+        question: "Do homeowners complete a hard credit check?",
+        answer:
+          "Most partners start with a soft pull. Customers authorize the process through Thorbis for compliance.",
+      },
+      {
+        question: "Can I track funding status?",
+        answer:
+          "Yes. Thorbis records application status, funded amounts, and automatically updates invoices.",
+      },
+    ],
+  },
+  {
+    kind: "feature",
+    slug: "payroll",
+    name: "Payroll & Commissions",
+    heroEyebrow: "Time Tracking • Rate Rules • Commission Statements",
+    heroTitle: "Pay technicians accurately without spreadsheets",
+    heroDescription:
+      "Thorbis collects time entries, job premiums, and spiffs automatically to produce accurate payroll exports.",
+    heroImage:
+      "https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=1600&q=80",
+    summary:
+      "Simplify payroll for hourly techs, spiff-driven sales reps, and salaried coordinators while maintaining compliance.",
+    primaryCta: {
+      label: "Automate payroll prep",
+      href: "/demo",
+    },
+    secondaryCta: {
+      label: "Download commission templates",
+      href: "/templates?tag=payroll",
+    },
+    seo: {
+      title: "Payroll and Commission Tracking for Service Teams | Thorbis",
+      description:
+        "Track time, premiums, and commissions for technicians automatically. Export accurate payroll files from Thorbis in minutes.",
+      keywords: [
+        "field service payroll",
+        "technician commission tracking",
+        "service business payroll software",
+      ],
+    },
+    painPoints: [
+      "Payroll admins chase technicians for time sheets and manual adjustments.",
+      "Complex commission structures require spreadsheets and manual reconciliation.",
+      "Labor compliance is risky without audit trails and approvals.",
+    ],
+    valueProps: [
+      {
+        title: "Unified time tracking",
+        description:
+          "Technicians clock in/out through the mobile app or geofenced kiosks. Supervisors approve in one dashboard.",
+        icon: "clock",
+      },
+      {
+        title: "Flexible pay rules",
+        description:
+          "Configure overtime, shift differentials, job premiums, and per-diem allowances with rule engines.",
+        icon: "settings",
+      },
+      {
+        title: "Commission statements",
+        description:
+          "Generate itemized commission reports tied to invoices, gross margin, or product lines.",
+        icon: "file-text",
+      },
+    ],
+    workflows: [
+      {
+        title: "Weekly payroll cycle",
+        description:
+          "Supervisors approve time, Thorbis applies pay rules, and finance exports CSVs straight into payroll providers.",
+      },
+      {
+        title: "Commission payouts",
+        description:
+          "Thorbis tracks close dates, paid invoices, and margin to release commissions only when jobs are complete.",
+      },
+    ],
+    stats: [
+      {
+        label: "Payroll prep time",
+        value: "-12 hrs",
+        description: "saved per pay period for accounting teams.",
+      },
+      {
+        label: "Commission disputes",
+        value: "-78%",
+        description: "reduction thanks to transparent statements.",
+      },
+      {
+        label: "Compliance risk",
+        value: "-90%",
+        description: "drop in missing approvals or undocumented edits.",
+      },
+    ],
+    integrations: ["ADP", "Gusto", "Paychex", "UKG"],
+    testimonial: {
+      quote:
+        "Payroll closes in hours, not days. Thorbis tracks time, job premiums, and commissions with clear approvals.",
+      attribution: "Olivia Bryant",
+      role: "Payroll Manager, ComfortPro Services",
+    },
+    faq: [
+      {
+        question: "Can we export to our payroll provider?",
+        answer:
+          "Yes. Thorbis produces mapped CSV exports for ADP, Gusto, Paychex, UKG, and more.",
+      },
+      {
+        question: "Do you support union rules?",
+        answer:
+          "Configure union rates, multi-tier premiums, and reporting requirements per contract.",
+      },
+      {
+        question: "How are edits handled?",
+        answer:
+          "All edits require approvals and leave an audit trail for compliance.",
+      },
+    ],
+  },
+];
+
+export function getAllFeatures(): MarketingFeatureContent[] {
+  return FEATURE_CONTENT;
+}
+
+export function getFeatureBySlug(
+  slug: string
+): MarketingFeatureContent | undefined {
+  return FEATURE_CONTENT.find((feature) => feature.slug === slug);
+}

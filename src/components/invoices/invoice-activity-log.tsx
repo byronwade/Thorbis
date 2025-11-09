@@ -10,12 +10,18 @@
 
 "use client";
 
-import { History, User, Clock, FileEdit } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { Clock, FileEdit, History } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Label } from "@/components/ui/label";
 
 interface Activity {
   id: string;
@@ -42,9 +48,9 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMins = Math.floor(diffMs / 60_000);
+    const diffHours = Math.floor(diffMs / 3_600_000);
+    const diffDays = Math.floor(diffMs / 86_400_000);
 
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins}m ago`;
@@ -84,18 +90,33 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
     switch (action.toLowerCase()) {
       case "create":
       case "created":
-        return { variant: "default" as const, icon: <FileEdit className="h-3 w-3" /> };
+        return {
+          variant: "default" as const,
+          icon: <FileEdit className="h-3 w-3" />,
+        };
       case "update":
       case "updated":
-        return { variant: "secondary" as const, icon: <FileEdit className="h-3 w-3" /> };
+        return {
+          variant: "secondary" as const,
+          icon: <FileEdit className="h-3 w-3" />,
+        };
       case "delete":
       case "deleted":
-        return { variant: "destructive" as const, icon: <FileEdit className="h-3 w-3" /> };
+        return {
+          variant: "destructive" as const,
+          icon: <FileEdit className="h-3 w-3" />,
+        };
       case "payment":
       case "paid":
-        return { variant: "default" as const, icon: <FileEdit className="h-3 w-3" /> };
+        return {
+          variant: "default" as const,
+          icon: <FileEdit className="h-3 w-3" />,
+        };
       default:
-        return { variant: "outline" as const, icon: <FileEdit className="h-3 w-3" /> };
+        return {
+          variant: "outline" as const,
+          icon: <FileEdit className="h-3 w-3" />,
+        };
     }
   };
 
@@ -104,21 +125,34 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
     if (!changes) return null;
 
     // Parse changes if it's a string
-    const parsedChanges = typeof changes === "string" ? JSON.parse(changes) : changes;
+    const parsedChanges =
+      typeof changes === "string" ? JSON.parse(changes) : changes;
 
-    return Object.entries(parsedChanges).map(([field, value]: [string, any]) => {
-      if (typeof value === "object" && value !== null && "old" in value && "new" in value) {
-        return (
-          <div key={field} className="text-sm">
-            <span className="font-medium capitalize">{field.replace(/_/g, " ")}</span>:{" "}
-            <span className="text-muted-foreground line-through">{String(value.old)}</span>
-            {" → "}
-            <span className="font-medium">{String(value.new)}</span>
-          </div>
-        );
+    return Object.entries(parsedChanges).map(
+      ([field, value]: [string, any]) => {
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          "old" in value &&
+          "new" in value
+        ) {
+          return (
+            <div className="text-sm" key={field}>
+              <span className="font-medium capitalize">
+                {field.replace(/_/g, " ")}
+              </span>
+              :{" "}
+              <span className="text-muted-foreground line-through">
+                {String(value.old)}
+              </span>
+              {" → "}
+              <span className="font-medium">{String(value.new)}</span>
+            </div>
+          );
+        }
+        return null;
       }
-      return null;
-    });
+    );
   };
 
   if (!activities || activities.length === 0) {
@@ -126,7 +160,7 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
       <Card className="mb-8 p-6">
         <div className="mb-4 flex items-center gap-2">
           <History className="h-5 w-5 text-muted-foreground" />
-          <Label className="text-base font-semibold">Activity Log</Label>
+          <Label className="font-semibold text-base">Activity Log</Label>
         </div>
         <Empty>
           <EmptyHeader>
@@ -135,7 +169,8 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
             </EmptyMedia>
             <EmptyTitle>No Activity Yet</EmptyTitle>
             <EmptyDescription>
-              Changes to this invoice will appear here with timestamps and user information.
+              Changes to this invoice will appear here with timestamps and user
+              information.
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -147,8 +182,8 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
     <Card className="mb-8 p-6">
       <div className="mb-6 flex items-center gap-2">
         <History className="h-5 w-5 text-muted-foreground" />
-        <Label className="text-base font-semibold">Activity Log</Label>
-        <Badge variant="secondary" className="ml-auto">
+        <Label className="font-semibold text-base">Activity Log</Label>
+        <Badge className="ml-auto" variant="secondary">
           {activities.length} {activities.length === 1 ? "event" : "events"}
         </Badge>
       </div>
@@ -158,7 +193,7 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
           const actionStyle = getActionStyle(activity.action);
 
           return (
-            <div key={activity.id} className="flex gap-4">
+            <div className="flex gap-4" key={activity.id}>
               {/* Avatar */}
               <Avatar className="h-8 w-8 shrink-0">
                 <AvatarFallback className="text-xs">
@@ -172,7 +207,7 @@ export function InvoiceActivityLog({ activities }: InvoiceActivityLogProps) {
                   <span className="font-medium text-sm">
                     {getUserName(activity.user)}
                   </span>
-                  <Badge variant={actionStyle.variant} className="gap-1">
+                  <Badge className="gap-1" variant={actionStyle.variant}>
                     {actionStyle.icon}
                     {activity.action}
                   </Badge>

@@ -18,11 +18,15 @@ import { SectionHeader } from "@/components/dashboard/section-header";
  * Only loads when user scrolls to chart section
  */
 const RevenueChart = dynamic(
-  () => import("@/components/dashboard/revenue-chart").then((mod) => mod.RevenueChart),
+  () =>
+    import("@/components/dashboard/revenue-chart").then(
+      (mod) => mod.RevenueChart
+    ),
   {
     loading: () => <ChartSkeleton />,
   }
 );
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartSkeleton } from "@/components/ui/skeletons";

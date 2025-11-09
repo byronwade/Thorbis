@@ -82,16 +82,14 @@ export async function updateTagSettings(
       autoAssignColors: formData.get("autoAssignColors") !== "false",
     });
 
-    const { error } = await supabase
-      .from("tag_settings")
-      .upsert({
-        company_id: companyId,
-        allow_custom_tags: data.allowCustomTags,
-        require_tag_approval: data.requireTagApproval,
-        max_tags_per_item: data.maxTagsPerItem,
-        use_color_coding: data.useColorCoding,
-        auto_assign_colors: data.autoAssignColors,
-      });
+    const { error } = await supabase.from("tag_settings").upsert({
+      company_id: companyId,
+      allow_custom_tags: data.allowCustomTags,
+      require_tag_approval: data.requireTagApproval,
+      max_tags_per_item: data.maxTagsPerItem,
+      use_color_coding: data.useColorCoding,
+      auto_assign_colors: data.autoAssignColors,
+    });
 
     if (error) {
       throw new ActionError(
@@ -169,21 +167,21 @@ export async function updateChecklistSettings(
     const companyId = await getCompanyId(supabase, user.id);
 
     const data = checklistSettingsSchema.parse({
-      requireChecklistCompletion: formData.get("requireChecklistCompletion") === "true",
+      requireChecklistCompletion:
+        formData.get("requireChecklistCompletion") === "true",
       allowSkipItems: formData.get("allowSkipItems") !== "false",
-      requirePhotosForChecklist: formData.get("requirePhotosForChecklist") === "true",
+      requirePhotosForChecklist:
+        formData.get("requirePhotosForChecklist") === "true",
       autoAssignByJobType: formData.get("autoAssignByJobType") !== "false",
     });
 
-    const { error } = await supabase
-      .from("checklist_settings")
-      .upsert({
-        company_id: companyId,
-        require_checklist_completion: data.requireChecklistCompletion,
-        allow_skip_items: data.allowSkipItems,
-        require_photos_for_checklist: data.requirePhotosForChecklist,
-        auto_assign_by_job_type: data.autoAssignByJobType,
-      });
+    const { error } = await supabase.from("checklist_settings").upsert({
+      company_id: companyId,
+      require_checklist_completion: data.requireChecklistCompletion,
+      allow_skip_items: data.allowSkipItems,
+      require_photos_for_checklist: data.requirePhotosForChecklist,
+      auto_assign_by_job_type: data.autoAssignByJobType,
+    });
 
     if (error) {
       throw new ActionError(
@@ -335,7 +333,9 @@ export async function updateLeadSource(
   });
 }
 
-export async function deleteLeadSource(sourceId: string): Promise<ActionResult<void>> {
+export async function deleteLeadSource(
+  sourceId: string
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

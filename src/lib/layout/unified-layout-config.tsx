@@ -26,9 +26,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 // Toolbar action components
 import { CommunicationToolbarActions } from "@/components/communication/communication-toolbar-actions";
-import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
-import { CustomerDetailToolbar } from "@/components/customers/customer-detail-toolbar";
 import { CustomerDetailBreadcrumbs } from "@/components/customers/customer-detail-breadcrumbs";
+import { CustomerDetailToolbar } from "@/components/customers/customer-detail-toolbar";
+import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
@@ -419,7 +419,8 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       sidebar: { show: false },
     },
     priority: 98,
-    description: "Customer detail page with inline editing - full width no sidebars",
+    description:
+      "Customer detail page with inline editing - full width no sidebars",
   },
 
   {

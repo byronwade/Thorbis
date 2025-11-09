@@ -175,10 +175,12 @@ export async function updateSchedule(
       processedData.dispatch_time = processedData.dispatch_time.toISOString();
     }
     if (processedData.actual_start_time instanceof Date) {
-      processedData.actual_start_time = processedData.actual_start_time.toISOString();
+      processedData.actual_start_time =
+        processedData.actual_start_time.toISOString();
     }
     if (processedData.actual_end_time instanceof Date) {
-      processedData.actual_end_time = processedData.actual_end_time.toISOString();
+      processedData.actual_end_time =
+        processedData.actual_end_time.toISOString();
     }
     if (processedData.start_time instanceof Date) {
       processedData.start_time = processedData.start_time.toISOString();
@@ -186,7 +188,7 @@ export async function updateSchedule(
     if (processedData.end_time instanceof Date) {
       processedData.end_time = processedData.end_time.toISOString();
     }
-    
+
     const validated = scheduleUpdateSchema.parse(processedData);
     const supabase = await createClient();
 

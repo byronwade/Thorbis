@@ -13,10 +13,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
-  jobWorkflowStageInsertSchema,
-  jobWorkflowStageUpdateSchema,
   type JobWorkflowStageInsert,
-  type JobWorkflowStageUpdate,
+  jobWorkflowStageInsertSchema,
 } from "@/lib/validations/database-schemas";
 
 // ============================================================================
@@ -197,7 +195,10 @@ export async function updateJobWorkflowStage(
             .eq("category", "completion")
             .gte("id", newStage.required_photos_count || 1);
 
-          if (!photos || photos.length < (newStage.required_photos_count || 1)) {
+          if (
+            !photos ||
+            photos.length < (newStage.required_photos_count || 1)
+          ) {
             return {
               success: false,
               error: `At least ${newStage.required_photos_count} completion photo(s) required`,
@@ -266,9 +267,7 @@ export async function updateJobWorkflowStage(
 // GET WORKFLOW STAGES
 // ============================================================================
 
-export async function getWorkflowStages(
-  industryType?: string
-): Promise<{
+export async function getWorkflowStages(industryType?: string): Promise<{
   success: boolean;
   error?: string;
   stages?: any[];
@@ -325,7 +324,9 @@ export async function getWorkflowStages(
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : "Failed to get workflow stages",
+        error instanceof Error
+          ? error.message
+          : "Failed to get workflow stages",
     };
   }
 }

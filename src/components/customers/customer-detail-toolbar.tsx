@@ -9,8 +9,8 @@
  * - Quick actions (New Job, New Invoice)
  */
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Briefcase, Edit3, Eye, FileText } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export function CustomerDetailToolbar() {
@@ -33,9 +33,9 @@ export function CustomerDetailToolbar() {
     <div className="flex items-center gap-2">
       {/* Edit/View Toggle */}
       <Button
+        onClick={toggleEditMode}
         size="sm"
         variant={isEditMode ? "default" : "outline"}
-        onClick={toggleEditMode}
       >
         {isEditMode ? (
           <>
@@ -53,14 +53,18 @@ export function CustomerDetailToolbar() {
       {/* Quick Actions */}
       {!isEditMode && (
         <>
-          <Button size="sm" variant="outline" asChild>
-            <a href={`/dashboard/work/new?customerId=${pathname.split("/").pop()}`}>
+          <Button asChild size="sm" variant="outline">
+            <a
+              href={`/dashboard/work/new?customerId=${pathname.split("/").pop()}`}
+            >
               <Briefcase className="mr-2 size-4" />
               New Job
             </a>
           </Button>
-          <Button size="sm" variant="outline" asChild>
-            <a href={`/dashboard/work/invoices/new?customerId=${pathname.split("/").pop()}`}>
+          <Button asChild size="sm" variant="outline">
+            <a
+              href={`/dashboard/work/invoices/new?customerId=${pathname.split("/").pop()}`}
+            >
               <FileText className="mr-2 size-4" />
               New Invoice
             </a>

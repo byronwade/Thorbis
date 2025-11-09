@@ -10,12 +10,12 @@
  * - Efficient query with joins to minimize database calls
  */
 
-import { redirect } from "next/navigation";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {  AlertCircle, CreditCard, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertCircle, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { SubscriptionCard } from "@/components/billing/subscription-card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
@@ -85,10 +85,14 @@ export default async function SubscriptionsPage() {
 
   const companies = memberships?.map((m: any) => m.companies) || [];
   const activeSubscriptions = companies.filter(
-    (c: any) => c.stripe_subscription_status === "active" || c.stripe_subscription_status === "trialing"
+    (c: any) =>
+      c.stripe_subscription_status === "active" ||
+      c.stripe_subscription_status === "trialing"
   );
   const inactiveCompanies = companies.filter(
-    (c: any) => !c.stripe_subscription_status || c.stripe_subscription_status === "canceled"
+    (c: any) =>
+      !c.stripe_subscription_status ||
+      c.stripe_subscription_status === "canceled"
   );
 
   return (

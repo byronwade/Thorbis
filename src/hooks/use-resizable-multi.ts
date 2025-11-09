@@ -225,14 +225,23 @@ export function useResizableMulti(
         const deltaX = clientX - startRef.current.x;
         const deltaY = clientY - startRef.current.y;
 
-        const newState = calculateResizeRef.current(deltaX, deltaY, activeDirection);
+        const newState = calculateResizeRef.current(
+          deltaX,
+          deltaY,
+          activeDirection
+        );
 
         // Update local state (no store update = fast)
         setLocalState(newState);
         localStateRef.current = newState;
 
         // Trigger callback for other updates (like height state in parent)
-        onResizeRef.current?.(newState.width, newState.height, newState.x, newState.y);
+        onResizeRef.current?.(
+          newState.width,
+          newState.height,
+          newState.x,
+          newState.y
+        );
       });
     };
 

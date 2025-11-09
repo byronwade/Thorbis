@@ -33,13 +33,13 @@ export function SettingsSearch() {
 
   return (
     <div className="relative">
-      <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
       <Input
         className="pl-9"
+        onChange={(e) => handleSearchChange(e.target.value)}
         placeholder="Search settings..."
         type="search"
         value={currentSearch}
-        onChange={(e) => handleSearchChange(e.target.value)}
       />
     </div>
   );

@@ -4,8 +4,8 @@
  * Displays count of archived items by entity type in ticker format
  */
 
-import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 import type { ArchivableEntityType } from "@/actions/archive";
+import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
 interface ArchiveStatsProps {
   stats: Record<ArchivableEntityType, number>;

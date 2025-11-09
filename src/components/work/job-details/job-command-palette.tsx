@@ -15,9 +15,28 @@
 
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
 import {
-  Command,
+  Activity,
+  Building2,
+  Calendar,
+  Camera,
+  Clock,
+  CreditCard,
+  DollarSign,
+  FileText,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Package,
+  Pen,
+  Phone,
+  Save,
+  Upload,
+  Users,
+  Wrench,
+} from "lucide-react";
+import { useCallback, useEffect } from "react";
+import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -27,41 +46,18 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import {
-  useIsCommandPaletteOpen,
-  useSetActiveTab,
-  useJobEditorStore,
   type JobTab,
+  useIsCommandPaletteOpen,
+  useJobEditorStore,
+  useSetActiveTab,
 } from "@/lib/stores/job-editor-store";
-import {
-  Building2,
-  Users,
-  DollarSign,
-  Package,
-  Camera,
-  Activity,
-  Wrench,
-  FileText,
-  Phone,
-  Mail,
-  MessageSquare,
-  CreditCard,
-  Clock,
-  Upload,
-  Pen,
-  Calendar,
-  MapPin,
-  Save,
-} from "lucide-react";
 
 interface JobCommandPaletteProps {
   jobId: string;
   customer?: any;
 }
 
-export function JobCommandPalette({
-  jobId,
-  customer,
-}: JobCommandPaletteProps) {
+export function JobCommandPalette({ jobId, customer }: JobCommandPaletteProps) {
   const isOpen = useIsCommandPaletteOpen();
   const setActiveTab = useSetActiveTab();
   const { setCommandPaletteOpen } = useJobEditorStore();
@@ -98,7 +94,7 @@ export function JobCommandPalette({
   );
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={setCommandPaletteOpen}>
+    <CommandDialog onOpenChange={setCommandPaletteOpen} open={isOpen}>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
@@ -141,25 +137,19 @@ export function JobCommandPalette({
         {customer && (
           <CommandGroup heading="Customer Actions">
             <CommandItem
-              onSelect={() =>
-                handleQuickAction(`call:${customer.phone}`)
-              }
+              onSelect={() => handleQuickAction(`call:${customer.phone}`)}
             >
               <Phone className="mr-2 h-4 w-4" />
               <span>Call {customer.first_name}</span>
             </CommandItem>
             <CommandItem
-              onSelect={() =>
-                handleQuickAction(`email:${customer.email}`)
-              }
+              onSelect={() => handleQuickAction(`email:${customer.email}`)}
             >
               <Mail className="mr-2 h-4 w-4" />
               <span>Email {customer.first_name}</span>
             </CommandItem>
             <CommandItem
-              onSelect={() =>
-                handleQuickAction(`sms:${customer.phone}`)
-              }
+              onSelect={() => handleQuickAction(`sms:${customer.phone}`)}
             >
               <MessageSquare className="mr-2 h-4 w-4" />
               <span>Send SMS</span>

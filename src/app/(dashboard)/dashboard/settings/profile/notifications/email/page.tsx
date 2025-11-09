@@ -10,16 +10,19 @@ import {
   Calendar,
   Clock,
   CreditCard,
+  Loader2,
   Mail,
   MessageSquare,
   Send,
   Shield,
   Trash2,
   Users,
-  Loader2,
-  Save,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  getNotificationPreferences,
+  updateNotificationPreferences,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,10 +42,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/use-settings";
-import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 
 export default function EmailPreferencesPage() {
-  const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings } = useSettings({
+  const {
+    settings,
+    isLoading,
+    isPending,
+    hasUnsavedChanges,
+    updateSetting,
+    saveSettings,
+  } = useSettings({
     getter: getNotificationPreferences,
     setter: updateNotificationPreferences,
     initialState: {

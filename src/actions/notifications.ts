@@ -19,24 +19,22 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
 import {
-  NotificationTypeSchema,
-  NotificationPrioritySchema,
-  CreateNotificationSchema,
-  GetNotificationsSchema,
-  NotificationPreferenceSchema,
-  type NotificationType,
-  type NotificationPriority,
   type CreateNotificationInput,
+  CreateNotificationSchema,
   type GetNotificationsInput,
+  GetNotificationsSchema,
   type NotificationPreference,
+  NotificationPreferenceSchema,
 } from "@/lib/notifications/types";
+import { createClient } from "@/lib/supabase/server";
 
 // NOTE: Type re-exports removed to comply with Next.js 16 "use server" restrictions
 // Import types directly from @/lib/notifications/types instead
 
-const UpdateNotificationPreferencesSchema = z.array(NotificationPreferenceSchema);
+const UpdateNotificationPreferencesSchema = z.array(
+  NotificationPreferenceSchema
+);
 
 // =====================================================================================
 // Helper Functions
@@ -90,7 +88,9 @@ async function getAuthContext() {
  * @param options - Filtering and pagination options
  * @returns Array of notifications and total count
  */
-export async function getNotifications(options?: Partial<GetNotificationsInput>) {
+export async function getNotifications(
+  options?: Partial<GetNotificationsInput>
+) {
   try {
     const { userId, supabase } = await getAuthContext();
 
@@ -118,11 +118,10 @@ export async function getNotifications(options?: Partial<GetNotificationsInput>)
     }
 
     // Apply pagination
-    query = query
-      .range(
-        validatedOptions.offset,
-        validatedOptions.offset + validatedOptions.limit - 1
-      );
+    query = query.range(
+      validatedOptions.offset,
+      validatedOptions.offset + validatedOptions.limit - 1
+    );
 
     const { data, error, count } = await query;
 
@@ -170,13 +169,20 @@ export async function getUnreadCount() {
     const { userId, supabase } = await getAuthContext();
 
     // Use the database function for optimized counting
-    const { data, error } = await supabase.rpc("get_unread_notification_count", {
-      p_user_id: userId,
-    });
+    const { data, error } = await supabase.rpc(
+      "get_unread_notification_count",
+      {
+        p_user_id: userId,
+      }
+    );
 
     if (error) {
       console.error("Error fetching unread count:", error);
-      return { success: false, error: "Failed to fetch unread count", count: 0 };
+      return {
+        success: false,
+        error: "Failed to fetch unread count",
+        count: 0,
+      };
     }
 
     return { success: true, count: data || 0 };
@@ -465,7 +471,8 @@ export async function updateNotificationPreferences(
     const { userId, companyId, supabase } = await getAuthContext();
 
     // Validate input
-    const validatedPreferences = UpdateNotificationPreferencesSchema.parse(preferences);
+    const validatedPreferences =
+      UpdateNotificationPreferencesSchema.parse(preferences);
 
     // Delete existing preferences
     await supabase

@@ -9,7 +9,16 @@
  * Shows Coming Soon component in production, normal page in development
  */
 
-import { CheckCircle2, CreditCard, DollarSign, TrendingUp, UserCheck, Users, Wallet, Zap } from "lucide-react";
+import {
+  CheckCircle2,
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+  UserCheck,
+  Users,
+  Wallet,
+  Zap,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -28,37 +37,41 @@ export default function ConsumerFinancingPage() {
   if (isProduction) {
     return (
       <ComingSoon
-        icon={UserCheck}
-        title="Consumer Financing"
-        titleGradient="from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
         description="Help customers say yes to larger jobs with instant financing approvals. Increase your average ticket size and close more deals with flexible payment options."
         features={[
           {
             icon: Zap,
             title: "Instant Approvals",
-            description: "Get customers approved in seconds with instant online applications - no waiting",
+            description:
+              "Get customers approved in seconds with instant online applications - no waiting",
             color: "green-500",
           },
           {
             icon: CreditCard,
             title: "Flexible Terms",
-            description: "Offer payment plans from 6-60 months with competitive rates and low monthly payments",
+            description:
+              "Offer payment plans from 6-60 months with competitive rates and low monthly payments",
             color: "blue-500",
           },
           {
             icon: TrendingUp,
             title: "Higher Tickets",
-            description: "Increase average job size by 40%+ when customers can spread costs over time",
+            description:
+              "Increase average job size by 40%+ when customers can spread costs over time",
             color: "purple-500",
           },
           {
             icon: CheckCircle2,
             title: "Multiple Partners",
-            description: "Integrated with Wisetack, GreenSky, and major BNPL providers for maximum approval rates",
+            description:
+              "Integrated with Wisetack, GreenSky, and major BNPL providers for maximum approval rates",
             color: "orange-500",
           },
         ]}
+        icon={UserCheck}
         showViewAllLink={false}
+        title="Consumer Financing"
+        titleGradient="from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
       />
     );
   }

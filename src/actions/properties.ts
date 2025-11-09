@@ -25,6 +25,7 @@ import {
   assertExists,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
+import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
@@ -147,7 +148,7 @@ export async function findOrCreateProperty(
 
     // Use coordinates from Google Places if provided, otherwise geocode in background
     const fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
-    
+
     // Create property immediately
     const insertData: Record<string, any> = {
       company_id: activeCompanyId,
@@ -165,12 +166,14 @@ export async function findOrCreateProperty(
     if (data.address2) insertData.address2 = data.address2;
     if (data.squareFootage) insertData.square_footage = data.squareFootage;
     if (data.yearBuilt) insertData.year_built = data.yearBuilt;
-    
+
     // If coordinates provided from Google Places, save them immediately
     if (data.lat && data.lon) {
       insertData.lat = data.lat;
       insertData.lon = data.lon;
-      console.log(`[Property] Using Google Places coordinates: ${data.lat}, ${data.lon}`);
+      console.log(
+        `[Property] Using Google Places coordinates: ${data.lat}, ${data.lon}`
+      );
     }
 
     const { data: property, error: createError } = await supabase
@@ -181,13 +184,17 @@ export async function findOrCreateProperty(
 
     // Only geocode in background if coordinates weren't provided
     if (property?.id && !data.lat && !data.lon) {
-      console.log(`[Property] No coordinates provided, geocoding in background...`);
+      console.log(
+        "[Property] No coordinates provided, geocoding in background..."
+      );
       // Fire and forget - don't wait for this
-      import("@/lib/services/location-services")
-        .then(({ LocationServices }) => {
-          const locationServices = new LocationServices();
-          return locationServices.geocode(fullAddress);
-        })
+      geocodeAddressSilent(
+        data.address,
+        data.city,
+        data.state,
+        data.zipCode,
+        data.country
+      )
         .then((geocoded) => {
           if (geocoded) {
             // Update property with coordinates
@@ -199,7 +206,9 @@ export async function findOrCreateProperty(
               })
               .eq("id", property.id)
               .then(() => {
-                console.log(`[Property] Geocoded ${fullAddress} to: ${geocoded.lat}, ${geocoded.lon}`);
+                console.log(
+                  `[Property] Geocoded ${fullAddress} to: ${geocoded.lat}, ${geocoded.lon}`
+                );
               });
           }
         })
@@ -305,6 +314,30 @@ export async function createProperty(
       name: data.name,
     });
 
+    // Geocode property address
+    let propertyLat: number | null = null;
+    let propertyLon: number | null = null;
+
+    const geocodeResult = await geocodeAddressSilent(
+      data.address,
+      data.city,
+      data.state,
+      data.zipCode,
+      data.country
+    );
+
+    if (geocodeResult) {
+      propertyLat = geocodeResult.lat;
+      propertyLon = geocodeResult.lon;
+      console.log(
+        `Geocoded property address: ${geocodeResult.lat}, ${geocodeResult.lon}`
+      );
+    } else {
+      console.warn(
+        "Failed to geocode property address - coordinates will be null"
+      );
+    }
+
     // Create property
     const { data: property, error: createError } = await supabase
       .from("properties")
@@ -322,6 +355,8 @@ export async function createProperty(
         square_footage: data.squareFootage,
         year_built: data.yearBuilt,
         notes: data.notes,
+        lat: propertyLat,
+        lon: propertyLon,
       })
       .select("id")
       .single();
@@ -530,7 +565,9 @@ export async function archiveProperty(
 
     // Archive property (soft delete)
     const now = new Date().toISOString();
-    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    const scheduledDeletion = new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000
+    ).toISOString();
 
     const { error: archiveError } = await supabase
       .from("properties")

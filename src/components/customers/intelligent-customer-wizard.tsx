@@ -17,31 +17,31 @@
  * - Form state management with useState
  */
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
   Building2,
-  Home,
-  Factory,
-  User,
-  MapPin,
+  CheckCircle2,
   CreditCard,
+  Factory,
+  Home,
+  MapPin,
+  Sparkles,
+  User,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { createCustomer } from "@/actions/customers";
+import { SmartAddressInput } from "@/components/customers/smart-address-input";
+import { SmartContactInput } from "@/components/customers/smart-contact-input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { SmartContactInput } from "@/components/customers/smart-contact-input";
-import { SmartAddressInput } from "@/components/customers/smart-address-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -49,7 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createCustomer } from "@/actions/customers";
+import { Textarea } from "@/components/ui/textarea";
 
 type CustomerType = "residential" | "commercial" | "industrial";
 
@@ -125,10 +125,26 @@ const CUSTOMER_TEMPLATES = {
 };
 
 const STEP_INFO = {
-  1: { title: "Customer Type", icon: Building2, description: "Choose customer type" },
-  2: { title: "Contact Info", icon: User, description: "Who should we contact?" },
-  3: { title: "Location", icon: MapPin, description: "Where do we provide service?" },
-  4: { title: "Business Details", icon: CreditCard, description: "Payment & billing info" },
+  1: {
+    title: "Customer Type",
+    icon: Building2,
+    description: "Choose customer type",
+  },
+  2: {
+    title: "Contact Info",
+    icon: User,
+    description: "Who should we contact?",
+  },
+  3: {
+    title: "Location",
+    icon: MapPin,
+    description: "Where do we provide service?",
+  },
+  4: {
+    title: "Business Details",
+    icon: CreditCard,
+    description: "Payment & billing info",
+  },
 };
 
 export function IntelligentCustomerWizard() {
@@ -264,7 +280,10 @@ export function IntelligentCustomerWizard() {
       }
 
       // Business details
-      formData.append("preferredContactMethod", customerData.preferredContactMethod);
+      formData.append(
+        "preferredContactMethod",
+        customerData.preferredContactMethod
+      );
       formData.append("paymentTerms", customerData.paymentTerms);
       formData.append("creditLimit", customerData.creditLimit);
       formData.append("taxExempt", customerData.taxExempt ? "on" : "");
@@ -312,13 +331,9 @@ export function IntelligentCustomerWizard() {
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <StepIcon className="size-4 text-primary md:size-5" />
-            <span className="font-medium">
-              Step {currentStep} of 4
-            </span>
+            <span className="font-medium">Step {currentStep} of 4</span>
           </div>
-          <span className="text-muted-foreground">
-            {Math.round(progress)}%
-          </span>
+          <span className="text-muted-foreground">{Math.round(progress)}%</span>
         </div>
         <Progress className="h-2" value={progress} />
         <p className="text-center text-muted-foreground text-xs md:text-left md:text-sm">
@@ -369,7 +384,9 @@ export function IntelligentCustomerWizard() {
                           : "border-border hover:border-primary/50"
                       }`}
                       key={key}
-                      onClick={() => applyTemplate(key as keyof typeof CUSTOMER_TEMPLATES)}
+                      onClick={() =>
+                        applyTemplate(key as keyof typeof CUSTOMER_TEMPLATES)
+                      }
                       type="button"
                     >
                       <div
@@ -379,7 +396,9 @@ export function IntelligentCustomerWizard() {
                       >
                         <Icon
                           className={`size-6 md:size-8 ${
-                            isSelected ? "text-primary" : "text-muted-foreground"
+                            isSelected
+                              ? "text-primary"
+                              : "text-muted-foreground"
                           }`}
                         />
                       </div>
@@ -392,7 +411,10 @@ export function IntelligentCustomerWizard() {
                         </p>
                       </div>
                       {isSelected && (
-                        <Badge className="absolute top-2 right-2 text-xs" variant="default">
+                        <Badge
+                          className="absolute top-2 right-2 text-xs"
+                          variant="default"
+                        >
                           <CheckCircle2 className="mr-1 size-3" />
                           Selected
                         </Badge>
@@ -411,7 +433,9 @@ export function IntelligentCustomerWizard() {
                     </Label>
                     <Input
                       id="companyName"
-                      onChange={(e) => updateField("companyName", e.target.value)}
+                      onChange={(e) =>
+                        updateField("companyName", e.target.value)
+                      }
                       placeholder="ABC Corporation"
                       type="text"
                       value={customerData.companyName}
@@ -431,7 +455,9 @@ export function IntelligentCustomerWizard() {
                         <SelectItem value="retail">Retail</SelectItem>
                         <SelectItem value="healthcare">Healthcare</SelectItem>
                         <SelectItem value="hospitality">Hospitality</SelectItem>
-                        <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="manufacturing">
+                          Manufacturing
+                        </SelectItem>
                         <SelectItem value="education">Education</SelectItem>
                         <SelectItem value="real_estate">Real Estate</SelectItem>
                         <SelectItem value="technology">Technology</SelectItem>
@@ -534,8 +560,8 @@ export function IntelligentCustomerWizard() {
 
               <div className="rounded-lg border bg-muted/50 p-4 text-center">
                 <p className="text-muted-foreground text-sm">
-                  💡 Tip: You can skip this and add addresses later from the customer
-                  profile
+                  💡 Tip: You can skip this and add addresses later from the
+                  customer profile
                 </p>
               </div>
             </div>
@@ -558,7 +584,9 @@ export function IntelligentCustomerWizard() {
                   <div className="space-y-2">
                     <Label htmlFor="paymentTerms">Payment Terms</Label>
                     <Select
-                      onValueChange={(value) => updateField("paymentTerms", value)}
+                      onValueChange={(value) =>
+                        updateField("paymentTerms", value)
+                      }
                       value={customerData.paymentTerms}
                     >
                       <SelectTrigger id="paymentTerms">
@@ -580,7 +608,9 @@ export function IntelligentCustomerWizard() {
                     <Input
                       id="creditLimit"
                       min="0"
-                      onChange={(e) => updateField("creditLimit", e.target.value)}
+                      onChange={(e) =>
+                        updateField("creditLimit", e.target.value)
+                      }
                       placeholder="0"
                       type="number"
                       value={customerData.creditLimit}
@@ -591,7 +621,9 @@ export function IntelligentCustomerWizard() {
                     <Label htmlFor="billingEmail">Billing Email</Label>
                     <Input
                       id="billingEmail"
-                      onChange={(e) => updateField("billingEmail", e.target.value)}
+                      onChange={(e) =>
+                        updateField("billingEmail", e.target.value)
+                      }
                       placeholder="billing@example.com"
                       type="email"
                       value={customerData.billingEmail}
@@ -682,7 +714,9 @@ export function IntelligentCustomerWizard() {
                   <Textarea
                     className="resize-none"
                     id="internalNotes"
-                    onChange={(e) => updateField("internalNotes", e.target.value)}
+                    onChange={(e) =>
+                      updateField("internalNotes", e.target.value)
+                    }
                     placeholder="Internal notes not visible to customer..."
                     rows={2}
                     value={customerData.internalNotes}
@@ -695,7 +729,7 @@ export function IntelligentCustomerWizard() {
       </Card>
 
       {/* Navigation - Sticky on mobile */}
-      <div className="sticky bottom-0 z-10 -mx-4 border-t bg-background p-4 shadow-lg md:relative md:mx-0 md:border-0 md:p-0 md:shadow-none">
+      <div className="-mx-4 sticky bottom-0 z-10 border-t bg-background p-4 shadow-lg md:relative md:mx-0 md:border-0 md:p-0 md:shadow-none">
         <div className="flex items-center justify-between gap-3">
           <Button
             className="flex-1 sm:flex-none"

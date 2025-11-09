@@ -15,11 +15,8 @@
  * - Delete confirmation
  */
 
+import { Circle, CreditCard, Smartphone, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { CreditCard, Smartphone, Trash2, CheckCircle2, Circle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,11 +28,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface PaymentMethod {
   id: string;
   stripePaymentMethodId: string;
-  type: "card" | "apple_pay" | "google_pay" | "paypal" | "amazon_pay" | "klarna" | "link";
+  type:
+    | "card"
+    | "apple_pay"
+    | "google_pay"
+    | "paypal"
+    | "amazon_pay"
+    | "klarna"
+    | "link";
   brand?: string;
   last4?: string;
   expMonth?: number;
@@ -129,8 +136,8 @@ export function PaymentMethodsList({
     return (
       <Card className="p-8 text-center">
         <CreditCard className="mx-auto size-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-semibold">No payment methods</h3>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h3 className="mt-4 font-semibold text-lg">No payment methods</h3>
+        <p className="mt-2 text-muted-foreground text-sm">
           Add a payment method to get started
         </p>
       </Card>
@@ -140,31 +147,36 @@ export function PaymentMethodsList({
   return (
     <div className="space-y-4">
       {paymentMethods.map((method) => (
-        <Card key={method.id} className="p-4">
+        <Card className="p-4" key={method.id}>
           <div className="flex items-center justify-between">
             {/* Left side: Icon, name, badges */}
             <div className="flex items-center gap-3">
               {getPaymentMethodIcon(method.type, method.brand)}
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{formatPaymentMethodText(method)}</span>
+                  <span className="font-medium">
+                    {formatPaymentMethodText(method)}
+                  </span>
                   {method.isDefault && (
-                    <Badge variant="default" className="text-xs">
+                    <Badge className="text-xs" variant="default">
                       Default
                     </Badge>
                   )}
                   {method.isDefaultForSubscription && (
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge className="text-xs" variant="secondary">
                       Default for subscriptions
                     </Badge>
                   )}
                 </div>
-                {method.type === "card" && method.expMonth && method.expYear && (
-                  <p className="text-sm text-muted-foreground">
-                    Expires {String(method.expMonth).padStart(2, "0")}/{method.expYear}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
+                {method.type === "card" &&
+                  method.expMonth &&
+                  method.expYear && (
+                    <p className="text-muted-foreground text-sm">
+                      Expires {String(method.expMonth).padStart(2, "0")}/
+                      {method.expYear}
+                    </p>
+                  )}
+                <p className="text-muted-foreground text-xs">
                   Added {new Date(method.createdAt).toLocaleDateString()}
                 </p>
               </div>
@@ -175,10 +187,10 @@ export function PaymentMethodsList({
               {/* Set as default for one-time payments */}
               {!method.isDefault && (
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSetDefault(method.id)}
                   disabled={isUpdating === method.id}
+                  onClick={() => handleSetDefault(method.id)}
+                  size="sm"
+                  variant="ghost"
                 >
                   <Circle className="mr-2 size-4" />
                   Set as default
@@ -188,10 +200,10 @@ export function PaymentMethodsList({
               {/* Set as default for subscriptions */}
               {!method.isDefaultForSubscription && (
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSetDefaultSubscription(method.id)}
                   disabled={isUpdating === method.id}
+                  onClick={() => handleSetDefaultSubscription(method.id)}
+                  size="sm"
+                  variant="ghost"
                 >
                   <Circle className="mr-2 size-4" />
                   Default for subscriptions
@@ -202,9 +214,9 @@ export function PaymentMethodsList({
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="sm"
                     disabled={isUpdating === method.id}
+                    size="sm"
+                    variant="ghost"
                   >
                     <Trash2 className="size-4 text-destructive" />
                   </Button>
@@ -213,15 +225,15 @@ export function PaymentMethodsList({
                   <AlertDialogHeader>
                     <AlertDialogTitle>Remove payment method?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will remove {formatPaymentMethodText(method)} from your account.
-                      This action cannot be undone.
+                      This will remove {formatPaymentMethodText(method)} from
+                      your account. This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => handleRemove(method.id)}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={() => handleRemove(method.id)}
                     >
                       Remove
                     </AlertDialogAction>

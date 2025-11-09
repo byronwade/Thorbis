@@ -1,5 +1,5 @@
-import type { NextConfig } from "next";
 import { withBotId } from "botid/next/config";
+import type { NextConfig } from "next";
 
 // Only load bundle analyzer when ANALYZE=true to avoid build overhead
 const withBundleAnalyzer =
@@ -65,9 +65,12 @@ const nextConfig: NextConfig = {
 
   // BUILD OPTIMIZATIONS: Faster compilation and smaller bundles
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production" ? {
-      exclude: ["error", "warn"], // Keep error/warn logs in production
-    } : false,
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? {
+            exclude: ["error", "warn"], // Keep error/warn logs in production
+          }
+        : false,
   },
 
   // TypeScript optimizations
@@ -80,27 +83,61 @@ const nextConfig: NextConfig = {
   // Enable experimental features for better performance
   experimental: {
     // Optimize package imports to reduce bundle size
+    // This enables tree-shaking for these packages
     optimizePackageImports: [
+      // Icons and utilities
       "lucide-react",
-      "recharts",
       "date-fns",
-      "@supabase/supabase-js",
       "zod",
+
+      // Heavy dependencies
+      "recharts",
+      "@react-pdf/renderer",
+      "@tiptap/react",
+      "@tiptap/core",
+      "@tiptap/starter-kit",
+      "@tiptap/extension-link",
+      "@tiptap/extension-image",
+      "@tiptap/extension-table",
+
+      // Supabase
+      "@supabase/supabase-js",
+      "@supabase/ssr",
+
+      // All Radix UI components (complete list)
       "@radix-ui/react-accordion",
       "@radix-ui/react-alert-dialog",
+      "@radix-ui/react-aspect-ratio",
       "@radix-ui/react-avatar",
       "@radix-ui/react-checkbox",
+      "@radix-ui/react-collapsible",
+      "@radix-ui/react-context-menu",
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-hover-card",
       "@radix-ui/react-label",
+      "@radix-ui/react-menubar",
+      "@radix-ui/react-navigation-menu",
       "@radix-ui/react-popover",
+      "@radix-ui/react-progress",
+      "@radix-ui/react-radio-group",
+      "@radix-ui/react-scroll-area",
       "@radix-ui/react-select",
       "@radix-ui/react-separator",
       "@radix-ui/react-slider",
+      "@radix-ui/react-slot",
       "@radix-ui/react-switch",
       "@radix-ui/react-tabs",
       "@radix-ui/react-toggle",
+      "@radix-ui/react-toggle-group",
       "@radix-ui/react-tooltip",
+
+      // Form libraries
+      "react-hook-form",
+
+      // Other heavy dependencies
+      "framer-motion",
+      "ai",
     ],
     // Enable faster refresh for better DX
     optimizeCss: true,

@@ -238,20 +238,30 @@ export async function updateContract(
     // Prepare update data with snake_case for Supabase
     const updateData: any = {};
     if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined) updateData.description = data.description || null;
+    if (data.description !== undefined)
+      updateData.description = data.description || null;
     if (data.content !== undefined) updateData.content = data.content;
     if (data.jobId !== undefined) updateData.job_id = data.jobId || null;
-    if (data.estimateId !== undefined) updateData.estimate_id = data.estimateId || null;
-    if (data.invoiceId !== undefined) updateData.invoice_id = data.invoiceId || null;
-    if (data.contractType !== undefined) updateData.contract_type = data.contractType;
-    if (data.validFrom !== undefined) updateData.valid_from = data.validFrom || null;
-    if (data.validUntil !== undefined) updateData.valid_until = data.validUntil || null;
+    if (data.estimateId !== undefined)
+      updateData.estimate_id = data.estimateId || null;
+    if (data.invoiceId !== undefined)
+      updateData.invoice_id = data.invoiceId || null;
+    if (data.contractType !== undefined)
+      updateData.contract_type = data.contractType;
+    if (data.validFrom !== undefined)
+      updateData.valid_from = data.validFrom || null;
+    if (data.validUntil !== undefined)
+      updateData.valid_until = data.validUntil || null;
     if (data.terms !== undefined) updateData.terms = data.terms || null;
     if (data.notes !== undefined) updateData.notes = data.notes || null;
-    if (data.signerName !== undefined) updateData.signer_name = data.signerName || null;
-    if (data.signerEmail !== undefined) updateData.signer_email = data.signerEmail;
-    if (data.signerTitle !== undefined) updateData.signer_title = data.signerTitle || null;
-    if (data.signerCompany !== undefined) updateData.signer_company = data.signerCompany || null;
+    if (data.signerName !== undefined)
+      updateData.signer_name = data.signerName || null;
+    if (data.signerEmail !== undefined)
+      updateData.signer_email = data.signerEmail;
+    if (data.signerTitle !== undefined)
+      updateData.signer_title = data.signerTitle || null;
+    if (data.signerCompany !== undefined)
+      updateData.signer_company = data.signerCompany || null;
 
     // Update in database (company-scoped for security via RLS)
     const { error } = await supabase
@@ -300,12 +310,18 @@ export async function archiveContract(
       .single();
 
     if (contract?.status === "signed" || contract?.status === "active") {
-      return { success: false, error: "Cannot archive signed or active contracts. Signed contracts must be retained for records." };
+      return {
+        success: false,
+        error:
+          "Cannot archive signed or active contracts. Signed contracts must be retained for records.",
+      };
     }
 
     // Archive contract (soft delete)
     const now = new Date().toISOString();
-    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    const scheduledDeletion = new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000
+    ).toISOString();
 
     const { error } = await supabase
       .from("contracts")

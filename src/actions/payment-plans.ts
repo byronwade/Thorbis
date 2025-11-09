@@ -101,7 +101,9 @@ export async function createPaymentPlan(
         ? Number.parseFloat(formData.get("downPaymentAmount") as string)
         : 0,
       paymentFrequency: formData.get("paymentFrequency") as any,
-      numberOfPayments: Number.parseInt(formData.get("numberOfPayments") as string),
+      numberOfPayments: Number.parseInt(
+        formData.get("numberOfPayments") as string
+      ),
       startDate: formData.get("startDate") as string,
       hasInterest: formData.get("hasInterest") === "true",
       interestRate: formData.get("interestRate")
@@ -154,16 +156,24 @@ export async function createPaymentPlan(
     const finalPaymentDate = new Date(firstPaymentDate);
     switch (data.paymentFrequency) {
       case "weekly":
-        finalPaymentDate.setDate(finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 7);
+        finalPaymentDate.setDate(
+          finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 7
+        );
         break;
       case "bi_weekly":
-        finalPaymentDate.setDate(finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 14);
+        finalPaymentDate.setDate(
+          finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 14
+        );
         break;
       case "monthly":
-        finalPaymentDate.setMonth(finalPaymentDate.getMonth() + (data.numberOfPayments - 1));
+        finalPaymentDate.setMonth(
+          finalPaymentDate.getMonth() + (data.numberOfPayments - 1)
+        );
         break;
       case "quarterly":
-        finalPaymentDate.setMonth(finalPaymentDate.getMonth() + (data.numberOfPayments - 1) * 3);
+        finalPaymentDate.setMonth(
+          finalPaymentDate.getMonth() + (data.numberOfPayments - 1) * 3
+        );
         break;
     }
 
@@ -175,7 +185,9 @@ export async function createPaymentPlan(
         customer_id: data.customerId,
         invoice_id: data.invoiceId,
         plan_number: planNumber,
-        plan_name: formData.get("planName") as string || `Payment Plan for ${data.customerId.slice(0, 8)}`,
+        plan_name:
+          (formData.get("planName") as string) ||
+          `Payment Plan for ${data.customerId.slice(0, 8)}`,
         total_amount: Math.round(data.totalAmount * 100), // Convert to cents
         down_payment_amount: Math.round(data.downPaymentAmount * 100),
         financed_amount: Math.round(financedAmount * 100),
@@ -249,7 +261,7 @@ async function createPaymentSchedule(
   if (!supabase) return;
 
   const scheduleItems = [];
-  let currentDate = new Date(config.firstPaymentDate);
+  const currentDate = new Date(config.firstPaymentDate);
 
   for (let i = 1; i <= config.numberOfPayments; i++) {
     scheduleItems.push({
@@ -351,7 +363,8 @@ export async function recordScheduledPayment(
             amount_remaining: Math.max(0, newAmountRemaining),
             last_payment_date: new Date().toISOString().split("T")[0],
             status: newAmountRemaining <= 0 ? "completed" : "active",
-            completed_at: newAmountRemaining <= 0 ? new Date().toISOString() : null,
+            completed_at:
+              newAmountRemaining <= 0 ? new Date().toISOString() : null,
           })
           .eq("id", schedule.payment_plan_id);
 
@@ -381,7 +394,9 @@ export async function recordScheduledPayment(
 /**
  * Get payment plan with schedules
  */
-export async function getPaymentPlan(planId: string): Promise<ActionResult<any>> {
+export async function getPaymentPlan(
+  planId: string
+): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -493,7 +508,9 @@ export async function getUpcomingPayments(
 
     // Filter by company through payment plan
     const filtered = (upcomingPayments || []).filter((payment: any) => {
-      const plan = Array.isArray(payment.payment_plan) ? payment.payment_plan[0] : payment.payment_plan;
+      const plan = Array.isArray(payment.payment_plan)
+        ? payment.payment_plan[0]
+        : payment.payment_plan;
       return plan?.company_id === teamMember.company_id;
     });
 
@@ -533,7 +550,9 @@ export async function applyLateFee(
 
     assertExists(schedule, "Payment schedule");
 
-    const plan = Array.isArray(schedule.payment_plan) ? schedule.payment_plan[0] : schedule.payment_plan;
+    const plan = Array.isArray(schedule.payment_plan)
+      ? schedule.payment_plan[0]
+      : schedule.payment_plan;
 
     // Check if already late fee applied
     if (schedule.late_fee_applied > 0) {

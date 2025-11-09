@@ -4,12 +4,12 @@
  * Tests for the enrichment orchestrator that coordinates all enrichment providers
  */
 
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { businessEnrichmentService } from "../business-enrichment";
 import { customerEnrichmentService } from "../customer-enrichment";
 import { personEnrichmentService } from "../person-enrichment";
-import { businessEnrichmentService } from "../business-enrichment";
-import { socialEnrichmentService } from "../social-enrichment";
 import { propertyEnrichmentService } from "../property-enrichment";
+import { socialEnrichmentService } from "../social-enrichment";
 
 // Mock all enrichment services
 jest.mock("../person-enrichment");
@@ -43,7 +43,9 @@ describe("CustomerEnrichmentService", () => {
       (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
         null
       );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(null);
+      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
+        null
+      );
       (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
         null
       );
@@ -68,7 +70,9 @@ describe("CustomerEnrichmentService", () => {
       (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
         null
       );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(null);
+      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
+        null
+      );
       (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
         null
       );
@@ -103,7 +107,9 @@ describe("CustomerEnrichmentService", () => {
       (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
         mockBusinessData
       );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(null);
+      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
+        null
+      );
       (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
         null
       );
@@ -142,7 +148,9 @@ describe("CustomerEnrichmentService", () => {
       (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
         mockBusinessData
       );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(null);
+      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
+        null
+      );
       (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
         null
       );
@@ -168,7 +176,9 @@ describe("CustomerEnrichmentService", () => {
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(), // Tomorrow
       };
 
-      expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(true);
+      expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(
+        true
+      );
     });
 
     it("should return false for expired enrichment", () => {
@@ -207,4 +217,3 @@ describe("CustomerEnrichmentService", () => {
     });
   });
 });
-

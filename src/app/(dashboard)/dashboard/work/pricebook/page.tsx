@@ -15,8 +15,8 @@
  * - Better SEO and initial page load performance
  */
 
-import { CategoryNavigationSync } from "@/components/pricebook/category-navigation-sync";
 import { notFound } from "next/navigation";
+import { CategoryNavigationSync } from "@/components/pricebook/category-navigation-sync";
 import { DrillDownView } from "@/components/pricebook/drill-down-view";
 import { getCategoryTree } from "@/lib/pricebook/category-tree-server";
 import { createClient } from "@/lib/supabase/server";

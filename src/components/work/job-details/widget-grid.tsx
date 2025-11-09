@@ -264,19 +264,19 @@ export function WidgetGrid({
                   widget={widget}
                 >
                   <WidgetRenderer
+                    activities={activities}
                     communications={communications}
                     customer={customer}
                     documents={documents}
                     estimates={estimates}
                     invoices={invoices}
                     job={job}
+                    materials={materials}
                     photos={photos}
                     property={property}
                     propertyEnrichment={propertyEnrichment}
-                    widget={widget}
                     teamAssignments={teamAssignments}
-                    materials={materials}
-                    activities={activities}
+                    widget={widget}
                   />
                 </WidgetContainer>
               </div>

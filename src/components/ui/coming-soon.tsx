@@ -10,7 +10,7 @@
  * - Reduced JavaScript bundle size
  */
 
-import { Clock, LucideIcon, Rocket } from "lucide-react";
+import { Clock, type LucideIcon, Rocket } from "lucide-react";
 import Link from "next/link";
 
 interface Feature {
@@ -74,7 +74,9 @@ export function ComingSoon({
         {/* Main heading with gradient */}
         <div className="space-y-4">
           <h1 className="font-bold text-5xl tracking-tight md:text-6xl">
-            <span className={`bg-gradient-to-r ${titleGradient} bg-clip-text font-extrabold text-transparent`}>
+            <span
+              className={`bg-gradient-to-r ${titleGradient} bg-clip-text font-extrabold text-transparent`}
+            >
               {title}
             </span>
           </h1>
@@ -108,16 +110,22 @@ export function ComingSoon({
 
                 return (
                   <div
-                    key={index}
                     className={`group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-${colorClass}/5 to-transparent p-8 transition-all duration-300 hover:border-${colorClass}/20 hover:shadow-lg hover:shadow-${colorClass}/10`}
+                    key={index}
                   >
                     <div className="mb-5 flex justify-center">
-                      <div className={`flex size-14 items-center justify-center rounded-full bg-${colorClass}/10`}>
+                      <div
+                        className={`flex size-14 items-center justify-center rounded-full bg-${colorClass}/10`}
+                      >
                         <FeatureIcon className={`size-7 text-${colorClass}`} />
                       </div>
                     </div>
-                    <h3 className="mb-3 font-semibold text-xl">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                    <h3 className="mb-3 font-semibold text-xl">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
                 );
               })}
@@ -130,8 +138,8 @@ export function ComingSoon({
           {showViewAllLink && (
             <div className="flex justify-center">
               <Link
-                href="/dashboard/coming-soon"
                 className="inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-8 py-4 font-medium transition-all hover:border-primary/30 hover:bg-primary/10"
+                href="/dashboard/coming-soon"
               >
                 View All Upcoming Features
                 <Rocket className="size-5" />
@@ -140,7 +148,10 @@ export function ComingSoon({
           )}
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <Rocket className="size-5" />
-            <p>In the meantime, explore the platform and reach out if you need help</p>
+            <p>
+              In the meantime, explore the platform and reach out if you need
+              help
+            </p>
           </div>
         </div>
       </div>

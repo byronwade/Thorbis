@@ -77,10 +77,15 @@ export function SmartContactInput({
   };
 
   // Extract name from text
-  const extractName = (text: string): { first: string; last: string } | null => {
+  const extractName = (
+    text: string
+  ): { first: string; last: string } | null => {
     // Remove email and phone
-    let cleaned = text.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "");
-    cleaned = cleaned.replace(/[\d\(\)\-\s\.]+/g, " ");
+    let cleaned = text.replace(
+      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+      ""
+    );
+    cleaned = cleaned.replace(/[\d()\-\s.]+/g, " ");
     cleaned = cleaned.trim();
 
     const parts = cleaned.split(/\s+/).filter(Boolean);
@@ -153,31 +158,19 @@ export function SmartContactInput({
             <h3 className="font-medium text-sm">Smart Fill</h3>
           </div>
 
-          {!showPasteHelper ? (
-            <div>
-              <p className="mb-3 text-muted-foreground text-sm">
-                Paste contact info from anywhere (email signature, business card,
-                text message) and we'll auto-fill the fields.
-              </p>
-              <button
-                className="text-primary text-sm underline"
-                onClick={() => setShowPasteHelper(true)}
-                type="button"
-              >
-                Try it now →
-              </button>
-            </div>
-          ) : (
+          {showPasteHelper ? (
             <div className="space-y-3">
               <Textarea
                 className="min-h-[100px] font-mono text-sm"
                 onChange={(e) => setPasteText(e.target.value)}
-                placeholder={`Paste contact info here, like:\n\nJohn Smith\njohn@example.com\n(555) 123-4567`}
+                placeholder={
+                  "Paste contact info here, like:\n\nJohn Smith\njohn@example.com\n(555) 123-4567"
+                }
                 value={pasteText}
               />
               <div className="flex gap-2">
                 <button
-                  className="rounded-lg bg-primary px-4 py-2 text-primary-foreground text-sm font-medium hover:bg-primary/90"
+                  className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/90"
                   onClick={() => handleSmartPaste(pasteText)}
                   type="button"
                 >
@@ -195,6 +188,20 @@ export function SmartContactInput({
                   Cancel
                 </button>
               </div>
+            </div>
+          ) : (
+            <div>
+              <p className="mb-3 text-muted-foreground text-sm">
+                Paste contact info from anywhere (email signature, business
+                card, text message) and we'll auto-fill the fields.
+              </p>
+              <button
+                className="text-primary text-sm underline"
+                onClick={() => setShowPasteHelper(true)}
+                type="button"
+              >
+                Try it now →
+              </button>
             </div>
           )}
         </div>
@@ -245,7 +252,7 @@ export function SmartContactInput({
         <div className="relative">
           <Mail className="absolute top-3 left-3 size-4 text-muted-foreground" />
           <Input
-            className="pl-10 pr-10"
+            className="pr-10 pl-10"
             id="email"
             onChange={(e) => handleFieldChange("email", e.target.value)}
             placeholder="john@example.com"
@@ -267,7 +274,7 @@ export function SmartContactInput({
         <div className="relative">
           <Phone className="absolute top-3 left-3 size-4 text-muted-foreground" />
           <Input
-            className="pl-10 pr-10"
+            className="pr-10 pl-10"
             id="phone"
             onChange={(e) => handleFieldChange("phone", e.target.value)}
             placeholder="(555) 123-4567"

@@ -6,12 +6,19 @@
 
 "use client";
 
-import { useState } from "react";
 import { DollarSign, Plus } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -20,13 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyDescription,
-} from "@/components/ui/empty";
 
 type Invoice = {
   id: string;
@@ -44,12 +44,11 @@ export function InvoicePayments({ invoice }: InvoicePaymentsProps) {
   const [showRecordPayment, setShowRecordPayment] = useState(false);
 
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   // Format date
   const formatDate = (dateString: string | null) => {
@@ -72,7 +71,7 @@ export function InvoicePayments({ invoice }: InvoicePaymentsProps) {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DollarSign className="h-5 w-5 text-muted-foreground" />
-          <Label className="text-base font-semibold">Payment History</Label>
+          <Label className="font-semibold text-base">Payment History</Label>
         </div>
         {invoice.balance_amount > 0 && invoice.status !== "cancelled" && (
           <Button
@@ -92,7 +91,7 @@ export function InvoicePayments({ invoice }: InvoicePaymentsProps) {
           <div className="mb-4 grid gap-4 md:grid-cols-3">
             <div className="rounded-lg bg-muted p-4">
               <div className="text-muted-foreground text-sm">Total Paid</div>
-              <div className="mt-1 text-xl font-bold text-green-600">
+              <div className="mt-1 font-bold text-green-600 text-xl">
                 {formatCurrency(invoice.paid_amount)}
               </div>
             </div>
@@ -101,7 +100,7 @@ export function InvoicePayments({ invoice }: InvoicePaymentsProps) {
                 Remaining Balance
               </div>
               <div
-                className={`mt-1 text-xl font-bold ${
+                className={`mt-1 font-bold text-xl ${
                   invoice.balance_amount > 0
                     ? invoice.status === "overdue"
                       ? "text-destructive"
@@ -118,7 +117,7 @@ export function InvoicePayments({ invoice }: InvoicePaymentsProps) {
               </div>
               <div className="mt-1">
                 {invoice.balance_amount === 0 ? (
-                  <Badge variant="default" className="bg-green-600">
+                  <Badge className="bg-green-600" variant="default">
                     PAID
                   </Badge>
                 ) : invoice.paid_amount > 0 ? (

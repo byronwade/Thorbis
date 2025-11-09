@@ -12,6 +12,9 @@
  * - Visual diff highlighting
  */
 
+import { AlertCircle, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,10 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, AlertCircle } from "lucide-react";
 
 interface Change {
   field: string;
@@ -66,7 +66,7 @@ export function ChangesConfirmationDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -74,7 +74,8 @@ export function ChangesConfirmationDialog({
             Confirm Changes
           </DialogTitle>
           <DialogDescription>
-            Review the changes below before saving. This helps prevent unwanted edits.
+            Review the changes below before saving. This helps prevent unwanted
+            edits.
           </DialogDescription>
         </DialogHeader>
 
@@ -86,16 +87,15 @@ export function ChangesConfirmationDialog({
               </p>
             ) : (
               changes.map((change, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg border bg-muted/30 p-4"
-                >
+                <div className="rounded-lg border bg-muted/30 p-4" key={index}>
                   <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge className="text-xs" variant="outline">
                         {change.section}
                       </Badge>
-                      <span className="font-medium text-sm">{change.field}</span>
+                      <span className="font-medium text-sm">
+                        {change.field}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
@@ -120,18 +120,16 @@ export function ChangesConfirmationDialog({
         </ScrollArea>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
+          <Button disabled={isLoading} onClick={onCancel} variant="outline">
             Cancel
           </Button>
           <Button
-            onClick={onConfirm}
             disabled={isLoading || changes.length === 0}
+            onClick={onConfirm}
           >
-            {isLoading ? "Saving..." : `Confirm & Save ${changes.length} Change${changes.length === 1 ? "" : "s"}`}
+            {isLoading
+              ? "Saving..."
+              : `Confirm & Save ${changes.length} Change${changes.length === 1 ? "" : "s"}`}
           </Button>
         </DialogFooter>
       </DialogContent>

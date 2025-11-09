@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  Calendar,
-  CreditCard,
-  DollarSign,
-  Loader2,
-  Repeat,
-} from "lucide-react";
+import { CreditCard, DollarSign, Loader2, Repeat } from "lucide-react";
 import { useState } from "react";
 import { createPaymentPlan } from "@/actions/payment-plans";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -71,7 +64,7 @@ export function PaymentPlanCreator({
   >("monthly");
   const [numberOfPayments, setNumberOfPayments] = useState(12);
   const [startDate, setStartDate] = useState(
-    new Date().toISOString().split("T")[0],
+    new Date().toISOString().split("T")[0]
   );
   const [hasInterest, setHasInterest] = useState(false);
   const [interestRate, setInterestRate] = useState(0);
@@ -154,11 +147,11 @@ export function PaymentPlanCreator({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       {/* Error Display */}
       {error && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-          <p className="text-destructive text-sm font-medium">{error}</p>
+          <p className="font-medium text-destructive text-sm">{error}</p>
         </div>
       )}
 
@@ -178,9 +171,9 @@ export function PaymentPlanCreator({
             <Label htmlFor="planName">Plan Name (Optional)</Label>
             <Input
               id="planName"
-              value={planName}
               onChange={(e) => setPlanName(e.target.value)}
               placeholder="e.g., HVAC Installation - 12 Month Plan"
+              value={planName}
             />
           </div>
 
@@ -189,14 +182,14 @@ export function PaymentPlanCreator({
               <Label htmlFor="totalAmount">Total Amount *</Label>
               <Input
                 id="totalAmount"
-                type="number"
                 min="1"
-                step="0.01"
-                value={totalAmount || ""}
                 onChange={(e) =>
                   setTotalAmount(Number.parseFloat(e.target.value))
                 }
                 required
+                step="0.01"
+                type="number"
+                value={totalAmount || ""}
               />
             </div>
 
@@ -204,13 +197,13 @@ export function PaymentPlanCreator({
               <Label htmlFor="downPayment">Down Payment</Label>
               <Input
                 id="downPayment"
-                type="number"
                 min="0"
-                step="0.01"
-                value={downPaymentAmount || ""}
                 onChange={(e) =>
                   setDownPaymentAmount(Number.parseFloat(e.target.value))
                 }
+                step="0.01"
+                type="number"
+                value={downPaymentAmount || ""}
               />
               {downPaymentPercent > 0 && (
                 <p className="text-muted-foreground text-xs">
@@ -259,8 +252,8 @@ export function PaymentPlanCreator({
             <div className="space-y-2">
               <Label htmlFor="frequency">Payment Frequency *</Label>
               <Select
-                value={paymentFrequency}
                 onValueChange={(value: any) => setPaymentFrequency(value)}
+                value={paymentFrequency}
               >
                 <SelectTrigger id="frequency">
                   <SelectValue />
@@ -278,14 +271,14 @@ export function PaymentPlanCreator({
               <Label htmlFor="numberOfPayments">Number of Payments *</Label>
               <Input
                 id="numberOfPayments"
-                type="number"
-                min="1"
                 max="60"
-                value={numberOfPayments}
+                min="1"
                 onChange={(e) =>
                   setNumberOfPayments(Number.parseInt(e.target.value))
                 }
                 required
+                type="number"
+                value={numberOfPayments}
               />
             </div>
           </div>
@@ -293,13 +286,13 @@ export function PaymentPlanCreator({
           <div className="space-y-2">
             <Label htmlFor="startDate">Start Date *</Label>
             <Input
+              className="font-mono"
               id="startDate"
+              min={new Date().toISOString().split("T")[0]}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]}
-              required
-              className="font-mono"
             />
           </div>
 
@@ -332,7 +325,7 @@ export function PaymentPlanCreator({
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border bg-card p-3">
             <div>
-              <Label htmlFor="hasInterest" className="text-sm font-medium">
+              <Label className="font-medium text-sm" htmlFor="hasInterest">
                 Charge Interest
               </Label>
               <p className="text-muted-foreground text-xs">
@@ -340,8 +333,8 @@ export function PaymentPlanCreator({
               </p>
             </div>
             <Switch
-              id="hasInterest"
               checked={hasInterest}
+              id="hasInterest"
               onCheckedChange={setHasInterest}
             />
           </div>
@@ -351,14 +344,14 @@ export function PaymentPlanCreator({
               <Label htmlFor="interestRate">Interest Rate (%)</Label>
               <Input
                 id="interestRate"
-                type="number"
-                min="0"
                 max="100"
-                step="0.1"
-                value={interestRate}
+                min="0"
                 onChange={(e) =>
                   setInterestRate(Number.parseFloat(e.target.value))
                 }
+                step="0.1"
+                type="number"
+                value={interestRate}
               />
             </div>
           )}
@@ -368,11 +361,11 @@ export function PaymentPlanCreator({
               <Label htmlFor="setupFee">Setup Fee</Label>
               <Input
                 id="setupFee"
-                type="number"
                 min="0"
-                step="0.01"
-                value={setupFee}
                 onChange={(e) => setSetupFee(Number.parseFloat(e.target.value))}
+                step="0.01"
+                type="number"
+                value={setupFee}
               />
             </div>
 
@@ -380,11 +373,11 @@ export function PaymentPlanCreator({
               <Label htmlFor="lateFee">Late Fee</Label>
               <Input
                 id="lateFee"
-                type="number"
                 min="0"
-                step="0.01"
-                value={lateFee}
                 onChange={(e) => setLateFee(Number.parseFloat(e.target.value))}
+                step="0.01"
+                type="number"
+                value={lateFee}
               />
             </div>
 
@@ -392,13 +385,13 @@ export function PaymentPlanCreator({
               <Label htmlFor="gracePeriod">Grace Period (Days)</Label>
               <Input
                 id="gracePeriod"
-                type="number"
-                min="0"
                 max="30"
-                value={gracePeriodDays}
+                min="0"
                 onChange={(e) =>
                   setGracePeriodDays(Number.parseInt(e.target.value))
                 }
+                type="number"
+                value={gracePeriodDays}
               />
             </div>
           </div>
@@ -416,7 +409,7 @@ export function PaymentPlanCreator({
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border bg-card p-3">
             <div>
-              <Label htmlFor="autoPay" className="text-sm font-medium">
+              <Label className="font-medium text-sm" htmlFor="autoPay">
                 Enable Auto-Payment
               </Label>
               <p className="text-muted-foreground text-xs">
@@ -424,8 +417,8 @@ export function PaymentPlanCreator({
               </p>
             </div>
             <Switch
-              id="autoPay"
               checked={autoPayEnabled}
+              id="autoPay"
               onCheckedChange={setAutoPayEnabled}
             />
           </div>
@@ -452,10 +445,10 @@ export function PaymentPlanCreator({
             <Label htmlFor="notes">Internal Notes</Label>
             <Textarea
               id="notes"
-              value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
               placeholder="Internal notes about this payment plan..."
+              rows={3}
+              value={notes}
             />
           </div>
 
@@ -463,10 +456,10 @@ export function PaymentPlanCreator({
             <Label htmlFor="terms">Terms & Conditions</Label>
             <Textarea
               id="terms"
-              value={terms}
               onChange={(e) => setTerms(e.target.value)}
-              rows={3}
               placeholder="Payment plan terms and conditions for customer..."
+              rows={3}
+              value={terms}
             />
           </div>
         </CardContent>
@@ -523,19 +516,19 @@ export function PaymentPlanCreator({
 
           <div className="flex gap-2 pt-2">
             <Button
-              type="submit"
-              disabled={isLoading || financedAmount < 0}
               className="flex-1"
+              disabled={isLoading || financedAmount < 0}
+              type="submit"
             >
               {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
               Create Payment Plan
             </Button>
             {onCancel && (
               <Button
+                disabled={isLoading}
+                onClick={onCancel}
                 type="button"
                 variant="outline"
-                onClick={onCancel}
-                disabled={isLoading}
               >
                 Cancel
               </Button>

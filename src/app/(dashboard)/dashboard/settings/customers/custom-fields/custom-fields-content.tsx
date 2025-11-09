@@ -10,8 +10,13 @@
  */
 
 import { HelpCircle, Plus, Save, Tag, Trash2 } from "lucide-react";
-import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import {
+  createCustomField,
+  deleteCustomField,
+  updateCustomField,
+} from "@/actions/settings/customers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,18 +44,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import {
-  createCustomField,
-  updateCustomField,
-  deleteCustomField,
-} from "@/actions/settings/customers";
 
 type CustomField = {
   id: string;
   company_id?: string;
   field_name: string;
   field_key: string;
-  field_type: "text" | "number" | "date" | "boolean" | "select" | "multi_select" | "textarea";
+  field_type:
+    | "text"
+    | "number"
+    | "date"
+    | "boolean"
+    | "select"
+    | "multi_select"
+    | "textarea";
   field_options?: string[] | null;
   is_required: boolean;
   show_in_list: boolean;
@@ -68,7 +75,8 @@ export function CustomFieldsContent({ initialFields }: Props) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
-  const [customFields, setCustomFields] = useState<CustomField[]>(initialFields);
+  const [customFields, setCustomFields] =
+    useState<CustomField[]>(initialFields);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const addCustomField = () => {
@@ -134,7 +142,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
       let hasErrors = false;
 
       for (const field of customFields) {
-        if (!field.field_name || !field.field_key) {
+        if (!(field.field_name && field.field_key)) {
           toast.error("Field name is required for all custom fields");
           hasErrors = true;
           break;
@@ -186,7 +194,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave} disabled={isPending}>
+            <Button disabled={isPending} onClick={handleSave}>
               <Save className="mr-2 size-4" />
               {isPending ? "Saving..." : "Save Changes"}
             </Button>
@@ -205,7 +213,12 @@ export function CustomFieldsContent({ initialFields }: Props) {
                   Create custom fields to capture business-specific information
                 </CardDescription>
               </div>
-              <Button onClick={addCustomField} size="sm" variant="outline" disabled={isPending}>
+              <Button
+                disabled={isPending}
+                onClick={addCustomField}
+                size="sm"
+                variant="outline"
+              >
                 <Plus className="mr-2 size-4" />
                 Add Field
               </Button>
@@ -224,12 +237,16 @@ export function CustomFieldsContent({ initialFields }: Props) {
                           </Label>
                           <Input
                             className="mt-2"
+                            disabled={isPending}
                             onChange={(e) =>
-                              updateField(field.id, "field_name", e.target.value)
+                              updateField(
+                                field.id,
+                                "field_name",
+                                e.target.value
+                              )
                             }
                             placeholder="e.g., Gate Code"
                             value={field.field_name}
-                            disabled={isPending}
                           />
                         </div>
 
@@ -248,6 +265,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
                             </Tooltip>
                           </Label>
                           <Select
+                            disabled={isPending}
                             onValueChange={(value) =>
                               updateField(
                                 field.id,
@@ -256,7 +274,6 @@ export function CustomFieldsContent({ initialFields }: Props) {
                               )
                             }
                             value={field.field_type}
-                            disabled={isPending}
                           >
                             <SelectTrigger className="mt-2">
                               <SelectValue />
@@ -267,14 +284,19 @@ export function CustomFieldsContent({ initialFields }: Props) {
                               <SelectItem value="date">Date</SelectItem>
                               <SelectItem value="boolean">Boolean</SelectItem>
                               <SelectItem value="select">Dropdown</SelectItem>
-                              <SelectItem value="multi_select">Multi-Select</SelectItem>
-                              <SelectItem value="textarea">Text Area</SelectItem>
+                              <SelectItem value="multi_select">
+                                Multi-Select
+                              </SelectItem>
+                              <SelectItem value="textarea">
+                                Text Area
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
 
-                      {(field.field_type === "select" || field.field_type === "multi_select") && (
+                      {(field.field_type === "select" ||
+                        field.field_type === "multi_select") && (
                         <div>
                           <Label className="flex items-center gap-2 text-sm">
                             Options (comma-separated)
@@ -291,6 +313,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
                           </Label>
                           <Input
                             className="mt-2"
+                            disabled={isPending}
                             onChange={(e) =>
                               updateField(
                                 field.id,
@@ -300,7 +323,6 @@ export function CustomFieldsContent({ initialFields }: Props) {
                             }
                             placeholder="Option 1, Option 2, Option 3"
                             value={field.field_options?.join(", ") || ""}
-                            disabled={isPending}
                           />
                           <div className="mt-2 flex flex-wrap gap-2">
                             {field.field_options?.map((option, i) => (
@@ -324,10 +346,10 @@ export function CustomFieldsContent({ initialFields }: Props) {
                           </div>
                           <Switch
                             checked={field.is_required}
+                            disabled={isPending}
                             onCheckedChange={(checked) =>
                               updateField(field.id, "is_required", checked)
                             }
-                            disabled={isPending}
                           />
                         </div>
 
@@ -340,10 +362,10 @@ export function CustomFieldsContent({ initialFields }: Props) {
                           </div>
                           <Switch
                             checked={field.show_in_list}
+                            disabled={isPending}
                             onCheckedChange={(checked) =>
                               updateField(field.id, "show_in_list", checked)
                             }
-                            disabled={isPending}
                           />
                         </div>
 
@@ -356,10 +378,10 @@ export function CustomFieldsContent({ initialFields }: Props) {
                           </div>
                           <Switch
                             checked={field.is_active}
+                            disabled={isPending}
                             onCheckedChange={(checked) =>
                               updateField(field.id, "is_active", checked)
                             }
-                            disabled={isPending}
                           />
                         </div>
                       </div>
@@ -367,10 +389,10 @@ export function CustomFieldsContent({ initialFields }: Props) {
 
                     <Button
                       className="ml-4"
+                      disabled={isPending}
                       onClick={() => removeField(field.id)}
                       size="sm"
                       variant="ghost"
-                      disabled={isPending}
                     >
                       <Trash2 className="size-4" />
                     </Button>

@@ -207,4 +207,7 @@ export enum EmailTemplate {
   SERVICE_REMINDER = "service-reminder",
   WELCOME_CUSTOMER = "welcome-customer",
   PORTAL_INVITATION = "portal-invitation",
+
+  // Generic
+  GENERIC = "generic",
 }

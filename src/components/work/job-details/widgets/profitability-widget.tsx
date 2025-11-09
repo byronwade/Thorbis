@@ -48,39 +48,73 @@ interface RevenueBreakdown {
   other: number;
 }
 
-export function ProfitabilityWidget({ job, materials: materialsData = [] }: ProfitabilityWidgetProps) {
+export function ProfitabilityWidget({
+  job,
+  materials: materialsData = [],
+}: ProfitabilityWidgetProps) {
   // Calculate revenue and costs from job line items
   const lineItems = materialsData as any[];
 
   // Calculate revenue by item type
   const revenue: RevenueBreakdown = {
-    services: lineItems
-      .filter((item) => item.item_type === "service" || item.item_type === "labor")
-      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
-    materials: lineItems
-      .filter((item) => item.item_type === "material" || item.item_type === "product")
-      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
-    equipment: lineItems
-      .filter((item) => item.item_type === "equipment")
-      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
-    other: lineItems
-      .filter((item) => !["service", "labor", "material", "product", "equipment"].includes(item.item_type))
-      .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    services:
+      lineItems
+        .filter(
+          (item) => item.item_type === "service" || item.item_type === "labor"
+        )
+        .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    materials:
+      lineItems
+        .filter(
+          (item) =>
+            item.item_type === "material" || item.item_type === "product"
+        )
+        .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    equipment:
+      lineItems
+        .filter((item) => item.item_type === "equipment")
+        .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
+    other:
+      lineItems
+        .filter(
+          (item) =>
+            !["service", "labor", "material", "product", "equipment"].includes(
+              item.item_type
+            )
+        )
+        .reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
   };
 
   // Calculate costs (assuming cost is tracked separately, or use 60% of price as estimate)
   const costs: CostBreakdown = {
-    labor: lineItems
-      .filter((item) => item.item_type === "service" || item.item_type === "labor")
-      .reduce((sum, item) => sum + ((item.cost || item.total_price * 0.6) || 0), 0) / 100,
-    materials: lineItems
-      .filter((item) => item.item_type === "material" || item.item_type === "product")
-      .reduce((sum, item) => sum + ((item.cost || item.total_price * 0.7) || 0), 0) / 100,
-    equipment: lineItems
-      .filter((item) => item.item_type === "equipment")
-      .reduce((sum, item) => sum + ((item.cost || item.total_price * 0.7) || 0), 0) / 100,
+    labor:
+      lineItems
+        .filter(
+          (item) => item.item_type === "service" || item.item_type === "labor"
+        )
+        .reduce(
+          (sum, item) => sum + (item.cost || item.total_price * 0.6 || 0),
+          0
+        ) / 100,
+    materials:
+      lineItems
+        .filter(
+          (item) =>
+            item.item_type === "material" || item.item_type === "product"
+        )
+        .reduce(
+          (sum, item) => sum + (item.cost || item.total_price * 0.7 || 0),
+          0
+        ) / 100,
+    equipment:
+      lineItems
+        .filter((item) => item.item_type === "equipment")
+        .reduce(
+          (sum, item) => sum + (item.cost || item.total_price * 0.7 || 0),
+          0
+        ) / 100,
     permits: 0, // TODO: Track permit costs separately
-    overhead: (job.totalAmount || 0) * 0.1 / 100, // 10% overhead estimate
+    overhead: ((job.totalAmount || 0) * 0.1) / 100, // 10% overhead estimate
     other: 0,
   };
 

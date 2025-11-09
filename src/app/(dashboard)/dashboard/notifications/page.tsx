@@ -24,7 +24,6 @@ export default function NotificationsPage() {
         }}
       />
       <div className="container mx-auto px-4 py-6">
-
         <Suspense fallback={<NotificationsListSkeleton />}>
           <NotificationsList />
         </Suspense>

@@ -1,8 +1,22 @@
 "use client";
 
-import { Building2, Home, MapPin, Package, Plus, Star, Trash2, Truck, X } from "lucide-react";
+import {
+  Building2,
+  Home,
+  MapPin,
+  Package,
+  Plus,
+  Star,
+  Trash2,
+  Truck,
+  X,
+} from "lucide-react";
 import { useState } from "react";
-import { addCustomerAddress, deleteCustomerAddress, updateCustomerAddress } from "@/actions/customer-enhancements";
+import {
+  addCustomerAddress,
+  deleteCustomerAddress,
+  updateCustomerAddress,
+} from "@/actions/customer-enhancements";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,8 +81,10 @@ const ADDRESS_TYPE_ICONS = {
 const ADDRESS_TYPE_COLORS = {
   billing: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   shipping: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  service: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  mailing: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+  service:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  mailing:
+    "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
   other: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
 };
 
@@ -141,22 +157,28 @@ export function CustomerAddressesManager({
       if (editingId) {
         const result = await updateCustomerAddress(editingId, formDataObj);
         if (result.success) {
-          setAddresses(addresses.map(a => a.id === editingId ? {
-            ...a,
-            address_type: formData.addressType,
-            is_default: formData.isDefault,
-            label: formData.label,
-            address_line1: formData.addressLine1,
-            address_line2: formData.addressLine2,
-            city: formData.city,
-            state: formData.state,
-            zip_code: formData.zipCode,
-            country: formData.country,
-            directions: formData.directions,
-            access_notes: formData.accessNotes,
-            parking_instructions: formData.parkingInstructions,
-            gate_code: formData.gateCode,
-          } : a));
+          setAddresses(
+            addresses.map((a) =>
+              a.id === editingId
+                ? {
+                    ...a,
+                    address_type: formData.addressType,
+                    is_default: formData.isDefault,
+                    label: formData.label,
+                    address_line1: formData.addressLine1,
+                    address_line2: formData.addressLine2,
+                    city: formData.city,
+                    state: formData.state,
+                    zip_code: formData.zipCode,
+                    country: formData.country,
+                    directions: formData.directions,
+                    access_notes: formData.accessNotes,
+                    parking_instructions: formData.parkingInstructions,
+                    gate_code: formData.gateCode,
+                  }
+                : a
+            )
+          );
           resetForm();
         } else {
           alert(result.error || "Failed to update address");
@@ -220,7 +242,7 @@ export function CustomerAddressesManager({
     try {
       const result = await deleteCustomerAddress(addressId);
       if (result.success) {
-        setAddresses(addresses.filter(a => a.id !== addressId));
+        setAddresses(addresses.filter((a) => a.id !== addressId));
       } else {
         alert(result.error || "Failed to delete address");
       }
@@ -232,7 +254,8 @@ export function CustomerAddressesManager({
   };
 
   const getTypeIcon = (type: string) => {
-    const Icon = ADDRESS_TYPE_ICONS[type as keyof typeof ADDRESS_TYPE_ICONS] || MapPin;
+    const Icon =
+      ADDRESS_TYPE_ICONS[type as keyof typeof ADDRESS_TYPE_ICONS] || MapPin;
     return Icon;
   };
 
@@ -257,10 +280,7 @@ export function CustomerAddressesManager({
         {addresses.map((address) => {
           const TypeIcon = getTypeIcon(address.address_type);
           return (
-            <div
-              key={address.id}
-              className="rounded-lg border bg-muted/50 p-4"
-            >
+            <div className="rounded-lg border bg-muted/50 p-4" key={address.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-1 items-start gap-3">
                   <TypeIcon className="mt-0.5 size-5 text-muted-foreground" />
@@ -271,15 +291,17 @@ export function CustomerAddressesManager({
                         <p className="font-semibold">{address.label}</p>
                       )}
                       <Badge
-                        variant="outline"
                         className={`text-xs capitalize ${
-                          ADDRESS_TYPE_COLORS[address.address_type as keyof typeof ADDRESS_TYPE_COLORS]
+                          ADDRESS_TYPE_COLORS[
+                            address.address_type as keyof typeof ADDRESS_TYPE_COLORS
+                          ]
                         }`}
+                        variant="outline"
                       >
                         {address.address_type}
                       </Badge>
                       {address.is_default && (
-                        <Badge variant="default" className="text-xs">
+                        <Badge className="text-xs" variant="default">
                           <Star className="mr-1 size-3" />
                           Default
                         </Badge>
@@ -317,22 +339,22 @@ export function CustomerAddressesManager({
                 {/* Actions */}
                 <div className="flex gap-1">
                   <Button
+                    className="h-8 px-2 text-xs"
+                    disabled={isLoading}
+                    onClick={() => handleEdit(address)}
+                    size="sm"
                     type="button"
                     variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(address)}
-                    disabled={isLoading}
-                    className="h-8 px-2 text-xs"
                   >
                     Edit
                   </Button>
                   <Button
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    disabled={isLoading}
+                    onClick={() => handleDelete(address.id)}
+                    size="sm"
                     type="button"
                     variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(address.id)}
-                    disabled={isLoading}
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -344,17 +366,20 @@ export function CustomerAddressesManager({
 
         {/* Add/Edit Form */}
         {showAddForm ? (
-          <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border bg-card p-4">
+          <form
+            className="space-y-4 rounded-lg border bg-card p-4"
+            onSubmit={handleSubmit}
+          >
             <div className="flex items-center justify-between">
               <h4 className="font-semibold text-sm">
                 {editingId ? "Edit Address" : "Add New Address"}
               </h4>
               <Button
+                className="h-8 w-8 p-0"
+                onClick={resetForm}
+                size="sm"
                 type="button"
                 variant="ghost"
-                size="sm"
-                onClick={resetForm}
-                className="h-8 w-8 p-0"
               >
                 <X className="size-4" />
               </Button>
@@ -362,12 +387,16 @@ export function CustomerAddressesManager({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="addressType" className="text-xs">Address Type *</Label>
+                <Label className="text-xs" htmlFor="addressType">
+                  Address Type *
+                </Label>
                 <Select
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, addressType: value })
+                  }
                   value={formData.addressType}
-                  onValueChange={(value: any) => setFormData({ ...formData, addressType: value })}
                 >
-                  <SelectTrigger id="addressType" className="h-9">
+                  <SelectTrigger className="h-9" id="addressType">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -380,71 +409,95 @@ export function CustomerAddressesManager({
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="label" className="text-xs">Label</Label>
+                <Label className="text-xs" htmlFor="label">
+                  Label
+                </Label>
                 <Input
-                  id="label"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  placeholder="Main Office, Warehouse, etc."
                   className="h-9"
+                  id="label"
+                  onChange={(e) =>
+                    setFormData({ ...formData, label: e.target.value })
+                  }
+                  placeholder="Main Office, Warehouse, etc."
+                  value={formData.label}
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="addressLine1" className="text-xs">Street Address *</Label>
+              <Label className="text-xs" htmlFor="addressLine1">
+                Street Address *
+              </Label>
               <Input
-                id="addressLine1"
-                value={formData.addressLine1}
-                onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
-                required
-                placeholder="123 Main St"
                 className="h-9"
+                id="addressLine1"
+                onChange={(e) =>
+                  setFormData({ ...formData, addressLine1: e.target.value })
+                }
+                placeholder="123 Main St"
+                required
+                value={formData.addressLine1}
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="addressLine2" className="text-xs">Apt, Suite, Unit</Label>
+              <Label className="text-xs" htmlFor="addressLine2">
+                Apt, Suite, Unit
+              </Label>
               <Input
-                id="addressLine2"
-                value={formData.addressLine2}
-                onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
-                placeholder="Suite 100"
                 className="h-9"
+                id="addressLine2"
+                onChange={(e) =>
+                  setFormData({ ...formData, addressLine2: e.target.value })
+                }
+                placeholder="Suite 100"
+                value={formData.addressLine2}
               />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="city" className="text-xs">City *</Label>
+                <Label className="text-xs" htmlFor="city">
+                  City *
+                </Label>
                 <Input
+                  className="h-9"
                   id="city"
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
+                  required
                   value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  required
-                  className="h-9"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="state" className="text-xs">State *</Label>
+                <Label className="text-xs" htmlFor="state">
+                  State *
+                </Label>
                 <Input
+                  className="h-9"
                   id="state"
-                  value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  required
                   maxLength={2}
+                  onChange={(e) =>
+                    setFormData({ ...formData, state: e.target.value })
+                  }
                   placeholder="CA"
-                  className="h-9"
+                  required
+                  value={formData.state}
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="zipCode" className="text-xs">ZIP *</Label>
+                <Label className="text-xs" htmlFor="zipCode">
+                  ZIP *
+                </Label>
                 <Input
-                  id="zipCode"
-                  value={formData.zipCode}
-                  onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                  required
                   className="h-9"
+                  id="zipCode"
+                  onChange={(e) =>
+                    setFormData({ ...formData, zipCode: e.target.value })
+                  }
+                  required
+                  value={formData.zipCode}
                 />
               </div>
             </div>
@@ -453,80 +506,105 @@ export function CustomerAddressesManager({
             {formData.addressType === "service" && (
               <>
                 <div className="space-y-1.5">
-                  <Label htmlFor="directions" className="text-xs">Directions</Label>
+                  <Label className="text-xs" htmlFor="directions">
+                    Directions
+                  </Label>
                   <Textarea
-                    id="directions"
-                    value={formData.directions}
-                    onChange={(e) => setFormData({ ...formData, directions: e.target.value })}
-                    rows={2}
-                    placeholder="Turn left after the red barn, driveway on right..."
                     className="text-sm"
+                    id="directions"
+                    onChange={(e) =>
+                      setFormData({ ...formData, directions: e.target.value })
+                    }
+                    placeholder="Turn left after the red barn, driveway on right..."
+                    rows={2}
+                    value={formData.directions}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="gateCode" className="text-xs">Gate Code</Label>
+                    <Label className="text-xs" htmlFor="gateCode">
+                      Gate Code
+                    </Label>
                     <Input
-                      id="gateCode"
-                      value={formData.gateCode}
-                      onChange={(e) => setFormData({ ...formData, gateCode: e.target.value })}
-                      placeholder="#1234"
                       className="h-9"
+                      id="gateCode"
+                      onChange={(e) =>
+                        setFormData({ ...formData, gateCode: e.target.value })
+                      }
+                      placeholder="#1234"
+                      value={formData.gateCode}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="parking" className="text-xs">Parking</Label>
+                    <Label className="text-xs" htmlFor="parking">
+                      Parking
+                    </Label>
                     <Input
-                      id="parking"
-                      value={formData.parkingInstructions}
-                      onChange={(e) => setFormData({ ...formData, parkingInstructions: e.target.value })}
-                      placeholder="Park in driveway"
                       className="h-9"
+                      id="parking"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          parkingInstructions: e.target.value,
+                        })
+                      }
+                      placeholder="Park in driveway"
+                      value={formData.parkingInstructions}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="accessNotes" className="text-xs">Access Notes</Label>
+                  <Label className="text-xs" htmlFor="accessNotes">
+                    Access Notes
+                  </Label>
                   <Textarea
-                    id="accessNotes"
-                    value={formData.accessNotes}
-                    onChange={(e) => setFormData({ ...formData, accessNotes: e.target.value })}
-                    rows={2}
-                    placeholder="Use side entrance, call before arrival, etc."
                     className="text-sm"
+                    id="accessNotes"
+                    onChange={(e) =>
+                      setFormData({ ...formData, accessNotes: e.target.value })
+                    }
+                    placeholder="Use side entrance, call before arrival, etc."
+                    rows={2}
+                    value={formData.accessNotes}
                   />
                 </div>
               </>
             )}
 
             <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-3">
-              <Label htmlFor="isDefault" className="text-xs">
+              <Label className="text-xs" htmlFor="isDefault">
                 Set as default {formData.addressType} address
               </Label>
               <Switch
-                id="isDefault"
                 checked={formData.isDefault}
-                onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked })}
+                id="isDefault"
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, isDefault: checked })
+                }
               />
             </div>
 
             <div className="flex gap-2">
               <Button
-                type="submit"
-                size="sm"
-                disabled={isLoading}
                 className="flex-1"
+                disabled={isLoading}
+                size="sm"
+                type="submit"
               >
-                {isLoading ? "Saving..." : editingId ? "Update Address" : "Add Address"}
+                {isLoading
+                  ? "Saving..."
+                  : editingId
+                    ? "Update Address"
+                    : "Add Address"}
               </Button>
               <Button
+                disabled={isLoading}
+                onClick={resetForm}
+                size="sm"
                 type="button"
                 variant="ghost"
-                size="sm"
-                onClick={resetForm}
-                disabled={isLoading}
               >
                 Cancel
               </Button>
@@ -534,11 +612,11 @@ export function CustomerAddressesManager({
           </form>
         ) : (
           <Button
+            className="w-full"
+            onClick={() => setShowAddForm(true)}
+            size="sm"
             type="button"
             variant="outline"
-            size="sm"
-            onClick={() => setShowAddForm(true)}
-            className="w-full"
           >
             <Plus className="mr-2 size-4" />
             Add Address

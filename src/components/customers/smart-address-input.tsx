@@ -14,7 +14,10 @@ import { Check, Loader2, MapPin, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loadGoogleMapsScript, isGoogleMapsLoaded } from "@/lib/utils/load-google-maps";
+import {
+  isGoogleMapsLoaded,
+  loadGoogleMapsScript,
+} from "@/lib/utils/load-google-maps";
 
 type AddressData = {
   address: string;
@@ -117,7 +120,8 @@ export function SmartAddressInput({
         newAddress.address = component.long_name;
       }
       if (types.includes("route")) {
-        newAddress.address = `${newAddress.address} ${component.long_name}`.trim();
+        newAddress.address =
+          `${newAddress.address} ${component.long_name}`.trim();
       }
       if (types.includes("locality")) {
         newAddress.city = component.long_name;
@@ -228,10 +232,10 @@ export function SmartAddressInput({
         <div className="relative">
           <Search className="absolute top-3 left-3 size-4 text-muted-foreground" />
           <Input
-            ref={autocompleteInputRef}
             className="pl-10"
             id="autocomplete-address"
             placeholder="Start typing an address..."
+            ref={autocompleteInputRef}
             required={required}
           />
         </div>

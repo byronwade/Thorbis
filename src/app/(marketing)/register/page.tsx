@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { useState } from "react";
 import { signInWithOAuth, signUp } from "@/actions/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -20,12 +21,36 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { createHowToSchema } from "@/lib/seo/structured-data";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const howToSchema = createHowToSchema({
+    name: "Create a Thorbis account",
+    description:
+      "Sign up for Thorbis in three simple steps to start managing your field operations.",
+    steps: [
+      {
+        name: "Enter your contact information",
+        text: "Provide your name and business email so we can set up your workspace.",
+      },
+      {
+        name: "Create a secure password",
+        text: "Use at least eight characters with uppercase, lowercase, and a number for security.",
+      },
+      {
+        name: "Accept terms and create account",
+        text: "Agree to the Thorbis terms, privacy policy, and fees to finalize your account.",
+      },
+    ],
+    supplies: ["Business email address"],
+    tools: ["Thorbis web app"],
+    totalTime: "PT5M",
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,13 +106,24 @@ export default function RegisterPage() {
         return; // Let the redirect happen, keep loading state
       }
 
-      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred. Please try again."
+      );
       setIsLoading(false);
     }
   };
 
   return (
     <div className="h-full w-full">
+      <Script
+        id="register-howto-schema"
+        strategy="afterInteractive"
+        type="application/ld+json"
+      >
+        {JSON.stringify(howToSchema)}
+      </Script>
       <div className="h-dvh lg:grid lg:grid-cols-2">
         {/* Registration Form Side */}
         <div className="flex h-full items-center justify-center space-y-6 px-6 py-12 sm:px-6 md:px-8">

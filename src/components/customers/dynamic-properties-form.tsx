@@ -11,9 +11,9 @@
 
 import { MapPin, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { SmartAddressInput } from "@/components/customers/smart-address-input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SmartAddressInput } from "@/components/customers/smart-address-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -80,15 +80,9 @@ export function DynamicPropertiesForm() {
     setProperties(properties.filter((p) => p.id !== id));
   };
 
-  const updateProperty = (
-    id: string,
-    field: keyof Property,
-    value: string
-  ) => {
+  const updateProperty = (id: string, field: keyof Property, value: string) => {
     setProperties(
-      properties.map((p) =>
-        p.id === id ? { ...p, [field]: value } : p
-      )
+      properties.map((p) => (p.id === id ? { ...p, [field]: value } : p))
     );
   };
 
@@ -128,9 +122,7 @@ export function DynamicPropertiesForm() {
           {!property.isPrimary && (
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor={`${property.id}-name`}>
-                  Property Name
-                </Label>
+                <Label htmlFor={`${property.id}-name`}>Property Name</Label>
                 <Input
                   id={`${property.id}-name`}
                   onChange={(e) =>
@@ -179,7 +171,11 @@ export function DynamicPropertiesForm() {
               zipCode: property.zipCode,
               country: property.country,
             }}
-            label={property.isPrimary ? "Primary Address (Optional)" : "Property Address"}
+            label={
+              property.isPrimary
+                ? "Primary Address (Optional)"
+                : "Property Address"
+            }
             onAddressChange={(data) => {
               updateProperty(property.id, "address", data.address);
               updateProperty(property.id, "address2", data.address2 || "");

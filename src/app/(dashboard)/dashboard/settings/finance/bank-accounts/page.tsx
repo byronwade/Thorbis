@@ -10,45 +10,22 @@
  */
 
 import {
-  Building2,
-  Plus,
-  Loader2,
-  Trash2,
-  Edit,
-  CheckCircle,
   AlertCircle,
+  Building2,
+  CheckCircle,
+  Edit,
   HelpCircle,
+  Loader2,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  createBankAccount,
+  deleteBankAccount,
+  getBankAccounts,
+  updateBankAccount,
+} from "@/actions/settings";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,17 +36,40 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  createBankAccount,
-  updateBankAccount,
-  deleteBankAccount,
-  getBankAccounts,
-} from "@/actions/settings";
+import { useToast } from "@/hooks/use-toast";
 
 type BankAccount = {
   id: string;
@@ -190,7 +190,9 @@ export default function BankAccountsSettingsPage() {
       }
 
       if (result.success) {
-        toast.success(`Bank account ${editingAccount ? "updated" : "created"} successfully`);
+        toast.success(
+          `Bank account ${editingAccount ? "updated" : "created"} successfully`
+        );
         setDialogOpen(false);
         resetForm();
         // Reload accounts
@@ -199,7 +201,10 @@ export default function BankAccountsSettingsPage() {
           setAccounts(accountsResult.data);
         }
       } else {
-        toast.error(result.error || `Failed to ${editingAccount ? "update" : "create"} bank account`);
+        toast.error(
+          result.error ||
+            `Failed to ${editingAccount ? "update" : "create"} bank account`
+        );
       }
     });
   };
@@ -225,12 +230,11 @@ export default function BankAccountsSettingsPage() {
     });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(amount);
-  };
 
   if (isLoading) {
     return (
@@ -253,7 +257,11 @@ export default function BankAccountsSettingsPage() {
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p className="text-sm">Connect and manage your business bank accounts with Plaid integration for automatic transaction imports and real-time balance updates.</p>
+                <p className="text-sm">
+                  Connect and manage your business bank accounts with Plaid
+                  integration for automatic transaction imports and real-time
+                  balance updates.
+                </p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -265,327 +273,335 @@ export default function BankAccountsSettingsPage() {
 
       <div className="space-y-6">
         <div className="flex items-start justify-between">
-          <div></div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()}>
-              <Plus className="mr-2 size-4" />
-              Add Account
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editingAccount ? "Edit Bank Account" : "Add Bank Account"}
-              </DialogTitle>
-              <DialogDescription>
-                {editingAccount
-                  ? "Update the bank account details below"
-                  : "Connect a new bank account to your business"}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="accountName">Account Name</Label>
-                  <Input
-                    className="mt-2"
-                    id="accountName"
-                    placeholder="Business Checking"
-                    value={formData.accountName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, accountName: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="bankName">Bank Name</Label>
-                  <Input
-                    className="mt-2"
-                    id="bankName"
-                    placeholder="Chase Bank"
-                    value={formData.bankName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, bankName: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="accountType">Account Type</Label>
-                  <Select
-                    value={formData.accountType}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, accountType: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="checking">Checking</SelectItem>
-                      <SelectItem value="savings">Savings</SelectItem>
-                      <SelectItem value="business_checking">
-                        Business Checking
-                      </SelectItem>
-                      <SelectItem value="credit_card">Credit Card</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="accountNumberLast4">Last 4 Digits</Label>
-                  <Input
-                    className="mt-2"
-                    id="accountNumberLast4"
-                    maxLength={4}
-                    placeholder="1234"
-                    value={formData.accountNumberLast4}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        accountNumberLast4: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="currentBalance">Current Balance</Label>
-                  <Input
-                    className="mt-2"
-                    id="currentBalance"
-                    placeholder="0.00"
-                    type="number"
-                    value={formData.currentBalance}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        currentBalance: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="availableBalance">Available Balance</Label>
-                  <Input
-                    className="mt-2"
-                    id="availableBalance"
-                    placeholder="0.00"
-                    type="number"
-                    value={formData.availableBalance}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        availableBalance: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label>Auto Import Transactions</Label>
-                  <p className="text-muted-foreground text-xs">
-                    Automatically sync transactions via Plaid
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.autoImportTransactions}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, autoImportTransactions: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label>Primary Account</Label>
-                  <p className="text-muted-foreground text-xs">
-                    Use as default for payments
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.isPrimary}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isPrimary: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label>Active</Label>
-                  <p className="text-muted-foreground text-xs">
-                    Show in reports and dashboard
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isActive: checked })
-                  }
-                />
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setDialogOpen(false);
-                  resetForm();
-                }}
-              >
-                Cancel
+          <div />
+          <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="mr-2 size-4" />
+                Add Account
               </Button>
-              <Button onClick={handleSave} disabled={isPending}>
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Account"
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingAccount ? "Edit Bank Account" : "Add Bank Account"}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingAccount
+                    ? "Update the bank account details below"
+                    : "Connect a new bank account to your business"}
+                </DialogDescription>
+              </DialogHeader>
 
-      {accounts.length === 0 ? (
-        <Card>
-          <CardContent className="flex min-h-[300px] flex-col items-center justify-center py-12">
-            <Building2 className="mb-4 size-12 text-muted-foreground" />
-            <h3 className="mb-2 font-semibold text-lg">
-              No bank accounts connected
-            </h3>
-            <p className="mb-6 text-center text-muted-foreground text-sm">
-              Connect your business bank accounts to track balances and manage
-              transactions
-            </p>
-            <Button onClick={() => handleOpenDialog()}>
-              <Plus className="mr-2 size-4" />
-              Add Your First Account
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {accounts.map((account) => (
-            <Card
-              key={account.id}
-              className={!account.is_active ? "opacity-60" : ""}
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2">
-                      <Building2 className="size-5 text-primary" />
-                      {account.account_name}
-                      {account.is_primary && (
-                        <span className="rounded-full bg-blue-500/10 px-2 py-0.5 font-medium text-blue-700 text-xs dark:text-blue-400">
-                          Primary
-                        </span>
-                      )}
-                    </CardTitle>
-                    <CardDescription className="mt-1">
-                      {account.bank_name}
-                      {account.account_number_last4 && (
-                        <span className="ml-2">
-                          ····{account.account_number_last4}
-                        </span>
-                      )}
-                    </CardDescription>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleOpenDialog(account)}
-                    >
-                      <Edit className="size-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        setAccountToDelete(account.id);
-                        setDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="size-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4 py-4">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="text-muted-foreground text-xs">
-                      Current Balance
-                    </p>
-                    <p className="font-semibold text-lg">
-                      {formatCurrency(account.current_balance)}
-                    </p>
+                    <Label htmlFor="accountName">Account Name</Label>
+                    <Input
+                      className="mt-2"
+                      id="accountName"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          accountName: e.target.value,
+                        })
+                      }
+                      placeholder="Business Checking"
+                      value={formData.accountName}
+                    />
                   </div>
                   <div>
-                    <p className="text-muted-foreground text-xs">
-                      Available Balance
-                    </p>
-                    <p className="font-semibold text-lg">
-                      {formatCurrency(account.available_balance)}
-                    </p>
+                    <Label htmlFor="bankName">Bank Name</Label>
+                    <Input
+                      className="mt-2"
+                      id="bankName"
+                      onChange={(e) =>
+                        setFormData({ ...formData, bankName: e.target.value })
+                      }
+                      placeholder="Chase Bank"
+                      value={formData.bankName}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="accountType">Account Type</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, accountType: value })
+                      }
+                      value={formData.accountType}
+                    >
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="checking">Checking</SelectItem>
+                        <SelectItem value="savings">Savings</SelectItem>
+                        <SelectItem value="business_checking">
+                          Business Checking
+                        </SelectItem>
+                        <SelectItem value="credit_card">Credit Card</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="accountNumberLast4">Last 4 Digits</Label>
+                    <Input
+                      className="mt-2"
+                      id="accountNumberLast4"
+                      maxLength={4}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          accountNumberLast4: e.target.value,
+                        })
+                      }
+                      placeholder="1234"
+                      value={formData.accountNumberLast4}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="currentBalance">Current Balance</Label>
+                    <Input
+                      className="mt-2"
+                      id="currentBalance"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          currentBalance: e.target.value,
+                        })
+                      }
+                      placeholder="0.00"
+                      type="number"
+                      value={formData.currentBalance}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="availableBalance">Available Balance</Label>
+                    <Input
+                      className="mt-2"
+                      id="availableBalance"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          availableBalance: e.target.value,
+                        })
+                      }
+                      placeholder="0.00"
+                      type="number"
+                      value={formData.availableBalance}
+                    />
                   </div>
                 </div>
 
                 <Separator />
 
-                <div className="flex items-center gap-2 text-sm">
-                  {account.is_active ? (
-                    <>
-                      <CheckCircle className="size-4 text-green-500" />
-                      <span className="text-muted-foreground">Active</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="size-4 text-amber-500" />
-                      <span className="text-muted-foreground">Inactive</span>
-                    </>
-                  )}
-                  <span className="text-muted-foreground">·</span>
-                  <span className="text-muted-foreground">
-                    {account.account_type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                  </span>
-                  {account.auto_import_transactions && (
-                    <>
-                      <span className="text-muted-foreground">·</span>
-                      <span className="text-muted-foreground">
-                        Auto-sync enabled
-                      </span>
-                    </>
-                  )}
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <Label>Auto Import Transactions</Label>
+                    <p className="text-muted-foreground text-xs">
+                      Automatically sync transactions via Plaid
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.autoImportTransactions}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        autoImportTransactions: checked,
+                      })
+                    }
+                  />
                 </div>
 
-                {account.last_synced_at && (
-                  <p className="text-muted-foreground text-xs">
-                    Last synced:{" "}
-                    {new Date(account.last_synced_at).toLocaleString()}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <Label>Primary Account</Label>
+                    <p className="text-muted-foreground text-xs">
+                      Use as default for payments
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.isPrimary}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, isPrimary: checked })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <Label>Active</Label>
+                    <p className="text-muted-foreground text-xs">
+                      Show in reports and dashboard
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, isActive: checked })
+                    }
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button
+                  onClick={() => {
+                    setDialogOpen(false);
+                    resetForm();
+                  }}
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+                <Button disabled={isPending} onClick={handleSave}>
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Account"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
+
+        {accounts.length === 0 ? (
+          <Card>
+            <CardContent className="flex min-h-[300px] flex-col items-center justify-center py-12">
+              <Building2 className="mb-4 size-12 text-muted-foreground" />
+              <h3 className="mb-2 font-semibold text-lg">
+                No bank accounts connected
+              </h3>
+              <p className="mb-6 text-center text-muted-foreground text-sm">
+                Connect your business bank accounts to track balances and manage
+                transactions
+              </p>
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="mr-2 size-4" />
+                Add Your First Account
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {accounts.map((account) => (
+              <Card
+                className={account.is_active ? "" : "opacity-60"}
+                key={account.id}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="flex items-center gap-2">
+                        <Building2 className="size-5 text-primary" />
+                        {account.account_name}
+                        {account.is_primary && (
+                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 font-medium text-blue-700 text-xs dark:text-blue-400">
+                            Primary
+                          </span>
+                        )}
+                      </CardTitle>
+                      <CardDescription className="mt-1">
+                        {account.bank_name}
+                        {account.account_number_last4 && (
+                          <span className="ml-2">
+                            ····{account.account_number_last4}
+                          </span>
+                        )}
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleOpenDialog(account)}
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <Edit className="size-4" />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setAccountToDelete(account.id);
+                          setDeleteDialogOpen(true);
+                        }}
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <Trash2 className="size-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-muted-foreground text-xs">
+                        Current Balance
+                      </p>
+                      <p className="font-semibold text-lg">
+                        {formatCurrency(account.current_balance)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">
+                        Available Balance
+                      </p>
+                      <p className="font-semibold text-lg">
+                        {formatCurrency(account.available_balance)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center gap-2 text-sm">
+                    {account.is_active ? (
+                      <>
+                        <CheckCircle className="size-4 text-green-500" />
+                        <span className="text-muted-foreground">Active</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="size-4 text-amber-500" />
+                        <span className="text-muted-foreground">Inactive</span>
+                      </>
+                    )}
+                    <span className="text-muted-foreground">·</span>
+                    <span className="text-muted-foreground">
+                      {account.account_type
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </span>
+                    {account.auto_import_transactions && (
+                      <>
+                        <span className="text-muted-foreground">·</span>
+                        <span className="text-muted-foreground">
+                          Auto-sync enabled
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  {account.last_synced_at && (
+                    <p className="text-muted-foreground text-xs">
+                      Last synced:{" "}
+                      {new Date(account.last_synced_at).toLocaleString()}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         <Card className="border-blue-500/50 bg-blue-500/5">
           <CardContent className="flex items-start gap-3 pt-6">
@@ -604,7 +620,7 @@ export default function BankAccountsSettingsPage() {
         </Card>
       </div>
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <AlertDialog onOpenChange={setDeleteDialogOpen} open={deleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Bank Account</AlertDialogTitle>
@@ -619,9 +635,9 @@ export default function BankAccountsSettingsPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isPending}
               className="bg-destructive hover:bg-destructive/90"
+              disabled={isPending}
+              onClick={handleDelete}
             >
               {isPending ? (
                 <>

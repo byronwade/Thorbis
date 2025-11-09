@@ -17,7 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
   title: "Phone Numbers | Communications Settings",
-  description: "Manage your company phone numbers, purchase new numbers, and port existing ones",
+  description:
+    "Manage your company phone numbers, purchase new numbers, and port existing ones",
 };
 
 export default function PhoneNumbersPage() {
@@ -45,7 +46,7 @@ function PhoneNumbersListSkeleton() {
   return (
     <div className="space-y-4 p-6">
       {[...Array(5)].map((_, i) => (
-        <Skeleton key={i} className="h-20 w-full" />
+        <Skeleton className="h-20 w-full" key={i} />
       ))}
     </div>
   );

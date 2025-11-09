@@ -10,6 +10,8 @@
 
 "use client";
 
+import { Clock, Filter, Phone, Search, Upload } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,10 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Phone, Upload, Search, Filter, Clock } from "lucide-react";
-import Link from "next/link";
-import { PhoneNumberSearchModal } from "./phone-number-search-modal";
 import { NumberPortingWizard } from "./number-porting-wizard";
+import { PhoneNumberSearchModal } from "./phone-number-search-modal";
 
 export function PhoneNumbersToolbar() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -37,14 +37,11 @@ export function PhoneNumbersToolbar() {
           {/* Left: Search and Filters */}
           <div className="flex flex-1 items-center gap-3">
             <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search phone numbers..."
-                className="pl-9"
-              />
+              <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+              <Input className="pl-9" placeholder="Search phone numbers..." />
             </div>
 
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <Select onValueChange={setFilterStatus} value={filterStatus}>
               <SelectTrigger className="w-[180px]">
                 <Filter className="mr-2 size-4" />
                 <SelectValue placeholder="Filter by status" />
@@ -61,21 +58,14 @@ export function PhoneNumbersToolbar() {
 
           {/* Right: Primary Actions */}
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-            >
+            <Button asChild size="sm" variant="ghost">
               <Link href="/dashboard/settings/communications/porting-status">
                 <Clock className="mr-2 size-4" />
                 Porting Status
               </Link>
             </Button>
 
-            <Button
-              variant="outline"
-              onClick={() => setPortingOpen(true)}
-            >
+            <Button onClick={() => setPortingOpen(true)} variant="outline">
               <Upload className="mr-2 size-4" />
               Port Number
             </Button>
@@ -88,17 +78,20 @@ export function PhoneNumbersToolbar() {
         </div>
 
         {/* Info Bar */}
-        <div className="mt-3 flex items-center gap-6 text-sm text-muted-foreground">
+        <div className="mt-3 flex items-center gap-6 text-muted-foreground text-sm">
           <div>
-            <span className="font-medium text-foreground">3</span> active numbers
+            <span className="font-medium text-foreground">3</span> active
+            numbers
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="font-medium text-foreground">$3.00</span>/month total cost
+            <span className="font-medium text-foreground">$3.00</span>/month
+            total cost
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="font-medium text-foreground">1,247</span> minutes this month
+            <span className="font-medium text-foreground">1,247</span> minutes
+            this month
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
@@ -108,15 +101,9 @@ export function PhoneNumbersToolbar() {
       </div>
 
       {/* Modals */}
-      <PhoneNumberSearchModal
-        open={searchOpen}
-        onOpenChange={setSearchOpen}
-      />
+      <PhoneNumberSearchModal onOpenChange={setSearchOpen} open={searchOpen} />
 
-      <NumberPortingWizard
-        open={portingOpen}
-        onOpenChange={setPortingOpen}
-      />
+      <NumberPortingWizard onOpenChange={setPortingOpen} open={portingOpen} />
     </>
   );
 }

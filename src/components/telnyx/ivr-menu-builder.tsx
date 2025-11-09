@@ -12,12 +12,41 @@
 
 "use client";
 
+import {
+  ArrowRight,
+  Clock,
+  Edit,
+  MessageSquare,
+  Phone,
+  Play,
+  Plus,
+  Save,
+  Settings,
+  Trash2,
+  Upload,
+  Users,
+  Volume2,
+} from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -25,34 +54,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Phone,
-  Plus,
-  Trash2,
-  Edit,
-  Play,
-  Upload,
-  Save,
-  ArrowRight,
-  Volume2,
-  Users,
-  Clock,
-  MessageSquare,
-  Settings,
-} from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 // IVR Node Types
-type NodeType = "greeting" | "menu" | "route" | "voicemail" | "hangup" | "repeat";
+type NodeType =
+  | "greeting"
+  | "menu"
+  | "route"
+  | "voicemail"
+  | "hangup"
+  | "repeat";
 
 // IVR Action Types
 type ActionType = "transfer" | "voicemail" | "submenu" | "repeat" | "hangup";
@@ -189,7 +201,8 @@ export function IVRMenuBuilder() {
     setMenu((prev) => ({
       ...prev,
       nodes: prev.nodes.map((n) => (n.id === updatedNode.id ? updatedNode : n)),
-      rootNode: prev.rootNode.id === updatedNode.id ? updatedNode : prev.rootNode,
+      rootNode:
+        prev.rootNode.id === updatedNode.id ? updatedNode : prev.rootNode,
     }));
     setSelectedNode(updatedNode);
   };
@@ -208,7 +221,11 @@ export function IVRMenuBuilder() {
               <CardDescription>{menu.description}</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => setTestMode(!testMode)}>
+              <Button
+                onClick={() => setTestMode(!testMode)}
+                size="sm"
+                variant="outline"
+              >
                 <Play className="mr-2 size-3" />
                 {testMode ? "Stop Test" : "Test Menu"}
               </Button>
@@ -242,7 +259,7 @@ export function IVRMenuBuilder() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {menu.rootNode.keypressOptions.map((option) => (
-                  <Button key={option.key} variant="outline" size="sm">
+                  <Button key={option.key} size="sm" variant="outline">
                     {option.key} - {option.label}
                   </Button>
                 ))}
@@ -256,39 +273,41 @@ export function IVRMenuBuilder() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Menu Flow</CardTitle>
-          <CardDescription>Visual representation of your IVR menu structure</CardDescription>
+          <CardDescription>
+            Visual representation of your IVR menu structure
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {/* Root Node */}
             <IVRNodeCard
-              node={menu.rootNode}
               isRoot={true}
+              node={menu.rootNode}
               onEdit={() => editNode(menu.rootNode)}
             />
 
             {/* Keypress Options Flow */}
             <div className="ml-8 space-y-3 border-l-2 border-dashed pl-6">
               {menu.rootNode.keypressOptions.map((option) => (
-                <div key={option.key} className="space-y-2">
+                <div className="space-y-2" key={option.key}>
                   <div className="flex items-center gap-3">
-                    <Badge variant="secondary" className="font-mono">
+                    <Badge className="font-mono" variant="secondary">
                       Press {option.key}
                     </Badge>
                     <ArrowRight className="size-4 text-muted-foreground" />
                     <div className="flex-1">
                       <div className="font-medium">{option.label}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-muted-foreground text-sm">
                         {getActionLabel(option.action)}
                         {option.destination && ` → ${option.destination}`}
                       </div>
                     </div>
                     <Button
-                      variant="ghost"
-                      size="sm"
                       onClick={() => {
                         // Edit keypress option
                       }}
+                      size="sm"
+                      variant="ghost"
                     >
                       <Edit className="size-3" />
                     </Button>
@@ -299,12 +318,12 @@ export function IVRMenuBuilder() {
               {/* Timeout Action */}
               {menu.rootNode.timeout && (
                 <div className="flex items-center gap-3 opacity-60">
-                  <Badge variant="outline" className="gap-1">
+                  <Badge className="gap-1" variant="outline">
                     <Clock className="size-3" />
                     {menu.rootNode.timeout}s timeout
                   </Badge>
                   <ArrowRight className="size-4 text-muted-foreground" />
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-muted-foreground text-sm">
                     {getActionLabel(menu.rootNode.timeoutAction || "repeat")}
                   </div>
                 </div>
@@ -318,20 +337,22 @@ export function IVRMenuBuilder() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{menu.rootNode.keypressOptions.length}</div>
-            <div className="text-sm text-muted-foreground">Menu Options</div>
+            <div className="font-bold text-2xl">
+              {menu.rootNode.keypressOptions.length}
+            </div>
+            <div className="text-muted-foreground text-sm">Menu Options</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{menu.rootNode.timeout}s</div>
-            <div className="text-sm text-muted-foreground">Timeout</div>
+            <div className="font-bold text-2xl">{menu.rootNode.timeout}s</div>
+            <div className="text-muted-foreground text-sm">Timeout</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{menu.rootNode.maxRetries}</div>
-            <div className="text-sm text-muted-foreground">Max Retries</div>
+            <div className="font-bold text-2xl">{menu.rootNode.maxRetries}</div>
+            <div className="text-muted-foreground text-sm">Max Retries</div>
           </CardContent>
         </Card>
       </div>
@@ -340,11 +361,11 @@ export function IVRMenuBuilder() {
       {selectedNode && (
         <NodeEditorDialog
           node={selectedNode}
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
-          onUpdate={updateNode}
           onAddKeypress={() => addKeypressOption(selectedNode)}
+          onOpenChange={setEditDialogOpen}
           onRemoveKeypress={(key) => removeKeypressOption(selectedNode, key)}
+          onUpdate={updateNode}
+          open={editDialogOpen}
         />
       )}
     </div>
@@ -380,15 +401,19 @@ function IVRNodeCard({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg border bg-muted p-2">{getNodeIcon()}</div>
+            <div className="rounded-lg border bg-muted p-2">
+              {getNodeIcon()}
+            </div>
             <div>
               <CardTitle className="text-base">{node.name}</CardTitle>
               {node.description && (
-                <CardDescription className="text-xs">{node.description}</CardDescription>
+                <CardDescription className="text-xs">
+                  {node.description}
+                </CardDescription>
               )}
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onEdit}>
+          <Button onClick={onEdit} size="icon" variant="ghost">
             <Edit className="size-4" />
           </Button>
         </div>
@@ -396,9 +421,11 @@ function IVRNodeCard({
       <CardContent>
         {node.greeting && (
           <div className="rounded-lg bg-muted/50 p-3 text-sm">
-            <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="mb-1 flex items-center gap-2 text-muted-foreground text-xs">
               <Volume2 className="size-3" />
-              {node.greeting.type === "text-to-speech" ? "Text-to-Speech" : "Audio File"}
+              {node.greeting.type === "text-to-speech"
+                ? "Text-to-Speech"
+                : "Audio File"}
             </div>
             <div className="line-clamp-2">{node.greeting.content}</div>
           </div>
@@ -431,8 +458,8 @@ function NodeEditorDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit IVR Node: {node.name}</DialogTitle>
           <DialogDescription>
@@ -447,8 +474,10 @@ function NodeEditorDialog({
               <Label htmlFor="node-name">Node Name</Label>
               <Input
                 id="node-name"
+                onChange={(e) =>
+                  setEditedNode({ ...editedNode, name: e.target.value })
+                }
                 value={editedNode.name}
-                onChange={(e) => setEditedNode({ ...editedNode, name: e.target.value })}
               />
             </div>
 
@@ -456,10 +485,10 @@ function NodeEditorDialog({
               <Label htmlFor="node-description">Description (Optional)</Label>
               <Input
                 id="node-description"
-                value={editedNode.description || ""}
                 onChange={(e) =>
                   setEditedNode({ ...editedNode, description: e.target.value })
                 }
+                value={editedNode.description || ""}
               />
             </div>
           </div>
@@ -469,13 +498,13 @@ function NodeEditorDialog({
             <Label>Greeting</Label>
 
             <Select
-              value={editedNode.greeting?.type}
               onValueChange={(value: "text-to-speech" | "audio-file") =>
                 setEditedNode({
                   ...editedNode,
                   greeting: { ...editedNode.greeting!, type: value },
                 })
               }
+              value={editedNode.greeting?.type}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -489,25 +518,28 @@ function NodeEditorDialog({
             {editedNode.greeting?.type === "text-to-speech" ? (
               <>
                 <Textarea
-                  placeholder="Enter the greeting text..."
-                  value={editedNode.greeting.content}
                   onChange={(e) =>
                     setEditedNode({
                       ...editedNode,
-                      greeting: { ...editedNode.greeting!, content: e.target.value },
+                      greeting: {
+                        ...editedNode.greeting!,
+                        content: e.target.value,
+                      },
                     })
                   }
+                  placeholder="Enter the greeting text..."
                   rows={3}
+                  value={editedNode.greeting.content}
                 />
 
                 <Select
-                  value={editedNode.greeting.voice}
                   onValueChange={(value) =>
                     setEditedNode({
                       ...editedNode,
                       greeting: { ...editedNode.greeting!, voice: value },
                     })
                   }
+                  value={editedNode.greeting.voice}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select voice" />
@@ -522,7 +554,7 @@ function NodeEditorDialog({
                 </Select>
               </>
             ) : (
-              <Button variant="outline" className="w-full">
+              <Button className="w-full" variant="outline">
                 <Upload className="mr-2 size-4" />
                 Upload Audio File (MP3, WAV)
               </Button>
@@ -533,7 +565,7 @@ function NodeEditorDialog({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label>Keypress Options</Label>
-              <Button variant="outline" size="sm" onClick={onAddKeypress}>
+              <Button onClick={onAddKeypress} size="sm" variant="outline">
                 <Plus className="mr-2 size-3" />
                 Add Option
               </Button>
@@ -548,24 +580,38 @@ function NodeEditorDialog({
                         <div className="space-y-2">
                           <Label>Key</Label>
                           <Select
-                            value={option.key}
                             onValueChange={(value) => {
                               const updated = [...editedNode.keypressOptions];
                               updated[index] = { ...option, key: value };
-                              setEditedNode({ ...editedNode, keypressOptions: updated });
+                              setEditedNode({
+                                ...editedNode,
+                                keypressOptions: updated,
+                              });
                             }}
+                            value={option.key}
                           >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "#"].map(
-                                (key) => (
-                                  <SelectItem key={key} value={key}>
-                                    {key}
-                                  </SelectItem>
-                                )
-                              )}
+                              {[
+                                "0",
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                                "5",
+                                "6",
+                                "7",
+                                "8",
+                                "9",
+                                "*",
+                                "#",
+                              ].map((key) => (
+                                <SelectItem key={key} value={key}>
+                                  {key}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>
@@ -573,12 +619,18 @@ function NodeEditorDialog({
                         <div className="col-span-2 space-y-2">
                           <Label>Label</Label>
                           <Input
-                            value={option.label}
                             onChange={(e) => {
                               const updated = [...editedNode.keypressOptions];
-                              updated[index] = { ...option, label: e.target.value };
-                              setEditedNode({ ...editedNode, keypressOptions: updated });
+                              updated[index] = {
+                                ...option,
+                                label: e.target.value,
+                              };
+                              setEditedNode({
+                                ...editedNode,
+                                keypressOptions: updated,
+                              });
                             }}
+                            value={option.label}
                           />
                         </div>
                       </div>
@@ -587,41 +639,63 @@ function NodeEditorDialog({
                         <div className="space-y-2">
                           <Label>Action</Label>
                           <Select
-                            value={option.action}
                             onValueChange={(value: ActionType) => {
                               const updated = [...editedNode.keypressOptions];
                               updated[index] = { ...option, action: value };
-                              setEditedNode({ ...editedNode, keypressOptions: updated });
+                              setEditedNode({
+                                ...editedNode,
+                                keypressOptions: updated,
+                              });
                             }}
+                            value={option.action}
                           >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="transfer">Transfer to Number</SelectItem>
-                              <SelectItem value="voicemail">Send to Voicemail</SelectItem>
-                              <SelectItem value="submenu">Go to Submenu</SelectItem>
-                              <SelectItem value="repeat">Repeat Menu</SelectItem>
+                              <SelectItem value="transfer">
+                                Transfer to Number
+                              </SelectItem>
+                              <SelectItem value="voicemail">
+                                Send to Voicemail
+                              </SelectItem>
+                              <SelectItem value="submenu">
+                                Go to Submenu
+                              </SelectItem>
+                              <SelectItem value="repeat">
+                                Repeat Menu
+                              </SelectItem>
                               <SelectItem value="hangup">Hang Up</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
 
-                        {(option.action === "transfer" || option.action === "submenu") && (
+                        {(option.action === "transfer" ||
+                          option.action === "submenu") && (
                           <div className="space-y-2">
                             <Label>
-                              {option.action === "transfer" ? "Phone Number" : "Submenu"}
+                              {option.action === "transfer"
+                                ? "Phone Number"
+                                : "Submenu"}
                             </Label>
                             <Input
-                              value={option.destination || ""}
                               onChange={(e) => {
                                 const updated = [...editedNode.keypressOptions];
-                                updated[index] = { ...option, destination: e.target.value };
-                                setEditedNode({ ...editedNode, keypressOptions: updated });
+                                updated[index] = {
+                                  ...option,
+                                  destination: e.target.value,
+                                };
+                                setEditedNode({
+                                  ...editedNode,
+                                  keypressOptions: updated,
+                                });
                               }}
                               placeholder={
-                                option.action === "transfer" ? "+1 (555) 123-4567" : "Select submenu"
+                                option.action === "transfer"
+                                  ? "+1 (555) 123-4567"
+                                  : "Select submenu"
                               }
+                              value={option.destination || ""}
                             />
                           </div>
                         )}
@@ -629,9 +703,9 @@ function NodeEditorDialog({
 
                       <div className="flex justify-end">
                         <Button
-                          variant="ghost"
-                          size="sm"
                           onClick={() => onRemoveKeypress(option.key)}
+                          size="sm"
+                          variant="ghost"
                         >
                           <Trash2 className="mr-2 size-3" />
                           Remove
@@ -653,13 +727,16 @@ function NodeEditorDialog({
                 <Label htmlFor="timeout">Timeout (seconds)</Label>
                 <Input
                   id="timeout"
-                  type="number"
-                  min="5"
                   max="60"
-                  value={editedNode.timeout}
+                  min="5"
                   onChange={(e) =>
-                    setEditedNode({ ...editedNode, timeout: parseInt(e.target.value) })
+                    setEditedNode({
+                      ...editedNode,
+                      timeout: Number.parseInt(e.target.value),
+                    })
                   }
+                  type="number"
+                  value={editedNode.timeout}
                 />
               </div>
 
@@ -667,13 +744,16 @@ function NodeEditorDialog({
                 <Label htmlFor="maxRetries">Max Retries</Label>
                 <Input
                   id="maxRetries"
-                  type="number"
-                  min="1"
                   max="10"
-                  value={editedNode.maxRetries}
+                  min="1"
                   onChange={(e) =>
-                    setEditedNode({ ...editedNode, maxRetries: parseInt(e.target.value) })
+                    setEditedNode({
+                      ...editedNode,
+                      maxRetries: Number.parseInt(e.target.value),
+                    })
                   }
+                  type="number"
+                  value={editedNode.maxRetries}
                 />
               </div>
             </div>
@@ -681,10 +761,10 @@ function NodeEditorDialog({
             <div className="space-y-2">
               <Label>Timeout Action</Label>
               <Select
-                value={editedNode.timeoutAction}
                 onValueChange={(value: ActionType) =>
                   setEditedNode({ ...editedNode, timeoutAction: value })
                 }
+                value={editedNode.timeoutAction}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -701,7 +781,7 @@ function NodeEditorDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button onClick={() => onOpenChange(false)} variant="outline">
             Cancel
           </Button>
           <Button onClick={handleSave}>Save Changes</Button>
@@ -715,7 +795,20 @@ function NodeEditorDialog({
 
 function getNextAvailableKey(options: KeypressOption[]): string {
   const usedKeys = new Set(options.map((opt) => opt.key));
-  const availableKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "*", "#"];
+  const availableKeys = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "0",
+    "*",
+    "#",
+  ];
   return availableKeys.find((key) => !usedKeys.has(key)) || "1";
 }
 

@@ -109,7 +109,8 @@ export const useJobEditorStore = create<JobEditorStore>()(
         setActiveTab: (tab) => set({ activeTab: tab }),
 
         // Edit Mode
-        toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
+        toggleEditMode: () =>
+          set((state) => ({ isEditMode: !state.isEditMode })),
         setEditMode: (mode) => set({ isEditMode: mode }),
 
         // Changes Tracking
@@ -176,8 +177,7 @@ export const useJobEditorStore = create<JobEditorStore>()(
 );
 
 // Selectors for optimized re-renders
-export const useActiveTab = () =>
-  useJobEditorStore((state) => state.activeTab);
+export const useActiveTab = () => useJobEditorStore((state) => state.activeTab);
 export const useSetActiveTab = () =>
   useJobEditorStore((state) => state.setActiveTab);
 

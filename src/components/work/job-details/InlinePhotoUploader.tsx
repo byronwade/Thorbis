@@ -1,9 +1,9 @@
 "use client";
 
-import { Camera, FileText, X, Upload, Check } from "lucide-react";
+import { Camera, Check, FileText, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { uploadDocument } from "@/actions/documents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,8 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { uploadDocument } from "@/actions/documents";
 import { useToast } from "@/hooks/use-toast";
 import type { PhotoCategory } from "./PhotoGallery";
 
@@ -45,9 +43,13 @@ const ACCEPTED_FILE_TYPES = {
   "image/tiff": [".tiff", ".tif"],
   "application/pdf": [".pdf"],
   "application/msword": [".doc"],
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+    ".docx",
+  ],
   "application/vnd.ms-excel": [".xls"],
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+    ".xlsx",
+  ],
   "text/plain": [".txt"],
   "text/csv": [".csv"],
 };
@@ -66,7 +68,8 @@ export function InlinePhotoUploader({
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const generateId = () => Math.random().toString(36).substring(2, 15);
-  const isImageFile = (mimeType: string): boolean => mimeType.startsWith('image/');
+  const isImageFile = (mimeType: string): boolean =>
+    mimeType.startsWith("image/");
 
   const validateFile = (file: File): string | null => {
     const fileType = file.type;
@@ -80,38 +83,41 @@ export function InlinePhotoUploader({
     return null;
   };
 
-  const processFiles = useCallback((fileList: FileList | null) => {
-    if (!fileList) return;
+  const processFiles = useCallback(
+    (fileList: FileList | null) => {
+      if (!fileList) return;
 
-    const newFiles: PhotoFile[] = [];
-    const errors: string[] = [];
+      const newFiles: PhotoFile[] = [];
+      const errors: string[] = [];
 
-    Array.from(fileList).forEach((file) => {
-      const error = validateFile(file);
-      if (error) {
-        errors.push(error);
-        return;
+      Array.from(fileList).forEach((file) => {
+        const error = validateFile(file);
+        if (error) {
+          errors.push(error);
+          return;
+        }
+
+        const preview = URL.createObjectURL(file);
+        const isDoc = !isImageFile(file.type);
+
+        newFiles.push({
+          id: generateId(),
+          file,
+          preview,
+          category: "other",
+          caption: "",
+          isDocument: isDoc,
+        });
+      });
+
+      if (errors.length > 0) {
+        toast.error(`Some files couldn't be added: ${errors.join(", ")}`);
       }
 
-      const preview = URL.createObjectURL(file);
-      const isDoc = !isImageFile(file.type);
-      
-      newFiles.push({
-        id: generateId(),
-        file,
-        preview,
-        category: "other",
-        caption: "",
-        isDocument: isDoc,
-      });
-    });
-
-    if (errors.length > 0) {
-      toast.error(`Some files couldn't be added: ${errors.join(", ")}`);
-    }
-
-    setFiles((prev) => [...prev, ...newFiles]);
-  }, [toast]);
+      setFiles((prev) => [...prev, ...newFiles]);
+    },
+    [toast]
+  );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     processFiles(e.target.files);
@@ -137,7 +143,11 @@ export function InlinePhotoUploader({
   const handleUpload = async () => {
     if (files.length === 0) return;
 
-    console.log('🚀 Starting upload:', { jobId, companyId, fileCount: files.length });
+    console.log("🚀 Starting upload:", {
+      jobId,
+      companyId,
+      fileCount: files.length,
+    });
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -148,44 +158,56 @@ export function InlinePhotoUploader({
 
       for (let i = 0; i < files.length; i++) {
         const photoFile = files[i];
-        
+
         try {
           const formData = new FormData();
-          formData.append('file', photoFile.file);
-          formData.append('companyId', companyId);
-          formData.append('contextType', 'job');
-          formData.append('contextId', jobId);
-          
+          formData.append("file", photoFile.file);
+          formData.append("companyId", companyId);
+          formData.append("contextType", "job");
+          formData.append("contextId", jobId);
+
           // Add folder based on file type
           if (photoFile.isDocument) {
-            formData.append('folder', 'documents');
+            formData.append("folder", "documents");
           } else {
-            formData.append('folder', 'photos');
-          }
-          
-          // Add description if provided
-          if (photoFile.caption) {
-            formData.append('description', photoFile.caption);
-          }
-          
-          // Add category as a tag
-          if (photoFile.category) {
-            formData.append('tags', JSON.stringify([photoFile.category]));
+            formData.append("folder", "photos");
           }
 
-          console.log('Uploading:', photoFile.file.name, 'companyId:', companyId, 'jobId:', jobId);
-          
+          // Add description if provided
+          if (photoFile.caption) {
+            formData.append("description", photoFile.caption);
+          }
+
+          // Add category as a tag
+          if (photoFile.category) {
+            formData.append("tags", JSON.stringify([photoFile.category]));
+          }
+
+          console.log(
+            "Uploading:",
+            photoFile.file.name,
+            "companyId:",
+            companyId,
+            "jobId:",
+            jobId
+          );
+
           const result = await uploadDocument(formData);
-          
-          console.log('Upload result for', photoFile.file.name, ':', result);
-          
+
+          console.log("Upload result for", photoFile.file.name, ":", result);
+
           if (result && result.success) {
             successCount++;
           } else {
             errorCount++;
             const errorMessage = result?.error || "Unknown error";
-            console.error('Upload failed for', photoFile.file.name, ':', errorMessage);
-            
+            console.error(
+              "Upload failed for",
+              photoFile.file.name,
+              ":",
+              errorMessage
+            );
+
             // Show specific error messages
             if (errorMessage.includes("Access denied")) {
               toast.error(
@@ -203,9 +225,15 @@ export function InlinePhotoUploader({
           }
         } catch (error) {
           errorCount++;
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          console.error('Upload exception for', photoFile.file.name, ':', error);
-          
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          console.error(
+            "Upload exception for",
+            photoFile.file.name,
+            ":",
+            error
+          );
+
           // Handle different error types
           if (errorMessage.includes("unexpected response")) {
             toast.error(
@@ -223,7 +251,7 @@ export function InlinePhotoUploader({
 
       if (successCount > 0) {
         toast.success(
-          `Successfully uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'}${errorCount > 0 ? ` (${errorCount} failed)` : ''}`
+          `Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`
         );
       }
 
@@ -235,10 +263,10 @@ export function InlinePhotoUploader({
 
       // Clean up object URLs
       files.forEach((file) => URL.revokeObjectURL(file.preview));
-      
+
       // Reset state
       setFiles([]);
-      
+
       // Call completion callback
       if (onUploadComplete) {
         onUploadComplete();
@@ -249,8 +277,9 @@ export function InlinePhotoUploader({
         setTimeout(() => onCancel(), 100);
       }
     } catch (error) {
-      console.error('❌ Upload exception:', error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to upload files";
+      console.error("❌ Upload exception:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to upload files";
       toast.error(errorMessage);
     } finally {
       setIsUploading(false);
@@ -276,7 +305,7 @@ export function InlinePhotoUploader({
           onChange={handleFileInput}
           type="file"
         />
-        <div className="flex items-center gap-3 rounded-md border-2 border-dashed border-muted-foreground/25 bg-background p-3 hover:border-muted-foreground/50">
+        <div className="flex items-center gap-3 rounded-md border-2 border-muted-foreground/25 border-dashed bg-background p-3 hover:border-muted-foreground/50">
           <div className="flex gap-1">
             <div className="flex size-8 items-center justify-center rounded bg-primary/10">
               <Camera className="size-4 text-primary" />
@@ -286,7 +315,7 @@ export function InlinePhotoUploader({
             </div>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium">Click or drag files here</p>
+            <p className="font-medium text-sm">Click or drag files here</p>
             <p className="text-muted-foreground text-xs">
               Images & documents up to 100MB
             </p>
@@ -299,8 +328,14 @@ export function InlinePhotoUploader({
       {files.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{files.length} file{files.length !== 1 ? 's' : ''} selected</span>
-            <Button onClick={() => files.forEach(f => removeFile(f.id))} size="sm" variant="ghost">
+            <span className="font-medium text-sm">
+              {files.length} file{files.length !== 1 ? "s" : ""} selected
+            </span>
+            <Button
+              onClick={() => files.forEach((f) => removeFile(f.id))}
+              size="sm"
+              variant="ghost"
+            >
               Clear all
             </Button>
           </div>
@@ -330,13 +365,19 @@ export function InlinePhotoUploader({
                 {/* Details */}
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{photoFile.file.name}</p>
-                    <p className="text-muted-foreground text-xs">{formatFileSize(photoFile.file.size)}</p>
+                    <p className="truncate font-medium text-sm">
+                      {photoFile.file.name}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {formatFileSize(photoFile.file.size)}
+                    </p>
                   </div>
 
                   {/* Category */}
                   <Select
-                    onValueChange={(value) => updateFileCategory(photoFile.id, value as PhotoCategory)}
+                    onValueChange={(value) =>
+                      updateFileCategory(photoFile.id, value as PhotoCategory)
+                    }
                     value={photoFile.category}
                   >
                     <SelectTrigger className="h-7 w-24 text-xs">
@@ -353,17 +394,19 @@ export function InlinePhotoUploader({
                   {/* Caption */}
                   <Input
                     className="h-7 w-32 text-xs"
-                    onChange={(e) => updateFileCaption(photoFile.id, e.target.value)}
+                    onChange={(e) =>
+                      updateFileCaption(photoFile.id, e.target.value)
+                    }
                     placeholder="Caption"
                     value={photoFile.caption}
                   />
 
                   {/* Remove */}
                   <Button
+                    className="size-7 p-0"
                     onClick={() => removeFile(photoFile.id)}
                     size="sm"
                     variant="ghost"
-                    className="size-7 p-0"
                   >
                     <X className="size-4" />
                   </Button>
@@ -408,7 +451,7 @@ export function InlinePhotoUploader({
               ) : (
                 <>
                   <Check className="mr-1 size-4" />
-                  Upload {files.length} {files.length === 1 ? 'File' : 'Files'}
+                  Upload {files.length} {files.length === 1 ? "File" : "Files"}
                 </>
               )}
             </Button>
@@ -418,4 +461,3 @@ export function InlinePhotoUploader({
     </div>
   );
 }
-

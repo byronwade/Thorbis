@@ -9,9 +9,9 @@
  * - Matches jobs page structure: stats pipeline + table
  */
 
-import { notFound } from "next/navigation";
-import { InvoicesTable, type Invoice } from "@/components/work/invoices-table";
+import { notFound, redirect } from "next/navigation";
 import { InvoiceStatusPipeline } from "@/components/invoices/invoice-status-pipeline";
+import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
 import { createClient } from "@/lib/supabase/server";
 
 // Configuration constants
@@ -41,7 +41,9 @@ export default async function InvoicesPage() {
     .single();
 
   if (!teamMember?.company_id) {
-    return notFound();
+    // User hasn't completed onboarding or doesn't have an active company membership
+    // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
   }
 
   // Fetch invoices from Supabase with customer details
@@ -61,7 +63,8 @@ export default async function InvoicesPage() {
     .limit(MAX_INVOICES_PER_PAGE);
 
   if (error) {
-    const errorMessage = error.message || JSON.stringify(error) || "Unknown database error";
+    const errorMessage =
+      error.message || JSON.stringify(error) || "Unknown database error";
     throw new Error(`Failed to load invoices: ${errorMessage}`);
   }
 
@@ -69,9 +72,10 @@ export default async function InvoicesPage() {
   const invoices: Invoice[] = (invoicesRaw || []).map((inv: any) => ({
     id: inv.id,
     invoiceNumber: inv.invoice_number,
-    customer: inv.customer?.display_name ||
-              `${inv.customer?.first_name || ""} ${inv.customer?.last_name || ""}`.trim() ||
-              "Unknown Customer",
+    customer:
+      inv.customer?.display_name ||
+      `${inv.customer?.first_name || ""} ${inv.customer?.last_name || ""}`.trim() ||
+      "Unknown Customer",
     date: new Date(inv.created_at).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -95,7 +99,7 @@ export default async function InvoicesPage() {
 
       {/* Invoices Table - Client component handles sorting, filtering, pagination */}
       <div>
-        <InvoicesTable itemsPerPage={50} invoices={invoices} />
+        <InvoicesTable invoices={invoices} itemsPerPage={50} />
       </div>
     </>
   );

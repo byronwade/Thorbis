@@ -17,14 +17,13 @@
 
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import type {
   KBArticleWithRelations,
   KBCategoryWithChildren,
-  KBSearchFilters,
   KBFeedbackSubmission,
+  KBSearchFilters,
 } from "@/lib/kb/types";
+import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
 // GET ARTICLES
@@ -33,9 +32,7 @@ import type {
 /**
  * Get all published articles with optional filters
  */
-export async function getKBArticles(
-  filters?: KBSearchFilters
-): Promise<{
+export async function getKBArticles(filters?: KBSearchFilters): Promise<{
   success: boolean;
   error?: string;
   articles?: KBArticleWithRelations[];
@@ -277,7 +274,7 @@ export async function searchKBArticles(
       .map((term) => `${term}:*`)
       .join(" & ");
 
-    let sqlQuery = supabase.rpc("search_kb_articles", {
+    const sqlQuery = supabase.rpc("search_kb_articles", {
       search_query: searchQuery,
       category_filter: filters?.category || null,
       limit_count: filters?.limit || 20,
@@ -304,7 +301,10 @@ export async function searchKBArticles(
       })
       .order("view_count", { ascending: false })
       .limit(filters?.limit || 20)
-      .range(filters?.offset || 0, (filters?.offset || 0) + (filters?.limit || 20) - 1);
+      .range(
+        filters?.offset || 0,
+        (filters?.offset || 0) + (filters?.limit || 20) - 1
+      );
 
     if (error) {
       console.error("Supabase error:", error);
@@ -503,4 +503,3 @@ export async function submitKBFeedback(
     return { success: false, error: "Failed to submit feedback" };
   }
 }
-

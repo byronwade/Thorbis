@@ -114,7 +114,8 @@ export async function getMessage(messageId: string) {
     console.error("Error retrieving message:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to retrieve message",
+      error:
+        error instanceof Error ? error.message : "Failed to retrieve message",
     };
   }
 }
@@ -213,7 +214,9 @@ export async function validatePhoneNumber(phoneNumber: string) {
     }
 
     // Ensure it starts with + for international format
-    const formattedNumber = cleanNumber.startsWith("+") ? cleanNumber : `+${cleanNumber}`;
+    const formattedNumber = cleanNumber.startsWith("+")
+      ? cleanNumber
+      : `+${cleanNumber}`;
 
     return {
       success: true,
@@ -223,7 +226,10 @@ export async function validatePhoneNumber(phoneNumber: string) {
     console.error("Error validating phone number:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to validate phone number",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to validate phone number",
     };
   }
 }

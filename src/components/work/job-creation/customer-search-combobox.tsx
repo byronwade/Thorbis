@@ -77,9 +77,8 @@ export function CustomerSearchCombobox({
   };
 
   // Format secondary info (email or phone)
-  const formatSecondaryInfo = (customer: Customer) => {
-    return customer.email || customer.phone || "";
-  };
+  const formatSecondaryInfo = (customer: Customer) =>
+    customer.email || customer.phone || "";
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -94,7 +93,9 @@ export function CustomerSearchCombobox({
           {selectedCustomer ? (
             <div className="flex items-center gap-2">
               <User className="size-4 text-muted-foreground" />
-              <span className="truncate">{formatCustomerName(selectedCustomer)}</span>
+              <span className="truncate">
+                {formatCustomerName(selectedCustomer)}
+              </span>
             </div>
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>
@@ -112,7 +113,9 @@ export function CustomerSearchCombobox({
           <CommandList>
             <CommandEmpty>
               <div className="py-6 text-center">
-                <p className="text-muted-foreground text-sm">No customers found</p>
+                <p className="text-muted-foreground text-sm">
+                  No customers found
+                </p>
                 <Button
                   className="mt-3"
                   onClick={() => {
@@ -185,7 +188,9 @@ export function CustomerSearchCombobox({
             )}
 
             {/* All Customers */}
-            <CommandGroup heading={searchQuery ? "Search Results" : "All Customers"}>
+            <CommandGroup
+              heading={searchQuery ? "Search Results" : "All Customers"}
+            >
               {(searchQuery ? customers : otherCustomers)
                 .filter((customer) => {
                   if (!searchQuery) return true;

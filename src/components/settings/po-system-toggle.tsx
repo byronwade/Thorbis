@@ -11,10 +11,9 @@
  * - Main page can be server component
  */
 
-import { useState } from "react";
-import Link from "next/link";
 import { Package } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,9 +36,7 @@ export function POSystemToggle() {
               <Package className="size-5" />
             </div>
             <div>
-              <CardTitle className="text-base">
-                Purchase Order System
-              </CardTitle>
+              <CardTitle className="text-base">Purchase Order System</CardTitle>
               <CardDescription className="text-sm">
                 Track inventory, materials, and vendor orders
               </CardDescription>

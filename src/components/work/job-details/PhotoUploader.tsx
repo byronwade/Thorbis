@@ -1,8 +1,9 @@
 "use client";
 
-import { Camera, FileImage, FileText, Upload, X } from "lucide-react";
+import { Camera, FileText, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
+import { uploadDocument } from "@/actions/documents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,9 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { uploadDocument } from "@/actions/documents";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import type { PhotoCategory } from "./PhotoGallery";
 
 interface PhotoFile {
@@ -57,9 +57,13 @@ const ACCEPTED_FILE_TYPES = {
   // Documents
   "application/pdf": [".pdf"],
   "application/msword": [".doc"],
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+    ".docx",
+  ],
   "application/vnd.ms-excel": [".xls"],
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+    ".xlsx",
+  ],
   "text/plain": [".txt"],
   "text/csv": [".csv"],
 };
@@ -81,9 +85,8 @@ export function PhotoUploader({
 
   const generateId = () => Math.random().toString(36).substring(2, 15);
 
-  const isImageFile = (mimeType: string): boolean => {
-    return mimeType.startsWith('image/');
-  };
+  const isImageFile = (mimeType: string): boolean =>
+    mimeType.startsWith("image/");
 
   const validateFile = (file: File): string | null => {
     // Check file type
@@ -101,40 +104,43 @@ export function PhotoUploader({
     return null;
   };
 
-  const processFiles = useCallback((fileList: FileList | null) => {
-    if (!fileList) {
-      return;
-    }
-
-    const newFiles: PhotoFile[] = [];
-    const errors: string[] = [];
-
-    Array.from(fileList).forEach((file) => {
-      const error = validateFile(file);
-      if (error) {
-        errors.push(error);
+  const processFiles = useCallback(
+    (fileList: FileList | null) => {
+      if (!fileList) {
         return;
       }
 
-      const preview = URL.createObjectURL(file);
-      const isDoc = !isImageFile(file.type);
-      
-      newFiles.push({
-        id: generateId(),
-        file,
-        preview,
-        category: "other",
-        caption: "",
-        isDocument: isDoc,
+      const newFiles: PhotoFile[] = [];
+      const errors: string[] = [];
+
+      Array.from(fileList).forEach((file) => {
+        const error = validateFile(file);
+        if (error) {
+          errors.push(error);
+          return;
+        }
+
+        const preview = URL.createObjectURL(file);
+        const isDoc = !isImageFile(file.type);
+
+        newFiles.push({
+          id: generateId(),
+          file,
+          preview,
+          category: "other",
+          caption: "",
+          isDocument: isDoc,
+        });
       });
-    });
 
-    if (errors.length > 0) {
-      toast.error(errors.join("\n"));
-    }
+      if (errors.length > 0) {
+        toast.error(errors.join("\n"));
+      }
 
-    setFiles((prev) => [...prev, ...newFiles]);
-  }, [toast]);
+      setFiles((prev) => [...prev, ...newFiles]);
+    },
+    [toast]
+  );
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -212,42 +218,42 @@ export function PhotoUploader({
       // Upload files one by one
       for (let i = 0; i < files.length; i++) {
         const photoFile = files[i];
-        
+
         try {
           const formData = new FormData();
-          formData.append('file', photoFile.file);
-          formData.append('companyId', companyId);
-          formData.append('contextType', 'job');
-          formData.append('contextId', jobId);
-          
+          formData.append("file", photoFile.file);
+          formData.append("companyId", companyId);
+          formData.append("contextType", "job");
+          formData.append("contextId", jobId);
+
           // Add folder based on file type
           if (photoFile.isDocument) {
-            formData.append('folder', 'documents');
+            formData.append("folder", "documents");
           } else {
-            formData.append('folder', 'photos');
+            formData.append("folder", "photos");
           }
-          
+
           // Add description if provided
           if (photoFile.caption) {
-            formData.append('description', photoFile.caption);
+            formData.append("description", photoFile.caption);
           }
-          
+
           // Add category as a tag
           if (photoFile.category) {
-            formData.append('tags', JSON.stringify([photoFile.category]));
+            formData.append("tags", JSON.stringify([photoFile.category]));
           }
 
           const result = await uploadDocument(formData);
-          
+
           if (result.success) {
             successCount++;
           } else {
             errorCount++;
-            console.error('Upload failed:', result.error);
+            console.error("Upload failed:", result.error);
           }
         } catch (error) {
           errorCount++;
-          console.error('Upload error:', error);
+          console.error("Upload error:", error);
         }
 
         // Update progress
@@ -256,7 +262,9 @@ export function PhotoUploader({
 
       // Show results
       if (successCount > 0) {
-        toast.success(`Successfully uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'}${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
+        toast.success(
+          `Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`
+        );
       }
 
       if (errorCount > 0 && successCount === 0) {
@@ -281,7 +289,9 @@ export function PhotoUploader({
         onCancel?.();
       }, 500);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to upload files");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload files"
+      );
       setIsUploading(false);
       setUploadProgress(0);
     }
@@ -327,8 +337,9 @@ export function PhotoUploader({
           Upload Photos & Documents
         </CardTitle>
         <CardDescription>
-          Add photos and documents to this job. Supported formats: Images (JPG, PNG, HEIC, WEBP, etc.), 
-          Documents (PDF, DOC, DOCX, XLS, XLSX, TXT, CSV) up to 100MB
+          Add photos and documents to this job. Supported formats: Images (JPG,
+          PNG, HEIC, WEBP, etc.), Documents (PDF, DOC, DOCX, XLS, XLSX, TXT,
+          CSV) up to 100MB
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

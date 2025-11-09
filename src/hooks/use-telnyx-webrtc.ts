@@ -14,14 +14,20 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { TelnyxRTC } from "@telnyx/webrtc";
 import type { Call, INotification } from "@telnyx/webrtc";
+import { TelnyxRTC } from "@telnyx/webrtc";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Call state types
  */
-export type CallState = "idle" | "connecting" | "ringing" | "active" | "held" | "ended";
+export type CallState =
+  | "idle"
+  | "connecting"
+  | "ringing"
+  | "active"
+  | "held"
+  | "ended";
 
 /**
  * Call direction
@@ -93,7 +99,9 @@ export interface UseTelnyxWebRTCReturn {
  *
  * Manages WebRTC connection and call state
  */
-export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRTCReturn {
+export function useTelnyxWebRTC(
+  options: UseTelnyxWebRTCOptions
+): UseTelnyxWebRTCReturn {
   // Connection state
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -130,7 +138,7 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
       password: currentOptions.password,
       ringtoneFile: undefined, // Use browser default
       ringbackFile: undefined,
-      debug: currentOptions.debug || false,
+      debug: currentOptions.debug,
     });
 
     // Handle ready event
@@ -216,7 +224,9 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
       await client.connect();
     } catch (error) {
       console.error("Failed to connect:", error);
-      setConnectionError(error instanceof Error ? error.message : "Connection failed");
+      setConnectionError(
+        error instanceof Error ? error.message : "Connection failed"
+      );
       setIsConnecting(false);
     }
   }, [initializeClient]);
@@ -239,7 +249,7 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
    */
   const makeCall = useCallback(
     async (destination: string, callerIdNumber?: string) => {
-      if (!clientRef.current || !isConnected) {
+      if (!(clientRef.current && isConnected)) {
         throw new Error("Not connected to Telnyx");
       }
 
@@ -398,7 +408,9 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
   const loadAudioDevices = useCallback(async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const audioOutputDevices = devices.filter((d) => d.kind === "audiooutput");
+      const audioOutputDevices = devices.filter(
+        (d) => d.kind === "audiooutput"
+      );
       setAudioDevices(audioOutputDevices);
     } catch (error) {
       console.error("Failed to load audio devices:", error);
@@ -417,10 +429,16 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
     const deviceChangeHandler = () => {
       loadAudioDevices();
     };
-    navigator.mediaDevices.addEventListener("devicechange", deviceChangeHandler);
+    navigator.mediaDevices.addEventListener(
+      "devicechange",
+      deviceChangeHandler
+    );
 
     return () => {
-      navigator.mediaDevices.removeEventListener("devicechange", deviceChangeHandler);
+      navigator.mediaDevices.removeEventListener(
+        "devicechange",
+        deviceChangeHandler
+      );
     };
   }, []); // ✅ Runs once on mount only
 

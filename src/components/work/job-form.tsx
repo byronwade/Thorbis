@@ -1,6 +1,14 @@
 "use client";
 
-import { Briefcase, Calendar, Keyboard, Loader2, MapPin, User, Zap } from "lucide-react";
+import {
+  Briefcase,
+  Calendar,
+  Keyboard,
+  Loader2,
+  MapPin,
+  User,
+  Zap,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createJob } from "@/actions/jobs";
@@ -23,9 +31,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AddPropertyDialog } from "@/components/work/add-property-dialog";
-import { EnhancedScheduling } from "@/components/work/enhanced-scheduling";
 import { CustomerCombobox } from "@/components/work/customer-combobox";
-import { JobTemplates, type JobTemplate } from "@/components/work/job-templates";
+import { EnhancedScheduling } from "@/components/work/enhanced-scheduling";
+import {
+  type JobTemplate,
+  JobTemplates,
+} from "@/components/work/job-templates";
 import { QuickCustomerAdd } from "@/components/work/quick-customer-add";
 import { ShortcutsHelp } from "@/components/work/shortcuts-help";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
@@ -108,12 +119,12 @@ export function JobForm({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-    existingJob?.customer_id || preselectedCustomerId
-  );
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-    existingJob?.property_id || preselectedPropertyId
-  );
+  const [selectedCustomerId, setSelectedCustomerId] = useState<
+    string | undefined
+  >(existingJob?.customer_id || preselectedCustomerId);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<
+    string | undefined
+  >(existingJob?.property_id || preselectedPropertyId);
 
   // Local properties and customers state (combines server data + newly created)
   const [localProperties, setLocalProperties] = useState(properties);
@@ -127,11 +138,17 @@ export function JobForm({
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   // Recent customers tracking
-  const recentCustomerIds = useRecentCustomersStore((state) => state.recentCustomerIds);
-  const addRecentCustomer = useRecentCustomersStore((state) => state.addRecentCustomer);
+  const recentCustomerIds = useRecentCustomersStore(
+    (state) => state.recentCustomerIds
+  );
+  const addRecentCustomer = useRecentCustomersStore(
+    (state) => state.addRecentCustomer
+  );
 
   // Get selected customer's address data
-  const selectedCustomer = localCustomers.find((c) => c.id === selectedCustomerId);
+  const selectedCustomer = localCustomers.find(
+    (c) => c.id === selectedCustomerId
+  );
   const customerAddress = selectedCustomer
     ? {
         address: selectedCustomer.address,
@@ -188,19 +205,25 @@ export function JobForm({
     if (!form) return;
 
     // Set job type
-    const jobTypeInput = form.querySelector('select[name="jobType"]') as HTMLSelectElement;
+    const jobTypeInput = form.querySelector(
+      'select[name="jobType"]'
+    ) as HTMLSelectElement;
     if (jobTypeInput) {
       jobTypeInput.value = template.jobType;
     }
 
     // Set priority
-    const priorityInput = form.querySelector('select[name="priority"]') as HTMLSelectElement;
+    const priorityInput = form.querySelector(
+      'select[name="priority"]'
+    ) as HTMLSelectElement;
     if (priorityInput) {
       priorityInput.value = template.priority;
     }
 
     // Set description
-    const descriptionInput = form.querySelector('textarea[name="description"]') as HTMLTextAreaElement;
+    const descriptionInput = form.querySelector(
+      'textarea[name="description"]'
+    ) as HTMLTextAreaElement;
     if (descriptionInput) {
       descriptionInput.value = template.description;
     }
@@ -263,7 +286,7 @@ export function JobForm({
 
   // Auto-focus customer select on mount (for power users)
   useEffect(() => {
-    if (!preselectedCustomerId && !showQuickCustomerAdd) {
+    if (!(preselectedCustomerId || showQuickCustomerAdd)) {
       const timer = setTimeout(() => {
         customerSelectRef.current?.focus();
       }, 100);
@@ -333,9 +356,12 @@ export function JobForm({
   return (
     <>
       {/* Shortcuts Help Dialog */}
-      <ShortcutsHelp isOpen={showShortcutsHelp} onClose={() => setShowShortcutsHelp(false)} />
+      <ShortcutsHelp
+        isOpen={showShortcutsHelp}
+        onClose={() => setShowShortcutsHelp(false)}
+      />
 
-      <form ref={formRef} onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={formRef}>
         <div className="space-y-6">
           {/* Power User Toolbar */}
           <div className="flex items-center justify-between gap-3 rounded-lg border bg-card p-3">
@@ -346,10 +372,10 @@ export function JobForm({
             <div className="flex items-center gap-2">
               <JobTemplates onTemplateSelect={applyTemplate} />
               <Button
+                onClick={() => setShowShortcutsHelp(true)}
+                size="sm"
                 type="button"
                 variant="outline"
-                size="sm"
-                onClick={() => setShowShortcutsHelp(true)}
               >
                 <Keyboard className="mr-2 size-4" />
                 Shortcuts
@@ -360,296 +386,322 @@ export function JobForm({
           {/* Error Display */}
           {error && (
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-              <p className="text-destructive text-sm font-medium">{error}</p>
+              <p className="font-medium text-destructive text-sm">{error}</p>
             </div>
           )}
 
-        {/* Customer & Property Selection */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <MapPin className="size-5 text-primary" />
-              <CardTitle>Location</CardTitle>
-            </div>
-            <CardDescription>Select the customer and property for this job</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="customerId">Customer</Label>
-                {!showQuickCustomerAdd && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowQuickCustomerAdd(true)}
-                    className="h-auto p-1 text-xs"
-                  >
-                    + New Customer
-                  </Button>
+          {/* Customer & Property Selection */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <MapPin className="size-5 text-primary" />
+                <CardTitle>Location</CardTitle>
+              </div>
+              <CardDescription>
+                Select the customer and property for this job
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="customerId">Customer</Label>
+                  {!showQuickCustomerAdd && (
+                    <Button
+                      className="h-auto p-1 text-xs"
+                      onClick={() => setShowQuickCustomerAdd(true)}
+                      size="sm"
+                      type="button"
+                      variant="ghost"
+                    >
+                      + New Customer
+                    </Button>
+                  )}
+                </div>
+
+                {showQuickCustomerAdd ? (
+                  <QuickCustomerAdd
+                    onCancel={() => setShowQuickCustomerAdd(false)}
+                    onCustomerCreated={(customerId, customerData) => {
+                      setLocalCustomers((prev) => [...prev, customerData]);
+                      setSelectedCustomerId(customerId);
+                      addRecentCustomer(customerId);
+                      setShowQuickCustomerAdd(false);
+                    }}
+                  />
+                ) : (
+                  <>
+                    <CustomerCombobox
+                      customers={localCustomers}
+                      onAddNew={() => setShowQuickCustomerAdd(true)}
+                      onValueChange={(customerId) => {
+                        setSelectedCustomerId(customerId);
+                        addRecentCustomer(customerId);
+                      }}
+                      placeholder="Search customers (⌘K)"
+                      recentCustomerIds={recentCustomerIds}
+                      ref={customerSelectRef}
+                      value={selectedCustomerId}
+                    />
+                    {/* Hidden input for form submission */}
+                    <input
+                      name="customerId"
+                      type="hidden"
+                      value={selectedCustomerId || ""}
+                    />
+                    {!selectedCustomerId && (
+                      <p className="text-muted-foreground text-xs">
+                        Search and select a customer to see their properties
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
 
-              {showQuickCustomerAdd ? (
-                <QuickCustomerAdd
-                  onCustomerCreated={(customerId, customerData) => {
-                    setLocalCustomers((prev) => [...prev, customerData]);
-                    setSelectedCustomerId(customerId);
-                    addRecentCustomer(customerId);
-                    setShowQuickCustomerAdd(false);
-                  }}
-                  onCancel={() => setShowQuickCustomerAdd(false)}
-                />
-              ) : (
-                <>
-                  <CustomerCombobox
-                    ref={customerSelectRef}
-                    customers={localCustomers}
-                    value={selectedCustomerId}
-                    onValueChange={(customerId) => {
-                      setSelectedCustomerId(customerId);
-                      addRecentCustomer(customerId);
-                    }}
-                    onAddNew={() => setShowQuickCustomerAdd(true)}
-                    recentCustomerIds={recentCustomerIds}
-                    placeholder="Search customers (⌘K)"
-                  />
-                  {/* Hidden input for form submission */}
-                  <input type="hidden" name="customerId" value={selectedCustomerId || ""} />
-                  {!selectedCustomerId && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="propertyId">Service Location *</Label>
+                  {selectedCustomerId &&
+                    filteredProperties.length === 0 &&
+                    !selectedCustomer?.address && (
+                      <AddPropertyDialog
+                        customerAddress={customerAddress}
+                        customerId={selectedCustomerId}
+                        onPropertyCreated={(propertyId, propertyData) => {
+                          // Add new property to local state
+                          setLocalProperties((prev) => [...prev, propertyData]);
+                          // Auto-select the newly created property
+                          setSelectedPropertyId(propertyId);
+                        }}
+                      />
+                    )}
+                </div>
+                <Select
+                  disabled={!selectedCustomerId}
+                  name="propertyId"
+                  onValueChange={setSelectedPropertyId}
+                  required
+                  value={selectedPropertyId}
+                >
+                  <SelectTrigger id="propertyId">
+                    <SelectValue placeholder="Select a property" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredProperties.length === 0 ? (
+                      <div className="p-2 text-center text-muted-foreground text-sm">
+                        No properties found for this customer
+                      </div>
+                    ) : (
+                      filteredProperties.map((property) => (
+                        <SelectItem key={property.id} value={property.id}>
+                          {property.name || property.address} - {property.city},{" "}
+                          {property.state}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                {selectedCustomerId && selectedCustomer?.address && (
+                  <div className="flex items-center gap-2">
                     <p className="text-muted-foreground text-xs">
-                      Search and select a customer to see their properties
+                      Need a different location?
                     </p>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="propertyId">Service Location *</Label>
-                {selectedCustomerId &&
-                  filteredProperties.length === 0 &&
-                  !selectedCustomer?.address && (
                     <AddPropertyDialog
-                      customerId={selectedCustomerId}
                       customerAddress={customerAddress}
+                      customerId={selectedCustomerId}
                       onPropertyCreated={(propertyId, propertyData) => {
                         // Add new property to local state
                         setLocalProperties((prev) => [...prev, propertyData]);
                         // Auto-select the newly created property
                         setSelectedPropertyId(propertyId);
                       }}
+                      trigger={
+                        <Button
+                          className="h-auto p-0 text-xs"
+                          size="sm"
+                          type="button"
+                          variant="link"
+                        >
+                          Add another location
+                        </Button>
+                      }
                     />
-                  )}
+                  </div>
+                )}
               </div>
-              <Select
-                value={selectedPropertyId}
-                disabled={!selectedCustomerId}
-                name="propertyId"
-                required
-                onValueChange={setSelectedPropertyId}
-              >
-                <SelectTrigger id="propertyId">
-                  <SelectValue placeholder="Select a property" />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredProperties.length === 0 ? (
-                    <div className="p-2 text-center text-muted-foreground text-sm">
-                      No properties found for this customer
-                    </div>
-                  ) : (
-                    filteredProperties.map((property) => (
-                      <SelectItem key={property.id} value={property.id}>
-                        {property.name || property.address} - {property.city}, {property.state}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              {selectedCustomerId && selectedCustomer?.address && (
-                <div className="flex items-center gap-2">
-                  <p className="text-muted-foreground text-xs">
-                    Need a different location?
-                  </p>
-                  <AddPropertyDialog
-                    customerId={selectedCustomerId}
-                    customerAddress={customerAddress}
-                    onPropertyCreated={(propertyId, propertyData) => {
-                      // Add new property to local state
-                      setLocalProperties((prev) => [...prev, propertyData]);
-                      // Auto-select the newly created property
-                      setSelectedPropertyId(propertyId);
-                    }}
-                    trigger={
-                      <Button type="button" variant="link" size="sm" className="h-auto p-0 text-xs">
-                        Add another location
-                      </Button>
-                    }
-                  />
+            </CardContent>
+          </Card>
+
+          {/* Job Details */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Briefcase className="size-5 text-primary" />
+                <CardTitle>Job Details</CardTitle>
+              </div>
+              <CardDescription>
+                Describe the work to be performed
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Job Title *</Label>
+                <Input
+                  defaultValue={existingJob?.title || ""}
+                  id="title"
+                  name="title"
+                  placeholder="e.g., Annual HVAC Maintenance"
+                  ref={titleInputRef}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  defaultValue={existingJob?.description || ""}
+                  id="description"
+                  name="description"
+                  placeholder="Detailed description of the job requirements"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="jobType">Job Type</Label>
+                  <Select
+                    defaultValue={existingJob?.job_type || "service"}
+                    name="jobType"
+                  >
+                    <SelectTrigger id="jobType">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="installation">Installation</SelectItem>
+                      <SelectItem value="repair">Repair</SelectItem>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem value="inspection">Inspection</SelectItem>
+                      <SelectItem value="consultation">Consultation</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Job Details */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Briefcase className="size-5 text-primary" />
-              <CardTitle>Job Details</CardTitle>
-            </div>
-            <CardDescription>Describe the work to be performed</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Job Title *</Label>
-              <Input
-                ref={titleInputRef}
-                id="title"
-                name="title"
-                placeholder="e.g., Annual HVAC Maintenance"
-                defaultValue={existingJob?.title || ""}
-                required
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority *</Label>
+                  <Select
+                    defaultValue={existingJob?.priority || "medium"}
+                    name="priority"
+                    required
+                  >
+                    <SelectTrigger id="priority">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Enhanced Scheduling (Optional) */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Calendar className="size-5 text-primary" />
+                <CardTitle>Schedule (Optional)</CardTitle>
+              </div>
+              <CardDescription>
+                Set the scheduled date, time, and recurrence for this job
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EnhancedScheduling
+                defaultEnd={existingJob?.scheduled_end || undefined}
+                defaultStart={existingJob?.scheduled_start || undefined}
               />
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                placeholder="Detailed description of the job requirements"
-                defaultValue={existingJob?.description || ""}
-                rows={4}
-              />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
+          {/* Assignment (Optional) */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <User className="size-5 text-primary" />
+                <CardTitle>Assignment (Optional)</CardTitle>
+              </div>
+              <CardDescription>Assign a technician to this job</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="jobType">Job Type</Label>
-                <Select defaultValue={existingJob?.job_type || "service"} name="jobType">
-                  <SelectTrigger id="jobType">
-                    <SelectValue />
+                <Label htmlFor="assignedTo">Assigned Technician</Label>
+                <Select
+                  defaultValue={existingJob?.assigned_to || undefined}
+                  name="assignedTo"
+                >
+                  <SelectTrigger id="assignedTo">
+                    <SelectValue placeholder="Select a team member" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="service">Service</SelectItem>
-                    <SelectItem value="installation">Installation</SelectItem>
-                    <SelectItem value="repair">Repair</SelectItem>
-                    <SelectItem value="maintenance">Maintenance</SelectItem>
-                    <SelectItem value="inspection">Inspection</SelectItem>
-                    <SelectItem value="consultation">Consultation</SelectItem>
+                    {teamMembers.map((member) => {
+                      const user = member.users;
+                      if (!user) return null;
+                      return (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.first_name} {user.last_name}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
+            </CardContent>
+          </Card>
 
+          {/* Notes */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Internal Notes</CardTitle>
+              <CardDescription>
+                Add any additional notes or instructions
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority *</Label>
-                <Select defaultValue={existingJob?.priority || "medium"} name="priority" required>
-                  <SelectTrigger id="priority">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  defaultValue={existingJob?.notes || ""}
+                  id="notes"
+                  name="notes"
+                  placeholder="Internal notes, special instructions, etc."
+                  rows={4}
+                />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Enhanced Scheduling (Optional) */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Calendar className="size-5 text-primary" />
-              <CardTitle>Schedule (Optional)</CardTitle>
-            </div>
-            <CardDescription>
-              Set the scheduled date, time, and recurrence for this job
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EnhancedScheduling
-              defaultStart={existingJob?.scheduled_start || undefined}
-              defaultEnd={existingJob?.scheduled_end || undefined}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Assignment (Optional) */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <User className="size-5 text-primary" />
-              <CardTitle>Assignment (Optional)</CardTitle>
-            </div>
-            <CardDescription>Assign a technician to this job</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="assignedTo">Assigned Technician</Label>
-              <Select name="assignedTo" defaultValue={existingJob?.assigned_to || undefined}>
-                <SelectTrigger id="assignedTo">
-                  <SelectValue placeholder="Select a team member" />
-                </SelectTrigger>
-                <SelectContent>
-                  {teamMembers.map((member) => {
-                    const user = member.users;
-                    if (!user) return null;
-                    return (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.first_name} {user.last_name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Notes */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Internal Notes</CardTitle>
-            <CardDescription>Add any additional notes or instructions</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                name="notes"
-                placeholder="Internal notes, special instructions, etc."
-                defaultValue={existingJob?.notes || ""}
-                rows={4}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Form Actions */}
-        <div className="flex justify-end gap-3">
-          <Button
-            disabled={isLoading}
-            onClick={() => router.back()}
-            type="button"
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button disabled={isLoading} type="submit">
-            {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-            {mode === "edit" ? "Update Job (⌘S)" : "Create Job (⌘S)"}
-          </Button>
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3">
+            <Button
+              disabled={isLoading}
+              onClick={() => router.back()}
+              type="button"
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button disabled={isLoading} type="submit">
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {mode === "edit" ? "Update Job (⌘S)" : "Create Job (⌘S)"}
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
     </>
   );
 }

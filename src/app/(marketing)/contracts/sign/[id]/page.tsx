@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ContractSigningForm } from "@/components/work/contract-signing-form";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
 /**
  * Public Contract Signing Page - Server Component
@@ -69,6 +70,26 @@ function formatDate(dateString: string) {
     year: "numeric",
     month: "long",
     day: "numeric",
+  });
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return generateSEOMetadata({
+    title: "Contract Signing",
+    section: "Customer Portal",
+    description:
+      "Review and sign your Thorbis service agreement securely with digital signatures and automated compliance tracking.",
+    path: `/contracts/sign/${id}`,
+    imageAlt: "Thorbis contract signing interface",
+    keywords: ["contract signing", "digital signature", "thorbis"],
+    noindex: true,
+    nofollow: true,
   });
 }
 

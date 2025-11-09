@@ -12,7 +12,10 @@
  * Supports test mode with test card numbers
  */
 
+import { AlertCircle, CreditCard, Landmark } from "lucide-react";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,12 +23,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Landmark, Wallet, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AddPaymentMethodDialogProps {
   open: boolean;
@@ -59,28 +59,32 @@ export function AddPaymentMethodDialog({
       // For now, simulate adding a test card
 
       // Validate test card
-      if (!testCardNumber || !testExpMonth || !testExpYear || !testCvc) {
+      if (!(testCardNumber && testExpMonth && testExpYear && testCvc)) {
         setError("Please fill in all card details");
         setIsLoading(false);
         return;
       }
 
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      alert("Payment method functionality coming soon! This will integrate with Stripe to securely save payment methods.");
+      alert(
+        "Payment method functionality coming soon! This will integrate with Stripe to securely save payment methods."
+      );
 
       onSuccess?.();
       onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add payment method");
+      setError(
+        err instanceof Error ? err.message : "Failed to add payment method"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Add Payment Method</DialogTitle>
@@ -89,24 +93,25 @@ export function AddPaymentMethodDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={paymentType} onValueChange={(v: any) => setPaymentType(v)}>
+        <Tabs onValueChange={(v: any) => setPaymentType(v)} value={paymentType}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="card" className="gap-2">
+            <TabsTrigger className="gap-2" value="card">
               <CreditCard className="size-4" />
               Card
             </TabsTrigger>
-            <TabsTrigger value="ach" className="gap-2">
+            <TabsTrigger className="gap-2" value="ach">
               <Landmark className="size-4" />
               Bank Account
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="card" className="space-y-4">
+          <TabsContent className="space-y-4" value="card">
             {/* Test Card Info Alert */}
             <Alert>
               <AlertCircle className="size-4" />
               <AlertDescription className="text-xs">
-                <strong>Test Cards:</strong> Use 4242 4242 4242 4242 (any CVC, future date)
+                <strong>Test Cards:</strong> Use 4242 4242 4242 4242 (any CVC,
+                future date)
               </AlertDescription>
             </Alert>
 
@@ -114,11 +119,11 @@ export function AddPaymentMethodDialog({
             <div className="space-y-2">
               <Label>Card Number</Label>
               <Input
-                type="text"
-                placeholder="4242 4242 4242 4242"
-                value={testCardNumber}
-                onChange={(e) => setTestCardNumber(e.target.value)}
                 maxLength={19}
+                onChange={(e) => setTestCardNumber(e.target.value)}
+                placeholder="4242 4242 4242 4242"
+                type="text"
+                value={testCardNumber}
               />
             </div>
 
@@ -127,31 +132,31 @@ export function AddPaymentMethodDialog({
               <div className="space-y-2">
                 <Label>Month</Label>
                 <Input
-                  type="text"
-                  placeholder="MM"
-                  value={testExpMonth}
-                  onChange={(e) => setTestExpMonth(e.target.value)}
                   maxLength={2}
+                  onChange={(e) => setTestExpMonth(e.target.value)}
+                  placeholder="MM"
+                  type="text"
+                  value={testExpMonth}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Year</Label>
                 <Input
-                  type="text"
-                  placeholder="YYYY"
-                  value={testExpYear}
-                  onChange={(e) => setTestExpYear(e.target.value)}
                   maxLength={4}
+                  onChange={(e) => setTestExpYear(e.target.value)}
+                  placeholder="YYYY"
+                  type="text"
+                  value={testExpYear}
                 />
               </div>
               <div className="space-y-2">
                 <Label>CVC</Label>
                 <Input
-                  type="text"
-                  placeholder="123"
-                  value={testCvc}
-                  onChange={(e) => setTestCvc(e.target.value)}
                   maxLength={4}
+                  onChange={(e) => setTestCvc(e.target.value)}
+                  placeholder="123"
+                  type="text"
+                  value={testCvc}
                 />
               </div>
             </div>
@@ -165,24 +170,24 @@ export function AddPaymentMethodDialog({
 
             <div className="flex gap-2 pt-4">
               <Button
-                variant="outline"
-                onClick={() => onOpenChange(false)}
                 className="flex-1"
                 disabled={isLoading}
+                onClick={() => onOpenChange(false)}
+                variant="outline"
               >
                 Cancel
               </Button>
               <Button
-                onClick={handleAddTestCard}
                 className="flex-1"
                 disabled={isLoading}
+                onClick={handleAddTestCard}
               >
                 {isLoading ? "Adding..." : "Add Card"}
               </Button>
             </div>
           </TabsContent>
 
-          <TabsContent value="ach" className="space-y-4">
+          <TabsContent className="space-y-4" value="ach">
             {/* ACH Bank Account */}
             <Alert>
               <AlertCircle className="size-4" />
@@ -194,25 +199,15 @@ export function AddPaymentMethodDialog({
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>Routing Number</Label>
-                <Input
-                  type="text"
-                  placeholder="110000000"
-                  maxLength={9}
-                />
+                <Input maxLength={9} placeholder="110000000" type="text" />
               </div>
               <div className="space-y-2">
                 <Label>Account Number</Label>
-                <Input
-                  type="text"
-                  placeholder="000123456789"
-                />
+                <Input placeholder="000123456789" type="text" />
               </div>
               <div className="space-y-2">
                 <Label>Account Holder Name</Label>
-                <Input
-                  type="text"
-                  placeholder="John Smith"
-                />
+                <Input placeholder="John Smith" type="text" />
               </div>
             </div>
 
@@ -225,9 +220,9 @@ export function AddPaymentMethodDialog({
 
             <div className="flex gap-2 pt-4">
               <Button
-                variant="outline"
-                onClick={() => onOpenChange(false)}
                 className="flex-1"
+                onClick={() => onOpenChange(false)}
+                variant="outline"
               >
                 Cancel
               </Button>

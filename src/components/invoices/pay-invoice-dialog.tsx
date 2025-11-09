@@ -10,7 +10,15 @@
  * - Database updates after successful payment
  */
 
-import { useState, useEffect } from "react";
+import { AlertCircle, Check, CreditCard, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  getInvoicePaymentDetails,
+  payInvoiceWithSavedCard,
+} from "@/actions/invoice-payments";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -19,19 +27,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { CreditCard, Check, AlertCircle, Loader2, Plus } from "lucide-react";
-import {
-  getInvoicePaymentDetails,
-  payInvoiceWithSavedCard,
-  createInvoicePaymentIntent,
-} from "@/actions/invoice-payments";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 
 interface PayInvoiceDialogProps {
@@ -82,7 +80,7 @@ export function PayInvoiceDialog({
 
       // Auto-select default payment method
       const defaultMethod = result.paymentMethods?.find(
-        (pm: any) => pm.is_default,
+        (pm: any) => pm.is_default
       );
       if (defaultMethod) {
         setSelectedPaymentMethod(defaultMethod.id);
@@ -100,12 +98,11 @@ export function PayInvoiceDialog({
     setIsLoading(false);
   };
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   const handlePayWithSavedCard = async () => {
     if (!selectedPaymentMethod) {
@@ -136,7 +133,7 @@ export function PayInvoiceDialog({
 
   const handlePayWithNewCard = async () => {
     // Validate card fields
-    if (!newCardNumber || !newCardExpMonth || !newCardExpYear || !newCardCvc) {
+    if (!(newCardNumber && newCardExpMonth && newCardExpYear && newCardCvc)) {
       setError("Please fill in all card details");
       return;
     }
@@ -148,7 +145,7 @@ export function PayInvoiceDialog({
     // For now, show a message
     setIsProcessing(false);
     setError(
-      "New card payment integration coming soon! Please use a saved card or contact support.",
+      "New card payment integration coming soon! Please use a saved card or contact support."
     );
   };
 
@@ -162,7 +159,7 @@ export function PayInvoiceDialog({
 
   if (isLoading) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog onOpenChange={onOpenChange} open={open}>
         <DialogContent className="sm:max-w-[500px]">
           <div className="flex items-center justify-center py-8">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -174,13 +171,13 @@ export function PayInvoiceDialog({
 
   if (success) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog onOpenChange={onOpenChange} open={open}>
         <DialogContent className="sm:max-w-[500px]">
           <div className="flex flex-col items-center justify-center py-8">
             <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-success/10">
               <Check className="size-8 text-success" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Payment Successful!</h3>
+            <h3 className="mb-2 font-semibold text-lg">Payment Successful!</h3>
             <p className="text-center text-muted-foreground text-sm">
               Your payment of {formatCurrency(invoice?.balance_amount || 0)} has
               been processed.
@@ -195,7 +192,7 @@ export function PayInvoiceDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Pay Invoice</DialogTitle>
@@ -210,7 +207,7 @@ export function PayInvoiceDialog({
           <div className="rounded-lg border bg-muted/30 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">
+                <p className="font-medium text-sm">
                   {invoice?.title || "Invoice Payment"}
                 </p>
                 <p className="text-muted-foreground text-xs">
@@ -221,14 +218,14 @@ export function PayInvoiceDialog({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-bold">
+                <p className="font-bold text-lg">
                   {formatCurrency(invoice?.balance_amount || 0)}
                 </p>
                 <Badge
+                  className="text-xs"
                   variant={
                     invoice?.status === "overdue" ? "destructive" : "secondary"
                   }
-                  className="text-xs"
                 >
                   {invoice?.status}
                 </Badge>
@@ -238,20 +235,20 @@ export function PayInvoiceDialog({
 
           {/* Payment Method Selection */}
           <div className="space-y-4">
-            <Label className="text-base font-semibold">Payment Method</Label>
+            <Label className="font-semibold text-base">Payment Method</Label>
 
             <RadioGroup
-              value={paymentMode}
               onValueChange={(v: any) => setPaymentMode(v)}
+              value={paymentMode}
             >
               {/* Saved Cards */}
               {paymentMethods.length > 0 && (
                 <>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="saved" id="saved" />
+                    <RadioGroupItem id="saved" value="saved" />
                     <Label
-                      htmlFor="saved"
                       className="cursor-pointer font-normal"
+                      htmlFor="saved"
                     >
                       Use Saved Card
                     </Label>
@@ -260,27 +257,27 @@ export function PayInvoiceDialog({
                   {paymentMode === "saved" && (
                     <div className="ml-6 space-y-2">
                       <RadioGroup
-                        value={selectedPaymentMethod}
                         onValueChange={setSelectedPaymentMethod}
+                        value={selectedPaymentMethod}
                       >
                         {paymentMethods.map((pm: any) => (
                           <div
-                            key={pm.id}
                             className={cn(
                               "flex items-center space-x-3 rounded-lg border p-3 transition-all",
                               selectedPaymentMethod === pm.id &&
-                                "border-primary bg-primary/5",
+                                "border-primary bg-primary/5"
                             )}
+                            key={pm.id}
                           >
-                            <RadioGroupItem value={pm.id} id={pm.id} />
+                            <RadioGroupItem id={pm.id} value={pm.id} />
                             <Label
-                              htmlFor={pm.id}
                               className="flex flex-1 cursor-pointer items-center justify-between"
+                              htmlFor={pm.id}
                             >
                               <div className="flex items-center gap-2">
                                 <span className="text-xl">💳</span>
                                 <div>
-                                  <p className="text-sm font-medium">
+                                  <p className="font-medium text-sm">
                                     {pm.card_brand.toUpperCase()} ••••{" "}
                                     {pm.card_last4}
                                   </p>
@@ -293,7 +290,7 @@ export function PayInvoiceDialog({
                                 </div>
                               </div>
                               {pm.is_default && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge className="text-xs" variant="secondary">
                                   Default
                                 </Badge>
                               )}
@@ -308,8 +305,8 @@ export function PayInvoiceDialog({
 
               {/* New Card */}
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="new" id="new" />
-                <Label htmlFor="new" className="cursor-pointer font-normal">
+                <RadioGroupItem id="new" value="new" />
+                <Label className="cursor-pointer font-normal" htmlFor="new">
                   Pay with New Card
                 </Label>
               </div>
@@ -327,11 +324,11 @@ export function PayInvoiceDialog({
                   <div className="space-y-2">
                     <Label>Card Number</Label>
                     <Input
-                      type="text"
-                      placeholder="4242 4242 4242 4242"
-                      value={newCardNumber}
-                      onChange={(e) => setNewCardNumber(e.target.value)}
                       maxLength={19}
+                      onChange={(e) => setNewCardNumber(e.target.value)}
+                      placeholder="4242 4242 4242 4242"
+                      type="text"
+                      value={newCardNumber}
                     />
                   </div>
 
@@ -339,31 +336,31 @@ export function PayInvoiceDialog({
                     <div className="space-y-2">
                       <Label>Month</Label>
                       <Input
-                        type="text"
-                        placeholder="MM"
-                        value={newCardExpMonth}
-                        onChange={(e) => setNewCardExpMonth(e.target.value)}
                         maxLength={2}
+                        onChange={(e) => setNewCardExpMonth(e.target.value)}
+                        placeholder="MM"
+                        type="text"
+                        value={newCardExpMonth}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Year</Label>
                       <Input
-                        type="text"
-                        placeholder="YYYY"
-                        value={newCardExpYear}
-                        onChange={(e) => setNewCardExpYear(e.target.value)}
                         maxLength={4}
+                        onChange={(e) => setNewCardExpYear(e.target.value)}
+                        placeholder="YYYY"
+                        type="text"
+                        value={newCardExpYear}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>CVC</Label>
                       <Input
-                        type="text"
-                        placeholder="123"
-                        value={newCardCvc}
-                        onChange={(e) => setNewCardCvc(e.target.value)}
                         maxLength={4}
+                        onChange={(e) => setNewCardCvc(e.target.value)}
+                        placeholder="123"
+                        type="text"
+                        value={newCardCvc}
                       />
                     </div>
                   </div>
@@ -383,18 +380,18 @@ export function PayInvoiceDialog({
 
         <DialogFooter>
           <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
             disabled={isProcessing}
+            onClick={() => onOpenChange(false)}
+            variant="outline"
           >
             Cancel
           </Button>
           <Button
-            onClick={handlePay}
             disabled={
               isProcessing ||
               (paymentMode === "saved" && !selectedPaymentMethod)
             }
+            onClick={handlePay}
           >
             {isProcessing ? (
               <>

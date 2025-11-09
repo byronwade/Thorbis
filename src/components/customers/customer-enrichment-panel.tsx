@@ -10,30 +10,32 @@
 
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Briefcase,
   Building2,
   DollarSign,
+  ExternalLink,
+  Facebook,
   Home,
   Linkedin,
-  Mail,
   MapPin,
   Phone,
   RefreshCw,
   Star,
+  TrendingUp,
   Twitter,
   User,
-  Facebook,
-  ExternalLink,
-  TrendingUp,
 } from "lucide-react";
+import { useState } from "react";
+import {
+  enrichCustomerData,
+  refreshEnrichment,
+} from "@/actions/customer-enrichment";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { enrichCustomerData, refreshEnrichment } from "@/actions/customer-enrichment";
 
 interface CustomerEnrichmentPanelProps {
   customerId: string;
@@ -76,7 +78,7 @@ export function CustomerEnrichmentPanel({
     }
   };
 
-  if (!enrichmentData && !isLoading) {
+  if (!(enrichmentData || isLoading)) {
     return (
       <Card>
         <CardHeader>
@@ -88,8 +90,8 @@ export function CustomerEnrichmentPanel({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">
+          <div className="py-8 text-center">
+            <p className="mb-4 text-muted-foreground">
               Enrich this customer with data from external sources
             </p>
             <Button onClick={handleEnrich}>
@@ -133,10 +135,10 @@ export function CustomerEnrichmentPanel({
               Customer Intelligence
             </span>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
               disabled={isRefreshing}
+              onClick={handleRefresh}
+              size="sm"
+              variant="outline"
             >
               <RefreshCw
                 className={cn("mr-2 h-4 w-4", isRefreshing && "animate-spin")}
@@ -146,7 +148,7 @@ export function CustomerEnrichmentPanel({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <Badge variant="outline">
               Confidence: {enrichmentData?.overallConfidence || 0}%
             </Badge>
@@ -169,11 +171,11 @@ export function CustomerEnrichmentPanel({
           <CardContent className="space-y-3">
             {personData.jobTitle && (
               <div className="flex items-start gap-3">
-                <Briefcase className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <Briefcase className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">{personData.jobTitle}</p>
                   {personData.seniority && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {personData.seniority}
                     </p>
                   )}
@@ -182,16 +184,16 @@ export function CustomerEnrichmentPanel({
             )}
             {personData.company && (
               <div className="flex items-start gap-3">
-                <Building2 className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <Building2 className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">{personData.company.name}</p>
                   {personData.company.industry && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {personData.company.industry}
                     </p>
                   )}
                   {personData.company.description && (
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="mt-1 text-muted-foreground text-sm">
                       {personData.company.description}
                     </p>
                   )}
@@ -228,17 +230,17 @@ export function CustomerEnrichmentPanel({
           <CardContent className="space-y-2">
             {socialData.profiles.linkedin?.url && (
               <a
+                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent"
                 href={socialData.profiles.linkedin.url}
-                target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
+                target="_blank"
               >
                 <div className="flex items-center gap-3">
                   <Linkedin className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="font-medium">LinkedIn</p>
                     {socialData.profiles.linkedin.headline && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {socialData.profiles.linkedin.headline}
                       </p>
                     )}
@@ -249,17 +251,17 @@ export function CustomerEnrichmentPanel({
             )}
             {socialData.profiles.twitter?.url && (
               <a
+                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent"
                 href={socialData.profiles.twitter.url}
-                target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
+                target="_blank"
               >
                 <div className="flex items-center gap-3">
                   <Twitter className="h-5 w-5 text-sky-500" />
                   <div>
                     <p className="font-medium">Twitter</p>
                     {socialData.profiles.twitter.followers && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {socialData.profiles.twitter.followers.toLocaleString()}{" "}
                         followers
                       </p>
@@ -271,17 +273,17 @@ export function CustomerEnrichmentPanel({
             )}
             {socialData.profiles.facebook?.url && (
               <a
+                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent"
                 href={socialData.profiles.facebook.url}
-                target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
+                target="_blank"
               >
                 <div className="flex items-center gap-3">
                   <Facebook className="h-5 w-5 text-blue-700" />
                   <div>
                     <p className="font-medium">Facebook</p>
                     {socialData.profiles.facebook.name && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {socialData.profiles.facebook.name}
                       </p>
                     )}
@@ -306,10 +308,10 @@ export function CustomerEnrichmentPanel({
           <CardContent className="space-y-3">
             {businessData.rating && (
               <div className="flex items-center gap-3">
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                 <span className="font-medium">{businessData.rating}/5</span>
                 {businessData.reviewCount && (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     ({businessData.reviewCount} reviews)
                   </span>
                 )}
@@ -325,17 +327,17 @@ export function CustomerEnrichmentPanel({
               <div className="flex items-center gap-3">
                 <ExternalLink className="h-4 w-4 text-muted-foreground" />
                 <a
+                  className="text-blue-600 text-sm hover:underline"
                   href={businessData.website}
-                  target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline"
+                  target="_blank"
                 >
                   {businessData.website}
                 </a>
               </div>
             )}
             {businessData.description && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {businessData.description}
               </p>
             )}
@@ -358,9 +360,12 @@ export function CustomerEnrichmentPanel({
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">
-                    ${(propertyData.ownership.marketValue / 100).toLocaleString()}
+                    $
+                    {(
+                      propertyData.ownership.marketValue / 100
+                    ).toLocaleString()}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Estimated Market Value
                   </p>
                 </div>
@@ -375,13 +380,14 @@ export function CustomerEnrichmentPanel({
               </div>
             )}
             {propertyData.details?.yearBuilt && (
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Built in {propertyData.details.yearBuilt}
               </div>
             )}
             {propertyData.taxes?.annualAmount && (
-              <div className="text-sm text-muted-foreground">
-                Annual Taxes: ${(propertyData.taxes.annualAmount / 100).toLocaleString()}
+              <div className="text-muted-foreground text-sm">
+                Annual Taxes: $
+                {(propertyData.taxes.annualAmount / 100).toLocaleString()}
               </div>
             )}
           </CardContent>
@@ -390,4 +396,3 @@ export function CustomerEnrichmentPanel({
     </div>
   );
 }
-

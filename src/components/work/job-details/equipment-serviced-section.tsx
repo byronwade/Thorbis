@@ -1,9 +1,12 @@
 "use client";
 
+import { AlertCircle, Camera, CheckCircle, Plus, Wrench } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { addEquipmentToJob } from "@/actions/equipment";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -22,9 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wrench, Plus, AlertCircle, CheckCircle, Camera } from "lucide-react";
-import { addEquipmentToJob, updateJobEquipment } from "@/actions/equipment";
-import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
 interface EquipmentServicedSectionProps {
@@ -64,9 +63,17 @@ export function EquipmentServicedSection({
   const getConditionBadge = (condition: string) => {
     switch (condition?.toLowerCase()) {
       case "excellent":
-        return <Badge variant="default" className="bg-green-600">Excellent</Badge>;
+        return (
+          <Badge className="bg-green-600" variant="default">
+            Excellent
+          </Badge>
+        );
       case "good":
-        return <Badge variant="default" className="bg-blue-600">Good</Badge>;
+        return (
+          <Badge className="bg-blue-600" variant="default">
+            Good
+          </Badge>
+        );
       case "fair":
         return <Badge variant="secondary">Fair</Badge>;
       case "poor":
@@ -88,7 +95,7 @@ export function EquipmentServicedSection({
     };
 
     return (
-      <Badge variant="default" className={colors[type] || "bg-gray-600"}>
+      <Badge className={colors[type] || "bg-gray-600"} variant="default">
         {type?.charAt(0).toUpperCase() + type?.slice(1)}
       </Badge>
     );
@@ -103,7 +110,7 @@ export function EquipmentServicedSection({
             <CardTitle>Equipment Serviced</CardTitle>
             <Badge variant="outline">{jobEquipment.length}</Badge>
           </div>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <Dialog onOpenChange={setIsAddDialogOpen} open={isAddDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
@@ -117,9 +124,9 @@ export function EquipmentServicedSection({
                   Select customer equipment that was serviced on this job
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleAddEquipment} className="space-y-4">
-                <input type="hidden" name="job_id" value={jobId} />
-                
+              <form className="space-y-4" onSubmit={handleAddEquipment}>
+                <input name="job_id" type="hidden" value={jobId} />
+
                 <div>
                   <Label htmlFor="equipment_id">Equipment</Label>
                   <Select name="equipment_id" required>
@@ -138,7 +145,7 @@ export function EquipmentServicedSection({
 
                 <div>
                   <Label htmlFor="service_type">Service Type</Label>
-                  <Select name="service_type" defaultValue="maintenance">
+                  <Select defaultValue="maintenance" name="service_type">
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -207,13 +214,13 @@ export function EquipmentServicedSection({
 
                 <div className="flex justify-end gap-2">
                   <Button
+                    onClick={() => setIsAddDialogOpen(false)}
                     type="button"
                     variant="outline"
-                    onClick={() => setIsAddDialogOpen(false)}
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isLoading}>
+                  <Button disabled={isLoading} type="submit">
                     {isLoading ? "Adding..." : "Add Equipment"}
                   </Button>
                 </div>
@@ -225,14 +232,14 @@ export function EquipmentServicedSection({
       <CardContent>
         {jobEquipment.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Wrench className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground mb-4">
+            <Wrench className="mb-4 h-12 w-12 text-muted-foreground" />
+            <p className="mb-4 text-muted-foreground text-sm">
               No equipment added to this job yet
             </p>
             <Button
-              variant="outline"
-              size="sm"
               onClick={() => setIsAddDialogOpen(true)}
+              size="sm"
+              variant="outline"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add First Equipment
@@ -242,19 +249,20 @@ export function EquipmentServicedSection({
           <div className="space-y-4">
             {jobEquipment.map((je: any) => (
               <div
+                className="space-y-3 rounded-lg border p-4 transition-colors hover:bg-accent/50"
                 key={je.id}
-                className="rounded-lg border p-4 space-y-3 hover:bg-accent/50 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <h4 className="font-semibold">{je.equipment?.name}</h4>
                       {getServiceTypeBadge(je.service_type)}
                     </div>
-                    <div className="text-sm text-muted-foreground space-y-1">
+                    <div className="space-y-1 text-muted-foreground text-sm">
                       <p>
                         {je.equipment?.manufacturer} {je.equipment?.model}
-                        {je.equipment?.serial_number && ` • SN: ${je.equipment.serial_number}`}
+                        {je.equipment?.serial_number &&
+                          ` • SN: ${je.equipment.serial_number}`}
                       </p>
                     </div>
                   </div>
@@ -263,20 +271,24 @@ export function EquipmentServicedSection({
                 {je.work_performed && (
                   <div className="text-sm">
                     <span className="font-medium">Work Performed:</span>
-                    <p className="text-muted-foreground mt-1">{je.work_performed}</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {je.work_performed}
+                    </p>
                   </div>
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   {je.condition_before && (
                     <div>
-                      <span className="text-muted-foreground mr-2">Before:</span>
+                      <span className="mr-2 text-muted-foreground">
+                        Before:
+                      </span>
                       {getConditionBadge(je.condition_before)}
                     </div>
                   )}
                   {je.condition_after && (
                     <div>
-                      <span className="text-muted-foreground mr-2">After:</span>
+                      <span className="mr-2 text-muted-foreground">After:</span>
                       {getConditionBadge(je.condition_after)}
                     </div>
                   )}
@@ -295,22 +307,25 @@ export function EquipmentServicedSection({
                 </div>
 
                 {je.technician_notes && (
-                  <div className="text-sm bg-muted/50 p-3 rounded">
+                  <div className="rounded bg-muted/50 p-3 text-sm">
                     <span className="font-medium">Tech Notes:</span>
-                    <p className="text-muted-foreground mt-1">{je.technician_notes}</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {je.technician_notes}
+                    </p>
                   </div>
                 )}
 
-                {(je.before_photos?.length > 0 || je.after_photos?.length > 0) && (
-                  <div className="flex items-center gap-4 pt-2 border-t">
+                {(je.before_photos?.length > 0 ||
+                  je.after_photos?.length > 0) && (
+                  <div className="flex items-center gap-4 border-t pt-2">
                     {je.before_photos?.length > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1 text-muted-foreground text-sm">
                         <Camera className="h-4 w-4" />
                         <span>{je.before_photos.length} before</span>
                       </div>
                     )}
                     {je.after_photos?.length > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1 text-muted-foreground text-sm">
                         <Camera className="h-4 w-4" />
                         <span>{je.after_photos.length} after</span>
                       </div>
@@ -325,4 +340,3 @@ export function EquipmentServicedSection({
     </Card>
   );
 }
-

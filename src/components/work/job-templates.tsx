@@ -22,7 +22,13 @@ type JobTemplate = {
   id: string;
   name: string;
   shortcut: string;
-  jobType: "service" | "installation" | "repair" | "maintenance" | "inspection" | "consultation";
+  jobType:
+    | "service"
+    | "installation"
+    | "repair"
+    | "maintenance"
+    | "inspection"
+    | "consultation";
   priority: "low" | "medium" | "high" | "urgent";
   duration: number; // minutes
   title: string;
@@ -100,7 +106,7 @@ export function JobTemplates({ onTemplateSelect }: JobTemplatesProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="outline" size="sm">
+        <Button size="sm" type="button" variant="outline">
           <Zap className="mr-2 size-4" />
           Quick Templates
         </Button>
@@ -108,16 +114,16 @@ export function JobTemplates({ onTemplateSelect }: JobTemplatesProps) {
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Job Templates</span>
-          <span className="text-muted-foreground text-xs font-normal">
+          <span className="font-normal text-muted-foreground text-xs">
             Alt + 1-6
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {JOB_TEMPLATES.map((template) => (
           <DropdownMenuItem
+            className="flex cursor-pointer items-center justify-between"
             key={template.id}
             onClick={() => onTemplateSelect(template)}
-            className="flex cursor-pointer items-center justify-between"
           >
             <div className="flex flex-col">
               <span className="font-medium">{template.name}</span>

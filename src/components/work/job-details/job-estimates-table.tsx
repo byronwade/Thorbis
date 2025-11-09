@@ -12,6 +12,8 @@ import {
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { bulkArchive } from "@/actions/archive";
+import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,12 +24,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  type ColumnDef,
   type BulkAction,
+  type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
-import { bulkArchive } from "@/actions/archive";
 
 type Estimate = {
   id: string;
@@ -67,7 +67,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
     setIsArchiving(true);
     try {
       const result = await bulkArchive(Array.from(selectedIds), "estimate");
-      
+
       if (result.success && result.data) {
         toast.success(
           `Successfully archived ${result.data.archived} estimate${result.data.archived === 1 ? "" : "s"}`
@@ -126,7 +126,10 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         header: "Title",
         width: "flex-1",
         render: (estimate) => (
-          <span className="block truncate text-sm text-foreground" title={estimate.title || undefined}>
+          <span
+            className="block truncate text-foreground text-sm"
+            title={estimate.title || undefined}
+          >
             {estimate.title || "—"}
           </span>
         ),
@@ -157,7 +160,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         shrink: true,
         hideOnMobile: true,
         render: (estimate) => (
-          <span className="text-sm text-muted-foreground tabular-nums">
+          <span className="text-muted-foreground text-sm tabular-nums">
             {estimate.valid_until
               ? new Date(estimate.valid_until).toLocaleDateString()
               : "—"}
@@ -221,10 +224,12 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
   return (
     <>
       <FullWidthDataTable
+        bulkActions={bulkActions}
         columns={columns}
         data={estimates}
         emptyIcon={<Receipt className="size-12 text-muted-foreground/50" />}
         emptyMessage="No estimates found for this job"
+        enableSelection={true}
         getItemId={(estimate) => estimate.id}
         searchFilter={(estimate, query) => {
           const searchLower = query.toLowerCase();
@@ -236,17 +241,15 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         }}
         searchPlaceholder="Search estimates..."
         showPagination={true}
-        bulkActions={bulkActions}
-        enableSelection={true}
       />
 
       <ArchiveConfirmDialog
-        open={showArchiveDialog}
-        onOpenChange={setShowArchiveDialog}
-        onConfirm={handleArchive}
-        itemCount={selectedIds.size}
         entityType="estimate"
         isLoading={isArchiving}
+        itemCount={selectedIds.size}
+        onConfirm={handleArchive}
+        onOpenChange={setShowArchiveDialog}
+        open={showArchiveDialog}
       />
     </>
   );

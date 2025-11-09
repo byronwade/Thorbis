@@ -9,6 +9,12 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 const METERS_TO_MILES = 0.000_621_371;
+const FALLBACK_SHOP_ADDRESS = {
+  address: "121 E Marietta St",
+  city: "Canton",
+  state: "GA",
+  zip_code: "30114",
+};
 
 function validateDestination(
   destinationAddress: string | null,
@@ -67,6 +73,30 @@ async function getUserCompany(
     .single();
 
   return teamMember;
+}
+
+async function resolveOriginAddress(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  userId: string
+) {
+  const teamMember = await getUserCompany(supabase, userId);
+
+  if (!teamMember?.company_id) {
+    return buildOriginAddress(FALLBACK_SHOP_ADDRESS);
+  }
+
+  const companySettings = await getCompanySettings(
+    supabase,
+    teamMember.company_id
+  );
+  const hasShopAddress =
+    companySettings?.address && companySettings?.city && companySettings?.state;
+
+  if (!hasShopAddress) {
+    return buildOriginAddress(FALLBACK_SHOP_ADDRESS);
+  }
+
+  return buildOriginAddress(companySettings);
 }
 
 type DistanceMatrixElement = {
@@ -175,28 +205,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const teamMember = await getUserCompany(supabase, user.id);
-    if (!teamMember?.company_id) {
-      return NextResponse.json({ error: "Company not found" }, { status: 404 });
-    }
-
-    const companySettings = await getCompanySettings(
-      supabase,
-      teamMember.company_id
-    );
-    const hasShopAddress =
-      companySettings?.address &&
-      companySettings?.city &&
-      companySettings?.state;
-
-    if (!hasShopAddress) {
-      return NextResponse.json(
-        { error: "Shop address not configured" },
-        { status: 404 }
-      );
-    }
-
-    const originAddress = buildOriginAddress(companySettings);
+    const originAddress = await resolveOriginAddress(supabase, user.id);
     const destAddress =
       destinationAddress || `${destinationLat},${destinationLon}`;
     const apiKey =

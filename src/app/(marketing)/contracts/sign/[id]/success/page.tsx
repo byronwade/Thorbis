@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
 /**
  * Contract Signing Success Page - Server Component
@@ -99,4 +100,24 @@ export default async function ContractSignSuccessPage({
       </div>
     </div>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return generateSEOMetadata({
+    title: "Contract Signed",
+    section: "Customer Portal",
+    description:
+      "Confirmation page for your successfully signed Thorbis service agreement.",
+    path: `/contracts/sign/${id}/success`,
+    imageAlt: "Thorbis contract signing confirmation",
+    keywords: ["contract signed", "thorbis confirmation"],
+    noindex: true,
+    nofollow: true,
+  });
 }

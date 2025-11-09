@@ -11,21 +11,21 @@
  * Chronological timeline with icons and timestamps
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import {
   Activity,
   Briefcase,
-  FileText,
+  Clock,
   DollarSign,
-  User,
-  Phone,
+  FileText,
   Mail,
   MapPin,
-  Clock,
+  Phone,
+  User,
 } from "lucide-react";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
 import { cn } from "@/lib/utils";
 
 // React component that renders the block
@@ -83,9 +83,9 @@ export function ActivityTimelineBlockComponent({ node }: any) {
     const d = new Date(date);
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMins = Math.floor(diffMs / 60_000);
+    const diffHours = Math.floor(diffMs / 3_600_000);
+    const diffDays = Math.floor(diffMs / 86_400_000);
 
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins}m ago`;
@@ -102,18 +102,21 @@ export function ActivityTimelineBlockComponent({ node }: any) {
   if (!activities || activities.length === 0) {
     return (
       <NodeViewWrapper className="activity-timeline-block">
-        <CollapsibleSectionWrapper
-          title="Activity History (0)"
-          icon={<Activity className="size-5" />}
+        <CollapsibleDataSection
+          count={0}
           defaultOpen={false}
+          icon={<Activity className="size-5" />}
+          standalone={true}
           storageKey="customer-activity-section"
           summary="No activity yet"
+          title="Activity History (0)"
+          value="customer-activity"
         >
           <div className="rounded-lg border bg-muted/30 p-8 text-center">
             <Activity className="mx-auto mb-3 size-12 text-muted-foreground/50" />
             <p className="text-muted-foreground">No activity yet</p>
           </div>
-        </CollapsibleSectionWrapper>
+        </CollapsibleDataSection>
       </NodeViewWrapper>
     );
   }
@@ -126,33 +129,44 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 
   return (
     <NodeViewWrapper className="activity-timeline-block">
-      <CollapsibleSectionWrapper
-        title={`Activity History (${activities.length})`}
-        icon={<Activity className="size-5" />}
+      <CollapsibleDataSection
+        count={activities.length}
         defaultOpen={false}
+        icon={<Activity className="size-5" />}
+        standalone={true}
         storageKey="customer-activity-section"
         summary={summary}
+        title={`Activity History (${activities.length})`}
+        value="customer-activity"
       >
         <div className="relative space-y-4">
           {/* Timeline Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-border" />
+          <div className="absolute top-0 bottom-0 left-8 w-px bg-border" />
 
           {activities.map((activity: any, index: number) => {
             const Icon = getActivityIcon(activity.action);
             const colorClass = getActivityColor(activity.action);
-            const user = Array.isArray(activity.user) ? activity.user[0] : activity.user;
+            const user = Array.isArray(activity.user)
+              ? activity.user[0]
+              : activity.user;
             const userName = user?.name || "System";
-            const userInitials = userName.split(" ").map((n: string) => n[0]).join("").toUpperCase();
+            const userInitials = userName
+              .split(" ")
+              .map((n: string) => n[0])
+              .join("")
+              .toUpperCase();
 
             // Parse changes from old_values/new_values
             const changes = [];
             if (activity.old_values && activity.new_values) {
-              const oldVals = typeof activity.old_values === "string"
-                ? JSON.parse(activity.old_values)
-                : activity.old_values;
-              const newVals = typeof activity.new_values === "string"
-                ? JSON.parse(activity.new_values)
-                : activity.new_values;
+              const oldVals =
+                typeof activity.old_values === "string"
+                  ? JSON.parse(activity.old_values)
+                  : activity.old_values;
+              const newVals =
+                typeof activity.new_values === "string"
+                  ? JSON.parse(activity.new_values)
+                  : activity.new_values;
 
               for (const key in newVals) {
                 if (oldVals[key] !== newVals[key]) {
@@ -166,9 +180,14 @@ export function ActivityTimelineBlockComponent({ node }: any) {
             }
 
             return (
-              <div key={activity.id || index} className="relative flex gap-4">
+              <div className="relative flex gap-4" key={activity.id || index}>
                 {/* Timeline Icon */}
-                <div className={cn("relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full", colorClass)}>
+                <div
+                  className={cn(
+                    "relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full",
+                    colorClass
+                  )}
+                >
                   <Icon className="size-6" />
                 </div>
 
@@ -186,11 +205,17 @@ export function ActivityTimelineBlockComponent({ node }: any) {
                         {changes.length > 0 && (
                           <div className="mt-2 space-y-1">
                             {changes.map((change, i) => (
-                              <div key={i} className="text-xs">
-                                <span className="font-medium text-muted-foreground">{change.field}:</span>{" "}
-                                <span className="line-through text-red-600">{String(change.old)}</span>
+                              <div className="text-xs" key={i}>
+                                <span className="font-medium text-muted-foreground">
+                                  {change.field}:
+                                </span>{" "}
+                                <span className="text-red-600 line-through">
+                                  {String(change.old)}
+                                </span>
                                 {" → "}
-                                <span className="text-green-600">{String(change.new)}</span>
+                                <span className="text-green-600">
+                                  {String(change.new)}
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -198,7 +223,7 @@ export function ActivityTimelineBlockComponent({ node }: any) {
                       </div>
 
                       {/* Timestamp - ALWAYS SHOW */}
-                      <time className="flex shrink-0 items-center gap-1 text-muted-foreground text-xs whitespace-nowrap">
+                      <time className="flex shrink-0 items-center gap-1 whitespace-nowrap text-muted-foreground text-xs">
                         <Clock className="size-3" />
                         {formatDate(activity.created_at)}
                       </time>
@@ -213,16 +238,27 @@ export function ActivityTimelineBlockComponent({ node }: any) {
                       </Avatar>
                       <div className="text-xs">
                         <span className="font-medium">{userName}</span>
-                        <span className="text-muted-foreground"> • {formatDate(activity.created_at)}</span>
+                        <span className="text-muted-foreground">
+                          {" "}
+                          • {formatDate(activity.created_at)}
+                        </span>
                       </div>
                     </div>
 
                     {/* IP Address and User Agent (for audit trail) */}
                     {(activity.ip_address || activity.user_agent) && (
                       <div className="mt-2 text-muted-foreground text-xs">
-                        {activity.ip_address && <span>IP: {activity.ip_address}</span>}
-                        {activity.ip_address && activity.user_agent && <span className="mx-2">•</span>}
-                        {activity.user_agent && <span title={activity.user_agent}>Browser: {activity.user_agent.split(" ")[0]}</span>}
+                        {activity.ip_address && (
+                          <span>IP: {activity.ip_address}</span>
+                        )}
+                        {activity.ip_address && activity.user_agent && (
+                          <span className="mx-2">•</span>
+                        )}
+                        {activity.user_agent && (
+                          <span title={activity.user_agent}>
+                            Browser: {activity.user_agent.split(" ")[0]}
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -231,7 +267,7 @@ export function ActivityTimelineBlockComponent({ node }: any) {
             );
           })}
         </div>
-      </CollapsibleSectionWrapper>
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -263,7 +299,13 @@ export const ActivityTimelineBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "activity-timeline-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, {
+        "data-type": "activity-timeline-block",
+      }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -274,12 +316,11 @@ export const ActivityTimelineBlock = Node.create({
     return {
       insertActivityTimelineBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

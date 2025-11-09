@@ -4,10 +4,10 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Package, Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -23,13 +23,16 @@ interface MaterialsTabProps {
   isEditMode: boolean;
 }
 
-export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) {
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+export function MaterialsTab({
+  job,
+  materials,
+  isEditMode,
+}: MaterialsTabProps) {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   const totalCost = materials.reduce(
     (sum, item) => sum + (item.quantity * item.unit_price || 0),
@@ -65,26 +68,28 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
                     <TableHead className="text-right">Qty</TableHead>
                     <TableHead className="text-right">Unit Price</TableHead>
                     <TableHead className="text-right">Total</TableHead>
-                    {isEditMode && <TableHead></TableHead>}
+                    {isEditMode && <TableHead />}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {materials.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="text-muted-foreground text-sm">
                         {item.description}
                       </TableCell>
-                      <TableCell className="text-right">{item.quantity}</TableCell>
+                      <TableCell className="text-right">
+                        {item.quantity}
+                      </TableCell>
                       <TableCell className="text-right">
                         {formatCurrency(item.unit_price || 0)}
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {formatCurrency((item.quantity * item.unit_price) || 0)}
+                        {formatCurrency(item.quantity * item.unit_price || 0)}
                       </TableCell>
                       {isEditMode && (
                         <TableCell>
-                          <Button variant="ghost" size="sm">
+                          <Button size="sm" variant="ghost">
                             Edit
                           </Button>
                         </TableCell>
@@ -95,13 +100,17 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
               </Table>
               <div className="mt-4 flex justify-end border-t pt-4">
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Total Materials</p>
-                  <p className="text-2xl font-bold">{formatCurrency(totalCost)}</p>
+                  <p className="text-muted-foreground text-sm">
+                    Total Materials
+                  </p>
+                  <p className="font-bold text-2xl">
+                    {formatCurrency(totalCost)}
+                  </p>
                 </div>
               </div>
             </>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No line items added yet
             </div>
           )}

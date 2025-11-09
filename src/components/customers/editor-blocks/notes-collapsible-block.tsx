@@ -7,18 +7,23 @@
  * - Both editable inline with full Tiptap formatting
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { FileText, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
 import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import {
+  CollapsibleActionButton,
+  CollapsibleDataSection,
+} from "@/components/ui/collapsible-data-section";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamically import to avoid SSR issues
 const CustomerNotesTable = dynamic(
-  () => import("@/components/customers/customer-notes-table").then((mod) => ({ default: mod.CustomerNotesTable })),
+  () =>
+    import("@/components/customers/customer-notes-table").then((mod) => ({
+      default: mod.CustomerNotesTable,
+    })),
   {
     ssr: false,
     loading: () => <Skeleton className="h-[400px] w-full" />,
@@ -30,38 +35,41 @@ export function NotesCollapsibleBlockComponent({ node, editor }: any) {
   const { customerId, notesCount = 0 } = node.attrs;
   const [triggerAddNote, setTriggerAddNote] = useState(0);
 
-  const summary = notesCount === 0
-    ? "No notes yet"
-    : `${notesCount} note${notesCount === 1 ? "" : "s"}`;
+  const summary =
+    notesCount === 0
+      ? "No notes yet"
+      : `${notesCount} note${notesCount === 1 ? "" : "s"}`;
 
   const handleAddNote = () => {
-    setTriggerAddNote(prev => prev + 1);
+    setTriggerAddNote((prev) => prev + 1);
   };
 
   return (
     <NodeViewWrapper className="notes-collapsible-block" data-drag-handle>
-      <CollapsibleSectionWrapper
-        title="Notes & Documentation"
-        icon={<FileText className="size-5" />}
+      <CollapsibleDataSection
+        actions={
+          <CollapsibleActionButton
+            icon={<Plus className="h-3.5 w-3.5" />}
+            onClick={handleAddNote}
+          >
+            Add Note
+          </CollapsibleActionButton>
+        }
+        count={notesCount}
         defaultOpen={false}
+        fullWidthContent={true}
+        icon={<FileText className="size-5" />}
+        standalone={true}
         storageKey="customer-notes-section"
         summary={summary}
-        actions={
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleAddNote}
-            className="h-8 px-3 text-xs gap-1.5"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add Note
-          </Button>
-        }
+        title="Notes & Documentation"
+        value="customer-notes"
       >
-        <div className="-mx-6 -mt-6 -mb-6">
-          <CustomerNotesTable customerId={customerId} triggerAdd={triggerAddNote} />
-        </div>
-      </CollapsibleSectionWrapper>
+        <CustomerNotesTable
+          customerId={customerId}
+          triggerAdd={triggerAddNote}
+        />
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -96,7 +104,13 @@ export const NotesCollapsibleBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "notes-collapsible-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, {
+        "data-type": "notes-collapsible-block",
+      }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -107,12 +121,11 @@ export const NotesCollapsibleBlock = Node.create({
     return {
       insertNotesCollapsibleBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

@@ -43,7 +43,7 @@ export default async function DashboardLayout({
   }
 
   const supabase = await createClient();
-  
+
   if (!supabase) {
     // Allow access if database not configured (development)
     return (
@@ -75,8 +75,8 @@ export default async function DashboardLayout({
       .eq("status", "active")
       .maybeSingle();
 
-    const companies = Array.isArray(teamMember?.companies) 
-      ? teamMember.companies[0] 
+    const companies = Array.isArray(teamMember?.companies)
+      ? teamMember.companies[0]
       : teamMember?.companies;
     const subscriptionStatus = companies?.stripe_subscription_status;
     hasActivePayment =

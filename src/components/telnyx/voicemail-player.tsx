@@ -13,29 +13,28 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  ChevronDown,
+  ChevronUp,
+  Download,
+  FileText,
+  Mail,
+  MailOpen,
+  MoreVertical,
+  Pause,
+  Play,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Play,
-  Pause,
-  Download,
-  Trash2,
-  MoreVertical,
-  Mail,
-  MailOpen,
-  Clock,
-  FileText,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Voicemail type
@@ -128,7 +127,7 @@ export function VoicemailPlayer({
 
   // Seek to position
   const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || !progressRef.current) return;
+    if (!(audioRef.current && progressRef.current)) return;
 
     const rect = progressRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -153,13 +152,13 @@ export function VoicemailPlayer({
                 <div className="font-medium">{voicemail.from}</div>
                 {!voicemail.isRead && <Badge variant="default">New</Badge>}
                 {voicemail.transcription && (
-                  <Badge variant="secondary" className="gap-1">
+                  <Badge className="gap-1" variant="secondary">
                     <FileText className="size-3" />
                     Transcribed
                   </Badge>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <span>{voicemail.fromNumber}</span>
                 <span>•</span>
                 <span>{formatTimestamp(voicemail.timestamp)}</span>
@@ -171,9 +170,9 @@ export function VoicemailPlayer({
             <div className="flex items-center gap-2">
               {/* Mark Read/Unread */}
               <Button
-                variant="ghost"
-                size="icon"
                 onClick={() => onMarkRead?.(voicemail.id, !voicemail.isRead)}
+                size="icon"
+                variant="ghost"
               >
                 {voicemail.isRead ? (
                   <Mail className="size-4" />
@@ -185,7 +184,7 @@ export function VoicemailPlayer({
               {/* More Options */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button size="icon" variant="ghost">
                     <MoreVertical className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -195,8 +194,8 @@ export function VoicemailPlayer({
                     Download
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => onDelete?.(voicemail.id)}
                     className="text-destructive"
+                    onClick={() => onDelete?.(voicemail.id)}
                   >
                     <Trash2 className="mr-2 size-4" />
                     Delete
@@ -210,21 +209,25 @@ export function VoicemailPlayer({
           <div className="flex items-center gap-4">
             {/* Play/Pause Button */}
             <Button
-              variant="outline"
-              size="icon"
-              onClick={togglePlayback}
               className="size-10 shrink-0"
+              onClick={togglePlayback}
+              size="icon"
+              variant="outline"
             >
-              {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
+              {isPlaying ? (
+                <Pause className="size-4" />
+              ) : (
+                <Play className="size-4" />
+              )}
             </Button>
 
             {/* Progress Bar & Time */}
             <div className="flex-1 space-y-2">
               {/* Progress Bar with Waveform */}
               <div
-                ref={progressRef}
                 className="relative h-12 cursor-pointer overflow-hidden rounded-md bg-muted"
                 onClick={handleSeek}
+                ref={progressRef}
               >
                 {/* Simplified Waveform Visualization */}
                 <div className="absolute inset-0 flex items-center justify-around px-1">
@@ -233,11 +236,11 @@ export function VoicemailPlayer({
                     const isPast = (i / 50) * 100 < progress;
                     return (
                       <div
-                        key={i}
                         className={cn(
                           "w-0.5 rounded-full transition-colors",
                           isPast ? "bg-primary" : "bg-muted-foreground/30"
                         )}
+                        key={i}
                         style={{ height: `${height}%` }}
                       />
                     );
@@ -258,7 +261,7 @@ export function VoicemailPlayer({
               </div>
 
               {/* Time Display */}
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center justify-between text-muted-foreground text-xs">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(voicemail.duration)}</span>
               </div>
@@ -267,13 +270,16 @@ export function VoicemailPlayer({
             {/* Playback Speed */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="shrink-0">
+                <Button className="shrink-0" size="sm" variant="outline">
                   {playbackSpeed}x
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((speed) => (
-                  <DropdownMenuItem key={speed} onClick={() => setPlaybackSpeed(speed)}>
+                  <DropdownMenuItem
+                    key={speed}
+                    onClick={() => setPlaybackSpeed(speed)}
+                  >
                     {speed}x {speed === 1.0 && "(Normal)"}
                   </DropdownMenuItem>
                 ))}
@@ -285,17 +291,18 @@ export function VoicemailPlayer({
           {voicemail.transcription && (
             <div className="space-y-2">
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowTranscription(!showTranscription)}
                 className="w-full justify-between"
+                onClick={() => setShowTranscription(!showTranscription)}
+                size="sm"
+                variant="ghost"
               >
                 <span className="flex items-center gap-2">
                   <FileText className="size-4" />
                   Transcription
                   {voicemail.transcriptionConfidence && (
-                    <Badge variant="secondary" className="text-xs">
-                      {Math.round(voicemail.transcriptionConfidence * 100)}% confidence
+                    <Badge className="text-xs" variant="secondary">
+                      {Math.round(voicemail.transcriptionConfidence * 100)}%
+                      confidence
                     </Badge>
                   )}
                 </span>
@@ -325,9 +332,9 @@ function formatTimestamp(timestamp: string): string {
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  const diffMins = Math.floor(diffMs / 60_000);
+  const diffHours = Math.floor(diffMs / 3_600_000);
+  const diffDays = Math.floor(diffMs / 86_400_000);
 
   if (diffMins < 1) return "Just now";
   if (diffMins < 60) return `${diffMins}m ago`;

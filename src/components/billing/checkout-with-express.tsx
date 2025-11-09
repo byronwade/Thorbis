@@ -13,10 +13,10 @@
  * - Saved payment methods selection
  */
 
-import { useState } from "react";
 import { CreditCard, Loader2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ExpressCheckoutElement } from "./express-checkout-element";
 
@@ -78,31 +78,33 @@ export function CheckoutWithExpress({
     <div className="mx-auto max-w-2xl space-y-8">
       {/* Order Summary */}
       <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Order Summary</h2>
+        <h2 className="mb-4 font-semibold text-lg">Order Summary</h2>
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">{description}</span>
-          <span className="text-2xl font-bold">{formatAmount(amount)}</span>
+          <span className="font-bold text-2xl">{formatAmount(amount)}</span>
         </div>
       </Card>
 
       {/* Express Checkout Section */}
       <div>
         <div className="mb-4 flex items-center gap-2">
-          <h3 className="text-lg font-semibold">Express Checkout</h3>
-          <span className="text-sm text-muted-foreground">Fastest way to pay</span>
+          <h3 className="font-semibold text-lg">Express Checkout</h3>
+          <span className="text-muted-foreground text-sm">
+            Fastest way to pay
+          </span>
         </div>
 
         <Card className="p-6">
           <ExpressCheckoutElement
             amount={amount}
-            currency={currency}
-            setupFutureUsage="off_session" // Save payment method
             collectShipping={collectShipping}
+            currency={currency} // Save payment method
             onPaymentComplete={handleExpressPaymentComplete}
             onPaymentError={handleExpressPaymentError}
+            setupFutureUsage="off_session"
           />
 
-          <p className="mt-4 text-center text-xs text-muted-foreground">
+          <p className="mt-4 text-center text-muted-foreground text-xs">
             One-click checkout with Apple Pay, Google Pay, or Link
           </p>
         </Card>
@@ -114,7 +116,7 @@ export function CheckoutWithExpress({
           <Separator />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-background px-4 text-sm text-muted-foreground">
+          <span className="bg-background px-4 text-muted-foreground text-sm">
             Or pay with card
           </span>
         </div>
@@ -124,7 +126,7 @@ export function CheckoutWithExpress({
       <Card className="p-6">
         <div className="mb-4 flex items-center gap-2">
           <CreditCard className="size-5" />
-          <h3 className="text-lg font-semibold">Card Payment</h3>
+          <h3 className="font-semibold text-lg">Card Payment</h3>
         </div>
 
         {/* This would be your existing payment form */}
@@ -138,13 +140,13 @@ export function CheckoutWithExpress({
 
           <Button
             className="w-full"
-            size="lg"
             disabled={isProcessing}
             onClick={() => {
               // Handle regular card payment
               setIsProcessing(true);
               // Your payment logic here
             }}
+            size="lg"
           >
             {isProcessing && <Loader2 className="mr-2 size-4 animate-spin" />}
             Pay {formatAmount(amount)}
@@ -153,7 +155,7 @@ export function CheckoutWithExpress({
       </Card>
 
       {/* Security Notice */}
-      <div className="text-center text-xs text-muted-foreground">
+      <div className="text-center text-muted-foreground text-xs">
         <p>🔒 Your payment information is encrypted and secure</p>
         <p className="mt-1">Powered by Stripe</p>
       </div>

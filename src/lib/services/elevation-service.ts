@@ -62,7 +62,7 @@ export class ElevationService {
         return null;
       }
 
-      if (!data || typeof data !== 'object' || !('value' in data)) {
+      if (!data || typeof data !== "object" || !("value" in data)) {
         console.log("[Elevation] No elevation data available");
         return null;
       }

@@ -1,6 +1,6 @@
 /**
  * Document Manager Service
- * 
+ *
  * Comprehensive document management for Supabase Storage with:
  * - Context-aware uploads (customer, job, equipment, general)
  * - Automatic path generation
@@ -10,30 +10,41 @@
  * - File operations (move, delete, duplicate)
  */
 
-import { createClient } from "@/lib/supabase/server";
-import { validateFile, sanitizeFileName, formatFileSize, type ValidationOptions } from "./file-validator";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import { createClient } from "@/lib/supabase/server";
+import {
+  formatFileSize,
+  sanitizeFileName,
+  type ValidationOptions,
+  validateFile,
+} from "./file-validator";
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 export type DocumentContext = {
-  type: 'customer' | 'job' | 'equipment' | 'general' | 'invoice' | 'estimate' | 'contract';
+  type:
+    | "customer"
+    | "job"
+    | "equipment"
+    | "general"
+    | "invoice"
+    | "estimate"
+    | "contract";
   id?: string; // Entity ID (customer_id, job_id, etc.)
   folder?: string; // Custom folder within context
 };
 
-export type StorageBucket = 
-  | 'company-files'
-  | 'customer-documents'
-  | 'documents'
-  | 'job-photos'
-  | 'invoices'
-  | 'estimates'
-  | 'contracts'
-  | 'avatars';
+export type StorageBucket =
+  | "company-files"
+  | "customer-documents"
+  | "documents"
+  | "job-photos"
+  | "invoices"
+  | "estimates"
+  | "contracts"
+  | "avatars";
 
 export interface UploadOptions {
   companyId: string;
@@ -91,8 +102,8 @@ export interface ListFilesOptions {
   virusScanStatus?: string;
   limit?: number;
   offset?: number;
-  sortBy?: 'created_at' | 'file_name' | 'file_size' | 'access_count';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "created_at" | "file_name" | "file_size" | "access_count";
+  sortOrder?: "asc" | "desc";
 }
 
 // ============================================================================
@@ -102,24 +113,27 @@ export interface ListFilesOptions {
 /**
  * Determine appropriate storage bucket based on context
  */
-function selectBucket(context: DocumentContext, customBucket?: StorageBucket): StorageBucket {
+function selectBucket(
+  context: DocumentContext,
+  customBucket?: StorageBucket
+): StorageBucket {
   if (customBucket) return customBucket;
 
   switch (context.type) {
-    case 'customer':
-      return 'customer-documents';
-    case 'job':
-      return 'job-photos';
-    case 'invoice':
-      return 'invoices';
-    case 'estimate':
-      return 'estimates';
-    case 'contract':
-      return 'contracts';
-    case 'equipment':
-    case 'general':
+    case "customer":
+      return "customer-documents";
+    case "job":
+      return "job-photos";
+    case "invoice":
+      return "invoices";
+    case "estimate":
+      return "estimates";
+    case "contract":
+      return "contracts";
+    case "equipment":
+    case "general":
     default:
-      return 'company-files';
+      return "company-files";
   }
 }
 
@@ -144,10 +158,10 @@ export function generateStoragePath(
   const parts = [companyId];
 
   // Add context type
-  if (context.type !== 'general') {
-    parts.push(context.type + 's'); // customers, jobs, etc.
+  if (context.type !== "general") {
+    parts.push(context.type + "s"); // customers, jobs, etc.
   } else {
-    parts.push('general');
+    parts.push("general");
   }
 
   // Add entity ID if provided
@@ -163,7 +177,7 @@ export function generateStoragePath(
   // Add filename
   parts.push(uniqueFileName);
 
-  return parts.join('/');
+  return parts.join("/");
 }
 
 /**
@@ -172,10 +186,10 @@ export function generateStoragePath(
 function generateFolderPath(context: DocumentContext): string {
   const parts: string[] = [];
 
-  if (context.type === 'general') {
-    parts.push('general');
+  if (context.type === "general") {
+    parts.push("general");
   } else {
-    parts.push(context.type + 's');
+    parts.push(context.type + "s");
   }
 
   if (context.id) {
@@ -186,7 +200,7 @@ function generateFolderPath(context: DocumentContext): string {
     parts.push(context.folder);
   }
 
-  return '/' + parts.join('/');
+  return "/" + parts.join("/");
 }
 
 // ============================================================================
@@ -198,9 +212,11 @@ function generateFolderPath(context: DocumentContext): string {
  */
 async function generateChecksum(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   return hashHex;
 }
 
@@ -221,7 +237,7 @@ export async function uploadDocument(
     if (!validation.valid) {
       return {
         success: false,
-        error: validation.errors.join('; '),
+        error: validation.errors.join("; "),
         warnings: validation.warnings,
       };
     }
@@ -231,31 +247,34 @@ export async function uploadDocument(
     if (!supabase) {
       return {
         success: false,
-        error: 'Supabase client not available',
+        error: "Supabase client not available",
       };
     }
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return {
         success: false,
-        error: 'User not authenticated',
+        error: "User not authenticated",
       };
     }
 
     // 3. Verify user has access to company
     const { data: membership } = await supabase
-      .from('team_members')
-      .select('id, role')
-      .eq('user_id', user.id)
-      .eq('company_id', options.companyId)
-      .eq('status', 'active')
+      .from("team_members")
+      .select("id, role")
+      .eq("user_id", user.id)
+      .eq("company_id", options.companyId)
+      .eq("status", "active")
       .single();
 
     if (!membership) {
       return {
         success: false,
-        error: 'User does not have access to this company',
+        error: "User does not have access to this company",
       };
     }
 
@@ -271,7 +290,7 @@ export async function uploadDocument(
     const { data: storageData, error: storageError } = await supabase.storage
       .from(bucket)
       .upload(storagePath, file, {
-        cacheControl: '3600',
+        cacheControl: "3600",
         upsert: false,
       });
 
@@ -283,18 +302,18 @@ export async function uploadDocument(
     }
 
     // 6. Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(storageData.path);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(bucket).getPublicUrl(storageData.path);
 
     // 7. Generate checksum
     const checksum = await generateChecksum(file);
 
     // 8. Track in database
     const folderPath = generateFolderPath(options.context);
-    
+
     const { data: attachment, error: dbError } = await supabase
-      .from('attachments')
+      .from("attachments")
       .insert({
         company_id: options.companyId,
         entity_type: options.context.type,
@@ -303,22 +322,23 @@ export async function uploadDocument(
         original_file_name: file.name,
         file_size: file.size,
         mime_type: validation.metadata?.detectedMimeType || file.type,
-        storage_provider: 'supabase',
+        storage_provider: "supabase",
         storage_url: publicUrl,
         storage_path: storageData.path,
         storage_bucket: bucket,
         folder_path: folderPath,
         checksum,
-        is_image: file.type.startsWith('image/'),
-        is_document: file.type.includes('pdf') || file.type.includes('document'),
-        is_video: file.type.startsWith('video/'),
+        is_image: file.type.startsWith("image/"),
+        is_document:
+          file.type.includes("pdf") || file.type.includes("document"),
+        is_video: file.type.startsWith("video/"),
         is_public: options.isPublic ?? false,
         is_internal: options.isInternal ?? false,
         description: options.description,
         tags: options.tags || [],
         expiry_date: options.expiryDate,
         uploaded_by: user.id,
-        virus_scan_status: 'pending',
+        virus_scan_status: "pending",
       })
       .select()
       .single();
@@ -326,7 +346,7 @@ export async function uploadDocument(
     if (dbError) {
       // Rollback: delete from storage
       await supabase.storage.from(bucket).remove([storageData.path]);
-      
+
       return {
         success: false,
         error: `Database tracking failed: ${dbError.message}`,
@@ -334,7 +354,9 @@ export async function uploadDocument(
     }
 
     // 9. Queue virus scan (async)
-    queueVirusScan(attachment.id, bucket, storageData.path).catch(console.error);
+    queueVirusScan(attachment.id, bucket, storageData.path).catch(
+      console.error
+    );
 
     return {
       success: true,
@@ -344,12 +366,11 @@ export async function uploadDocument(
       publicUrl,
       warnings: validation.warnings,
     };
-
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Upload error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Upload failed',
+      error: error instanceof Error ? error.message : "Upload failed",
     };
   }
 }
@@ -362,18 +383,18 @@ export async function uploadDocuments(
   options: UploadOptions
 ): Promise<UploadResult[]> {
   const results: UploadResult[] = [];
-  
+
   for (const file of files) {
     const result = await uploadDocument(file, options);
     results.push(result);
-    
+
     // Update progress if callback provided
     if (options.onProgress) {
       const progress = (results.length / files.length) * 100;
       options.onProgress(progress);
     }
   }
-  
+
   return results;
 }
 
@@ -391,41 +412,43 @@ export async function getDownloadUrl(
   try {
     const supabase = await createClient();
     if (!supabase) {
-      return { error: 'Supabase client not available' };
+      return { error: "Supabase client not available" };
     }
-    
+
     // Get attachment details
     const { data: attachment, error: fetchError } = await supabase
-      .from('attachments')
-      .select('storage_bucket, storage_path, company_id, virus_scan_status')
-      .eq('id', attachmentId)
+      .from("attachments")
+      .select("storage_bucket, storage_path, company_id, virus_scan_status")
+      .eq("id", attachmentId)
       .single();
 
     if (fetchError || !attachment) {
-      return { error: 'File not found' };
+      return { error: "File not found" };
     }
 
     // Verify user has access to company
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      return { error: 'User not authenticated' };
+      return { error: "User not authenticated" };
     }
 
     const { data: membership } = await supabase
-      .from('team_members')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('company_id', attachment.company_id)
-      .eq('status', 'active')
+      .from("team_members")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("company_id", attachment.company_id)
+      .eq("status", "active")
       .single();
 
     if (!membership) {
-      return { error: 'Access denied' };
+      return { error: "Access denied" };
     }
 
     // Check virus scan status
-    if (attachment.virus_scan_status === 'infected') {
-      return { error: 'File failed security scan and cannot be downloaded' };
+    if (attachment.virus_scan_status === "infected") {
+      return { error: "File failed security scan and cannot be downloaded" };
     }
 
     // Generate signed URL
@@ -438,13 +461,17 @@ export async function getDownloadUrl(
     }
 
     // Track download
-    await supabase.rpc('track_file_download', { p_attachment_id: attachmentId });
+    await supabase.rpc("track_file_download", {
+      p_attachment_id: attachmentId,
+    });
 
     return { url: data.signedUrl };
-
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to generate download URL',
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to generate download URL",
     };
   }
 }
@@ -462,48 +489,54 @@ export async function listDocuments(
   try {
     const supabase = await createClient();
     if (!supabase) {
-      return { documents: [], total: 0, error: 'Supabase client not available' };
+      return {
+        documents: [],
+        total: 0,
+        error: "Supabase client not available",
+      };
     }
-    
+
     // Build query
     let query = supabase
-      .from('attachments')
-      .select('*', { count: 'exact' })
-      .eq('company_id', options.companyId)
-      .is('deleted_at', null);
+      .from("attachments")
+      .select("*", { count: "exact" })
+      .eq("company_id", options.companyId)
+      .is("deleted_at", null);
 
     // Apply filters
     if (options.context) {
-      query = query.eq('entity_type', options.context.type);
+      query = query.eq("entity_type", options.context.type);
       if (options.context.id) {
-        query = query.eq('entity_id', options.context.id);
+        query = query.eq("entity_id", options.context.id);
       }
     }
 
     if (options.folder) {
-      query = query.eq('folder_path', options.folder);
+      query = query.eq("folder_path", options.folder);
     }
 
     if (options.search) {
-      query = query.or(`file_name.ilike.%${options.search}%,description.ilike.%${options.search}%`);
+      query = query.or(
+        `file_name.ilike.%${options.search}%,description.ilike.%${options.search}%`
+      );
     }
 
     if (options.mimeTypes && options.mimeTypes.length > 0) {
-      query = query.in('mime_type', options.mimeTypes);
+      query = query.in("mime_type", options.mimeTypes);
     }
 
     if (options.uploadedBy) {
-      query = query.eq('uploaded_by', options.uploadedBy);
+      query = query.eq("uploaded_by", options.uploadedBy);
     }
 
     if (options.virusScanStatus) {
-      query = query.eq('virus_scan_status', options.virusScanStatus);
+      query = query.eq("virus_scan_status", options.virusScanStatus);
     }
 
     // Apply sorting
-    const sortBy = options.sortBy || 'created_at';
-    const sortOrder = options.sortOrder || 'desc';
-    query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+    const sortBy = options.sortBy || "created_at";
+    const sortOrder = options.sortOrder || "desc";
+    query = query.order(sortBy, { ascending: sortOrder === "asc" });
 
     // Apply pagination
     const limit = options.limit || 50;
@@ -520,12 +553,12 @@ export async function listDocuments(
       documents: data as DocumentMetadata[],
       total: count || 0,
     };
-
   } catch (error) {
     return {
       documents: [],
       total: 0,
-      error: error instanceof Error ? error.message : 'Failed to list documents',
+      error:
+        error instanceof Error ? error.message : "Failed to list documents",
     };
   }
 }
@@ -543,57 +576,58 @@ export async function deleteDocument(
   try {
     const supabase = await createClient();
     if (!supabase) {
-      return { success: false, error: 'Supabase client not available' };
+      return { success: false, error: "Supabase client not available" };
     }
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
-      return { success: false, error: 'User not authenticated' };
+      return { success: false, error: "User not authenticated" };
     }
 
     // Get attachment to verify access
     const { data: attachment } = await supabase
-      .from('attachments')
-      .select('company_id')
-      .eq('id', attachmentId)
+      .from("attachments")
+      .select("company_id")
+      .eq("id", attachmentId)
       .single();
 
     if (!attachment) {
-      return { success: false, error: 'File not found' };
+      return { success: false, error: "File not found" };
     }
 
     // Verify access
     const { data: membership } = await supabase
-      .from('team_members')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('company_id', attachment.company_id)
-      .eq('status', 'active')
+      .from("team_members")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("company_id", attachment.company_id)
+      .eq("status", "active")
       .single();
 
     if (!membership) {
-      return { success: false, error: 'Access denied' };
+      return { success: false, error: "Access denied" };
     }
 
     // Soft delete
     const { error } = await supabase
-      .from('attachments')
+      .from("attachments")
       .update({
         deleted_at: new Date().toISOString(),
         deleted_by: user.id,
       })
-      .eq('id', attachmentId);
+      .eq("id", attachmentId);
 
     if (error) {
       return { success: false, error: error.message };
     }
 
     return { success: true };
-
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Delete failed',
+      error: error instanceof Error ? error.message : "Delete failed",
     };
   }
 }
@@ -608,24 +642,26 @@ export async function moveDocument(
   try {
     const supabase = await createClient();
     if (!supabase) {
-      return { success: false, error: 'Supabase client not available' };
+      return { success: false, error: "Supabase client not available" };
     }
-    
+
     const { error } = await supabase
-      .from('attachments')
-      .update({ folder_path: newFolderPath, updated_at: new Date().toISOString() })
-      .eq('id', attachmentId);
+      .from("attachments")
+      .update({
+        folder_path: newFolderPath,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", attachmentId);
 
     if (error) {
       return { success: false, error: error.message };
     }
 
     return { success: true };
-
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Move failed',
+      error: error instanceof Error ? error.message : "Move failed",
     };
   }
 }
@@ -646,24 +682,23 @@ export async function updateDocumentMetadata(
   try {
     const supabase = await createClient();
     if (!supabase) {
-      return { success: false, error: 'Supabase client not available' };
+      return { success: false, error: "Supabase client not available" };
     }
-    
+
     const { error } = await supabase
-      .from('attachments')
+      .from("attachments")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', attachmentId);
+      .eq("id", attachmentId);
 
     if (error) {
       return { success: false, error: error.message };
     }
 
     return { success: true };
-
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Update failed',
+      error: error instanceof Error ? error.message : "Update failed",
     };
   }
 }
@@ -685,14 +720,13 @@ async function queueVirusScan(
     if (!supabase) {
       return;
     }
-    
+
     // Call Edge Function to handle scanning
-    await supabase.functions.invoke('virus-scan', {
+    await supabase.functions.invoke("virus-scan", {
       body: { attachmentId, bucket, path },
     });
-    
   } catch (error) {
-    console.error('Failed to queue virus scan:', error);
+    console.error("Failed to queue virus scan:", error);
   }
 }
 
@@ -703,9 +737,7 @@ async function queueVirusScan(
 /**
  * Get document statistics for company
  */
-export async function getDocumentStats(
-  companyId: string
-): Promise<{
+export async function getDocumentStats(companyId: string): Promise<{
   totalFiles: number;
   totalSize: number;
   byType: Record<string, number>;
@@ -714,14 +746,19 @@ export async function getDocumentStats(
   try {
     const supabase = await createClient();
     if (!supabase) {
-      return { totalFiles: 0, totalSize: 0, byType: {}, error: 'Supabase client not available' };
+      return {
+        totalFiles: 0,
+        totalSize: 0,
+        byType: {},
+        error: "Supabase client not available",
+      };
     }
-    
+
     const { data, error } = await supabase
-      .from('attachments')
-      .select('file_size, mime_type')
-      .eq('company_id', companyId)
-      .is('deleted_at', null);
+      .from("attachments")
+      .select("file_size, mime_type")
+      .eq("company_id", companyId)
+      .is("deleted_at", null);
 
     if (error) {
       return { totalFiles: 0, totalSize: 0, byType: {}, error: error.message };
@@ -731,22 +768,20 @@ export async function getDocumentStats(
     const totalSize = data.reduce((sum, file) => sum + file.file_size, 0);
     const byType: Record<string, number> = {};
 
-    data.forEach(file => {
-      const category = file.mime_type.split('/')[0];
+    data.forEach((file) => {
+      const category = file.mime_type.split("/")[0];
       byType[category] = (byType[category] || 0) + 1;
     });
 
     return { totalFiles, totalSize, byType };
-
   } catch (error) {
     return {
       totalFiles: 0,
       totalSize: 0,
       byType: {},
-      error: error instanceof Error ? error.message : 'Failed to get stats',
+      error: error instanceof Error ? error.message : "Failed to get stats",
     };
   }
 }
 
 export { formatFileSize };
-

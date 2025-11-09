@@ -117,7 +117,8 @@ export async function addCustomerContact(
       isPrimary: formData.get("isPrimary") === "true",
       isBillingContact: formData.get("isBillingContact") === "true",
       isEmergencyContact: formData.get("isEmergencyContact") === "true",
-      preferredContactMethod: formData.get("preferredContactMethod") as any || "email",
+      preferredContactMethod:
+        (formData.get("preferredContactMethod") as any) || "email",
       notes: formData.get("notes") || undefined,
     });
 
@@ -240,12 +241,15 @@ export async function updateCustomerContact(
     }
 
     const updateData: any = {};
-    if (formData.get("firstName")) updateData.first_name = formData.get("firstName");
-    if (formData.get("lastName")) updateData.last_name = formData.get("lastName");
+    if (formData.get("firstName"))
+      updateData.first_name = formData.get("firstName");
+    if (formData.get("lastName"))
+      updateData.last_name = formData.get("lastName");
     if (formData.has("title")) updateData.title = formData.get("title");
     if (formData.get("email")) updateData.email = formData.get("email");
     if (formData.get("phone")) updateData.phone = formData.get("phone");
-    if (formData.has("secondaryPhone")) updateData.secondary_phone = formData.get("secondaryPhone");
+    if (formData.has("secondaryPhone"))
+      updateData.secondary_phone = formData.get("secondaryPhone");
     if (formData.has("notes")) updateData.notes = formData.get("notes");
 
     // Handle boolean flags
@@ -262,11 +266,13 @@ export async function updateCustomerContact(
     }
 
     if (formData.has("isBillingContact")) {
-      updateData.is_billing_contact = formData.get("isBillingContact") === "true";
+      updateData.is_billing_contact =
+        formData.get("isBillingContact") === "true";
     }
 
     if (formData.has("isEmergencyContact")) {
-      updateData.is_emergency_contact = formData.get("isEmergencyContact") === "true";
+      updateData.is_emergency_contact =
+        formData.get("isEmergencyContact") === "true";
     }
 
     // Update contact
@@ -532,15 +538,21 @@ export async function updateCustomerAddress(
 
     const updateData: any = {};
     if (formData.has("label")) updateData.label = formData.get("label");
-    if (formData.get("addressLine1")) updateData.address_line1 = formData.get("addressLine1");
-    if (formData.has("addressLine2")) updateData.address_line2 = formData.get("addressLine2");
+    if (formData.get("addressLine1"))
+      updateData.address_line1 = formData.get("addressLine1");
+    if (formData.has("addressLine2"))
+      updateData.address_line2 = formData.get("addressLine2");
     if (formData.get("city")) updateData.city = formData.get("city");
     if (formData.get("state")) updateData.state = formData.get("state");
     if (formData.get("zipCode")) updateData.zip_code = formData.get("zipCode");
-    if (formData.has("directions")) updateData.directions = formData.get("directions");
-    if (formData.has("accessNotes")) updateData.access_notes = formData.get("accessNotes");
-    if (formData.has("parkingInstructions")) updateData.parking_instructions = formData.get("parkingInstructions");
-    if (formData.has("gateCode")) updateData.gate_code = formData.get("gateCode");
+    if (formData.has("directions"))
+      updateData.directions = formData.get("directions");
+    if (formData.has("accessNotes"))
+      updateData.access_notes = formData.get("accessNotes");
+    if (formData.has("parkingInstructions"))
+      updateData.parking_instructions = formData.get("parkingInstructions");
+    if (formData.has("gateCode"))
+      updateData.gate_code = formData.get("gateCode");
 
     if (formData.has("isDefault")) {
       const isDefault = formData.get("isDefault") === "true";
@@ -739,7 +751,9 @@ export async function updateCustomerBusinessInfo(
 /**
  * Get all contacts for a customer
  */
-export async function getCustomerContacts(customerId: string): Promise<ActionResult<any[]>> {
+export async function getCustomerContacts(
+  customerId: string
+): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -791,7 +805,9 @@ export async function getCustomerContacts(customerId: string): Promise<ActionRes
 /**
  * Get all addresses for a customer
  */
-export async function getCustomerAddresses(customerId: string): Promise<ActionResult<any[]>> {
+export async function getCustomerAddresses(
+  customerId: string
+): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

@@ -10,8 +10,6 @@
  * - Mark as read/delete actions
  */
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   AlertCircle,
   Bell,
@@ -25,21 +23,23 @@ import {
   UserPlus,
   Wrench,
 } from "lucide-react";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
-import type {
-  NotificationType,
-  NotificationPriority,
-} from "@/lib/stores/notifications-store";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
-  getNotifications,
-  markAsRead as markAsReadAction,
-  markAllAsRead as markAllAsReadAction,
   deleteNotification as deleteNotificationAction,
+  getNotifications,
+  markAllAsRead as markAllAsReadAction,
+  markAsRead as markAsReadAction,
 } from "@/actions/notifications";
-import { createClient } from "@/lib/supabase/client";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import type {
+  NotificationPriority,
+  NotificationType,
+} from "@/lib/stores/notifications-store";
+import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import { createClient } from "@/lib/supabase/client";
 
 // Time constants
 const MS_PER_MINUTE = 60 * 1000;
@@ -88,18 +88,24 @@ function formatTimestamp(date: Date): string {
 export function NotificationsList() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [filterType, setFilterType] = useState<NotificationType | "all">("all");
-  const [filterRead, setFilterRead] = useState<"all" | "unread" | "read">("all");
+  const [filterRead, setFilterRead] = useState<"all" | "unread" | "read">(
+    "all"
+  );
 
   // Get notifications from Zustand store
   const notifications = useNotificationsStore((state) => state.notifications);
-  const setNotifications = useNotificationsStore((state) => state.setNotifications);
+  const setNotifications = useNotificationsStore(
+    (state) => state.setNotifications
+  );
   const optimisticMarkAsRead = useNotificationsStore(
     (state) => state.optimisticMarkAsRead
   );
   const optimisticMarkAllAsRead = useNotificationsStore(
     (state) => state.optimisticMarkAllAsRead
   );
-  const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
+  const optimisticDelete = useNotificationsStore(
+    (state) => state.optimisticDelete
+  );
   const subscribe = useNotificationsStore((state) => state.subscribe);
   const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -197,23 +203,23 @@ export function NotificationsList() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-2">
             <Button
-              variant={filterRead === "all" ? "default" : "outline"}
-              size="sm"
               onClick={() => setFilterRead("all")}
+              size="sm"
+              variant={filterRead === "all" ? "default" : "outline"}
             >
               All
             </Button>
             <Button
-              variant={filterRead === "unread" ? "default" : "outline"}
-              size="sm"
               onClick={() => setFilterRead("unread")}
+              size="sm"
+              variant={filterRead === "unread" ? "default" : "outline"}
             >
               Unread ({unreadCount})
             </Button>
             <Button
-              variant={filterRead === "read" ? "default" : "outline"}
-              size="sm"
               onClick={() => setFilterRead("read")}
+              size="sm"
+              variant={filterRead === "read" ? "default" : "outline"}
             >
               Read
             </Button>
@@ -221,7 +227,7 @@ export function NotificationsList() {
 
           <div className="flex gap-2">
             {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={markAllAsRead}>
+              <Button onClick={markAllAsRead} size="sm" variant="outline">
                 <CheckCheck className="mr-2 size-4" />
                 Mark All Read
               </Button>
@@ -232,22 +238,29 @@ export function NotificationsList() {
         {/* Type filters */}
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
-            variant={filterType === "all" ? "default" : "ghost"}
-            size="sm"
             onClick={() => setFilterType("all")}
+            size="sm"
+            variant={filterType === "all" ? "default" : "ghost"}
           >
             All Types
           </Button>
           {(
-            ["message", "alert", "payment", "job", "team", "system"] as NotificationType[]
+            [
+              "message",
+              "alert",
+              "payment",
+              "job",
+              "team",
+              "system",
+            ] as NotificationType[]
           ).map((type) => {
             const Icon = notificationIcons[type];
             return (
               <Button
                 key={type}
-                variant={filterType === type ? "default" : "ghost"}
-                size="sm"
                 onClick={() => setFilterType(type)}
+                size="sm"
+                variant={filterType === type ? "default" : "ghost"}
               >
                 <Icon className="mr-2 size-3" />
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -278,10 +291,10 @@ export function NotificationsList() {
             const Icon = notificationIcons[notification.type];
             return (
               <Card
-                key={notification.id}
                 className={`p-4 transition-colors ${
                   notification.read ? "bg-background" : "bg-primary/5"
                 }`}
+                key={notification.id}
               >
                 <div className="flex gap-4">
                   {/* Icon */}
@@ -303,8 +316,8 @@ export function NotificationsList() {
                         </p>
                       </div>
                       <Badge
-                        variant="outline"
                         className={priorityColors[notification.priority]}
+                        variant="outline"
                       >
                         {notification.priority}
                       </Badge>
@@ -321,9 +334,9 @@ export function NotificationsList() {
                         {notification.action_url && (
                           <Link href={notification.action_url}>
                             <Button
-                              variant="ghost"
-                              size="sm"
                               onClick={() => markAsRead(notification.id)}
+                              size="sm"
+                              variant="ghost"
                             >
                               {notification.action_label || "View"}
                             </Button>
@@ -331,20 +344,20 @@ export function NotificationsList() {
                         )}
                         {!notification.read && (
                           <Button
-                            variant="ghost"
-                            size="sm"
                             onClick={() => markAsRead(notification.id)}
+                            size="sm"
                             title="Mark as read"
+                            variant="ghost"
                           >
                             <Check className="size-4" />
                           </Button>
                         )}
                         <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteNotification(notification.id)}
-                          title="Delete"
                           className="hover:text-destructive"
+                          onClick={() => deleteNotification(notification.id)}
+                          size="sm"
+                          title="Delete"
+                          variant="ghost"
                         >
                           <Trash2 className="size-4" />
                         </Button>

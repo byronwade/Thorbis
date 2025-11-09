@@ -216,27 +216,35 @@ export const getUserCompanies = cache(
 
       // Map to simplified structure with onboarding status
       // Deduplicate by company ID in case of multiple team_member records
-      const companyMap = new Map<string, {
-        id: string;
-        name: string;
-        plan: string;
-        onboardingComplete: boolean;
-        hasPayment: boolean;
-      }>();
+      const companyMap = new Map<
+        string,
+        {
+          id: string;
+          name: string;
+          plan: string;
+          onboardingComplete: boolean;
+          hasPayment: boolean;
+        }
+      >();
 
       memberships?.forEach((m: any) => {
         const companyId = m.companies.id;
         if (!companyMap.has(companyId)) {
           const subscriptionStatus = m.companies.stripe_subscription_status;
-          const hasPayment = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+          const hasPayment =
+            subscriptionStatus === "active" ||
+            subscriptionStatus === "trialing";
           const onboardingComplete = hasPayment;
-          
+
           // Determine plan/status label
           let planLabel = "Active";
           if (!hasPayment) {
-            planLabel = subscriptionStatus === "incomplete" ? "Incomplete Onboarding" : "Not Complete";
+            planLabel =
+              subscriptionStatus === "incomplete"
+                ? "Incomplete Onboarding"
+                : "Not Complete";
           }
-          
+
           companyMap.set(companyId, {
             id: companyId,
             name: m.companies.name,

@@ -6,10 +6,17 @@
  */
 
 import type { Metadata } from "next";
+import { SEO_URLS } from "@/lib/seo/config";
+import {
+  generateMetadata as generateSEOMetadata,
+  siteName,
+} from "@/lib/seo/metadata";
+import {
+  createArticleSchema,
+  createBreadcrumbSchema,
+  createFAQSchema,
+} from "@/lib/seo/structured-data";
 import type { KBArticleWithRelations } from "./types";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
-const siteName = "Thorbis";
 
 /**
  * Generate metadata for an article page
@@ -19,47 +26,35 @@ export function generateArticleMetadata(
 ): Metadata {
   const title = article.metaTitle || article.title;
   const description =
-    article.metaDescription || article.excerpt || `${article.title} - ${siteName}`;
-  const url = `${siteUrl}/kb/${article.category.slug}/${article.slug}`;
+    article.metaDescription ||
+    article.excerpt ||
+    `${article.title} - ${siteName}`;
+  const path = `/kb/${article.category.slug}/${article.slug}`;
   const image = article.featuredImage
-    ? `${siteUrl}${article.featuredImage}`
-    : `${siteUrl}/og-image.jpg`;
+    ? article.featuredImage.startsWith("http")
+      ? article.featuredImage
+      : `${SEO_URLS.site}${article.featuredImage}`
+    : undefined;
 
-  return {
+  return generateSEOMetadata({
     title,
+    section: article.category.title,
     description,
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName,
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: article.title,
-        },
-      ],
-      type: "article",
-      publishedTime: article.publishedAt || undefined,
-      modifiedTime: article.updatedAt || undefined,
-      authors: article.author ? [article.author] : undefined,
-      tags: article.tags?.map((tag: { name: string }) => tag.name) || [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-    },
-    alternates: {
-      canonical: url,
-    },
-    keywords: Array.isArray(article.keywords)
-      ? article.keywords.join(", ")
+    path,
+    image,
+    type: "article",
+    publishedTime: article.publishedAt
+      ? new Date(article.publishedAt).toISOString()
       : undefined,
-  };
+    modifiedTime: article.updatedAt
+      ? new Date(article.updatedAt).toISOString()
+      : undefined,
+    authors: article.author ? [article.author] : undefined,
+    tags: article.tags?.map((tag: { name: string }) => tag.name) || [],
+    keywords: Array.isArray(article.keywords) ? article.keywords : undefined,
+    canonical: `${SEO_URLS.site}${path}`,
+    imageAlt: article.title,
+  });
 }
 
 /**
@@ -68,40 +63,28 @@ export function generateArticleMetadata(
 export function generateArticleStructuredData(
   article: KBArticleWithRelations
 ): object {
-  const url = `${siteUrl}/kb/${article.category.slug}/${article.slug}`;
-  const image = article.featuredImage
-    ? `${siteUrl}${article.featuredImage}`
-    : `${siteUrl}/og-image.jpg`;
+  const url = `${SEO_URLS.site}/kb/${article.category.slug}/${article.slug}`;
+  const words = article.content
+    ? article.content.trim().split(/\s+/).length
+    : undefined;
+  const readMinutes =
+    typeof words === "number"
+      ? Math.max(1, Math.round(words / 220))
+      : undefined;
 
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt || article.metaDescription,
-    image: image,
-    datePublished: article.publishedAt || article.createdAt,
-    dateModified: article.updatedAt || article.createdAt,
-    author: {
-      "@type": "Person",
-      name: article.author || siteName,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: siteName,
-      logo: {
-        "@type": "ImageObject",
-        url: `${siteUrl}/logo.png`,
-      },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": url,
-    },
-    articleSection: article.category.title,
-    keywords: Array.isArray(article.keywords)
-      ? article.keywords.join(", ")
-      : undefined,
-  };
+  return createArticleSchema({
+    title: article.title,
+    description: article.excerpt || article.metaDescription || "",
+    url,
+    image: article.featuredImage,
+    publishedTime: article.publishedAt || article.createdAt,
+    modifiedTime: article.updatedAt || article.createdAt,
+    authorName: article.author || siteName,
+    tags: Array.isArray(article.keywords) ? article.keywords : undefined,
+    section: article.category.title,
+    wordCount: words,
+    estimatedReadTime: readMinutes ? `PT${readMinutes}M` : undefined,
+  });
 }
 
 /**
@@ -112,40 +95,19 @@ export function generateBreadcrumbStructuredData(
   article?: { slug: string; title: string }
 ): object {
   const items = [
-    {
-      "@type": "ListItem",
-      position: 1,
-      name: "Home",
-      item: siteUrl,
-    },
-    {
-      "@type": "ListItem",
-      position: 2,
-      name: "Knowledge Base",
-      item: `${siteUrl}/kb`,
-    },
-    {
-      "@type": "ListItem",
-      position: 3,
-      name: category.title,
-      item: `${siteUrl}/kb/${category.slug}`,
-    },
+    { name: "Home", url: SEO_URLS.site },
+    { name: "Knowledge Base", url: `${SEO_URLS.site}/kb` },
+    { name: category.title, url: `${SEO_URLS.site}/kb/${category.slug}` },
   ];
 
   if (article) {
     items.push({
-      "@type": "ListItem",
-      position: 4,
       name: article.title,
-      item: `${siteUrl}/kb/${category.slug}/${article.slug}`,
+      url: `${SEO_URLS.site}/kb/${category.slug}/${article.slug}`,
     });
   }
 
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items,
-  };
+  return createBreadcrumbSchema(items);
 }
 
 /**
@@ -154,53 +116,54 @@ export function generateBreadcrumbStructuredData(
 export function generateFAQStructuredData(
   questions: Array<{ question: string; answer: string }>
 ): object {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: questions.map((q) => ({
-      "@type": "Question",
-      name: q.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: q.answer,
-      },
-    })),
-  };
+  return createFAQSchema(questions);
 }
 
 /**
  * Generate metadata for KB homepage
  */
 export function generateKBHomeMetadata(): Metadata {
-  return {
-    title: `Knowledge Base - ${siteName}`,
+  return generateSEOMetadata({
+    title: "Knowledge Base",
     description: `Find answers, guides, and documentation for ${siteName}. Learn how to use all features and get the most out of your account.`,
-    openGraph: {
-      title: `Knowledge Base - ${siteName}`,
-      description: `Find answers, guides, and documentation for ${siteName}`,
-      url: `${siteUrl}/kb`,
-      siteName,
-    },
-  };
+    path: "/kb",
+    section: "Resources",
+    imageAlt: "Thorbis knowledge base home",
+    keywords: [
+      "documentation",
+      "help center",
+      "user guides",
+      "tutorials",
+      "support",
+      "knowledge base",
+      "how to",
+      "faq",
+    ],
+  });
 }
 
 /**
  * Generate metadata for category page
  */
-export function generateCategoryMetadata(
-  category: { title: string; description?: string; slug: string }
-): Metadata {
-  return {
-    title: `${category.title} - Knowledge Base - ${siteName}`,
+export function generateCategoryMetadata(category: {
+  title: string;
+  description?: string;
+  slug: string;
+}): Metadata {
+  return generateSEOMetadata({
+    title: `${category.title} - Knowledge Base`,
     description:
       category.description ||
       `Articles and guides about ${category.title.toLowerCase()} in the ${siteName} knowledge base.`,
-    openGraph: {
-      title: `${category.title} - Knowledge Base`,
-      description: category.description,
-      url: `${siteUrl}/kb/${category.slug}`,
-      siteName,
-    },
-  };
+    path: `/kb/${category.slug}`,
+    section: "Knowledge Base",
+    imageAlt: `${category.title} knowledge base resources`,
+    keywords: [
+      category.title.toLowerCase(),
+      "documentation",
+      "guides",
+      "tutorials",
+      "help",
+    ],
+  });
 }
-

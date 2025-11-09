@@ -1,6 +1,6 @@
 /**
  * Storage Analytics Service
- * 
+ *
  * Track and analyze storage usage:
  * - Company storage quotas
  * - Usage trends
@@ -72,7 +72,9 @@ const WARNING_THRESHOLD = 0.8;
 /**
  * Get current storage usage for a company
  */
-export async function getStorageUsage(companyId: string): Promise<StorageUsage> {
+export async function getStorageUsage(
+  companyId: string
+): Promise<StorageUsage> {
   const supabase = await createClient();
 
   // Get all attachments for company
@@ -145,7 +147,9 @@ export async function getStorageUsage(companyId: string): Promise<StorageUsage> 
 /**
  * Get storage quota status for a company
  */
-export async function getStorageQuota(companyId: string): Promise<StorageQuota> {
+export async function getStorageQuota(
+  companyId: string
+): Promise<StorageQuota> {
   const usage = await getStorageUsage(companyId);
 
   // Get custom quota if set (TODO: fetch from companies table)
@@ -341,7 +345,8 @@ export async function getCleanupRecommendations(companyId: string): Promise<{
       name: file.file_name,
       size: file.file_size,
       age: Math.floor(
-        (Date.now() - new Date(file.created_at).getTime()) / (1000 * 60 * 60 * 24)
+        (Date.now() - new Date(file.created_at).getTime()) /
+          (1000 * 60 * 60 * 24)
       ),
     }))
     .sort((a, b) => b.age - a.age)
@@ -412,9 +417,10 @@ export function formatQuotaStatus(quota: StorageQuota): string {
 /**
  * Get quota status color
  */
-export function getQuotaStatusColor(quota: StorageQuota): "success" | "warning" | "error" {
+export function getQuotaStatusColor(
+  quota: StorageQuota
+): "success" | "warning" | "error" {
   if (quota.isOverLimit) return "error";
   if (quota.isNearLimit) return "warning";
   return "success";
 }
-

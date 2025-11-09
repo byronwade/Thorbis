@@ -31,19 +31,22 @@ interface InvoiceStatsBarProps {
   compact?: boolean;
 }
 
-export function InvoiceStatsBar({ invoice, compact = false }: InvoiceStatsBarProps) {
+export function InvoiceStatsBar({
+  invoice,
+  compact = false,
+}: InvoiceStatsBarProps) {
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   // Calculate percentage paid
-  const percentPaid = invoice.total_amount > 0
-    ? Math.round((invoice.paid_amount / invoice.total_amount) * 100)
-    : 0;
+  const percentPaid =
+    invoice.total_amount > 0
+      ? Math.round((invoice.paid_amount / invoice.total_amount) * 100)
+      : 0;
 
   // Calculate days until due
   const daysUntilDue = () => {
@@ -101,11 +104,12 @@ export function InvoiceStatsBar({ invoice, compact = false }: InvoiceStatsBarPro
             year: "numeric",
           })
         : "Not set",
-      changeLabel: days !== null
-        ? isOverdue
-          ? `${Math.abs(days)} days overdue`
-          : `${days} days remaining`
-        : undefined,
+      changeLabel:
+        days !== null
+          ? isOverdue
+            ? `${Math.abs(days)} days overdue`
+            : `${days} days remaining`
+          : undefined,
       change: isOverdue ? -1 : days !== null && days <= 7 ? 0 : 1,
     },
     {
@@ -114,5 +118,5 @@ export function InvoiceStatsBar({ invoice, compact = false }: InvoiceStatsBarPro
     },
   ];
 
-  return <StatsCards stats={stats} variant="ticker" compact={compact} />;
+  return <StatsCards compact={compact} stats={stats} variant="ticker" />;
 }

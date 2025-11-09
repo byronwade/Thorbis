@@ -140,7 +140,9 @@ export async function changePassword(formData: FormData) {
       if (error.message.includes("same")) {
         throw new Error("New password must be different from current password");
       }
-      throw new Error("Failed to change password. Please verify your current password.");
+      throw new Error(
+        "Failed to change password. Please verify your current password."
+      );
     }
 
     revalidatePath("/dashboard/settings/profile/security/password");

@@ -15,10 +15,21 @@
 
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  CreditCard,
+  DollarSign,
+  Download,
+  Eye,
+  FileText,
+  PieChart,
+  Plus,
+  Receipt,
+  Send,
+  TrendingUp,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -28,18 +39,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DollarSign,
-  FileText,
-  TrendingUp,
-  Receipt,
-  CreditCard,
-  PieChart,
-  Plus,
-  Eye,
-  Download,
-  Send,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FinancialsTabProps {
@@ -58,23 +57,21 @@ export function FinancialsTab({
   isEditMode,
 }: FinancialsTabProps) {
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(cents / 100);
-  };
 
   // Format date
-  const formatDate = (date: string) => {
-    return new Intl.DateTimeFormat("en-US", {
+  const formatDate = (date: string) =>
+    new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     }).format(new Date(date));
-  };
 
   // Calculate totals
   const totalInvoiced = invoices.reduce(
@@ -111,8 +108,8 @@ export function FinancialsTab({
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground">Job Value</p>
-                <p className="text-2xl font-bold">
+                <p className="text-muted-foreground text-xs">Job Value</p>
+                <p className="font-bold text-2xl">
                   {formatCurrency(job.total_amount || 0)}
                 </p>
               </div>
@@ -125,8 +122,8 @@ export function FinancialsTab({
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground">Paid</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-muted-foreground text-xs">Paid</p>
+                <p className="font-bold text-2xl text-green-600">
                   {formatCurrency(totalPaid)}
                 </p>
               </div>
@@ -139,8 +136,8 @@ export function FinancialsTab({
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground">Outstanding</p>
-                <p className="text-2xl font-bold text-orange-600">
+                <p className="text-muted-foreground text-xs">Outstanding</p>
+                <p className="font-bold text-2xl text-orange-600">
                   {formatCurrency(totalOutstanding)}
                 </p>
               </div>
@@ -153,11 +150,11 @@ export function FinancialsTab({
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground">Profit</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-muted-foreground text-xs">Profit</p>
+                <p className="font-bold text-2xl text-blue-600">
                   {formatCurrency(metrics.totalAmount - metrics.materialsCost)}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {metrics.profitMargin.toFixed(2)}% margin
                 </p>
               </div>
@@ -224,8 +221,7 @@ export function FinancialsTab({
                       )}
                     >
                       {formatCurrency(
-                        (invoice.total_amount || 0) -
-                          (invoice.paid_amount || 0)
+                        (invoice.total_amount || 0) - (invoice.paid_amount || 0)
                       )}
                     </TableCell>
                     <TableCell>
@@ -235,13 +231,13 @@ export function FinancialsTab({
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Download className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Send className="h-4 w-4" />
                         </Button>
                       </div>
@@ -251,10 +247,10 @@ export function FinancialsTab({
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No invoices created yet
               {isEditMode && (
-                <Button variant="outline" size="sm" className="ml-2 mt-2">
+                <Button className="mt-2 ml-2" size="sm" variant="outline">
                   Create First Invoice
                 </Button>
               )}
@@ -317,14 +313,14 @@ export function FinancialsTab({
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm" variant="ghost">
                           <Download className="h-4 w-4" />
                         </Button>
                         {estimate.status === "approved" && (
-                          <Button variant="ghost" size="sm">
+                          <Button size="sm" variant="ghost">
                             Convert to Job
                           </Button>
                         )}
@@ -335,10 +331,10 @@ export function FinancialsTab({
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No estimates created
               {isEditMode && (
-                <Button variant="outline" size="sm" className="ml-2 mt-2">
+                <Button className="mt-2 ml-2" size="sm" variant="outline">
                   Create First Estimate
                 </Button>
               )}
@@ -359,14 +355,14 @@ export function FinancialsTab({
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Revenue</span>
+                <span className="text-muted-foreground text-sm">Revenue</span>
                 <span className="font-medium">
                   {formatCurrency(metrics.totalAmount)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   Materials Cost
                 </span>
                 <span className="font-medium">
@@ -375,7 +371,7 @@ export function FinancialsTab({
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   Labor Hours
                 </span>
                 <span className="font-medium">
@@ -386,24 +382,22 @@ export function FinancialsTab({
               <Separator />
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">Gross Profit</span>
-                <span className="text-lg font-bold text-green-600">
-                  {formatCurrency(
-                    metrics.totalAmount - metrics.materialsCost
-                  )}
+                <span className="font-semibold text-sm">Gross Profit</span>
+                <span className="font-bold text-green-600 text-lg">
+                  {formatCurrency(metrics.totalAmount - metrics.materialsCost)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">Profit Margin</span>
-                <span className="text-lg font-bold text-blue-600">
+                <span className="font-semibold text-sm">Profit Margin</span>
+                <span className="font-bold text-blue-600 text-lg">
                   {metrics.profitMargin.toFixed(2)}%
                 </span>
               </div>
             </div>
 
             <div className="rounded-lg border p-4">
-              <h4 className="mb-3 text-sm font-semibold">Cost Breakdown</h4>
+              <h4 className="mb-3 font-semibold text-sm">Cost Breakdown</h4>
               <div className="space-y-2">
                 <div>
                   <div className="mb-1 flex justify-between text-xs">
@@ -450,8 +444,8 @@ export function FinancialsTab({
           <div className="grid gap-4 md:grid-cols-2">
             {job.payment_terms && (
               <div>
-                <p className="text-sm font-medium">Payment Terms</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium text-sm">Payment Terms</p>
+                <p className="text-muted-foreground text-sm">
                   {job.payment_terms}
                 </p>
               </div>
@@ -459,13 +453,13 @@ export function FinancialsTab({
 
             {job.deposit_amount > 0 && (
               <div>
-                <p className="text-sm font-medium">Deposit</p>
+                <p className="font-medium text-sm">Deposit</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {formatCurrency(job.deposit_amount)}
                   </p>
                   {job.deposit_paid_at && (
-                    <Badge variant="default" className="text-xs">
+                    <Badge className="text-xs" variant="default">
                       Paid {formatDate(job.deposit_paid_at)}
                     </Badge>
                   )}
@@ -483,19 +477,19 @@ export function FinancialsTab({
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
+            <Button size="sm" variant="outline">
               Record Payment
             </Button>
-            <Button variant="outline" size="sm">
+            <Button size="sm" variant="outline">
               Send Invoice Reminder
             </Button>
-            <Button variant="outline" size="sm">
+            <Button size="sm" variant="outline">
               Generate Statement
             </Button>
-            <Button variant="outline" size="sm">
+            <Button size="sm" variant="outline">
               Apply Discount
             </Button>
-            <Button variant="outline" size="sm">
+            <Button size="sm" variant="outline">
               Set Payment Plan
             </Button>
           </div>

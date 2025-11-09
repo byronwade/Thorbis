@@ -14,6 +14,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { sendEmail } from "@/lib/email/email-sender";
+import { EmailTemplate } from "@/lib/email/email-types";
 import {
   ActionError,
   ERROR_CODES,
@@ -25,10 +27,9 @@ import {
   assertExists,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { sendEmail } from "@/lib/email/email-sender";
-import { EmailTemplate } from "@/lib/email/email-types";
-import PortalInvitationEmail from "../../emails/templates/customer/portal-invitation";
+import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
+import PortalInvitationEmail from "../../emails/templates/customer/portal-invitation";
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -172,7 +173,8 @@ export async function createCustomer(
     }
 
     // Get primary property
-    const primaryProperty = properties.find((p) => p.isPrimary) || properties[0];
+    const primaryProperty =
+      properties.find((p) => p.isPrimary) || properties[0];
 
     // Parse tags if provided
     let tags: string[] | undefined;
@@ -229,6 +231,37 @@ export async function createCustomer(
       })),
     };
 
+    // Geocode customer address if available
+    let customerLat: number | null = null;
+    let customerLon: number | null = null;
+
+    if (
+      primaryProperty?.address &&
+      primaryProperty?.city &&
+      primaryProperty?.state &&
+      primaryProperty?.zipCode
+    ) {
+      const geocodeResult = await geocodeAddressSilent(
+        primaryProperty.address,
+        primaryProperty.city,
+        primaryProperty.state,
+        primaryProperty.zipCode,
+        primaryProperty.country || "USA"
+      );
+
+      if (geocodeResult) {
+        customerLat = geocodeResult.lat;
+        customerLon = geocodeResult.lon;
+        console.log(
+          `Geocoded customer address: ${geocodeResult.lat}, ${geocodeResult.lon}`
+        );
+      } else {
+        console.warn(
+          "Failed to geocode customer address - coordinates will be null"
+        );
+      }
+    }
+
     // Create customer
     const { data: customer, error: createError } = await supabase
       .from("customers")
@@ -248,9 +281,9 @@ export async function createCustomer(
         state: primaryProperty?.state || null,
         zip_code: primaryProperty?.zipCode || null,
         country: primaryProperty?.country || "USA",
-        source: formData.get("source")
-          ? String(formData.get("source"))
-          : null,
+        lat: customerLat,
+        lon: customerLon,
+        source: formData.get("source") ? String(formData.get("source")) : null,
         referred_by: formData.get("referredBy")
           ? String(formData.get("referredBy"))
           : null,
@@ -262,8 +295,7 @@ export async function createCustomer(
         billing_email: formData.get("billingEmail")
           ? String(formData.get("billingEmail"))
           : null,
-        payment_terms:
-          String(formData.get("paymentTerms")) || "due_on_receipt",
+        payment_terms: String(formData.get("paymentTerms")) || "due_on_receipt",
         credit_limit: formData.get("creditLimit")
           ? Number(formData.get("creditLimit")) * 100
           : 0,
@@ -299,19 +331,47 @@ export async function createCustomer(
     // Create additional properties if any
     const additionalProperties = properties.filter((p) => !p.isPrimary);
     if (additionalProperties.length > 0) {
-      const propertiesToInsert = additionalProperties.map((prop) => ({
-        company_id: teamMember.company_id,
-        customer_id: customer.id,
-        name: prop.name || "Additional Property",
-        address: prop.address,
-        address2: prop.address2 || null,
-        city: prop.city,
-        state: prop.state,
-        zip_code: prop.zipCode,
-        country: prop.country || "USA",
-        property_type: prop.propertyType || "residential",
-        notes: prop.notes || null,
-      }));
+      // Geocode each property address
+      const propertiesToInsert = await Promise.all(
+        additionalProperties.map(async (prop) => {
+          let propLat: number | null = null;
+          let propLon: number | null = null;
+
+          if (prop.address && prop.city && prop.state && prop.zipCode) {
+            const geocodeResult = await geocodeAddressSilent(
+              prop.address,
+              prop.city,
+              prop.state,
+              prop.zipCode,
+              prop.country || "USA"
+            );
+
+            if (geocodeResult) {
+              propLat = geocodeResult.lat;
+              propLon = geocodeResult.lon;
+              console.log(
+                `Geocoded property: ${geocodeResult.lat}, ${geocodeResult.lon}`
+              );
+            }
+          }
+
+          return {
+            company_id: teamMember.company_id,
+            customer_id: customer.id,
+            name: prop.name || "Additional Property",
+            address: prop.address,
+            address2: prop.address2 || null,
+            city: prop.city,
+            state: prop.state,
+            zip_code: prop.zipCode,
+            country: prop.country || "USA",
+            property_type: prop.propertyType || "residential",
+            notes: prop.notes || null,
+            lat: propLat,
+            lon: propLon,
+          };
+        })
+      );
 
       const { error: propertiesError } = await supabase
         .from("properties")
@@ -830,7 +890,10 @@ export async function inviteToPortal(
     });
 
     if (!emailResult.success) {
-      console.error("Failed to send portal invitation email:", emailResult.error);
+      console.error(
+        "Failed to send portal invitation email:",
+        emailResult.error
+      );
       // Don't fail the whole operation if email fails - customer is still invited
     }
 
@@ -914,6 +977,51 @@ export async function revokePortalAccess(
 // ============================================================================
 
 /**
+ * Get customer by phone number
+ * Used for incoming call lookups
+ */
+export async function getCustomerByPhone(
+  phoneNumber: string,
+  companyId: string
+): Promise<ActionResult<any>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Normalize phone number (remove formatting)
+    const normalizedPhone = phoneNumber.replace(/\D/g, "");
+
+    // Search by primary phone or secondary phone
+    const { data: customer, error } = await supabase
+      .from("customers")
+      .select(`
+        *,
+        properties:properties(*)
+      `)
+      .eq("company_id", companyId)
+      .or(
+        `phone.eq.${phoneNumber},phone.eq.${normalizedPhone},secondary_phone.eq.${phoneNumber},secondary_phone.eq.${normalizedPhone}`
+      )
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      // PGRST116 = no rows found
+      throw new ActionError(
+        `Failed to find customer: ${error.message}`,
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return customer || null;
+  });
+}
+
+/**
  * Search customers by name, email, phone, or company
  */
 export async function searchCustomers(
@@ -952,7 +1060,9 @@ export async function searchCustomers(
     // Searches across: first_name, last_name, display_name, email, phone,
     // secondary_phone, company_name, address, city, state
     // Returns results ordered by relevance (weighted: name > contact > address)
-    const { searchCustomersFullText } = await import("@/lib/search/full-text-search");
+    const { searchCustomersFullText } = await import(
+      "@/lib/search/full-text-search"
+    );
 
     const customers = await searchCustomersFullText(
       supabase,
@@ -1197,14 +1307,15 @@ export async function getAllCustomers(): Promise<
           .eq("company_id", teamMember.company_id);
 
         const total_jobs = jobStats?.length || 0;
-        const total_revenue = jobStats?.reduce(
-          (sum, job) => sum + (job.total_amount || 0),
-          0
-        ) || 0;
+        const total_revenue =
+          jobStats?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
 
         return {
           ...customer,
-          last_job_date: lastJob?.actual_end || lastJob?.scheduled_end || lastJob?.created_at,
+          last_job_date:
+            lastJob?.actual_end ||
+            lastJob?.scheduled_end ||
+            lastJob?.created_at,
           next_scheduled_job: nextJob?.scheduled_start,
           total_jobs,
           total_revenue,
@@ -1291,4 +1402,3 @@ export async function updateCustomerPageContent(
     revalidatePath(`/dashboard/customers/${customerId}`);
   });
 }
-

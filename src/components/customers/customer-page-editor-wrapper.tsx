@@ -13,20 +13,23 @@
  * - URL state sync (?mode=edit)
  */
 
-import { useCallback, useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import dynamic from "next/dynamic";
-import { updateCustomerPageContent } from "@/actions/customers";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { updateCustomerPageContent } from "@/actions/customers";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChangesConfirmationDialog } from "./changes-confirmation-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { extractChanges } from "@/lib/utils/content-diff";
+import { ChangesConfirmationDialog } from "./changes-confirmation-dialog";
 
 // Lazy load editor to reduce initial bundle size
 const CustomerPageEditor = dynamic(
-  () => import("./customer-page-editor").then((mod) => ({ default: mod.CustomerPageEditor })),
+  () =>
+    import("./customer-page-editor").then((mod) => ({
+      default: mod.CustomerPageEditor,
+    })),
   {
     ssr: false,
     loading: () => (
@@ -91,15 +94,18 @@ export function CustomerPageEditorWrapper({
   }, [hasChanges]);
 
   // Handle content change
-  const handleContentChange = useCallback((newContent: any) => {
-    // Store original content on first change
-    if (!originalContentRef.current) {
-      originalContentRef.current = content || newContent;
-    }
+  const handleContentChange = useCallback(
+    (newContent: any) => {
+      // Store original content on first change
+      if (!originalContentRef.current) {
+        originalContentRef.current = content || newContent;
+      }
 
-    setContent(newContent);
-    setHasChanges(true);
-  }, [content]);
+      setContent(newContent);
+      setHasChanges(true);
+    },
+    [content]
+  );
 
   // Handle save click - show confirmation dialog
   const handleSaveClick = useCallback(() => {
@@ -107,43 +113,41 @@ export function CustomerPageEditorWrapper({
   }, []);
 
   // Handle confirmed save
-  const handleConfirmedSave = useCallback(
-    async () => {
-      if (!content) return;
+  const handleConfirmedSave = useCallback(async () => {
+    if (!content) return;
 
-      setIsSaving(true);
+    setIsSaving(true);
 
-      const result = await updateCustomerPageContent(customer.id, content);
+    const result = await updateCustomerPageContent(customer.id, content);
 
-      if (!result.success) {
-        toast.error(result.error || "Failed to save changes");
-      } else {
-        setHasChanges(false);
-        originalContentRef.current = content; // Update original after successful save
-        setShowConfirmDialog(false);
-        toast.success("Customer page saved successfully");
-      }
+    if (result.success) {
+      setHasChanges(false);
+      originalContentRef.current = content; // Update original after successful save
+      setShowConfirmDialog(false);
+      toast.success("Customer page saved successfully");
+    } else {
+      toast.error(result.error || "Failed to save changes");
+    }
 
-      setIsSaving(false);
-    },
-    [customer.id, content, toast]
-  );
+    setIsSaving(false);
+  }, [customer.id, content, toast]);
 
   // Extract changes for confirmation dialog
-  const changes = content && originalContentRef.current
-    ? extractChanges(originalContentRef.current, content)
-    : [];
+  const changes =
+    content && originalContentRef.current
+      ? extractChanges(originalContentRef.current, content)
+      : [];
 
   return (
     <div className="relative min-h-screen">
       {/* Save Button - Floating in bottom right */}
       {hasChanges && (
-        <div className="fixed bottom-8 right-8 z-50">
+        <div className="fixed right-8 bottom-8 z-50">
           <Button
-            size="lg"
-            onClick={handleSaveClick}
-            disabled={isSaving}
             className="gap-2 shadow-lg"
+            disabled={isSaving}
+            onClick={handleSaveClick}
+            size="lg"
           >
             <Save className="size-4" />
             Review & Save Changes
@@ -153,12 +157,12 @@ export function CustomerPageEditorWrapper({
 
       {/* Changes Confirmation Dialog */}
       <ChangesConfirmationDialog
-        open={showConfirmDialog}
-        onOpenChange={setShowConfirmDialog}
         changes={changes}
-        onConfirm={handleConfirmedSave}
-        onCancel={() => setShowConfirmDialog(false)}
         isLoading={isSaving}
+        onCancel={() => setShowConfirmDialog(false)}
+        onConfirm={handleConfirmedSave}
+        onOpenChange={setShowConfirmDialog}
+        open={showConfirmDialog}
       />
 
       {/* Novel Editor - Full Width No Padding - Always Editable */}

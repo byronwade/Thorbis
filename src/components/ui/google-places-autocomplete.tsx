@@ -1,8 +1,8 @@
 "use client";
 
+import { Loader2, MapPin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Loader2, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type PlaceResult = {
@@ -48,7 +48,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
     const existingScript = document.querySelector(
       'script[src^="https://maps.googleapis.com/maps/api/js"]'
     );
-    
+
     if (existingScript) {
       // Script exists but might not be loaded yet
       isScriptLoading = true;
@@ -56,7 +56,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
         isScriptLoaded = true;
         isScriptLoading = false;
         resolve();
-        loadCallbacks.forEach(cb => cb());
+        loadCallbacks.forEach((cb) => cb());
         loadCallbacks.length = 0;
       });
       return;
@@ -68,20 +68,20 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
     script.async = true;
     script.defer = true;
-    
+
     script.onload = () => {
       isScriptLoaded = true;
       isScriptLoading = false;
       resolve();
-      loadCallbacks.forEach(cb => cb());
+      loadCallbacks.forEach((cb) => cb());
       loadCallbacks.length = 0;
     };
-    
+
     script.onerror = () => {
       isScriptLoading = false;
       reject(new Error("Failed to load Google Places"));
     };
-    
+
     document.head.appendChild(script);
   });
 }
@@ -99,7 +99,7 @@ export function GooglePlacesAutocomplete({
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
-    
+
     if (!apiKey) {
       setError("Google Places API key not configured");
       return;
@@ -123,7 +123,7 @@ export function GooglePlacesAutocomplete({
   }, []);
 
   const initAutocomplete = () => {
-    if (!inputRef.current || !window.google?.maps?.places) return;
+    if (!(inputRef.current && window.google?.maps?.places)) return;
 
     // Clear existing instance if any
     if (autocompleteRef.current) {
@@ -216,15 +216,15 @@ export function GooglePlacesAutocomplete({
   return (
     <div className="relative">
       <Input
-        ref={inputRef}
         autoFocus={autoFocus}
         className={cn("pl-9", className)}
         placeholder={placeholder}
+        ref={inputRef}
         type="text"
       />
-      <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <MapPin className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
       {isLoading && (
-        <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+        <Loader2 className="-translate-y-1/2 absolute top-1/2 right-3 h-4 w-4 animate-spin text-muted-foreground" />
       )}
     </div>
   );
@@ -244,4 +244,3 @@ declare global {
     };
   }
 }
-

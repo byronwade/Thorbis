@@ -7,12 +7,14 @@
  * - Click to view job details
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
-import type { NodeViewProps } from "@tiptap/react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { Briefcase, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
+import {
+  CollapsibleActionButton,
+  CollapsibleDataSection,
+  EmptyStateActionButton,
+} from "@/components/ui/collapsible-data-section";
 import { JobsTable } from "@/components/work/jobs-table";
 
 // React component that renders the block
@@ -26,9 +28,15 @@ export function JobsTableBlockComponent({ node, editor }: any) {
   };
 
   // Calculate job summary
-  const inProgressJobs = (jobs || []).filter((job: any) => job.status === "in_progress");
-  const scheduledJobs = (jobs || []).filter((job: any) => job.status === "scheduled");
-  const completedJobs = (jobs || []).filter((job: any) => job.status === "completed");
+  const inProgressJobs = (jobs || []).filter(
+    (job: any) => job.status === "in_progress"
+  );
+  const scheduledJobs = (jobs || []).filter(
+    (job: any) => job.status === "scheduled"
+  );
+  const completedJobs = (jobs || []).filter(
+    (job: any) => job.status === "completed"
+  );
 
   let summary = "";
   if (jobs.length === 0) {
@@ -72,64 +80,48 @@ export function JobsTableBlockComponent({ node, editor }: any) {
     aiProcessedAt: job.ai_processed_at ? new Date(job.ai_processed_at) : null,
   }));
 
-  if (!jobs || jobs.length === 0) {
-    return (
-      <NodeViewWrapper className="jobs-table-block">
-        <CollapsibleSectionWrapper
-          title="Jobs (0)"
-          icon={<Briefcase className="size-5" />}
-          defaultOpen={false}
-          storageKey="customer-jobs-section"
-          summary="No jobs yet"
-          actions={
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleAddJob}
-              className="h-8 px-3 text-xs gap-1.5"
-            >
-              <Plus className="size-4" />
-              Add Job
-            </Button>
-          }
-        >
-          <div className="rounded-lg border bg-muted/30 p-8 text-center">
-            <Briefcase className="mx-auto mb-3 size-12 text-muted-foreground/50" />
-            <p className="text-muted-foreground">No jobs yet</p>
-          </div>
-        </CollapsibleSectionWrapper>
-      </NodeViewWrapper>
-    );
-  }
-
   return (
     <NodeViewWrapper className="jobs-table-block">
-      <CollapsibleSectionWrapper
-        title={`Jobs (${jobs.length})`}
-        icon={<Briefcase className="size-5" />}
+      <CollapsibleDataSection
+        actions={
+          <CollapsibleActionButton
+            icon={<Plus className="size-4" />}
+            onClick={handleAddJob}
+          >
+            Add Job
+          </CollapsibleActionButton>
+        }
+        count={jobs.length}
         defaultOpen={false}
+        emptyState={
+          !jobs || jobs.length === 0
+            ? {
+                show: true,
+                icon: <Briefcase className="h-8 w-8 text-muted-foreground" />,
+                title: "No jobs found",
+                description: "Get started by creating your first job.",
+                action: (
+                  <EmptyStateActionButton
+                    icon={<Plus className="size-4" />}
+                    onClick={handleAddJob}
+                  >
+                    Add Job
+                  </EmptyStateActionButton>
+                ),
+              }
+            : undefined
+        }
+        fullWidthContent={true}
+        icon={<Briefcase className="size-5" />}
+        standalone={true}
         storageKey="customer-jobs-section"
         summary={summary}
-        actions={
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleAddJob}
-            className="gap-1"
-          >
-            <Plus className="size-4" />
-            Add Job
-          </Button>
-        }
+        title={`Jobs (${jobs.length})`}
+        value="customer-jobs"
       >
         {/* Use same JobsTable component as jobs page */}
-        <div className="-mx-6 -mt-6 -mb-6">
-          <JobsTable
-            jobs={transformedJobs}
-            itemsPerPage={10}
-          />
-        </div>
-      </CollapsibleSectionWrapper>
+        <JobsTable itemsPerPage={10} jobs={transformedJobs} />
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -164,7 +156,11 @@ export const JobsTableBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "jobs-table-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, { "data-type": "jobs-table-block" }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -175,12 +171,11 @@ export const JobsTableBlock = Node.create({
     return {
       insertJobsTableBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

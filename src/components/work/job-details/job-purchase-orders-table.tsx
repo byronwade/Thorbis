@@ -1,9 +1,18 @@
 "use client";
 
-import { Archive, Download, Eye, MoreHorizontal, Package, Send } from "lucide-react";
+import {
+  Archive,
+  Download,
+  Eye,
+  MoreHorizontal,
+  Package,
+  Send,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { bulkArchive } from "@/actions/archive";
+import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,12 +23,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  type ColumnDef,
   type BulkAction,
+  type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
-import { bulkArchive } from "@/actions/archive";
 
 type PurchaseOrder = {
   id: string;
@@ -63,8 +70,11 @@ export function JobPurchaseOrdersTable({
 
     setIsArchiving(true);
     try {
-      const result = await bulkArchive(Array.from(selectedIds), "purchase_order");
-      
+      const result = await bulkArchive(
+        Array.from(selectedIds),
+        "purchase_order"
+      );
+
       if (result.success && result.data) {
         toast.success(
           `Successfully archived ${result.data.archived} purchase order${result.data.archived === 1 ? "" : "s"}`
@@ -132,7 +142,10 @@ export function JobPurchaseOrdersTable({
         header: "Title",
         width: "flex-1",
         render: (po) => (
-          <span className="block truncate text-sm text-foreground" title={po.title || undefined}>
+          <span
+            className="block truncate text-foreground text-sm"
+            title={po.title || undefined}
+          >
             {po.title || "—"}
           </span>
         ),
@@ -143,7 +156,10 @@ export function JobPurchaseOrdersTable({
         width: "w-48",
         shrink: true,
         render: (po) => (
-          <span className="block truncate text-sm text-foreground" title={po.vendor}>
+          <span
+            className="block truncate text-foreground text-sm"
+            title={po.vendor}
+          >
             {po.vendor}
           </span>
         ),
@@ -162,7 +178,9 @@ export function JobPurchaseOrdersTable({
         shrink: true,
         align: "right",
         render: (po) => (
-          <span className="font-semibold text-sm tabular-nums">{formatCurrency(po.total_amount)}</span>
+          <span className="font-semibold text-sm tabular-nums">
+            {formatCurrency(po.total_amount)}
+          </span>
         ),
       },
       {
@@ -172,7 +190,7 @@ export function JobPurchaseOrdersTable({
         shrink: true,
         hideOnMobile: true,
         render: (po) => (
-          <span className="text-sm text-muted-foreground tabular-nums">
+          <span className="text-muted-foreground text-sm tabular-nums">
             {po.expected_delivery
               ? new Date(po.expected_delivery).toLocaleDateString()
               : "—"}
@@ -232,10 +250,12 @@ export function JobPurchaseOrdersTable({
   return (
     <>
       <FullWidthDataTable
+        bulkActions={bulkActions}
         columns={columns}
         data={purchaseOrders}
         emptyIcon={<Package className="size-12 text-muted-foreground/50" />}
         emptyMessage="No purchase orders found for this job"
+        enableSelection={true}
         getItemId={(po) => po.id}
         searchFilter={(po, query) => {
           const searchLower = query.toLowerCase();
@@ -248,17 +268,15 @@ export function JobPurchaseOrdersTable({
         }}
         searchPlaceholder="Search purchase orders..."
         showPagination={true}
-        bulkActions={bulkActions}
-        enableSelection={true}
       />
 
       <ArchiveConfirmDialog
-        open={showArchiveDialog}
-        onOpenChange={setShowArchiveDialog}
-        onConfirm={handleArchive}
-        itemCount={selectedIds.size}
         entityType="purchase order"
         isLoading={isArchiving}
+        itemCount={selectedIds.size}
+        onConfirm={handleArchive}
+        onOpenChange={setShowArchiveDialog}
+        open={showArchiveDialog}
       />
     </>
   );

@@ -22,9 +22,8 @@ import {
   Save,
   Sun,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
 import { getUserPreferences, updateUserPreferences } from "@/actions/settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -48,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -112,7 +112,10 @@ export default function PreferencesPage() {
       formData.append("timezone", settings.timezone);
       formData.append("dateFormat", settings.dateFormat);
       formData.append("timeFormat", settings.timeFormat);
-      formData.append("defaultPageSize", settings.tableView === "compact" ? "10" : "25");
+      formData.append(
+        "defaultPageSize",
+        settings.tableView === "compact" ? "10" : "25"
+      );
       return formData;
     },
   });
@@ -615,7 +618,11 @@ export default function PreferencesPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+          <Button
+            disabled={isPending}
+            onClick={() => saveSettings()}
+            type="button"
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />

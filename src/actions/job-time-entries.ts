@@ -13,10 +13,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
-  jobTimeEntryInsertSchema,
-  jobTimeEntryUpdateSchema,
   type JobTimeEntryInsert,
   type JobTimeEntryUpdate,
+  jobTimeEntryInsertSchema,
+  jobTimeEntryUpdateSchema,
 } from "@/lib/validations/database-schemas";
 
 // ============================================================================
@@ -118,7 +118,7 @@ export async function clockIn(
 
 export async function clockOut(
   entryId: string,
-  breakMinutes: number = 0,
+  breakMinutes = 0,
   location?: { lat: number; lng: number; accuracy?: number }
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -354,9 +354,7 @@ export async function deleteTimeEntry(
 // GET ACTIVE TIME ENTRY
 // ============================================================================
 
-export async function getActiveTimeEntry(
-  jobId: string
-): Promise<{
+export async function getActiveTimeEntry(jobId: string): Promise<{
   success: boolean;
   error?: string;
   entry?: any;

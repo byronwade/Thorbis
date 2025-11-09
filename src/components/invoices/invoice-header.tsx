@@ -12,11 +12,11 @@
 
 "use client";
 
-import { Calendar, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Calendar } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
 
 type Invoice = {
@@ -37,7 +37,10 @@ interface InvoiceHeaderProps {
 
 export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
   // Get overdue status
-  const overdueStatus = getOverdueStatus(invoice.due_date, invoice.balance_amount);
+  const overdueStatus = getOverdueStatus(
+    invoice.due_date,
+    invoice.balance_amount
+  );
   const isOverdue = overdueStatus.showBanner;
 
   // Format dates for input
@@ -58,7 +61,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
   };
 
   return (
-    <Card className={`mb-8 border-2 p-6 ${isOverdue ? overdueStatus.colors.bg : ""} ${isOverdue ? overdueStatus.colors.border : ""}`}>
+    <Card
+      className={`mb-8 border-2 p-6 ${isOverdue ? overdueStatus.colors.bg : ""} ${isOverdue ? overdueStatus.colors.border : ""}`}
+    >
       <div className="grid gap-6 md:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-4">
@@ -66,7 +71,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
             <Label className="text-muted-foreground text-sm">
               Invoice Number
             </Label>
-            <div className="mt-1 font-mono text-2xl font-bold">
+            <div className="mt-1 font-bold font-mono text-2xl">
               {invoice.invoice_number}
             </div>
           </div>
@@ -74,11 +79,11 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
           <div>
             <Label htmlFor="title">Invoice Title</Label>
             <Input
+              className="mt-1"
               id="title"
-              value={invoice.title || ""}
               onChange={(e) => onUpdate("title", e.target.value)}
               placeholder="e.g., HVAC System Installation"
-              className="mt-1"
+              value={invoice.title || ""}
             />
           </div>
 
@@ -88,7 +93,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
                 Linked Job
               </Label>
               <div className="mt-1">
-                <Badge variant="outline" className="text-sm">
+                <Badge className="text-sm" variant="outline">
                   {job.job_number}: {job.title}
                 </Badge>
               </div>
@@ -99,7 +104,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
         {/* Right Column */}
         <div className="space-y-4">
           <div>
-            <Label htmlFor="created_at" className="flex items-center gap-2">
+            <Label className="flex items-center gap-2" htmlFor="created_at">
               <Calendar className="h-4 w-4" />
               Issue Date
             </Label>
@@ -109,7 +114,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
           </div>
 
           <div>
-            <Label htmlFor="due_date" className="flex items-center gap-2">
+            <Label className="flex items-center gap-2" htmlFor="due_date">
               <Calendar className="h-4 w-4" />
               Due Date
               {isOverdue && (
@@ -120,24 +125,30 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
               )}
             </Label>
             <Input
+              className={`mt-1 ${isOverdue ? "border-2 border-red-500" : ""}`}
               id="due_date"
+              onChange={(e) => onUpdate("due_date", e.target.value)}
               type="date"
               value={formatDateForInput(invoice.due_date)}
-              onChange={(e) => onUpdate("due_date", e.target.value)}
-              className={`mt-1 ${isOverdue ? "border-2 border-red-500" : ""}`}
             />
             {isOverdue && (
-              <p className={`mt-1 text-sm font-medium ${overdueStatus.colors.text}`}>
+              <p
+                className={`mt-1 font-medium text-sm ${overdueStatus.colors.text}`}
+              >
                 {overdueStatus.message}
               </p>
             )}
           </div>
 
           <div>
-            <Label className={`text-sm ${isOverdue ? overdueStatus.colors.text + " font-bold" : "text-muted-foreground"}`}>
+            <Label
+              className={`text-sm ${isOverdue ? overdueStatus.colors.text + "font-bold" : "text-muted-foreground"}`}
+            >
               {isOverdue ? "PAST DUE AMOUNT" : "Amount Due"}
             </Label>
-            <div className={`mt-1 text-3xl font-bold ${isOverdue ? overdueStatus.colors.text : ""}`}>
+            <div
+              className={`mt-1 font-bold text-3xl ${isOverdue ? overdueStatus.colors.text : ""}`}
+            >
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",

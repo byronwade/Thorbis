@@ -34,7 +34,11 @@ export type StatsCardsProps = {
   compact?: boolean;
 };
 
-export function StatsCards({ stats, variant = "ticker", compact = false }: StatsCardsProps) {
+export function StatsCards({
+  stats,
+  variant = "ticker",
+  compact = false,
+}: StatsCardsProps) {
   // Dynamically determine grid columns based on number of stats
   const gridColsClass =
     {
@@ -58,18 +62,20 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
             const isNeutral = change === 0;
 
             return (
-              <div 
+              <div
                 className={cn(
                   "transition-all duration-300",
                   compact ? "px-3 py-2" : "px-4 py-3"
-                )} 
+                )}
                 key={stat.label}
               >
                 <div className="flex items-baseline gap-2">
-                  <div className={cn(
-                    "font-semibold text-foreground tabular-nums transition-all duration-300",
-                    compact ? "text-lg" : "text-xl"
-                  )}>
+                  <div
+                    className={cn(
+                      "font-semibold text-foreground tabular-nums transition-all duration-300",
+                      compact ? "text-lg" : "text-xl"
+                    )}
+                  >
                     {stat.value}
                   </div>
                   {/* Stock ticker style change indicator */}
@@ -92,10 +98,12 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
                     </div>
                   )}
                 </div>
-                <div className={cn(
-                  "text-muted-foreground transition-all duration-300",
-                  compact ? "mt-0.5 text-xs" : "mt-1 text-sm"
-                )}>
+                <div
+                  className={cn(
+                    "text-muted-foreground transition-all duration-300",
+                    compact ? "mt-0.5 text-xs" : "mt-1 text-sm"
+                  )}
+                >
                   {stat.label}
                 </div>
                 {!compact && stat.changeLabel && (

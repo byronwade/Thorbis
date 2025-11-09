@@ -13,6 +13,7 @@
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { ViewToggle } from "@/components/pricebook/view-toggle";
 import { Button } from "@/components/ui/button";
 import { LaborCalculatorModal } from "@/components/work/labor-calculator-modal";
@@ -35,6 +36,7 @@ export function PriceBookToolbarActions() {
           Add Item
         </Link>
       </Button>
+      <ImportExportDropdown dataType="pricebook" />
     </div>
   );
 }

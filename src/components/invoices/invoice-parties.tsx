@@ -6,7 +6,7 @@
 
 "use client";
 
-import { Building2, User, MapPin } from "lucide-react";
+import { Building2, MapPin, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
@@ -69,63 +69,67 @@ export function InvoiceParties({
       {/* Business and Customer */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* From (Business) */}
-      <Card className="p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-muted-foreground" />
-          <Label className="text-base font-semibold">From</Label>
-        </div>
-        <div className="space-y-2 text-sm">
-          <div className="font-semibold">{company?.name || "Your Business"}</div>
-          {company?.email && <div>{company.email}</div>}
-          {company?.phone && <div>{company.phone}</div>}
-          {company?.address && (
-            <div className="text-muted-foreground">
-              <div>{company.address}</div>
-              {company.city && company.state && (
-                <div>
-                  {company.city}, {company.state} {company.zip_code}
-                </div>
-              )}
-            </div>
-          )}
-          {company?.tax_id && (
-            <div className="mt-2 text-muted-foreground">
-              Tax ID: {company.tax_id}
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* To (Customer) */}
-      <Card className="p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <User className="h-5 w-5 text-muted-foreground" />
-          <Label className="text-base font-semibold">Bill To</Label>
-        </div>
-        <div className="space-y-2 text-sm">
-          <div className="font-semibold">
-            {customer?.display_name ||
-              `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
-              "Customer"}
+        <Card className="p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-muted-foreground" />
+            <Label className="font-semibold text-base">From</Label>
           </div>
-          {customer?.company_name && (
-            <div className="text-muted-foreground">{customer.company_name}</div>
-          )}
-          {customer?.email && <div>{customer.email}</div>}
-          {customer?.phone && <div>{customer.phone}</div>}
-          {customer?.billing_address && (
-            <div className="text-muted-foreground">
-              <div>{customer.billing_address}</div>
-              {customer.billing_city && customer.billing_state && (
-                <div>
-                  {customer.billing_city}, {customer.billing_state}{" "}
-                  {customer.billing_zip}
-                </div>
-              )}
+          <div className="space-y-2 text-sm">
+            <div className="font-semibold">
+              {company?.name || "Your Business"}
             </div>
-          )}
-        </div>
-      </Card>
+            {company?.email && <div>{company.email}</div>}
+            {company?.phone && <div>{company.phone}</div>}
+            {company?.address && (
+              <div className="text-muted-foreground">
+                <div>{company.address}</div>
+                {company.city && company.state && (
+                  <div>
+                    {company.city}, {company.state} {company.zip_code}
+                  </div>
+                )}
+              </div>
+            )}
+            {company?.tax_id && (
+              <div className="mt-2 text-muted-foreground">
+                Tax ID: {company.tax_id}
+              </div>
+            )}
+          </div>
+        </Card>
+
+        {/* To (Customer) */}
+        <Card className="p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <User className="h-5 w-5 text-muted-foreground" />
+            <Label className="font-semibold text-base">Bill To</Label>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="font-semibold">
+              {customer?.display_name ||
+                `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
+                "Customer"}
+            </div>
+            {customer?.company_name && (
+              <div className="text-muted-foreground">
+                {customer.company_name}
+              </div>
+            )}
+            {customer?.email && <div>{customer.email}</div>}
+            {customer?.phone && <div>{customer.phone}</div>}
+            {customer?.billing_address && (
+              <div className="text-muted-foreground">
+                <div>{customer.billing_address}</div>
+                {customer.billing_city && customer.billing_state && (
+                  <div>
+                    {customer.billing_city}, {customer.billing_state}{" "}
+                    {customer.billing_zip}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
 
       {/* Property/Job Site Address (if applicable) */}
@@ -133,10 +137,14 @@ export function InvoiceParties({
         <Card className="p-6">
           <div className="mb-4 flex items-center gap-2">
             <MapPin className="h-5 w-5 text-muted-foreground" />
-            <Label className="text-base font-semibold">Job Site / Property</Label>
+            <Label className="font-semibold text-base">
+              Job Site / Property
+            </Label>
           </div>
           <div className="space-y-2 text-sm">
-            {property.name && <div className="font-semibold">{property.name}</div>}
+            {property.name && (
+              <div className="font-semibold">{property.name}</div>
+            )}
             {property.property_type && (
               <div className="text-muted-foreground capitalize">
                 {property.property_type}

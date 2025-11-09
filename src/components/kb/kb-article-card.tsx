@@ -4,13 +4,19 @@
  * Displays article preview card with title, excerpt, and metadata
  */
 
-import Link from "next/link";
-import Image from "next/image";
 import { Calendar, Eye, Tag } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { KBArticleWithRelations } from "@/lib/kb/types";
+import { cn } from "@/lib/utils";
 
 interface KBArticleCardProps {
   article: KBArticleWithRelations;
@@ -29,7 +35,7 @@ export function KBArticleCard({
     : null;
 
   return (
-    <Link href={url} className={cn("block", className)}>
+    <Link className={cn("block", className)} href={url}>
       <Card
         className={cn(
           "h-full transition-all hover:shadow-md",
@@ -39,11 +45,11 @@ export function KBArticleCard({
         {article.featuredImage && (
           <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
             <Image
-              src={article.featuredImage}
               alt={article.title}
-              fill
               className="object-cover"
+              fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              src={article.featuredImage}
             />
           </div>
         )}
@@ -51,7 +57,7 @@ export function KBArticleCard({
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="line-clamp-2">{article.title}</CardTitle>
             {featured && (
-              <Badge variant="default" className="shrink-0">
+              <Badge className="shrink-0" variant="default">
                 Featured
               </Badge>
             )}
@@ -85,16 +91,14 @@ export function KBArticleCard({
           </div>
           {article.tags && article.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
-              {article.tags.slice(0, 3).map((tag: { id: string; slug: string; name: string }) => (
-                <Badge
-                  key={tag.id}
-                  variant="secondary"
-                  className="text-xs"
-                >
-                  <Tag className="mr-1 size-3" />
-                  {tag.name}
-                </Badge>
-              ))}
+              {article.tags
+                .slice(0, 3)
+                .map((tag: { id: string; slug: string; name: string }) => (
+                  <Badge className="text-xs" key={tag.id} variant="secondary">
+                    <Tag className="mr-1 size-3" />
+                    {tag.name}
+                  </Badge>
+                ))}
             </div>
           )}
         </CardContent>
@@ -102,4 +106,3 @@ export function KBArticleCard({
     </Link>
   );
 }
-

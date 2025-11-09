@@ -7,14 +7,17 @@
  * - Auto-generated badges (past due, payment status)
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamically import to avoid SSR issues
 const CustomerBadges = dynamic(
-  () => import("@/components/customers/customer-badges").then((mod) => ({ default: mod.CustomerBadges })),
+  () =>
+    import("@/components/customers/customer-badges").then((mod) => ({
+      default: mod.CustomerBadges,
+    })),
   {
     ssr: false,
     loading: () => <Skeleton className="h-16 w-full" />,
@@ -59,7 +62,11 @@ export const CustomerBadgesBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "customer-badges-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, { "data-type": "customer-badges-block" }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -70,12 +77,11 @@ export const CustomerBadgesBlock = Node.create({
     return {
       insertCustomerBadgesBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

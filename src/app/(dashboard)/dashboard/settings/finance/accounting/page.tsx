@@ -10,17 +10,21 @@
  */
 
 import {
-  Loader2,
-  CheckCircle,
   AlertCircle,
-  RefreshCw,
-  Link2,
-  Save,
   Check,
+  CheckCircle,
   HelpCircle,
+  Link2,
+  Loader2,
+  RefreshCw,
+  Save,
 } from "lucide-react";
-import { useEffect, useState, useTransition, useMemo } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  getAccountingSettings,
+  updateAccountingSettings,
+} from "@/actions/settings";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,9 +35,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -41,15 +42,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  getAccountingSettings,
-  updateAccountingSettings,
-} from "@/actions/settings";
+import { useToast } from "@/hooks/use-toast";
 
 type AccountingSettings = {
   provider?: string;
@@ -123,9 +123,10 @@ export default function AccountingSettingsPage() {
     syncCustomers: true,
   });
 
-  const hasChanges = useMemo(() => {
-    return JSON.stringify(formData) !== JSON.stringify(originalFormData);
-  }, [formData, originalFormData]);
+  const hasChanges = useMemo(
+    () => JSON.stringify(formData) !== JSON.stringify(originalFormData),
+    [formData, originalFormData]
+  );
 
   useEffect(() => {
     async function loadSettings() {
@@ -171,15 +172,26 @@ export default function AccountingSettingsPage() {
     startTransition(async () => {
       const formDataObj = new FormData();
       formDataObj.append("provider", formData.provider);
-      formDataObj.append("providerEnabled", formData.providerEnabled.toString());
+      formDataObj.append(
+        "providerEnabled",
+        formData.providerEnabled.toString()
+      );
       if (formData.apiKey) formDataObj.append("apiKey", formData.apiKey);
-      if (formData.apiSecret) formDataObj.append("apiSecret", formData.apiSecret);
-      formDataObj.append("autoSyncEnabled", formData.autoSyncEnabled.toString());
+      if (formData.apiSecret)
+        formDataObj.append("apiSecret", formData.apiSecret);
+      formDataObj.append(
+        "autoSyncEnabled",
+        formData.autoSyncEnabled.toString()
+      );
       formDataObj.append("syncFrequency", formData.syncFrequency);
-      if (formData.incomeAccount) formDataObj.append("incomeAccount", formData.incomeAccount);
-      if (formData.expenseAccount) formDataObj.append("expenseAccount", formData.expenseAccount);
-      if (formData.assetAccount) formDataObj.append("assetAccount", formData.assetAccount);
-      if (formData.liabilityAccount) formDataObj.append("liabilityAccount", formData.liabilityAccount);
+      if (formData.incomeAccount)
+        formDataObj.append("incomeAccount", formData.incomeAccount);
+      if (formData.expenseAccount)
+        formDataObj.append("expenseAccount", formData.expenseAccount);
+      if (formData.assetAccount)
+        formDataObj.append("assetAccount", formData.assetAccount);
+      if (formData.liabilityAccount)
+        formDataObj.append("liabilityAccount", formData.liabilityAccount);
       formDataObj.append("syncInvoices", formData.syncInvoices.toString());
       formDataObj.append("syncPayments", formData.syncPayments.toString());
       formDataObj.append("syncExpenses", formData.syncExpenses.toString());
@@ -227,7 +239,9 @@ export default function AccountingSettingsPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="font-bold text-4xl tracking-tight">Accounting Integration</h1>
+            <h1 className="font-bold text-4xl tracking-tight">
+              Accounting Integration
+            </h1>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button type="button">
@@ -235,11 +249,18 @@ export default function AccountingSettingsPage() {
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p className="text-sm">Connect your accounting software for seamless financial data sync. Supports QuickBooks, Xero, Sage, and FreshBooks.</p>
+                <p className="text-sm">
+                  Connect your accounting software for seamless financial data
+                  sync. Supports QuickBooks, Xero, Sage, and FreshBooks.
+                </p>
               </TooltipContent>
             </Tooltip>
           </div>
-          {hasChanges && <Badge className="bg-amber-600 hover:bg-amber-700">Unsaved Changes</Badge>}
+          {hasChanges && (
+            <Badge className="bg-amber-600 hover:bg-amber-700">
+              Unsaved Changes
+            </Badge>
+          )}
         </div>
         <p className="text-lg text-muted-foreground">
           Connect your accounting software for seamless financial data sync
@@ -247,7 +268,6 @@ export default function AccountingSettingsPage() {
       </div>
 
       <div className="space-y-6">
-
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -259,119 +279,130 @@ export default function AccountingSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <Label htmlFor="provider">Accounting Provider</Label>
-              <Select
-                value={formData.provider}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, provider: value })
-                }
-              >
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="quickbooks">QuickBooks Online</SelectItem>
-                  <SelectItem value="xero">Xero</SelectItem>
-                  <SelectItem value="sage">Sage Intacct</SelectItem>
-                  <SelectItem value="freshbooks">FreshBooks</SelectItem>
-                  <SelectItem value="manual">Manual Entry</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-end">
-              <div className="flex items-center gap-2">
-                {connectionStatus === "connected" && (
-                  <div className="flex items-center gap-2 text-green-600 text-sm">
-                    <CheckCircle className="size-4" />
-                    <span>Connected</span>
-                  </div>
-                )}
-                {connectionStatus === "disconnected" && (
-                  <div className="flex items-center gap-2 text-destructive text-sm">
-                    <AlertCircle className="size-4" />
-                    <span>Not Connected</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {formData.provider !== "none" && formData.provider !== "manual" && (
-            <>
-              <Separator />
-
-              <div className="space-y-4">
-                <h3 className="font-medium text-sm">API Credentials</h3>
-                <div className="grid gap-4">
-                  <div>
-                    <Label htmlFor="apiKey">API Key / Client ID</Label>
-                    <Input
-                      className="mt-2"
-                      id="apiKey"
-                      type="password"
-                      placeholder="Enter your API key"
-                      value={formData.apiKey}
-                      onChange={(e) =>
-                        setFormData({ ...formData, apiKey: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="apiSecret">API Secret / Client Secret</Label>
-                    <Input
-                      className="mt-2"
-                      id="apiSecret"
-                      type="password"
-                      placeholder="Enter your API secret"
-                      value={formData.apiSecret}
-                      onChange={(e) =>
-                        setFormData({ ...formData, apiSecret: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  onClick={handleTestConnection}
-                  disabled={isTestingConnection || !formData.apiKey || !formData.apiSecret}
-                >
-                  {isTestingConnection ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Testing Connection...
-                    </>
-                  ) : (
-                    <>
-                      <Link2 className="mr-2 size-4" />
-                      Test Connection
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label>Enable Provider</Label>
-                  <p className="text-muted-foreground text-xs">
-                    Activate integration with {formData.provider}
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.providerEnabled}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, providerEnabled: checked })
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="provider">Accounting Provider</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, provider: value })
                   }
-                />
+                  value={formData.provider}
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="quickbooks">
+                      QuickBooks Online
+                    </SelectItem>
+                    <SelectItem value="xero">Xero</SelectItem>
+                    <SelectItem value="sage">Sage Intacct</SelectItem>
+                    <SelectItem value="freshbooks">FreshBooks</SelectItem>
+                    <SelectItem value="manual">Manual Entry</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </>
-          )}
+
+              <div className="flex items-end">
+                <div className="flex items-center gap-2">
+                  {connectionStatus === "connected" && (
+                    <div className="flex items-center gap-2 text-green-600 text-sm">
+                      <CheckCircle className="size-4" />
+                      <span>Connected</span>
+                    </div>
+                  )}
+                  {connectionStatus === "disconnected" && (
+                    <div className="flex items-center gap-2 text-destructive text-sm">
+                      <AlertCircle className="size-4" />
+                      <span>Not Connected</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {formData.provider !== "none" && formData.provider !== "manual" && (
+              <>
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="font-medium text-sm">API Credentials</h3>
+                  <div className="grid gap-4">
+                    <div>
+                      <Label htmlFor="apiKey">API Key / Client ID</Label>
+                      <Input
+                        className="mt-2"
+                        id="apiKey"
+                        onChange={(e) =>
+                          setFormData({ ...formData, apiKey: e.target.value })
+                        }
+                        placeholder="Enter your API key"
+                        type="password"
+                        value={formData.apiKey}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="apiSecret">
+                        API Secret / Client Secret
+                      </Label>
+                      <Input
+                        className="mt-2"
+                        id="apiSecret"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            apiSecret: e.target.value,
+                          })
+                        }
+                        placeholder="Enter your API secret"
+                        type="password"
+                        value={formData.apiSecret}
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    disabled={
+                      isTestingConnection ||
+                      !formData.apiKey ||
+                      !formData.apiSecret
+                    }
+                    onClick={handleTestConnection}
+                    variant="outline"
+                  >
+                    {isTestingConnection ? (
+                      <>
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                        Testing Connection...
+                      </>
+                    ) : (
+                      <>
+                        <Link2 className="mr-2 size-4" />
+                        Test Connection
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <Label>Enable Provider</Label>
+                    <p className="text-muted-foreground text-xs">
+                      Activate integration with {formData.provider}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.providerEnabled}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, providerEnabled: checked })
+                    }
+                  />
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -388,109 +419,109 @@ export default function AccountingSettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label>Auto Sync</Label>
-                  <p className="text-muted-foreground text-xs">
-                    Automatically sync data on schedule
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.autoSyncEnabled}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, autoSyncEnabled: checked })
-                  }
-                />
-              </div>
-
-              {formData.autoSyncEnabled && (
-                <div>
-                  <Label htmlFor="syncFrequency">Sync Frequency</Label>
-                  <Select
-                    value={formData.syncFrequency}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, syncFrequency: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="realtime">Real-time</SelectItem>
-                      <SelectItem value="hourly">Hourly</SelectItem>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="manual">Manual Only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h3 className="font-medium text-sm">Data Sync Options</h3>
-
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Label>Sync Invoices</Label>
+                    <Label>Auto Sync</Label>
                     <p className="text-muted-foreground text-xs">
-                      Sync invoice data to accounting system
+                      Automatically sync data on schedule
                     </p>
                   </div>
                   <Switch
-                    checked={formData.syncInvoices}
+                    checked={formData.autoSyncEnabled}
                     onCheckedChange={(checked) =>
-                      setFormData({ ...formData, syncInvoices: checked })
+                      setFormData({ ...formData, autoSyncEnabled: checked })
                     }
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label>Sync Payments</Label>
-                    <p className="text-muted-foreground text-xs">
-                      Sync payment transactions
-                    </p>
+                {formData.autoSyncEnabled && (
+                  <div>
+                    <Label htmlFor="syncFrequency">Sync Frequency</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, syncFrequency: value })
+                      }
+                      value={formData.syncFrequency}
+                    >
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="realtime">Real-time</SelectItem>
+                        <SelectItem value="hourly">Hourly</SelectItem>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="manual">Manual Only</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <Switch
-                    checked={formData.syncPayments}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, syncPayments: checked })
-                    }
-                  />
-                </div>
+                )}
 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label>Sync Expenses</Label>
-                    <p className="text-muted-foreground text-xs">
-                      Sync expense records
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.syncExpenses}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, syncExpenses: checked })
-                    }
-                  />
-                </div>
+                <Separator />
 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label>Sync Customers</Label>
-                    <p className="text-muted-foreground text-xs">
-                      Sync customer information
-                    </p>
+                <div className="space-y-4">
+                  <h3 className="font-medium text-sm">Data Sync Options</h3>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Sync Invoices</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Sync invoice data to accounting system
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.syncInvoices}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, syncInvoices: checked })
+                      }
+                    />
                   </div>
-                  <Switch
-                    checked={formData.syncCustomers}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, syncCustomers: checked })
-                    }
-                  />
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Sync Payments</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Sync payment transactions
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.syncPayments}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, syncPayments: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Sync Expenses</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Sync expense records
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.syncExpenses}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, syncExpenses: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Sync Customers</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Sync customer information
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.syncCustomers}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, syncCustomers: checked })
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
               </CardContent>
             </Card>
 
@@ -505,57 +536,66 @@ export default function AccountingSettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="incomeAccount">Income Account</Label>
-                <Input
-                  className="mt-2"
-                  id="incomeAccount"
-                  placeholder="e.g., 4000 - Service Revenue"
-                  value={formData.incomeAccount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, incomeAccount: e.target.value })
-                  }
-                />
-              </div>
+                <div>
+                  <Label htmlFor="incomeAccount">Income Account</Label>
+                  <Input
+                    className="mt-2"
+                    id="incomeAccount"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        incomeAccount: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., 4000 - Service Revenue"
+                    value={formData.incomeAccount}
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="expenseAccount">Expense Account</Label>
-                <Input
-                  className="mt-2"
-                  id="expenseAccount"
-                  placeholder="e.g., 5000 - Operating Expenses"
-                  value={formData.expenseAccount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, expenseAccount: e.target.value })
-                  }
-                />
-              </div>
+                <div>
+                  <Label htmlFor="expenseAccount">Expense Account</Label>
+                  <Input
+                    className="mt-2"
+                    id="expenseAccount"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        expenseAccount: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., 5000 - Operating Expenses"
+                    value={formData.expenseAccount}
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="assetAccount">Asset Account</Label>
-                <Input
-                  className="mt-2"
-                  id="assetAccount"
-                  placeholder="e.g., 1200 - Accounts Receivable"
-                  value={formData.assetAccount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, assetAccount: e.target.value })
-                  }
-                />
-              </div>
+                <div>
+                  <Label htmlFor="assetAccount">Asset Account</Label>
+                  <Input
+                    className="mt-2"
+                    id="assetAccount"
+                    onChange={(e) =>
+                      setFormData({ ...formData, assetAccount: e.target.value })
+                    }
+                    placeholder="e.g., 1200 - Accounts Receivable"
+                    value={formData.assetAccount}
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="liabilityAccount">Liability Account</Label>
-                <Input
-                  className="mt-2"
-                  id="liabilityAccount"
-                  placeholder="e.g., 2000 - Accounts Payable"
-                  value={formData.liabilityAccount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, liabilityAccount: e.target.value })
-                  }
-                />
-              </div>
+                <div>
+                  <Label htmlFor="liabilityAccount">Liability Account</Label>
+                  <Input
+                    className="mt-2"
+                    id="liabilityAccount"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        liabilityAccount: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., 2000 - Accounts Payable"
+                    value={formData.liabilityAccount}
+                  />
+                </div>
               </CardContent>
             </Card>
           </>
@@ -569,10 +609,10 @@ export default function AccountingSettingsPage() {
                 Accounting Integration Benefits
               </p>
               <p className="text-muted-foreground text-sm">
-                Connecting your accounting software enables automatic financial data
-                sync, reduces manual data entry, ensures accuracy across systems, and
-                provides real-time financial reporting. Your credentials are encrypted
-                and securely stored.
+                Connecting your accounting software enables automatic financial
+                data sync, reduces manual data entry, ensures accuracy across
+                systems, and provides real-time financial reporting. Your
+                credentials are encrypted and securely stored.
               </p>
             </div>
           </CardContent>
@@ -590,7 +630,9 @@ export default function AccountingSettingsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-sm">Unsaved Changes</p>
-                  <p className="text-muted-foreground text-xs">Save your changes or discard them</p>
+                  <p className="text-muted-foreground text-xs">
+                    Save your changes or discard them
+                  </p>
                 </div>
               </>
             ) : (
@@ -603,15 +645,18 @@ export default function AccountingSettingsPage() {
                   <p className="text-muted-foreground text-xs">
                     {settings.last_sync_at
                       ? `Last synced: ${new Date(settings.last_sync_at).toLocaleString()}`
-                      : "Your settings are up to date"
-                    }
+                      : "Your settings are up to date"}
                   </p>
                 </div>
               </>
             )}
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" disabled={isPending} onClick={handleCancel}>
+            <Button
+              disabled={isPending}
+              onClick={handleCancel}
+              variant="outline"
+            >
               Cancel
             </Button>
             <Button disabled={isPending || !hasChanges} onClick={handleSave}>

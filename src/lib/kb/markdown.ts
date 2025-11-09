@@ -6,19 +6,20 @@
  */
 
 import matter from "gray-matter";
-import remarkGfm from "remark-gfm";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import remarkGfm from "remark-gfm";
 import type { KBArticleFrontmatter } from "./types";
 
 /**
  * Parse markdown file with frontmatter
  */
-export function parseMarkdown(
-  content: string
-): { frontmatter: KBArticleFrontmatter; content: string } {
+export function parseMarkdown(content: string): {
+  frontmatter: KBArticleFrontmatter;
+  content: string;
+} {
   const { data, content: markdownContent } = matter(content);
 
   // Validate and normalize frontmatter
@@ -126,7 +127,7 @@ export function extractTableOfContents(html: string): Array<{
 
   let match;
   while ((match = headingRegex.exec(html)) !== null) {
-    const level = parseInt(match[1] || "1", 10);
+    const level = Number.parseInt(match[1] || "1", 10);
     const id = match[2] || "";
     // Strip HTML tags from text
     const text = match[3]?.replace(/<[^>]*>/g, "").trim() || "";
@@ -138,5 +139,3 @@ export function extractTableOfContents(html: string): Array<{
 
   return toc;
 }
-
-

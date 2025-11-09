@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Loader2, MapPin, Plus } from "lucide-react";
+import { useState } from "react";
 import { createProperty, getCustomerProperties } from "@/actions/properties";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,7 +79,9 @@ export function AddPropertyDialog({
 
     if (propertiesResult.success && propertiesResult.data) {
       // Find the newly created property
-      const newProperty = propertiesResult.data.find(p => p.id === result.data);
+      const newProperty = propertiesResult.data.find(
+        (p) => p.id === result.data
+      );
 
       if (newProperty) {
         // Notify parent component with full property data
@@ -94,10 +96,10 @@ export function AddPropertyDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button type="button" variant="outline" size="sm">
+          <Button size="sm" type="button" variant="outline">
             <Plus className="mr-2 size-4" />
             Add Property
           </Button>
@@ -110,8 +112,8 @@ export function AddPropertyDialog({
             <DialogTitle>Add New Property</DialogTitle>
           </div>
           <DialogDescription>
-            Add a new service location for this customer. All fields marked with * are
-            required.
+            Add a new service location for this customer. All fields marked with
+            * are required.
             {customerAddress?.address && (
               <span className="mt-2 block font-medium text-green-600">
                 ✓ Address fields pre-filled from customer profile
@@ -120,7 +122,7 @@ export function AddPropertyDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4" key={customerId}>
+        <form className="space-y-4" key={customerId} onSubmit={handleSubmit}>
           {/* Error Display */}
           {error && (
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3">
@@ -132,12 +134,14 @@ export function AddPropertyDialog({
           <div className="space-y-2">
             <Label htmlFor="name">Property Name *</Label>
             <Input
+              defaultValue={
+                customerAddress?.address ? "Primary Location" : undefined
+              }
+              disabled={isLoading}
               id="name"
               name="name"
               placeholder="e.g., Main Office, Home, Warehouse #1"
-              defaultValue={customerAddress?.address ? `Primary Location` : undefined}
               required
-              disabled={isLoading}
             />
             <p className="text-muted-foreground text-xs">
               A friendly name to identify this location
@@ -148,12 +152,12 @@ export function AddPropertyDialog({
           <div className="space-y-2">
             <Label htmlFor="address">Street Address *</Label>
             <Input
+              defaultValue={customerAddress?.address}
+              disabled={isLoading}
               id="address"
               name="address"
               placeholder="123 Main Street"
-              defaultValue={customerAddress?.address}
               required
-              disabled={isLoading}
             />
             {customerAddress?.address && (
               <p className="text-muted-foreground text-xs">
@@ -166,10 +170,10 @@ export function AddPropertyDialog({
           <div className="space-y-2">
             <Label htmlFor="address2">Address Line 2 (Optional)</Label>
             <Input
+              disabled={isLoading}
               id="address2"
               name="address2"
               placeholder="Suite 100, Apt 4B, etc."
-              disabled={isLoading}
             />
           </div>
 
@@ -178,37 +182,37 @@ export function AddPropertyDialog({
             <div className="space-y-2">
               <Label htmlFor="city">City *</Label>
               <Input
+                defaultValue={customerAddress?.city}
+                disabled={isLoading}
                 id="city"
                 name="city"
                 placeholder="San Francisco"
-                defaultValue={customerAddress?.city}
                 required
-                disabled={isLoading}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="state">State *</Label>
               <Input
+                defaultValue={customerAddress?.state}
+                disabled={isLoading}
                 id="state"
+                maxLength={2}
                 name="state"
                 placeholder="CA"
-                maxLength={2}
-                defaultValue={customerAddress?.state}
                 required
-                disabled={isLoading}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="zipCode">ZIP Code *</Label>
               <Input
+                defaultValue={customerAddress?.zip_code}
+                disabled={isLoading}
                 id="zipCode"
                 name="zipCode"
                 placeholder="94102"
-                defaultValue={customerAddress?.zip_code}
                 required
-                disabled={isLoading}
               />
             </div>
           </div>
@@ -216,7 +220,7 @@ export function AddPropertyDialog({
           {/* Property Type */}
           <div className="space-y-2">
             <Label htmlFor="propertyType">Property Type</Label>
-            <Select name="propertyType" disabled={isLoading}>
+            <Select disabled={isLoading} name="propertyType">
               <SelectTrigger id="propertyType">
                 <SelectValue placeholder="Select property type (optional)" />
               </SelectTrigger>
@@ -233,25 +237,25 @@ export function AddPropertyDialog({
             <div className="space-y-2">
               <Label htmlFor="squareFootage">Square Footage</Label>
               <Input
-                id="squareFootage"
-                name="squareFootage"
-                type="number"
-                placeholder="2500"
-                min="0"
                 disabled={isLoading}
+                id="squareFootage"
+                min="0"
+                name="squareFootage"
+                placeholder="2500"
+                type="number"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="yearBuilt">Year Built</Label>
               <Input
-                id="yearBuilt"
-                name="yearBuilt"
-                type="number"
-                placeholder="2010"
-                min="1800"
-                max={new Date().getFullYear() + 5}
                 disabled={isLoading}
+                id="yearBuilt"
+                max={new Date().getFullYear() + 5}
+                min="1800"
+                name="yearBuilt"
+                placeholder="2010"
+                type="number"
               />
             </div>
           </div>
@@ -260,25 +264,25 @@ export function AddPropertyDialog({
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
             <Textarea
+              disabled={isLoading}
               id="notes"
               name="notes"
               placeholder="Any additional information about this property..."
               rows={3}
-              disabled={isLoading}
             />
           </div>
 
           {/* Form Actions */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
+              disabled={isLoading}
+              onClick={() => setOpen(false)}
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button disabled={isLoading} type="submit">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

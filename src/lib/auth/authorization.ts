@@ -31,8 +31,8 @@ import { getCurrentUser } from "./session";
 export class AuthorizationError extends Error {
   constructor(
     message: string,
-    public code: string = "UNAUTHORIZED",
-    public statusCode: number = 403
+    public code = "UNAUTHORIZED",
+    public statusCode = 403
   ) {
     super(message);
     this.name = "AuthorizationError";
@@ -76,11 +76,7 @@ export async function requireCompanyMembership(): Promise<CompanyMembership> {
 
   const supabase = await createClient();
   if (!supabase) {
-    throw new AuthorizationError(
-      "Database connection failed",
-      "DB_ERROR",
-      500
-    );
+    throw new AuthorizationError("Database connection failed", "DB_ERROR", 500);
   }
 
   // Get active company membership with role and permissions
@@ -169,17 +165,13 @@ export async function requireCompanyAccess(
 export async function requireResourceAccess(
   tableName: string,
   resourceId: string,
-  resourceName: string = "resource"
+  resourceName = "resource"
 ): Promise<CompanyMembership> {
   const membership = await requireCompanyMembership();
   const supabase = await createClient();
 
   if (!supabase) {
-    throw new AuthorizationError(
-      "Database connection failed",
-      "DB_ERROR",
-      500
-    );
+    throw new AuthorizationError("Database connection failed", "DB_ERROR", 500);
   }
 
   // Verify resource exists and belongs to user's company
@@ -330,11 +322,7 @@ export async function requireCompanyOwner(): Promise<CompanyMembership> {
   const supabase = await createClient();
 
   if (!supabase) {
-    throw new AuthorizationError(
-      "Database connection failed",
-      "DB_ERROR",
-      500
-    );
+    throw new AuthorizationError("Database connection failed", "DB_ERROR", 500);
   }
 
   // Check if user is the owner
@@ -345,11 +333,7 @@ export async function requireCompanyOwner(): Promise<CompanyMembership> {
     .single();
 
   if (error || !company) {
-    throw new AuthorizationError(
-      "Company not found",
-      "COMPANY_NOT_FOUND",
-      404
-    );
+    throw new AuthorizationError("Company not found", "COMPANY_NOT_FOUND", 404);
   }
 
   if (company.owner_id !== membership.userId) {

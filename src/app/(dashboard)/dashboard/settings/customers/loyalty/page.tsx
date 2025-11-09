@@ -9,12 +9,22 @@
  * - Real-time settings updates with database integration
  */
 
-import { Crown, Gift, HelpCircle, Save, Star, TrendingUp, Loader2 } from "lucide-react";
+import {
+  Crown,
+  Gift,
+  HelpCircle,
+  Loader2,
+  Save,
+  Star,
+  TrendingUp,
+} from "lucide-react";
 import { useState } from "react";
+import {
+  getLoyaltySettings,
+  updateLoyaltySettings,
+} from "@/actions/settings/customers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getLoyaltySettings, updateLoyaltySettings } from "@/actions/settings/customers";
 import {
   Card,
   CardContent,
@@ -39,6 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 type Tier = {
   id: string;
@@ -60,32 +71,32 @@ export default function LoyaltyRewardsPage() {
     getter: getLoyaltySettings,
     setter: updateLoyaltySettings,
     initialState: {
-    enableLoyaltyProgram: true,
-    programName: "Rewards Program",
-    pointsPerDollar: 10,
-    pointsValue: 0.01,
-    minimumRedemption: 500,
-    pointsExpireDays: 365,
-    earnOnTaxes: false,
-    earnOnFees: true,
-    allowPartialRedemption: true,
-    enableReferralRewards: true,
-    referrerPoints: 500,
-    refereeDiscount: 25,
-    referralRequirement: "first_job",
-    enableBirthdayReward: true,
-    birthdayRewardType: "points",
-    birthdayRewardAmount: 100,
-    enableAnniversaryReward: true,
-    anniversaryRewardType: "discount",
-    anniversaryRewardAmount: 15,
-    enableTierSystem: true,
-    autoUpgradeTiers: true,
-    tierReviewPeriod: "annual",
-    sendTierChangeNotification: true,
-    displayPointsOnInvoice: true,
-    displayTierOnProfile: true,
-    allowPointsTransfer: false,
+      enableLoyaltyProgram: true,
+      programName: "Rewards Program",
+      pointsPerDollar: 10,
+      pointsValue: 0.01,
+      minimumRedemption: 500,
+      pointsExpireDays: 365,
+      earnOnTaxes: false,
+      earnOnFees: true,
+      allowPartialRedemption: true,
+      enableReferralRewards: true,
+      referrerPoints: 500,
+      refereeDiscount: 25,
+      referralRequirement: "first_job",
+      enableBirthdayReward: true,
+      birthdayRewardType: "points",
+      birthdayRewardAmount: 100,
+      enableAnniversaryReward: true,
+      anniversaryRewardType: "discount",
+      anniversaryRewardAmount: 15,
+      enableTierSystem: true,
+      autoUpgradeTiers: true,
+      tierReviewPeriod: "annual",
+      sendTierChangeNotification: true,
+      displayPointsOnInvoice: true,
+      displayTierOnProfile: true,
+      allowPointsTransfer: false,
     },
     settingsName: "loyalty",
     transformLoad: (data) => ({
@@ -118,11 +129,20 @@ export default function LoyaltyRewardsPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      formData.append("loyaltyEnabled", settings.enableLoyaltyProgram.toString());
+      formData.append(
+        "loyaltyEnabled",
+        settings.enableLoyaltyProgram.toString()
+      );
       formData.append("programName", settings.programName);
-      formData.append("pointsPerDollarSpent", settings.pointsPerDollar.toString());
+      formData.append(
+        "pointsPerDollarSpent",
+        settings.pointsPerDollar.toString()
+      );
       formData.append("pointsPerReferral", settings.referrerPoints.toString());
-      formData.append("pointsExpiryDays", settings.pointsExpireDays?.toString() || "");
+      formData.append(
+        "pointsExpiryDays",
+        settings.pointsExpireDays?.toString() || ""
+      );
       formData.append("autoApplyRewards", "false");
       formData.append("notifyOnPointsEarned", "true");
       return formData;
@@ -181,7 +201,7 @@ export default function LoyaltyRewardsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={() => saveSettings()} disabled={isPending}>
+            <Button disabled={isPending} onClick={() => saveSettings()}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

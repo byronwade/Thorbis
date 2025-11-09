@@ -11,10 +11,10 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { ActionError, ERROR_CODES } from "@/lib/errors/action-error";
 import { withErrorHandling } from "@/lib/errors/with-error-handling";
+import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -32,7 +32,9 @@ const adyenConfigSchema = z.object({
 const plaidConfigSchema = z.object({
   clientId: z.string().min(1),
   secret: z.string().min(1),
-  environment: z.enum(["sandbox", "development", "production"]).default("sandbox"),
+  environment: z
+    .enum(["sandbox", "development", "production"])
+    .default("sandbox"),
 });
 
 const profitstarsConfigSchema = z.object({
@@ -58,14 +60,21 @@ export async function configurePaymentProcessor(
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
-      throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
     }
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      throw new ActionError("Not authenticated", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
+      throw new ActionError(
+        "Not authenticated",
+        ERROR_CODES.AUTH_UNAUTHORIZED,
+        401
+      );
     }
 
     // Get user's company
@@ -76,11 +85,19 @@ export async function configurePaymentProcessor(
       .single();
 
     if (!teamMember?.company_id) {
-      throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
     }
 
     if (!["owner", "admin", "finance_manager"].includes(teamMember.role)) {
-      throw new ActionError("Insufficient permissions", ERROR_CODES.AUTH_FORBIDDEN, 403);
+      throw new ActionError(
+        "Insufficient permissions",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
     }
 
     const processorType = formData.get("processorType") as string;
@@ -133,17 +150,23 @@ export async function configurePaymentProcessor(
     // Add trust/risk settings
     const maxPaymentAmount = formData.get("maxPaymentAmount");
     if (maxPaymentAmount) {
-      configData.max_payment_amount = Math.round(Number.parseFloat(maxPaymentAmount as string) * 100); // Convert to cents
+      configData.max_payment_amount = Math.round(
+        Number.parseFloat(maxPaymentAmount as string) * 100
+      ); // Convert to cents
     }
 
     const maxDailyVolume = formData.get("maxDailyVolume");
     if (maxDailyVolume) {
-      configData.max_daily_volume = Math.round(Number.parseFloat(maxDailyVolume as string) * 100);
+      configData.max_daily_volume = Math.round(
+        Number.parseFloat(maxDailyVolume as string) * 100
+      );
     }
 
     const requiresApprovalAbove = formData.get("requiresApprovalAbove");
     if (requiresApprovalAbove) {
-      configData.requires_approval_above = Math.round(Number.parseFloat(requiresApprovalAbove as string) * 100);
+      configData.requires_approval_above = Math.round(
+        Number.parseFloat(requiresApprovalAbove as string) * 100
+      );
     }
 
     // Check if processor already exists
@@ -164,7 +187,8 @@ export async function configurePaymentProcessor(
         .select("id")
         .single();
 
-      if (error) throw new ActionError(error.message, ERROR_CODES.DB_QUERY_ERROR);
+      if (error)
+        throw new ActionError(error.message, ERROR_CODES.DB_QUERY_ERROR);
       result = data;
     } else {
       // Create new
@@ -174,7 +198,8 @@ export async function configurePaymentProcessor(
         .select("id")
         .single();
 
-      if (error) throw new ActionError(error.message, ERROR_CODES.DB_QUERY_ERROR);
+      if (error)
+        throw new ActionError(error.message, ERROR_CODES.DB_QUERY_ERROR);
       result = data;
     }
 
@@ -233,7 +258,9 @@ export async function getPaymentProcessorConfig(
       ...p,
       adyen_api_key_encrypted: p.adyen_api_key_encrypted ? "***" : null,
       plaid_secret_encrypted: p.plaid_secret_encrypted ? "***" : null,
-      profitstars_api_key_encrypted: p.profitstars_api_key_encrypted ? "***" : null,
+      profitstars_api_key_encrypted: p.profitstars_api_key_encrypted
+        ? "***"
+        : null,
     }));
 
     return { success: true, processors: sanitized };
@@ -298,14 +325,21 @@ export async function updateProcessorStatus(
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
-      throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
     }
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      throw new ActionError("Not authenticated", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
+      throw new ActionError(
+        "Not authenticated",
+        ERROR_CODES.AUTH_UNAUTHORIZED,
+        401
+      );
     }
 
     const { data: teamMember } = await supabase
@@ -315,11 +349,19 @@ export async function updateProcessorStatus(
       .single();
 
     if (!teamMember?.company_id) {
-      throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
     }
 
     if (!["owner", "admin", "finance_manager"].includes(teamMember.role)) {
-      throw new ActionError("Insufficient permissions", ERROR_CODES.AUTH_FORBIDDEN, 403);
+      throw new ActionError(
+        "Insufficient permissions",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
     }
 
     // Verify processor belongs to company
@@ -330,7 +372,11 @@ export async function updateProcessorStatus(
       .single();
 
     if (!processor || processor.company_id !== teamMember.company_id) {
-      throw new ActionError("Processor not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+      throw new ActionError(
+        "Processor not found",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
     }
 
     const { error } = await supabase
@@ -346,5 +392,3 @@ export async function updateProcessorStatus(
     return { success: true };
   });
 }
-
-

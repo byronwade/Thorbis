@@ -7,17 +7,23 @@
  * - Same datatable design as Jobs/Invoices
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
-import { Wrench, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
+import { Plus, Wrench } from "lucide-react";
 import dynamic from "next/dynamic";
+import {
+  CollapsibleActionButton,
+  CollapsibleDataSection,
+  EmptyStateActionButton,
+} from "@/components/ui/collapsible-data-section";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamically import to avoid SSR issues
 const EquipmentTable = dynamic(
-  () => import("@/components/work/equipment-table").then((mod) => ({ default: mod.EquipmentTable })),
+  () =>
+    import("@/components/work/equipment-table").then((mod) => ({
+      default: mod.EquipmentTable,
+    })),
   {
     ssr: false,
     loading: () => <Skeleton className="h-[200px] w-full" />,
@@ -34,9 +40,15 @@ export function EquipmentTableBlockComponent({ node, editor }: any) {
   };
 
   // Calculate equipment summary
-  const activeEquipment = (equipment || []).filter((eq: any) => eq.status === "active");
-  const inServiceEquipment = (equipment || []).filter((eq: any) => eq.status === "in_service");
-  const retiredEquipment = (equipment || []).filter((eq: any) => eq.status === "retired");
+  const activeEquipment = (equipment || []).filter(
+    (eq: any) => eq.status === "active"
+  );
+  const inServiceEquipment = (equipment || []).filter(
+    (eq: any) => eq.status === "in_service"
+  );
+  const retiredEquipment = (equipment || []).filter(
+    (eq: any) => eq.status === "retired"
+  );
 
   let summary = "";
   if (equipment.length === 0) {
@@ -74,76 +86,71 @@ export function EquipmentTableBlockComponent({ node, editor }: any) {
       condition: eq.condition,
       location: eq.location,
       assignedTo: eq.assigned_to,
-      property: property ? {
-        address: property.address,
-        city: property.city,
-        state: property.state,
-      } : null,
+      property: property
+        ? {
+            address: property.address,
+            city: property.city,
+            state: property.state,
+          }
+        : null,
       installDate: eq.install_date ? new Date(eq.install_date) : null,
-      lastServiceDate: eq.last_service_date ? new Date(eq.last_service_date) : null,
-      nextServiceDue: eq.next_service_due ? new Date(eq.next_service_due) : null,
-      warrantyExpiration: eq.warranty_expiration ? new Date(eq.warranty_expiration) : null,
+      lastServiceDate: eq.last_service_date
+        ? new Date(eq.last_service_date)
+        : null,
+      nextServiceDue: eq.next_service_due
+        ? new Date(eq.next_service_due)
+        : null,
+      warrantyExpiration: eq.warranty_expiration
+        ? new Date(eq.warranty_expiration)
+        : null,
       notes: eq.notes,
       createdAt: new Date(eq.created_at),
       updatedAt: new Date(eq.updated_at),
     } as any;
   });
 
-  if (!equipment || equipment.length === 0) {
-    return (
-      <NodeViewWrapper className="equipment-table-block">
-        <CollapsibleSectionWrapper
-          title="Equipment (0)"
-          icon={<Wrench className="size-5" />}
-          defaultOpen={false}
-          storageKey="customer-equipment-section"
-          summary="No equipment registered"
-          actions={
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleAddEquipment}
-              className="h-8 px-3 text-xs gap-1.5"
-            >
-              <Plus className="size-4" />
-              Add Equipment
-            </Button>
-          }
-        >
-          <div className="rounded-lg border bg-muted/30 p-8 text-center">
-            <Wrench className="mx-auto mb-3 size-12 text-muted-foreground/50" />
-            <p className="text-muted-foreground">No equipment registered</p>
-          </div>
-        </CollapsibleSectionWrapper>
-      </NodeViewWrapper>
-    );
-  }
-
   return (
     <NodeViewWrapper className="equipment-table-block">
-      <CollapsibleSectionWrapper
-        title={`Equipment (${equipment.length})`}
-        icon={<Wrench className="size-5" />}
+      <CollapsibleDataSection
+        actions={
+          <CollapsibleActionButton
+            icon={<Plus className="size-4" />}
+            onClick={handleAddEquipment}
+          >
+            Add Equipment
+          </CollapsibleActionButton>
+        }
+        count={equipment.length}
         defaultOpen={false}
+        emptyState={
+          !equipment || equipment.length === 0
+            ? {
+                show: true,
+                icon: <Wrench className="h-8 w-8 text-muted-foreground" />,
+                title: "No equipment registered",
+                description: "Get started by adding your first equipment.",
+                action: (
+                  <EmptyStateActionButton
+                    icon={<Plus className="size-4" />}
+                    onClick={handleAddEquipment}
+                  >
+                    Add Equipment
+                  </EmptyStateActionButton>
+                ),
+              }
+            : undefined
+        }
+        fullWidthContent={true}
+        icon={<Wrench className="size-5" />}
+        standalone={true}
         storageKey="customer-equipment-section"
         summary={summary}
-        actions={
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleAddEquipment}
-            className="gap-1"
-          >
-            <Plus className="size-4" />
-            Add Equipment
-          </Button>
-        }
+        title={`Equipment (${equipment.length})`}
+        value="customer-equipment"
       >
         {/* Use EquipmentTable component */}
-        <div className="-mx-6 -mt-6 -mb-6">
-          <EquipmentTable equipment={transformedEquipment} itemsPerPage={10} />
-        </div>
-      </CollapsibleSectionWrapper>
+        <EquipmentTable equipment={transformedEquipment} itemsPerPage={10} />
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -178,7 +185,11 @@ export const EquipmentTableBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "equipment-table-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, { "data-type": "equipment-table-block" }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -189,12 +200,11 @@ export const EquipmentTableBlock = Node.create({
     return {
       insertEquipmentTableBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

@@ -14,9 +14,9 @@
  * SECURITY: Verifies webhook signature to ensure requests come from Stripe
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import Stripe from "stripe";
+import { type NextRequest, NextResponse } from "next/server";
+import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -41,10 +41,7 @@ export async function POST(request: NextRequest) {
 
   if (!signature) {
     console.error("No Stripe signature found");
-    return NextResponse.json(
-      { error: "No signature found" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "No signature found" }, { status: 400 });
   }
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -57,7 +54,10 @@ export async function POST(request: NextRequest) {
   }
 
   if (!stripe) {
-    return NextResponse.json({ error: "Payment service unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Payment service unavailable" },
+      { status: 503 }
+    );
   }
 
   let event: Stripe.Event;
@@ -70,7 +70,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "Signature verification failed",
+          error instanceof Error
+            ? error.message
+            : "Signature verification failed",
       },
       { status: 400 }
     );
@@ -132,9 +134,9 @@ async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (!supabase) {
     console.error("Supabase not configured");
     return;
@@ -144,14 +146,15 @@ async function handleCheckoutSessionCompleted(
   const companyId = session.metadata?.company_id;
   const phoneNumber = session.metadata?.phone_number;
 
-  if (!companyId || !subscriptionId) {
+  if (!(companyId && subscriptionId)) {
     console.error("Missing company_id or subscription_id in session metadata");
     return;
   }
 
   // Get subscription details from Stripe
   if (!stripe) return;
-  const subscriptionData: any = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscriptionData: any =
+    await stripe.subscriptions.retrieve(subscriptionId);
 
   // Update company with subscription details
   await supabase
@@ -180,11 +183,15 @@ async function handleCheckoutSessionCompleted(
         phoneNumber,
         companyId,
       });
-      
+
       if (purchaseResult.success) {
-        console.log(`Phone number ${phoneNumber} purchased for company ${companyId}`);
-      } else if ('error' in purchaseResult) {
-        console.error(`Failed to purchase phone number: ${purchaseResult.error}`);
+        console.log(
+          `Phone number ${phoneNumber} purchased for company ${companyId}`
+        );
+      } else if ("error" in purchaseResult) {
+        console.error(
+          `Failed to purchase phone number: ${purchaseResult.error}`
+        );
       }
     } catch (error) {
       console.error("Error purchasing phone number after payment:", error);
@@ -203,9 +210,9 @@ async function handleCheckoutSessionCompleted(
  */
 async function handleSubscriptionUpdated(subscription: any) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (!supabase) {
     console.error("Supabase not configured");
     return;
@@ -236,7 +243,9 @@ async function handleSubscriptionUpdated(subscription: any) {
     })
     .eq("stripe_subscription_id", subscription.id);
 
-  console.log(`Subscription ${subscription.id} updated for company ${companyId}`);
+  console.log(
+    `Subscription ${subscription.id} updated for company ${companyId}`
+  );
 }
 
 /**
@@ -246,9 +255,9 @@ async function handleSubscriptionUpdated(subscription: any) {
  */
 async function handleSubscriptionDeleted(subscription: any) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (!supabase) {
     console.error("Supabase not configured");
     return;
@@ -273,9 +282,9 @@ async function handleSubscriptionDeleted(subscription: any) {
  */
 async function handleInvoicePaymentSucceeded(invoice: any) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (!supabase) {
     console.error("Supabase not configured");
     return;
@@ -305,9 +314,9 @@ async function handleInvoicePaymentSucceeded(invoice: any) {
  */
 async function handleInvoicePaymentFailed(invoice: any) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (!supabase) {
     console.error("Supabase not configured");
     return;

@@ -7,7 +7,7 @@
  * - Client Component compatible
  */
 
-import { loadStripe, Stripe } from "@stripe/stripe-js";
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
 
 let stripePromise: Promise<Stripe | null> | null = null;
 

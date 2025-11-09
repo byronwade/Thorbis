@@ -12,11 +12,19 @@
 
 "use client";
 
+import { Calendar, History, Plus, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { Plus, Calendar, TrendingUp, History, CreditCard } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -24,14 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 interface PaymentsManagerProps {
@@ -50,12 +50,11 @@ export function PaymentsManager({
   const [isRecording, setIsRecording] = useState(false);
 
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   // Calculate payment progress
   const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
@@ -75,7 +74,7 @@ export function PaymentsManager({
             <span className="text-muted-foreground">Payment Progress</span>
             <span className="font-medium">{percentPaid.toFixed(0)}%</span>
           </div>
-          <Progress value={percentPaid} className="h-2" />
+          <Progress className="h-2" value={percentPaid} />
           <div className="flex justify-between text-xs">
             <span>
               <span className="text-muted-foreground">Paid:</span>{" "}
@@ -83,7 +82,9 @@ export function PaymentsManager({
             </span>
             <span>
               <span className="text-muted-foreground">Due:</span>{" "}
-              <span className="font-semibold">{formatCurrency(balanceDue)}</span>
+              <span className="font-semibold">
+                {formatCurrency(balanceDue)}
+              </span>
             </span>
           </div>
         </div>
@@ -91,8 +92,8 @@ export function PaymentsManager({
 
       {/* Quick Record Payment */}
       <Button
-        onClick={() => setIsRecording(!isRecording)}
         className="mb-4 w-full gap-2"
+        onClick={() => setIsRecording(!isRecording)}
         variant={isRecording ? "outline" : "default"}
       >
         <Plus className="size-4" />
@@ -103,11 +104,11 @@ export function PaymentsManager({
         <div className="mb-4 space-y-3 rounded-lg border p-4">
           <div>
             <Label className="text-xs">Amount</Label>
-            <Input type="number" placeholder="0.00" className="mt-1" />
+            <Input className="mt-1" placeholder="0.00" type="number" />
           </div>
           <div>
             <Label className="text-xs">Date</Label>
-            <Input type="date" className="mt-1" />
+            <Input className="mt-1" type="date" />
           </div>
           <div>
             <Label className="text-xs">Method</Label>
@@ -124,10 +125,14 @@ export function PaymentsManager({
             </Select>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" className="flex-1">
+            <Button className="flex-1" size="sm">
               Save Payment
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setIsRecording(false)}>
+            <Button
+              onClick={() => setIsRecording(false)}
+              size="sm"
+              variant="outline"
+            >
               Cancel
             </Button>
           </div>
@@ -137,7 +142,11 @@ export function PaymentsManager({
       <Separator className="my-4" />
 
       {/* Payment Sections */}
-      <Accordion type="multiple" className="flex-1 overflow-y-auto" defaultValue={["history"]}>
+      <Accordion
+        className="flex-1 overflow-y-auto"
+        defaultValue={["history"]}
+        type="multiple"
+      >
         {/* Payment History */}
         <AccordionItem value="history">
           <AccordionTrigger className="text-sm">
@@ -149,18 +158,20 @@ export function PaymentsManager({
           <AccordionContent>
             <div className="space-y-2">
               {payments.length === 0 ? (
-                <p className="text-center text-muted-foreground text-xs">No payments yet</p>
+                <p className="text-center text-muted-foreground text-xs">
+                  No payments yet
+                </p>
               ) : (
                 payments.map((payment) => (
                   <div
-                    key={payment.id}
                     className="rounded-md border bg-card p-3 text-sm"
+                    key={payment.id}
                   >
                     <div className="mb-1 flex items-start justify-between">
                       <span className="font-semibold">
                         {formatCurrency(payment.amount)}
                       </span>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge className="text-xs" variant="outline">
                         {payment.method}
                       </Badge>
                     </div>
@@ -192,7 +203,7 @@ export function PaymentsManager({
               <p className="text-muted-foreground text-xs">
                 Set up installment payment schedules
               </p>
-              <Button size="sm" variant="outline" className="w-full gap-2">
+              <Button className="w-full gap-2" size="sm" variant="outline">
                 <Plus className="size-4" />
                 Create Payment Plan
               </Button>
@@ -213,7 +224,7 @@ export function PaymentsManager({
               <p className="text-muted-foreground text-xs">
                 Milestone-based payments (deposits, progress, completion)
               </p>
-              <Button size="sm" variant="outline" className="w-full gap-2">
+              <Button className="w-full gap-2" size="sm" variant="outline">
                 <Plus className="size-4" />
                 Set Up Milestones
               </Button>

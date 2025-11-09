@@ -19,14 +19,14 @@
  * - Workflow automation
  */
 
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
-import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { JobHeaderPermanent } from "@/components/work/job-details/job-header-permanent";
-import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
+import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
+import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
+import { createClient } from "@/lib/supabase/server";
 
 // Lazy load the editor to reduce initial bundle size
 // Note: No ssr: false needed - JobPageEditor is already a client component
@@ -161,14 +161,14 @@ export default async function JobDetailsPage({
   // Fetch all customers for this job
   const { data: jobCustomers } = await supabase
     .from("job_customers")
-    .select(`*, customer:customers(*)`)
+    .select("*, customer:customers(*)")
     .eq("job_id", jobId)
     .order("is_primary", { ascending: false });
 
   // Fetch all properties for this job
   const { data: jobProperties } = await supabase
     .from("job_properties")
-    .select(`*, property:properties(*)`)
+    .select("*, property:properties(*)")
     .eq("job_id", jobId)
     .order("is_primary", { ascending: false });
 
@@ -256,8 +256,7 @@ export default async function JobDetailsPage({
 
   // Calculate total labor hours
   const totalLaborHours =
-    timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) ||
-    0;
+    timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
 
   // ============================================================================
   // Financials
@@ -433,17 +432,16 @@ export default async function JobDetailsPage({
     cancelled: 0,
     on_hold: 40,
   };
-  const completionPercentage =
-    statusCompletionMap[job.status as string] || 0;
+  const completionPercentage = statusCompletionMap[job.status as string] || 0;
 
   const metrics = {
     totalAmount: job.total_amount || 0,
     paidAmount: job.paid_amount || 0,
-    totalLaborHours: totalLaborHours,
+    totalLaborHours,
     estimatedLaborHours: job.estimated_labor_hours || 0,
-    materialsCost: materialsCost,
-    profitMargin: profitMargin,
-    completionPercentage: completionPercentage,
+    materialsCost,
+    profitMargin,
+    completionPercentage,
   };
 
   // ============================================================================
@@ -455,46 +453,46 @@ export default async function JobDetailsPage({
       {/* Sticky Stats Bar - Becomes compact on scroll */}
       <StickyStatsBar>
         <JobStatsBar
-          metrics={metrics}
           jobId={jobId}
+          metrics={metrics}
           status={job.status as string}
         />
       </StickyStatsBar>
 
       {/* Job Header - Permanent */}
       <JobHeaderPermanent
-        job={job}
-        customer={customer}
-        property={property}
         assignedUser={assignedUser}
+        customer={customer}
         enrichmentData={propertyEnrichment}
+        job={job}
+        property={property}
       />
 
       {/* Main Content - Tabbed Editor */}
       <JobPageEditor
-        job={job}
-        customer={customer}
-        customers={jobCustomers || []}
-        property={property}
-        properties={jobProperties || []}
-        propertyEnrichment={propertyEnrichment}
+        activities={activities || []}
         assignedUser={assignedUser}
-        teamAssignments={teamAssignments || []}
-        timeEntries={timeEntries || []}
-        invoices={invoices || []}
+        communications={communications || []}
+        customer={customer}
+        customerSignature={customerSignature}
+        customers={jobCustomers || []}
+        documents={documents || []}
+        equipment={equipment || []}
         estimates={estimates || []}
+        invoices={invoices || []}
+        job={job}
         materials={materials || []}
+        metrics={metrics}
         photos={photos || []}
         photosByCategory={photosByCategory}
-        documents={documents || []}
+        properties={jobProperties || []}
+        property={property}
+        propertyEnrichment={propertyEnrichment}
         signatures={signatures || []}
-        customerSignature={customerSignature}
+        teamAssignments={teamAssignments || []}
         technicianSignature={technicianSignature}
-        activities={activities || []}
-        communications={communications || []}
-        equipment={equipment || []}
+        timeEntries={timeEntries || []}
         workflowStages={workflowStages || []}
-        metrics={metrics}
       />
     </div>
   );

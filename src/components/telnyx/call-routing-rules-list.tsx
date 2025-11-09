@@ -14,9 +14,9 @@
  * - Optimistic UI updates
  */
 
-import { Suspense } from "react";
+import { Clock, Menu, Phone, Settings, Users } from "lucide-react";
 import { getCallRoutingRules } from "@/actions/telnyx";
-import { getUserCompanyId } from "@/lib/auth/user-data";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,18 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import {
-  ArrowUp,
-  ArrowDown,
-  Clock,
-  Phone,
-  Users,
-  Menu,
-  Settings,
-  Trash2,
-} from "lucide-react";
+import { getUserCompanyId } from "@/lib/auth/user-data";
 import { CallRoutingRuleActions } from "./call-routing-rule-actions";
 
 export async function CallRoutingRulesList() {
@@ -52,10 +41,12 @@ export async function CallRoutingRulesList() {
 
   const result = await getCallRoutingRules(companyId);
 
-  if (!result.success || !result.data) {
+  if (!(result.success && result.data)) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-destructive">{result.error || "Failed to load routing rules"}</p>
+        <p className="text-destructive">
+          {result.error || "Failed to load routing rules"}
+        </p>
       </div>
     );
   }
@@ -65,9 +56,9 @@ export async function CallRoutingRulesList() {
   if (rules.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12">
-        <Phone className="h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold mb-2">No Routing Rules</h3>
-        <p className="text-muted-foreground mb-4">
+        <Phone className="mb-4 h-12 w-12 text-muted-foreground" />
+        <h3 className="mb-2 font-semibold text-lg">No Routing Rules</h3>
+        <p className="mb-4 text-muted-foreground">
           Create your first call routing rule to get started
         </p>
         <Button>Create Routing Rule</Button>
@@ -78,11 +69,11 @@ export async function CallRoutingRulesList() {
   return (
     <div className="space-y-4 p-6">
       {rules.map((rule) => (
-        <Card key={rule.id} className={!rule.is_active ? "opacity-60" : ""}>
+        <Card className={rule.is_active ? "" : "opacity-60"} key={rule.id}>
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="mb-2 flex items-center gap-3">
                   <CardTitle className="text-lg">{rule.name}</CardTitle>
                   <Badge variant={rule.is_active ? "default" : "secondary"}>
                     {rule.is_active ? "Active" : "Inactive"}
@@ -94,7 +85,7 @@ export async function CallRoutingRulesList() {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="font-mono">
+                <Badge className="font-mono" variant="outline">
                   Priority: {rule.priority}
                 </Badge>
                 <CallRoutingRuleActions rule={rule} />
@@ -103,7 +94,7 @@ export async function CallRoutingRulesList() {
           </CardHeader>
 
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {/* Routing Details */}
               <RoutingDetails rule={rule} />
 
@@ -145,7 +136,7 @@ function RoutingTypeBadge({ type }: { type: string }) {
   };
 
   return (
-    <Badge variant="outline" className="gap-1.5">
+    <Badge className="gap-1.5" variant="outline">
       {icons[type as keyof typeof icons]}
       {labels[type as keyof typeof labels] || type}
     </Badge>
@@ -155,17 +146,15 @@ function RoutingTypeBadge({ type }: { type: string }) {
 function RoutingDetails({ rule }: { rule: any }) {
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium">Routing Configuration</h4>
-      <div className="text-sm text-muted-foreground space-y-1">
+      <h4 className="font-medium text-sm">Routing Configuration</h4>
+      <div className="space-y-1 text-muted-foreground text-sm">
         {rule.routing_type === "direct" && rule.forward_to_number && (
           <p>Forward to: {rule.forward_to_number}</p>
         )}
         {rule.routing_type === "round_robin" && (
           <p>Ring timeout: {rule.ring_timeout}s</p>
         )}
-        {rule.routing_type === "ivr" && (
-          <p>IVR Menu configured</p>
-        )}
+        {rule.routing_type === "ivr" && <p>IVR Menu configured</p>}
         {rule.routing_type === "business_hours" && (
           <>
             <p>Timezone: {rule.timezone}</p>
@@ -183,8 +172,8 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
   if (!businessHours) {
     return (
       <div className="space-y-2">
-        <h4 className="text-sm font-medium">Business Hours</h4>
-        <p className="text-sm text-muted-foreground">Not configured</p>
+        <h4 className="font-medium text-sm">Business Hours</h4>
+        <p className="text-muted-foreground text-sm">Not configured</p>
       </div>
     );
   }
@@ -194,13 +183,14 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium">Business Hours</h4>
-      <div className="text-sm text-muted-foreground">
+      <h4 className="font-medium text-sm">Business Hours</h4>
+      <div className="text-muted-foreground text-sm">
         <p>{configuredDays.length} days configured</p>
         {configuredDays.length > 0 && (
-          <p className="text-xs mt-1">
+          <p className="mt-1 text-xs">
             {configuredDays.slice(0, 3).join(", ")}
-            {configuredDays.length > 3 && `, +${configuredDays.length - 3} more`}
+            {configuredDays.length > 3 &&
+              `, +${configuredDays.length - 3} more`}
           </p>
         )}
       </div>
@@ -211,8 +201,8 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
 function TeamMembersInfo({ teamMembers }: { teamMembers: string[] }) {
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium">Team Members</h4>
-      <div className="text-sm text-muted-foreground">
+      <h4 className="font-medium text-sm">Team Members</h4>
+      <div className="text-muted-foreground text-sm">
         <p>{teamMembers.length} members in rotation</p>
       </div>
     </div>
@@ -233,10 +223,10 @@ function FeaturesInfo({ rule }: { rule: any }) {
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium">Features</h4>
+      <h4 className="font-medium text-sm">Features</h4>
       <div className="flex flex-wrap gap-1">
         {features.map((feature) => (
-          <Badge key={feature} variant="secondary" className="text-xs">
+          <Badge className="text-xs" key={feature} variant="secondary">
             {feature}
           </Badge>
         ))}

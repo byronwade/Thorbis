@@ -24,10 +24,12 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  getChecklistSettings,
+  updateChecklistSettings,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getChecklistSettings, updateChecklistSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -45,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -106,26 +109,26 @@ export default function ChecklistsPage() {
     getter: getChecklistSettings,
     setter: updateChecklistSettings,
     initialState: {
-    // General Settings
-    enableChecklists: true,
-    requireChecklistCompletion: true,
-    allowTechnicianSkip: true,
-    requireSkipReason: true,
+      // General Settings
+      enableChecklists: true,
+      requireChecklistCompletion: true,
+      allowTechnicianSkip: true,
+      requireSkipReason: true,
 
-    // Photo Requirements
-    requirePhotos: true,
-    photoQualityCheck: false,
-    minimumPhotosPerJob: 2,
+      // Photo Requirements
+      requirePhotos: true,
+      photoQualityCheck: false,
+      minimumPhotosPerJob: 2,
 
-    // Completion Settings
-    requireAllItemsChecked: false,
-    allowPartialCompletion: true,
-    saveIncompleteLists: true,
+      // Completion Settings
+      requireAllItemsChecked: false,
+      allowPartialCompletion: true,
+      saveIncompleteLists: true,
 
-    // Customer Visibility
-    shareChecklistWithCustomer: true,
-    includeInJobSummary: true,
-    customerCanViewInPortal: true,
+      // Customer Visibility
+      shareChecklistWithCustomer: true,
+      includeInJobSummary: true,
+      customerCanViewInPortal: true,
     },
     settingsName: "checklists",
     transformLoad: (data) => ({
@@ -135,9 +138,18 @@ export default function ChecklistsPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      formData.append("requireChecklistCompletion", settings.requireChecklistCompletion.toString());
-      formData.append("allowSkipItems", settings.allowTechnicianSkip.toString());
-      formData.append("requirePhotosForChecklist", settings.requirePhotos.toString());
+      formData.append(
+        "requireChecklistCompletion",
+        settings.requireChecklistCompletion.toString()
+      );
+      formData.append(
+        "allowSkipItems",
+        settings.allowTechnicianSkip.toString()
+      );
+      formData.append(
+        "requirePhotosForChecklist",
+        settings.requirePhotos.toString()
+      );
       formData.append("autoAssignByJobType", "true");
       return formData;
     },

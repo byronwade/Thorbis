@@ -4,10 +4,10 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Activity, MessageSquare } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ActivityTabProps {
   job: any;
@@ -16,21 +16,28 @@ interface ActivityTabProps {
   customer: any;
 }
 
-export function ActivityTab({ job, activities, communications, customer }: ActivityTabProps) {
-  const formatDateTime = (date: string) => {
-    return new Intl.DateTimeFormat("en-US", {
+export function ActivityTab({
+  job,
+  activities,
+  communications,
+  customer,
+}: ActivityTabProps) {
+  const formatDateTime = (date: string) =>
+    new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
     }).format(new Date(date));
-  };
 
   // Combine and sort activities and communications
   const timeline = [
     ...activities.map((a) => ({ ...a, type: "activity" })),
     ...communications.map((c) => ({ ...c, type: "communication" })),
-  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  ].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -46,27 +53,37 @@ export function ActivityTab({ job, activities, communications, customer }: Activ
           {timeline.length > 0 ? (
             <div className="space-y-4">
               {timeline.map((item, index) => {
-                const user = Array.isArray(item.user) ? item.user[0] : item.user;
+                const user = Array.isArray(item.user)
+                  ? item.user[0]
+                  : item.user;
                 return (
-                  <div key={item.id || index} className="flex gap-3">
+                  <div className="flex gap-3" key={item.id || index}>
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.avatar} />
                       <AvatarFallback className="text-xs">
-                        {user?.name?.split(" ").map((n: string) => n[0]).join("") || "?"}
+                        {user?.name
+                          ?.split(" ")
+                          .map((n: string) => n[0])
+                          .join("") || "?"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">{user?.name || "System"}</span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="font-medium text-sm">
+                          {user?.name || "System"}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
                           {formatDateTime(item.created_at)}
                         </span>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           {item.type}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {item.description || item.subject || item.body || "Activity logged"}
+                      <p className="text-muted-foreground text-sm">
+                        {item.description ||
+                          item.subject ||
+                          item.body ||
+                          "Activity logged"}
                       </p>
                     </div>
                   </div>
@@ -74,7 +91,7 @@ export function ActivityTab({ job, activities, communications, customer }: Activ
               })}
             </div>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No activity recorded yet
             </div>
           )}
@@ -93,22 +110,24 @@ export function ActivityTab({ job, activities, communications, customer }: Activ
           {communications.length > 0 ? (
             <div className="space-y-3">
               {communications.map((comm) => (
-                <div key={comm.id} className="rounded-lg border p-3">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="rounded-lg border p-3" key={comm.id}>
+                  <div className="mb-2 flex items-center justify-between">
                     <Badge>{comm.type?.toUpperCase()}</Badge>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       {formatDateTime(comm.created_at)}
                     </span>
                   </div>
-                  <p className="text-sm font-medium">{comm.subject}</p>
+                  <p className="font-medium text-sm">{comm.subject}</p>
                   {comm.body && (
-                    <p className="text-sm text-muted-foreground mt-1">{comm.body}</p>
+                    <p className="mt-1 text-muted-foreground text-sm">
+                      {comm.body}
+                    </p>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No communications logged
             </div>
           )}

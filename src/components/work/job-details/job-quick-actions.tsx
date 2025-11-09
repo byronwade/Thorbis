@@ -5,9 +5,7 @@
 
 "use client";
 
-import {
-  CheckCircle,
-} from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { completeJob, startJob } from "@/actions/jobs";
@@ -69,36 +67,33 @@ export function JobQuickActions({
   const isCompleted = currentStatus === "completed";
   const isCancelled = currentStatus === "cancelled";
 
-
   return (
     <div className="space-y-3">
       {/* Primary Action Button */}
-      {!(isCompleted || isCancelled) &&
-        (canArrive || canClose) && (
-          <div className="flex justify-end">
-            {canArrive && (
-              <Button
-                className="bg-green-600 hover:bg-green-700"
-                disabled={isLoading === "arrive"}
-                onClick={handleArrive}
-              >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                {isLoading === "arrive" ? "Arriving..." : "Arrive at Site"}
-              </Button>
-            )}
-            {canClose && (
-              <Button
-                className="bg-purple-600 hover:bg-purple-700"
-                disabled={isLoading === "close"}
-                onClick={handleClose}
-              >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                {isLoading === "close" ? "Closing..." : "Complete Job"}
-              </Button>
-            )}
-          </div>
-        )}
-
+      {!(isCompleted || isCancelled) && (canArrive || canClose) && (
+        <div className="flex justify-end">
+          {canArrive && (
+            <Button
+              className="bg-green-600 hover:bg-green-700"
+              disabled={isLoading === "arrive"}
+              onClick={handleArrive}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              {isLoading === "arrive" ? "Arriving..." : "Arrive at Site"}
+            </Button>
+          )}
+          {canClose && (
+            <Button
+              className="bg-purple-600 hover:bg-purple-700"
+              disabled={isLoading === "close"}
+              onClick={handleClose}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              {isLoading === "close" ? "Closing..." : "Complete Job"}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -22,64 +22,72 @@ export const BusinessEnrichmentSchema = z.object({
   // Basic info
   businessName: z.string(),
   businessType: z.string().optional(),
-  
+
   // Contact info
   phone: z.string().optional(),
   website: z.string().url().optional(),
   email: z.string().email().optional(),
-  
+
   // Location
-  address: z.object({
-    street: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
-  }).optional(),
-  
+  address: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      zipCode: z.string().optional(),
+      country: z.string().optional(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+    })
+    .optional(),
+
   // Business details
   description: z.string().optional(),
   categories: z.array(z.string()).optional(),
   priceLevel: z.number().min(1).max(4).optional(), // 1-4 dollar signs
-  
+
   // Reviews and ratings
   rating: z.number().min(0).max(5).optional(),
   reviewCount: z.number().optional(),
-  reviews: z.array(
-    z.object({
-      author: z.string(),
-      rating: z.number(),
-      text: z.string(),
-      time: z.string(),
-    })
-  ).optional(),
-  
+  reviews: z
+    .array(
+      z.object({
+        author: z.string(),
+        rating: z.number(),
+        text: z.string(),
+        time: z.string(),
+      })
+    )
+    .optional(),
+
   // Operating hours
-  hours: z.object({
-    monday: z.string().optional(),
-    tuesday: z.string().optional(),
-    wednesday: z.string().optional(),
-    thursday: z.string().optional(),
-    friday: z.string().optional(),
-    saturday: z.string().optional(),
-    sunday: z.string().optional(),
-  }).optional(),
-  
+  hours: z
+    .object({
+      monday: z.string().optional(),
+      tuesday: z.string().optional(),
+      wednesday: z.string().optional(),
+      thursday: z.string().optional(),
+      friday: z.string().optional(),
+      saturday: z.string().optional(),
+      sunday: z.string().optional(),
+    })
+    .optional(),
+
   // Photos
   photos: z.array(z.string().url()).optional(),
-  
+
   // Company registration (from OpenCorporates)
-  registration: z.object({
-    companyNumber: z.string().optional(),
-    jurisdiction: z.string().optional(),
-    incorporationDate: z.string().optional(),
-    companyType: z.string().optional(),
-    status: z.string().optional(),
-    registeredAddress: z.string().optional(),
-  }).optional(),
-  
+  registration: z
+    .object({
+      companyNumber: z.string().optional(),
+      jurisdiction: z.string().optional(),
+      incorporationDate: z.string().optional(),
+      companyType: z.string().optional(),
+      status: z.string().optional(),
+      registeredAddress: z.string().optional(),
+    })
+    .optional(),
+
   // Metadata
   source: z.enum(["google_places", "opencorporates", "combined"]),
   confidence: z.number().min(0).max(100),
@@ -133,13 +141,16 @@ export class BusinessEnrichmentService {
     }
 
     // Combine results
-    if (!placesData && !corporatesData) {
+    if (!(placesData || corporatesData)) {
       return null;
     }
 
     // Merge data from both sources
     return BusinessEnrichmentSchema.parse({
-      businessName: placesData?.businessName || corporatesData?.businessName || businessName,
+      businessName:
+        placesData?.businessName ||
+        corporatesData?.businessName ||
+        businessName,
       businessType: placesData?.businessType || corporatesData?.businessType,
       phone: placesData?.phone,
       website: placesData?.website,
@@ -154,7 +165,12 @@ export class BusinessEnrichmentService {
       hours: placesData?.hours,
       photos: placesData?.photos,
       registration: corporatesData?.registration,
-      source: placesData && corporatesData ? "combined" : placesData ? "google_places" : "opencorporates",
+      source:
+        placesData && corporatesData
+          ? "combined"
+          : placesData
+            ? "google_places"
+            : "opencorporates",
       confidence: placesData ? 90 : 70,
       enrichedAt: new Date().toISOString(),
     });
@@ -184,7 +200,9 @@ export class BusinessEnrichmentService {
 
     const searchResponse = await fetch(searchUrl);
     if (!searchResponse.ok) {
-      throw new Error(`Google Places search error: ${searchResponse.statusText}`);
+      throw new Error(
+        `Google Places search error: ${searchResponse.statusText}`
+      );
     }
 
     const searchData = await searchResponse.json();
@@ -199,7 +217,9 @@ export class BusinessEnrichmentService {
 
     const detailsResponse = await fetch(detailsUrl);
     if (!detailsResponse.ok) {
-      throw new Error(`Google Places details error: ${detailsResponse.statusText}`);
+      throw new Error(
+        `Google Places details error: ${detailsResponse.statusText}`
+      );
     }
 
     const detailsData = await detailsResponse.json();
@@ -226,9 +246,12 @@ export class BusinessEnrichmentService {
       : undefined;
 
     // Get photo URLs (first 5)
-    const photos = place.photos?.slice(0, 5).map((photo: any) => 
-      `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${this.googlePlacesApiKey}`
-    );
+    const photos = place.photos
+      ?.slice(0, 5)
+      .map(
+        (photo: any) =>
+          `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${this.googlePlacesApiKey}`
+      );
 
     return {
       businessName: place.name,
@@ -304,4 +327,3 @@ export class BusinessEnrichmentService {
 
 // Singleton instance
 export const businessEnrichmentService = new BusinessEnrichmentService();
-

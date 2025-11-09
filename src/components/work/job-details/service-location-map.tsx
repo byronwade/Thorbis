@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { MapPin, Maximize2, Store } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Supplier = {
@@ -116,8 +116,11 @@ export function ServiceLocationMap({
 
   // Initialize compact map
   useEffect(() => {
-    console.log("[ServiceLocationMap] useEffect called, ref exists:", !!compactMapRef.current);
-    
+    console.log(
+      "[ServiceLocationMap] useEffect called, ref exists:",
+      !!compactMapRef.current
+    );
+
     if (!apiKey) {
       console.error("[ServiceLocationMap] ❌ No API key");
       setError("Google Maps API key not configured");
@@ -143,12 +146,16 @@ export function ServiceLocationMap({
       if (!compactMapRef.current) {
         retryCount++;
         if (retryCount >= MAX_RETRIES) {
-          console.error("[ServiceLocationMap] ❌ Max retries reached, ref never ready");
+          console.error(
+            "[ServiceLocationMap] ❌ Max retries reached, ref never ready"
+          );
           setError("Failed to initialize map");
           setIsLoading(false);
           return;
         }
-        console.warn(`[ServiceLocationMap] ⚠️ Ref not ready (${retryCount}/${MAX_RETRIES}), retrying...`);
+        console.warn(
+          `[ServiceLocationMap] ⚠️ Ref not ready (${retryCount}/${MAX_RETRIES}), retrying...`
+        );
         timeoutId = setTimeout(attemptInit, 100);
         return;
       }
@@ -159,7 +166,11 @@ export function ServiceLocationMap({
           if (!isMounted) return;
           console.log("[ServiceLocationMap] ✅ Script loaded");
           if (compactMapRef.current && !compactMapInstance.current) {
-            console.log("[ServiceLocationMap] Initializing map with lat/lon:", lat, lon);
+            console.log(
+              "[ServiceLocationMap] Initializing map with lat/lon:",
+              lat,
+              lon
+            );
             initMap(compactMapRef.current, false);
           }
         })
@@ -194,8 +205,11 @@ export function ServiceLocationMap({
   }, [isExpanded]);
 
   const initMap = (container: HTMLDivElement, isExpanded: boolean) => {
-    console.log("[ServiceLocationMap] initMap called", { isExpanded, hasGoogle: !!window.google?.maps });
-    
+    console.log("[ServiceLocationMap] initMap called", {
+      isExpanded,
+      hasGoogle: !!window.google?.maps,
+    });
+
     if (!window.google?.maps) {
       console.error("[ServiceLocationMap] ❌ Google Maps not loaded");
       return;
@@ -209,7 +223,7 @@ export function ServiceLocationMap({
       streetViewControl: false,
       fullscreenControl: isExpanded,
     });
-    
+
     console.log("[ServiceLocationMap] ✅ Map created");
 
     // Add job location marker (red)
@@ -296,10 +310,8 @@ export function ServiceLocationMap({
       <div className="group relative overflow-hidden rounded-lg border bg-card">
         {/* Map Container */}
         <div className="relative h-[180px] w-full">
-          <div ref={compactMapRef} className="h-full w-full" />
-          {isLoading && (
-            <Skeleton className="absolute inset-0 h-full w-full" />
-          )}
+          <div className="h-full w-full" ref={compactMapRef} />
+          {isLoading && <Skeleton className="absolute inset-0 h-full w-full" />}
 
           {/* Overlay Info */}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3">
@@ -307,7 +319,7 @@ export function ServiceLocationMap({
               <div className="flex-1">
                 <div className="mb-1 flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-white" />
-                  <span className="font-semibold text-white text-sm">
+                  <span className="font-semibold text-sm text-white">
                     Service Location
                   </span>
                   {nearbySuppliers.length > 0 && (
@@ -381,4 +393,3 @@ export function ServiceLocationMap({
     </>
   );
 }
-

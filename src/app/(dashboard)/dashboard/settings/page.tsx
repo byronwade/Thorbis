@@ -33,6 +33,8 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { POSystemToggle } from "@/components/settings/po-system-toggle";
+import { SettingsSearch } from "@/components/settings/settings-search";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,8 +44,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SettingsSearch } from "@/components/settings/settings-search";
-import { POSystemToggle } from "@/components/settings/po-system-toggle";
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
@@ -256,7 +256,9 @@ type PageProps = {
   searchParams: Promise<{ q?: string }>;
 };
 
-export default async function SettingsOverviewPage({ searchParams }: PageProps) {
+export default async function SettingsOverviewPage({
+  searchParams,
+}: PageProps) {
   // Get search query from URL params (server-side)
   const { q: searchQuery = "" } = await searchParams;
 

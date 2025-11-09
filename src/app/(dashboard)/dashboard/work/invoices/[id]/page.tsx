@@ -14,9 +14,9 @@
  * - Auto-save debounced
  */
 
-import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { notFound, redirect } from "next/navigation";
 import { InvoiceEditorWrapper } from "@/components/invoices/invoice-editor-wrapper";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +62,9 @@ export default async function InvoiceDetailsPage({
     .single();
 
   if (!teamMember?.company_id) {
-    return notFound();
+    // User hasn't completed onboarding or doesn't have an active company membership
+    // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
   }
 
   // Fetch invoice
@@ -99,7 +101,11 @@ export default async function InvoiceDetailsPage({
       .single(),
 
     // Fetch company
-    supabase.from("companies").select("*").eq("id", teamMember.company_id).single(),
+    supabase
+      .from("companies")
+      .select("*")
+      .eq("id", teamMember.company_id)
+      .single(),
 
     // Fetch job (if linked)
     invoice.job_id
@@ -159,13 +165,13 @@ export default async function InvoiceDetailsPage({
 
   return (
     <InvoiceEditorWrapper
-      invoice={invoice}
-      customer={customer}
-      company={company}
-      job={job}
-      property={property}
-      paymentMethods={paymentMethods || []}
       activities={activities || []}
+      company={company}
+      customer={customer}
+      invoice={invoice}
+      job={job}
+      paymentMethods={paymentMethods || []}
+      property={property}
     />
   );
 }

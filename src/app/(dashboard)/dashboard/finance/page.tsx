@@ -11,11 +11,11 @@
  * Shows Coming Soon component in production, normal page in development
  */
 
-import { DollarSign, PieChart, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { DollarSign, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { BankAccountsOverview } from "@/components/finance/bank-accounts-overview";
+import { FinanceComingSoon } from "@/components/finance/finance-coming-soon";
 import { VirtualBucketsOverview } from "@/components/finance/virtual-buckets-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FinanceComingSoon } from "@/components/finance/finance-coming-soon";
 
 export const revalidate = 900; // Revalidate every 15 minutes
 

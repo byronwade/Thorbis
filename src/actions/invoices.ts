@@ -68,7 +68,7 @@ const recordPaymentSchema = z.object({
  */
 async function generateInvoiceNumber(
   supabase: any,
-  companyId: string,
+  companyId: string
 ): Promise<string> {
   const { data: latestInvoice } = await supabase
     .from("invoices")
@@ -97,7 +97,7 @@ async function generateInvoiceNumber(
 function calculateTotals(
   lineItems: any[],
   taxRate: number,
-  discountAmount: number,
+  discountAmount: number
 ) {
   const subtotal = lineItems.reduce((sum, item) => sum + item.total, 0);
   const taxAmount = Math.round((subtotal * taxRate) / 100);
@@ -115,14 +115,14 @@ function calculateTotals(
  * Create a new invoice
  */
 export async function createInvoice(
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -141,7 +141,7 @@ export async function createInvoice(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -172,7 +172,7 @@ export async function createInvoice(
     const totals = calculateTotals(
       data.lineItems,
       data.taxRate,
-      data.discountAmount,
+      data.discountAmount
     );
 
     // Calculate due date
@@ -182,7 +182,7 @@ export async function createInvoice(
     // Generate invoice number
     const invoiceNumber = await generateInvoiceNumber(
       supabase,
-      teamMember.company_id,
+      teamMember.company_id
     );
 
     // Create invoice
@@ -213,7 +213,7 @@ export async function createInvoice(
     if (createError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("create invoice"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -228,14 +228,14 @@ export async function createInvoice(
  */
 export async function updateInvoice(
   invoiceId: string,
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -254,7 +254,7 @@ export async function updateInvoice(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -271,7 +271,7 @@ export async function updateInvoice(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -279,7 +279,7 @@ export async function updateInvoice(
     if (existingInvoice.status !== "draft") {
       throw new ActionError(
         "Only draft invoices can be edited",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -342,7 +342,7 @@ export async function updateInvoice(
     if (updateError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("update invoice"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -355,14 +355,14 @@ export async function updateInvoice(
  * Send invoice to customer
  */
 export async function sendInvoice(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -381,7 +381,7 @@ export async function sendInvoice(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -398,7 +398,7 @@ export async function sendInvoice(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -406,7 +406,7 @@ export async function sendInvoice(
     if (existingInvoice.status !== "draft") {
       throw new ActionError(
         "Invoice has already been sent",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -425,7 +425,7 @@ export async function sendInvoice(
     if (updateError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("send invoice"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -438,14 +438,14 @@ export async function sendInvoice(
  * Mark invoice as viewed (customer opened it)
  */
 export async function markInvoiceViewed(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -471,7 +471,7 @@ export async function markInvoiceViewed(
       if (updateError) {
         throw new ActionError(
           ERROR_MESSAGES.operationFailed("mark invoice as viewed"),
-          ERROR_CODES.DB_QUERY_ERROR,
+          ERROR_CODES.DB_QUERY_ERROR
         );
       }
     }
@@ -486,14 +486,14 @@ export async function markInvoiceViewed(
  */
 export async function recordPayment(
   invoiceId: string,
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -512,7 +512,7 @@ export async function recordPayment(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -538,7 +538,7 @@ export async function recordPayment(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -546,7 +546,7 @@ export async function recordPayment(
     if (invoice.status === "cancelled") {
       throw new ActionError(
         "Cannot record payment on cancelled invoices",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -557,7 +557,7 @@ export async function recordPayment(
     if (paymentAmountCents > invoice.balance_amount) {
       throw new ActionError(
         "Payment amount exceeds remaining balance",
-        ERROR_CODES.PAYMENT_INVALID_AMOUNT,
+        ERROR_CODES.PAYMENT_INVALID_AMOUNT
       );
     }
 
@@ -587,7 +587,7 @@ export async function recordPayment(
     if (updateError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("record payment"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -610,14 +610,14 @@ export async function recordPayment(
  * Mark invoice as overdue (automated or manual)
  */
 export async function markInvoiceOverdue(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -636,7 +636,7 @@ export async function markInvoiceOverdue(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -653,7 +653,7 @@ export async function markInvoiceOverdue(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -661,7 +661,7 @@ export async function markInvoiceOverdue(
     if (!["sent", "viewed", "partial"].includes(invoice.status)) {
       throw new ActionError(
         "Invoice cannot be marked as overdue",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -670,7 +670,7 @@ export async function markInvoiceOverdue(
     if (dueDate > new Date()) {
       throw new ActionError(
         "Invoice is not yet due",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -683,7 +683,7 @@ export async function markInvoiceOverdue(
     if (updateError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("mark invoice as overdue"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -697,14 +697,14 @@ export async function markInvoiceOverdue(
  */
 export async function cancelInvoice(
   invoiceId: string,
-  reason?: string,
+  reason?: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -723,7 +723,7 @@ export async function cancelInvoice(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -740,7 +740,7 @@ export async function cancelInvoice(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -748,7 +748,7 @@ export async function cancelInvoice(
     if (invoice.status === "paid") {
       throw new ActionError(
         "Cannot cancel paid invoices. Please issue a refund instead",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -756,7 +756,7 @@ export async function cancelInvoice(
     if (invoice.paid_amount > 0 && !reason) {
       throw new ActionError(
         "Cancellation reason is required for partially paid invoices",
-        ERROR_CODES.VALIDATION_REQUIRED_FIELD,
+        ERROR_CODES.VALIDATION_REQUIRED_FIELD
       );
     }
 
@@ -777,7 +777,7 @@ export async function cancelInvoice(
     if (updateError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("cancel invoice"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -793,14 +793,14 @@ export async function cancelInvoice(
  * Archived invoices can be restored within 90 days.
  */
 export async function archiveInvoice(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -819,7 +819,7 @@ export async function archiveInvoice(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -836,7 +836,7 @@ export async function archiveInvoice(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -844,13 +844,15 @@ export async function archiveInvoice(
     if (invoice.status === "paid") {
       throw new ActionError(
         "Cannot archive paid invoices. Paid invoices must be retained for records.",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
     // Archive invoice (soft delete)
     const now = new Date().toISOString();
-    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(); // 90 days from now
+    const scheduledDeletion = new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000
+    ).toISOString(); // 90 days from now
 
     const { error: archiveError } = await supabase
       .from("invoices")
@@ -866,7 +868,7 @@ export async function archiveInvoice(
     if (archiveError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("archive invoice"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -881,14 +883,14 @@ export async function archiveInvoice(
  * Restores an archived invoice back to its previous status (draft/sent/viewed/etc.)
  */
 export async function restoreInvoice(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -907,7 +909,7 @@ export async function restoreInvoice(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -924,14 +926,14 @@ export async function restoreInvoice(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
     if (!invoice.deleted_at) {
       throw new ActionError(
         "Invoice is not archived",
-        ERROR_CODES.OPERATION_NOT_ALLOWED,
+        ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
 
@@ -950,7 +952,7 @@ export async function restoreInvoice(
     if (restoreError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("restore invoice"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -964,7 +966,7 @@ export async function restoreInvoice(
  * @deprecated Use archiveInvoice() instead
  */
 export async function deleteInvoice(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<void>> {
   // Redirect to archive function
   return archiveInvoice(invoiceId);
@@ -977,14 +979,14 @@ export async function deleteInvoice(
  */
 export async function updateInvoiceContent(
   invoiceId: string,
-  content: any,
+  content: any
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -1003,7 +1005,7 @@ export async function updateInvoiceContent(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -1020,7 +1022,7 @@ export async function updateInvoiceContent(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -1036,7 +1038,7 @@ export async function updateInvoiceContent(
     if (updateError) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("update invoice content"),
-        ERROR_CODES.DB_QUERY_ERROR,
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -1051,14 +1053,14 @@ export async function updateInvoiceContent(
  * Returns a URL to the generated PDF
  */
 export async function generateInvoicePDF(
-  invoiceId: string,
+  invoiceId: string
 ): Promise<ActionResult<{ pdfUrl: string; invoice: any }>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR,
+        ERROR_CODES.DB_CONNECTION_ERROR
       );
     }
 
@@ -1077,7 +1079,7 @@ export async function generateInvoicePDF(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 
@@ -1106,7 +1108,7 @@ export async function generateInvoicePDF(
           website,
           tax_id
         )
-      `,
+      `
       )
       .eq("id", invoiceId)
       .single();
@@ -1117,7 +1119,7 @@ export async function generateInvoicePDF(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403,
+        403
       );
     }
 

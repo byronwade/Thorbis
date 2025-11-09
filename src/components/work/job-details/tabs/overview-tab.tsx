@@ -19,10 +19,25 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import {
+  AlertCircle,
+  Building2,
+  Calendar,
+  Clock,
+  DollarSign,
+  FileText,
+  Mail,
+  MapPin,
+  Phone,
+  Shield,
+  User,
+  Users,
+} from "lucide-react";
+import { useCallback, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -31,25 +46,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  Building2,
-  MapPin,
-  Calendar,
-  DollarSign,
-  User,
-  Phone,
-  Mail,
-  Clock,
-  FileText,
-  Shield,
-  Wrench,
-  AlertCircle,
-  Users,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 import { useJobEditorStore } from "@/lib/stores/job-editor-store";
 import { TeamMemberSelector } from "../team-member-selector";
 
@@ -88,14 +86,13 @@ export function OverviewTab({
   );
 
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(cents / 100);
-  };
 
   // Format date
   const formatDate = (date: string | null) => {
@@ -119,7 +116,11 @@ export function OverviewTab({
               <FileText className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Job Information</CardTitle>
             </div>
-            <Badge variant={localJob.status === "completed" ? "default" : "secondary"}>
+            <Badge
+              variant={
+                localJob.status === "completed" ? "default" : "secondary"
+              }
+            >
               {localJob.status?.toUpperCase()}
             </Badge>
           </div>
@@ -129,9 +130,9 @@ export function OverviewTab({
           <div>
             <Label>Job Number</Label>
             <Input
-              value={localJob.job_number || ""}
-              disabled
               className="bg-muted"
+              disabled
+              value={localJob.job_number || ""}
             />
           </div>
 
@@ -139,10 +140,10 @@ export function OverviewTab({
           <div>
             <Label>Title</Label>
             <Input
-              value={localJob.title || ""}
-              onChange={(e) => handleFieldChange("title", e.target.value)}
               disabled={!isEditMode}
+              onChange={(e) => handleFieldChange("title", e.target.value)}
               placeholder="Enter job title..."
+              value={localJob.title || ""}
             />
           </div>
 
@@ -150,11 +151,11 @@ export function OverviewTab({
           <div>
             <Label>Description</Label>
             <Textarea
-              value={localJob.description || ""}
-              onChange={(e) => handleFieldChange("description", e.target.value)}
               disabled={!isEditMode}
+              onChange={(e) => handleFieldChange("description", e.target.value)}
               placeholder="Enter job description..."
               rows={4}
+              value={localJob.description || ""}
             />
           </div>
 
@@ -163,9 +164,9 @@ export function OverviewTab({
             <div>
               <Label>Status</Label>
               <Select
-                value={localJob.status || "quoted"}
-                onValueChange={(value) => handleFieldChange("status", value)}
                 disabled={!isEditMode}
+                onValueChange={(value) => handleFieldChange("status", value)}
+                value={localJob.status || "quoted"}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -184,9 +185,9 @@ export function OverviewTab({
             <div>
               <Label>Priority</Label>
               <Select
-                value={localJob.priority || "medium"}
-                onValueChange={(value) => handleFieldChange("priority", value)}
                 disabled={!isEditMode}
+                onValueChange={(value) => handleFieldChange("priority", value)}
+                value={localJob.priority || "medium"}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -206,20 +207,22 @@ export function OverviewTab({
             <div>
               <Label>Job Type</Label>
               <Input
-                value={localJob.job_type || ""}
-                onChange={(e) => handleFieldChange("job_type", e.target.value)}
                 disabled={!isEditMode}
+                onChange={(e) => handleFieldChange("job_type", e.target.value)}
                 placeholder="e.g., Installation, Repair, Maintenance"
+                value={localJob.job_type || ""}
               />
             </div>
 
             <div>
               <Label>Service Type</Label>
               <Input
-                value={localJob.service_type || ""}
-                onChange={(e) => handleFieldChange("service_type", e.target.value)}
                 disabled={!isEditMode}
+                onChange={(e) =>
+                  handleFieldChange("service_type", e.target.value)
+                }
                 placeholder="e.g., HVAC, Plumbing, Electrical"
+                value={localJob.service_type || ""}
               />
             </div>
           </div>
@@ -230,7 +233,7 @@ export function OverviewTab({
               <Users className="h-4 w-4 text-muted-foreground" />
               Team Assigned
             </Label>
-            <TeamMemberSelector jobId={job.id} isEditMode={isEditMode} />
+            <TeamMemberSelector isEditMode={isEditMode} jobId={job.id} />
           </div>
 
           <Separator />
@@ -239,11 +242,11 @@ export function OverviewTab({
           <div>
             <Label>Internal Notes</Label>
             <Textarea
-              value={localJob.notes || ""}
-              onChange={(e) => handleFieldChange("notes", e.target.value)}
               disabled={!isEditMode}
+              onChange={(e) => handleFieldChange("notes", e.target.value)}
               placeholder="Internal notes (not visible to customer)..."
               rows={3}
+              value={localJob.notes || ""}
             />
           </div>
         </CardContent>
@@ -262,17 +265,17 @@ export function OverviewTab({
             <>
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="font-semibold text-lg">
                     {customer.first_name} {customer.last_name}
                   </h3>
                   {customer.company_name && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {customer.company_name}
                     </p>
                   )}
                 </div>
                 {isEditMode && (
-                  <Button variant="outline" size="sm">
+                  <Button size="sm" variant="outline">
                     Change Customer
                   </Button>
                 )}
@@ -286,8 +289,8 @@ export function OverviewTab({
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
                     <a
+                      className="text-blue-600 text-sm hover:underline"
                       href={`mailto:${customer.email}`}
-                      className="text-sm text-blue-600 hover:underline"
                     >
                       {customer.email}
                     </a>
@@ -298,8 +301,8 @@ export function OverviewTab({
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <a
+                      className="text-blue-600 text-sm hover:underline"
                       href={`tel:${customer.phone}`}
-                      className="text-sm text-blue-600 hover:underline"
                     >
                       {customer.phone}
                     </a>
@@ -310,7 +313,7 @@ export function OverviewTab({
               {/* Customer Address */}
               {customer.address && (
                 <div>
-                  <Label className="text-xs text-muted-foreground">
+                  <Label className="text-muted-foreground text-xs">
                     Customer Address
                   </Label>
                   <p className="text-sm">
@@ -325,7 +328,7 @@ export function OverviewTab({
               {/* Multiple Customers Indicator */}
               {customers.length > 1 && (
                 <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                  <p className="text-sm text-blue-900">
+                  <p className="text-blue-900 text-sm">
                     <AlertCircle className="mr-1 inline h-4 w-4" />
                     This job has {customers.length} customers assigned.
                   </p>
@@ -333,10 +336,10 @@ export function OverviewTab({
               )}
             </>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No customer assigned
               {isEditMode && (
-                <Button variant="outline" size="sm" className="ml-2">
+                <Button className="ml-2" size="sm" variant="outline">
                   Add Customer
                 </Button>
               )}
@@ -358,12 +361,12 @@ export function OverviewTab({
             <>
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="font-semibold text-lg">
                     {property.name || "Service Location"}
                   </h3>
                   <div className="flex items-start gap-2">
                     <Building2 className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       <p>{property.address}</p>
                       {property.address2 && <p>{property.address2}</p>}
                       <p>
@@ -373,7 +376,7 @@ export function OverviewTab({
                   </div>
                 </div>
                 {isEditMode && (
-                  <Button variant="outline" size="sm">
+                  <Button size="sm" variant="outline">
                     Change Property
                   </Button>
                 )}
@@ -386,21 +389,22 @@ export function OverviewTab({
                 <div className="grid gap-4 md:grid-cols-3">
                   {propertyEnrichment.squareFootage && (
                     <div>
-                      <Label className="text-xs text-muted-foreground">
+                      <Label className="text-muted-foreground text-xs">
                         Square Footage
                       </Label>
-                      <p className="text-sm font-medium">
-                        {propertyEnrichment.squareFootage.toLocaleString()} sq ft
+                      <p className="font-medium text-sm">
+                        {propertyEnrichment.squareFootage.toLocaleString()} sq
+                        ft
                       </p>
                     </div>
                   )}
 
                   {propertyEnrichment.yearBuilt && (
                     <div>
-                      <Label className="text-xs text-muted-foreground">
+                      <Label className="text-muted-foreground text-xs">
                         Year Built
                       </Label>
-                      <p className="text-sm font-medium">
+                      <p className="font-medium text-sm">
                         {propertyEnrichment.yearBuilt}
                       </p>
                     </div>
@@ -408,10 +412,10 @@ export function OverviewTab({
 
                   {propertyEnrichment.propertyType && (
                     <div>
-                      <Label className="text-xs text-muted-foreground">
+                      <Label className="text-muted-foreground text-xs">
                         Property Type
                       </Label>
-                      <p className="text-sm font-medium capitalize">
+                      <p className="font-medium text-sm capitalize">
                         {propertyEnrichment.propertyType}
                       </p>
                     </div>
@@ -423,7 +427,7 @@ export function OverviewTab({
               {property.notes && (
                 <div>
                   <Label>Access Instructions</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {property.notes}
                   </p>
                 </div>
@@ -432,7 +436,7 @@ export function OverviewTab({
               {/* Multiple Properties Indicator */}
               {properties.length > 1 && (
                 <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                  <p className="text-sm text-blue-900">
+                  <p className="text-blue-900 text-sm">
                     <AlertCircle className="mr-1 inline h-4 w-4" />
                     This job involves {properties.length} properties.
                   </p>
@@ -440,10 +444,10 @@ export function OverviewTab({
               )}
             </>
           ) : (
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-muted-foreground text-sm">
               No property assigned
               {isEditMode && (
-                <Button variant="outline" size="sm" className="ml-2">
+                <Button className="ml-2" size="sm" variant="outline">
                   Add Property
                 </Button>
               )}
@@ -527,28 +531,28 @@ export function OverviewTab({
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <Label className="text-xs text-muted-foreground">
+              <Label className="text-muted-foreground text-xs">
                 Total Amount
               </Label>
-              <p className="text-2xl font-bold">
+              <p className="font-bold text-2xl">
                 {formatCurrency(localJob.total_amount || 0)}
               </p>
             </div>
 
             <div>
-              <Label className="text-xs text-muted-foreground">
+              <Label className="text-muted-foreground text-xs">
                 Paid Amount
               </Label>
-              <p className="text-2xl font-bold text-green-600">
+              <p className="font-bold text-2xl text-green-600">
                 {formatCurrency(localJob.paid_amount || 0)}
               </p>
             </div>
 
             <div>
-              <Label className="text-xs text-muted-foreground">
+              <Label className="text-muted-foreground text-xs">
                 Outstanding
               </Label>
-              <p className="text-2xl font-bold text-orange-600">
+              <p className="font-bold text-2xl text-orange-600">
                 {formatCurrency(
                   (localJob.total_amount || 0) - (localJob.paid_amount || 0)
                 )}
@@ -557,7 +561,7 @@ export function OverviewTab({
           </div>
 
           <div className="mt-4">
-            <Button variant="outline" className="w-full">
+            <Button className="w-full" variant="outline">
               View Detailed Financials →
             </Button>
           </div>
@@ -577,7 +581,7 @@ export function OverviewTab({
             {localJob.job_warranty_info && (
               <div>
                 <Label>Warranty Information</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {JSON.stringify(localJob.job_warranty_info)}
                 </p>
               </div>
@@ -586,7 +590,7 @@ export function OverviewTab({
             {localJob.job_service_agreement_id && (
               <div>
                 <Label>Service Agreement</Label>
-                <Button variant="link" className="h-auto p-0">
+                <Button className="h-auto p-0" variant="link">
                   View Agreement Details
                 </Button>
               </div>

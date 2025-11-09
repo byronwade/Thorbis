@@ -198,7 +198,9 @@ export function CustomerDataTables({
               <CardDescription>All invoices for this customer</CardDescription>
             </div>
             <Button asChild size="sm" variant="outline">
-              <Link href={`/dashboard/work/invoices/new?customer=${customerId}`}>
+              <Link
+                href={`/dashboard/work/invoices/new?customer=${customerId}`}
+              >
                 <FileText className="mr-2 size-4" />
                 New Invoice
               </Link>

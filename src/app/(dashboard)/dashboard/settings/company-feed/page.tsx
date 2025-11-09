@@ -30,10 +30,11 @@ import {
   Users,
   Video,
 } from "lucide-react";
-import { useState } from "react";
+import {
+  getCompanyFeedSettings,
+  updateCompanyFeedSettings,
+} from "@/actions/company";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getCompanyFeedSettings, updateCompanyFeedSettings } from "@/actions/company";
 import {
   Card,
   CardContent,
@@ -59,6 +60,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -153,109 +155,113 @@ export default function CompanyFeedSettingsPage() {
     getter: getCompanyFeedSettings,
     setter: updateCompanyFeedSettings,
     initialState: {
-    // General Settings
-    feedEnabled: true,
-    feedName: "Company Feed",
-    feedDescription:
-      "Stay connected with your team through company-wide announcements, updates, and conversations",
-    feedVisibility: "all_employees",
+      // General Settings
+      feedEnabled: true,
+      feedName: "Company Feed",
+      feedDescription:
+        "Stay connected with your team through company-wide announcements, updates, and conversations",
+      feedVisibility: "all_employees",
 
-    // Post Settings
-    allowPosts: true,
-    allowComments: true,
-    allowReactions: true,
-    allowSharing: true,
-    requireApproval: false,
-    maxPostLength: DEFAULT_POST_LENGTH,
+      // Post Settings
+      allowPosts: true,
+      allowComments: true,
+      allowReactions: true,
+      allowSharing: true,
+      requireApproval: false,
+      maxPostLength: DEFAULT_POST_LENGTH,
 
-    // Content Types
-    allowTextPosts: true,
-    allowImageUploads: true,
-    allowVideoUploads: true,
-    allowDocumentUploads: true,
-    allowLinkSharing: true,
-    allowPolls: true,
-    allowEvents: true,
+      // Content Types
+      allowTextPosts: true,
+      allowImageUploads: true,
+      allowVideoUploads: true,
+      allowDocumentUploads: true,
+      allowLinkSharing: true,
+      allowPolls: true,
+      allowEvents: true,
 
-    // Media Settings
-    maxImageSize: 10,
-    maxVideoSize: 100,
-    maxDocumentSize: 25,
-    allowedImageFormats: ["jpg", "jpeg", "png", "gif", "webp"],
-    allowedVideoFormats: ["mp4", "mov", "avi", "webm"],
-    allowedDocumentFormats: [
-      "pdf",
-      "doc",
-      "docx",
-      "xls",
-      "xlsx",
-      "ppt",
-      "pptx",
-    ],
+      // Media Settings
+      maxImageSize: 10,
+      maxVideoSize: 100,
+      maxDocumentSize: 25,
+      allowedImageFormats: ["jpg", "jpeg", "png", "gif", "webp"],
+      allowedVideoFormats: ["mp4", "mov", "avi", "webm"],
+      allowedDocumentFormats: [
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx",
+      ],
 
-    // Moderation
-    enableModeration: true,
-    moderatorRoles: ["Admin", "Manager"],
-    autoModerateKeywords: true,
-    blockedKeywords: [],
-    flagThreshold: 3,
+      // Moderation
+      enableModeration: true,
+      moderatorRoles: ["Admin", "Manager"],
+      autoModerateKeywords: true,
+      blockedKeywords: [],
+      flagThreshold: 3,
 
-    // Notifications
-    notifyOnMention: true,
-    notifyOnReply: true,
-    notifyOnReaction: false,
-    notifyOnNewPost: false,
-    digestFrequency: "daily",
+      // Notifications
+      notifyOnMention: true,
+      notifyOnReply: true,
+      notifyOnReaction: false,
+      notifyOnNewPost: false,
+      digestFrequency: "daily",
 
-    // Content Portal
-    enableContentPortal: true,
-    portalCategories: [
-      "Announcements",
-      "Training Materials",
-      "Company Policies",
-      "Best Practices",
-      "Success Stories",
-    ],
-    allowContentRating: true,
-    allowContentBookmarking: true,
-    featuredContentDuration: 7,
+      // Content Portal
+      enableContentPortal: true,
+      portalCategories: [
+        "Announcements",
+        "Training Materials",
+        "Company Policies",
+        "Best Practices",
+        "Success Stories",
+      ],
+      allowContentRating: true,
+      allowContentBookmarking: true,
+      featuredContentDuration: 7,
 
-    // Customer-Facing Content
-    enableCustomerContent: true,
-    customerContentApproval: true,
-    customerContentCategories: [
-      "Service Tips",
-      "Maintenance Guides",
-      "FAQ",
-      "Testimonials",
-    ],
-    showCustomerTestimonials: true,
+      // Customer-Facing Content
+      enableCustomerContent: true,
+      customerContentApproval: true,
+      customerContentCategories: [
+        "Service Tips",
+        "Maintenance Guides",
+        "FAQ",
+        "Testimonials",
+      ],
+      showCustomerTestimonials: true,
 
-    // Analytics & Insights
-    trackEngagement: true,
-    showViewCounts: true,
-    showLikeCounts: true,
-    showShareCounts: true,
-    enableLeaderboard: true,
+      // Analytics & Insights
+      trackEngagement: true,
+      showViewCounts: true,
+      showLikeCounts: true,
+      showShareCounts: true,
+      enableLeaderboard: true,
 
-    // Data Management
-    archiveOldPosts: true,
-    archiveAfterDays: 90,
-    allowPostEditing: true,
-    editTimeLimit: 30,
-    allowPostDeletion: true,
-    retainDeletedPosts: true,
-    retentionPeriod: DEFAULT_RETENTION_DAYS,
+      // Data Management
+      archiveOldPosts: true,
+      archiveAfterDays: 90,
+      allowPostEditing: true,
+      editTimeLimit: 30,
+      allowPostDeletion: true,
+      retainDeletedPosts: true,
+      retentionPeriod: DEFAULT_RETENTION_DAYS,
     },
     settingsName: "company feed",
     transformLoad: (data) => ({
       feedEnabled: data.company_feed_enabled ?? true,
-      feedVisibility: data.feed_visibility === "all_team" ? "all_employees" : "role_based",
+      feedVisibility:
+        data.feed_visibility === "all_team" ? "all_employees" : "role_based",
     }),
     transformSave: (settings) => {
       const formData = new FormData();
       formData.append("feedEnabled", settings.feedEnabled.toString());
-      formData.append("feedVisibility", settings.feedVisibility === "all_employees" ? "all_team" : "role_based");
+      formData.append(
+        "feedVisibility",
+        settings.feedVisibility === "all_employees" ? "all_team" : "role_based"
+      );
       return formData;
     },
   });

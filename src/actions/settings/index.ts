@@ -6,126 +6,120 @@
 
 // Communications Settings
 export {
-  updateEmailSettings,
   getEmailSettings,
-  updateSmsSettings,
-  getSmsSettings,
-  updatePhoneSettings,
-  getPhoneSettings,
-  updateNotificationSettings,
   getNotificationSettings,
+  getPhoneSettings,
+  getSmsSettings,
+  updateEmailSettings,
+  updateNotificationSettings,
+  updatePhoneSettings,
+  updateSmsSettings,
 } from "./communications";
 
 // Customer Settings
 export {
-  updateCustomerPreferences,
-  getCustomerPreferences,
   createCustomField,
-  updateCustomField,
   deleteCustomField,
+  getCustomerPreferences,
   getCustomFields,
-  updateLoyaltySettings,
-  getLoyaltySettings,
-  updatePrivacySettings,
-  getPrivacySettings,
-  updatePortalSettings,
-  getPortalSettings,
-  updateIntakeSettings,
   getIntakeSettings,
+  getLoyaltySettings,
+  getPortalSettings,
+  getPrivacySettings,
+  updateCustomerPreferences,
+  updateCustomField,
+  updateIntakeSettings,
+  updateLoyaltySettings,
+  updatePortalSettings,
+  updatePrivacySettings,
 } from "./customers";
-
-// Work Settings
-export {
-  updateJobSettings,
-  getJobSettings,
-  updateEstimateSettings,
-  getEstimateSettings,
-  updateInvoiceSettings,
-  getInvoiceSettings,
-  updateServicePlanSettings,
-  getServicePlanSettings,
-  updatePricebookSettings,
-  getPricebookSettings,
-  updateBookingSettings,
-  getBookingSettings,
-} from "./work";
-
-// Schedule Settings
-export {
-  updateAvailabilitySettings,
-  getAvailabilitySettings,
-  updateCalendarSettings,
-  getCalendarSettings,
-  updateTeamSchedulingRules,
-  getTeamSchedulingRules,
-  createServiceArea,
-  updateServiceArea,
-  deleteServiceArea,
-  getServiceAreas,
-} from "./schedule";
-
-// Profile/User Settings
-export {
-  updateNotificationPreferences,
-  getNotificationPreferences,
-  updateUserPreferences,
-  getUserPreferences,
-  updatePersonalInfo,
-  getPersonalInfo,
-  updatePassword,
-} from "./profile";
-
-// Misc Settings (Tags, Checklists, Lead Sources, Import/Export)
-export {
-  updateTagSettings,
-  getTagSettings,
-  updateChecklistSettings,
-  getChecklistSettings,
-  createLeadSource,
-  updateLeadSource,
-  deleteLeadSource,
-  getLeadSources,
-  updateImportExportSettings,
-  getImportExportSettings,
-} from "./misc";
-
 // Finance Settings
 export {
-  updateAccountingSettings,
-  getAccountingSettings,
-  updateBookkeepingSettings,
-  getBookkeepingSettings,
   createBankAccount,
-  updateBankAccount,
   deleteBankAccount,
+  getAccountingSettings,
   getBankAccounts,
-  updateBusinessFinancingSettings,
+  getBookkeepingSettings,
   getBusinessFinancingSettings,
-  updateConsumerFinancingSettings,
   getConsumerFinancingSettings,
   getDebitCards,
   getGasCards,
-  updateGiftCardSettings,
   getGiftCardSettings,
-  updateVirtualBucketSettings,
   getVirtualBucketSettings,
   getVirtualBuckets,
+  updateAccountingSettings,
+  updateBankAccount,
+  updateBookkeepingSettings,
+  updateBusinessFinancingSettings,
+  updateConsumerFinancingSettings,
+  updateGiftCardSettings,
+  updateVirtualBucketSettings,
 } from "./finance";
-
+// Misc Settings (Tags, Checklists, Lead Sources, Import/Export)
+export {
+  createLeadSource,
+  deleteLeadSource,
+  getChecklistSettings,
+  getImportExportSettings,
+  getLeadSources,
+  getTagSettings,
+  updateChecklistSettings,
+  updateImportExportSettings,
+  updateLeadSource,
+  updateTagSettings,
+} from "./misc";
 // Payroll Settings
 export {
-  updateOvertimeSettings,
-  getOvertimeSettings,
   createCommissionRule,
-  updateCommissionRule,
-  deleteCommissionRule,
-  getCommissionRules,
   createCommissionTier,
-  getCommissionTiers,
+  deleteCommissionRule,
   getBonusRules,
   getCallbackSettings,
+  getCommissionRules,
+  getCommissionTiers,
   getDeductionTypes,
   getMaterialSettings,
-  updatePayrollSchedule,
+  getOvertimeSettings,
   getPayrollSchedule,
+  updateCommissionRule,
+  updateOvertimeSettings,
+  updatePayrollSchedule,
 } from "./payroll";
+// Profile/User Settings
+export {
+  getNotificationPreferences,
+  getPersonalInfo,
+  getUserPreferences,
+  updateNotificationPreferences,
+  updatePassword,
+  updatePersonalInfo,
+  updateUserPreferences,
+} from "./profile";
+// Schedule Settings
+export {
+  createServiceArea,
+  deleteServiceArea,
+  getAvailabilitySettings,
+  getCalendarSettings,
+  getServiceAreas,
+  getTeamSchedulingRules,
+  updateAvailabilitySettings,
+  updateCalendarSettings,
+  updateServiceArea,
+  updateTeamSchedulingRules,
+} from "./schedule";
+// Work Settings
+export {
+  getBookingSettings,
+  getEstimateSettings,
+  getInvoiceSettings,
+  getJobSettings,
+  getPricebookSettings,
+  getServicePlanSettings,
+  updateBookingSettings,
+  updateEstimateSettings,
+  updateInvoiceSettings,
+  updateJobSettings,
+  updatePricebookSettings,
+  updateServicePlanSettings,
+} from "./work";

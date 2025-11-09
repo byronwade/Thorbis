@@ -65,8 +65,11 @@ export function MultiPropertySelector({
   initialSelected = [],
   onChange,
 }: MultiPropertySelectorProps) {
-  const [selectedProperties, setSelectedProperties] = useState<SelectedProperty[]>(initialSelected);
-  const [showAddProperty, setShowAddProperty] = useState(initialSelected.length === 0);
+  const [selectedProperties, setSelectedProperties] =
+    useState<SelectedProperty[]>(initialSelected);
+  const [showAddProperty, setShowAddProperty] = useState(
+    initialSelected.length === 0
+  );
 
   // Filter properties by customer if provided
   const filteredProperties = customerId
@@ -112,14 +115,17 @@ export function MultiPropertySelector({
     const updated = selectedProperties.map((sp) => ({
       ...sp,
       isPrimary: sp.id === propertyId,
-      role: sp.id === propertyId ? "primary" as const : sp.role,
+      role: sp.id === propertyId ? ("primary" as const) : sp.role,
     }));
 
     setSelectedProperties(updated);
     onChange?.(updated);
   };
 
-  const updatePropertyRole = (propertyId: string, role: SelectedProperty["role"]) => {
+  const updatePropertyRole = (
+    propertyId: string,
+    role: SelectedProperty["role"]
+  ) => {
     const updated = selectedProperties.map((sp) =>
       sp.id === propertyId ? { ...sp, role } : sp
     );
@@ -155,7 +161,8 @@ export function MultiPropertySelector({
             <CardTitle>Service Locations</CardTitle>
           </div>
           <Badge variant="secondary">
-            {selectedProperties.length} location{selectedProperties.length !== 1 ? "s" : ""}
+            {selectedProperties.length} location
+            {selectedProperties.length !== 1 ? "s" : ""}
           </Badge>
         </div>
         <CardDescription>
@@ -165,15 +172,14 @@ export function MultiPropertySelector({
       <CardContent className="space-y-4">
         {/* Selected Properties */}
         {selectedProperties.map((selected) => (
-          <div
-            key={selected.id}
-            className="rounded-lg border bg-muted/50 p-4"
-          >
+          <div className="rounded-lg border bg-muted/50 p-4" key={selected.id}>
             <div className="space-y-3">
               {/* Property Header */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-1 items-start gap-3">
-                  <MapPin className={`mt-1 size-5 ${selected.isPrimary ? "text-primary" : "text-muted-foreground"}`} />
+                  <MapPin
+                    className={`mt-1 size-5 ${selected.isPrimary ? "text-primary" : "text-muted-foreground"}`}
+                  />
 
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -181,7 +187,7 @@ export function MultiPropertySelector({
                         {selected.property.name || selected.property.address}
                       </p>
                       {selected.isPrimary && (
-                        <Badge variant="default" className="text-xs">
+                        <Badge className="text-xs" variant="default">
                           <Star className="mr-1 size-3" />
                           Primary
                         </Badge>
@@ -189,7 +195,8 @@ export function MultiPropertySelector({
                     </div>
 
                     <p className="mt-1 text-muted-foreground text-sm">
-                      {selected.property.address}, {selected.property.city}, {selected.property.state}
+                      {selected.property.address}, {selected.property.city},{" "}
+                      {selected.property.state}
                     </p>
                   </div>
                 </div>
@@ -198,22 +205,22 @@ export function MultiPropertySelector({
                 <div className="flex gap-1">
                   {!selected.isPrimary && (
                     <Button
+                      className="h-8 w-8 p-0"
+                      onClick={() => setPrimary(selected.id)}
+                      size="sm"
                       type="button"
                       variant="ghost"
-                      size="sm"
-                      onClick={() => setPrimary(selected.id)}
-                      className="h-8 w-8 p-0"
                     >
                       <Star className="size-4" />
                     </Button>
                   )}
                   {selectedProperties.length > 1 && (
                     <Button
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      onClick={() => removeProperty(selected.id)}
+                      size="sm"
                       type="button"
                       variant="ghost"
-                      size="sm"
-                      onClick={() => removeProperty(selected.id)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                     >
                       <Trash2 className="size-4" />
                     </Button>
@@ -224,61 +231,94 @@ export function MultiPropertySelector({
               {/* Property Details */}
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`property-role-${selected.id}`} className="text-xs">
+                  <Label
+                    className="text-xs"
+                    htmlFor={`property-role-${selected.id}`}
+                  >
                     Property Role
                   </Label>
                   <Select
+                    onValueChange={(value: any) =>
+                      updatePropertyRole(selected.id, value)
+                    }
                     value={selected.role}
-                    onValueChange={(value: any) => updatePropertyRole(selected.id, value)}
                   >
-                    <SelectTrigger id={`property-role-${selected.id}`} className="h-9">
+                    <SelectTrigger
+                      className="h-9"
+                      id={`property-role-${selected.id}`}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="primary">Primary Location</SelectItem>
-                      <SelectItem value="secondary">Secondary Location</SelectItem>
+                      <SelectItem value="secondary">
+                        Secondary Location
+                      </SelectItem>
                       <SelectItem value="related">Related Property</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor={`hours-${selected.id}`} className="text-xs">
+                  <Label className="text-xs" htmlFor={`hours-${selected.id}`}>
                     Est. Hours
                   </Label>
                   <Input
-                    id={`hours-${selected.id}`}
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={selected.estimatedHours || ""}
-                    onChange={(e) => updateEstimatedHours(selected.id, Number.parseFloat(e.target.value))}
-                    placeholder="0"
                     className="h-9"
+                    id={`hours-${selected.id}`}
+                    min="0"
+                    onChange={(e) =>
+                      updateEstimatedHours(
+                        selected.id,
+                        Number.parseFloat(e.target.value)
+                      )
+                    }
+                    placeholder="0"
+                    step="0.5"
+                    type="number"
+                    value={selected.estimatedHours || ""}
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor={`work-${selected.id}`} className="text-xs">
+                <Label className="text-xs" htmlFor={`work-${selected.id}`}>
                   Work Scope at This Location
                 </Label>
                 <Textarea
+                  className="text-sm"
                   id={`work-${selected.id}`}
-                  value={selected.workDescription || ""}
-                  onChange={(e) => updateWorkDescription(selected.id, e.target.value)}
+                  onChange={(e) =>
+                    updateWorkDescription(selected.id, e.target.value)
+                  }
                   placeholder="Describe work to be performed at this property..."
                   rows={2}
-                  className="text-sm"
+                  value={selected.workDescription || ""}
                 />
               </div>
             </div>
 
             {/* Hidden inputs for form submission */}
-            <input type="hidden" name={`property_${selected.id}_role`} value={selected.role} />
-            <input type="hidden" name={`property_${selected.id}_isPrimary`} value={selected.isPrimary ? "true" : "false"} />
-            <input type="hidden" name={`property_${selected.id}_workDescription`} value={selected.workDescription || ""} />
-            <input type="hidden" name={`property_${selected.id}_estimatedHours`} value={selected.estimatedHours || 0} />
+            <input
+              name={`property_${selected.id}_role`}
+              type="hidden"
+              value={selected.role}
+            />
+            <input
+              name={`property_${selected.id}_isPrimary`}
+              type="hidden"
+              value={selected.isPrimary ? "true" : "false"}
+            />
+            <input
+              name={`property_${selected.id}_workDescription`}
+              type="hidden"
+              value={selected.workDescription || ""}
+            />
+            <input
+              name={`property_${selected.id}_estimatedHours`}
+              type="hidden"
+              value={selected.estimatedHours || 0}
+            />
           </div>
         ))}
 
@@ -288,11 +328,11 @@ export function MultiPropertySelector({
             <div className="flex items-center justify-between">
               <Label>Add Service Location</Label>
               <Button
+                className="h-8 w-8 p-0"
+                onClick={() => setShowAddProperty(false)}
+                size="sm"
                 type="button"
                 variant="ghost"
-                size="sm"
-                onClick={() => setShowAddProperty(false)}
-                className="h-8 w-8 p-0"
               >
                 <X className="size-4" />
               </Button>
@@ -304,10 +344,13 @@ export function MultiPropertySelector({
               </SelectTrigger>
               <SelectContent>
                 {filteredProperties
-                  .filter((p) => !selectedProperties.some((sp) => sp.id === p.id))
+                  .filter(
+                    (p) => !selectedProperties.some((sp) => sp.id === p.id)
+                  )
                   .map((property) => (
                     <SelectItem key={property.id} value={property.id}>
-                      {property.name || property.address} - {property.city}, {property.state}
+                      {property.name || property.address} - {property.city},{" "}
+                      {property.state}
                     </SelectItem>
                   ))}
               </SelectContent>
@@ -315,12 +358,12 @@ export function MultiPropertySelector({
           </div>
         ) : (
           <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAddProperty(true)}
             className="w-full"
             disabled={!customerId}
+            onClick={() => setShowAddProperty(true)}
+            size="sm"
+            type="button"
+            variant="outline"
           >
             <Plus className="mr-2 size-4" />
             Add Another Location
@@ -335,13 +378,13 @@ export function MultiPropertySelector({
 
         {/* Hidden inputs for property IDs */}
         <input
-          type="hidden"
           name="propertyIds"
+          type="hidden"
           value={selectedProperties.map((sp) => sp.id).join(",")}
         />
         <input
-          type="hidden"
           name="primaryPropertyId"
+          type="hidden"
           value={selectedProperties.find((sp) => sp.isPrimary)?.id || ""}
         />
       </CardContent>

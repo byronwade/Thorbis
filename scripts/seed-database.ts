@@ -50,6 +50,7 @@ const seedFiles = [
   "seeds/13_schedules.sql",
   "seeds/14_communications.sql",
   "seeds/15_inventory.sql",
+  "seeds/16_marketing_content_seed.sql",
 ];
 
 async function runSeedFile(filepath: string): Promise<void> {

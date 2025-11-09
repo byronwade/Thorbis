@@ -9,15 +9,24 @@
  * - Click to view property details
  */
 
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
-import { Home, MapPin, ExternalLink, Building2, Factory, Plus } from "lucide-react";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
+import {
+  Building2,
+  ExternalLink,
+  Factory,
+  Home,
+  MapPin,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CollapsibleActionButton,
+  CollapsibleDataSection,
+} from "@/components/ui/collapsible-data-section";
 import { cn } from "@/lib/utils";
-import { CollapsibleSectionWrapper } from "./collapsible-section-wrapper";
 
 // React component that renders the block
 export function PropertiesBlockComponent({ node, editor }: any) {
@@ -67,22 +76,22 @@ export function PropertiesBlockComponent({ node, editor }: any) {
 
   return (
     <NodeViewWrapper className="properties-block">
-      <CollapsibleSectionWrapper
-        title={`Properties (${properties.length})`}
-        icon={<MapPin className="size-5" />}
-        defaultOpen={false}
-        storageKey="customer-properties-section"
+      <CollapsibleDataSection
         actions={
-          <Button
-            size="sm"
-            variant="ghost"
+          <CollapsibleActionButton
+            icon={<Plus className="size-4" />}
             onClick={handleAddProperty}
-            className="h-8 px-3 text-xs gap-1.5"
           >
-            <Plus className="size-4" />
             Add Property
-          </Button>
+          </CollapsibleActionButton>
         }
+        count={properties.length}
+        defaultOpen={false}
+        icon={<MapPin className="size-5" />}
+        standalone={true}
+        storageKey="customer-properties-section"
+        title={`Properties (${properties.length})`}
+        value="customer-properties"
       >
         <div className="grid gap-4 md:grid-cols-2">
           {properties.map((property: any) => {
@@ -116,15 +125,19 @@ export function PropertiesBlockComponent({ node, editor }: any) {
                     {(property.square_footage || property.year_built) && (
                       <div className="flex gap-4 text-muted-foreground text-xs">
                         {property.square_footage && (
-                          <span>{property.square_footage.toLocaleString()} sq ft</span>
+                          <span>
+                            {property.square_footage.toLocaleString()} sq ft
+                          </span>
                         )}
-                        {property.year_built && <span>Built {property.year_built}</span>}
+                        {property.year_built && (
+                          <span>Built {property.year_built}</span>
+                        )}
                       </div>
                     )}
 
                     <Link
-                      href={`/dashboard/customers/${property.customer_id}#property-${property.id}`}
                       className="inline-flex items-center gap-1 text-primary text-xs hover:underline"
+                      href={`/dashboard/customers/${property.customer_id}#property-${property.id}`}
                     >
                       View details
                       <ExternalLink className="size-3" />
@@ -135,7 +148,7 @@ export function PropertiesBlockComponent({ node, editor }: any) {
             );
           })}
         </div>
-      </CollapsibleSectionWrapper>
+      </CollapsibleDataSection>
     </NodeViewWrapper>
   );
 }
@@ -168,7 +181,11 @@ export const PropertiesBlock = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, { "data-type": "properties-block" }), 0];
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, { "data-type": "properties-block" }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -179,12 +196,11 @@ export const PropertiesBlock = Node.create({
     return {
       insertPropertiesBlock:
         (attributes: any) =>
-        ({ commands }: any) => {
-          return commands.insertContent({
+        ({ commands }: any) =>
+          commands.insertContent({
             type: this.name,
             attrs: attributes,
-          });
-        },
+          }),
     } as any;
   },
 });

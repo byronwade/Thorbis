@@ -109,7 +109,9 @@ export async function sendEmail({
         const supabase = await createClient();
         if (supabase) {
           await supabase.from("email_logs").insert({
-            to: Array.isArray(validatedData.to) ? validatedData.to.join(", ") : validatedData.to,
+            to: Array.isArray(validatedData.to)
+              ? validatedData.to.join(", ")
+              : validatedData.to,
             from: emailConfig.from,
             subject: validatedData.subject,
             html_body: html,
@@ -136,7 +138,9 @@ export async function sendEmail({
       const supabase = await createClient();
       if (supabase) {
         await supabase.from("email_logs").insert({
-          to: Array.isArray(validatedData.to) ? validatedData.to.join(", ") : validatedData.to,
+          to: Array.isArray(validatedData.to)
+            ? validatedData.to.join(", ")
+            : validatedData.to,
           from: emailConfig.from,
           subject: validatedData.subject,
           html_body: html,

@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { JobForm } from "@/components/work/job-form";
 import { createClient } from "@/lib/supabase/server";
@@ -38,7 +38,9 @@ export default async function NewJobPage({
   }
 
   // Fetch customers and properties for the form dropdowns
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return (
@@ -56,19 +58,18 @@ export default async function NewJobPage({
     .single();
 
   if (!teamMember?.company_id) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground">
-          You must be part of a company to create jobs
-        </p>
-      </div>
-    );
+    // User doesn't have an active company membership
+    // Show 404 instead of redirecting to avoid redirect loops
+    // The dashboard layout handles onboarding redirects
+    return notFound();
   }
 
   // Fetch customers for dropdown
   const { data: customers } = await supabase
     .from("customers")
-    .select("id, first_name, last_name, email, phone, company_name, address, city, state, zip_code")
+    .select(
+      "id, first_name, last_name, email, phone, company_name, address, city, state, zip_code"
+    )
     .eq("company_id", teamMember.company_id)
     .is("deleted_at", null)
     .order("first_name", { ascending: true });
@@ -91,9 +92,10 @@ export default async function NewJobPage({
   // Transform properties to match expected type (customers should be single object or null, not array)
   const properties = propertiesRaw?.map((property: any) => ({
     ...property,
-    customers: Array.isArray(property.customers) && property.customers.length > 0
-      ? property.customers[0]
-      : null,
+    customers:
+      Array.isArray(property.customers) && property.customers.length > 0
+        ? property.customers[0]
+        : null,
   }));
 
   // Fetch team members for assignment dropdown
@@ -109,9 +111,10 @@ export default async function NewJobPage({
   // Transform team members to match expected type (users should be single object or null, not array)
   const teamMembers = teamMembersRaw?.map((member: any) => ({
     ...member,
-    users: Array.isArray(member.users) && member.users.length > 0
-      ? member.users[0]
-      : null,
+    users:
+      Array.isArray(member.users) && member.users.length > 0
+        ? member.users[0]
+        : null,
   }));
 
   return (
@@ -127,8 +130,10 @@ export default async function NewJobPage({
                 Back to Work
               </Link>
             </Button>
-            <h1 className="font-bold text-3xl tracking-tight">Create New Job</h1>
-            <p className="mt-2 text-muted-foreground text-lg">
+            <h1 className="font-bold text-3xl tracking-tight">
+              Create New Job
+            </h1>
+            <p className="mt-2 text-lg text-muted-foreground">
               {params.customerId && "Create a job for this customer"}
               {params.propertyId && "Create a job for this property"}
               {!(params.customerId || params.propertyId) &&
@@ -139,10 +144,10 @@ export default async function NewJobPage({
           {/* Form */}
           <JobForm
             customers={customers || []}
-            properties={properties || []}
-            teamMembers={teamMembers || []}
             preselectedCustomerId={params.customerId}
             preselectedPropertyId={params.propertyId}
+            properties={properties || []}
+            teamMembers={teamMembers || []}
           />
         </div>
       </div>

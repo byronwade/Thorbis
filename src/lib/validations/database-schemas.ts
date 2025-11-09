@@ -501,7 +501,7 @@ export const jobPhotoInsertSchema = z.object({
   storage_path: z.string().min(1, "Storage path is required"),
   thumbnail_path: z.string().optional().nullable(),
   file_name: z.string().min(1, "File name is required").max(255),
-  file_size: z.number().int().min(1).max(52428800), // 50MB max
+  file_size: z.number().int().min(1).max(52_428_800), // 50MB max
   mime_type: z.string().optional().nullable(),
   category: z.enum([
     "before",

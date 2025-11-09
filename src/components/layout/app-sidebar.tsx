@@ -10,6 +10,23 @@
  * - Only loads icons needed for current page section
  */
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { EmailDetailSidebar } from "@/components/communication/email-detail-sidebar";
+import { NavChatHistory } from "@/components/layout/nav-chat-history";
+import { NavFlexible } from "@/components/layout/nav-flexible";
+import { NavGrouped } from "@/components/layout/nav-grouped";
+import { NavMain } from "@/components/layout/nav-main";
+import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
+import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav-v2";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import {
   Archive,
   ArrowDownToLine,
@@ -73,23 +90,6 @@ import {
   X,
   Zap,
 } from "@/lib/icons/icon-registry";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { EmailDetailSidebar } from "@/components/communication/email-detail-sidebar";
-import { NavChatHistory } from "@/components/layout/nav-chat-history";
-import { NavFlexible } from "@/components/layout/nav-flexible";
-import { NavGrouped } from "@/components/layout/nav-grouped";
-import { NavMain } from "@/components/layout/nav-main";
-import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
-import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav-v2";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarRail,
-} from "@/components/ui/sidebar";
-import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import { useChatStore } from "@/lib/store/chat-store";
 
 // Navigation sections for each route

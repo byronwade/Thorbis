@@ -5,9 +5,9 @@
  * Uses client component for sidebar state management
  */
 
-import { KBSidebarProvider } from "./kb-sidebar-provider";
-import { KBSidebarContent } from "./kb-sidebar";
 import type { KBArticleWithRelations } from "@/lib/kb/types";
+import { KBSidebarContent } from "./kb-sidebar";
+import { KBSidebarProvider } from "./kb-sidebar-provider";
 
 interface KBSidebarWrapperProps {
   currentCategory?: string;
@@ -27,8 +27,8 @@ export async function KBSidebarWrapper({
   return (
     <KBSidebarProvider>
       <KBSidebarContent
-        currentCategory={currentCategory}
         currentArticleId={currentArticleId}
+        currentCategory={currentCategory}
         htmlContent={htmlContent}
         relatedArticles={relatedArticles}
       />
@@ -36,4 +36,3 @@ export async function KBSidebarWrapper({
     </KBSidebarProvider>
   );
 }
-

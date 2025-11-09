@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Plus, Star, Trash2, User, Users, X } from "lucide-react";
+import { Plus, Star, Trash2, Users, X } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -66,8 +66,11 @@ export function MultiCustomerSelector({
   onChange,
   recentCustomerIds = [],
 }: MultiCustomerSelectorProps) {
-  const [selectedCustomers, setSelectedCustomers] = useState<SelectedCustomer[]>(initialSelected);
-  const [showAddCustomer, setShowAddCustomer] = useState(initialSelected.length === 0);
+  const [selectedCustomers, setSelectedCustomers] =
+    useState<SelectedCustomer[]>(initialSelected);
+  const [showAddCustomer, setShowAddCustomer] = useState(
+    initialSelected.length === 0
+  );
 
   const addCustomer = (customerId: string) => {
     const customer = customers.find((c) => c.id === customerId);
@@ -110,14 +113,17 @@ export function MultiCustomerSelector({
     const updated = selectedCustomers.map((sc) => ({
       ...sc,
       isPrimary: sc.id === customerId,
-      role: sc.id === customerId ? "primary" as const : sc.role,
+      role: sc.id === customerId ? ("primary" as const) : sc.role,
     }));
 
     setSelectedCustomers(updated);
     onChange?.(updated);
   };
 
-  const updateCustomerRole = (customerId: string, role: SelectedCustomer["role"]) => {
+  const updateCustomerRole = (
+    customerId: string,
+    role: SelectedCustomer["role"]
+  ) => {
     const updated = selectedCustomers.map((sc) =>
       sc.id === customerId ? { ...sc, role } : sc
     );
@@ -128,16 +134,17 @@ export function MultiCustomerSelector({
 
   const toggleBillingContact = (customerId: string) => {
     const updated = selectedCustomers.map((sc) =>
-      sc.id === customerId ? { ...sc, isBillingContact: !sc.isBillingContact } : sc
+      sc.id === customerId
+        ? { ...sc, isBillingContact: !sc.isBillingContact }
+        : sc
     );
 
     setSelectedCustomers(updated);
     onChange?.(updated);
   };
 
-  const getInitials = (customer: Customer) => {
-    return `${customer.first_name[0] || ""}${customer.last_name[0] || ""}`.toUpperCase();
-  };
+  const getInitials = (customer: Customer) =>
+    `${customer.first_name[0] || ""}${customer.last_name[0] || ""}`.toUpperCase();
 
   return (
     <Card>
@@ -148,7 +155,8 @@ export function MultiCustomerSelector({
             <CardTitle>Customers</CardTitle>
           </div>
           <Badge variant="secondary">
-            {selectedCustomers.length} customer{selectedCustomers.length !== 1 ? "s" : ""}
+            {selectedCustomers.length} customer
+            {selectedCustomers.length !== 1 ? "s" : ""}
           </Badge>
         </div>
         <CardDescription>
@@ -158,15 +166,18 @@ export function MultiCustomerSelector({
       <CardContent className="space-y-4">
         {/* Selected Customers */}
         {selectedCustomers.map((selected) => (
-          <div
-            key={selected.id}
-            className="rounded-lg border bg-muted/50 p-4"
-          >
+          <div className="rounded-lg border bg-muted/50 p-4" key={selected.id}>
             <div className="flex items-start justify-between gap-3">
               {/* Customer Info */}
               <div className="flex flex-1 items-start gap-3">
                 <Avatar className="size-10">
-                  <AvatarFallback className={selected.isPrimary ? "bg-primary text-primary-foreground" : ""}>
+                  <AvatarFallback
+                    className={
+                      selected.isPrimary
+                        ? "bg-primary text-primary-foreground"
+                        : ""
+                    }
+                  >
                     {getInitials(selected.customer)}
                   </AvatarFallback>
                 </Avatar>
@@ -174,16 +185,17 @@ export function MultiCustomerSelector({
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold">
-                      {selected.customer.first_name} {selected.customer.last_name}
+                      {selected.customer.first_name}{" "}
+                      {selected.customer.last_name}
                     </p>
                     {selected.isPrimary && (
-                      <Badge variant="default" className="text-xs">
+                      <Badge className="text-xs" variant="default">
                         <Star className="mr-1 size-3" />
                         Primary
                       </Badge>
                     )}
                     {selected.isBillingContact && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge className="text-xs" variant="outline">
                         Billing
                       </Badge>
                     )}
@@ -196,41 +208,62 @@ export function MultiCustomerSelector({
                   )}
 
                   <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="text-muted-foreground">{selected.customer.phone}</span>
+                    <span className="text-muted-foreground">
+                      {selected.customer.phone}
+                    </span>
                     <span className="text-muted-foreground">•</span>
-                    <span className="text-muted-foreground">{selected.customer.email}</span>
+                    <span className="text-muted-foreground">
+                      {selected.customer.email}
+                    </span>
                   </div>
 
                   {/* Role Selector */}
                   <div className="flex items-center gap-3 pt-2">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor={`role-${selected.id}`} className="text-xs">
+                      <Label
+                        className="text-xs"
+                        htmlFor={`role-${selected.id}`}
+                      >
                         Role:
                       </Label>
                       <Select
+                        onValueChange={(value: any) =>
+                          updateCustomerRole(selected.id, value)
+                        }
                         value={selected.role}
-                        onValueChange={(value: any) => updateCustomerRole(selected.id, value)}
                       >
-                        <SelectTrigger id={`role-${selected.id}`} className="h-8 w-[140px]">
+                        <SelectTrigger
+                          className="h-8 w-[140px]"
+                          id={`role-${selected.id}`}
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primary</SelectItem>
                           <SelectItem value="secondary">Secondary</SelectItem>
-                          <SelectItem value="billing">Billing Contact</SelectItem>
-                          <SelectItem value="property_owner">Property Owner</SelectItem>
+                          <SelectItem value="billing">
+                            Billing Contact
+                          </SelectItem>
+                          <SelectItem value="property_owner">
+                            Property Owner
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Switch
-                        id={`billing-${selected.id}`}
                         checked={selected.isBillingContact}
-                        onCheckedChange={() => toggleBillingContact(selected.id)}
                         className="scale-75"
+                        id={`billing-${selected.id}`}
+                        onCheckedChange={() =>
+                          toggleBillingContact(selected.id)
+                        }
                       />
-                      <Label htmlFor={`billing-${selected.id}`} className="text-xs">
+                      <Label
+                        className="text-xs"
+                        htmlFor={`billing-${selected.id}`}
+                      >
                         Billing Contact
                       </Label>
                     </div>
@@ -242,22 +275,22 @@ export function MultiCustomerSelector({
               <div className="flex gap-1">
                 {!selected.isPrimary && (
                   <Button
+                    className="h-8 w-8 p-0"
+                    onClick={() => setPrimary(selected.id)}
+                    size="sm"
                     type="button"
                     variant="ghost"
-                    size="sm"
-                    onClick={() => setPrimary(selected.id)}
-                    className="h-8 w-8 p-0"
                   >
                     <Star className="size-4" />
                   </Button>
                 )}
                 {selectedCustomers.length > 1 && (
                   <Button
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    onClick={() => removeCustomer(selected.id)}
+                    size="sm"
                     type="button"
                     variant="ghost"
-                    size="sm"
-                    onClick={() => removeCustomer(selected.id)}
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -266,9 +299,21 @@ export function MultiCustomerSelector({
             </div>
 
             {/* Hidden input for form submission */}
-            <input type="hidden" name={`customer_${selected.id}_role`} value={selected.role} />
-            <input type="hidden" name={`customer_${selected.id}_isPrimary`} value={selected.isPrimary ? "true" : "false"} />
-            <input type="hidden" name={`customer_${selected.id}_isBilling`} value={selected.isBillingContact ? "true" : "false"} />
+            <input
+              name={`customer_${selected.id}_role`}
+              type="hidden"
+              value={selected.role}
+            />
+            <input
+              name={`customer_${selected.id}_isPrimary`}
+              type="hidden"
+              value={selected.isPrimary ? "true" : "false"}
+            />
+            <input
+              name={`customer_${selected.id}_isBilling`}
+              type="hidden"
+              value={selected.isBillingContact ? "true" : "false"}
+            />
           </div>
         ))}
 
@@ -278,11 +323,11 @@ export function MultiCustomerSelector({
             <div className="flex items-center justify-between">
               <Label>Add Customer</Label>
               <Button
+                className="h-8 w-8 p-0"
+                onClick={() => setShowAddCustomer(false)}
+                size="sm"
                 type="button"
                 variant="ghost"
-                size="sm"
-                onClick={() => setShowAddCustomer(false)}
-                className="h-8 w-8 p-0"
               >
                 <X className="size-4" />
               </Button>
@@ -291,17 +336,17 @@ export function MultiCustomerSelector({
             <CustomerCombobox
               customers={customers}
               onValueChange={addCustomer}
-              recentCustomerIds={recentCustomerIds}
               placeholder="Search and add customer..."
+              recentCustomerIds={recentCustomerIds}
             />
           </div>
         ) : (
           <Button
+            className="w-full"
+            onClick={() => setShowAddCustomer(true)}
+            size="sm"
             type="button"
             variant="outline"
-            size="sm"
-            onClick={() => setShowAddCustomer(true)}
-            className="w-full"
           >
             <Plus className="mr-2 size-4" />
             Add Another Customer
@@ -310,13 +355,13 @@ export function MultiCustomerSelector({
 
         {/* Hidden inputs for selected customer IDs */}
         <input
-          type="hidden"
           name="customerIds"
+          type="hidden"
           value={selectedCustomers.map((sc) => sc.id).join(",")}
         />
         <input
-          type="hidden"
           name="primaryCustomerId"
+          type="hidden"
           value={selectedCustomers.find((sc) => sc.isPrimary)?.id || ""}
         />
       </CardContent>

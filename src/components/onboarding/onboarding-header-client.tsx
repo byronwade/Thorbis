@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import { Building2, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/actions/auth";
 import { switchCompany } from "@/actions/company-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, LogOut, Building2 } from "lucide-react";
 import type { UserProfile } from "@/lib/auth/user-data";
 
 interface OnboardingHeaderClientProps {
@@ -29,9 +29,12 @@ interface OnboardingHeaderClientProps {
   }>;
 }
 
-export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHeaderClientProps) {
+export function OnboardingHeaderClient({
+  userProfile,
+  companies,
+}: OnboardingHeaderClientProps) {
   const router = useRouter();
-  
+
   // Use companies passed as props, which already include onboarding status from the API
   const companiesWithStatus = companies.map((company) => ({
     id: company.id,
@@ -41,14 +44,17 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
     hasPayment: company.hasPayment ?? false,
   }));
 
-  const handleCompanySwitch = async (companyId: string, onboardingComplete: boolean) => {
+  const handleCompanySwitch = async (
+    companyId: string,
+    onboardingComplete: boolean
+  ) => {
     const result = await switchCompany(companyId);
     if (result.success) {
       // If onboarding is not complete, redirect to onboarding page
-      if (!onboardingComplete) {
-        router.push("/dashboard/welcome");
-      } else {
+      if (onboardingComplete) {
         router.push("/dashboard");
+      } else {
+        router.push("/dashboard/welcome");
       }
     }
   };
@@ -84,7 +90,10 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
                 type="button"
               >
                 <Avatar className="size-6 rounded-md">
-                  <AvatarImage alt={userProfile.name} src={userProfile.avatar} />
+                  <AvatarImage
+                    alt={userProfile.name}
+                    src={userProfile.avatar}
+                  />
                   <AvatarFallback className="rounded-md text-[10px]">
                     {userProfile.name
                       .split(" ")
@@ -101,7 +110,10 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="size-8 rounded-lg">
-                    <AvatarImage alt={userProfile.name} src={userProfile.avatar} />
+                    <AvatarImage
+                      alt={userProfile.name}
+                      src={userProfile.avatar}
+                    />
                     <AvatarFallback className="rounded-lg">
                       {userProfile.name
                         .split(" ")
@@ -110,8 +122,12 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{userProfile.name}</span>
-                    <span className="truncate text-xs">{userProfile.email}</span>
+                    <span className="truncate font-semibold">
+                      {userProfile.name}
+                    </span>
+                    <span className="truncate text-xs">
+                      {userProfile.email}
+                    </span>
                   </div>
                 </div>
               </DropdownMenuLabel>
@@ -123,9 +139,11 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
               </DropdownMenuLabel>
               {companiesWithStatus.map((company) => (
                 <DropdownMenuItem
-                  key={company.id}
                   className="gap-2 p-2"
-                  onClick={() => handleCompanySwitch(company.id, company.onboardingComplete)}
+                  key={company.id}
+                  onClick={() =>
+                    handleCompanySwitch(company.id, company.onboardingComplete)
+                  }
                 >
                   <div className="flex size-6 items-center justify-center rounded-sm border">
                     <Building2 className="size-4 shrink-0" />
@@ -134,12 +152,18 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
                     <span className="font-medium text-sm">{company.name}</span>
                     <div className="flex items-center gap-2">
                       {company.onboardingComplete ? (
-                        <Badge variant="default" className="h-4 px-1.5 text-[10px]">
+                        <Badge
+                          className="h-4 px-1.5 text-[10px]"
+                          variant="default"
+                        >
                           <CheckCircle2 className="mr-1 size-3" />
                           Complete
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
+                        <Badge
+                          className="h-4 px-1.5 text-[10px]"
+                          variant="secondary"
+                        >
                           <XCircle className="mr-1 size-3" />
                           Not Complete
                         </Badge>
@@ -173,4 +197,3 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
     </header>
   );
 }
-

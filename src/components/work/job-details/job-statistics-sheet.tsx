@@ -24,6 +24,7 @@ import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -31,7 +32,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
 
 type JobStatisticsSheetProps = {
   open: boolean;
@@ -197,7 +197,7 @@ export function JobStatisticsSheet({
               <DollarSign className="h-5 w-5 text-muted-foreground" />
               <h3 className="font-semibold text-lg">Financial Overview</h3>
             </div>
-            
+
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {/* Job Value */}
               <Card>
@@ -278,17 +278,21 @@ export function JobStatisticsSheet({
               <Package className="h-5 w-5 text-muted-foreground" />
               <h3 className="font-semibold text-lg">Job Costing</h3>
             </div>
-            
+
             <Card>
-              <CardContent className="p-6 space-y-4">
+              <CardContent className="space-y-4 p-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Labor Cost</span>
+                  <span className="text-muted-foreground text-sm">
+                    Labor Cost
+                  </span>
                   <span className="font-semibold tabular-nums">
                     {formatCurrency(detailedMetrics.laborCost)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Materials Cost</span>
+                  <span className="text-muted-foreground text-sm">
+                    Materials Cost
+                  </span>
                   <span className="font-semibold tabular-nums">
                     {formatCurrency(detailedMetrics.materialsCost)}
                   </span>
@@ -329,7 +333,7 @@ export function JobStatisticsSheet({
               <Clock className="h-5 w-5 text-muted-foreground" />
               <h3 className="font-semibold text-lg">Labor & Time</h3>
             </div>
-            
+
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardContent className="p-6">
@@ -393,9 +397,10 @@ export function JobStatisticsSheet({
                         {detailedMetrics.laborVariance >= 0 ? "+" : ""}
                         {formatHours(Math.abs(detailedMetrics.laborVariance))}
                       </span>
-                      <p className="text-muted-foreground text-xs mt-0.5">
+                      <p className="mt-0.5 text-muted-foreground text-xs">
                         {detailedMetrics.laborVariancePercent >= 0 ? "+" : ""}
-                        {detailedMetrics.laborVariancePercent.toFixed(1)}% vs estimate
+                        {detailedMetrics.laborVariancePercent.toFixed(1)}% vs
+                        estimate
                       </p>
                     </div>
                   </div>
@@ -411,49 +416,59 @@ export function JobStatisticsSheet({
                 <Users className="h-5 w-5 text-muted-foreground" />
                 <h3 className="font-semibold text-lg">Team Breakdown</h3>
               </div>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {detailedMetrics.teamMembers.map((member: any, index: number) => (
-                      <div key={member.id}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-9 w-9">
-                              <AvatarImage
-                                alt={member.name}
-                                src={member.avatar || undefined}
-                              />
-                              <AvatarFallback className="text-xs">
-                                {member.name
-                                  .split(" ")
-                                  .map((n: string) => n[0])
-                                  .join("")
-                                  .toUpperCase()
-                                  .slice(0, 2)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium text-sm">{member.name}</p>
+                    {detailedMetrics.teamMembers.map(
+                      (member: any, index: number) => (
+                        <div key={member.id}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-9 w-9">
+                                <AvatarImage
+                                  alt={member.name}
+                                  src={member.avatar || undefined}
+                                />
+                                <AvatarFallback className="text-xs">
+                                  {member.name
+                                    .split(" ")
+                                    .map((n: string) => n[0])
+                                    .join("")
+                                    .toUpperCase()
+                                    .slice(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="font-medium text-sm">
+                                  {member.name}
+                                </p>
+                                <p className="text-muted-foreground text-xs">
+                                  {member.entries}{" "}
+                                  {member.entries === 1 ? "entry" : "entries"}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold tabular-nums">
+                                {formatHours(member.totalHours)}
+                              </p>
                               <p className="text-muted-foreground text-xs">
-                                {member.entries} {member.entries === 1 ? "entry" : "entries"}
+                                {(
+                                  (member.totalHours /
+                                    metrics.totalLaborHours) *
+                                  100
+                                ).toFixed(0)}
+                                %
                               </p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="font-semibold tabular-nums">
-                              {formatHours(member.totalHours)}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                              {((member.totalHours / metrics.totalLaborHours) * 100).toFixed(0)}%
-                            </p>
-                          </div>
+                          {index !== detailedMetrics.teamMembers.length - 1 && (
+                            <Separator className="mt-4" />
+                          )}
                         </div>
-                        {index !== detailedMetrics.teamMembers.length - 1 && (
-                          <Separator className="mt-4" />
-                        )}
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -466,12 +481,12 @@ export function JobStatisticsSheet({
               <BarChart3 className="h-5 w-5 text-muted-foreground" />
               <h3 className="font-semibold text-lg">Performance</h3>
             </div>
-            
+
             <Card>
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="space-y-6 p-6">
                 <div>
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-sm font-medium">Completion Progress</p>
+                    <p className="font-medium text-sm">Completion Progress</p>
                     <span className="font-bold tabular-nums">
                       {metrics.completionPercentage}%
                     </span>
@@ -485,9 +500,9 @@ export function JobStatisticsSheet({
                     />
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <p className="text-muted-foreground text-sm">Efficiency</p>
@@ -496,7 +511,7 @@ export function JobStatisticsSheet({
                         ? `${(
                             (metrics.estimatedLaborHours /
                               metrics.totalLaborHours) *
-                            100
+                              100
                           ).toFixed(0)}%`
                         : "N/A"}
                     </p>
@@ -516,4 +531,3 @@ export function JobStatisticsSheet({
     </Sheet>
   );
 }
-

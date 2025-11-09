@@ -13,10 +13,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
-  jobPhotoInsertSchema,
-  jobPhotoUpdateSchema,
   type JobPhotoInsert,
   type JobPhotoUpdate,
+  jobPhotoInsertSchema,
+  jobPhotoUpdateSchema,
 } from "@/lib/validations/database-schemas";
 
 // ============================================================================

@@ -79,9 +79,11 @@ export class LocationServices {
   /**
    * Geocode using Google Geocoding API (more accurate than Nominatim)
    */
-  private async geocodeWithGoogle(address: string): Promise<GeocodingResult | null> {
+  private async geocodeWithGoogle(
+    address: string
+  ): Promise<GeocodingResult | null> {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
-    
+
     if (!apiKey) {
       console.warn("[Google Geocoding] API key not configured");
       return null;
@@ -89,7 +91,7 @@ export class LocationServices {
 
     try {
       const params = new URLSearchParams({
-        address: address,
+        address,
         key: apiKey,
       });
 
@@ -98,30 +100,34 @@ export class LocationServices {
       const res = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?${params}`,
         {
-          signal: AbortSignal.timeout(10000), // 10 second timeout
+          signal: AbortSignal.timeout(10_000), // 10 second timeout
         }
       );
 
       if (!res.ok) {
-        console.error(`[Google Geocoding] HTTP ${res.status}: ${res.statusText}`);
+        console.error(
+          `[Google Geocoding] HTTP ${res.status}: ${res.statusText}`
+        );
         return null;
       }
 
       const data = await res.json();
 
       if (data.status !== "OK" || !data.results || data.results.length === 0) {
-        console.warn(`[Google Geocoding] No results for: ${address} (status: ${data.status})`);
+        console.warn(
+          `[Google Geocoding] No results for: ${address} (status: ${data.status})`
+        );
         return null;
       }
 
       const first = data.results[0];
       const location = first.geometry.location;
-      
+
       // Parse address components
       const addressComponents = first.address_components || [];
-      const getComponent = (type: string) => 
+      const getComponent = (type: string) =>
         addressComponents.find((c: any) => c.types.includes(type))?.long_name;
-      const getComponentShort = (type: string) => 
+      const getComponentShort = (type: string) =>
         addressComponents.find((c: any) => c.types.includes(type))?.short_name;
 
       const result: GeocodingResult = {
@@ -131,20 +137,25 @@ export class LocationServices {
         address: {
           house_number: getComponent("street_number"),
           road: getComponent("route"),
-          city: getComponent("locality") || getComponent("sublocality") || getComponent("postal_town"),
+          city:
+            getComponent("locality") ||
+            getComponent("sublocality") ||
+            getComponent("postal_town"),
           state: getComponentShort("administrative_area_level_1"),
           postcode: getComponent("postal_code"),
           country: getComponent("country"),
         },
       };
 
-      console.log(`[Google Geocoding] ✅ Success: ${result.lat}, ${result.lon}`);
+      console.log(
+        `[Google Geocoding] ✅ Success: ${result.lat}, ${result.lon}`
+      );
       return GeocodingResultSchema.parse(result);
     } catch (error: any) {
       if (error.name === "TimeoutError" || error.name === "AbortError") {
         console.error(`[Google Geocoding] Timeout for: ${address}`);
       } else {
-        console.error(`[Google Geocoding] Error:`, error.message || error);
+        console.error("[Google Geocoding] Error:", error.message || error);
       }
       return null;
     }
@@ -153,7 +164,9 @@ export class LocationServices {
   /**
    * Geocode using Nominatim (OpenStreetMap) - fallback option
    */
-  private async geocodeWithNominatim(address: string): Promise<GeocodingResult | null> {
+  private async geocodeWithNominatim(
+    address: string
+  ): Promise<GeocodingResult | null> {
     try {
       const params = new URLSearchParams({
         q: address,
@@ -168,17 +181,19 @@ export class LocationServices {
         `https://nominatim.openstreetmap.org/search?${params}`,
         {
           headers: { "User-Agent": USER_AGENT },
-          signal: AbortSignal.timeout(15000), // 15 second timeout
+          signal: AbortSignal.timeout(15_000), // 15 second timeout
         }
       );
 
       if (!res.ok) {
         console.error(`[Nominatim] HTTP ${res.status}: ${res.statusText}`);
-        
+
         if (res.status === 429) {
-          console.warn("[Nominatim] Rate limited - wait 1 minute before trying again");
+          console.warn(
+            "[Nominatim] Rate limited - wait 1 minute before trying again"
+          );
         }
-        
+
         return null;
       }
 
@@ -192,14 +207,17 @@ export class LocationServices {
 
       const first = data[0];
       const result: GeocodingResult = {
-        lat: parseFloat(first.lat),
-        lon: parseFloat(first.lon),
+        lat: Number.parseFloat(first.lat),
+        lon: Number.parseFloat(first.lon),
         displayName: first.display_name,
         address: first.address
           ? {
               house_number: first.address.house_number,
               road: first.address.road,
-              city: first.address.city || first.address.town || first.address.village,
+              city:
+                first.address.city ||
+                first.address.town ||
+                first.address.village,
               state: first.address.state,
               postcode: first.address.postcode,
               country: first.address.country,
@@ -213,7 +231,7 @@ export class LocationServices {
       if (error.name === "TimeoutError" || error.name === "AbortError") {
         console.error(`[Nominatim] Timeout for: ${address}`);
       } else {
-        console.error(`[Nominatim] Error:`, error.message || error);
+        console.error("[Nominatim] Error:", error.message || error);
       }
       return null;
     }
@@ -233,10 +251,10 @@ export class LocationServices {
 
     // Try Google first (more accurate for US addresses)
     let result = await this.geocodeWithGoogle(address);
-    
+
     // Fall back to Nominatim if Google fails
     if (!result) {
-      console.log(`[Geocoding] Google failed, trying Nominatim...`);
+      console.log("[Geocoding] Google failed, trying Nominatim...");
       result = await this.geocodeWithNominatim(address);
     }
 
@@ -283,14 +301,15 @@ export class LocationServices {
       const data = await res.json();
 
       const result: GeocodingResult = {
-        lat: parseFloat(data.lat),
-        lon: parseFloat(data.lon),
+        lat: Number.parseFloat(data.lat),
+        lon: Number.parseFloat(data.lon),
         displayName: data.display_name,
         address: data.address
           ? {
               house_number: data.address.house_number,
               road: data.address.road,
-              city: data.address.city || data.address.town || data.address.village,
+              city:
+                data.address.city || data.address.town || data.address.village,
               state: data.address.state,
               postcode: data.address.postcode,
               country: data.address.country,
@@ -382,7 +401,7 @@ export class LocationServices {
       if (!res.ok) {
         // 404 just means no flood zone data available for this location (expected)
         if (res.status === 404) {
-          console.log(`[FEMA NFHL] No flood zone data available for location`);
+          console.log("[FEMA NFHL] No flood zone data available for location");
         } else {
           console.warn(`[FEMA NFHL] Service unavailable: ${res.status}`);
         }
@@ -476,4 +495,3 @@ export class LocationServices {
 
 // Singleton instance
 export const locationServices = new LocationServices();
-

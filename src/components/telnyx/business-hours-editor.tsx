@@ -12,9 +12,24 @@
 
 "use client";
 
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Copy,
+  Globe,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,18 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import {
-  Clock,
-  Copy,
-  Plus,
-  Trash2,
-  AlertCircle,
-  CheckCircle2,
-  Calendar,
-  Globe,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Time range for a single day
@@ -154,9 +158,15 @@ export function BusinessHoursEditor() {
           ? {
               ...day,
               isOpen: !day.isOpen,
-              timeRanges: !day.isOpen
-                ? [{ id: crypto.randomUUID(), startTime: "09:00", endTime: "17:00" }]
-                : [],
+              timeRanges: day.isOpen
+                ? []
+                : [
+                    {
+                      id: crypto.randomUUID(),
+                      startTime: "09:00",
+                      endTime: "17:00",
+                    },
+                  ],
             }
           : day
       ),
@@ -173,7 +183,11 @@ export function BusinessHoursEditor() {
               ...day,
               timeRanges: [
                 ...day.timeRanges,
-                { id: crypto.randomUUID(), startTime: "09:00", endTime: "17:00" },
+                {
+                  id: crypto.randomUUID(),
+                  startTime: "09:00",
+                  endTime: "17:00",
+                },
               ],
             }
           : day
@@ -189,7 +203,9 @@ export function BusinessHoursEditor() {
         day.dayOfWeek === dayOfWeek
           ? {
               ...day,
-              timeRanges: day.timeRanges.filter((range) => range.id !== rangeId),
+              timeRanges: day.timeRanges.filter(
+                (range) => range.id !== rangeId
+              ),
             }
           : day
       ),
@@ -253,7 +269,13 @@ export function BusinessHoursEditor() {
           ? {
               ...day,
               isOpen: true,
-              timeRanges: [{ id: crypto.randomUUID(), startTime: preset.start, endTime: preset.end }],
+              timeRanges: [
+                {
+                  id: crypto.randomUUID(),
+                  startTime: preset.start,
+                  endTime: preset.end,
+                },
+              ],
             }
           : day
       ),
@@ -261,9 +283,8 @@ export function BusinessHoursEditor() {
   };
 
   // Validate time ranges (start < end)
-  const validateTimeRange = (range: TimeRange): boolean => {
-    return range.startTime < range.endTime;
-  };
+  const validateTimeRange = (range: TimeRange): boolean =>
+    range.startTime < range.endTime;
 
   return (
     <div className="space-y-6">
@@ -281,15 +302,15 @@ export function BusinessHoursEditor() {
         <CardContent className="space-y-6">
           {/* Timezone Selection */}
           <div className="space-y-2">
-            <Label htmlFor="timezone" className="flex items-center gap-2">
+            <Label className="flex items-center gap-2" htmlFor="timezone">
               <Globe className="size-4" />
               Timezone
             </Label>
             <Select
-              value={businessHours.timezone}
               onValueChange={(value) =>
                 setBusinessHours((prev) => ({ ...prev, timezone: value }))
               }
+              value={businessHours.timezone}
             >
               <SelectTrigger id="timezone">
                 <SelectValue />
@@ -311,9 +332,9 @@ export function BusinessHoursEditor() {
               {presets.map((preset) => (
                 <Button
                   key={preset.name}
-                  variant="outline"
-                  size="sm"
                   onClick={() => applyPresetToWeekdays(preset.hours)}
+                  size="sm"
+                  variant="outline"
                 >
                   {preset.name}
                 </Button>
@@ -327,17 +348,19 @@ export function BusinessHoursEditor() {
       <div className="space-y-3">
         {businessHours.schedule.map((day) => (
           <DayScheduleCard
-            key={day.dayOfWeek}
+            canPaste={copiedDay !== null}
             day={day}
-            onToggle={() => toggleDay(day.dayOfWeek)}
+            key={day.dayOfWeek}
             onAddTimeRange={() => addTimeRange(day.dayOfWeek)}
-            onRemoveTimeRange={(rangeId) => removeTimeRange(day.dayOfWeek, rangeId)}
+            onCopy={() => copyDay(day)}
+            onPaste={() => pasteDay(day.dayOfWeek)}
+            onRemoveTimeRange={(rangeId) =>
+              removeTimeRange(day.dayOfWeek, rangeId)
+            }
+            onToggle={() => toggleDay(day.dayOfWeek)}
             onUpdateTimeRange={(rangeId, field, value) =>
               updateTimeRange(day.dayOfWeek, rangeId, field, value)
             }
-            onCopy={() => copyDay(day)}
-            onPaste={() => pasteDay(day.dayOfWeek)}
-            canPaste={copiedDay !== null}
             validateTimeRange={validateTimeRange}
           />
         ))}
@@ -353,11 +376,17 @@ export function BusinessHoursEditor() {
             {businessHours.schedule
               .filter((day) => day.isOpen)
               .map((day) => (
-                <div key={day.dayOfWeek} className="flex items-center justify-between">
+                <div
+                  className="flex items-center justify-between"
+                  key={day.dayOfWeek}
+                >
                   <span className="font-medium">{day.dayName}</span>
                   <span className="text-muted-foreground">
                     {day.timeRanges
-                      .map((range) => `${formatTime(range.startTime)} - ${formatTime(range.endTime)}`)
+                      .map(
+                        (range) =>
+                          `${formatTime(range.startTime)} - ${formatTime(range.endTime)}`
+                      )
                       .join(", ")}
                   </span>
                 </div>
@@ -399,7 +428,11 @@ function DayScheduleCard({
   onToggle: () => void;
   onAddTimeRange: () => void;
   onRemoveTimeRange: (rangeId: string) => void;
-  onUpdateTimeRange: (rangeId: string, field: "startTime" | "endTime", value: string) => void;
+  onUpdateTimeRange: (
+    rangeId: string,
+    field: "startTime" | "endTime",
+    value: string
+  ) => void;
   onCopy: () => void;
   onPaste: () => void;
   canPaste: boolean;
@@ -427,10 +460,20 @@ function DayScheduleCard({
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onCopy} disabled={!day.isOpen}>
+            <Button
+              disabled={!day.isOpen}
+              onClick={onCopy}
+              size="sm"
+              variant="ghost"
+            >
               <Copy className="size-3" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={onPaste} disabled={!canPaste}>
+            <Button
+              disabled={!canPaste}
+              onClick={onPaste}
+              size="sm"
+              variant="ghost"
+            >
               Paste
             </Button>
           </div>
@@ -443,14 +486,18 @@ function DayScheduleCard({
           {day.timeRanges.map((range, index) => {
             const isValid = validateTimeRange(range);
             return (
-              <div key={range.id} className="flex items-center gap-3">
+              <div className="flex items-center gap-3" key={range.id}>
                 <div className="flex flex-1 items-center gap-3">
                   <div className="flex-1">
                     <Select
+                      onValueChange={(value) =>
+                        onUpdateTimeRange(range.id, "startTime", value)
+                      }
                       value={range.startTime}
-                      onValueChange={(value) => onUpdateTimeRange(range.id, "startTime", value)}
                     >
-                      <SelectTrigger className={cn("h-9", !isValid && "border-red-500")}>
+                      <SelectTrigger
+                        className={cn("h-9", !isValid && "border-red-500")}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -467,10 +514,14 @@ function DayScheduleCard({
 
                   <div className="flex-1">
                     <Select
+                      onValueChange={(value) =>
+                        onUpdateTimeRange(range.id, "endTime", value)
+                      }
                       value={range.endTime}
-                      onValueChange={(value) => onUpdateTimeRange(range.id, "endTime", value)}
                     >
-                      <SelectTrigger className={cn("h-9", !isValid && "border-red-500")}>
+                      <SelectTrigger
+                        className={cn("h-9", !isValid && "border-red-500")}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -486,10 +537,10 @@ function DayScheduleCard({
 
                 {day.timeRanges.length > 1 && (
                   <Button
-                    variant="ghost"
-                    size="icon"
                     className="size-9"
                     onClick={() => onRemoveTimeRange(range.id)}
+                    size="icon"
+                    variant="ghost"
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -500,10 +551,10 @@ function DayScheduleCard({
 
           {/* Add Time Range Button */}
           <Button
-            variant="outline"
-            size="sm"
             className="w-full"
             onClick={onAddTimeRange}
+            size="sm"
+            variant="outline"
           >
             <Plus className="mr-2 size-3" />
             Add Time Range (e.g., Lunch Break)
@@ -511,7 +562,7 @@ function DayScheduleCard({
 
           {/* Validation Warning */}
           {day.timeRanges.some((range) => !validateTimeRange(range)) && (
-            <div className="flex items-center gap-2 text-sm text-red-600">
+            <div className="flex items-center gap-2 text-red-600 text-sm">
               <AlertCircle className="size-4" />
               End time must be after start time
             </div>

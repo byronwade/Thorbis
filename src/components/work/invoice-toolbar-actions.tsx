@@ -16,6 +16,7 @@
 
 import { Download, Eye, Mail, Save } from "lucide-react";
 import { useState } from "react";
+import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -124,6 +125,8 @@ export function InvoiceToolbarActions() {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
+      <ImportExportDropdown dataType="invoices" />
     </div>
   );
 }

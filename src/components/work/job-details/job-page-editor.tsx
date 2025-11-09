@@ -19,35 +19,34 @@
 
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import {
+  Activity,
+  Building2,
+  Camera,
+  ChevronRight,
+  DollarSign,
+  Edit3,
+  Package,
+  Save,
+  Users,
+  Wrench,
+  X,
+} from "lucide-react";
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useActiveTab,
-  useSetActiveTab,
-  useIsEditMode,
-  useToggleEditMode,
   useHasUnsavedChanges,
+  useIsEditMode,
   useJobEditorStore,
+  useSetActiveTab,
+  useToggleEditMode,
 } from "@/lib/stores/job-editor-store";
-import {
-  Building2,
-  Users,
-  DollarSign,
-  Package,
-  Camera,
-  Activity,
-  Wrench,
-  Save,
-  X,
-  Edit3,
-  ChevronRight,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
 import { JobCommandPalette } from "./job-command-palette";
 
 // Lazy load heavy tab components
@@ -322,26 +321,26 @@ export function JobPageEditor({
       <div className="flex items-center justify-between border-b bg-background px-4 py-2">
         <div className="flex items-center gap-2">
           <Button
-            variant={isEditMode ? "default" : "outline"}
-            size="sm"
             onClick={toggleEditMode}
+            size="sm"
+            variant={isEditMode ? "default" : "outline"}
           >
             <Edit3 className="mr-2 h-4 w-4" />
             {isEditMode ? "Editing" : "Edit Mode"}
           </Button>
 
           {hasUnsavedChanges && (
-            <Badge variant="secondary" className="ml-2">
+            <Badge className="ml-2" variant="secondary">
               Unsaved Changes
             </Badge>
           )}
 
           {saveStatus === "saving" && (
-            <span className="text-sm text-muted-foreground">Saving...</span>
+            <span className="text-muted-foreground text-sm">Saving...</span>
           )}
 
           {showSaveSuccess && (
-            <Badge variant="default" className="bg-green-500">
+            <Badge className="bg-green-500" variant="default">
               Saved!
             </Badge>
           )}
@@ -350,11 +349,15 @@ export function JobPageEditor({
         <div className="flex items-center gap-2">
           {isEditMode && hasUnsavedChanges && (
             <>
-              <Button variant="outline" size="sm" onClick={() => toggleEditMode()}>
+              <Button
+                onClick={() => toggleEditMode()}
+                size="sm"
+                variant="outline"
+              >
                 <X className="mr-2 h-4 w-4" />
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button onClick={handleSave} size="sm">
                 <Save className="mr-2 h-4 w-4" />
                 Save Changes
               </Button>
@@ -363,24 +366,20 @@ export function JobPageEditor({
 
           {/* Command Palette Trigger */}
           <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCommandPaletteOpen(true)}
             className="text-muted-foreground"
+            onClick={() => setCommandPaletteOpen(true)}
+            size="sm"
+            variant="ghost"
           >
             <span className="text-xs">Press</span>
-            <kbd className="pointer-events-none mx-1 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            <kbd className="pointer-events-none mx-1 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] text-muted-foreground">
               <span className="text-xs">⌘</span>K
             </kbd>
             <span className="text-xs">for commands</span>
           </Button>
 
           {/* Right Sidebar Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleRightSidebar}
-          >
+          <Button onClick={toggleRightSidebar} size="sm" variant="outline">
             Quick Actions
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
@@ -389,24 +388,20 @@ export function JobPageEditor({
 
       {/* Main Content - Tabs */}
       <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as any)}
         className="flex h-full w-full flex-col"
+        onValueChange={(value) => setActiveTab(value as any)}
+        value={activeTab}
       >
         {/* Tab Navigation */}
         <TabsList className="w-full justify-start rounded-none border-b bg-background px-4">
           {tabs.map((tab) => (
-            <TabsTrigger
-              key={tab.id}
-              value={tab.id}
-              className="relative"
-            >
+            <TabsTrigger className="relative" key={tab.id} value={tab.id}>
               <tab.icon className="mr-2 h-4 w-4" />
               {tab.label}
               {tab.count !== undefined && tab.count > 0 && (
                 <Badge
-                  variant="secondary"
                   className="ml-2 h-5 min-w-5 px-1.5 text-xs"
+                  variant="secondary"
                 >
                   {tab.count}
                 </Badge>
@@ -417,84 +412,84 @@ export function JobPageEditor({
 
         {/* Tab Content */}
         <div className="flex-1 overflow-auto">
-          <TabsContent value="overview" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="overview">
             <OverviewTab
-              job={job}
               customer={customer}
               customers={customers}
-              property={property}
-              properties={properties}
-              propertyEnrichment={propertyEnrichment}
               isEditMode={isEditMode}
+              job={job}
+              properties={properties}
+              property={property}
+              propertyEnrichment={propertyEnrichment}
             />
           </TabsContent>
 
-          <TabsContent value="team-schedule" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="team-schedule">
             <TeamScheduleTab
+              assignedUser={assignedUser}
+              isEditMode={isEditMode}
               job={job}
               teamAssignments={teamAssignments}
               timeEntries={timeEntries}
-              assignedUser={assignedUser}
-              isEditMode={isEditMode}
             />
           </TabsContent>
 
-          <TabsContent value="financials" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="financials">
             <FinancialsTab
-              job={job}
-              invoices={invoices}
               estimates={estimates}
-              metrics={metrics}
+              invoices={invoices}
               isEditMode={isEditMode}
+              job={job}
+              metrics={metrics}
             />
           </TabsContent>
 
-          <TabsContent value="materials" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="materials">
             <MaterialsTab
+              isEditMode={isEditMode}
               job={job}
               materials={materials}
-              isEditMode={isEditMode}
             />
           </TabsContent>
 
-          <TabsContent value="photos-docs" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="photos-docs">
             <PhotosDocsTab
+              customerSignature={customerSignature}
+              documents={documents}
+              isEditMode={isEditMode}
               job={job}
               photos={photos}
               photosByCategory={photosByCategory}
-              documents={documents}
               signatures={signatures}
-              customerSignature={customerSignature}
               technicianSignature={technicianSignature}
-              isEditMode={isEditMode}
             />
           </TabsContent>
 
-          <TabsContent value="activity" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="activity">
             <ActivityTab
-              job={job}
               activities={activities}
               communications={communications}
               customer={customer}
+              job={job}
             />
           </TabsContent>
 
-          <TabsContent value="equipment" className="m-0 h-full p-6">
+          <TabsContent className="m-0 h-full p-6" value="equipment">
             <EquipmentTab
-              job={job}
               equipment={equipment}
-              property={property}
               isEditMode={isEditMode}
+              job={job}
+              property={property}
             />
           </TabsContent>
         </div>
       </Tabs>
 
       {/* Right Sidebar (Sheet) */}
-      <Sheet open={isRightSidebarOpen} onOpenChange={toggleRightSidebar}>
-        <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+      <Sheet onOpenChange={toggleRightSidebar} open={isRightSidebarOpen}>
+        <SheetContent className="w-[400px] sm:w-[540px]" side="right">
           <div className="flex h-full flex-col">
-            <h2 className="text-lg font-semibold">Quick Actions</h2>
+            <h2 className="font-semibold text-lg">Quick Actions</h2>
             <div className="mt-4 space-y-4">
               {/* TODO: Add quick action buttons */}
               <Button className="w-full" variant="outline">
@@ -518,7 +513,7 @@ export function JobPageEditor({
       </Sheet>
 
       {/* Command Palette (Cmd+K) */}
-      <JobCommandPalette jobId={job.id} customer={customer} />
+      <JobCommandPalette customer={customer} jobId={job.id} />
     </div>
   );
 }

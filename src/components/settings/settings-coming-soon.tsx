@@ -13,7 +13,7 @@
  * - Standard info banner at bottom
  */
 
-import { LucideIcon, Clock, ArrowLeft, HelpCircle } from "lucide-react";
+import { ArrowLeft, Clock, HelpCircle, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -61,7 +61,7 @@ export function SettingsComingSoon({
             {helpText && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button type="button" className="flex-shrink-0">
+                  <button className="flex-shrink-0" type="button">
                     <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 </TooltipTrigger>
@@ -99,12 +99,12 @@ export function SettingsComingSoon({
               This Feature is Under Development
             </h2>
             <p className="mb-8 max-w-md text-muted-foreground">
-              We're working hard to bring you powerful{" "}
-              {title.toLowerCase()} capabilities. Check back soon for updates!
+              We're working hard to bring you powerful {title.toLowerCase()}{" "}
+              capabilities. Check back soon for updates!
             </p>
 
             {/* Back Button */}
-            <Button variant="outline" asChild>
+            <Button asChild variant="outline">
               <Link href={backLink}>
                 <ArrowLeft className="mr-2 size-4" />
                 {backLabel}

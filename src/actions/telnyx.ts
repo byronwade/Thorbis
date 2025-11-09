@@ -15,28 +15,22 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
-  searchAvailableNumbers,
-  purchaseNumber,
-  listOwnedNumbers,
-  updateNumber as telnyxUpdateNumber,
-  releaseNumber,
-  type NumberType,
-  type NumberFeature,
-} from "@/lib/telnyx/numbers";
-import {
-  sendSMS,
-  sendMMS,
-  formatPhoneNumber,
-} from "@/lib/telnyx/messaging";
-import {
-  initiateCall,
   answerCall,
-  rejectCall,
   hangupCall,
+  initiateCall,
+  rejectCall,
   startRecording,
   stopRecording,
 } from "@/lib/telnyx/calls";
 import { TELNYX_CONFIG } from "@/lib/telnyx/client";
+import { formatPhoneNumber, sendMMS, sendSMS } from "@/lib/telnyx/messaging";
+import {
+  type NumberFeature,
+  type NumberType,
+  purchaseNumber,
+  releaseNumber,
+  searchAvailableNumbers,
+} from "@/lib/telnyx/numbers";
 
 // =====================================================================================
 // PHONE NUMBER MANAGEMENT ACTIONS
@@ -65,7 +59,10 @@ export async function searchPhoneNumbers(params: {
     console.error("Error searching phone numbers:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to search phone numbers",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to search phone numbers",
     };
   }
 }
@@ -125,7 +122,10 @@ export async function purchasePhoneNumber(params: {
     console.error("Error purchasing phone number:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to purchase phone number",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to purchase phone number",
     };
   }
 }
@@ -157,7 +157,8 @@ export async function getCompanyPhoneNumbers(companyId: string) {
     console.error("Error getting company phone numbers:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get phone numbers",
+      error:
+        error instanceof Error ? error.message : "Failed to get phone numbers",
     };
   }
 }
@@ -200,7 +201,10 @@ export async function updatePhoneNumber(params: {
     console.error("Error updating phone number:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to update phone number",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to update phone number",
     };
   }
 }
@@ -249,7 +253,10 @@ export async function deletePhoneNumber(phoneNumberId: string) {
     console.error("Error deleting phone number:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to delete phone number",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to delete phone number",
     };
   }
 }
@@ -392,7 +399,8 @@ export async function startCallRecording(callControlId: string) {
     console.error("Error starting recording:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to start recording",
+      error:
+        error instanceof Error ? error.message : "Failed to start recording",
     };
   }
 }
@@ -409,7 +417,8 @@ export async function stopCallRecording(callControlId: string) {
     console.error("Error stopping recording:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to stop recording",
+      error:
+        error instanceof Error ? error.message : "Failed to stop recording",
     };
   }
 }
@@ -469,7 +478,9 @@ export async function transcribeCallRecording(params: {
 
     const webhookUrl = `${baseUrl}/api/webhooks/assemblyai`;
 
-    console.log(`📝 Submitting call recording for transcription: ${params.recordingUrl}`);
+    console.log(
+      `📝 Submitting call recording for transcription: ${params.recordingUrl}`
+    );
 
     // Submit to AssemblyAI
     const result = await submitTranscription({
@@ -478,7 +489,7 @@ export async function transcribeCallRecording(params: {
       webhook_url: webhookUrl,
     });
 
-    if (!result.success || !result.data) {
+    if (!(result.success && result.data)) {
       console.error("❌ Failed to submit transcription:", result.error);
       return {
         success: false,
@@ -510,7 +521,10 @@ export async function transcribeCallRecording(params: {
     console.error("Error submitting transcription:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to transcribe recording",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to transcribe recording",
     };
   }
 }
@@ -664,7 +678,10 @@ export async function getWebRTCCredentials() {
     }
 
     // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
     if (userError || !user) {
       return {
         success: false,
@@ -676,7 +693,7 @@ export async function getWebRTCCredentials() {
     const { generateWebRTCToken } = await import("@/lib/telnyx/webrtc");
     const result = await generateWebRTCToken({
       username: user.email || user.id,
-      ttl: 86400, // 24 hours
+      ttl: 86_400, // 24 hours
     });
 
     if (!result.success) {
@@ -691,7 +708,10 @@ export async function getWebRTCCredentials() {
     console.error("Error generating WebRTC credentials:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to generate WebRTC credentials",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to generate WebRTC credentials",
     };
   }
 }
@@ -731,7 +751,8 @@ export async function getVoicemails(companyId: string) {
     console.error("Error getting voicemails:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get voicemails",
+      error:
+        error instanceof Error ? error.message : "Failed to get voicemails",
     };
   }
 }
@@ -769,7 +790,10 @@ export async function markVoicemailAsRead(voicemailId: string, userId: string) {
     console.error("Error marking voicemail as read:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to mark voicemail as read",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to mark voicemail as read",
     };
   }
 }
@@ -801,7 +825,8 @@ export async function deleteVoicemail(voicemailId: string, userId: string) {
     console.error("Error deleting voicemail:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to delete voicemail",
+      error:
+        error instanceof Error ? error.message : "Failed to delete voicemail",
     };
   }
 }
@@ -841,7 +866,10 @@ export async function getCallRoutingRules(companyId: string) {
     console.error("Error getting call routing rules:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get call routing rules",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to get call routing rules",
     };
   }
 }
@@ -854,7 +882,12 @@ export async function createCallRoutingRule(params: {
   userId: string;
   name: string;
   description?: string;
-  routingType: "direct" | "round_robin" | "ivr" | "business_hours" | "conditional";
+  routingType:
+    | "direct"
+    | "round_robin"
+    | "ivr"
+    | "business_hours"
+    | "conditional";
   priority?: number;
   businessHours?: Record<string, unknown>;
   timezone?: string;
@@ -899,9 +932,11 @@ export async function createCallRoutingRule(params: {
         forward_to_user_id: params.forwardToUserId,
         enable_voicemail: params.enableVoicemail !== false,
         voicemail_greeting_url: params.voicemailGreetingUrl,
-        voicemail_transcription_enabled: params.voicemailTranscriptionEnabled !== false,
-        voicemail_email_notifications: params.voicemailEmailNotifications !== false,
-        record_calls: params.recordCalls || false,
+        voicemail_transcription_enabled:
+          params.voicemailTranscriptionEnabled !== false,
+        voicemail_email_notifications:
+          params.voicemailEmailNotifications !== false,
+        record_calls: params.recordCalls,
         is_active: true,
       })
       .select()
@@ -919,7 +954,10 @@ export async function createCallRoutingRule(params: {
     console.error("Error creating call routing rule:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to create call routing rule",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to create call routing rule",
     };
   }
 }
@@ -958,23 +996,39 @@ export async function updateCallRoutingRule(params: {
     const updateData: Record<string, unknown> = {};
 
     if (params.name !== undefined) updateData.name = params.name;
-    if (params.description !== undefined) updateData.description = params.description;
+    if (params.description !== undefined)
+      updateData.description = params.description;
     if (params.priority !== undefined) updateData.priority = params.priority;
-    if (params.businessHours !== undefined) updateData.business_hours = params.businessHours;
+    if (params.businessHours !== undefined)
+      updateData.business_hours = params.businessHours;
     if (params.timezone !== undefined) updateData.timezone = params.timezone;
-    if (params.afterHoursAction !== undefined) updateData.after_hours_action = params.afterHoursAction;
-    if (params.afterHoursForwardTo !== undefined) updateData.after_hours_forward_to = params.afterHoursForwardTo;
-    if (params.teamMembers !== undefined) updateData.team_members = params.teamMembers;
-    if (params.ringTimeout !== undefined) updateData.ring_timeout = params.ringTimeout;
+    if (params.afterHoursAction !== undefined)
+      updateData.after_hours_action = params.afterHoursAction;
+    if (params.afterHoursForwardTo !== undefined)
+      updateData.after_hours_forward_to = params.afterHoursForwardTo;
+    if (params.teamMembers !== undefined)
+      updateData.team_members = params.teamMembers;
+    if (params.ringTimeout !== undefined)
+      updateData.ring_timeout = params.ringTimeout;
     if (params.ivrMenu !== undefined) updateData.ivr_menu = params.ivrMenu;
-    if (params.ivrGreetingUrl !== undefined) updateData.ivr_greeting_url = params.ivrGreetingUrl;
-    if (params.forwardToNumber !== undefined) updateData.forward_to_number = params.forwardToNumber;
-    if (params.forwardToUserId !== undefined) updateData.forward_to_user_id = params.forwardToUserId;
-    if (params.enableVoicemail !== undefined) updateData.enable_voicemail = params.enableVoicemail;
-    if (params.voicemailGreetingUrl !== undefined) updateData.voicemail_greeting_url = params.voicemailGreetingUrl;
-    if (params.voicemailTranscriptionEnabled !== undefined) updateData.voicemail_transcription_enabled = params.voicemailTranscriptionEnabled;
-    if (params.voicemailEmailNotifications !== undefined) updateData.voicemail_email_notifications = params.voicemailEmailNotifications;
-    if (params.recordCalls !== undefined) updateData.record_calls = params.recordCalls;
+    if (params.ivrGreetingUrl !== undefined)
+      updateData.ivr_greeting_url = params.ivrGreetingUrl;
+    if (params.forwardToNumber !== undefined)
+      updateData.forward_to_number = params.forwardToNumber;
+    if (params.forwardToUserId !== undefined)
+      updateData.forward_to_user_id = params.forwardToUserId;
+    if (params.enableVoicemail !== undefined)
+      updateData.enable_voicemail = params.enableVoicemail;
+    if (params.voicemailGreetingUrl !== undefined)
+      updateData.voicemail_greeting_url = params.voicemailGreetingUrl;
+    if (params.voicemailTranscriptionEnabled !== undefined)
+      updateData.voicemail_transcription_enabled =
+        params.voicemailTranscriptionEnabled;
+    if (params.voicemailEmailNotifications !== undefined)
+      updateData.voicemail_email_notifications =
+        params.voicemailEmailNotifications;
+    if (params.recordCalls !== undefined)
+      updateData.record_calls = params.recordCalls;
     if (params.isActive !== undefined) updateData.is_active = params.isActive;
 
     const { data, error } = await supabase
@@ -996,7 +1050,10 @@ export async function updateCallRoutingRule(params: {
     console.error("Error updating call routing rule:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to update call routing rule",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to update call routing rule",
     };
   }
 }
@@ -1028,7 +1085,10 @@ export async function deleteCallRoutingRule(ruleId: string, userId: string) {
     console.error("Error deleting call routing rule:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to delete call routing rule",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to delete call routing rule",
     };
   }
 }
@@ -1062,7 +1122,10 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
     console.error("Error toggling call routing rule:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to toggle call routing rule",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to toggle call routing rule",
     };
   }
 }
@@ -1074,7 +1137,10 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
 /**
  * Get usage statistics for a phone number
  */
-export async function getPhoneNumberUsageStats(phoneNumberId: string, days: number = 30) {
+export async function getPhoneNumberUsageStats(
+  phoneNumberId: string,
+  days = 30
+) {
   try {
     const supabase = await createClient();
     if (!supabase) {
@@ -1109,8 +1175,13 @@ export async function getPhoneNumberUsageStats(phoneNumberId: string, days: numb
     const sms = smsStats || [];
 
     const incomingCalls = calls.filter((c) => c.direction === "inbound").length;
-    const outgoingCalls = calls.filter((c) => c.direction === "outbound").length;
-    const totalCallDuration = calls.reduce((sum, c) => sum + (c.duration || 0), 0);
+    const outgoingCalls = calls.filter(
+      (c) => c.direction === "outbound"
+    ).length;
+    const totalCallDuration = calls.reduce(
+      (sum, c) => sum + (c.duration || 0),
+      0
+    );
     const incomingSms = sms.filter((s) => s.direction === "inbound").length;
     const outgoingSms = sms.filter((s) => s.direction === "outbound").length;
 
@@ -1131,7 +1202,10 @@ export async function getPhoneNumberUsageStats(phoneNumberId: string, days: numb
     console.error("Error getting phone number usage stats:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get usage statistics",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to get usage statistics",
     };
   }
 }
@@ -1139,7 +1213,7 @@ export async function getPhoneNumberUsageStats(phoneNumberId: string, days: numb
 /**
  * Get company-wide usage statistics
  */
-export async function getCompanyUsageStats(companyId: string, days: number = 30) {
+export async function getCompanyUsageStats(companyId: string, days = 30) {
   try {
     const supabase = await createClient();
     if (!supabase) {
@@ -1164,8 +1238,13 @@ export async function getCompanyUsageStats(companyId: string, days: number = 30)
     const sms = items.filter((i) => i.type === "sms");
 
     const incomingCalls = calls.filter((c) => c.direction === "inbound").length;
-    const outgoingCalls = calls.filter((c) => c.direction === "outbound").length;
-    const totalCallDuration = calls.reduce((sum, c) => sum + (c.duration || 0), 0);
+    const outgoingCalls = calls.filter(
+      (c) => c.direction === "outbound"
+    ).length;
+    const totalCallDuration = calls.reduce(
+      (sum, c) => sum + (c.duration || 0),
+      0
+    );
     const incomingSms = sms.filter((s) => s.direction === "inbound").length;
     const outgoingSms = sms.filter((s) => s.direction === "outbound").length;
 
@@ -1176,7 +1255,8 @@ export async function getCompanyUsageStats(companyId: string, days: number = 30)
         outgoingCalls,
         totalCalls: incomingCalls + outgoingCalls,
         totalCallDuration,
-        averageCallDuration: calls.length > 0 ? totalCallDuration / calls.length : 0,
+        averageCallDuration:
+          calls.length > 0 ? totalCallDuration / calls.length : 0,
         incomingSms,
         outgoingSms,
         totalSms: incomingSms + outgoingSms,
@@ -1187,7 +1267,10 @@ export async function getCompanyUsageStats(companyId: string, days: number = 30)
     console.error("Error getting company usage stats:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get usage statistics",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to get usage statistics",
     };
   }
 }
@@ -1195,8 +1278,14 @@ export async function getCompanyUsageStats(companyId: string, days: number = 30)
 /**
  * Helper function to aggregate daily statistics
  */
-function aggregateDailyStats(items: Array<{ created_at: string; type: string; duration?: number }>, days: number) {
-  const dailyStats: Record<string, { date: string; calls: number; sms: number; duration: number }> = {};
+function aggregateDailyStats(
+  items: Array<{ created_at: string; type: string; duration?: number }>,
+  days: number
+) {
+  const dailyStats: Record<
+    string,
+    { date: string; calls: number; sms: number; duration: number }
+  > = {};
 
   // Initialize all days
   for (let i = 0; i < days; i++) {

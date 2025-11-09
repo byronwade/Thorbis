@@ -17,10 +17,10 @@
  */
 
 import { usePathname } from "next/navigation";
+import { InvoiceOptionsSidebar } from "@/components/invoices/invoice-options-sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppToolbar } from "@/components/layout/app-toolbar";
 import { PriceBookSidebar } from "@/components/pricebook/pricebook-sidebar";
-import { InvoiceOptionsSidebar } from "@/components/invoices/invoice-options-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
   getGapClass,

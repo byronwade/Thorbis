@@ -83,36 +83,40 @@ export async function updateJobSettings(
 
     const data = jobSettingsSchema.parse({
       jobNumberPrefix: formData.get("jobNumberPrefix") || "JOB",
-      jobNumberFormat: formData.get("jobNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
+      jobNumberFormat:
+        formData.get("jobNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
       nextJobNumber: formData.get("nextJobNumber") || "1",
       defaultJobStatus: formData.get("defaultJobStatus") || "scheduled",
       defaultPriority: formData.get("defaultPriority") || "normal",
-      requireCustomerSignature: formData.get("requireCustomerSignature") === "true",
+      requireCustomerSignature:
+        formData.get("requireCustomerSignature") === "true",
       requirePhotoCompletion: formData.get("requirePhotoCompletion") === "true",
-      autoInvoiceOnCompletion: formData.get("autoInvoiceOnCompletion") === "true",
-      autoSendCompletionEmail: formData.get("autoSendCompletionEmail") !== "false",
+      autoInvoiceOnCompletion:
+        formData.get("autoInvoiceOnCompletion") === "true",
+      autoSendCompletionEmail:
+        formData.get("autoSendCompletionEmail") !== "false",
       trackTechnicianTime: formData.get("trackTechnicianTime") !== "false",
-      requireArrivalConfirmation: formData.get("requireArrivalConfirmation") === "true",
-      requireCompletionNotes: formData.get("requireCompletionNotes") !== "false",
+      requireArrivalConfirmation:
+        formData.get("requireArrivalConfirmation") === "true",
+      requireCompletionNotes:
+        formData.get("requireCompletionNotes") !== "false",
     });
 
-    const { error } = await supabase
-      .from("job_settings")
-      .upsert({
-        company_id: companyId,
-        job_number_prefix: data.jobNumberPrefix,
-        job_number_format: data.jobNumberFormat,
-        next_job_number: data.nextJobNumber,
-        default_job_status: data.defaultJobStatus,
-        default_priority: data.defaultPriority,
-        require_customer_signature: data.requireCustomerSignature,
-        require_photo_completion: data.requirePhotoCompletion,
-        auto_invoice_on_completion: data.autoInvoiceOnCompletion,
-        auto_send_completion_email: data.autoSendCompletionEmail,
-        track_technician_time: data.trackTechnicianTime,
-        require_arrival_confirmation: data.requireArrivalConfirmation,
-        require_completion_notes: data.requireCompletionNotes,
-      });
+    const { error } = await supabase.from("job_settings").upsert({
+      company_id: companyId,
+      job_number_prefix: data.jobNumberPrefix,
+      job_number_format: data.jobNumberFormat,
+      next_job_number: data.nextJobNumber,
+      default_job_status: data.defaultJobStatus,
+      default_priority: data.defaultPriority,
+      require_customer_signature: data.requireCustomerSignature,
+      require_photo_completion: data.requirePhotoCompletion,
+      auto_invoice_on_completion: data.autoInvoiceOnCompletion,
+      auto_send_completion_email: data.autoSendCompletionEmail,
+      track_technician_time: data.trackTechnicianTime,
+      require_arrival_confirmation: data.requireArrivalConfirmation,
+      require_completion_notes: data.requireCompletionNotes,
+    });
 
     if (error) {
       throw new ActionError(
@@ -203,11 +207,14 @@ export async function updateEstimateSettings(
 
     const data = estimateSettingsSchema.parse({
       estimateNumberPrefix: formData.get("estimateNumberPrefix") || "EST",
-      estimateNumberFormat: formData.get("estimateNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
+      estimateNumberFormat:
+        formData.get("estimateNumberFormat") ||
+        "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
       nextEstimateNumber: formData.get("nextEstimateNumber") || "1",
       defaultValidForDays: formData.get("defaultValidForDays") || "30",
       showExpiryDate: formData.get("showExpiryDate") !== "false",
-      includeTermsAndConditions: formData.get("includeTermsAndConditions") !== "false",
+      includeTermsAndConditions:
+        formData.get("includeTermsAndConditions") !== "false",
       defaultTerms: formData.get("defaultTerms") || undefined,
       showPaymentTerms: formData.get("showPaymentTerms") !== "false",
       allowDiscounts: formData.get("allowDiscounts") !== "false",
@@ -220,27 +227,25 @@ export async function updateEstimateSettings(
       reminderDaysBeforeExpiry: formData.get("reminderDaysBeforeExpiry") || "7",
     });
 
-    const { error } = await supabase
-      .from("estimate_settings")
-      .upsert({
-        company_id: companyId,
-        estimate_number_prefix: data.estimateNumberPrefix,
-        estimate_number_format: data.estimateNumberFormat,
-        next_estimate_number: data.nextEstimateNumber,
-        default_valid_for_days: data.defaultValidForDays,
-        show_expiry_date: data.showExpiryDate,
-        include_terms_and_conditions: data.includeTermsAndConditions,
-        default_terms: data.defaultTerms,
-        show_payment_terms: data.showPaymentTerms,
-        allow_discounts: data.allowDiscounts,
-        show_individual_prices: data.showIndividualPrices,
-        show_subtotals: data.showSubtotals,
-        show_tax_breakdown: data.showTaxBreakdown,
-        require_approval: data.requireApproval,
-        auto_convert_to_job: data.autoConvertToJob,
-        send_reminder_enabled: data.sendReminderEnabled,
-        reminder_days_before_expiry: data.reminderDaysBeforeExpiry,
-      });
+    const { error } = await supabase.from("estimate_settings").upsert({
+      company_id: companyId,
+      estimate_number_prefix: data.estimateNumberPrefix,
+      estimate_number_format: data.estimateNumberFormat,
+      next_estimate_number: data.nextEstimateNumber,
+      default_valid_for_days: data.defaultValidForDays,
+      show_expiry_date: data.showExpiryDate,
+      include_terms_and_conditions: data.includeTermsAndConditions,
+      default_terms: data.defaultTerms,
+      show_payment_terms: data.showPaymentTerms,
+      allow_discounts: data.allowDiscounts,
+      show_individual_prices: data.showIndividualPrices,
+      show_subtotals: data.showSubtotals,
+      show_tax_breakdown: data.showTaxBreakdown,
+      require_approval: data.requireApproval,
+      auto_convert_to_job: data.autoConvertToJob,
+      send_reminder_enabled: data.sendReminderEnabled,
+      reminder_days_before_expiry: data.reminderDaysBeforeExpiry,
+    });
 
     if (error) {
       throw new ActionError(
@@ -333,7 +338,8 @@ export async function updateInvoiceSettings(
 
     const data = invoiceSettingsSchema.parse({
       invoiceNumberPrefix: formData.get("invoiceNumberPrefix") || "INV",
-      invoiceNumberFormat: formData.get("invoiceNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
+      invoiceNumberFormat:
+        formData.get("invoiceNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
       nextInvoiceNumber: formData.get("nextInvoiceNumber") || "1",
       defaultPaymentTerms: formData.get("defaultPaymentTerms") || "30",
       paymentTermsOptions: formData.get("paymentTermsOptions") || undefined,
@@ -341,9 +347,11 @@ export async function updateInvoiceSettings(
       lateFeeType: formData.get("lateFeeType") || "percentage",
       lateFeeAmount: formData.get("lateFeeAmount") || "5.0",
       lateFeeGracePeriodDays: formData.get("lateFeeGracePeriodDays") || "7",
-      includeTermsAndConditions: formData.get("includeTermsAndConditions") !== "false",
+      includeTermsAndConditions:
+        formData.get("includeTermsAndConditions") !== "false",
       defaultTerms: formData.get("defaultTerms") || undefined,
-      showPaymentInstructions: formData.get("showPaymentInstructions") !== "false",
+      showPaymentInstructions:
+        formData.get("showPaymentInstructions") !== "false",
       paymentInstructions: formData.get("paymentInstructions") || undefined,
       taxEnabled: formData.get("taxEnabled") !== "false",
       defaultTaxRate: formData.get("defaultTaxRate") || "0",
@@ -371,29 +379,27 @@ export async function updateInvoiceSettings(
       }
     }
 
-    const { error } = await supabase
-      .from("invoice_settings")
-      .upsert({
-        company_id: companyId,
-        invoice_number_prefix: data.invoiceNumberPrefix,
-        invoice_number_format: data.invoiceNumberFormat,
-        next_invoice_number: data.nextInvoiceNumber,
-        default_payment_terms: data.defaultPaymentTerms,
-        payment_terms_options: paymentTermsOptionsArray,
-        late_fee_enabled: data.lateFeeEnabled,
-        late_fee_type: data.lateFeeType,
-        late_fee_amount: data.lateFeeAmount,
-        late_fee_grace_period_days: data.lateFeeGracePeriodDays,
-        include_terms_and_conditions: data.includeTermsAndConditions,
-        default_terms: data.defaultTerms,
-        show_payment_instructions: data.showPaymentInstructions,
-        payment_instructions: data.paymentInstructions,
-        tax_enabled: data.taxEnabled,
-        default_tax_rate: data.defaultTaxRate,
-        tax_label: data.taxLabel,
-        send_reminders: data.sendReminders,
-        reminder_schedule: reminderScheduleArray,
-      });
+    const { error } = await supabase.from("invoice_settings").upsert({
+      company_id: companyId,
+      invoice_number_prefix: data.invoiceNumberPrefix,
+      invoice_number_format: data.invoiceNumberFormat,
+      next_invoice_number: data.nextInvoiceNumber,
+      default_payment_terms: data.defaultPaymentTerms,
+      payment_terms_options: paymentTermsOptionsArray,
+      late_fee_enabled: data.lateFeeEnabled,
+      late_fee_type: data.lateFeeType,
+      late_fee_amount: data.lateFeeAmount,
+      late_fee_grace_period_days: data.lateFeeGracePeriodDays,
+      include_terms_and_conditions: data.includeTermsAndConditions,
+      default_terms: data.defaultTerms,
+      show_payment_instructions: data.showPaymentInstructions,
+      payment_instructions: data.paymentInstructions,
+      tax_enabled: data.taxEnabled,
+      default_tax_rate: data.defaultTaxRate,
+      tax_label: data.taxLabel,
+      send_reminders: data.sendReminders,
+      reminder_schedule: reminderScheduleArray,
+    });
 
     if (error) {
       throw new ActionError(
@@ -476,31 +482,32 @@ export async function updateServicePlanSettings(
     const companyId = await getCompanyId(supabase, user.id);
 
     const data = servicePlanSettingsSchema.parse({
-      allowMultiplePlansPerCustomer: formData.get("allowMultiplePlansPerCustomer") === "true",
-      requireContractSignature: formData.get("requireContractSignature") !== "false",
+      allowMultiplePlansPerCustomer:
+        formData.get("allowMultiplePlansPerCustomer") === "true",
+      requireContractSignature:
+        formData.get("requireContractSignature") !== "false",
       autoRenewEnabled: formData.get("autoRenewEnabled") !== "false",
       renewalNoticeDays: formData.get("renewalNoticeDays") || "30",
       autoInvoiceOnRenewal: formData.get("autoInvoiceOnRenewal") !== "false",
       autoScheduleServices: formData.get("autoScheduleServices") !== "false",
       scheduleAdvanceDays: formData.get("scheduleAdvanceDays") || "7",
-      sendReminderBeforeService: formData.get("sendReminderBeforeService") !== "false",
+      sendReminderBeforeService:
+        formData.get("sendReminderBeforeService") !== "false",
       reminderDays: formData.get("reminderDays") || "3",
     });
 
-    const { error } = await supabase
-      .from("service_plan_settings")
-      .upsert({
-        company_id: companyId,
-        allow_multiple_plans_per_customer: data.allowMultiplePlansPerCustomer,
-        require_contract_signature: data.requireContractSignature,
-        auto_renew_enabled: data.autoRenewEnabled,
-        renewal_notice_days: data.renewalNoticeDays,
-        auto_invoice_on_renewal: data.autoInvoiceOnRenewal,
-        auto_schedule_services: data.autoScheduleServices,
-        schedule_advance_days: data.scheduleAdvanceDays,
-        send_reminder_before_service: data.sendReminderBeforeService,
-        reminder_days: data.reminderDays,
-      });
+    const { error } = await supabase.from("service_plan_settings").upsert({
+      company_id: companyId,
+      allow_multiple_plans_per_customer: data.allowMultiplePlansPerCustomer,
+      require_contract_signature: data.requireContractSignature,
+      auto_renew_enabled: data.autoRenewEnabled,
+      renewal_notice_days: data.renewalNoticeDays,
+      auto_invoice_on_renewal: data.autoInvoiceOnRenewal,
+      auto_schedule_services: data.autoScheduleServices,
+      schedule_advance_days: data.scheduleAdvanceDays,
+      send_reminder_before_service: data.sendReminderBeforeService,
+      reminder_days: data.reminderDays,
+    });
 
     if (error) {
       throw new ActionError(
@@ -582,26 +589,26 @@ export async function updatePricebookSettings(
 
     const data = pricebookSettingsSchema.parse({
       showCostPrices: formData.get("showCostPrices") !== "false",
-      markupDefaultPercentage: formData.get("markupDefaultPercentage") || "50.0",
+      markupDefaultPercentage:
+        formData.get("markupDefaultPercentage") || "50.0",
       requireCategories: formData.get("requireCategories") !== "false",
       allowCustomItems: formData.get("allowCustomItems") !== "false",
-      requireApprovalForCustom: formData.get("requireApprovalForCustom") === "true",
+      requireApprovalForCustom:
+        formData.get("requireApprovalForCustom") === "true",
       showItemCodes: formData.get("showItemCodes") !== "false",
       showItemDescriptions: formData.get("showItemDescriptions") !== "false",
     });
 
-    const { error } = await supabase
-      .from("pricebook_settings")
-      .upsert({
-        company_id: companyId,
-        show_cost_prices: data.showCostPrices,
-        markup_default_percentage: data.markupDefaultPercentage,
-        require_categories: data.requireCategories,
-        allow_custom_items: data.allowCustomItems,
-        require_approval_for_custom: data.requireApprovalForCustom,
-        show_item_codes: data.showItemCodes,
-        show_item_descriptions: data.showItemDescriptions,
-      });
+    const { error } = await supabase.from("pricebook_settings").upsert({
+      company_id: companyId,
+      show_cost_prices: data.showCostPrices,
+      markup_default_percentage: data.markupDefaultPercentage,
+      require_categories: data.requireCategories,
+      allow_custom_items: data.allowCustomItems,
+      require_approval_for_custom: data.requireApprovalForCustom,
+      show_item_codes: data.showItemCodes,
+      show_item_descriptions: data.showItemDescriptions,
+    });
 
     if (error) {
       throw new ActionError(
@@ -687,31 +694,31 @@ export async function updateBookingSettings(
     const data = bookingSettingsSchema.parse({
       onlineBookingEnabled: formData.get("onlineBookingEnabled") === "true",
       requireAccount: formData.get("requireAccount") === "true",
-      requireServiceSelection: formData.get("requireServiceSelection") !== "false",
+      requireServiceSelection:
+        formData.get("requireServiceSelection") !== "false",
       showPricing: formData.get("showPricing") !== "false",
       allowTimePreferences: formData.get("allowTimePreferences") !== "false",
-      requireImmediatePayment: formData.get("requireImmediatePayment") === "true",
+      requireImmediatePayment:
+        formData.get("requireImmediatePayment") === "true",
       sendConfirmationEmail: formData.get("sendConfirmationEmail") !== "false",
       sendConfirmationSms: formData.get("sendConfirmationSms") === "true",
       minBookingNoticeHours: formData.get("minBookingNoticeHours") || "24",
       maxBookingsPerDay: formData.get("maxBookingsPerDay") || undefined,
     });
 
-    const { error } = await supabase
-      .from("booking_settings")
-      .upsert({
-        company_id: companyId,
-        online_booking_enabled: data.onlineBookingEnabled,
-        require_account: data.requireAccount,
-        require_service_selection: data.requireServiceSelection,
-        show_pricing: data.showPricing,
-        allow_time_preferences: data.allowTimePreferences,
-        require_immediate_payment: data.requireImmediatePayment,
-        send_confirmation_email: data.sendConfirmationEmail,
-        send_confirmation_sms: data.sendConfirmationSms,
-        min_booking_notice_hours: data.minBookingNoticeHours,
-        max_bookings_per_day: data.maxBookingsPerDay,
-      });
+    const { error } = await supabase.from("booking_settings").upsert({
+      company_id: companyId,
+      online_booking_enabled: data.onlineBookingEnabled,
+      require_account: data.requireAccount,
+      require_service_selection: data.requireServiceSelection,
+      show_pricing: data.showPricing,
+      allow_time_preferences: data.allowTimePreferences,
+      require_immediate_payment: data.requireImmediatePayment,
+      send_confirmation_email: data.sendConfirmationEmail,
+      send_confirmation_sms: data.sendConfirmationSms,
+      min_booking_notice_hours: data.minBookingNoticeHours,
+      max_bookings_per_day: data.maxBookingsPerDay,
+    });
 
     if (error) {
       throw new ActionError(

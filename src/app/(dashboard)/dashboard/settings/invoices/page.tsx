@@ -24,10 +24,9 @@ import {
   Settings,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { getInvoiceSettings, updateInvoiceSettings } from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getInvoiceSettings, updateInvoiceSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -53,6 +52,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -187,9 +187,14 @@ export default function InvoiceSettingsPage() {
             ...prev,
             invoicePrefix: result.data.invoice_number_prefix || "INV",
             nextInvoiceNumber: result.data.next_invoice_number || 1,
-            defaultPaymentTerms: result.data.default_payment_terms === 30 ? "net30" :
-                                 result.data.default_payment_terms === 15 ? "net15" :
-                                 result.data.default_payment_terms === 60 ? "net60" : "net30",
+            defaultPaymentTerms:
+              result.data.default_payment_terms === 30
+                ? "net30"
+                : result.data.default_payment_terms === 15
+                  ? "net15"
+                  : result.data.default_payment_terms === 60
+                    ? "net60"
+                    : "net30",
             lateFeeEnabled: result.data.late_fee_enabled ?? false,
             lateFeePercent: result.data.late_fee_amount ?? 1.5,
             lateFeeGracePeriodDays: result.data.late_fee_grace_period_days ?? 3,
@@ -250,23 +255,36 @@ export default function InvoiceSettingsPage() {
 
       // Convert payment terms to days
       const paymentTermsDays =
-        settings.defaultPaymentTerms === "net15" ? 15 :
-        settings.defaultPaymentTerms === "net30" ? 30 :
-        settings.defaultPaymentTerms === "net60" ? 60 :
-        settings.defaultPaymentTerms === "due-on-receipt" ? 0 :
-        settings.customTermsDays;
+        settings.defaultPaymentTerms === "net15"
+          ? 15
+          : settings.defaultPaymentTerms === "net30"
+            ? 30
+            : settings.defaultPaymentTerms === "net60"
+              ? 60
+              : settings.defaultPaymentTerms === "due-on-receipt"
+                ? 0
+                : settings.customTermsDays;
 
       formData.append("invoiceNumberPrefix", settings.invoicePrefix);
-      formData.append("nextInvoiceNumber", settings.nextInvoiceNumber.toString());
+      formData.append(
+        "nextInvoiceNumber",
+        settings.nextInvoiceNumber.toString()
+      );
       formData.append("defaultPaymentTerms", paymentTermsDays.toString());
       formData.append("lateFeeEnabled", settings.lateFeeEnabled.toString());
       formData.append("lateFeeType", "percentage");
       formData.append("lateFeeAmount", settings.lateFeePercent.toString());
-      formData.append("lateFeeGracePeriodDays", settings.lateFeeGracePeriodDays.toString());
+      formData.append(
+        "lateFeeGracePeriodDays",
+        settings.lateFeeGracePeriodDays.toString()
+      );
       formData.append("defaultTerms", settings.defaultInvoiceTerms);
       formData.append("defaultTaxRate", settings.defaultTaxRate.toString());
       formData.append("taxLabel", settings.taxLabel);
-      formData.append("sendReminders", settings.sendOverdueReminders.toString());
+      formData.append(
+        "sendReminders",
+        settings.sendOverdueReminders.toString()
+      );
 
       const result = await updateInvoiceSettings(formData);
 

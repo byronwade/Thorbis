@@ -1,14 +1,14 @@
 /**
  * Schools Service
- * 
+ *
  * Fetches nearby schools from OpenStreetMap
  * - Elementary, Middle, High Schools
  * - Distance from property
  * - School type (public, private, charter)
- * 
+ *
  * API: FREE, no key required (using Overpass API)
  * Data: OpenStreetMap
- * 
+ *
  * Note: For US school ratings, would need GreatSchools API (requires paid subscription)
  * This provides basic school locations and types only
  */
@@ -38,10 +38,15 @@ export type School = z.infer<typeof SchoolSchema>;
 export type SchoolsData = z.infer<typeof SchoolsDataSchema>;
 
 export class SchoolsService {
-  private cache: Map<string, { data: SchoolsData; timestamp: number }> = new Map();
+  private cache: Map<string, { data: SchoolsData; timestamp: number }> =
+    new Map();
   private cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days
 
-  async getNearbySchools(lat: number, lon: number, radius = 5000): Promise<SchoolsData | null> {
+  async getNearbySchools(
+    lat: number,
+    lon: number,
+    radius = 5000
+  ): Promise<SchoolsData | null> {
     const cacheKey = `schools:${lat.toFixed(4)},${lon.toFixed(4)}`;
     const cached = this.cache.get(cacheKey);
 
@@ -94,7 +99,7 @@ export class SchoolsService {
         const tags = element.tags || {};
         const schoolLat = element.center?.lat || element.lat;
         const schoolLon = element.center?.lon || element.lon;
-        
+
         const distance = this.calculateDistance(lat, lon, schoolLat, schoolLon);
 
         return {
@@ -119,8 +124,10 @@ export class SchoolsService {
       };
 
       this.cache.set(cacheKey, { data: schoolsData, timestamp: Date.now() });
-      console.log(`[Schools] Found ${schoolsData.totalSchools} schools within ${radius}m`);
-      
+      console.log(
+        `[Schools] Found ${schoolsData.totalSchools} schools within ${radius}m`
+      );
+
       return schoolsData;
     } catch (error) {
       console.error("[Schools] Error:", error);
@@ -132,7 +139,7 @@ export class SchoolsService {
     if (tags.amenity === "kindergarten") return "Preschool";
     if (tags.amenity === "university") return "University";
     if (tags.amenity === "college") return "College";
-    
+
     // Check for grade levels
     if (tags["isced:level"]) {
       const level = tags["isced:level"];
@@ -144,8 +151,13 @@ export class SchoolsService {
     return "School";
   }
 
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371000; // Earth's radius in meters
+  private calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const R = 6_371_000; // Earth's radius in meters
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
@@ -161,4 +173,3 @@ export class SchoolsService {
 }
 
 export const schoolsService = new SchoolsService();
-

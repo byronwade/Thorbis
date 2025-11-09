@@ -1,6 +1,6 @@
 /**
  * File Validation and Security
- * 
+ *
  * Comprehensive file validation with:
  * - Extension blocklist (dangerous file types)
  * - Magic number/signature verification
@@ -20,49 +20,112 @@
  */
 export const BLOCKED_EXTENSIONS = [
   // Windows executables
-  '.exe', '.bat', '.cmd', '.com', '.scr', '.pif',
-  '.application', '.gadget', '.msi', '.msp', '.msc',
-  '.vbs', '.vbe', '.js', '.jse', '.ws', '.wsf', '.wsc', '.wsh',
-  '.ps1', '.ps1xml', '.ps2', '.ps2xml', '.psc1', '.psc2',
-  '.msh', '.msh1', '.msh2', '.mshxml', '.msh1xml', '.msh2xml',
-  
+  ".exe",
+  ".bat",
+  ".cmd",
+  ".com",
+  ".scr",
+  ".pif",
+  ".application",
+  ".gadget",
+  ".msi",
+  ".msp",
+  ".msc",
+  ".vbs",
+  ".vbe",
+  ".js",
+  ".jse",
+  ".ws",
+  ".wsf",
+  ".wsc",
+  ".wsh",
+  ".ps1",
+  ".ps1xml",
+  ".ps2",
+  ".ps2xml",
+  ".psc1",
+  ".psc2",
+  ".msh",
+  ".msh1",
+  ".msh2",
+  ".mshxml",
+  ".msh1xml",
+  ".msh2xml",
+
   // MacOS executables
-  '.app', '.dmg', '.pkg', '.mpkg', '.command',
-  
+  ".app",
+  ".dmg",
+  ".pkg",
+  ".mpkg",
+  ".command",
+
   // Linux executables
-  '.sh', '.bash', '.zsh', '.fish', '.ksh', '.csh',
-  '.run', '.bin', '.deb', '.rpm', '.snap',
-  
+  ".sh",
+  ".bash",
+  ".zsh",
+  ".fish",
+  ".ksh",
+  ".csh",
+  ".run",
+  ".bin",
+  ".deb",
+  ".rpm",
+  ".snap",
+
   // Archives that can contain executables
-  '.jar', '.war', '.ear',
-  
+  ".jar",
+  ".war",
+  ".ear",
+
   // System files
-  '.dll', '.sys', '.drv',
-  
+  ".dll",
+  ".sys",
+  ".drv",
+
   // Scripts and code that could be auto-executed
-  '.cpl', '.inf', '.ins', '.isp', '.lnk', '.mde',
-  '.mdt', '.mdw', '.mdz', '.ops', '.pcd', '.prg',
-  '.reg', '.scf', '.sct', '.shb', '.shs', '.url',
-  
+  ".cpl",
+  ".inf",
+  ".ins",
+  ".isp",
+  ".lnk",
+  ".mde",
+  ".mdt",
+  ".mdw",
+  ".mdz",
+  ".ops",
+  ".pcd",
+  ".prg",
+  ".reg",
+  ".scf",
+  ".sct",
+  ".shb",
+  ".shs",
+  ".url",
+
   // Database files that could contain macros
-  '.ade', '.adp', '.mdb', '.accdb',
-  
+  ".ade",
+  ".adp",
+  ".mdb",
+  ".accdb",
+
   // Potentially dangerous compressed files
-  '.ace', '.arj', '.cab',
+  ".ace",
+  ".arj",
+  ".cab",
 ];
 
 /**
  * File size limits by context (in bytes)
  */
 export const SIZE_LIMITS = {
-  avatar: 5 * 1024 * 1024,        // 5MB
-  image: 20 * 1024 * 1024,        // 20MB
-  document: 100 * 1024 * 1024,    // 100MB
-  video: 250 * 1024 * 1024,       // 250MB
-  general: 250 * 1024 * 1024,     // 250MB
-  invoice: 20 * 1024 * 1024,      // 20MB
-  estimate: 20 * 1024 * 1024,     // 20MB
-  contract: 50 * 1024 * 1024,     // 50MB
+  avatar: 5 * 1024 * 1024, // 5MB
+  image: 20 * 1024 * 1024, // 20MB
+  document: 100 * 1024 * 1024, // 100MB
+  video: 250 * 1024 * 1024, // 250MB
+  general: 250 * 1024 * 1024, // 250MB
+  invoice: 20 * 1024 * 1024, // 20MB
+  estimate: 20 * 1024 * 1024, // 20MB
+  contract: 50 * 1024 * 1024, // 50MB
 } as const;
 
 /**
@@ -70,60 +133,60 @@ export const SIZE_LIMITS = {
  */
 export const ALLOWED_MIME_TYPES = {
   image: [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'image/svg+xml',
-    'image/bmp',
-    'image/tiff',
-    'image/heic',
-    'image/heif',
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+    "image/bmp",
+    "image/tiff",
+    "image/heic",
+    "image/heif",
   ],
   document: [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/vnd.ms-powerpoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.oasis.opendocument.text',
-    'application/vnd.oasis.opendocument.spreadsheet',
-    'application/vnd.oasis.opendocument.presentation',
-    'text/plain',
-    'text/csv',
-    'application/rtf',
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.oasis.opendocument.text",
+    "application/vnd.oasis.opendocument.spreadsheet",
+    "application/vnd.oasis.opendocument.presentation",
+    "text/plain",
+    "text/csv",
+    "application/rtf",
   ],
   video: [
-    'video/mp4',
-    'video/mpeg',
-    'video/quicktime',
-    'video/x-msvideo',
-    'video/webm',
-    'video/x-matroska',
+    "video/mp4",
+    "video/mpeg",
+    "video/quicktime",
+    "video/x-msvideo",
+    "video/webm",
+    "video/x-matroska",
   ],
   audio: [
-    'audio/mpeg',
-    'audio/mp4',
-    'audio/wav',
-    'audio/webm',
-    'audio/ogg',
-    'audio/flac',
+    "audio/mpeg",
+    "audio/mp4",
+    "audio/wav",
+    "audio/webm",
+    "audio/ogg",
+    "audio/flac",
   ],
   archive: [
-    'application/zip',
-    'application/x-rar-compressed',
-    'application/x-7z-compressed',
-    'application/x-tar',
-    'application/gzip',
+    "application/zip",
+    "application/x-rar-compressed",
+    "application/x-7z-compressed",
+    "application/x-tar",
+    "application/gzip",
   ],
   cad: [
-    'application/acad',
-    'application/x-acad',
-    'application/autocad_dwg',
-    'image/vnd.dwg',
-    'image/vnd.dxf',
+    "application/acad",
+    "application/x-acad",
+    "application/autocad_dwg",
+    "image/vnd.dwg",
+    "image/vnd.dxf",
   ],
 } as const;
 
@@ -132,13 +195,13 @@ export const ALLOWED_MIME_TYPES = {
  * First few bytes of common file types
  */
 const FILE_SIGNATURES: Record<string, { bytes: number[]; offset: number }[]> = {
-  'image/jpeg': [{ bytes: [0xFF, 0xD8, 0xFF], offset: 0 }],
-  'image/png': [{ bytes: [0x89, 0x50, 0x4E, 0x47], offset: 0 }],
-  'image/gif': [{ bytes: [0x47, 0x49, 0x46, 0x38], offset: 0 }],
-  'image/webp': [{ bytes: [0x52, 0x49, 0x46, 0x46], offset: 0 }],
-  'application/pdf': [{ bytes: [0x25, 0x50, 0x44, 0x46], offset: 0 }],
-  'application/zip': [{ bytes: [0x50, 0x4B, 0x03, 0x04], offset: 0 }],
-  'video/mp4': [{ bytes: [0x66, 0x74, 0x79, 0x70], offset: 4 }],
+  "image/jpeg": [{ bytes: [0xff, 0xd8, 0xff], offset: 0 }],
+  "image/png": [{ bytes: [0x89, 0x50, 0x4e, 0x47], offset: 0 }],
+  "image/gif": [{ bytes: [0x47, 0x49, 0x46, 0x38], offset: 0 }],
+  "image/webp": [{ bytes: [0x52, 0x49, 0x46, 0x46], offset: 0 }],
+  "application/pdf": [{ bytes: [0x25, 0x50, 0x44, 0x46], offset: 0 }],
+  "application/zip": [{ bytes: [0x50, 0x4b, 0x03, 0x04], offset: 0 }],
+  "video/mp4": [{ bytes: [0x66, 0x74, 0x79, 0x70], offset: 4 }],
 };
 
 // ============================================================================
@@ -172,7 +235,7 @@ export interface ValidationOptions {
 
 /**
  * Validate a file for upload
- * 
+ *
  * @param file - The file to validate
  * @param options - Validation options
  * @returns Validation result with errors and metadata
@@ -182,7 +245,7 @@ export async function validateFile(
   options: ValidationOptions = {}
 ): Promise<ValidationResult> {
   const {
-    context = 'general',
+    context = "general",
     maxSize,
     allowedMimeTypes,
     checkMagicNumbers = true,
@@ -193,20 +256,20 @@ export async function validateFile(
   const warnings: string[] = [];
 
   // 1. Basic file checks
-  if (!file || !(file instanceof File)) {
-    errors.push('Invalid file object');
+  if (!(file && file instanceof File)) {
+    errors.push("Invalid file object");
     return { valid: false, errors, warnings };
   }
 
-  if (!file.name || file.name.trim() === '') {
-    errors.push('File must have a name');
+  if (!file.name || file.name.trim() === "") {
+    errors.push("File must have a name");
     return { valid: false, errors, warnings };
   }
 
   // 2. Sanitize filename
   const sanitizedName = sanitizeFileName(file.name);
   if (sanitizedName !== file.name) {
-    warnings.push('Filename was sanitized for security');
+    warnings.push("Filename was sanitized for security");
   }
 
   // 3. Check for blocked extensions
@@ -225,16 +288,18 @@ export async function validateFile(
   }
 
   if (file.size === 0) {
-    errors.push('File is empty');
+    errors.push("File is empty");
   }
 
   // 5. Check MIME type
-  if (allowedMimeTypes && allowedMimeTypes.length > 0) {
-    if (!allowedMimeTypes.includes(file.type)) {
-      errors.push(
-        `File type "${file.type}" is not allowed. Allowed types: ${allowedMimeTypes.join(', ')}`
-      );
-    }
+  if (
+    allowedMimeTypes &&
+    allowedMimeTypes.length > 0 &&
+    !allowedMimeTypes.includes(file.type)
+  ) {
+    errors.push(
+      `File type "${file.type}" is not allowed. Allowed types: ${allowedMimeTypes.join(", ")}`
+    );
   }
 
   // Detect file category
@@ -245,7 +310,7 @@ export async function validateFile(
   if (checkMagicNumbers && file.size > 0) {
     try {
       detectedMimeType = (await verifyFileSignature(file)) ?? undefined;
-      
+
       if (detectedMimeType && detectedMimeType !== file.type) {
         if (strictMode) {
           errors.push(
@@ -258,7 +323,7 @@ export async function validateFile(
         }
       }
     } catch (error) {
-      warnings.push('Could not verify file signature');
+      warnings.push("Could not verify file signature");
     }
   }
 
@@ -295,9 +360,9 @@ export function isBlockedExtension(extension: string): boolean {
  * Get file extension from filename
  */
 export function getFileExtension(filename: string): string {
-  const lastDot = filename.lastIndexOf('.');
+  const lastDot = filename.lastIndexOf(".");
   if (lastDot === -1 || lastDot === filename.length - 1) {
-    return '';
+    return "";
   }
   return filename.substring(lastDot);
 }
@@ -311,19 +376,22 @@ export function getFileExtension(filename: string): string {
 export function sanitizeFileName(fileName: string): string {
   // Get extension first
   const extension = getFileExtension(fileName);
-  const nameWithoutExt = fileName.substring(0, fileName.length - extension.length);
+  const nameWithoutExt = fileName.substring(
+    0,
+    fileName.length - extension.length
+  );
 
   // Remove path traversal attempts
-  let sanitized = nameWithoutExt.replace(/\.\./g, '');
-  
+  let sanitized = nameWithoutExt.replace(/\.\./g, "");
+
   // Remove or replace dangerous characters
   sanitized = sanitized
-    .replace(/[<>:"|?*]/g, '') // Windows invalid chars
-    .replace(/[\x00-\x1F\x80-\x9F]/g, '') // Control characters
-    .replace(/^\.+/, '') // Leading dots
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/--+/g, '-') // Multiple hyphens to single
-    .replace(/^-|-$/g, ''); // Trim hyphens
+    .replace(/[<>:"|?*]/g, "") // Windows invalid chars
+    .replace(/[\x00-\x1F\x80-\x9F]/g, "") // Control characters
+    .replace(/^\.+/, "") // Leading dots
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/--+/g, "-") // Multiple hyphens to single
+    .replace(/^-|-$/g, ""); // Trim hyphens
 
   // Limit length (max 200 chars for name, excluding extension)
   if (sanitized.length > 200) {
@@ -371,14 +439,14 @@ function detectFileCategory(mimeType: string): string | undefined {
       return category;
     }
   }
-  
+
   // Fallback to general category detection
-  if (mimeType.startsWith('image/')) return 'image';
-  if (mimeType.startsWith('video/')) return 'video';
-  if (mimeType.startsWith('audio/')) return 'audio';
-  if (mimeType.startsWith('text/')) return 'document';
-  
-  return undefined;
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (mimeType.startsWith("text/")) return "document";
+
+  return;
 }
 
 /**
@@ -392,31 +460,29 @@ function performSecurityChecks(
   const warnings: string[] = [];
 
   // Check for double extensions (e.g., file.pdf.exe)
-  const parts = sanitizedName.split('.');
+  const parts = sanitizedName.split(".");
   if (parts.length > 2) {
-    const secondExt = '.' + parts[parts.length - 2];
+    const secondExt = "." + parts[parts.length - 2];
     if (isBlockedExtension(secondExt)) {
       errors.push(
-        'File has suspicious double extension that could hide malicious content'
+        "File has suspicious double extension that could hide malicious content"
       );
     }
   }
 
   // Check for very long filenames (potential buffer overflow)
   if (sanitizedName.length > 255) {
-    errors.push('Filename is too long');
+    errors.push("Filename is too long");
   }
 
   // Check for null bytes (can cause issues in some systems)
-  if (file.name.includes('\0')) {
-    errors.push('Filename contains null bytes');
+  if (file.name.includes("\0")) {
+    errors.push("Filename contains null bytes");
   }
 
   // Warn about unusual MIME types
-  if (!file.type || file.type === 'application/octet-stream') {
-    warnings.push(
-      'File type could not be determined. Upload may be rejected.'
-    );
+  if (!file.type || file.type === "application/octet-stream") {
+    warnings.push("File type could not be determined. Upload may be rejected.");
   }
 
   return { errors, warnings };
@@ -426,13 +492,13 @@ function performSecurityChecks(
  * Format file size for display
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  
+  if (bytes === 0) return "0 Bytes";
+
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+
+  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 }
 
 // ============================================================================
@@ -447,7 +513,7 @@ export async function validateImage(
   maxSize = SIZE_LIMITS.image
 ): Promise<ValidationResult> {
   return validateFile(file, {
-    context: 'image',
+    context: "image",
     maxSize,
     allowedMimeTypes: [...ALLOWED_MIME_TYPES.image],
     checkMagicNumbers: true,
@@ -463,7 +529,7 @@ export async function validateDocument(
   maxSize = SIZE_LIMITS.document
 ): Promise<ValidationResult> {
   return validateFile(file, {
-    context: 'document',
+    context: "document",
     maxSize,
     allowedMimeTypes: [...ALLOWED_MIME_TYPES.document],
     checkMagicNumbers: true,
@@ -478,7 +544,7 @@ export async function validateVideo(
   maxSize = SIZE_LIMITS.video
 ): Promise<ValidationResult> {
   return validateFile(file, {
-    context: 'video',
+    context: "video",
     maxSize,
     allowedMimeTypes: [...ALLOWED_MIME_TYPES.video],
     checkMagicNumbers: false, // Video signatures are complex
@@ -490,14 +556,14 @@ export async function validateVideo(
  */
 export async function validateAvatar(file: File): Promise<ValidationResult> {
   const result = await validateImage(file, SIZE_LIMITS.avatar);
-  
+
   // Additional avatar-specific validation
-  if (result.valid && file.type === 'image/svg+xml') {
+  if (result.valid && file.type === "image/svg+xml") {
     result.warnings.push(
-      'SVG avatars may be sanitized to remove potential scripts'
+      "SVG avatars may be sanitized to remove potential scripts"
     );
   }
-  
+
   return result;
 }
 
@@ -509,14 +575,14 @@ export async function validateFiles(
   options: ValidationOptions = {}
 ): Promise<Map<string, ValidationResult>> {
   const results = new Map<string, ValidationResult>();
-  
+
   const validations = files.map(async (file) => {
     const result = await validateFile(file, options);
     results.set(file.name, result);
   });
-  
+
   await Promise.all(validations);
-  
+
   return results;
 }
 
@@ -536,9 +602,8 @@ export async function isValidFile(
  */
 export function getValidationErrorMessage(result: ValidationResult): string {
   if (result.valid) {
-    return '';
+    return "";
   }
-  
-  return result.errors.join('; ');
-}
 
+  return result.errors.join("; ");
+}

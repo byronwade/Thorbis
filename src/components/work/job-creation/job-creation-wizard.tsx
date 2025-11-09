@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, Briefcase, Loader2, MapPin, Sparkles } from "lucide-react";
+import { ArrowLeft, Briefcase, Loader2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createJob } from "@/actions/jobs";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,11 +23,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useJobCreationStore } from "@/lib/stores/job-creation-store";
 import { CustomerSearchCombobox } from "./customer-search-combobox";
 import { InlineCustomerForm } from "./inline-customer-form";
 import { InlinePropertyForm } from "./inline-property-form";
-import { createJob } from "@/actions/jobs";
-import { useJobCreationStore } from "@/lib/stores/job-creation-store";
 
 /**
  * Job Creation Wizard - Main Orchestrator Component
@@ -163,18 +163,28 @@ export function JobCreationWizard({
         gateCode: preselectedProperty.gate_code,
       });
     }
-  }, [preselectedCustomer, preselectedProperty, customer, property, setCustomer, setProperty, addRecentCustomer]);
+  }, [
+    preselectedCustomer,
+    preselectedProperty,
+    customer,
+    property,
+    setCustomer,
+    setProperty,
+    addRecentCustomer,
+  ]);
 
   // Convert CustomerData to Customer format for components expecting database format
-  const customerForCombobox: Customer | null = customer ? {
-    id: customer.id!,
-    first_name: customer.firstName,
-    last_name: customer.lastName,
-    email: customer.email,
-    phone: customer.phone,
-    company_name: customer.companyName,
-    type: customer.type,
-  } : null;
+  const customerForCombobox: Customer | null = customer
+    ? {
+        id: customer.id!,
+        first_name: customer.firstName,
+        last_name: customer.lastName,
+        email: customer.email,
+        phone: customer.phone,
+        company_name: customer.companyName,
+        type: customer.type,
+      }
+    : null;
 
   // Filter properties by selected customer
   const filteredProperties = customer
@@ -269,7 +279,8 @@ export function JobCreationWizard({
     if (job.description) formData.append("description", job.description);
     if (job.jobType) formData.append("jobType", job.jobType);
     if (job.priority) formData.append("priority", job.priority);
-    if (job.scheduledStart) formData.append("scheduledStart", job.scheduledStart);
+    if (job.scheduledStart)
+      formData.append("scheduledStart", job.scheduledStart);
     if (job.scheduledEnd) formData.append("scheduledEnd", job.scheduledEnd);
     if (job.assignedTo) formData.append("assignedTo", job.assignedTo);
     if (job.notes) formData.append("notes", job.notes);
@@ -331,7 +342,9 @@ export function JobCreationWizard({
             {/* Error Display */}
             {errors.submit && (
               <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-                <p className="text-destructive text-sm font-medium">{errors.submit}</p>
+                <p className="font-medium text-destructive text-sm">
+                  {errors.submit}
+                </p>
               </div>
             )}
 
@@ -365,7 +378,9 @@ export function JobCreationWizard({
                       selectedCustomer={customerForCombobox}
                     />
                     {errors.customer && (
-                      <p className="text-destructive text-sm">{errors.customer}</p>
+                      <p className="text-destructive text-sm">
+                        {errors.customer}
+                      </p>
                     )}
                   </div>
                 )}
@@ -399,7 +414,7 @@ export function JobCreationWizard({
                       </Label>
                       {filteredProperties.length === 0 ? (
                         <div className="rounded-lg border border-dashed p-6 text-center">
-                          <p className="text-muted-foreground text-sm mb-3">
+                          <p className="mb-3 text-muted-foreground text-sm">
                             No properties found for this customer
                           </p>
                           <Button
@@ -415,7 +430,9 @@ export function JobCreationWizard({
                         <>
                           <Select
                             onValueChange={(value) => {
-                              const selected = properties.find((p) => p.id === value);
+                              const selected = properties.find(
+                                (p) => p.id === value
+                              );
                               if (selected) {
                                 setProperty({
                                   id: selected.id,
@@ -442,7 +459,8 @@ export function JobCreationWizard({
                             <SelectContent>
                               {filteredProperties.map((prop) => (
                                 <SelectItem key={prop.id} value={prop.id}>
-                                  {prop.name || prop.address} - {prop.city}, {prop.state}
+                                  {prop.name || prop.address} - {prop.city},{" "}
+                                  {prop.state}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -459,7 +477,9 @@ export function JobCreationWizard({
                         </>
                       )}
                       {errors.property && (
-                        <p className="text-destructive text-sm">{errors.property}</p>
+                        <p className="text-destructive text-sm">
+                          {errors.property}
+                        </p>
                       )}
                     </div>
                   )}
@@ -495,7 +515,9 @@ export function JobCreationWizard({
                         value={job.title || ""}
                       />
                       {errors.title && (
-                        <p className="text-destructive text-sm">{errors.title}</p>
+                        <p className="text-destructive text-sm">
+                          {errors.title}
+                        </p>
                       )}
                     </div>
 
@@ -503,7 +525,9 @@ export function JobCreationWizard({
                       <Label htmlFor="job-description">Description</Label>
                       <Textarea
                         id="job-description"
-                        onChange={(e) => updateJob({ description: e.target.value })}
+                        onChange={(e) =>
+                          updateJob({ description: e.target.value })
+                        }
                         placeholder="Detailed description of the job..."
                         rows={4}
                         value={job.description || ""}
@@ -514,7 +538,9 @@ export function JobCreationWizard({
                       <div className="space-y-2">
                         <Label htmlFor="job-type">Job Type</Label>
                         <Select
-                          onValueChange={(value) => updateJob({ jobType: value as any })}
+                          onValueChange={(value) =>
+                            updateJob({ jobType: value as any })
+                          }
                           value={job.jobType || undefined}
                         >
                           <SelectTrigger id="job-type">
@@ -522,11 +548,19 @@ export function JobCreationWizard({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="service">Service</SelectItem>
-                            <SelectItem value="installation">Installation</SelectItem>
+                            <SelectItem value="installation">
+                              Installation
+                            </SelectItem>
                             <SelectItem value="repair">Repair</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                            <SelectItem value="inspection">Inspection</SelectItem>
-                            <SelectItem value="consultation">Consultation</SelectItem>
+                            <SelectItem value="maintenance">
+                              Maintenance
+                            </SelectItem>
+                            <SelectItem value="inspection">
+                              Inspection
+                            </SelectItem>
+                            <SelectItem value="consultation">
+                              Consultation
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -534,7 +568,9 @@ export function JobCreationWizard({
                       <div className="space-y-2">
                         <Label htmlFor="job-priority">Priority</Label>
                         <Select
-                          onValueChange={(value) => updateJob({ priority: value as any })}
+                          onValueChange={(value) =>
+                            updateJob({ priority: value as any })
+                          }
                           value={job.priority || "medium"}
                         >
                           <SelectTrigger id="job-priority">
@@ -577,7 +613,9 @@ export function JobCreationWizard({
                         <Label htmlFor="scheduled-start">Scheduled Start</Label>
                         <Input
                           id="scheduled-start"
-                          onChange={(e) => updateJob({ scheduledStart: e.target.value })}
+                          onChange={(e) =>
+                            updateJob({ scheduledStart: e.target.value })
+                          }
                           type="datetime-local"
                           value={job.scheduledStart || ""}
                         />
@@ -587,7 +625,9 @@ export function JobCreationWizard({
                         <Label htmlFor="scheduled-end">Scheduled End</Label>
                         <Input
                           id="scheduled-end"
-                          onChange={(e) => updateJob({ scheduledEnd: e.target.value })}
+                          onChange={(e) =>
+                            updateJob({ scheduledEnd: e.target.value })
+                          }
                           type="datetime-local"
                           value={job.scheduledEnd || ""}
                         />
@@ -597,7 +637,9 @@ export function JobCreationWizard({
                     <div className="space-y-2">
                       <Label htmlFor="assigned-to">Assign Technician</Label>
                       <Select
-                        onValueChange={(value) => updateJob({ assignedTo: value })}
+                        onValueChange={(value) =>
+                          updateJob({ assignedTo: value })
+                        }
                         value={job.assignedTo || undefined}
                       >
                         <SelectTrigger id="assigned-to">

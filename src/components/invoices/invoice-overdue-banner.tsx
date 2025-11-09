@@ -6,11 +6,11 @@
 
 "use client";
 
-import { AlertTriangle, CreditCard, Clock } from "lucide-react";
+import { AlertTriangle, Clock, CreditCard } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getOverdueStatus, type OverdueStatus } from "@/lib/utils/invoice-overdue";
+import { Button } from "@/components/ui/button";
+import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
 
 interface InvoiceOverdueBannerProps {
   dueDate: string | null;
@@ -31,16 +31,18 @@ export function InvoiceOverdueBanner({
   }
 
   // Format amount
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   // Get icon based on urgency
   const getIcon = () => {
-    if (overdueStatus.urgency === "severe" || overdueStatus.urgency === "critical") {
+    if (
+      overdueStatus.urgency === "severe" ||
+      overdueStatus.urgency === "critical"
+    ) {
       return <AlertTriangle className="h-6 w-6" />;
     }
     return <Clock className="h-6 w-6" />;
@@ -69,18 +71,23 @@ export function InvoiceOverdueBanner({
 
         {/* Content */}
         <div className="flex-1">
-          <AlertTitle className={`mb-2 flex items-center gap-2 text-lg font-bold ${overdueStatus.colors.text}`}>
+          <AlertTitle
+            className={`mb-2 flex items-center gap-2 font-bold text-lg ${overdueStatus.colors.text}`}
+          >
             <span>PAST DUE</span>
             <Badge className={overdueStatus.colors.badge}>
-              {overdueStatus.daysOverdue} day{overdueStatus.daysOverdue === 1 ? "" : "s"} overdue
+              {overdueStatus.daysOverdue} day
+              {overdueStatus.daysOverdue === 1 ? "" : "s"} overdue
             </Badge>
           </AlertTitle>
-          <AlertDescription className={`space-y-2 ${overdueStatus.colors.text}`}>
+          <AlertDescription
+            className={`space-y-2 ${overdueStatus.colors.text}`}
+          >
             <p className="text-base">{overdueStatus.message}</p>
             <div className="flex items-center gap-4">
               <div>
-                <p className="text-sm font-medium">Amount Due:</p>
-                <p className="text-3xl font-bold">
+                <p className="font-medium text-sm">Amount Due:</p>
+                <p className="font-bold text-3xl">
                   {formatCurrency(balanceAmount)}
                 </p>
               </div>
@@ -91,13 +98,11 @@ export function InvoiceOverdueBanner({
         {/* Quick Pay Button */}
         <div className="shrink-0">
           <Button
-            size="lg"
-            onClick={onQuickPay}
             className={`
               ${overdueStatus.urgency === "severe" ? "animate-bounce" : ""}
-              ${overdueStatus.urgency === "critical" ? "animate-pulse" : ""}
-              bg-primary text-primary-foreground hover:bg-primary/90
-            `}
+              ${overdueStatus.urgency === "critical" ? "animate-pulse" : ""}bg-primary text-primary-foreground hover:bg-primary/90`}
+            onClick={onQuickPay}
+            size="lg"
           >
             <CreditCard className="mr-2 h-5 w-5" />
             Pay Now

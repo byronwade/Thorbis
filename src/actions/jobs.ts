@@ -9,6 +9,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
   ActionError,
   ERROR_CODES,
@@ -20,9 +21,8 @@ import {
   assertExists,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { notifyJobCreated } from "@/lib/notifications/triggers";
+import { createClient } from "@/lib/supabase/server";
 
 // Validation Schemas
 const createJobSchema = z.object({
@@ -32,7 +32,14 @@ const createJobSchema = z.object({
   description: z.string().optional(),
   priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
   jobType: z
-    .enum(["service", "installation", "repair", "maintenance", "inspection", "consultation"])
+    .enum([
+      "service",
+      "installation",
+      "repair",
+      "maintenance",
+      "inspection",
+      "consultation",
+    ])
     .optional(),
   scheduledStart: z.string().optional(),
   scheduledEnd: z.string().optional(),
@@ -42,7 +49,9 @@ const createJobSchema = z.object({
   isRecurring: z.boolean().optional(),
   schedulingMode: z.enum(["specific", "window"]).optional(),
   timeWindow: z.string().optional(),
-  recurrenceType: z.enum(["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]).optional(),
+  recurrenceType: z
+    .enum(["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"])
+    .optional(),
   recurrenceEndDate: z.string().optional(),
   recurrenceCount: z.number().int().min(1).max(365).optional(),
 });
@@ -50,10 +59,26 @@ const createJobSchema = z.object({
 const updateJobSchema = z.object({
   title: z.string().min(1, "Job title is required").optional(),
   description: z.string().optional(),
-  status: z.enum(["quoted", "scheduled", "in_progress", "on_hold", "completed", "cancelled"]).optional(),
+  status: z
+    .enum([
+      "quoted",
+      "scheduled",
+      "in_progress",
+      "on_hold",
+      "completed",
+      "cancelled",
+    ])
+    .optional(),
   priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
   jobType: z
-    .enum(["service", "installation", "repair", "maintenance", "inspection", "consultation"])
+    .enum([
+      "service",
+      "installation",
+      "repair",
+      "maintenance",
+      "inspection",
+      "consultation",
+    ])
     .optional(),
   notes: z.string().optional(),
   totalAmount: z.number().min(0).optional(),
@@ -243,9 +268,9 @@ export async function createJob(
       notes: formData.get("notes") || undefined,
       // Enhanced scheduling fields
       isRecurring: formData.get("isRecurring") === "true",
-      schedulingMode: formData.get("schedulingMode") as any || undefined,
+      schedulingMode: (formData.get("schedulingMode") as any) || undefined,
       timeWindow: formData.get("timeWindow") || undefined,
-      recurrenceType: formData.get("recurrenceType") as any || undefined,
+      recurrenceType: (formData.get("recurrenceType") as any) || undefined,
       recurrenceEndDate: formData.get("recurrenceEndDate") || undefined,
       recurrenceCount: formData.get("recurrenceCount")
         ? Number.parseInt(formData.get("recurrenceCount") as string)
@@ -345,8 +370,13 @@ export async function createJob(
         jobId: newJob.id,
         jobTitle: data.title,
         address: property.address || "Unknown address",
-        priority: data.priority === "urgent" ? "urgent" : data.priority === "high" ? "high" : "medium",
-        actionUrl: `/dashboard/work`,
+        priority:
+          data.priority === "urgent"
+            ? "urgent"
+            : data.priority === "high"
+              ? "high"
+              : "medium",
+        actionUrl: "/dashboard/work",
       });
     }
 
@@ -474,7 +504,7 @@ export async function updateJob(
     const role = Array.isArray(teamMember?.custom_roles)
       ? teamMember.custom_roles[0]
       : teamMember?.custom_roles;
-    
+
     const isAdminOrOwner =
       role?.name === "Admin" ||
       role?.name === "Owner" ||
@@ -510,7 +540,7 @@ export async function updateJob(
 
     const customerIdValue = formData.get("customerId");
     const propertyIdValue = formData.get("propertyId");
-    
+
     // Handle customerId: empty string or "null" string means remove (set to null)
     // undefined means don't change it
     let parsedCustomerId: string | null | undefined;
@@ -521,7 +551,7 @@ export async function updateJob(
     } else {
       parsedCustomerId = customerIdValue as string; // Set to this customer
     }
-    
+
     // Handle propertyId: empty string means remove (set to null), undefined means don't change
     let parsedPropertyId: string | null | undefined;
     if (propertyIdValue === null || propertyIdValue === undefined) {
@@ -552,26 +582,34 @@ export async function updateJob(
     // Build update object with only defined values
     const updateData: any = {};
     if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined) updateData.description = data.description;
+    if (data.description !== undefined)
+      updateData.description = data.description;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.priority !== undefined) updateData.priority = data.priority;
     if (data.jobType !== undefined) updateData.job_type = data.jobType;
     if (data.notes !== undefined) updateData.notes = data.notes;
-    if (data.totalAmount !== undefined) updateData.total_amount = data.totalAmount;
-    if (data.scheduledStart !== undefined) updateData.scheduled_start = data.scheduledStart;
-    if (data.scheduledEnd !== undefined) updateData.scheduled_end = data.scheduledEnd;
+    if (data.totalAmount !== undefined)
+      updateData.total_amount = data.totalAmount;
+    if (data.scheduledStart !== undefined)
+      updateData.scheduled_start = data.scheduledStart;
+    if (data.scheduledEnd !== undefined)
+      updateData.scheduled_end = data.scheduledEnd;
     if (data.assignedTo !== undefined) updateData.assigned_to = data.assignedTo;
     if (data.customerId !== undefined) updateData.customer_id = data.customerId;
     if (data.propertyId !== undefined) {
       updateData.property_id = data.propertyId;
       // If property is being set (not null), verify it belongs to the customer (if customer is set)
-      if (data.propertyId !== null && data.customerId !== undefined && data.customerId !== null) {
+      if (
+        data.propertyId !== null &&
+        data.customerId !== undefined &&
+        data.customerId !== null
+      ) {
         const { data: property } = await supabase
           .from("properties")
           .select("customer_id")
           .eq("id", data.propertyId)
           .single();
-        
+
         if (property && property.customer_id !== data.customerId) {
           throw new ActionError(
             "Property does not belong to the selected customer",
@@ -590,7 +628,8 @@ export async function updateJob(
     if (updateError) {
       console.error("Database update error:", updateError);
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("update job") + `: ${updateError.message}`,
+        ERROR_MESSAGES.operationFailed("update job") +
+          `: ${updateError.message}`,
         ERROR_CODES.DB_QUERY_ERROR
       );
     }
@@ -1161,7 +1200,9 @@ export async function searchJobs(
     }
 
     // Use full-text search with ranking for best matches
-    const { searchJobsFullText } = await import("@/lib/search/full-text-search");
+    const { searchJobsFullText } = await import(
+      "@/lib/search/full-text-search"
+    );
 
     const jobs = await searchJobsFullText(
       supabase,
@@ -1302,7 +1343,9 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 
     // Archive job (soft delete)
     const now = new Date().toISOString();
-    const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    const scheduledDeletion = new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000
+    ).toISOString();
 
     const { error: archiveError } = await supabase
       .from("jobs")
@@ -1408,4 +1451,3 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
     revalidatePath("/dashboard/settings/archive");
   });
 }
-

@@ -10,9 +10,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface CollapsibleSectionWrapperProps {
   title: string;
@@ -61,18 +60,20 @@ export function CollapsibleSectionWrapper({
       {/* Header - Clickable to toggle */}
       <div className="flex w-full items-center justify-between gap-4 px-6 py-3.5">
         <button
-          type="button"
+          className="flex flex-1 items-center gap-3 rounded-md text-left transition-colors hover:bg-muted/50"
           onClick={toggleOpen}
-          className="flex flex-1 items-center gap-3 text-left transition-colors hover:bg-muted/50 rounded-md"
+          type="button"
         >
           {/* Icon with Background */}
           {icon && (
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
-              <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+              <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
+                {icon}
+              </span>
             </div>
           )}
-          
-          <div className="flex-1 min-w-0">
+
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h3 className="font-medium text-sm">{title}</h3>
               {badge}
@@ -92,7 +93,10 @@ export function CollapsibleSectionWrapper({
 
         {/* Action Buttons - Always visible on far right */}
         {actions && (
-          <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex shrink-0 items-center gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
             {actions}
           </div>
         )}
@@ -100,7 +104,7 @@ export function CollapsibleSectionWrapper({
 
       {/* Content - Collapsible */}
       {isOpen && (
-        <div className="border-t p-6 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fade-in slide-in-from-top-2 animate-in border-t p-6 duration-200">
           {children}
         </div>
       )}

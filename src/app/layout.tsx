@@ -1,8 +1,8 @@
+import { BotIdClient } from "botid/client";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
-import { BotIdClient } from "botid/client";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,15 +15,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
+
 export const metadata: Metadata = {
-  title: "Thorbis | Modern Business Platform",
-  description:
-    "Manage your business with Thorbis - a modern, dark-first platform",
+  ...generateSEOMetadata({
+    title: "Modern Business Management Platform",
+    description:
+      "Thorbis is a modern business management platform designed for service companies. Manage customers, jobs, invoices, equipment, and more with our all-in-one solution.",
+    path: "/",
+  }),
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Stratos",
+    title: "Thorbis",
   },
 };
 

@@ -17,16 +17,16 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
-import { InvoiceHeader } from "./invoice-header";
-import { InvoiceParties } from "./invoice-parties";
-import { InvoiceLineItems } from "./invoice-line-items";
-import { InvoiceTotals } from "./invoice-totals";
-import { InvoiceTerms } from "./invoice-terms";
-import { InvoicePaymentManagement } from "./invoice-payment-management";
+import { useCallback, useState } from "react";
 import { InvoiceActivityLog } from "./invoice-activity-log";
+import { InvoiceHeader } from "./invoice-header";
+import { InvoiceLineItems } from "./invoice-line-items";
 import { InvoiceOverdueBanner } from "./invoice-overdue-banner";
+import { InvoiceParties } from "./invoice-parties";
+import { InvoicePaymentManagement } from "./invoice-payment-management";
 import { InvoiceProgressPayments } from "./invoice-progress-payments";
+import { InvoiceTerms } from "./invoice-terms";
+import { InvoiceTotals } from "./invoice-totals";
 
 // Type definitions (matching database schema)
 type Invoice = {
@@ -129,20 +129,20 @@ export function InvoiceEditorWrapper({
       <div className="space-y-6">
         {/* Overdue Banner - Prominent Alert */}
         <InvoiceOverdueBanner
-          dueDate={invoice.due_date}
           balanceAmount={invoice.balance_amount}
+          dueDate={invoice.due_date}
           onQuickPay={handleQuickPayment}
         />
 
         {/* Invoice Header */}
-        <InvoiceHeader invoice={invoice} onUpdate={updateField} job={job} />
+        <InvoiceHeader invoice={invoice} job={job} onUpdate={updateField} />
 
         {/* Business, Customer, and Property Info */}
         <InvoiceParties
           company={company}
           customer={customer}
-          property={property}
           invoice={invoice}
+          property={property}
         />
 
         {/* Line Items */}
@@ -156,17 +156,17 @@ export function InvoiceEditorWrapper({
 
         {/* Terms and Notes */}
         <InvoiceTerms
-          terms={invoice.terms}
           notes={invoice.notes}
           onUpdate={updateField}
+          terms={invoice.terms}
         />
 
         {/* Payment Management - Cards on file and payment dialog */}
         <div id="payment-management">
           <InvoicePaymentManagement
+            autoOpen={showQuickPayment}
             invoice={invoice}
             paymentMethods={paymentMethods}
-            autoOpen={showQuickPayment}
           />
         </div>
       </div>

@@ -51,12 +51,14 @@ export function CollapsibleSection({
           <div className="flex items-center gap-3">
             {icon && (
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+                <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
+                  {icon}
+                </span>
               </div>
             )}
             <span className="font-medium text-sm">{title}</span>
             {count !== undefined && (
-              <Badge variant="secondary" className="ml-1 text-xs">
+              <Badge className="ml-1 text-xs" variant="secondary">
                 {count}
               </Badge>
             )}

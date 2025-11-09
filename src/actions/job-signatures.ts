@@ -11,12 +11,11 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import {
-  jobSignatureInsertSchema,
-  jobSignatureUpdateSchema,
   type JobSignatureInsert,
+  jobSignatureInsertSchema,
 } from "@/lib/validations/database-schemas";
 
 // ============================================================================
@@ -300,7 +299,9 @@ export async function getSignaturesByType(
 // HELPER: Generate Signature Hash
 // ============================================================================
 
-async function generateSignatureHash(signatureDataUrl: string): Promise<string> {
+async function generateSignatureHash(
+  signatureDataUrl: string
+): Promise<string> {
   // In a real implementation, use crypto.subtle.digest
   // For now, return a simple hash
   const encoder = new TextEncoder();

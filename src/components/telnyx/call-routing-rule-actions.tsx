@@ -10,21 +10,23 @@
 
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
-  toggleCallRoutingRule,
+  ArrowDown,
+  ArrowUp,
+  Copy,
+  Edit,
+  MoreVertical,
+  Power,
+  Trash2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
   deleteCallRoutingRule,
+  toggleCallRoutingRule,
   updateCallRoutingRule,
 } from "@/actions/telnyx";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -33,18 +35,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import {
-  MoreVertical,
-  Edit,
-  Trash2,
-  ArrowUp,
-  ArrowDown,
-  Copy,
-  Power,
-} from "lucide-react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
 
 interface CallRoutingRuleActionsProps {
   rule: any;
@@ -62,7 +61,9 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
     const result = await toggleCallRoutingRule(rule.id, !rule.is_active);
 
     if (result.success) {
-      toast.success(`Rule ${!rule.is_active ? "activated" : "deactivated"} successfully`);
+      toast.success(
+        `Rule ${rule.is_active ? "deactivated" : "activated"} successfully`
+      );
       router.refresh();
     } else {
       toast.error(result.error || "Failed to update rule status");
@@ -122,25 +123,34 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
     <>
       <div className="flex items-center gap-2">
         <Switch
-          checked={rule.is_active}
-          onCheckedChange={handleToggleActive}
-          disabled={isToggling}
           aria-label="Toggle rule active status"
+          checked={rule.is_active}
+          disabled={isToggling}
+          onCheckedChange={handleToggleActive}
         />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => router.push(`/dashboard/settings/communications/call-routing/${rule.id}`)}>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  `/dashboard/settings/communications/call-routing/${rule.id}`
+                )
+              }
+            >
               <Edit className="mr-2 h-4 w-4" />
               Edit Rule
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleToggleActive} disabled={isToggling}>
+            <DropdownMenuItem
+              disabled={isToggling}
+              onClick={handleToggleActive}
+            >
               <Power className="mr-2 h-4 w-4" />
               {rule.is_active ? "Deactivate" : "Activate"}
             </DropdownMenuItem>
@@ -154,14 +164,16 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
               Decrease Priority
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => toast.success("Duplicate rule functionality")}>
+            <DropdownMenuItem
+              onClick={() => toast.success("Duplicate rule functionality")}
+            >
               <Copy className="mr-2 h-4 w-4" />
               Duplicate
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => setShowDeleteDialog(true)}
               className="text-destructive focus:text-destructive"
+              onClick={() => setShowDeleteDialog(true)}
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
@@ -170,27 +182,27 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
         </DropdownMenu>
       </div>
 
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <Dialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Routing Rule</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{rule.name}"? This action cannot be
-              undone. Calls will no longer be routed using this rule.
+              Are you sure you want to delete "{rule.name}"? This action cannot
+              be undone. Calls will no longer be routed using this rule.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
               disabled={isDeleting}
+              onClick={() => setShowDeleteDialog(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleDelete}
               disabled={isDeleting}
+              onClick={handleDelete}
+              variant="destructive"
             >
               {isDeleting ? "Deleting..." : "Delete Rule"}
             </Button>

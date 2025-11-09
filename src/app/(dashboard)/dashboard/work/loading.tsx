@@ -11,7 +11,7 @@ export default function WorkLoading() {
       </div>
       <div className="grid gap-4 md:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+          <div className="h-24 animate-pulse rounded-lg bg-muted" key={i} />
         ))}
       </div>
       <div className="flex-1 animate-pulse rounded-lg bg-muted" />

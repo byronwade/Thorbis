@@ -58,7 +58,8 @@ export async function initiateCall(params: {
       from: params.from,
       connection_id: params.connectionId,
       webhook_url: params.webhookUrl,
-      answering_machine_detection: params.answeringMachineDetection || "disabled",
+      answering_machine_detection:
+        params.answeringMachineDetection || "disabled",
       custom_headers: params.customHeaders,
     });
 
@@ -176,7 +177,8 @@ export async function startRecording(params: {
     console.error("Error starting recording:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to start recording",
+      error:
+        error instanceof Error ? error.message : "Failed to start recording",
     };
   }
 }
@@ -198,7 +200,8 @@ export async function stopRecording(params: { callControlId: string }) {
     console.error("Error stopping recording:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to stop recording",
+      error:
+        error instanceof Error ? error.message : "Failed to stop recording",
     };
   }
 }
@@ -292,7 +295,10 @@ export async function transferCall(params: {
 /**
  * Send DTMF tones (phone keypad presses)
  */
-export async function sendDTMF(params: { callControlId: string; digits: string }) {
+export async function sendDTMF(params: {
+  callControlId: string;
+  digits: string;
+}) {
   try {
     const response = await (telnyxClient.calls as any).send_dtmf({
       call_control_id: params.callControlId,

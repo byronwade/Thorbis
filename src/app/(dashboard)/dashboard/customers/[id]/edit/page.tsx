@@ -8,12 +8,11 @@
  * - Reuses smart input components from create page
  */
 
-import Link from "next/link";
-import { redirect, notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { updateCustomer } from "@/actions/customers";
-import { createClient } from "@/lib/supabase/server";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -347,7 +346,7 @@ export default async function EditCustomerPage({ params }: PageProps) {
                 <div className="flex items-center space-x-2 pt-8">
                   <input
                     className="h-4 w-4 rounded border-gray-300"
-                    defaultChecked={customer.tax_exempt || false}
+                    defaultChecked={customer.tax_exempt}
                     id="taxExempt"
                     name="taxExempt"
                     type="checkbox"
@@ -385,7 +384,10 @@ export default async function EditCustomerPage({ params }: PageProps) {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="source">Lead Source</Label>
-                  <Select defaultValue={customer.source || undefined} name="source">
+                  <Select
+                    defaultValue={customer.source || undefined}
+                    name="source"
+                  >
                     <SelectTrigger id="source">
                       <SelectValue placeholder="Select source" />
                     </SelectTrigger>
@@ -445,7 +447,9 @@ export default async function EditCustomerPage({ params }: PageProps) {
               </p>
               <div className="flex gap-3">
                 <Button asChild type="button" variant="outline">
-                  <Link href={`/dashboard/customers/${customerId}`}>Cancel</Link>
+                  <Link href={`/dashboard/customers/${customerId}`}>
+                    Cancel
+                  </Link>
                 </Button>
                 <Button type="submit">Save Changes</Button>
               </div>

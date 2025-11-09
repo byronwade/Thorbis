@@ -1,6 +1,6 @@
-import { Building2, Calendar, MapPin, Ruler, User } from "lucide-react";
+import { Building2, Calendar, User } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,7 +53,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     .single();
 
   if (!teamMember?.company_id) {
-    return notFound();
+    // User hasn't completed onboarding or doesn't have an active company membership
+    // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
   }
 
   // Fetch property with customer info
@@ -110,18 +112,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Link
-              href="/dashboard/customers"
-              className="hover:text-foreground"
-            >
+            <Link className="hover:text-foreground" href="/dashboard/customers">
               Customers
             </Link>
             <span>/</span>
             {customer && (
               <>
                 <Link
-                  href={`/dashboard/customers/${customer.id}`}
                   className="hover:text-foreground"
+                  href={`/dashboard/customers/${customer.id}`}
                 >
                   {customer.first_name} {customer.last_name}
                 </Link>
@@ -140,7 +139,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" asChild>
+          <Button asChild variant="outline">
             <Link href={`/dashboard/properties/${id}/edit`}>Edit Property</Link>
           </Button>
           <Button asChild>
@@ -171,7 +170,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </div>
               {property.square_footage && (
                 <div>
-                  <p className="text-muted-foreground text-sm">Square Footage</p>
+                  <p className="text-muted-foreground text-sm">
+                    Square Footage
+                  </p>
                   <p className="font-medium">
                     {property.square_footage.toLocaleString()} sq ft
                   </p>
@@ -200,7 +201,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             {property.access_instructions && (
               <div>
-                <p className="text-muted-foreground text-sm">Access Instructions</p>
+                <p className="text-muted-foreground text-sm">
+                  Access Instructions
+                </p>
                 <p className="mt-1 text-sm">{property.access_instructions}</p>
               </div>
             )}
@@ -231,10 +234,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <div className="space-y-2">
                 {customer.phone && (
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground text-sm">Phone:</span>
+                    <span className="text-muted-foreground text-sm">
+                      Phone:
+                    </span>
                     <a
-                      href={`tel:${customer.phone}`}
                       className="text-sm hover:underline"
+                      href={`tel:${customer.phone}`}
                     >
                       {customer.phone}
                     </a>
@@ -242,10 +247,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 )}
                 {customer.email && (
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground text-sm">Email:</span>
+                    <span className="text-muted-foreground text-sm">
+                      Email:
+                    </span>
                     <a
-                      href={`mailto:${customer.email}`}
                       className="text-sm hover:underline"
+                      href={`mailto:${customer.email}`}
                     >
                       {customer.email}
                     </a>
@@ -253,7 +260,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 )}
               </div>
 
-              <Button variant="outline" size="sm" asChild className="w-full">
+              <Button asChild className="w-full" size="sm" variant="outline">
                 <Link href={`/dashboard/customers/${customer.id}`}>
                   View Customer Profile
                 </Link>
@@ -276,7 +283,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 Recent jobs performed at this property
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm" asChild>
+            <Button asChild size="sm" variant="outline">
               <Link href={`/dashboard/work?propertyId=${id}`}>View All</Link>
             </Button>
           </div>
@@ -284,8 +291,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <CardContent>
           {!jobs || jobs.length === 0 ? (
             <div className="py-8 text-center">
-              <p className="text-muted-foreground">No jobs found for this property</p>
-              <Button className="mt-4" size="sm" asChild>
+              <p className="text-muted-foreground">
+                No jobs found for this property
+              </p>
+              <Button asChild className="mt-4" size="sm">
                 <Link href={`/dashboard/work/new?propertyId=${id}`}>
                   Create First Job
                 </Link>
@@ -295,23 +304,23 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <div className="space-y-2">
               {jobs.map((job) => (
                 <Link
-                  key={job.id}
-                  href={`/dashboard/work/${job.id}`}
                   className="block rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                  href={`/dashboard/work/${job.id}`}
+                  key={job.id}
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{job.title}</p>
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 font-medium text-xs ${
                             job.status === "completed"
                               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                               : job.status === "in_progress"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                              : job.status === "scheduled"
-                              ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                              : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                : job.status === "scheduled"
+                                  ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                                  : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                           }`}
                         >
                           {job.status}
@@ -320,18 +329,22 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       <p className="mt-1 text-muted-foreground text-sm">
                         {job.job_number}
                         {job.scheduled_start && (
-                          <> • Scheduled: {new Date(job.scheduled_start).toLocaleDateString()}</>
+                          <>
+                            {" "}
+                            • Scheduled:{" "}
+                            {new Date(job.scheduled_start).toLocaleDateString()}
+                          </>
                         )}
                       </p>
                     </div>
                     <div className="text-right">
                       <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 font-medium text-xs ${
                           job.priority === "urgent"
                             ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                             : job.priority === "high"
-                            ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                              ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                              : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                         }`}
                       >
                         {job.priority}

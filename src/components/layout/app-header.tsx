@@ -1,5 +1,5 @@
-import { getUserProfile, getUserCompanies } from "@/lib/auth/user-data";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { getUserCompanies, getUserProfile } from "@/lib/auth/user-data";
 import { AppHeaderClient } from "./app-header-client";
 
 /**
@@ -39,5 +39,11 @@ export async function AppHeader() {
 
   // Pass server-fetched data to client component for interactivity
   // Client component only handles interactive parts (mobile menu, active nav state)
-  return <AppHeaderClient userProfile={userProfile} companies={companies} activeCompanyId={activeCompanyId} />;
+  return (
+    <AppHeaderClient
+      activeCompanyId={activeCompanyId}
+      companies={companies}
+      userProfile={userProfile}
+    />
+  );
 }

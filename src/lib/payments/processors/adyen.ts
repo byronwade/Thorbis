@@ -14,7 +14,14 @@
  * - Better suited for B2B and high-ticket transactions
  */
 
-import type { PaymentProcessor, ProcessPaymentRequest, ProcessPaymentResponse, RefundPaymentRequest, RefundPaymentResponse, PaymentChannel } from "../processor";
+import type {
+  PaymentChannel,
+  PaymentProcessor,
+  ProcessPaymentRequest,
+  ProcessPaymentResponse,
+  RefundPaymentRequest,
+  RefundPaymentResponse,
+} from "../processor";
 
 interface AdyenConfig {
   companyId: string;
@@ -39,7 +46,9 @@ export class AdyenProcessor implements PaymentProcessor {
     return ["online", "card_present", "tap_to_pay", "ach"];
   }
 
-  async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
+  async processPayment(
+    request: ProcessPaymentRequest
+  ): Promise<ProcessPaymentResponse> {
     try {
       // For Adyen, we need to create a payment request
       const paymentRequest = {
@@ -96,7 +105,11 @@ export class AdyenProcessor implements PaymentProcessor {
           status: "succeeded",
           processorMetadata: data,
         };
-      } else if (data.resultCode === "Pending" || data.resultCode === "RedirectShopper") {
+      }
+      if (
+        data.resultCode === "Pending" ||
+        data.resultCode === "RedirectShopper"
+      ) {
         return {
           success: true,
           transactionId: data.pspReference,
@@ -105,27 +118,29 @@ export class AdyenProcessor implements PaymentProcessor {
           clientSecret: data.action?.paymentData || data.pspReference,
           processorMetadata: data,
         };
-      } else {
-        return {
-          success: false,
-          status: "failed",
-          error: data.refusalReason || "Payment was refused",
-          failureCode: data.refusalReasonCode,
-          failureMessage: data.refusalReason,
-          processorMetadata: data,
-        };
       }
+      return {
+        success: false,
+        status: "failed",
+        error: data.refusalReason || "Payment was refused",
+        failureCode: data.refusalReasonCode,
+        failureMessage: data.refusalReason,
+        processorMetadata: data,
+      };
     } catch (error) {
       console.error("Adyen payment processing error:", error);
       return {
         success: false,
         status: "failed",
-        error: error instanceof Error ? error.message : "Payment processing failed",
+        error:
+          error instanceof Error ? error.message : "Payment processing failed",
       };
     }
   }
 
-  async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
+  async refundPayment(
+    request: RefundPaymentRequest
+  ): Promise<RefundPaymentResponse> {
     try {
       const refundRequest = {
         merchantAccount: this.config.merchantAccount,
@@ -143,14 +158,17 @@ export class AdyenProcessor implements PaymentProcessor {
         },
       };
 
-      const response = await fetch(`${this.apiUrl}/v68/payments/${request.transactionId}/refunds`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": this.config.apiKey,
-        },
-        body: JSON.stringify(refundRequest),
-      });
+      const response = await fetch(
+        `${this.apiUrl}/v68/payments/${request.transactionId}/refunds`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-Key": this.config.apiKey,
+          },
+          body: JSON.stringify(refundRequest),
+        }
+      );
 
       const data = await response.json();
 
@@ -225,5 +243,3 @@ export class AdyenProcessor implements PaymentProcessor {
     }
   }
 }
-
-

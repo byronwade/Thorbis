@@ -28,36 +28,69 @@
 import dynamic from "next/dynamic";
 
 // Dynamic icon imports - only load what's needed
-const AlertCircle = dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle));
-const AlertTriangle = dynamic(() => import("lucide-react").then((mod) => mod.AlertTriangle));
-const ArrowRightLeft = dynamic(() => import("lucide-react").then((mod) => mod.ArrowRightLeft));
+const AlertCircle = dynamic(() =>
+  import("lucide-react").then((mod) => mod.AlertCircle)
+);
+const AlertTriangle = dynamic(() =>
+  import("lucide-react").then((mod) => mod.AlertTriangle)
+);
+const ArrowRightLeft = dynamic(() =>
+  import("lucide-react").then((mod) => mod.ArrowRightLeft)
+);
 const Brain = dynamic(() => import("lucide-react").then((mod) => mod.Brain));
-const Building2 = dynamic(() => import("lucide-react").then((mod) => mod.Building2));
-const CheckCircle2 = dynamic(() => import("lucide-react").then((mod) => mod.CheckCircle2));
-const ChevronDown = dynamic(() => import("lucide-react").then((mod) => mod.ChevronDown));
-const ChevronUp = dynamic(() => import("lucide-react").then((mod) => mod.ChevronUp));
+const Building2 = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Building2)
+);
+const CheckCircle2 = dynamic(() =>
+  import("lucide-react").then((mod) => mod.CheckCircle2)
+);
+const ChevronDown = dynamic(() =>
+  import("lucide-react").then((mod) => mod.ChevronDown)
+);
+const ChevronUp = dynamic(() =>
+  import("lucide-react").then((mod) => mod.ChevronUp)
+);
 const Clock = dynamic(() => import("lucide-react").then((mod) => mod.Clock));
-const FileText = dynamic(() => import("lucide-react").then((mod) => mod.FileText));
+const FileText = dynamic(() =>
+  import("lucide-react").then((mod) => mod.FileText)
+);
 const Hash = dynamic(() => import("lucide-react").then((mod) => mod.Hash));
-const HelpCircle = dynamic(() => import("lucide-react").then((mod) => mod.HelpCircle));
-const Maximize2 = dynamic(() => import("lucide-react").then((mod) => mod.Maximize2));
+const HelpCircle = dynamic(() =>
+  import("lucide-react").then((mod) => mod.HelpCircle)
+);
+const Maximize2 = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Maximize2)
+);
 const Mic = dynamic(() => import("lucide-react").then((mod) => mod.Mic));
 const MicOff = dynamic(() => import("lucide-react").then((mod) => mod.MicOff));
-const Minimize2 = dynamic(() => import("lucide-react").then((mod) => mod.Minimize2));
+const Minimize2 = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Minimize2)
+);
 const Pause = dynamic(() => import("lucide-react").then((mod) => mod.Pause));
 const Phone = dynamic(() => import("lucide-react").then((mod) => mod.Phone));
-const PhoneOff = dynamic(() => import("lucide-react").then((mod) => mod.PhoneOff));
+const PhoneOff = dynamic(() =>
+  import("lucide-react").then((mod) => mod.PhoneOff)
+);
 const Play = dynamic(() => import("lucide-react").then((mod) => mod.Play));
-const Settings = dynamic(() => import("lucide-react").then((mod) => mod.Settings));
+const Settings = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Settings)
+);
 const Shield = dynamic(() => import("lucide-react").then((mod) => mod.Shield));
 const Square = dynamic(() => import("lucide-react").then((mod) => mod.Square));
-const SquareStack = dynamic(() => import("lucide-react").then((mod) => mod.SquareStack));
+const SquareStack = dynamic(() =>
+  import("lucide-react").then((mod) => mod.SquareStack)
+);
 const Tag = dynamic(() => import("lucide-react").then((mod) => mod.Tag));
 const User = dynamic(() => import("lucide-react").then((mod) => mod.User));
 const Video = dynamic(() => import("lucide-react").then((mod) => mod.Video));
-const VideoOff = dynamic(() => import("lucide-react").then((mod) => mod.VideoOff));
-const Voicemail = dynamic(() => import("lucide-react").then((mod) => mod.Voicemail));
-import { useEffect, useState, useRef, useCallback } from "react";
+const VideoOff = dynamic(() =>
+  import("lucide-react").then((mod) => mod.VideoOff)
+);
+const Voicemail = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Voicemail)
+);
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CallIndicatorBadge } from "@/components/call/call-indicator-badge";
 
 /**
@@ -68,31 +101,48 @@ import { CallIndicatorBadge } from "@/components/call/call-indicator-badge";
  * - VideoConferenceView: ~100KB+
  * Total savings: ~220KB+ when no call is active
  */
-const TransferCallModal = dynamic(() =>
-  import("@/components/calls/transfer-call-modal").then((mod) => ({ default: mod.TransferCallModal })),
+const TransferCallModal = dynamic(
+  () =>
+    import("@/components/calls/transfer-call-modal").then((mod) => ({
+      default: mod.TransferCallModal,
+    })),
   {
     loading: () => null,
   }
 );
-const AIAutofillPreview = dynamic(() =>
-  import("@/components/communication/ai-autofill-preview").then((mod) => ({ default: mod.AIAutofillPreview })),
+const AIAutofillPreview = dynamic(
+  () =>
+    import("@/components/communication/ai-autofill-preview").then((mod) => ({
+      default: mod.AIAutofillPreview,
+    })),
   {
     loading: () => null,
   }
 );
-const TranscriptPanel = dynamic(() =>
-  import("@/components/communication/transcript-panel").then((mod) => ({ default: mod.TranscriptPanel })),
+const TranscriptPanel = dynamic(
+  () =>
+    import("@/components/communication/transcript-panel").then((mod) => ({
+      default: mod.TranscriptPanel,
+    })),
   {
     loading: () => null,
   }
 );
-const VideoConferenceView = dynamic(() =>
-  import("./video-conference").then((mod) => ({ default: mod.VideoConferenceView })),
+const VideoConferenceView = dynamic(
+  () =>
+    import("./video-conference").then((mod) => ({
+      default: mod.VideoConferenceView,
+    })),
   {
     loading: () => null,
   }
 );
 
+import {
+  getWebRTCCredentials,
+  startCallRecording,
+  stopCallRecording,
+} from "@/actions/telnyx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { useCrossTabSync } from "@/hooks/use-cross-tab-sync";
@@ -107,7 +157,6 @@ import {
 } from "@/lib/stores/call-preferences-store";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 import { cn } from "@/lib/utils";
-import { getWebRTCCredentials, startCallRecording, stopCallRecording } from "@/actions/telnyx";
 
 type CallDisposition =
   | "resolved"
@@ -194,75 +243,162 @@ const getVideoButtonClass = (
 };
 
 // Mock customer data
-const getCustomerData = (
-  callerName?: string,
-  callerNumber?: string
-): CustomerData => {
-  const isKnown = Boolean(callerName && callerName !== "Unknown Caller");
-  const randomSpamScore = Math.random() * AI_MAX_SCORE;
-  const isSpam = randomSpamScore > AI_SPAM_THRESHOLD;
+/**
+ * Fetch real customer data from database
+ * This replaces the previous mock data function
+ */
+const useCustomerData = (callerNumber?: string, companyId?: string) => {
+  const [customerData, setCustomerData] = useState<CustomerData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  let trustScore = AI_MEDIUM_TRUST_SCORE;
-  if (isKnown) trustScore = AI_HIGH_TRUST_SCORE;
-  else if (isSpam) trustScore = AI_LOW_TRUST_SCORE;
+  useEffect(() => {
+    if (!(callerNumber && companyId)) {
+      // Return default data for unknown callers
+      setCustomerData({
+        name: "Unknown Customer",
+        email: "",
+        phone: callerNumber || "Unknown",
+        company: "",
+        accountStatus: "Unknown",
+        lastContact: "Never",
+        totalCalls: 0,
+        openTickets: 0,
+        priority: "medium",
+        tags: [],
+        recentIssues: [],
+        aiData: {
+          isKnownCustomer: false,
+          isSpam: false,
+          spamConfidence: 0,
+          recognitionSource: "unknown",
+          trustScore: AI_MEDIUM_TRUST_SCORE,
+          callHistory: [],
+          similarCallers: 0,
+          riskLevel: "medium",
+          aiNotes: [
+            "First-time caller",
+            "No prior history",
+            "Standard verification recommended",
+          ],
+        },
+      });
+      return;
+    }
 
-  let riskLevel: "low" | "medium" | "high" = "medium";
-  if (isSpam) riskLevel = "high";
-  else if (isKnown) riskLevel = "low";
+    setIsLoading(true);
 
-  let aiNotes: string[] = [];
-  if (isSpam) {
-    aiNotes = [
-      "Multiple reports from other users",
-      "Suspicious calling pattern detected",
-      "Number flagged by community",
-    ];
-  } else if (isKnown) {
-    aiNotes = [
-      "Verified customer since 2023",
-      "Consistent positive interactions",
-      "High engagement score",
-    ];
-  } else {
-    aiNotes = [
-      "First-time caller",
-      "No prior history",
-      "Standard verification recommended",
-    ];
-  }
+    // Fetch real customer data from database
+    import("@/actions/customers")
+      .then(({ getCustomerByPhone }) =>
+        getCustomerByPhone(callerNumber, companyId)
+      )
+      .then((result) => {
+        if (result.success && result.data) {
+          const customer = result.data;
 
-  return {
-    name: callerName || "Unknown Customer",
-    email: "customer@example.com",
-    phone: callerNumber || "Unknown",
-    company: "Acme Corporation",
-    accountStatus: "Active",
-    lastContact: "2 days ago",
-    totalCalls: 12,
-    openTickets: 2,
-    priority: "medium",
-    tags: ["VIP", "Enterprise"],
-    recentIssues: [
-      { id: "1", text: "Billing inquiry - Resolved" },
-      { id: "2", text: "Product question - Pending" },
-      { id: "3", text: "Account access - Resolved" },
-    ],
-    aiData: {
-      isKnownCustomer: isKnown,
-      isSpam,
-      spamConfidence: isSpam ? randomSpamScore : AI_LOW_SPAM_SCORE,
-      recognitionSource: isKnown ? "crm" : "ai",
-      trustScore,
-      callHistory: [
-        { date: "2024-01-15", duration: "12:34", outcome: "Resolved" },
-        { date: "2024-01-10", duration: "8:22", outcome: "Escalated" },
-        { date: "2023-12-28", duration: "5:11", outcome: "Resolved" },
-      ],
-      similarCallers: isSpam ? AI_SPAM_SIMILAR_CALLERS : 0,
-      riskLevel,
-      aiNotes,
-    },
-  };
+          // Calculate AI metrics based on real customer data
+          const isKnown = true;
+          const randomSpamScore = 0; // Real spam detection would come from external service
+          const isSpam = false;
+
+          setCustomerData({
+            name: `${customer.first_name} ${customer.last_name}`,
+            email: customer.email || "",
+            phone: customer.phone || callerNumber,
+            company: customer.company_name || "",
+            accountStatus: customer.status || "Active",
+            lastContact: customer.last_contact_date
+              ? new Date(customer.last_contact_date).toLocaleDateString()
+              : "Unknown",
+            totalCalls: customer.total_interactions || 0,
+            openTickets: 0, // Would need to query jobs/tickets table
+            priority: (customer.priority_level || "medium") as
+              | "low"
+              | "medium"
+              | "high",
+            tags: customer.tags || [],
+            recentIssues: [], // Would need to query jobs table
+            aiData: {
+              isKnownCustomer: isKnown,
+              isSpam,
+              spamConfidence: randomSpamScore,
+              recognitionSource: "crm",
+              trustScore: AI_HIGH_TRUST_SCORE,
+              callHistory: [], // Would need to query communications table
+              similarCallers: 0,
+              riskLevel: "low",
+              aiNotes: [
+                `Customer since ${customer.created_at ? new Date(customer.created_at).getFullYear() : "Unknown"}`,
+                "Verified customer",
+                "Account in good standing",
+              ],
+            },
+          });
+        } else {
+          // Customer not found - return default data
+          setCustomerData({
+            name: "Unknown Customer",
+            email: "",
+            phone: callerNumber,
+            company: "",
+            accountStatus: "New",
+            lastContact: "Never",
+            totalCalls: 0,
+            openTickets: 0,
+            priority: "medium",
+            tags: [],
+            recentIssues: [],
+            aiData: {
+              isKnownCustomer: false,
+              isSpam: false,
+              spamConfidence: 0,
+              recognitionSource: "unknown",
+              trustScore: AI_MEDIUM_TRUST_SCORE,
+              callHistory: [],
+              similarCallers: 0,
+              riskLevel: "medium",
+              aiNotes: [
+                "First-time caller",
+                "No prior history",
+                "Standard verification recommended",
+              ],
+            },
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching customer data:", error);
+        setCustomerData({
+          name: "Unknown Customer",
+          email: "",
+          phone: callerNumber,
+          company: "",
+          accountStatus: "Unknown",
+          lastContact: "Never",
+          totalCalls: 0,
+          openTickets: 0,
+          priority: "medium",
+          tags: [],
+          recentIssues: [],
+          aiData: {
+            isKnownCustomer: false,
+            isSpam: false,
+            spamConfidence: 0,
+            recognitionSource: "unknown",
+            trustScore: AI_MEDIUM_TRUST_SCORE,
+            callHistory: [],
+            similarCallers: 0,
+            riskLevel: "medium",
+            aiNotes: ["Error loading customer data"],
+          },
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [callerNumber, companyId]);
+
+  return { customerData, isLoading };
 };
 
 // Incoming Call View (keep mostly unchanged)
@@ -445,7 +581,10 @@ function MinimizedCallWidget({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showKeypad, setShowKeypad] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth - 350, y: window.innerHeight - 150 });
+  const [position, setPosition] = useState({
+    x: window.innerWidth - 350,
+    y: window.innerHeight - 150,
+  });
   const [isDragging, setIsDragging] = useState(false);
 
   // Use refs to avoid dependency issues and prevent listener stacking
@@ -504,7 +643,7 @@ function MinimizedCallWidget({
       <div className="rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl">
         {/* Header - Draggable */}
         <div
-          className="cursor-grab rounded-t-xl border-b border-zinc-700 bg-zinc-800/70 px-4 py-3 active:cursor-grabbing"
+          className="cursor-grab rounded-t-xl border-zinc-700 border-b bg-zinc-800/70 px-4 py-3 active:cursor-grabbing"
           onMouseDown={handleMouseDown}
         >
           <div className="flex items-center gap-3">
@@ -538,8 +677,8 @@ function MinimizedCallWidget({
             <button
               className="flex size-7 items-center justify-center rounded-lg bg-zinc-800 transition-colors hover:bg-zinc-700"
               onClick={() => setIsExpanded(!isExpanded)}
-              type="button"
               title={isExpanded ? "Collapse" : "Expand"}
+              type="button"
             >
               {isExpanded ? (
                 <ChevronUp className="size-3.5 text-zinc-300" />
@@ -561,8 +700,8 @@ function MinimizedCallWidget({
                   : "bg-zinc-800 hover:bg-zinc-700"
               )}
               onClick={toggleMute}
-              type="button"
               title={call.isMuted ? "Unmute" : "Mute"}
+              type="button"
             >
               {call.isMuted ? (
                 <MicOff className="size-4 text-white" />
@@ -583,8 +722,8 @@ function MinimizedCallWidget({
                     : "bg-zinc-800 hover:bg-zinc-700"
                 )}
                 onClick={toggleHold}
-                type="button"
                 title={call.isOnHold ? "Resume" : "Hold"}
+                type="button"
               >
                 {call.isOnHold ? (
                   <Play className="size-4 text-white" />
@@ -606,8 +745,8 @@ function MinimizedCallWidget({
                     : "bg-zinc-800 hover:bg-zinc-700"
                 )}
                 onClick={() => setShowKeypad(!showKeypad)}
-                type="button"
                 title="Keypad"
+                type="button"
               >
                 <Hash className="size-4 text-zinc-300" />
                 <span className="text-[9px] text-zinc-400">Keypad</span>
@@ -617,8 +756,8 @@ function MinimizedCallWidget({
             <button
               className="flex flex-col items-center gap-1 rounded-lg bg-zinc-800 p-2 transition-colors hover:bg-zinc-700"
               onClick={onMaximize}
-              type="button"
               title="Open Dashboard"
+              type="button"
             >
               <Maximize2 className="size-4 text-zinc-300" />
               <span className="text-[9px] text-zinc-400">Open</span>
@@ -627,8 +766,8 @@ function MinimizedCallWidget({
             <button
               className="flex flex-col items-center gap-1 rounded-lg bg-red-600 p-2 transition-colors hover:bg-red-700"
               onClick={onEndCall}
-              type="button"
               title="End Call"
+              type="button"
             >
               <PhoneOff className="size-4 text-white" />
               <span className="text-[9px] text-white">End</span>
@@ -638,7 +777,7 @@ function MinimizedCallWidget({
 
         {/* Expanded Controls */}
         {isExpanded && (
-          <div className="border-t border-zinc-700 p-3">
+          <div className="border-zinc-700 border-t p-3">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-zinc-500">Caller Number</span>
@@ -659,7 +798,7 @@ function MinimizedCallWidget({
 
         {/* DTMF Keypad */}
         {showKeypad && sendDTMF && (
-          <div className="border-t border-zinc-700 p-3">
+          <div className="border-zinc-700 border-t p-3">
             <div className="mb-2 text-center">
               <p className="text-xs text-zinc-500">Dial Tones</p>
             </div>
@@ -1070,8 +1209,8 @@ function ActiveCallView({
             <button
               className="flex flex-col items-center gap-1.5 rounded-lg bg-zinc-800 p-3 transition-colors hover:bg-zinc-700"
               onClick={onTransfer}
-              type="button"
               title="Transfer Call"
+              type="button"
             >
               <ArrowRightLeft className="size-5 text-zinc-300" />
               <span className="text-[10px] text-zinc-400">Transfer</span>
@@ -1497,11 +1636,7 @@ export function IncomingCallNotification() {
   });
 
   // Fallback to UI store for video features (not in WebRTC)
-  const {
-    call: uiCall,
-    requestVideo,
-    endVideo,
-  } = useUIStore();
+  const { call: uiCall, requestVideo, endVideo } = useUIStore();
 
   const [callDuration, setCallDuration] = useState("00:00");
   const [callNotes, setCallNotes] = useState("");
@@ -1513,26 +1648,27 @@ export function IncomingCallNotification() {
   // Map WebRTC call state to UI format
   const call = webrtc.currentCall
     ? {
-        status: webrtc.currentCall.state === "ringing"
-          ? webrtc.currentCall.direction === "inbound"
-            ? ("incoming" as const)
-            : ("active" as const)
-          : webrtc.currentCall.state === "active"
-            ? ("active" as const)
-            : webrtc.currentCall.state === "ended"
-              ? ("ended" as const)
-              : ("idle" as const),
+        status:
+          webrtc.currentCall.state === "ringing"
+            ? webrtc.currentCall.direction === "inbound"
+              ? ("incoming" as const)
+              : ("active" as const)
+            : webrtc.currentCall.state === "active"
+              ? ("active" as const)
+              : webrtc.currentCall.state === "ended"
+                ? ("ended" as const)
+                : ("idle" as const),
         caller: {
           name: webrtc.currentCall.remoteName || "Unknown Caller",
           number: webrtc.currentCall.remoteNumber,
         },
         isMuted: webrtc.currentCall.isMuted,
         isOnHold: webrtc.currentCall.isHeld,
-        isRecording: isRecording, // Use server-side recording state
+        isRecording, // Use server-side recording state
         startTime: webrtc.currentCall.startTime?.getTime(),
         videoStatus: uiCall.videoStatus || "off",
-        isLocalVideoEnabled: uiCall.isLocalVideoEnabled || false,
-        isRemoteVideoEnabled: uiCall.isRemoteVideoEnabled || false,
+        isLocalVideoEnabled: uiCall.isLocalVideoEnabled,
+        isRemoteVideoEnabled: uiCall.isRemoteVideoEnabled,
         isScreenSharing: false,
         connectionQuality: "excellent" as const,
         hasVirtualBackground: false,
@@ -1562,7 +1698,63 @@ export function IncomingCallNotification() {
   const clearTranscript = useTranscriptStore((state) => state.clearTranscript);
   const addEntry = useTranscriptStore((state) => state.addEntry);
 
-  const customerData = getCustomerData(call.caller?.name, call.caller?.number);
+  // Fetch company ID for current user
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  useEffect(() => {
+    async function fetchCompanyId() {
+      const supabase = await import("@/lib/supabase/client").then((m) =>
+        m.createClient()
+      );
+      if (!supabase) return;
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: teamMember } = await supabase
+          .from("team_members")
+          .select("company_id")
+          .eq("user_id", user.id)
+          .single();
+
+        if (teamMember?.company_id) {
+          setCompanyId(teamMember.company_id);
+        }
+      }
+    }
+    fetchCompanyId();
+  }, []);
+
+  // Fetch real customer data from database
+  const { customerData: fetchedCustomerData, isLoading: isLoadingCustomer } =
+    useCustomerData(call.caller?.number, companyId || undefined);
+
+  // Use fetched data or fallback to default
+  const customerData: CustomerData = fetchedCustomerData || {
+    name: call.caller?.name || "Unknown Customer",
+    email: "",
+    phone: call.caller?.number || "Unknown",
+    company: "",
+    accountStatus: "Unknown",
+    lastContact: "Never",
+    totalCalls: 0,
+    openTickets: 0,
+    priority: "medium",
+    tags: [],
+    recentIssues: [],
+    aiData: {
+      isKnownCustomer: false,
+      isSpam: false,
+      spamConfidence: 0,
+      recognitionSource: "unknown",
+      trustScore: AI_MEDIUM_TRUST_SCORE,
+      callHistory: [],
+      similarCallers: 0,
+      riskLevel: "medium",
+      aiNotes: ["Loading customer data..."],
+    },
+  };
 
   // Generate call ID from caller info
   const callId = `call-${call.caller?.number || Date.now()}`;
@@ -1849,9 +2041,9 @@ export function IncomingCallNotification() {
         caller={call.caller}
         onEndCall={handleEndCall}
         onMaximize={() => setIsMinimized(false)}
-        toggleMute={handleToggleMute}
-        toggleHold={handleToggleHold}
         sendDTMF={handleSendDTMF}
+        toggleHold={handleToggleHold}
+        toggleMute={handleToggleMute}
       />
     );
   }
@@ -1914,11 +2106,11 @@ export function IncomingCallNotification() {
       />
 
       <TransferCallModal
-        open={showTransferModal}
-        onOpenChange={setShowTransferModal}
         callControlId={webrtc.currentCall?.id || null}
         fromNumber={call.caller?.number || ""}
+        onOpenChange={setShowTransferModal}
         onTransferSuccess={handleTransferSuccess}
+        open={showTransferModal}
       />
     </>
   );

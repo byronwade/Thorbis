@@ -11,7 +11,14 @@
  * often in combination with Adyen or ProfitStars for actual payment processing.
  */
 
-import type { PaymentProcessor, ProcessPaymentRequest, ProcessPaymentResponse, RefundPaymentRequest, RefundPaymentResponse, PaymentChannel } from "../processor";
+import type {
+  PaymentChannel,
+  PaymentProcessor,
+  ProcessPaymentRequest,
+  ProcessPaymentResponse,
+  RefundPaymentRequest,
+  RefundPaymentResponse,
+} from "../processor";
 
 interface PlaidConfig {
   companyId: string;
@@ -38,7 +45,9 @@ export class PlaidProcessor implements PaymentProcessor {
     return ["ach"];
   }
 
-  async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
+  async processPayment(
+    request: ProcessPaymentRequest
+  ): Promise<ProcessPaymentResponse> {
     try {
       // Plaid is primarily for bank account linking
       // Actual ACH processing is typically done through a partner like Adyen or ProfitStars
@@ -62,24 +71,29 @@ export class PlaidProcessor implements PaymentProcessor {
       return {
         success: false,
         status: "failed",
-        error: "ACH processing via Plaid requires integration with ACH processor (Adyen/ProfitStars)",
+        error:
+          "ACH processing via Plaid requires integration with ACH processor (Adyen/ProfitStars)",
       };
     } catch (error) {
       console.error("Plaid payment processing error:", error);
       return {
         success: false,
         status: "failed",
-        error: error instanceof Error ? error.message : "Payment processing failed",
+        error:
+          error instanceof Error ? error.message : "Payment processing failed",
       };
     }
   }
 
-  async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
+  async refundPayment(
+    request: RefundPaymentRequest
+  ): Promise<RefundPaymentResponse> {
     // ACH refunds are typically processed through the same ACH processor
     return {
       success: false,
       status: "failed",
-      error: "ACH refunds must be processed through ACH processor (Adyen/ProfitStars)",
+      error:
+        "ACH refunds must be processed through ACH processor (Adyen/ProfitStars)",
     };
   }
 
@@ -144,19 +158,24 @@ export class PlaidProcessor implements PaymentProcessor {
   /**
    * Exchange public token for access token after Plaid Link success
    */
-  async exchangePublicToken(publicToken: string): Promise<{ accessToken: string } | null> {
+  async exchangePublicToken(
+    publicToken: string
+  ): Promise<{ accessToken: string } | null> {
     try {
-      const response = await fetch(`${this.apiUrl}/item/public_token/exchange`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "PLAID-CLIENT-ID": this.config.clientId,
-          "PLAID-SECRET": this.config.secret,
-        },
-        body: JSON.stringify({
-          public_token: publicToken,
-        }),
-      });
+      const response = await fetch(
+        `${this.apiUrl}/item/public_token/exchange`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "PLAID-CLIENT-ID": this.config.clientId,
+            "PLAID-SECRET": this.config.secret,
+          },
+          body: JSON.stringify({
+            public_token: publicToken,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -172,5 +191,3 @@ export class PlaidProcessor implements PaymentProcessor {
     }
   }
 }
-
-

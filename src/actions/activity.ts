@@ -9,8 +9,8 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import type { Activity } from "@/lib/db/schema";
+import { createClient } from "@/lib/supabase/server";
 import type {
   ActivityFilters,
   CreateActivityData,
@@ -70,10 +70,12 @@ export async function logActivity(
         ai_model: data.aiModel || null,
         automation_workflow_id: data.automationWorkflowId || null,
         automation_workflow_name: data.automationWorkflowName || null,
-        is_important: data.isImportant || false,
-        is_system_generated: data.isSystemGenerated || false,
+        is_important: data.isImportant,
+        is_system_generated: data.isSystemGenerated,
         is_visible: true,
-        occurred_at: data.occurredAt ? new Date(data.occurredAt).toISOString() : new Date().toISOString(),
+        occurred_at: data.occurredAt
+          ? new Date(data.occurredAt).toISOString()
+          : new Date().toISOString(),
       })
       .select()
       .single();
@@ -125,10 +127,7 @@ export async function getActivities(
     }
 
     // Build query
-    let query = supabase
-      .from("activities")
-      .select("*")
-      .eq("is_visible", true);
+    let query = supabase.from("activities").select("*").eq("is_visible", true);
 
     if (filters.entityType) {
       query = query.eq("entity_type", filters.entityType);
@@ -170,36 +169,37 @@ export async function getActivities(
     }
 
     // Transform snake_case to camelCase for frontend
-    const transformedActivities = activities?.map((activity: any) => ({
-      id: activity.id,
-      entityType: activity.entity_type,
-      entityId: activity.entity_id,
-      companyId: activity.company_id,
-      activityType: activity.activity_type,
-      action: activity.action,
-      category: activity.category,
-      actorId: activity.actor_id,
-      actorType: activity.actor_type,
-      actorName: activity.actor_name,
-      fieldName: activity.field_name,
-      oldValue: activity.old_value,
-      newValue: activity.new_value,
-      description: activity.description,
-      metadata: activity.metadata,
-      relatedEntityType: activity.related_entity_type,
-      relatedEntityId: activity.related_entity_id,
-      attachmentType: activity.attachment_type,
-      attachmentUrl: activity.attachment_url,
-      attachmentName: activity.attachment_name,
-      aiModel: activity.ai_model,
-      automationWorkflowId: activity.automation_workflow_id,
-      automationWorkflowName: activity.automation_workflow_name,
-      isImportant: activity.is_important,
-      isSystemGenerated: activity.is_system_generated,
-      isVisible: activity.is_visible,
-      occurredAt: new Date(activity.occurred_at),
-      createdAt: new Date(activity.created_at),
-    })) || [];
+    const transformedActivities =
+      activities?.map((activity: any) => ({
+        id: activity.id,
+        entityType: activity.entity_type,
+        entityId: activity.entity_id,
+        companyId: activity.company_id,
+        activityType: activity.activity_type,
+        action: activity.action,
+        category: activity.category,
+        actorId: activity.actor_id,
+        actorType: activity.actor_type,
+        actorName: activity.actor_name,
+        fieldName: activity.field_name,
+        oldValue: activity.old_value,
+        newValue: activity.new_value,
+        description: activity.description,
+        metadata: activity.metadata,
+        relatedEntityType: activity.related_entity_type,
+        relatedEntityId: activity.related_entity_id,
+        attachmentType: activity.attachment_type,
+        attachmentUrl: activity.attachment_url,
+        attachmentName: activity.attachment_name,
+        aiModel: activity.ai_model,
+        automationWorkflowId: activity.automation_workflow_id,
+        automationWorkflowName: activity.automation_workflow_name,
+        isImportant: activity.is_important,
+        isSystemGenerated: activity.is_system_generated,
+        isVisible: activity.is_visible,
+        occurredAt: new Date(activity.occurred_at),
+        createdAt: new Date(activity.created_at),
+      })) || [];
 
     return {
       success: true,

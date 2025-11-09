@@ -12,11 +12,11 @@
  * - Shows countdown to permanent deletion
  */
 
-import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { notFound, redirect } from "next/navigation";
+import { getArchiveStats } from "@/actions/archive";
 import { ArchiveDataTable } from "@/components/archive/archive-data-table";
 import { ArchiveStats } from "@/components/archive/archive-stats";
-import { getArchiveStats } from "@/actions/archive";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +59,9 @@ export default async function ArchivePage({
     .single();
 
   if (!teamMember?.company_id) {
-    return notFound();
+    // User hasn't completed onboarding or doesn't have an active company membership
+    // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
   }
 
   // Fetch archive statistics
@@ -75,8 +77,8 @@ export default async function ArchivePage({
 
       {/* Archive Data Table */}
       <ArchiveDataTable
-        entityFilter={params.entity || "all"}
         dateRange={params.range || "30days"}
+        entityFilter={params.entity || "all"}
         searchQuery={params.search}
       />
     </div>

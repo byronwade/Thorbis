@@ -6,17 +6,31 @@
  * Configure overtime rules, rate multipliers, and approval workflows
  */
 
-import { Clock, AlertTriangle, DollarSign, Calendar, Loader2 } from "lucide-react";
+import {
+  AlertTriangle,
+  Calendar,
+  Clock,
+  DollarSign,
+  Loader2,
+} from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import {
+  getOvertimeSettings,
+  updateOvertimeSettings,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { getOvertimeSettings, updateOvertimeSettings } from "@/actions/settings";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
 
 export default function OvertimeSettingsPage() {
   const { toast } = useToast();
@@ -60,9 +74,10 @@ export default function OvertimeSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">Overtime Settings</h1>
+        <h1 className="font-bold text-4xl tracking-tight">Overtime Settings</h1>
         <p className="text-muted-foreground">
-          Configure overtime rules, multipliers, and approval workflows for field technicians
+          Configure overtime rules, multipliers, and approval workflows for
+          field technicians
         </p>
       </div>
 
@@ -82,15 +97,17 @@ export default function OvertimeSettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="overtimeEnabled">Enable Overtime Tracking</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <Label htmlFor="overtimeEnabled">
+                    Enable Overtime Tracking
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
                     Track and calculate overtime pay for technicians
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.overtime_enabled ?? true}
                   id="overtimeEnabled"
                   name="overtimeEnabled"
-                  defaultChecked={settings?.overtime_enabled ?? true}
                 />
               </div>
 
@@ -98,50 +115,57 @@ export default function OvertimeSettingsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="dailyThresholdHours">Daily Overtime Threshold (hours)</Label>
+                  <Label htmlFor="dailyThresholdHours">
+                    Daily Overtime Threshold (hours)
+                  </Label>
                   <Input
-                    id="dailyThresholdHours"
-                    name="dailyThresholdHours"
-                    type="number"
-                    step="0.25"
-                    min="0"
                     defaultValue={settings?.daily_threshold_hours ?? 8}
+                    id="dailyThresholdHours"
+                    min="0"
+                    name="dailyThresholdHours"
                     placeholder="8.00"
+                    step="0.25"
+                    type="number"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Hours worked in a day before overtime kicks in
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="weeklyThresholdHours">Weekly Overtime Threshold (hours)</Label>
+                  <Label htmlFor="weeklyThresholdHours">
+                    Weekly Overtime Threshold (hours)
+                  </Label>
                   <Input
-                    id="weeklyThresholdHours"
-                    name="weeklyThresholdHours"
-                    type="number"
-                    step="0.25"
-                    min="0"
                     defaultValue={settings?.weekly_threshold_hours ?? 40}
+                    id="weeklyThresholdHours"
+                    min="0"
+                    name="weeklyThresholdHours"
                     placeholder="40.00"
+                    step="0.25"
+                    type="number"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Hours worked in a week before overtime kicks in
                   </p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="consecutiveDaysThreshold">Consecutive Days Threshold</Label>
+                <Label htmlFor="consecutiveDaysThreshold">
+                  Consecutive Days Threshold
+                </Label>
                 <Input
-                  id="consecutiveDaysThreshold"
-                  name="consecutiveDaysThreshold"
-                  type="number"
-                  min="1"
                   defaultValue={settings?.consecutive_days_threshold ?? 7}
+                  id="consecutiveDaysThreshold"
+                  min="1"
+                  name="consecutiveDaysThreshold"
                   placeholder="7"
+                  type="number"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Number of consecutive days worked before triggering special overtime
+                <p className="text-muted-foreground text-xs">
+                  Number of consecutive days worked before triggering special
+                  overtime
                 </p>
               </div>
             </CardContent>
@@ -161,35 +185,40 @@ export default function OvertimeSettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="dailyOvertimeMultiplier">Daily Overtime Multiplier</Label>
+                  <Label htmlFor="dailyOvertimeMultiplier">
+                    Daily Overtime Multiplier
+                  </Label>
                   <Input
-                    id="dailyOvertimeMultiplier"
-                    name="dailyOvertimeMultiplier"
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
                     defaultValue={settings?.daily_overtime_multiplier ?? 1.5}
+                    id="dailyOvertimeMultiplier"
+                    max="5"
+                    min="1"
+                    name="dailyOvertimeMultiplier"
                     placeholder="1.5"
+                    step="0.1"
+                    type="number"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Pay multiplier for daily overtime (e.g., 1.5 = time and a half)
+                  <p className="text-muted-foreground text-xs">
+                    Pay multiplier for daily overtime (e.g., 1.5 = time and a
+                    half)
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="weeklyOvertimeMultiplier">Weekly Overtime Multiplier</Label>
+                  <Label htmlFor="weeklyOvertimeMultiplier">
+                    Weekly Overtime Multiplier
+                  </Label>
                   <Input
-                    id="weeklyOvertimeMultiplier"
-                    name="weeklyOvertimeMultiplier"
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
                     defaultValue={settings?.weekly_overtime_multiplier ?? 1.5}
+                    id="weeklyOvertimeMultiplier"
+                    max="5"
+                    min="1"
+                    name="weeklyOvertimeMultiplier"
                     placeholder="1.5"
+                    step="0.1"
+                    type="number"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Pay multiplier for weekly overtime
                   </p>
                 </div>
@@ -200,58 +229,68 @@ export default function OvertimeSettingsPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="doubleTimeEnabled">Enable Double Time</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <Label htmlFor="doubleTimeEnabled">
+                      Enable Double Time
+                    </Label>
+                    <p className="text-muted-foreground text-sm">
                       Pay double time after extended hours
                     </p>
                   </div>
                   <Switch
+                    defaultChecked={settings?.double_time_enabled ?? false}
                     id="doubleTimeEnabled"
                     name="doubleTimeEnabled"
-                    defaultChecked={settings?.double_time_enabled ?? false}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="doubleTimeMultiplier">Double Time Multiplier</Label>
+                    <Label htmlFor="doubleTimeMultiplier">
+                      Double Time Multiplier
+                    </Label>
                     <Input
-                      id="doubleTimeMultiplier"
-                      name="doubleTimeMultiplier"
-                      type="number"
-                      step="0.1"
-                      min="1"
-                      max="5"
                       defaultValue={settings?.double_time_multiplier ?? 2.0}
+                      id="doubleTimeMultiplier"
+                      max="5"
+                      min="1"
+                      name="doubleTimeMultiplier"
                       placeholder="2.0"
+                      step="0.1"
+                      type="number"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="doubleTimeAfterHours">Double Time After (hours)</Label>
+                    <Label htmlFor="doubleTimeAfterHours">
+                      Double Time After (hours)
+                    </Label>
                     <Input
-                      id="doubleTimeAfterHours"
-                      name="doubleTimeAfterHours"
-                      type="number"
-                      step="0.25"
-                      min="0"
                       defaultValue={settings?.double_time_after_hours ?? 12}
+                      id="doubleTimeAfterHours"
+                      min="0"
+                      name="doubleTimeAfterHours"
                       placeholder="12.00"
+                      step="0.25"
+                      type="number"
                     />
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="doubleTimeOnSeventhDay">Double Time on 7th Consecutive Day</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <Label htmlFor="doubleTimeOnSeventhDay">
+                      Double Time on 7th Consecutive Day
+                    </Label>
+                    <p className="text-muted-foreground text-sm">
                       Pay double time for work on the 7th consecutive day
                     </p>
                   </div>
                   <Switch
+                    defaultChecked={
+                      settings?.double_time_on_seventh_day ?? false
+                    }
                     id="doubleTimeOnSeventhDay"
                     name="doubleTimeOnSeventhDay"
-                    defaultChecked={settings?.double_time_on_seventh_day ?? false}
                   />
                 </div>
               </div>
@@ -272,58 +311,62 @@ export default function OvertimeSettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="weekendOvertimeEnabled">Enable Weekend Overtime Rates</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <Label htmlFor="weekendOvertimeEnabled">
+                    Enable Weekend Overtime Rates
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
                     Apply different rates for weekend work
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.weekend_overtime_enabled ?? false}
                   id="weekendOvertimeEnabled"
                   name="weekendOvertimeEnabled"
-                  defaultChecked={settings?.weekend_overtime_enabled ?? false}
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="saturdayMultiplier">Saturday Multiplier</Label>
+                  <Label htmlFor="saturdayMultiplier">
+                    Saturday Multiplier
+                  </Label>
                   <Input
-                    id="saturdayMultiplier"
-                    name="saturdayMultiplier"
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
                     defaultValue={settings?.saturday_multiplier ?? 1.5}
+                    id="saturdayMultiplier"
+                    max="5"
+                    min="1"
+                    name="saturdayMultiplier"
                     placeholder="1.5"
+                    step="0.1"
+                    type="number"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="sundayMultiplier">Sunday Multiplier</Label>
                   <Input
-                    id="sundayMultiplier"
-                    name="sundayMultiplier"
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
                     defaultValue={settings?.sunday_multiplier ?? 2.0}
+                    id="sundayMultiplier"
+                    max="5"
+                    min="1"
+                    name="sundayMultiplier"
                     placeholder="2.0"
+                    step="0.1"
+                    type="number"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="holidayMultiplier">Holiday Multiplier</Label>
                   <Input
-                    id="holidayMultiplier"
-                    name="holidayMultiplier"
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
                     defaultValue={settings?.holiday_multiplier ?? 2.5}
+                    id="holidayMultiplier"
+                    max="5"
+                    min="1"
+                    name="holidayMultiplier"
                     placeholder="2.5"
+                    step="0.1"
+                    type="number"
                   />
                 </div>
               </div>
@@ -344,57 +387,61 @@ export default function OvertimeSettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="requireOvertimeApproval">Require Overtime Approval</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <Label htmlFor="requireOvertimeApproval">
+                    Require Overtime Approval
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
                     Managers must approve overtime before payment
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.require_overtime_approval ?? true}
                   id="requireOvertimeApproval"
                   name="requireOvertimeApproval"
-                  defaultChecked={settings?.require_overtime_approval ?? true}
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="autoCalculateOvertime">Auto-Calculate Overtime</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <Label htmlFor="autoCalculateOvertime">
+                    Auto-Calculate Overtime
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
                     Automatically calculate overtime based on hours worked
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.auto_calculate_overtime ?? true}
                   id="autoCalculateOvertime"
                   name="autoCalculateOvertime"
-                  defaultChecked={settings?.auto_calculate_overtime ?? true}
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="trackByJob">Track Overtime by Job</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Track overtime hours per job
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.track_by_job ?? true}
                   id="trackByJob"
                   name="trackByJob"
-                  defaultChecked={settings?.track_by_job ?? true}
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="trackByDay">Track Overtime by Day</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Track overtime hours per day
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.track_by_day ?? true}
                   id="trackByDay"
                   name="trackByDay"
-                  defaultChecked={settings?.track_by_day ?? true}
                 />
               </div>
 
@@ -402,45 +449,53 @@ export default function OvertimeSettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="notifyApproachingOvertime">Notify Approaching Overtime</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <Label htmlFor="notifyApproachingOvertime">
+                    Notify Approaching Overtime
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
                     Alert technicians when approaching overtime threshold
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.notify_approaching_overtime ?? true}
                   id="notifyApproachingOvertime"
                   name="notifyApproachingOvertime"
-                  defaultChecked={settings?.notify_approaching_overtime ?? true}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="overtimeThresholdNotificationHours">Notification Threshold (hours)</Label>
+                <Label htmlFor="overtimeThresholdNotificationHours">
+                  Notification Threshold (hours)
+                </Label>
                 <Input
+                  defaultValue={
+                    settings?.overtime_threshold_notification_hours ?? 7.5
+                  }
                   id="overtimeThresholdNotificationHours"
-                  name="overtimeThresholdNotificationHours"
-                  type="number"
-                  step="0.25"
                   min="0"
-                  defaultValue={settings?.overtime_threshold_notification_hours ?? 7.5}
+                  name="overtimeThresholdNotificationHours"
                   placeholder="7.5"
+                  step="0.25"
+                  type="number"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Send notification when technician reaches this many hours
                 </p>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="notifyManagersOnOvertime">Notify Managers on Overtime</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <Label htmlFor="notifyManagersOnOvertime">
+                    Notify Managers on Overtime
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
                     Alert managers when technicians enter overtime
                   </p>
                 </div>
                 <Switch
+                  defaultChecked={settings?.notify_managers_on_overtime ?? true}
                   id="notifyManagersOnOvertime"
                   name="notifyManagersOnOvertime"
-                  defaultChecked={settings?.notify_managers_on_overtime ?? true}
                 />
               </div>
             </CardContent>
@@ -448,7 +503,7 @@ export default function OvertimeSettingsPage() {
 
           {/* Submit Button */}
           <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={isPending}>
+            <Button disabled={isPending} type="submit">
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

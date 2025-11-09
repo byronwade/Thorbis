@@ -16,11 +16,10 @@
 import {
   Document,
   Page,
+  Image as PDFImage,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  Image as PDFImage,
-  Font,
 } from "@react-pdf/renderer";
 
 interface InvoicePDFProps {
@@ -207,12 +206,11 @@ export function InvoicePDFDocument({
   const lineItems = lineItemsBlock.lineItems || [];
 
   // Format currency
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
-  };
 
   return (
     <Document>
@@ -350,9 +348,9 @@ export function InvoicePDFDocument({
                 totalsBlock.subtotal +
                   (totalsBlock.taxTiers?.reduce(
                     (sum: number, t: any) => sum + t.amount,
-                    0,
+                    0
                   ) || 0) -
-                  (totalsBlock.discountAmount || 0),
+                  (totalsBlock.discountAmount || 0)
               )}
             </Text>
           </View>
@@ -391,11 +389,11 @@ export function InvoicePDFDocument({
                   totalsBlock.subtotal +
                     (totalsBlock.taxTiers?.reduce(
                       (sum: number, t: any) => sum + t.amount,
-                      0,
+                      0
                     ) || 0) -
                     (totalsBlock.discountAmount || 0) -
                     (totalsBlock.depositAmount || 0) -
-                    (totalsBlock.paymentsReceived || 0),
+                    (totalsBlock.paymentsReceived || 0)
                 )}
               </Text>
             </View>
@@ -437,11 +435,11 @@ export function InvoicePDFDocument({
         {/* Page Numbers */}
         {footerBlock.showPageNumbers && (
           <Text
-            style={styles.pageNumber}
+            fixed
             render={({ pageNumber, totalPages }) =>
               `Page ${pageNumber} of ${totalPages}`
             }
-            fixed
+            style={styles.pageNumber}
           />
         )}
       </Page>

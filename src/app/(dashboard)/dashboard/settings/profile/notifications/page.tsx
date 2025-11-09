@@ -9,19 +9,21 @@
  * - Browser API access for enhanced UX
  */
 
-import { useState, useTransition } from "react";
 import {
   Bell,
   HelpCircle,
+  Loader2,
   Mail,
   MessageSquare,
-  Smartphone,
-  Loader2,
   Save,
+  Smartphone,
 } from "lucide-react";
+import { useState } from "react";
+import {
+  getNotificationPreferences,
+  updateNotificationPreferences,
+} from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -38,6 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 type NotificationSettings = {
   email: {
@@ -187,7 +190,7 @@ export default function NotificationsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={() => saveSettings()} disabled={isPending}>
+            <Button disabled={isPending} onClick={() => saveSettings()}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

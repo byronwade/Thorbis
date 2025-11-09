@@ -1,0 +1,166 @@
+/**
+ * Email Dialog - Internal email composer
+ *
+ * Features:
+ * - Rich text email composition
+ * - Send emails through platform
+ * - Creates communication records
+ * - Shows send status
+ */
+
+"use client";
+
+import { Mail, Send } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { GenericEmail } from "@/emails/generic-email";
+import { useToast } from "@/hooks/use-toast";
+import { sendEmail } from "@/lib/email/email-sender";
+import { EmailTemplate } from "@/lib/email/email-types";
+
+interface EmailDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  customerName: string;
+  customerEmail: string;
+  customerId?: string;
+  defaultSubject?: string;
+  defaultBody?: string;
+}
+
+export function EmailDialog({
+  open,
+  onOpenChange,
+  customerName,
+  customerEmail,
+  customerId,
+  defaultSubject = "",
+  defaultBody = "",
+}: EmailDialogProps) {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [subject, setSubject] = useState(defaultSubject);
+  const [body, setBody] = useState(defaultBody);
+
+  const handleSend = () => {
+    if (!subject.trim()) {
+      toast.error("Please enter a subject for the email");
+      return;
+    }
+
+    if (!body.trim()) {
+      toast.error("Please enter a message to send");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await sendEmail({
+        to: customerEmail,
+        subject,
+        template: GenericEmail({
+          recipientName: customerName,
+          message: body,
+        }),
+        templateType: EmailTemplate.GENERIC,
+      });
+
+      if (result.success) {
+        toast.success(`Email sent to ${customerName}`);
+        setSubject("");
+        setBody("");
+        onOpenChange(false);
+      } else {
+        toast.error(result.error || "Failed to send email");
+      }
+    });
+  };
+
+  return (
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Mail className="size-5" />
+            Send Email
+          </DialogTitle>
+          <DialogDescription>
+            Compose and send an email to {customerName}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {/* Recipient Info */}
+          <div className="rounded-lg border bg-muted/50 p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-sm">
+                {customerName
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-sm">{customerName}</div>
+                <div className="text-muted-foreground text-xs">
+                  {customerEmail}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Subject */}
+          <div className="space-y-2">
+            <Label>Subject</Label>
+            <Input
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Email subject"
+              value={subject}
+            />
+          </div>
+
+          {/* Message Body */}
+          <div className="space-y-2">
+            <Label>Message</Label>
+            <Textarea
+              className="min-h-[200px] resize-none"
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Type your message here..."
+              value={body}
+            />
+            <div className="text-muted-foreground text-xs">
+              {body.length} characters
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            disabled={isPending}
+            onClick={() => onOpenChange(false)}
+            variant="outline"
+          >
+            Cancel
+          </Button>
+          <Button
+            disabled={isPending || !subject.trim() || !body.trim()}
+            onClick={handleSend}
+          >
+            <Send className="mr-2 size-4" />
+            Send Email
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

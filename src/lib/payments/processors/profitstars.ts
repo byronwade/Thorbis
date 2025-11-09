@@ -14,7 +14,14 @@
  * - Reduced ACH returns and better compliance
  */
 
-import type { PaymentProcessor, ProcessPaymentRequest, ProcessPaymentResponse, RefundPaymentRequest, RefundPaymentResponse, PaymentChannel } from "../processor";
+import type {
+  PaymentChannel,
+  PaymentProcessor,
+  ProcessPaymentRequest,
+  ProcessPaymentResponse,
+  RefundPaymentRequest,
+  RefundPaymentResponse,
+} from "../processor";
 
 interface ProfitStarsConfig {
   companyId: string;
@@ -35,7 +42,9 @@ export class ProfitStarsProcessor implements PaymentProcessor {
     return ["ach", "check"];
   }
 
-  async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
+  async processPayment(
+    request: ProcessPaymentRequest
+  ): Promise<ProcessPaymentResponse> {
     try {
       if (!request.paymentMethodId) {
         return {
@@ -67,7 +76,7 @@ export class ProfitStarsProcessor implements PaymentProcessor {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${this.config.apiKey}`,
+          Authorization: `Bearer ${this.config.apiKey}`,
           "X-Merchant-ID": this.config.merchantId,
         },
         body: JSON.stringify(achRequest),
@@ -97,12 +106,15 @@ export class ProfitStarsProcessor implements PaymentProcessor {
       return {
         success: false,
         status: "failed",
-        error: error instanceof Error ? error.message : "Payment processing failed",
+        error:
+          error instanceof Error ? error.message : "Payment processing failed",
       };
     }
   }
 
-  async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
+  async refundPayment(
+    request: RefundPaymentRequest
+  ): Promise<RefundPaymentResponse> {
     try {
       const refundRequest = {
         merchant_id: this.config.merchantId,
@@ -115,7 +127,7 @@ export class ProfitStarsProcessor implements PaymentProcessor {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${this.config.apiKey}`,
+          Authorization: `Bearer ${this.config.apiKey}`,
           "X-Merchant-ID": this.config.merchantId,
         },
         body: JSON.stringify(refundRequest),
@@ -153,13 +165,16 @@ export class ProfitStarsProcessor implements PaymentProcessor {
     metadata?: Record<string, unknown>;
   }> {
     try {
-      const response = await fetch(`${this.apiUrl}/v1/payments/${transactionId}`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${this.config.apiKey}`,
-          "X-Merchant-ID": this.config.merchantId,
-        },
-      });
+      const response = await fetch(
+        `${this.apiUrl}/v1/payments/${transactionId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${this.config.apiKey}`,
+            "X-Merchant-ID": this.config.merchantId,
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -189,5 +204,3 @@ export class ProfitStarsProcessor implements PaymentProcessor {
     }
   }
 }
-
-

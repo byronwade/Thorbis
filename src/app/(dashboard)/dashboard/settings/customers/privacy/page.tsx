@@ -9,10 +9,9 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Lock, Save, Shield, Trash2, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
+import { HelpCircle, Loader2, Lock, Save, Shield, Trash2 } from "lucide-react";
 import { getPrivacySettings, updatePrivacySettings } from "@/actions/settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -37,6 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 export default function PrivacyConsentPage() {
   const {
     settings,
@@ -83,9 +83,13 @@ export default function PrivacyConsentPage() {
     },
     settingsName: "privacy",
     transformLoad: (data) => ({
-      dataRetentionDays: data.data_retention_years ? data.data_retention_years * 365 : 2555,
+      dataRetentionDays: data.data_retention_years
+        ? data.data_retention_years * 365
+        : 2555,
       deleteInactiveCustomers: data.auto_delete_inactive_customers ?? false,
-      inactivityPeriodDays: data.inactive_threshold_years ? data.inactive_threshold_years * 365 : 730,
+      inactivityPeriodDays: data.inactive_threshold_years
+        ? data.inactive_threshold_years * 365
+        : 730,
       requireMarketingConsent: data.require_marketing_consent ?? true,
       requirePrivacyConsent: data.require_data_processing_consent ?? true,
       privacyPolicyUrl: data.privacy_policy_url || "",
@@ -95,14 +99,32 @@ export default function PrivacyConsentPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      formData.append("dataRetentionYears", Math.floor(settings.dataRetentionDays / 365).toString());
-      formData.append("autoDeleteInactiveCustomers", settings.deleteInactiveCustomers.toString());
-      formData.append("inactiveThresholdYears", Math.floor(settings.inactivityPeriodDays / 365).toString());
-      formData.append("requireMarketingConsent", settings.requireMarketingConsent.toString());
-      formData.append("requireDataProcessingConsent", settings.requirePrivacyConsent.toString());
+      formData.append(
+        "dataRetentionYears",
+        Math.floor(settings.dataRetentionDays / 365).toString()
+      );
+      formData.append(
+        "autoDeleteInactiveCustomers",
+        settings.deleteInactiveCustomers.toString()
+      );
+      formData.append(
+        "inactiveThresholdYears",
+        Math.floor(settings.inactivityPeriodDays / 365).toString()
+      );
+      formData.append(
+        "requireMarketingConsent",
+        settings.requireMarketingConsent.toString()
+      );
+      formData.append(
+        "requireDataProcessingConsent",
+        settings.requirePrivacyConsent.toString()
+      );
       formData.append("privacyPolicyUrl", settings.privacyPolicyUrl);
       formData.append("termsOfServiceUrl", settings.termsOfServiceUrl);
-      formData.append("enableRightToDeletion", settings.enableGDPRCompliance.toString());
+      formData.append(
+        "enableRightToDeletion",
+        settings.enableGDPRCompliance.toString()
+      );
       formData.append("enableDataExport", settings.allowDataExport.toString());
       return formData;
     },
@@ -129,7 +151,7 @@ export default function PrivacyConsentPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={() => saveSettings()} disabled={isPending}>
+            <Button disabled={isPending} onClick={() => saveSettings()}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

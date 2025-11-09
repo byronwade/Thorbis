@@ -13,31 +13,30 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import {
+  Check,
+  CheckCheck,
+  Clock,
+  File,
+  MoreVertical,
+  Paperclip,
+  Phone,
+  Search,
+  Send,
+  Video,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Send,
-  Paperclip,
-  MoreVertical,
-  Phone,
-  Video,
-  Search,
-  Image as ImageIcon,
-  File,
-  Check,
-  CheckCheck,
-  Clock,
-} from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // Message types
@@ -134,7 +133,8 @@ const mockMessages: Message[] = [
     id: "msg-4",
     conversationId: "conv-1",
     direction: "sent",
-    content: "Tuesday at 2 PM works great! I've scheduled you with our technician.",
+    content:
+      "Tuesday at 2 PM works great! I've scheduled you with our technician.",
     timestamp: "2025-01-31T10:15:00Z",
     status: "read",
   },
@@ -164,9 +164,8 @@ const mockMessages: Message[] = [
 ];
 
 export function SMSThreadView() {
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(
-    mockConversations[0]
-  );
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(mockConversations[0]);
   const [messageText, setMessageText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -177,7 +176,7 @@ export function SMSThreadView() {
   }, [selectedConversation]);
 
   const handleSendMessage = () => {
-    if (!messageText.trim() || !selectedConversation) return;
+    if (!(messageText.trim() && selectedConversation)) return;
 
     // Here you would send the message via server action
     console.log("Sending message:", messageText);
@@ -196,8 +195,8 @@ export function SMSThreadView() {
         {/* Search */}
         <div className="border-b p-3">
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-            <Input placeholder="Search conversations..." className="pl-9" />
+            <Search className="absolute top-2.5 left-3 size-4 text-muted-foreground" />
+            <Input className="pl-9" placeholder="Search conversations..." />
           </div>
         </div>
 
@@ -205,12 +204,12 @@ export function SMSThreadView() {
         <div className="divide-y overflow-auto">
           {mockConversations.map((conv) => (
             <button
-              key={conv.id}
-              onClick={() => setSelectedConversation(conv)}
               className={cn(
                 "flex w-full items-start gap-3 p-3 text-left transition-colors hover:bg-muted/50",
                 selectedConversation?.id === conv.id && "bg-muted"
               )}
+              key={conv.id}
+              onClick={() => setSelectedConversation(conv)}
             >
               <Avatar className="mt-1">
                 <AvatarFallback>{conv.contactInitials}</AvatarFallback>
@@ -220,14 +219,14 @@ export function SMSThreadView() {
                 <div className="mb-1 flex items-center justify-between">
                   <span className="font-medium">{conv.contactName}</span>
                   {conv.lastMessageTime && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       {formatTime(conv.lastMessageTime)}
                     </span>
                   )}
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <p className="line-clamp-1 text-sm text-muted-foreground">
+                  <p className="line-clamp-1 text-muted-foreground text-sm">
                     {conv.lastMessage}
                   </p>
                   {conv.unreadCount > 0 && (
@@ -249,26 +248,30 @@ export function SMSThreadView() {
           <div className="flex items-center justify-between border-b bg-background px-4 py-3">
             <div className="flex items-center gap-3">
               <Avatar>
-                <AvatarFallback>{selectedConversation.contactInitials}</AvatarFallback>
+                <AvatarFallback>
+                  {selectedConversation.contactInitials}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <div className="font-medium">{selectedConversation.contactName}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="font-medium">
+                  {selectedConversation.contactName}
+                </div>
+                <div className="text-muted-foreground text-xs">
                   {selectedConversation.contactNumber}
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
+              <Button size="icon" variant="ghost">
                 <Phone className="size-4" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button size="icon" variant="ghost">
                 <Video className="size-4" />
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button size="icon" variant="ghost">
                     <MoreVertical className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -289,13 +292,13 @@ export function SMSThreadView() {
             <div className="mx-auto max-w-4xl space-y-4">
               {messages.map((message, index) => (
                 <MessageBubble
+                  contactInitials={selectedConversation.contactInitials}
                   key={message.id}
                   message={message}
                   showAvatar={
                     index === 0 ||
                     messages[index - 1].direction !== message.direction
                   }
-                  contactInitials={selectedConversation.contactInitials}
                 />
               ))}
 
@@ -324,12 +327,12 @@ export function SMSThreadView() {
           {/* Message Input */}
           <div className="border-t bg-background p-4">
             <div className="mx-auto flex max-w-4xl items-end gap-2">
-              <Button variant="ghost" size="icon">
+              <Button size="icon" variant="ghost">
                 <Paperclip className="size-4" />
               </Button>
 
               <Input
-                value={messageText}
+                className="flex-1"
                 onChange={(e) => setMessageText(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -338,10 +341,13 @@ export function SMSThreadView() {
                   }
                 }}
                 placeholder="Type a message..."
-                className="flex-1"
+                value={messageText}
               />
 
-              <Button onClick={handleSendMessage} disabled={!messageText.trim()}>
+              <Button
+                disabled={!messageText.trim()}
+                onClick={handleSendMessage}
+              >
                 <Send className="size-4" />
               </Button>
             </div>
@@ -350,7 +356,9 @@ export function SMSThreadView() {
       ) : (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
-            <div className="mb-2 text-muted-foreground">Select a conversation to start messaging</div>
+            <div className="mb-2 text-muted-foreground">
+              Select a conversation to start messaging
+            </div>
           </div>
         </div>
       )}
@@ -375,7 +383,9 @@ function MessageBubble({
       {!isSent && (
         <Avatar className="size-8">
           {showAvatar ? (
-            <AvatarFallback className="text-xs">{contactInitials}</AvatarFallback>
+            <AvatarFallback className="text-xs">
+              {contactInitials}
+            </AvatarFallback>
           ) : (
             <div className="size-8" />
           )}
@@ -398,9 +408,7 @@ function MessageBubble({
           <Card
             className={cn(
               "relative",
-              isSent
-                ? "bg-primary text-primary-foreground"
-                : "bg-background"
+              isSent ? "bg-primary text-primary-foreground" : "bg-background"
             )}
           >
             <CardContent className="p-3">
@@ -414,7 +422,7 @@ function MessageBubble({
         {/* Message Footer */}
         <div
           className={cn(
-            "flex items-center gap-1 px-1 text-xs text-muted-foreground",
+            "flex items-center gap-1 px-1 text-muted-foreground text-xs",
             isSent && "justify-end"
           )}
         >
@@ -429,14 +437,18 @@ function MessageBubble({
   );
 }
 
-function MediaAttachment({ media }: { media: NonNullable<Message["media"]>[0] }) {
+function MediaAttachment({
+  media,
+}: {
+  media: NonNullable<Message["media"]>[0];
+}) {
   if (media.type === "image") {
     return (
       <Card className="overflow-hidden">
         <img
-          src={media.thumbnail || media.url}
           alt="Attachment"
           className="max-h-64 w-full object-cover"
+          src={media.thumbnail || media.url}
         />
       </Card>
     );
@@ -451,9 +463,11 @@ function MediaAttachment({ media }: { media: NonNullable<Message["media"]>[0] })
           <File className="size-10 text-muted-foreground" />
         )}
         <div className="min-w-0 flex-1">
-          <div className="truncate font-medium text-sm">{media.fileName || "Attachment"}</div>
+          <div className="truncate font-medium text-sm">
+            {media.fileName || "Attachment"}
+          </div>
           {media.fileSize && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-muted-foreground text-xs">
               {formatFileSize(media.fileSize)}
             </div>
           )}
@@ -483,15 +497,16 @@ function formatTime(timestamp: string): string {
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  const diffMins = Math.floor(diffMs / 60_000);
+  const diffHours = Math.floor(diffMs / 3_600_000);
+  const diffDays = Math.floor(diffMs / 86_400_000);
 
   if (diffMins < 1) return "Now";
   if (diffMins < 60) return `${diffMins}m`;
   if (diffHours < 24) return `${diffHours}h`;
   if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return date.toLocaleDateString("en-US", { weekday: "short" });
+  if (diffDays < 7)
+    return date.toLocaleDateString("en-US", { weekday: "short" });
 
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
@@ -510,5 +525,5 @@ function formatFileSize(bytes: number): string {
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+  return Math.round((bytes / k ** i) * 100) / 100 + " " + sizes[i];
 }

@@ -12,12 +12,32 @@
 
 "use client";
 
-import { useState, useRef } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  FileAudio,
+  Mail,
+  MessageSquare,
+  Pause,
+  Play,
+  Trash2,
+  Upload,
+  Voicemail,
+  Volume2,
+} from "lucide-react";
+import { useRef, useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -26,23 +46,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Voicemail,
-  Upload,
-  Play,
-  Pause,
-  Trash2,
-  CheckCircle2,
-  Mail,
-  MessageSquare,
-  Clock,
-  AlertCircle,
-  FileAudio,
-  Volume2,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
 // Greeting configuration
 type VoicemailGreeting = {
@@ -166,7 +170,8 @@ export function VoicemailSettings() {
             Voicemail Greeting
           </CardTitle>
           <CardDescription>
-            Configure the greeting message that callers hear when they reach your voicemail
+            Configure the greeting message that callers hear when they reach
+            your voicemail
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -174,10 +179,10 @@ export function VoicemailSettings() {
           <div className="space-y-2">
             <Label htmlFor="greetingType">Greeting Type</Label>
             <Select
-              value={greeting.type}
               onValueChange={(value: VoicemailGreeting["type"]) =>
                 setGreeting({ ...greeting, type: value })
               }
+              value={greeting.type}
             >
               <SelectTrigger id="greetingType">
                 <SelectValue />
@@ -211,8 +216,8 @@ export function VoicemailSettings() {
               <AlertCircle className="size-4" />
               <AlertTitle>Default Greeting</AlertTitle>
               <AlertDescription>
-                "You have reached the voicemail of [Your Business Name]. Please leave a message
-                after the tone."
+                "You have reached the voicemail of [Your Business Name]. Please
+                leave a message after the tone."
               </AlertDescription>
             </Alert>
           )}
@@ -224,12 +229,14 @@ export function VoicemailSettings() {
                 <Label htmlFor="ttsText">Greeting Text</Label>
                 <Textarea
                   id="ttsText"
+                  onChange={(e) =>
+                    setGreeting({ ...greeting, content: e.target.value })
+                  }
                   placeholder="Enter your custom greeting message..."
-                  value={greeting.content || ""}
-                  onChange={(e) => setGreeting({ ...greeting, content: e.target.value })}
                   rows={4}
+                  value={greeting.content || ""}
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Keep it concise (15-30 seconds when spoken)
                 </p>
               </div>
@@ -237,8 +244,10 @@ export function VoicemailSettings() {
               <div className="space-y-2">
                 <Label htmlFor="ttsVoice">Voice</Label>
                 <Select
+                  onValueChange={(value) =>
+                    setGreeting({ ...greeting, voice: value })
+                  }
                   value={greeting.voice}
-                  onValueChange={(value) => setGreeting({ ...greeting, voice: value })}
                 >
                   <SelectTrigger id="ttsVoice">
                     <SelectValue placeholder="Select voice" />
@@ -254,7 +263,7 @@ export function VoicemailSettings() {
               </div>
 
               {greeting.content && (
-                <Button variant="outline" onClick={togglePlayback}>
+                <Button onClick={togglePlayback} variant="outline">
                   {isPlaying ? (
                     <>
                       <Pause className="mr-2 size-4" />
@@ -274,43 +283,7 @@ export function VoicemailSettings() {
           {/* Audio File Upload */}
           {greeting.type === "audio-file" && (
             <div className="space-y-4">
-              {!greeting.content ? (
-                <div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="audio/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Upload className="mr-2 size-4" />
-                    Upload Audio File
-                  </Button>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Supported formats: MP3, WAV, M4A • Max file size: 5MB
-                  </p>
-
-                  {uploadProgress > 0 && uploadProgress < 100 && (
-                    <div className="mt-3">
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Uploading...</span>
-                        <span>{uploadProgress}%</span>
-                      </div>
-                      <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full bg-primary transition-all duration-300"
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
+              {greeting.content ? (
                 <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20">
                   <CardContent className="pt-4">
                     <div className="flex items-start justify-between">
@@ -318,12 +291,16 @@ export function VoicemailSettings() {
                         <FileAudio className="size-5 text-green-600 dark:text-green-400" />
                         <div>
                           <div className="font-medium">{greeting.fileName}</div>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-muted-foreground text-sm">
                             {formatFileSize(greeting.fileSize || 0)}
                             {greeting.duration && ` • ${greeting.duration}s`}
                           </div>
                           <div className="mt-2 flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={togglePlayback}>
+                            <Button
+                              onClick={togglePlayback}
+                              size="sm"
+                              variant="outline"
+                            >
                               {isPlaying ? (
                                 <>
                                   <Pause className="mr-2 size-3" />
@@ -339,12 +316,52 @@ export function VoicemailSettings() {
                           </div>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={removeGreeting}>
+                      <Button
+                        onClick={removeGreeting}
+                        size="icon"
+                        variant="ghost"
+                      >
                         <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
+              ) : (
+                <div>
+                  <input
+                    accept="audio/*"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    ref={fileInputRef}
+                    type="file"
+                  />
+                  <Button
+                    className="w-full"
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                  >
+                    <Upload className="mr-2 size-4" />
+                    Upload Audio File
+                  </Button>
+                  <p className="mt-2 text-muted-foreground text-xs">
+                    Supported formats: MP3, WAV, M4A • Max file size: 5MB
+                  </p>
+
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mt-3">
+                      <div className="flex justify-between text-muted-foreground text-xs">
+                        <span>Uploading...</span>
+                        <span>{uploadProgress}%</span>
+                      </div>
+                      <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full bg-primary transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
               <Alert>
@@ -381,13 +398,13 @@ export function VoicemailSettings() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="emailNotifications">Email Notifications</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Receive voicemail notifications via email
                 </p>
               </div>
               <Switch
-                id="emailNotifications"
                 checked={notifications.emailEnabled}
+                id="emailNotifications"
                 onCheckedChange={(checked) =>
                   setNotifications({ ...notifications, emailEnabled: checked })
                 }
@@ -399,17 +416,17 @@ export function VoicemailSettings() {
                 <Label htmlFor="emailAddresses">Email Addresses</Label>
                 <Input
                   id="emailAddresses"
-                  type="email"
-                  placeholder="user@example.com"
-                  value={notifications.emailAddresses[0] || ""}
                   onChange={(e) =>
                     setNotifications({
                       ...notifications,
                       emailAddresses: [e.target.value],
                     })
                   }
+                  placeholder="user@example.com"
+                  type="email"
+                  value={notifications.emailAddresses[0] || ""}
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Separate multiple addresses with commas
                 </p>
               </div>
@@ -421,13 +438,13 @@ export function VoicemailSettings() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="smsNotifications">SMS Notifications</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Receive voicemail notifications via text message
                 </p>
               </div>
               <Switch
-                id="smsNotifications"
                 checked={notifications.smsEnabled}
+                id="smsNotifications"
                 onCheckedChange={(checked) =>
                   setNotifications({ ...notifications, smsEnabled: checked })
                 }
@@ -439,15 +456,15 @@ export function VoicemailSettings() {
                 <Label htmlFor="smsNumbers">Phone Number</Label>
                 <Input
                   id="smsNumbers"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={notifications.smsNumbers[0] || ""}
                   onChange={(e) =>
                     setNotifications({
                       ...notifications,
                       smsNumbers: [e.target.value],
                     })
                   }
+                  placeholder="+1 (555) 123-4567"
+                  type="tel"
+                  value={notifications.smsNumbers[0] || ""}
                 />
               </div>
             )}
@@ -457,15 +474,18 @@ export function VoicemailSettings() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="transcription">Voicemail Transcription</Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Automatically transcribe voicemail messages to text
               </p>
             </div>
             <Switch
-              id="transcription"
               checked={notifications.transcriptionEnabled}
+              id="transcription"
               onCheckedChange={(checked) =>
-                setNotifications({ ...notifications, transcriptionEnabled: checked })
+                setNotifications({
+                  ...notifications,
+                  transcriptionEnabled: checked,
+                })
               }
             />
           </div>
@@ -479,17 +499,22 @@ export function VoicemailSettings() {
             <Clock className="size-5" />
             Voicemail Box Settings
           </CardTitle>
-          <CardDescription>Configure voicemail storage and security settings</CardDescription>
+          <CardDescription>
+            Configure voicemail storage and security settings
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="maxLength">Max Message Length</Label>
               <Select
-                value={boxSettings.maxMessageLength.toString()}
                 onValueChange={(value) =>
-                  setBoxSettings({ ...boxSettings, maxMessageLength: parseInt(value) })
+                  setBoxSettings({
+                    ...boxSettings,
+                    maxMessageLength: Number.parseInt(value),
+                  })
                 }
+                value={boxSettings.maxMessageLength.toString()}
               >
                 <SelectTrigger id="maxLength">
                   <SelectValue />
@@ -506,10 +531,13 @@ export function VoicemailSettings() {
             <div className="space-y-2">
               <Label htmlFor="maxMessages">Max Messages</Label>
               <Select
-                value={boxSettings.maxMessages.toString()}
                 onValueChange={(value) =>
-                  setBoxSettings({ ...boxSettings, maxMessages: parseInt(value) })
+                  setBoxSettings({
+                    ...boxSettings,
+                    maxMessages: Number.parseInt(value),
+                  })
                 }
+                value={boxSettings.maxMessages.toString()}
               >
                 <SelectTrigger id="maxMessages">
                   <SelectValue />
@@ -526,10 +554,13 @@ export function VoicemailSettings() {
             <div className="space-y-2">
               <Label htmlFor="deleteAfter">Auto-Delete After</Label>
               <Select
-                value={boxSettings.deleteAfterDays.toString()}
                 onValueChange={(value) =>
-                  setBoxSettings({ ...boxSettings, deleteAfterDays: parseInt(value) })
+                  setBoxSettings({
+                    ...boxSettings,
+                    deleteAfterDays: Number.parseInt(value),
+                  })
                 }
+                value={boxSettings.deleteAfterDays.toString()}
               >
                 <SelectTrigger id="deleteAfter">
                   <SelectValue />
@@ -548,13 +579,13 @@ export function VoicemailSettings() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="requirePin">Require PIN for Access</Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Protect voicemail access with a PIN code
               </p>
             </div>
             <Switch
-              id="requirePin"
               checked={boxSettings.requirePin}
+              id="requirePin"
               onCheckedChange={(checked) =>
                 setBoxSettings({ ...boxSettings, requirePin: checked })
               }
@@ -566,11 +597,13 @@ export function VoicemailSettings() {
               <Label htmlFor="pin">PIN Code</Label>
               <Input
                 id="pin"
-                type="password"
-                placeholder="Enter 4-6 digit PIN"
-                value={boxSettings.pin || ""}
-                onChange={(e) => setBoxSettings({ ...boxSettings, pin: e.target.value })}
                 maxLength={6}
+                onChange={(e) =>
+                  setBoxSettings({ ...boxSettings, pin: e.target.value })
+                }
+                placeholder="Enter 4-6 digit PIN"
+                type="password"
+                value={boxSettings.pin || ""}
               />
             </div>
           )}
@@ -595,5 +628,5 @@ function formatFileSize(bytes: number): string {
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+  return Math.round((bytes / k ** i) * 100) / 100 + " " + sizes[i];
 }

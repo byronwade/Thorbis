@@ -80,7 +80,8 @@ export async function getCustomerContacts(customerId: string) {
     console.error("Error in getCustomerContacts:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch contacts",
+      error:
+        error instanceof Error ? error.message : "Failed to fetch contacts",
       data: [],
     };
   }
@@ -206,16 +207,23 @@ export async function updateCustomerContact({
     }
 
     const updates: any = {};
-    if (updateData.firstName !== undefined) updates.first_name = updateData.firstName;
-    if (updateData.lastName !== undefined) updates.last_name = updateData.lastName;
+    if (updateData.firstName !== undefined)
+      updates.first_name = updateData.firstName;
+    if (updateData.lastName !== undefined)
+      updates.last_name = updateData.lastName;
     if (updateData.title !== undefined) updates.title = updateData.title;
     if (updateData.email !== undefined) updates.email = updateData.email;
     if (updateData.phone !== undefined) updates.phone = updateData.phone;
-    if (updateData.secondaryPhone !== undefined) updates.secondary_phone = updateData.secondaryPhone;
-    if (updateData.isPrimary !== undefined) updates.is_primary = updateData.isPrimary;
-    if (updateData.isBillingContact !== undefined) updates.is_billing_contact = updateData.isBillingContact;
-    if (updateData.isEmergencyContact !== undefined) updates.is_emergency_contact = updateData.isEmergencyContact;
-    if (updateData.preferredContactMethod !== undefined) updates.preferred_contact_method = updateData.preferredContactMethod;
+    if (updateData.secondaryPhone !== undefined)
+      updates.secondary_phone = updateData.secondaryPhone;
+    if (updateData.isPrimary !== undefined)
+      updates.is_primary = updateData.isPrimary;
+    if (updateData.isBillingContact !== undefined)
+      updates.is_billing_contact = updateData.isBillingContact;
+    if (updateData.isEmergencyContact !== undefined)
+      updates.is_emergency_contact = updateData.isEmergencyContact;
+    if (updateData.preferredContactMethod !== undefined)
+      updates.preferred_contact_method = updateData.preferredContactMethod;
     if (updateData.notes !== undefined) updates.notes = updateData.notes;
 
     const { data, error } = await supabase
@@ -235,7 +243,8 @@ export async function updateCustomerContact({
     console.error("Error in updateCustomerContact:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to update contact",
+      error:
+        error instanceof Error ? error.message : "Failed to update contact",
     };
   }
 }
@@ -266,7 +275,8 @@ export async function removeCustomerContact(contactId: string) {
     console.error("Error in removeCustomerContact:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to remove contact",
+      error:
+        error instanceof Error ? error.message : "Failed to remove contact",
     };
   }
 }

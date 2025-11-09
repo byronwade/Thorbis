@@ -27,10 +27,12 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  getServicePlanSettings,
+  updateServicePlanSettings,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getServicePlanSettings, updateServicePlanSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -48,6 +50,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -120,41 +123,41 @@ export default function ServicePlansPage() {
     getter: getServicePlanSettings,
     setter: updateServicePlanSettings,
     initialState: {
-    // General Settings
-    enableServicePlans: true,
-    allowCustomerSignup: true,
-    requirePaymentMethod: true,
-    sendWelcomeEmail: true,
-    sendRenewalReminders: true,
-    reminderDaysBeforeRenewal: 30,
+      // General Settings
+      enableServicePlans: true,
+      allowCustomerSignup: true,
+      requirePaymentMethod: true,
+      sendWelcomeEmail: true,
+      sendRenewalReminders: true,
+      reminderDaysBeforeRenewal: 30,
 
-    // Billing Settings
-    billingDay: DEFAULT_BILLING_DAY,
-    autoRenew: true,
-    gracePeriodDays: 7,
-    retryFailedPayments: true,
-    retryAttempts: 3,
-    retryIntervalDays: 3,
+      // Billing Settings
+      billingDay: DEFAULT_BILLING_DAY,
+      autoRenew: true,
+      gracePeriodDays: 7,
+      retryFailedPayments: true,
+      retryAttempts: 3,
+      retryIntervalDays: 3,
 
-    // Service Settings
-    priorityScheduling: true,
-    allowRolloverVisits: true,
-    maxRolloverVisits: 2,
-    sendAppointmentReminders: true,
-    autoScheduleVisits: false,
+      // Service Settings
+      priorityScheduling: true,
+      allowRolloverVisits: true,
+      maxRolloverVisits: 2,
+      sendAppointmentReminders: true,
+      autoScheduleVisits: false,
 
-    // Member Benefits
-    memberDiscount: 15,
-    waiveTripFees: true,
-    waiveDiagnosticFees: true,
-    partsDiscount: 10,
-    referralBonus: 50,
+      // Member Benefits
+      memberDiscount: 15,
+      waiveTripFees: true,
+      waiveDiagnosticFees: true,
+      partsDiscount: 10,
+      referralBonus: 50,
 
-    // Cancellation Policy
-    allowCancellation: true,
-    noticePeriodDays: 30,
-    refundUnusedVisits: true,
-    cancellationFee: 0,
+      // Cancellation Policy
+      allowCancellation: true,
+      noticePeriodDays: 30,
+      refundUnusedVisits: true,
+      cancellationFee: 0,
     },
     settingsName: "service plans",
     transformLoad: (data) => ({
@@ -167,11 +170,20 @@ export default function ServicePlansPage() {
     transformSave: (settings) => {
       const formData = new FormData();
       formData.append("allowMultiplePlansPerCustomer", "false");
-      formData.append("requireContractSignature", settings.requirePaymentMethod.toString());
+      formData.append(
+        "requireContractSignature",
+        settings.requirePaymentMethod.toString()
+      );
       formData.append("autoRenewEnabled", settings.autoRenew.toString());
-      formData.append("renewalNoticeDays", settings.noticePeriodDays.toString());
+      formData.append(
+        "renewalNoticeDays",
+        settings.noticePeriodDays.toString()
+      );
       formData.append("autoInvoiceOnRenewal", "true");
-      formData.append("autoScheduleServices", settings.autoScheduleVisits.toString());
+      formData.append(
+        "autoScheduleServices",
+        settings.autoScheduleVisits.toString()
+      );
       formData.append("scheduleAdvanceDays", "7");
       formData.append("sendReminderBeforeService", "true");
       formData.append("reminderDays", "3");

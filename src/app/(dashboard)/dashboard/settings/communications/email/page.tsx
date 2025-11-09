@@ -9,9 +9,9 @@
  * - Real database integration with server actions
  */
 
-import { HelpCircle, Mail, Save, Loader2 } from "lucide-react";
+import { HelpCircle, Loader2, Mail, Save } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { getEmailSettings, updateEmailSettings } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,7 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getEmailSettings, updateEmailSettings } from "@/actions/settings";
+import { useToast } from "@/hooks/use-toast";
 
 const MAX_SIGNATURE_LENGTH = 300;
 
@@ -126,7 +126,7 @@ export default function EmailSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave} disabled={isPending}>
+            <Button disabled={isPending} onClick={handleSave}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
@@ -196,9 +196,7 @@ export default function EmailSettingsPage() {
                 </Label>
                 <Input
                   className="mt-2"
-                  onChange={(e) =>
-                    updateSetting("autoCcEmail", e.target.value)
-                  }
+                  onChange={(e) => updateSetting("autoCcEmail", e.target.value)}
                   placeholder="support@yourcompany.com"
                   type="email"
                   value={settings.autoCcEmail}

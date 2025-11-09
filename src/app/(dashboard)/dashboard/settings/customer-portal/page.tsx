@@ -26,10 +26,9 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import { getPortalSettings, updatePortalSettings } from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getPortalSettings, updatePortalSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -48,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const SIMULATED_API_DELAY = 1500;
@@ -170,20 +170,38 @@ export default function CustomerPortalPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      formData.append("portalEnabled", settings.enableCustomerPortal.toString());
-      formData.append("requireAccountApproval", settings.requireAccountActivation.toString());
+      formData.append(
+        "portalEnabled",
+        settings.enableCustomerPortal.toString()
+      );
+      formData.append(
+        "requireAccountApproval",
+        settings.requireAccountActivation.toString()
+      );
       formData.append("allowBooking", settings.bookAppointments.toString());
-      formData.append("allowInvoicePayment", settings.payInvoicesOnline.toString());
-      formData.append("allowEstimateApproval", settings.approveEstimates.toString());
+      formData.append(
+        "allowInvoicePayment",
+        settings.payInvoicesOnline.toString()
+      );
+      formData.append(
+        "allowEstimateApproval",
+        settings.approveEstimates.toString()
+      );
       formData.append("showServiceHistory", settings.viewJobHistory.toString());
       formData.append("showInvoices", settings.viewInvoices.toString());
       formData.append("showEstimates", settings.viewEstimates.toString());
       formData.append("allowMessaging", settings.messageTeam.toString());
       formData.append("primaryColor", settings.brandingColor);
       formData.append("welcomeMessage", settings.customWelcomeMessage);
-      formData.append("notifyOnNewInvoice", settings.notifyOnNewInvoice.toString());
+      formData.append(
+        "notifyOnNewInvoice",
+        settings.notifyOnNewInvoice.toString()
+      );
       formData.append("notifyOnNewEstimate", "true");
-      formData.append("notifyOnAppointment", settings.notifyOnAppointmentUpdate.toString());
+      formData.append(
+        "notifyOnAppointment",
+        settings.notifyOnAppointmentUpdate.toString()
+      );
       return formData;
     },
   });
@@ -1043,7 +1061,11 @@ export default function CustomerPortalPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+          <Button
+            disabled={isPending}
+            onClick={() => saveSettings()}
+            type="button"
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />

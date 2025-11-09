@@ -9,11 +9,10 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, MessageSquare, Save, Loader2 } from "lucide-react";
+import { HelpCircle, Loader2, MessageSquare, Save } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import { getSmsSettings, updateSmsSettings } from "@/actions/settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -32,6 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 export default function SMSSettingsPage() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -63,7 +63,8 @@ export default function SMSSettingsPage() {
             includeUnsubscribeLink: result.data.include_opt_out ?? true,
             autoRespondToSMS: result.data.auto_reply_enabled ?? false,
             smsAutoResponseMessage: result.data.auto_reply_message || "",
-            optOutMessage: result.data.opt_out_message || "Reply STOP to unsubscribe",
+            optOutMessage:
+              result.data.opt_out_message || "Reply STOP to unsubscribe",
             consentRequired: result.data.consent_required ?? true,
           });
         }
@@ -90,7 +91,10 @@ export default function SMSSettingsPage() {
       formData.append("autoReplyEnabled", settings.autoRespondToSMS.toString());
       formData.append("autoReplyMessage", settings.smsAutoResponseMessage);
       formData.append("optOutMessage", settings.optOutMessage);
-      formData.append("includeOptOut", settings.includeUnsubscribeLink.toString());
+      formData.append(
+        "includeOptOut",
+        settings.includeUnsubscribeLink.toString()
+      );
       formData.append("consentRequired", settings.consentRequired.toString());
 
       const result = await updateSmsSettings(formData);
@@ -125,7 +129,7 @@ export default function SMSSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave} disabled={isPending}>
+            <Button disabled={isPending} onClick={handleSave}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

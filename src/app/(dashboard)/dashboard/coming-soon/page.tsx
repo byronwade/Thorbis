@@ -13,10 +13,8 @@
  */
 
 import {
-  Award,
   BarChart3,
   Bell,
-  Bot,
   Brain,
   Briefcase,
   Building2,
@@ -26,25 +24,18 @@ import {
   CreditCard,
   Database,
   DollarSign,
-  Facebook,
   FileText,
   GraduationCap,
-  Headphones,
   Lightbulb,
   LineChart,
-  Mail,
   Megaphone,
   MessageSquare,
   Phone,
   PhoneCall,
-  PhoneForwarded,
   PhoneIncoming,
   PhoneOutgoing,
   Rocket,
-  Search,
   Send,
-  Share2,
-  Shield,
   Sparkles,
   Star,
   Target,
@@ -62,7 +53,7 @@ export default function ComingSoonPage() {
   return (
     <div className="relative space-y-16 overflow-auto py-12">
       {/* Background gradient blobs */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute right-1/4 bottom-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
@@ -98,8 +89,9 @@ export default function ComingSoonPage() {
               </span>
             </h1>
             <p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">
-              Powerful new features coming to Thorbis - from AI automation and intelligent calling
-              to comprehensive payroll, training, and financial management.
+              Powerful new features coming to Thorbis - from AI automation and
+              intelligent calling to comprehensive payroll, training, and
+              financial management.
             </p>
           </div>
         </div>
@@ -119,27 +111,32 @@ export default function ComingSoonPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
                     <MessageSquare className="size-6 text-blue-600 dark:text-blue-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-base">Natural Commands</h3>
+                <h3 className="mb-2 font-semibold text-base">
+                  Natural Commands
+                </h3>
                 <p className="text-muted-foreground text-sm">
                   "Send invoice to John" - AI handles everything automatically
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-green-500/20 hover:shadow-lg hover:shadow-green-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
                     <Bell className="size-6 text-green-600 dark:text-green-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-base">24/7 Monitoring</h3>
+                <h3 className="mb-2 font-semibold text-base">
+                  24/7 Monitoring
+                </h3>
                 <p className="text-muted-foreground text-sm">
-                  Catches errors, inconsistencies, and problems before they cost you money
+                  Catches errors, inconsistencies, and problems before they cost
+                  you money
                 </p>
               </div>
 
@@ -149,9 +146,12 @@ export default function ComingSoonPage() {
                     <Database className="size-6 text-purple-600 dark:text-purple-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-base">Full System Access</h3>
+                <h3 className="mb-2 font-semibold text-base">
+                  Full System Access
+                </h3>
                 <p className="text-muted-foreground text-sm">
-                  Create, update, search, analyze - anything you can do, AI can do
+                  Create, update, search, analyze - anything you can do, AI can
+                  do
                 </p>
               </div>
 
@@ -161,9 +161,12 @@ export default function ComingSoonPage() {
                     <Zap className="size-6 text-orange-600 dark:text-orange-400" />
                   </div>
                 </div>
-                <h3 className="mb-2 font-semibold text-base">Smart Automation</h3>
+                <h3 className="mb-2 font-semibold text-base">
+                  Smart Automation
+                </h3>
                 <p className="text-muted-foreground text-sm">
-                  Auto-orders inventory, transfers funds, sends reminders automatically
+                  Auto-orders inventory, transfers funds, sends reminders
+                  automatically
                 </p>
               </div>
             </div>
@@ -177,7 +180,8 @@ export default function ComingSoonPage() {
                 <h2 className="font-bold text-3xl">AI Phone System</h2>
               </div>
               <p className="text-muted-foreground">
-                Intelligent inbound & outbound calling - never miss a lead or follow-up
+                Intelligent inbound & outbound calling - never miss a lead or
+                follow-up
               </p>
             </div>
 
@@ -188,13 +192,17 @@ export default function ComingSoonPage() {
                     <PhoneIncoming className="size-6 text-cyan-600 dark:text-cyan-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">24/7 Call Handling</h3>
-                    <p className="text-muted-foreground text-xs">Never miss a lead</p>
+                    <h3 className="font-semibold text-lg">
+                      24/7 Call Handling
+                    </h3>
+                    <p className="text-muted-foreground text-xs">
+                      Never miss a lead
+                    </p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  AI answers every call, books appointments, quotes pricing, and escalates when
-                  needed
+                  AI answers every call, books appointments, quotes pricing, and
+                  escalates when needed
                 </p>
               </div>
 
@@ -204,13 +212,17 @@ export default function ComingSoonPage() {
                     <PhoneOutgoing className="size-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Proactive Outreach</h3>
-                    <p className="text-muted-foreground text-xs">Auto follow-ups</p>
+                    <h3 className="font-semibold text-lg">
+                      Proactive Outreach
+                    </h3>
+                    <p className="text-muted-foreground text-xs">
+                      Auto follow-ups
+                    </p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  AI calls customers with quotes, appointment reminders, and payment collections
-                  automatically
+                  AI calls customers with quotes, appointment reminders, and
+                  payment collections automatically
                 </p>
               </div>
 
@@ -221,12 +233,14 @@ export default function ComingSoonPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Campaign Calling</h3>
-                    <p className="text-muted-foreground text-xs">Targeted outreach</p>
+                    <p className="text-muted-foreground text-xs">
+                      Targeted outreach
+                    </p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  Automated calling campaigns for seasonal services, warranty renewals, and
-                  maintenance
+                  Automated calling campaigns for seasonal services, warranty
+                  renewals, and maintenance
                 </p>
               </div>
             </div>
@@ -306,8 +320,12 @@ export default function ComingSoonPage() {
                     <Building2 className="size-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Business Financing</h3>
-                    <p className="text-muted-foreground text-sm">Fund your growth</p>
+                    <h3 className="font-semibold text-lg">
+                      Business Financing
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Fund your growth
+                    </p>
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm">
@@ -332,8 +350,12 @@ export default function ComingSoonPage() {
                     <UserCheck className="size-6 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Consumer Financing</h3>
-                    <p className="text-muted-foreground text-sm">Help customers say yes</p>
+                    <h3 className="font-semibold text-lg">
+                      Consumer Financing
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Help customers say yes
+                    </p>
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm">
@@ -417,7 +439,8 @@ export default function ComingSoonPage() {
                 <h2 className="font-bold text-3xl">Training Center</h2>
               </div>
               <p className="text-muted-foreground">
-                System training, sales courses, Nextstar content, and trade certifications
+                System training, sales courses, Nextstar content, and trade
+                certifications
               </p>
             </div>
 
@@ -561,8 +584,9 @@ export default function ComingSoonPage() {
             </div>
             <h2 className="mb-4 font-semibold text-2xl">Stay Tuned</h2>
             <p className="mx-auto max-w-2xl text-foreground/60 leading-relaxed">
-              These features are in active development and will be rolling out progressively. In the
-              meantime, explore the platform and reach out if you have questions or need assistance.
+              These features are in active development and will be rolling out
+              progressively. In the meantime, explore the platform and reach out
+              if you have questions or need assistance.
             </p>
             <div className="mt-6 flex items-center justify-center gap-2 text-muted-foreground text-sm">
               <Rocket className="size-4" />

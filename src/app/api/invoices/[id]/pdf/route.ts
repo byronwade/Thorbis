@@ -10,7 +10,7 @@
  * - Company-scoped
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
@@ -23,7 +23,10 @@ export async function GET(
     // Get Supabase client
     const supabase = await createClient();
     if (!supabase) {
-      return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Database connection failed" },
+        { status: 500 }
+      );
     }
 
     // Get current user
@@ -115,7 +118,9 @@ export async function GET(
     };
 
     // Generate PDF using service function
-    const { generateInvoicePDFBuffer } = await import("@/lib/pdf/generate-invoice-pdf");
+    const { generateInvoicePDFBuffer } = await import(
+      "@/lib/pdf/generate-invoice-pdf"
+    );
     const pdfBuffer = await generateInvoicePDFBuffer(content, customization);
 
     // Return PDF with proper headers

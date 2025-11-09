@@ -6,11 +6,11 @@
 
 "use client";
 
+import { MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useState } from "react";
-import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
+import { submitKBFeedback } from "@/actions/kb";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { submitKBFeedback } from "@/actions/kb";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,9 @@ export function KBFeedback({
 
     if (result.success) {
       setHelpful(value);
-      toast.success("Thank you! Your feedback helps us improve our documentation.");
+      toast.success(
+        "Thank you! Your feedback helps us improve our documentation."
+      );
     } else {
       toast.error(result.error || "Failed to submit feedback");
     }
@@ -71,22 +73,24 @@ export function KBFeedback({
   return (
     <div className={cn("space-y-4 border-t pt-6", className)}>
       <div>
-        <h3 className="font-semibold text-sm mb-2">Was this article helpful?</h3>
+        <h3 className="mb-2 font-semibold text-sm">
+          Was this article helpful?
+        </h3>
         <div className="flex items-center gap-4">
           <Button
-            variant={helpful === true ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleFeedback(true)}
             disabled={isSubmitting || helpful === true}
+            onClick={() => handleFeedback(true)}
+            size="sm"
+            variant={helpful === true ? "default" : "outline"}
           >
             <ThumbsUp className="mr-2 size-4" />
             Yes ({helpfulCount})
           </Button>
           <Button
-            variant={helpful === false ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleFeedback(false)}
             disabled={isSubmitting || helpful === false}
+            onClick={() => handleFeedback(false)}
+            size="sm"
+            variant={helpful === false ? "default" : "outline"}
           >
             <ThumbsDown className="mr-2 size-4" />
             No ({notHelpfulCount})
@@ -95,19 +99,21 @@ export function KBFeedback({
       </div>
 
       <div>
-        <h3 className="font-semibold text-sm mb-2">Have a comment or suggestion?</h3>
+        <h3 className="mb-2 font-semibold text-sm">
+          Have a comment or suggestion?
+        </h3>
         <div className="space-y-2">
           <Textarea
-            placeholder="Share your thoughts..."
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            rows={3}
             className="resize-none"
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Share your thoughts..."
+            rows={3}
+            value={comment}
           />
           <Button
-            size="sm"
-            onClick={handleCommentSubmit}
             disabled={!comment.trim() || isSubmitting}
+            onClick={handleCommentSubmit}
+            size="sm"
           >
             <MessageSquare className="mr-2 size-4" />
             Submit Comment
@@ -117,4 +123,3 @@ export function KBFeedback({
     </div>
   );
 }
-

@@ -4,7 +4,7 @@
  * Dynamic sitemap generation for all published articles
  */
 
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import { getKBArticles, getKBCategories } from "@/actions/kb";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
@@ -57,4 +57,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [...homepageEntry, ...categoryEntries, ...articleEntries];
 }
-

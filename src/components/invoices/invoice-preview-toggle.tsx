@@ -12,10 +12,9 @@
 
 "use client";
 
+import { Download, Edit, FileText } from "lucide-react";
 import { useEffect } from "react";
-import { FileText, Edit, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type ViewMode = "edit" | "preview";
 
@@ -52,19 +51,19 @@ export function InvoicePreviewToggle({
       {/* Mode Toggle */}
       <div className="inline-flex rounded-lg border p-1">
         <Button
-          variant={mode === "preview" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => onModeChange("preview")}
           className="gap-2"
+          onClick={() => onModeChange("preview")}
+          size="sm"
+          variant={mode === "preview" ? "default" : "ghost"}
         >
           <FileText className="size-4" />
           Preview
         </Button>
         <Button
-          variant={mode === "edit" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => onModeChange("edit")}
           className="gap-2"
+          onClick={() => onModeChange("edit")}
+          size="sm"
+          variant={mode === "edit" ? "default" : "ghost"}
         >
           <Edit className="size-4" />
           Edit
@@ -73,7 +72,12 @@ export function InvoicePreviewToggle({
 
       {/* Export PDF */}
       {mode === "preview" && onExportPDF && (
-        <Button onClick={onExportPDF} variant="outline" size="sm" className="gap-2">
+        <Button
+          className="gap-2"
+          onClick={onExportPDF}
+          size="sm"
+          variant="outline"
+        >
           <Download className="size-4" />
           Export PDF
         </Button>

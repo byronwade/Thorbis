@@ -10,6 +10,7 @@
 
 import { Filter, Plus } from "lucide-react";
 import Link from "next/link";
+import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 
 export function WorkToolbarActions() {
@@ -25,6 +26,7 @@ export function WorkToolbarActions() {
           New Job
         </Link>
       </Button>
+      <ImportExportDropdown dataType="jobs" />
     </div>
   );
 }

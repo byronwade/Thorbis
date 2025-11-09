@@ -16,12 +16,12 @@
  * ```
  */
 
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
 import type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
 } from "@supabase/supabase-js";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
 
 // =====================================================================================
@@ -117,7 +117,9 @@ export const useNotificationsStore = create<NotificationsState>()(
 
       addNotification: (notification) =>
         set((state) => {
-          const exists = state.notifications.some((n) => n.id === notification.id);
+          const exists = state.notifications.some(
+            (n) => n.id === notification.id
+          );
           if (exists) return state;
 
           const newNotifications = [notification, ...state.notifications];
@@ -160,7 +162,9 @@ export const useNotificationsStore = create<NotificationsState>()(
       optimisticMarkAsRead: (id) =>
         set((state) => {
           const notifications = state.notifications.map((n) =>
-            n.id === id ? { ...n, read: true, read_at: new Date().toISOString() } : n
+            n.id === id
+              ? { ...n, read: true, read_at: new Date().toISOString() }
+              : n
           );
           const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -217,7 +221,10 @@ export const useNotificationsStore = create<NotificationsState>()(
 
           if (!supabase) {
             console.error("Supabase client not configured");
-            set({ error: "Failed to initialize realtime updates", isSubscribed: false });
+            set({
+              error: "Failed to initialize realtime updates",
+              isSubscribed: false,
+            });
             return;
           }
 
@@ -310,10 +317,18 @@ export const useNotificationsStore = create<NotificationsState>()(
                 // isSubscribed already set to true above
               } else if (status === "CHANNEL_ERROR") {
                 console.error("Error subscribing to notifications channel");
-                set({ error: "Failed to subscribe to real-time updates", isSubscribed: false, realtimeChannel: null });
+                set({
+                  error: "Failed to subscribe to real-time updates",
+                  isSubscribed: false,
+                  realtimeChannel: null,
+                });
               } else if (status === "TIMED_OUT") {
                 console.error("Subscription timed out");
-                set({ error: "Real-time subscription timed out", isSubscribed: false, realtimeChannel: null });
+                set({
+                  error: "Real-time subscription timed out",
+                  isSubscribed: false,
+                  realtimeChannel: null,
+                });
               }
             });
 
@@ -362,16 +377,16 @@ export const selectUnreadNotifications = (state: NotificationsState) =>
 /**
  * Get notifications by type
  */
-export const selectNotificationsByType = (type: NotificationType) => (
-  state: NotificationsState
-) => state.notifications.filter((n) => n.type === type);
+export const selectNotificationsByType =
+  (type: NotificationType) => (state: NotificationsState) =>
+    state.notifications.filter((n) => n.type === type);
 
 /**
  * Get notifications by priority
  */
-export const selectNotificationsByPriority = (priority: NotificationPriority) => (
-  state: NotificationsState
-) => state.notifications.filter((n) => n.priority === priority);
+export const selectNotificationsByPriority =
+  (priority: NotificationPriority) => (state: NotificationsState) =>
+    state.notifications.filter((n) => n.priority === priority);
 
 /**
  * Get urgent unread notifications

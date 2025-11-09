@@ -17,16 +17,16 @@
  */
 
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/auth/session";
 import {
   createBillingPortalSession,
   createCheckoutSession,
   getOrCreateStripeCustomer,
+  getSubscription,
   cancelSubscription as stripeCancel,
   reactivateSubscription as stripeReactivate,
-  getSubscription,
 } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/auth/session";
 
 // Internal return type (not exported - Next.js 16 "use server" restriction)
 type BillingActionResult = {
@@ -114,7 +114,9 @@ export async function createOrganizationCheckoutSession(
       customerId,
       companyId,
       isAdditionalOrg,
-      successUrl: successUrl || `${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
+      successUrl:
+        successUrl ||
+        `${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: cancelUrl || `${siteUrl}/dashboard/welcome`,
       phoneNumber,
     });

@@ -14,7 +14,12 @@ import { telnyxClient } from "./client";
 /**
  * Number type for search
  */
-export type NumberType = "local" | "toll-free" | "national" | "mobile" | "shared_cost";
+export type NumberType =
+  | "local"
+  | "toll-free"
+  | "national"
+  | "mobile"
+  | "shared_cost";
 
 /**
  * Number features
@@ -55,7 +60,8 @@ export async function searchAvailableNumbers(params: {
     console.error("Error searching available numbers:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to search numbers",
+      error:
+        error instanceof Error ? error.message : "Failed to search numbers",
     };
   }
 }
@@ -92,7 +98,8 @@ export async function purchaseNumber(params: {
     console.error("Error purchasing number:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to purchase number",
+      error:
+        error instanceof Error ? error.message : "Failed to purchase number",
     };
   }
 }
@@ -137,7 +144,9 @@ export async function listOwnedNumbers(params?: {
  */
 export async function getNumberDetails(phoneNumberId: string) {
   try {
-    const number = await (telnyxClient.phoneNumbers as any).retrieve(phoneNumberId);
+    const number = await (telnyxClient.phoneNumbers as any).retrieve(
+      phoneNumberId
+    );
 
     return {
       success: true,
@@ -147,7 +156,8 @@ export async function getNumberDetails(phoneNumberId: string) {
     console.error("Error retrieving number details:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to retrieve number",
+      error:
+        error instanceof Error ? error.message : "Failed to retrieve number",
     };
   }
 }
@@ -164,13 +174,16 @@ export async function updateNumber(params: {
   customerReference?: string;
 }) {
   try {
-    const number = await (telnyxClient.phoneNumbers as any).update(params.phoneNumberId, {
-      connection_id: params.connectionId,
-      messaging_profile_id: params.messagingProfileId,
-      billing_group_id: params.billingGroupId,
-      tags: params.tags,
-      customer_reference: params.customerReference,
-    } as any);
+    const number = await (telnyxClient.phoneNumbers as any).update(
+      params.phoneNumberId,
+      {
+        connection_id: params.connectionId,
+        messaging_profile_id: params.messagingProfileId,
+        billing_group_id: params.billingGroupId,
+        tags: params.tags,
+        customer_reference: params.customerReference,
+      } as any
+    );
 
     return {
       success: true,
@@ -199,7 +212,8 @@ export async function releaseNumber(phoneNumberId: string) {
     console.error("Error releasing number:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to release number",
+      error:
+        error instanceof Error ? error.message : "Failed to release number",
     };
   }
 }
@@ -250,7 +264,8 @@ export async function initiatePorting(params: {
     console.error("Error initiating porting:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to initiate porting",
+      error:
+        error instanceof Error ? error.message : "Failed to initiate porting",
     };
   }
 }
@@ -260,7 +275,9 @@ export async function initiatePorting(params: {
  */
 export async function getPortingStatus(portingOrderId: string) {
   try {
-    const order = await (telnyxClient as any).numberPortouts.retrieve(portingOrderId);
+    const order = await (telnyxClient as any).numberPortouts.retrieve(
+      portingOrderId
+    );
 
     return {
       success: true,
@@ -271,7 +288,8 @@ export async function getPortingStatus(portingOrderId: string) {
     console.error("Error getting porting status:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get porting status",
+      error:
+        error instanceof Error ? error.message : "Failed to get porting status",
     };
   }
 }
@@ -359,7 +377,10 @@ export async function validatePortability(phoneNumber: string) {
     console.error("Error validating portability:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to validate portability",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to validate portability",
     };
   }
 }

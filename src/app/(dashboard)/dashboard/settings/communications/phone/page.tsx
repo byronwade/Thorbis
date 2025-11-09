@@ -9,11 +9,10 @@
  * - Browser API access for enhanced UX
  */
 
-import { HelpCircle, Phone, Save, Loader2 } from "lucide-react";
+import { HelpCircle, Loader2, Phone, Save } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import { getPhoneSettings, updatePhoneSettings } from "@/actions/settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -32,6 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 export default function PhoneSettingsPage() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -62,15 +62,18 @@ export default function PhoneSettingsPage() {
           setSettings({
             businessPhoneNumber: result.data.fallback_number || "",
             enableCallRecording: result.data.recording_enabled ?? false,
-            callRecordingDisclosure: result.data.recording_consent_required ?? true,
+            callRecordingDisclosure:
+              result.data.recording_consent_required ?? true,
             enableVoicemail: result.data.voicemail_enabled ?? true,
             voicemailGreeting: result.data.voicemail_greeting_url || "",
             forwardAfterHours: !result.data.business_hours_only,
             forwardToNumber: result.data.fallback_number || "",
             routingStrategy: result.data.routing_strategy || "round_robin",
             businessHoursOnly: result.data.business_hours_only ?? false,
-            voicemailEmailNotifications: result.data.voicemail_email_notifications ?? true,
-            voicemailTranscription: result.data.voicemail_transcription_enabled ?? false,
+            voicemailEmailNotifications:
+              result.data.voicemail_email_notifications ?? true,
+            voicemailTranscription:
+              result.data.voicemail_transcription_enabled ?? false,
           });
         }
       } catch (error) {
@@ -93,13 +96,28 @@ export default function PhoneSettingsPage() {
       const formData = new FormData();
       formData.append("routingStrategy", settings.routingStrategy);
       formData.append("fallbackNumber", settings.forwardToNumber);
-      formData.append("businessHoursOnly", settings.businessHoursOnly.toString());
+      formData.append(
+        "businessHoursOnly",
+        settings.businessHoursOnly.toString()
+      );
       formData.append("voicemailEnabled", settings.enableVoicemail.toString());
       formData.append("voicemailGreetingUrl", settings.voicemailGreeting);
-      formData.append("voicemailEmailNotifications", settings.voicemailEmailNotifications.toString());
-      formData.append("voicemailTranscriptionEnabled", settings.voicemailTranscription.toString());
-      formData.append("recordingEnabled", settings.enableCallRecording.toString());
-      formData.append("recordingConsentRequired", settings.callRecordingDisclosure.toString());
+      formData.append(
+        "voicemailEmailNotifications",
+        settings.voicemailEmailNotifications.toString()
+      );
+      formData.append(
+        "voicemailTranscriptionEnabled",
+        settings.voicemailTranscription.toString()
+      );
+      formData.append(
+        "recordingEnabled",
+        settings.enableCallRecording.toString()
+      );
+      formData.append(
+        "recordingConsentRequired",
+        settings.callRecordingDisclosure.toString()
+      );
 
       const result = await updatePhoneSettings(formData);
 
@@ -133,7 +151,7 @@ export default function PhoneSettingsPage() {
             </p>
           </div>
           {hasUnsavedChanges && (
-            <Button onClick={handleSave} disabled={isPending}>
+            <Button disabled={isPending} onClick={handleSave}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

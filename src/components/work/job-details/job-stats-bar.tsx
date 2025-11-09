@@ -29,23 +29,22 @@ interface JobStatsBarProps {
   compact?: boolean;
 }
 
-export function JobStatsBar({ metrics, status, compact = false }: JobStatsBarProps) {
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+export function JobStatsBar({
+  metrics,
+  status,
+  compact = false,
+}: JobStatsBarProps) {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(cents / 100);
-  };
 
-  const formatHours = (hours: number) => {
-    return `${hours.toFixed(1)}h`;
-  };
+  const formatHours = (hours: number) => `${hours.toFixed(1)}h`;
 
-  const formatPercentage = (value: number) => {
-    return `${value.toFixed(0)}%`;
-  };
+  const formatPercentage = (value: number) => `${value.toFixed(0)}%`;
 
   // Calculate outstanding balance
   const outstanding = metrics.totalAmount - metrics.paidAmount;
@@ -60,8 +59,10 @@ export function JobStatsBar({ metrics, status, compact = false }: JobStatsBarPro
   // Calculate labor efficiency (actual vs estimated)
   const laborEfficiency =
     metrics.estimatedLaborHours > 0
-      ? ((metrics.totalLaborHours / metrics.estimatedLaborHours) * 100 -
-          100).toFixed(0)
+      ? (
+          (metrics.totalLaborHours / metrics.estimatedLaborHours) * 100 -
+          100
+        ).toFixed(0)
       : 0;
 
   const jobStats: StatCard[] = [
@@ -73,9 +74,7 @@ export function JobStatsBar({ metrics, status, compact = false }: JobStatsBarPro
           ? Number((-((outstanding / metrics.totalAmount) * 100)).toFixed(2))
           : undefined,
       changeLabel:
-        outstanding > 0
-          ? `${formatCurrency(outstanding)} due`
-          : "paid in full",
+        outstanding > 0 ? `${formatCurrency(outstanding)} due` : "paid in full",
     },
     {
       label: "Labor Hours",
@@ -100,5 +99,5 @@ export function JobStatsBar({ metrics, status, compact = false }: JobStatsBarPro
     },
   ];
 
-  return <StatsCards stats={jobStats} variant="ticker" compact={compact} />;
+  return <StatsCards compact={compact} stats={jobStats} variant="ticker" />;
 }

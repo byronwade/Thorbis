@@ -18,71 +18,58 @@
  * - Optimistic UI updates
  */
 
-import { useCallback, useEffect, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Link as TiptapLink } from "@tiptap/extension-link";
 import { Image as TiptapImage } from "@tiptap/extension-image";
-import { Table as TiptapTable } from "@tiptap/extension-table";
-import { TableRow as TiptapTableRow } from "@tiptap/extension-table-row";
-import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table-header";
-import { TableCell as TiptapTableCell } from "@tiptap/extension-table-cell";
-import { Placeholder as TiptapPlaceholder } from "@tiptap/extension-placeholder";
 import { Mention as TiptapMention } from "@tiptap/extension-mention";
-import { CustomerInfoBlock } from "./editor-blocks/customer-info-block";
-import { MetricsBlock } from "./editor-blocks/metrics-block";
-import { JobsTableBlock } from "./editor-blocks/jobs-table-block";
-import { AddressPropertiesAdaptiveBlock } from "./editor-blocks/address-properties-adaptive-block";
-import { InvoicesTableBlock } from "./editor-blocks/invoices-table-block";
-import { BillingInfoBlock } from "./editor-blocks/billing-info-block";
-import { NotesCollapsibleBlock } from "./editor-blocks/notes-collapsible-block";
-import { ActivityTimelineBlock } from "./editor-blocks/activity-timeline-block";
-import { EquipmentTableBlock } from "./editor-blocks/equipment-table-block";
-import { DocumentsMediaBlock } from "./editor-blocks/documents-media-block";
-import { CustomerBadgesBlock } from "./editor-blocks/customer-badges-block";
-import { CustomerContactsBlock } from "./editor-blocks/customer-contacts-block";
+import { Placeholder as TiptapPlaceholder } from "@tiptap/extension-placeholder";
+import { Table as TiptapTable } from "@tiptap/extension-table";
+import { TableCell as TiptapTableCell } from "@tiptap/extension-table-cell";
+import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table-header";
+import { TableRow as TiptapTableRow } from "@tiptap/extension-table-row";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import {
+  AtSign,
   Bold,
+  Briefcase,
+  ChevronDown,
+  Clock,
+  DollarSign,
+  FileText,
+  Image as ImageIcon,
   Italic,
+  LayoutGrid,
+  Link as LinkIcon,
   List,
   ListOrdered,
-  Link as LinkIcon,
-  Image as ImageIcon,
-  Table as TableIcon,
-  AtSign,
-  Save,
-  Edit3,
-  Eye,
   Plus,
-  ChevronDown,
-  LayoutGrid,
-  Briefcase,
-  FileText,
-  DollarSign,
-  Clock,
-  MapPin,
-  Wrench,
-  Tag,
-  AlertTriangle,
-  Star as StarIcon,
-  ShieldCheck,
-  Heart,
-  UserPlus,
+  Table as TableIcon,
   Users,
+  Wrench,
 } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { PREMADE_BADGES } from "@/types/customer-badges";
-import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { ActivityTimelineBlock } from "./editor-blocks/activity-timeline-block";
+import { AddressPropertiesAdaptiveBlock } from "./editor-blocks/address-properties-adaptive-block";
+import { BillingInfoBlock } from "./editor-blocks/billing-info-block";
+import { CustomerBadgesBlock } from "./editor-blocks/customer-badges-block";
+import { CustomerContactsBlock } from "./editor-blocks/customer-contacts-block";
+import { CustomerInfoBlock } from "./editor-blocks/customer-info-block";
+import { DocumentsMediaBlock } from "./editor-blocks/documents-media-block";
+import { EquipmentTableBlock } from "./editor-blocks/equipment-table-block";
+import { InvoicesTableBlock } from "./editor-blocks/invoices-table-block";
+import { JobsTableBlock } from "./editor-blocks/jobs-table-block";
+import { MetricsBlock } from "./editor-blocks/metrics-block";
+import { NotesCollapsibleBlock } from "./editor-blocks/notes-collapsible-block";
 
 interface CustomerPageEditorProps {
   customerId: string;
@@ -101,7 +88,6 @@ export function CustomerPageEditor({
   onChange,
   className,
 }: CustomerPageEditorProps) {
-
   // Generate default content - simplified for testing
   const getDefaultContent = () => {
     console.log("getDefaultContent called with:", {
@@ -113,7 +99,12 @@ export function CustomerPageEditor({
     });
 
     // Check if we have valid existing content (not just empty doc)
-    if (initialContent && initialContent.type === "doc" && initialContent.content && initialContent.content.length > 0) {
+    if (
+      initialContent &&
+      initialContent.type === "doc" &&
+      initialContent.content &&
+      initialContent.content.length > 0
+    ) {
       console.log("Using existing page_content:", initialContent);
 
       // Update content blocks with fresh data from database
@@ -126,28 +117,42 @@ export function CustomerPageEditor({
             ...node,
             attrs: {
               id: initialData?.id,
-              displayName: initialData?.display_name || nodeAttrs.displayName || "",
+              displayName:
+                initialData?.display_name || nodeAttrs.displayName || "",
               firstName: initialData?.first_name || nodeAttrs.firstName || "",
               lastName: initialData?.last_name || nodeAttrs.lastName || "",
               email: initialData?.email || nodeAttrs.email || "",
               phone: initialData?.phone || nodeAttrs.phone || "",
-              secondaryPhone: initialData?.secondary_phone || nodeAttrs.secondaryPhone || "",
-              billingEmail: initialData?.billing_email || nodeAttrs.billingEmail || "",
-              companyName: initialData?.company_name || nodeAttrs.companyName || "",
-              customerType: initialData?.type || nodeAttrs.customerType || "residential",
+              secondaryPhone:
+                initialData?.secondary_phone || nodeAttrs.secondaryPhone || "",
+              billingEmail:
+                initialData?.billing_email || nodeAttrs.billingEmail || "",
+              companyName:
+                initialData?.company_name || nodeAttrs.companyName || "",
+              customerType:
+                initialData?.type || nodeAttrs.customerType || "residential",
             },
           };
         }
 
         // Update other blocks with fresh data
         if (node.type === "jobsTableBlock") {
-          return { ...node, attrs: { jobs: initialData?.jobs || [], customerId } };
+          return {
+            ...node,
+            attrs: { jobs: initialData?.jobs || [], customerId },
+          };
         }
         if (node.type === "invoicesTableBlock") {
-          return { ...node, attrs: { invoices: initialData?.invoices || [], customerId } };
+          return {
+            ...node,
+            attrs: { invoices: initialData?.invoices || [], customerId },
+          };
         }
         if (node.type === "equipmentTableBlock") {
-          return { ...node, attrs: { equipment: initialData?.equipment || [], customerId } };
+          return {
+            ...node,
+            attrs: { equipment: initialData?.equipment || [], customerId },
+          };
         }
         if (node.type === "documentsMediaBlock") {
           return {
@@ -157,7 +162,7 @@ export function CustomerPageEditor({
               properties: initialData?.properties || [],
               jobs: initialData?.jobs || [],
               customerId,
-            }
+            },
           };
         }
         if (node.type === "addressPropertiesAdaptiveBlock") {
@@ -181,11 +186,19 @@ export function CustomerPageEditor({
             ...node,
             attrs: {
               id: initialData?.id,
-              billingEmail: initialData?.billing_email || nodeAttrs.billingEmail || "",
-              paymentTerms: initialData?.payment_terms || nodeAttrs.paymentTerms || "due_on_receipt",
-              creditLimit: initialData?.credit_limit || nodeAttrs.creditLimit || 0,
-              taxExempt: initialData?.tax_exempt || nodeAttrs.taxExempt || false,
-              taxExemptNumber: initialData?.tax_exempt_number || nodeAttrs.taxExemptNumber || "",
+              billingEmail:
+                initialData?.billing_email || nodeAttrs.billingEmail || "",
+              paymentTerms:
+                initialData?.payment_terms ||
+                nodeAttrs.paymentTerms ||
+                "due_on_receipt",
+              creditLimit:
+                initialData?.credit_limit || nodeAttrs.creditLimit || 0,
+              taxExempt: initialData?.tax_exempt || nodeAttrs.taxExempt,
+              taxExemptNumber:
+                initialData?.tax_exempt_number ||
+                nodeAttrs.taxExemptNumber ||
+                "",
               paymentMethods: initialData?.paymentMethods || [],
               customerId,
             },
@@ -214,7 +227,9 @@ export function CustomerPageEditor({
       });
 
       // Check if badges block exists, if not, add it at the beginning
-      const hasBadgesBlock = updatedContent.some((node: any) => node.type === "customerBadgesBlock");
+      const hasBadgesBlock = updatedContent.some(
+        (node: any) => node.type === "customerBadgesBlock"
+      );
 
       if (!hasBadgesBlock) {
         console.log("Adding missing badges block to existing content");
@@ -224,7 +239,7 @@ export function CustomerPageEditor({
             {
               type: "customerBadgesBlock",
               attrs: {
-                customerId: customerId,
+                customerId,
               },
             },
             ...updatedContent,
@@ -239,19 +254,24 @@ export function CustomerPageEditor({
     }
 
     // Create full page layout with all customer data blocks
-    console.log("Creating default content for customer:", initialData?.display_name, "with", {
-      propertiesCount: initialData?.properties?.length,
-      jobsCount: initialData?.jobs?.length,
-      invoicesCount: initialData?.invoices?.length,
-      activitiesCount: initialData?.activities?.length,
-    });
+    console.log(
+      "Creating default content for customer:",
+      initialData?.display_name,
+      "with",
+      {
+        propertiesCount: initialData?.properties?.length,
+        jobsCount: initialData?.jobs?.length,
+        invoicesCount: initialData?.invoices?.length,
+        activitiesCount: initialData?.activities?.length,
+      }
+    );
     return {
       type: "doc",
       content: [
         {
           type: "customerBadgesBlock",
           attrs: {
-            customerId: customerId,
+            customerId,
           },
         },
         {
@@ -272,7 +292,7 @@ export function CustomerPageEditor({
         {
           type: "customerContactsBlock",
           attrs: {
-            customerId: customerId,
+            customerId,
             contactsCount: 0, // Will be loaded dynamically
           },
         },
@@ -289,28 +309,28 @@ export function CustomerPageEditor({
             country: initialData?.country || "USA",
             // All properties including primary
             properties: initialData?.properties || [],
-            customerId: customerId,
+            customerId,
           },
         },
         {
           type: "jobsTableBlock",
           attrs: {
             jobs: initialData?.jobs || [],
-            customerId: customerId,
+            customerId,
           },
         },
         {
           type: "invoicesTableBlock",
           attrs: {
             invoices: initialData?.invoices || [],
-            customerId: customerId,
+            customerId,
           },
         },
         {
           type: "equipmentTableBlock",
           attrs: {
             equipment: initialData?.equipment || [],
-            customerId: customerId,
+            customerId,
           },
         },
         {
@@ -319,7 +339,7 @@ export function CustomerPageEditor({
             attachments: initialData?.attachments || [],
             properties: initialData?.properties || [],
             jobs: initialData?.jobs || [],
-            customerId: customerId,
+            customerId,
           },
         },
         {
@@ -329,16 +349,16 @@ export function CustomerPageEditor({
             billingEmail: initialData?.billing_email || "",
             paymentTerms: initialData?.payment_terms || "due_on_receipt",
             creditLimit: initialData?.credit_limit || 0,
-            taxExempt: initialData?.tax_exempt || false,
+            taxExempt: initialData?.tax_exempt,
             taxExemptNumber: initialData?.tax_exempt_number || "",
             paymentMethods: initialData?.paymentMethods || [],
-            customerId: customerId,
+            customerId,
           },
         },
         {
           type: "notesCollapsibleBlock",
           attrs: {
-            customerId: customerId,
+            customerId,
             notesCount: 0, // Will be loaded dynamically
           },
         },
@@ -371,7 +391,8 @@ export function CustomerPageEditor({
       TiptapTableRow,
       TiptapTableHeader.configure({
         HTMLAttributes: {
-          class: "border border-border bg-muted/50 px-4 py-2 text-left font-medium",
+          class:
+            "border border-border bg-muted/50 px-4 py-2 text-left font-medium",
         },
       }),
       TiptapTableCell.configure({
@@ -432,7 +453,7 @@ export function CustomerPageEditor({
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm max-w-7xl mx-auto focus:outline-none min-h-screen w-full px-4 py-4 pb-96",
+          "prose prose-sm mx-auto min-h-screen w-full max-w-7xl px-4 py-4 pb-96 focus:outline-none",
           isEditable && "cursor-text"
         ),
       },
@@ -468,10 +489,12 @@ export function CustomerPageEditor({
 
   if (!editor) {
     return (
-      <div className="flex h-[500px] items-center justify-center border-2 border-dashed border-muted-foreground/50 bg-muted/30">
+      <div className="flex h-[500px] items-center justify-center border-2 border-muted-foreground/50 border-dashed bg-muted/30">
         <div className="text-center">
           <p className="text-muted-foreground">Loading editor...</p>
-          <p className="mt-2 text-muted-foreground text-xs">If this persists, check browser console for errors</p>
+          <p className="mt-2 text-muted-foreground text-xs">
+            If this persists, check browser console for errors
+          </p>
         </div>
       </div>
     );
@@ -481,175 +504,200 @@ export function CustomerPageEditor({
     <div className={cn("relative w-full", className)}>
       {/* Floating Toolbar - Always visible since page is always editable */}
       <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b bg-background/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          {/* Editor Controls */}
-          <div className="flex items-center gap-1">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              className={cn(editor.isActive("bold") && "bg-muted")}
-              title="Bold (Cmd+B)"
-            >
-              <Bold className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={cn(editor.isActive("italic") && "bg-muted")}
-              title="Italic (Cmd+I)"
-            >
-              <Italic className="size-4" />
-            </Button>
-            <Separator orientation="vertical" className="mx-1 h-6" />
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={cn(editor.isActive("bulletList") && "bg-muted")}
-              title="Bullet List"
-            >
-              <List className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={cn(editor.isActive("orderedList") && "bg-muted")}
-              title="Numbered List"
-            >
-              <ListOrdered className="size-4" />
-            </Button>
-            <Separator orientation="vertical" className="mx-1 h-6" />
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                const url = window.prompt("Enter URL");
-                if (url) {
-                  editor.chain().focus().setLink({ href: url }).run();
-                }
-              }}
-              className={cn(editor.isActive("link") && "bg-muted")}
-              title="Add Link (Cmd+K)"
-            >
-              <LinkIcon className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                const url = window.prompt("Enter image URL");
-                if (url) {
-                  editor.chain().focus().setImage({ src: url }).run();
-                }
-              }}
-              title="Add Image"
-            >
-              <ImageIcon className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-              title="Insert Table"
-            >
-              <TableIcon className="size-4" />
-            </Button>
-            <Separator orientation="vertical" className="mx-1 h-6" />
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              title="Mention Team Member (@)"
-            >
-              <AtSign className="size-4" />
-            </Button>
-            <Separator orientation="vertical" className="mx-1 h-6" />
+        {/* Editor Controls */}
+        <div className="flex items-center gap-1">
+          <Button
+            className={cn(editor.isActive("bold") && "bg-muted")}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            size="sm"
+            title="Bold (Cmd+B)"
+            type="button"
+            variant="ghost"
+          >
+            <Bold className="size-4" />
+          </Button>
+          <Button
+            className={cn(editor.isActive("italic") && "bg-muted")}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            size="sm"
+            title="Italic (Cmd+I)"
+            type="button"
+            variant="ghost"
+          >
+            <Italic className="size-4" />
+          </Button>
+          <Separator className="mx-1 h-6" orientation="vertical" />
+          <Button
+            className={cn(editor.isActive("bulletList") && "bg-muted")}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            size="sm"
+            title="Bullet List"
+            type="button"
+            variant="ghost"
+          >
+            <List className="size-4" />
+          </Button>
+          <Button
+            className={cn(editor.isActive("orderedList") && "bg-muted")}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            size="sm"
+            title="Numbered List"
+            type="button"
+            variant="ghost"
+          >
+            <ListOrdered className="size-4" />
+          </Button>
+          <Separator className="mx-1 h-6" orientation="vertical" />
+          <Button
+            className={cn(editor.isActive("link") && "bg-muted")}
+            onClick={() => {
+              const url = window.prompt("Enter URL");
+              if (url) {
+                editor.chain().focus().setLink({ href: url }).run();
+              }
+            }}
+            size="sm"
+            title="Add Link (Cmd+K)"
+            type="button"
+            variant="ghost"
+          >
+            <LinkIcon className="size-4" />
+          </Button>
+          <Button
+            onClick={() => {
+              const url = window.prompt("Enter image URL");
+              if (url) {
+                editor.chain().focus().setImage({ src: url }).run();
+              }
+            }}
+            size="sm"
+            title="Add Image"
+            type="button"
+            variant="ghost"
+          >
+            <ImageIcon className="size-4" />
+          </Button>
+          <Button
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .run()
+            }
+            size="sm"
+            title="Insert Table"
+            type="button"
+            variant="ghost"
+          >
+            <TableIcon className="size-4" />
+          </Button>
+          <Separator className="mx-1 h-6" orientation="vertical" />
+          <Button
+            size="sm"
+            title="Mention Team Member (@)"
+            type="button"
+            variant="ghost"
+          >
+            <AtSign className="size-4" />
+          </Button>
+          <Separator className="mx-1 h-6" orientation="vertical" />
 
-            {/* Add Widget Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  className="gap-1"
-                  title="Add Widget"
-                >
-                  <Plus className="size-4" />
-                  <span className="text-xs">Add Widget</span>
-                  <ChevronDown className="size-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Customer Sections</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+          {/* Add Widget Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className="gap-1"
+                size="sm"
+                title="Add Widget"
+                type="button"
+                variant="ghost"
+              >
+                <Plus className="size-4" />
+                <span className="text-xs">Add Widget</span>
+                <ChevronDown className="size-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Customer Sections</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "customerContactsBlock",
                       attrs: {
                         customerId,
                         contactsCount: 0,
                       },
-                    }).run();
-                  }}
-                >
-                  <Users className="mr-2 size-4" />
-                  Additional Contacts
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+                    })
+                    .run();
+                }}
+              >
+                <Users className="mr-2 size-4" />
+                Additional Contacts
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "jobsTableBlock",
                       attrs: {
                         jobs: initialData?.jobs || [],
                         customerId,
                       },
-                    }).run();
-                  }}
-                >
-                  <Briefcase className="mr-2 size-4" />
-                  Jobs Table
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+                    })
+                    .run();
+                }}
+              >
+                <Briefcase className="mr-2 size-4" />
+                Jobs Table
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "invoicesTableBlock",
                       attrs: {
                         invoices: initialData?.invoices || [],
                         customerId,
                       },
-                    }).run();
-                  }}
-                >
-                  <DollarSign className="mr-2 size-4" />
-                  Invoices Table
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+                    })
+                    .run();
+                }}
+              >
+                <DollarSign className="mr-2 size-4" />
+                Invoices Table
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "equipmentTableBlock",
                       attrs: {
                         equipment: initialData?.equipment || [],
                         customerId,
                       },
-                    }).run();
-                  }}
-                >
-                  <Wrench className="mr-2 size-4" />
-                  Equipment Table
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+                    })
+                    .run();
+                }}
+              >
+                <Wrench className="mr-2 size-4" />
+                Equipment Table
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "documentsMediaBlock",
                       attrs: {
                         attachments: initialData?.attachments || [],
@@ -657,77 +705,82 @@ export function CustomerPageEditor({
                         jobs: initialData?.jobs || [],
                         customerId,
                       },
-                    }).run();
-                  }}
-                >
-                  <FileText className="mr-2 size-4" />
-                  Documents & Media
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>Data Blocks</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+                    })
+                    .run();
+                }}
+              >
+                <FileText className="mr-2 size-4" />
+                Documents & Media
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Data Blocks</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "activityTimelineBlock",
                       attrs: {
                         activities: initialData?.activities || [],
                       },
-                    }).run();
-                  }}
-                >
-                  <Clock className="mr-2 size-4" />
-                  Activity Timeline
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    editor.chain().focus().insertContent({
+                    })
+                    .run();
+                }}
+              >
+                <Clock className="mr-2 size-4" />
+                Activity Timeline
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent({
                       type: "metricsBlock",
                       attrs: {
                         metrics: initialData?.metrics || {},
                       },
-                    }).run();
-                  }}
-                >
-                  <LayoutGrid className="mr-2 size-4" />
-                  Metrics Dashboard
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
+                    })
+                    .run();
+                }}
+              >
+                <LayoutGrid className="mr-2 size-4" />
+                Metrics Dashboard
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+      </div>
 
       {/* Editor Content - No Padding, Full Width */}
-      <EditorContent
-        editor={editor}
-        className="min-h-screen w-full"
-      />
+      <EditorContent className="min-h-screen w-full" editor={editor} />
 
       {/* Helper Text at Bottom - Always show since always editable */}
       <div className="border-t bg-muted/30 px-4 py-3">
-          <p className="text-muted-foreground text-xs">
-            <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
-              /
-            </kbd>{" "}
-            for commands •{" "}
-            <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
-              Cmd+B
-            </kbd>{" "}
-            bold •{" "}
-            <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
-              Cmd+I
-            </kbd>{" "}
-            italic •{" "}
-            <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
-              Cmd+K
-            </kbd>{" "}
-            link •{" "}
-            <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
-              @
-            </kbd>{" "}
-            mention team member
-          </p>
-        </div>
+        <p className="text-muted-foreground text-xs">
+          <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
+            /
+          </kbd>{" "}
+          for commands •{" "}
+          <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
+            Cmd+B
+          </kbd>{" "}
+          bold •{" "}
+          <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
+            Cmd+I
+          </kbd>{" "}
+          italic •{" "}
+          <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
+            Cmd+K
+          </kbd>{" "}
+          link •{" "}
+          <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-xs">
+            @
+          </kbd>{" "}
+          mention team member
+        </p>
+      </div>
     </div>
   );
 }

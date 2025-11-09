@@ -30,7 +30,7 @@ class InMemoryRateLimiter {
     this.windowMs = windowMs;
 
     // Cleanup old entries every minute
-    setInterval(() => this.cleanup(), 60000);
+    setInterval(() => this.cleanup(), 60_000);
   }
 
   async limit(identifier: string): Promise<{

@@ -4,8 +4,8 @@ import {
   integer as pgInteger,
   json as pgJson,
   pgTable,
-  real,
   text as pgText,
+  real,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -16,19 +16,29 @@ const isProduction = true; // Always use PostgreSQL/Supabase
 // Type-safe fallback for SQLite (will never be used in production)
 // This allows the code to compile but throws if SQLite is ever attempted
 const sqliteTable = (...args: any[]): any => {
-  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+  throw new Error(
+    "SQLite is not supported. This project uses Supabase (PostgreSQL) only."
+  );
 };
 const sqliteInteger = (...args: any[]): any => {
-  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+  throw new Error(
+    "SQLite is not supported. This project uses Supabase (PostgreSQL) only."
+  );
 };
 const sqliteText = (...args: any[]): any => {
-  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+  throw new Error(
+    "SQLite is not supported. This project uses Supabase (PostgreSQL) only."
+  );
 };
 const text = (...args: any[]): any => {
-  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+  throw new Error(
+    "SQLite is not supported. This project uses Supabase (PostgreSQL) only."
+  );
 };
 const integer = (...args: any[]): any => {
-  throw new Error("SQLite is not supported. This project uses Supabase (PostgreSQL) only.");
+  throw new Error(
+    "SQLite is not supported. This project uses Supabase (PostgreSQL) only."
+  );
 };
 
 /**

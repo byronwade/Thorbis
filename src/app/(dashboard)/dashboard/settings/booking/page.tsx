@@ -20,12 +20,10 @@ import {
   Save,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { getBookingSettings, updateBookingSettings } from "@/actions/settings";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
-import { getBookingSettings, updateBookingSettings } from "@/actions/settings";
 import {
   Card,
   CardContent,
@@ -51,6 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/use-settings";
 
 // Constants
 const MIN_BOOKING_WINDOW = 1;
@@ -129,31 +128,31 @@ export default function BookingSettingsPage() {
     getter: getBookingSettings,
     setter: updateBookingSettings,
     initialState: {
-    enableOnlineBooking: true,
-    requireApproval: false,
-    bookingWindowDays: 30,
-    bufferTimeBetweenJobs: 15,
-    cancellationNoticePeriod: 24,
-    allowCustomerReschedule: true,
-    sendConfirmationEmail: true,
-    sendReminderEmail: true,
-    reminderHoursBefore: 24,
-    defaultJobDuration: 60,
-    maxBookingsPerDay: 10,
-    travelRadius: 50,
-    bookingInstructions:
-      "Please provide detailed information about the service you need. Our team will confirm the appointment within 24 hours.",
-    businessHours: {
-      monday: { enabled: true, start: "08:00", end: "17:00" },
-      tuesday: { enabled: true, start: "08:00", end: "17:00" },
-      wednesday: { enabled: true, start: "08:00", end: "17:00" },
-      thursday: { enabled: true, start: "08:00", end: "17:00" },
-      friday: { enabled: true, start: "08:00", end: "17:00" },
-      saturday: { enabled: false, start: "09:00", end: "13:00" },
-      sunday: { enabled: false, start: "09:00", end: "13:00" },
-    },
-    useCompanyHours: true,
-    useCompanyServiceArea: true,
+      enableOnlineBooking: true,
+      requireApproval: false,
+      bookingWindowDays: 30,
+      bufferTimeBetweenJobs: 15,
+      cancellationNoticePeriod: 24,
+      allowCustomerReschedule: true,
+      sendConfirmationEmail: true,
+      sendReminderEmail: true,
+      reminderHoursBefore: 24,
+      defaultJobDuration: 60,
+      maxBookingsPerDay: 10,
+      travelRadius: 50,
+      bookingInstructions:
+        "Please provide detailed information about the service you need. Our team will confirm the appointment within 24 hours.",
+      businessHours: {
+        monday: { enabled: true, start: "08:00", end: "17:00" },
+        tuesday: { enabled: true, start: "08:00", end: "17:00" },
+        wednesday: { enabled: true, start: "08:00", end: "17:00" },
+        thursday: { enabled: true, start: "08:00", end: "17:00" },
+        friday: { enabled: true, start: "08:00", end: "17:00" },
+        saturday: { enabled: false, start: "09:00", end: "13:00" },
+        sunday: { enabled: false, start: "09:00", end: "13:00" },
+      },
+      useCompanyHours: true,
+      useCompanyServiceArea: true,
     },
     settingsName: "booking",
     transformLoad: (data) => ({
@@ -163,9 +162,15 @@ export default function BookingSettingsPage() {
     }),
     transformSave: (settings) => {
       const formData = new FormData();
-      formData.append("onlineBookingEnabled", settings.enableOnlineBooking.toString());
+      formData.append(
+        "onlineBookingEnabled",
+        settings.enableOnlineBooking.toString()
+      );
       formData.append("requireAccount", settings.requireApproval.toString());
-      formData.append("sendConfirmationEmail", settings.sendConfirmationEmail.toString());
+      formData.append(
+        "sendConfirmationEmail",
+        settings.sendConfirmationEmail.toString()
+      );
       formData.append("sendConfirmationSms", "false");
       formData.append("minBookingNoticeHours", "24");
       formData.append("requireServiceSelection", "true");
@@ -957,7 +962,11 @@ export default function BookingSettingsPage() {
           <Button type="button" variant="outline">
             Reset to Defaults
           </Button>
-          <Button disabled={isPending} onClick={() => saveSettings()} type="button">
+          <Button
+            disabled={isPending}
+            onClick={() => saveSettings()}
+            type="button"
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />

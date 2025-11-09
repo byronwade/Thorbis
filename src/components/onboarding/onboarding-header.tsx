@@ -1,32 +1,34 @@
 /**
  * Onboarding Header Component
- * 
+ *
  * Header for onboarding page with:
  * - Thorbis logo and name
  * - User dropdown with company switcher
  * - Shows onboarding status for each company
- * 
+ *
  * Note: This is a client component because it's used in WelcomePage which is a client component.
  * The client component fetches its own data to avoid server/client boundary issues.
  */
 
 "use client";
 
-import { OnboardingHeaderClient } from "./onboarding-header-client";
-import { useEffect, useState } from "react";
-import type { UserProfile } from "@/lib/auth/user-data";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import type { UserProfile } from "@/lib/auth/user-data";
+import { OnboardingHeaderClient } from "./onboarding-header-client";
 
 export function OnboardingHeader() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [companies, setCompanies] = useState<Array<{
-    id: string;
-    name: string;
-    plan: string;
-    onboardingComplete?: boolean;
-    hasPayment?: boolean;
-  }>>([]);
+  const [companies, setCompanies] = useState<
+    Array<{
+      id: string;
+      name: string;
+      plan: string;
+      onboardingComplete?: boolean;
+      hasPayment?: boolean;
+    }>
+  >([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -42,11 +44,15 @@ export function OnboardingHeader() {
         const profileData = await profileRes.json();
         setUserProfile({
           id: profileData.id || "",
-          name: `${profileData.firstName} ${profileData.lastName}`.trim() || profileData.email,
+          name:
+            `${profileData.firstName} ${profileData.lastName}`.trim() ||
+            profileData.email,
           email: profileData.email,
           avatar: "",
-          emailVerified: profileData.emailVerified || false,
-          createdAt: profileData.createdAt ? new Date(profileData.createdAt) : new Date(),
+          emailVerified: profileData.emailVerified,
+          createdAt: profileData.createdAt
+            ? new Date(profileData.createdAt)
+            : new Date(),
         });
       } else {
         console.error("Failed to fetch user profile:", profileRes.status);
@@ -96,7 +102,7 @@ export function OnboardingHeader() {
 
     window.addEventListener("refresh-companies", handleRefresh);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    
+
     return () => {
       window.removeEventListener("refresh-companies", handleRefresh);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -125,6 +131,7 @@ export function OnboardingHeader() {
     );
   }
 
-  return <OnboardingHeaderClient userProfile={userProfile} companies={companies} />;
+  return (
+    <OnboardingHeaderClient companies={companies} userProfile={userProfile} />
+  );
 }
-

@@ -11,9 +11,9 @@
  * Documentation: https://www.assemblyai.com/docs/API%20reference/webhook
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { formatTranscriptWithSpeakers } from "@/lib/assemblyai/client";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,15 +48,17 @@ export async function POST(request: NextRequest) {
  */
 async function handleTranscriptionCompleted(payload: any) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
 
   try {
     console.log("✅ Transcription completed successfully");
 
     // Format transcript with speaker labels
-    const formattedTranscript = formatTranscriptWithSpeakers(payload.utterances);
+    const formattedTranscript = formatTranscriptWithSpeakers(
+      payload.utterances
+    );
 
     // Find communication record by transcription ID
     const { data: communications } = await supabase
@@ -73,7 +75,8 @@ async function handleTranscriptionCompleted(payload: any) {
 
     // Update all matching communications (should typically be just one)
     for (const communication of communications) {
-      const existingMetadata = (communication.metadata as Record<string, any>) || {};
+      const existingMetadata =
+        (communication.metadata as Record<string, any>) || {};
 
       await supabase
         .from("communications")
@@ -99,8 +102,12 @@ async function handleTranscriptionCompleted(payload: any) {
 
       // Log first 200 chars of transcript
       const preview =
-        formattedTranscript?.substring(0, 200) || payload.text?.substring(0, 200) || "";
-      console.log(`📄 Transcript preview: ${preview}${preview.length >= 200 ? "..." : ""}`);
+        formattedTranscript?.substring(0, 200) ||
+        payload.text?.substring(0, 200) ||
+        "";
+      console.log(
+        `📄 Transcript preview: ${preview}${preview.length >= 200 ? "..." : ""}`
+      );
     }
   } catch (error) {
     console.error("Error handling completed transcription:", error);
@@ -113,9 +120,9 @@ async function handleTranscriptionCompleted(payload: any) {
  */
 async function handleTranscriptionFailed(payload: any) {
   const supabase = await createClient();
-    if (!supabase) {
-      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-    }
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
 
   try {
     console.error("❌ Transcription failed");
@@ -136,7 +143,8 @@ async function handleTranscriptionFailed(payload: any) {
 
     // Update metadata with error status
     for (const communication of communications) {
-      const existingMetadata = (communication.metadata as Record<string, any>) || {};
+      const existingMetadata =
+        (communication.metadata as Record<string, any>) || {};
 
       await supabase
         .from("communications")
@@ -150,7 +158,9 @@ async function handleTranscriptionFailed(payload: any) {
         })
         .eq("id", communication.id);
 
-      console.log(`❌ Transcription error saved for communication ${communication.id}`);
+      console.log(
+        `❌ Transcription error saved for communication ${communication.id}`
+      );
     }
   } catch (error) {
     console.error("Error handling failed transcription:", error);

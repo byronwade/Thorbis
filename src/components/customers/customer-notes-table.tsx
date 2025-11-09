@@ -11,18 +11,16 @@
  * - Filter by type
  */
 
-import { useState, useEffect } from "react";
+import { formatDistance } from "date-fns";
+import { Archive, FileText, Lock, Pin, User } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+  createCustomerNote,
+  deleteCustomerNote,
+  getCustomerNotes,
+} from "@/actions/customer-notes";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -31,29 +29,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  getCustomerNotes,
-  createCustomerNote,
-  deleteCustomerNote,
-} from "@/actions/customer-notes";
-import { type CustomerNote } from "@/types/customer-notes";
-import { Archive, FileText, Lock, Pin, Trash2, Plus, User } from "lucide-react";
-import { formatDistance } from "date-fns";
-import { cn } from "@/lib/utils";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import type { CustomerNote } from "@/types/customer-notes";
 
 interface CustomerNotesTableProps {
   customerId: string;
   triggerAdd?: number; // Trigger to show add note form from external button
 }
 
-export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTableProps) {
+export function CustomerNotesTable({
+  customerId,
+  triggerAdd,
+}: CustomerNotesTableProps) {
   const [notes, setNotes] = useState<CustomerNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filterType, setFilterType] = useState<"all" | "customer" | "internal">("all");
+  const [filterType, setFilterType] = useState<"all" | "customer" | "internal">(
+    "all"
+  );
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [showAddNote, setShowAddNote] = useState(false);
   const [newNoteContent, setNewNoteContent] = useState("");
-  const [newNoteType, setNewNoteType] = useState<"customer" | "internal">("customer");
+  const [newNoteType, setNewNoteType] = useState<"customer" | "internal">(
+    "customer"
+  );
 
   const pageSize = 20;
 
@@ -102,7 +108,12 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
   };
 
   const handleArchiveNote = async (noteId: string) => {
-    if (!confirm("Archive this note? It can be restored within 90 days from the archive page.")) return;
+    if (
+      !confirm(
+        "Archive this note? It can be restored within 90 days from the archive page."
+      )
+    )
+      return;
 
     const result = await deleteCustomerNote(noteId); // Function already does soft delete
     if (result.success) {
@@ -117,7 +128,10 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4 p-4">
         <div className="flex items-center gap-2">
-          <Select value={filterType} onValueChange={(v: any) => setFilterType(v)}>
+          <Select
+            onValueChange={(v: any) => setFilterType(v)}
+            value={filterType}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue />
             </SelectTrigger>
@@ -132,9 +146,12 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 
       {/* Add Note Form */}
       {showAddNote && (
-        <div className="space-y-3 rounded-lg border bg-muted/30 p-4 mx-4">
+        <div className="mx-4 space-y-3 rounded-lg border bg-muted/30 p-4">
           <div className="flex items-center gap-2">
-            <Select value={newNoteType} onValueChange={(v: any) => setNewNoteType(v)}>
+            <Select
+              onValueChange={(v: any) => setNewNoteType(v)}
+              value={newNoteType}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
@@ -155,23 +172,23 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
             </Select>
           </div>
           <Textarea
-            placeholder="Enter note content..."
-            value={newNoteContent}
             onChange={(e) => setNewNoteContent(e.target.value)}
+            placeholder="Enter note content..."
             rows={3}
+            value={newNoteContent}
           />
           <div className="flex justify-end gap-2">
             <Button
-              size="sm"
-              variant="ghost"
               onClick={() => {
                 setShowAddNote(false);
                 setNewNoteContent("");
               }}
+              size="sm"
+              variant="ghost"
             >
               Cancel
             </Button>
-            <Button size="sm" onClick={handleAddNote}>
+            <Button onClick={handleAddNote} size="sm">
               Save Note
             </Button>
           </div>
@@ -193,10 +210,12 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
           <TableBody>
             {notes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell className="h-24 text-center" colSpan={5}>
                   <div className="flex flex-col items-center gap-2">
                     <FileText className="size-8 text-muted-foreground/50" />
-                    <p className="text-muted-foreground text-sm">No notes found</p>
+                    <p className="text-muted-foreground text-sm">
+                      No notes found
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -205,12 +224,12 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
                 <TableRow key={note.id}>
                   <TableCell>
                     {note.note_type === "internal" ? (
-                      <Badge variant="secondary" className="gap-1 text-xs">
+                      <Badge className="gap-1 text-xs" variant="secondary">
                         <Lock className="size-3" />
                         Internal
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="gap-1 text-xs">
+                      <Badge className="gap-1 text-xs" variant="outline">
                         <FileText className="size-3" />
                         Customer
                       </Badge>
@@ -219,7 +238,10 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
                   <TableCell className="max-w-md">
                     <div className="flex items-start gap-2">
                       {note.is_pinned && (
-                        <Pin className="mt-1 size-4 text-primary" fill="currentColor" />
+                        <Pin
+                          className="mt-1 size-4 text-primary"
+                          fill="currentColor"
+                        />
                       )}
                       <p className="text-sm">{note.content}</p>
                     </div>
@@ -228,23 +250,29 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
                     <div className="flex items-center gap-2">
                       <User className="size-4 text-muted-foreground" />
                       <div className="text-sm">
-                        <p className="font-medium">{note.user?.name || "Unknown"}</p>
-                        <p className="text-muted-foreground text-xs">{note.user?.email}</p>
+                        <p className="font-medium">
+                          {note.user?.name || "Unknown"}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {note.user?.email}
+                        </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <p className="text-muted-foreground text-xs">
-                      {formatDistance(new Date(note.created_at), new Date(), { addSuffix: true })}
+                      {formatDistance(new Date(note.created_at), new Date(), {
+                        addSuffix: true,
+                      })}
                     </p>
                   </TableCell>
                   <TableCell>
                     <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleArchiveNote(note.id)}
                       className="size-8 p-0"
+                      onClick={() => handleArchiveNote(note.id)}
+                      size="sm"
                       title="Archive note"
+                      variant="ghost"
                     >
                       <Archive className="size-4 text-destructive" />
                     </Button>
@@ -260,22 +288,23 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-muted-foreground text-sm">
-            Showing {page * pageSize + 1}-{Math.min((page + 1) * pageSize, totalCount)} of {totalCount}
+            Showing {page * pageSize + 1}-
+            {Math.min((page + 1) * pageSize, totalCount)} of {totalCount}
           </p>
           <div className="flex gap-2">
             <Button
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
               size="sm"
               variant="outline"
-              onClick={() => setPage(page - 1)}
-              disabled={page === 0}
             >
               Previous
             </Button>
             <Button
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(page + 1)}
               size="sm"
               variant="outline"
-              onClick={() => setPage(page + 1)}
-              disabled={page >= totalPages - 1}
             >
               Next
             </Button>

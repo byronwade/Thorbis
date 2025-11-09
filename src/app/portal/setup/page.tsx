@@ -8,13 +8,19 @@
  * - Auto-login after setup
  */
 
-import { redirect, notFound } from "next/navigation";
+import { AlertCircle, CheckCircle2, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { notFound, redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle2, Lock, Mail, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 type PageProps = {
@@ -43,12 +49,14 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
     const decoded = Buffer.from(token, "base64url").toString("utf-8");
     const parts = decoded.split(":");
     customerId = parts[0] || "";
-    timestamp = parseInt(parts[1] || "0", 10);
+    timestamp = Number.parseInt(parts[1] || "0", 10);
 
     // Check if token is expired (7 days = 168 hours)
     const expirationTime = timestamp + 168 * 60 * 60 * 1000;
     if (Date.now() > expirationTime) {
-      return <InvalidTokenUI message="This invitation link has expired. Please request a new invitation." />;
+      return (
+        <InvalidTokenUI message="This invitation link has expired. Please request a new invitation." />
+      );
     }
   } catch {
     return <InvalidTokenUI message="Invalid invitation token" />;
@@ -68,7 +76,9 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
     .single();
 
   if (!customer) {
-    return <InvalidTokenUI message="Customer not found or invitation has been revoked" />;
+    return (
+      <InvalidTokenUI message="Customer not found or invitation has been revoked" />
+    );
   }
 
   // Check if already set up
@@ -176,7 +186,8 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
           </div>
           <CardTitle className="text-2xl">Set Up Your Portal Account</CardTitle>
           <CardDescription>
-            Welcome, {customer.display_name}! Create a password to access your customer portal.
+            Welcome, {customer.display_name}! Create a password to access your
+            customer portal.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -187,7 +198,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
               <div className="relative">
                 <Mail className="absolute top-3 left-3 size-4 text-muted-foreground" />
                 <Input
-                  className="pl-10 bg-muted"
+                  className="bg-muted pl-10"
                   disabled
                   id="email"
                   readOnly
@@ -206,7 +217,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
               <div className="relative">
                 <User className="absolute top-3 left-3 size-4 text-muted-foreground" />
                 <Input
-                  className="pl-10 bg-muted"
+                  className="bg-muted pl-10"
                   disabled
                   id="name"
                   readOnly
@@ -264,7 +275,8 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
                 <div className="space-y-1">
                   <p className="font-medium text-sm">Secure & Private</p>
                   <p className="text-muted-foreground text-xs">
-                    Your password is encrypted and secure. We never share your information.
+                    Your password is encrypted and secure. We never share your
+                    information.
                   </p>
                 </div>
               </div>
@@ -278,7 +290,10 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
             {/* Help text */}
             <p className="text-center text-muted-foreground text-sm">
               Need help?{" "}
-              <a className="text-primary underline" href="mailto:support@thorbis.com">
+              <a
+                className="text-primary underline"
+                href="mailto:support@thorbis.com"
+              >
                 Contact Support
               </a>
             </p>

@@ -15,10 +15,10 @@
  */
 
 import { z } from "zod";
-import { personEnrichmentService } from "./person-enrichment";
 import { businessEnrichmentService } from "./business-enrichment";
-import { socialEnrichmentService } from "./social-enrichment";
+import { personEnrichmentService } from "./person-enrichment";
 import { propertyEnrichmentService } from "./property-enrichment";
+import { socialEnrichmentService } from "./social-enrichment";
 
 // ============================================================================
 // Types and Schemas
@@ -26,19 +26,19 @@ import { propertyEnrichmentService } from "./property-enrichment";
 
 export const CustomerEnrichmentSchema = z.object({
   customerId: z.string().uuid(),
-  
+
   // Person data
   person: z.any().optional(), // PersonEnrichmentSchema
-  
+
   // Business data
   business: z.any().optional(), // BusinessEnrichmentSchema
-  
+
   // Social profiles
   social: z.any().optional(), // SocialEnrichmentSchema
-  
+
   // Property data (if customer has properties)
   properties: z.array(z.any()).optional(), // PropertyEnrichmentSchema[]
-  
+
   // Metadata
   enrichmentStatus: z.enum(["pending", "in_progress", "completed", "failed"]),
   lastEnrichedAt: z.string().optional(),
@@ -77,9 +77,10 @@ export class CustomerEnrichmentService {
       enrichmentStatus: "in_progress",
     };
 
-    const fullName = customer.firstName && customer.lastName
-      ? `${customer.firstName} ${customer.lastName}`
-      : undefined;
+    const fullName =
+      customer.firstName && customer.lastName
+        ? `${customer.firstName} ${customer.lastName}`
+        : undefined;
 
     // 1. Person enrichment
     try {
@@ -127,7 +128,12 @@ export class CustomerEnrichmentService {
     }
 
     // 4. Property enrichment (if address provided)
-    if (customer.address && customer.city && customer.state && customer.zipCode) {
+    if (
+      customer.address &&
+      customer.city &&
+      customer.state &&
+      customer.zipCode
+    ) {
       try {
         const propertyData = await propertyEnrichmentService.enrichProperty(
           customer.address,
@@ -146,9 +152,12 @@ export class CustomerEnrichmentService {
 
     // Calculate overall confidence score
     const confidenceScores: number[] = [];
-    if (enrichmentData.person) confidenceScores.push((enrichmentData.person as any).confidence);
-    if (enrichmentData.business) confidenceScores.push((enrichmentData.business as any).confidence);
-    if (enrichmentData.social) confidenceScores.push((enrichmentData.social as any).confidence);
+    if (enrichmentData.person)
+      confidenceScores.push((enrichmentData.person as any).confidence);
+    if (enrichmentData.business)
+      confidenceScores.push((enrichmentData.business as any).confidence);
+    if (enrichmentData.social)
+      confidenceScores.push((enrichmentData.social as any).confidence);
     if (enrichmentData.properties?.length) {
       confidenceScores.push((enrichmentData.properties[0] as any).confidence);
     }
@@ -202,4 +211,3 @@ export class CustomerEnrichmentService {
 
 // Singleton instance
 export const customerEnrichmentService = new CustomerEnrichmentService();
-

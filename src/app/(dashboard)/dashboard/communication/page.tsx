@@ -22,8 +22,8 @@ import {
   Search,
   Ticket,
 } from "lucide-react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { CallsView } from "@/components/communication/calls-view";
 import { EmailView } from "@/components/communication/email-view";
 import { SMSView } from "@/components/communication/sms-view";
@@ -151,7 +151,9 @@ export default function CommunicationPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null
+  );
   const [isDetailView, setIsDetailView] = useState(false);
 
   // Use Zustand store for active filter (shared with toolbar)

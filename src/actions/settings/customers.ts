@@ -48,7 +48,9 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 // ============================================================================
 
 const customerPreferenceSchema = z.object({
-  defaultContactMethod: z.enum(["email", "sms", "phone", "app"]).default("email"),
+  defaultContactMethod: z
+    .enum(["email", "sms", "phone", "app"])
+    .default("email"),
   allowMarketingEmails: z.boolean().default(true),
   allowMarketingSms: z.boolean().default(false),
   requestFeedback: z.boolean().default(true),
@@ -84,7 +86,8 @@ export async function updateCustomerPreferences(
       allowMarketingSms: formData.get("allowMarketingSms") === "true",
       requestFeedback: formData.get("requestFeedback") !== "false",
       feedbackDelayHours: formData.get("feedbackDelayHours") || "24",
-      sendAppointmentReminders: formData.get("sendAppointmentReminders") !== "false",
+      sendAppointmentReminders:
+        formData.get("sendAppointmentReminders") !== "false",
       reminderHoursBefore: formData.get("reminderHoursBefore") || "24",
       requireServiceAddress: formData.get("requireServiceAddress") !== "false",
       autoTagCustomers: formData.get("autoTagCustomers") === "true",
@@ -157,7 +160,15 @@ export async function getCustomerPreferences(): Promise<ActionResult<any>> {
 const customFieldSchema = z.object({
   fieldName: z.string().min(1, "Field name is required"),
   fieldKey: z.string().min(1, "Field key is required"),
-  fieldType: z.enum(["text", "number", "date", "boolean", "select", "multi_select", "textarea"]),
+  fieldType: z.enum([
+    "text",
+    "number",
+    "date",
+    "boolean",
+    "select",
+    "multi_select",
+    "textarea",
+  ]),
   fieldOptions: z.string().optional(), // JSON string
   isRequired: z.boolean().default(false),
   showInList: z.boolean().default(false),
@@ -305,7 +316,9 @@ export async function updateCustomField(
   });
 }
 
-export async function deleteCustomField(fieldId: string): Promise<ActionResult<void>> {
+export async function deleteCustomField(
+  fieldId: string
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -430,19 +443,17 @@ export async function updateLoyaltySettings(
       }
     }
 
-    const { error } = await supabase
-      .from("customer_loyalty_settings")
-      .upsert({
-        company_id: companyId,
-        loyalty_enabled: data.loyaltyEnabled,
-        program_name: data.programName,
-        points_per_dollar_spent: data.pointsPerDollarSpent,
-        points_per_referral: data.pointsPerReferral,
-        points_expiry_days: data.pointsExpiryDays,
-        reward_tiers: rewardTiersJson,
-        auto_apply_rewards: data.autoApplyRewards,
-        notify_on_points_earned: data.notifyOnPointsEarned,
-      });
+    const { error } = await supabase.from("customer_loyalty_settings").upsert({
+      company_id: companyId,
+      loyalty_enabled: data.loyaltyEnabled,
+      program_name: data.programName,
+      points_per_dollar_spent: data.pointsPerDollarSpent,
+      points_per_referral: data.pointsPerReferral,
+      points_expiry_days: data.pointsExpiryDays,
+      reward_tiers: rewardTiersJson,
+      auto_apply_rewards: data.autoApplyRewards,
+      notify_on_points_earned: data.notifyOnPointsEarned,
+    });
 
     if (error) {
       throw new ActionError(
@@ -526,30 +537,31 @@ export async function updatePrivacySettings(
 
     const data = privacySettingsSchema.parse({
       dataRetentionYears: formData.get("dataRetentionYears") || "7",
-      autoDeleteInactiveCustomers: formData.get("autoDeleteInactiveCustomers") === "true",
+      autoDeleteInactiveCustomers:
+        formData.get("autoDeleteInactiveCustomers") === "true",
       inactiveThresholdYears: formData.get("inactiveThresholdYears") || "3",
-      requireMarketingConsent: formData.get("requireMarketingConsent") !== "false",
-      requireDataProcessingConsent: formData.get("requireDataProcessingConsent") !== "false",
+      requireMarketingConsent:
+        formData.get("requireMarketingConsent") !== "false",
+      requireDataProcessingConsent:
+        formData.get("requireDataProcessingConsent") !== "false",
       privacyPolicyUrl: formData.get("privacyPolicyUrl") || undefined,
       termsOfServiceUrl: formData.get("termsOfServiceUrl") || undefined,
       enableRightToDeletion: formData.get("enableRightToDeletion") !== "false",
       enableDataExport: formData.get("enableDataExport") !== "false",
     });
 
-    const { error } = await supabase
-      .from("customer_privacy_settings")
-      .upsert({
-        company_id: companyId,
-        data_retention_years: data.dataRetentionYears,
-        auto_delete_inactive_customers: data.autoDeleteInactiveCustomers,
-        inactive_threshold_years: data.inactiveThresholdYears,
-        require_marketing_consent: data.requireMarketingConsent,
-        require_data_processing_consent: data.requireDataProcessingConsent,
-        privacy_policy_url: data.privacyPolicyUrl,
-        terms_of_service_url: data.termsOfServiceUrl,
-        enable_right_to_deletion: data.enableRightToDeletion,
-        enable_data_export: data.enableDataExport,
-      });
+    const { error } = await supabase.from("customer_privacy_settings").upsert({
+      company_id: companyId,
+      data_retention_years: data.dataRetentionYears,
+      auto_delete_inactive_customers: data.autoDeleteInactiveCustomers,
+      inactive_threshold_years: data.inactiveThresholdYears,
+      require_marketing_consent: data.requireMarketingConsent,
+      require_data_processing_consent: data.requireDataProcessingConsent,
+      privacy_policy_url: data.privacyPolicyUrl,
+      terms_of_service_url: data.termsOfServiceUrl,
+      enable_right_to_deletion: data.enableRightToDeletion,
+      enable_data_export: data.enableDataExport,
+    });
 
     if (error) {
       throw new ActionError(
@@ -611,7 +623,10 @@ const portalSettingsSchema = z.object({
   showEstimates: z.boolean().default(true),
   allowMessaging: z.boolean().default(true),
   portalLogoUrl: z.string().optional(),
-  primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).default("#3b82f6"),
+  primaryColor: z
+    .string()
+    .regex(/^#[0-9A-F]{6}$/i)
+    .default("#3b82f6"),
   welcomeMessage: z.string().optional(),
   notifyOnNewInvoice: z.boolean().default(true),
   notifyOnNewEstimate: z.boolean().default(true),
@@ -655,26 +670,24 @@ export async function updatePortalSettings(
       notifyOnAppointment: formData.get("notifyOnAppointment") !== "false",
     });
 
-    const { error } = await supabase
-      .from("customer_portal_settings")
-      .upsert({
-        company_id: companyId,
-        portal_enabled: data.portalEnabled,
-        require_account_approval: data.requireAccountApproval,
-        allow_booking: data.allowBooking,
-        allow_invoice_payment: data.allowInvoicePayment,
-        allow_estimate_approval: data.allowEstimateApproval,
-        show_service_history: data.showServiceHistory,
-        show_invoices: data.showInvoices,
-        show_estimates: data.showEstimates,
-        allow_messaging: data.allowMessaging,
-        portal_logo_url: data.portalLogoUrl,
-        primary_color: data.primaryColor,
-        welcome_message: data.welcomeMessage,
-        notify_on_new_invoice: data.notifyOnNewInvoice,
-        notify_on_new_estimate: data.notifyOnNewEstimate,
-        notify_on_appointment: data.notifyOnAppointment,
-      });
+    const { error } = await supabase.from("customer_portal_settings").upsert({
+      company_id: companyId,
+      portal_enabled: data.portalEnabled,
+      require_account_approval: data.requireAccountApproval,
+      allow_booking: data.allowBooking,
+      allow_invoice_payment: data.allowInvoicePayment,
+      allow_estimate_approval: data.allowEstimateApproval,
+      show_service_history: data.showServiceHistory,
+      show_invoices: data.showInvoices,
+      show_estimates: data.showEstimates,
+      allow_messaging: data.allowMessaging,
+      portal_logo_url: data.portalLogoUrl,
+      primary_color: data.primaryColor,
+      welcome_message: data.welcomeMessage,
+      notify_on_new_invoice: data.notifyOnNewInvoice,
+      notify_on_new_estimate: data.notifyOnNewEstimate,
+      notify_on_appointment: data.notifyOnAppointment,
+    });
 
     if (error) {
       throw new ActionError(
@@ -769,7 +782,8 @@ export async function updateIntakeSettings(
       autoAssignTechnician: formData.get("autoAssignTechnician") === "true",
       autoCreateJob: formData.get("autoCreateJob") === "true",
       sendWelcomeEmail: formData.get("sendWelcomeEmail") !== "false",
-      welcomeEmailTemplateId: formData.get("welcomeEmailTemplateId") || undefined,
+      welcomeEmailTemplateId:
+        formData.get("welcomeEmailTemplateId") || undefined,
     });
 
     let customQuestionsJson = [];
@@ -784,22 +798,20 @@ export async function updateIntakeSettings(
       }
     }
 
-    const { error } = await supabase
-      .from("customer_intake_settings")
-      .upsert({
-        company_id: companyId,
-        require_phone: data.requirePhone,
-        require_email: data.requireEmail,
-        require_address: data.requireAddress,
-        require_property_type: data.requirePropertyType,
-        custom_questions: customQuestionsJson,
-        track_lead_source: data.trackLeadSource,
-        require_lead_source: data.requireLeadSource,
-        auto_assign_technician: data.autoAssignTechnician,
-        auto_create_job: data.autoCreateJob,
-        send_welcome_email: data.sendWelcomeEmail,
-        welcome_email_template_id: data.welcomeEmailTemplateId,
-      });
+    const { error } = await supabase.from("customer_intake_settings").upsert({
+      company_id: companyId,
+      require_phone: data.requirePhone,
+      require_email: data.requireEmail,
+      require_address: data.requireAddress,
+      require_property_type: data.requirePropertyType,
+      custom_questions: customQuestionsJson,
+      track_lead_source: data.trackLeadSource,
+      require_lead_source: data.requireLeadSource,
+      auto_assign_technician: data.autoAssignTechnician,
+      auto_create_job: data.autoCreateJob,
+      send_welcome_email: data.sendWelcomeEmail,
+      welcome_email_template_id: data.welcomeEmailTemplateId,
+    });
 
     if (error) {
       throw new ActionError(

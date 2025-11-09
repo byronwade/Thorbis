@@ -253,7 +253,8 @@ function Sidebar({
           className={cn(
             "flex h-full w-full flex-col",
             variant === "sidebar" && "bg-transparent",
-            variant !== "sidebar" && "bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
+            variant !== "sidebar" &&
+              "bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
           )}
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
@@ -386,11 +387,15 @@ function SidebarSeparator({
   );
 }
 
-function SidebarContent({ className, children, ...props }: React.ComponentProps<"div">) {
+function SidebarContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden overflow-x-hidden px-2 no-scrollbar",
+        "no-scrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-auto overflow-x-hidden px-2 group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
       data-sidebar="content"
@@ -398,10 +403,10 @@ function SidebarContent({ className, children, ...props }: React.ComponentProps<
       {...props}
     >
       {/* Top gradient overlay */}
-      <div className="from-background via-background/80 to-background/50 sticky -top-1 z-10 h-8 shrink-0 bg-gradient-to-b blur-xs" />
+      <div className="-top-1 sticky z-10 h-8 shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
       {children}
       {/* Bottom gradient overlay */}
-      <div className="from-background via-background/80 to-background/50 sticky -bottom-1 z-10 h-16 shrink-0 bg-gradient-to-t blur-xs" />
+      <div className="-bottom-1 sticky z-10 h-16 shrink-0 bg-gradient-to-t from-background via-background/80 to-background/50 blur-xs" />
     </div>
   );
 }

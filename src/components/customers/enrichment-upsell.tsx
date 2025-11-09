@@ -6,6 +6,9 @@
 
 "use client";
 
+import { Check, Crown, Lock, Sparkles, TrendingUp, Zap } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,17 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Check,
-  Lock,
-  Sparkles,
-  TrendingUp,
-  Zap,
-  Crown,
-} from "lucide-react";
-import Link from "next/link";
 
 interface EnrichmentUpsellProps {
   currentTier: "free" | "pro" | "enterprise";
@@ -75,7 +68,11 @@ export function EnrichmentUpsell({
         "1-day cache refresh",
         "Email support",
       ],
-      locked: ["Unlimited enrichments", "Real-time updates", "Priority support"],
+      locked: [
+        "Unlimited enrichments",
+        "Real-time updates",
+        "Priority support",
+      ],
     },
     enterprise: {
       name: "Enterprise",
@@ -97,15 +94,15 @@ export function EnrichmentUpsell({
 
   if (showFullFeatures) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {Object.entries(tierFeatures).map(([tier, features]) => {
           const isCurrent = tier === currentTier;
           const isPremium = tier !== "free";
 
           return (
             <Card
-              key={tier}
               className={isCurrent ? "border-primary shadow-lg" : ""}
+              key={tier}
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -113,29 +110,31 @@ export function EnrichmentUpsell({
                     {tier === "enterprise" && (
                       <Crown className="h-5 w-5 text-yellow-500" />
                     )}
-                    {tier === "pro" && <Zap className="h-5 w-5 text-blue-500" />}
+                    {tier === "pro" && (
+                      <Zap className="h-5 w-5 text-blue-500" />
+                    )}
                     {features.name}
                   </CardTitle>
                   {isCurrent && <Badge>Current</Badge>}
                 </div>
                 <CardDescription>
-                  <div className="text-2xl font-bold mt-2">
-                    {'price' in features ? features.price : "Free"}
+                  <div className="mt-2 font-bold text-2xl">
+                    {"price" in features ? features.price : "Free"}
                   </div>
                   <div className="text-sm">{features.limit}</div>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 {features.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" key={index}>
                     <Check className="h-4 w-4 text-green-600" />
                     <span className="text-sm">{feature}</span>
                   </div>
                 ))}
                 {features.locked.map((feature, index) => (
                   <div
-                    key={index}
                     className="flex items-center gap-2 text-muted-foreground"
+                    key={index}
                   >
                     <Lock className="h-4 w-4" />
                     <span className="text-sm">{feature}</span>
@@ -144,14 +143,14 @@ export function EnrichmentUpsell({
               </CardContent>
               <CardFooter>
                 {!isCurrent && (
-                  <Button className="w-full" asChild>
+                  <Button asChild className="w-full">
                     <Link href="/dashboard/settings/subscriptions">
                       {isPremium ? "Upgrade" : "Downgrade"}
                     </Link>
                   </Button>
                 )}
                 {isCurrent && (
-                  <Button variant="outline" className="w-full" disabled>
+                  <Button className="w-full" disabled variant="outline">
                     Current Plan
                   </Button>
                 )}
@@ -187,19 +186,17 @@ export function EnrichmentUpsell({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {usageLimit && (
-          <Progress value={usagePercentage} className="h-2" />
-        )}
+        {usageLimit && <Progress className="h-2" value={usagePercentage} />}
 
         {isLimitReached && (
-          <div className="p-4 border border-destructive rounded-lg bg-destructive/10">
+          <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
             <div className="flex items-start gap-3">
-              <Lock className="h-5 w-5 text-destructive mt-0.5" />
+              <Lock className="mt-0.5 h-5 w-5 text-destructive" />
               <div>
                 <p className="font-medium text-destructive">
                   Enrichment limit reached
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="mt-1 text-muted-foreground text-sm">
                   Upgrade to continue enriching customer data
                 </p>
               </div>
@@ -208,12 +205,12 @@ export function EnrichmentUpsell({
         )}
 
         {currentTier === "free" && usagePercentage > 70 && (
-          <div className="p-4 border rounded-lg bg-accent">
+          <div className="rounded-lg border bg-accent p-4">
             <div className="flex items-start gap-3">
-              <Sparkles className="h-5 w-5 text-primary mt-0.5" />
+              <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
               <div>
                 <p className="font-medium">Unlock more enrichments</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="mt-1 text-muted-foreground text-sm">
                   Upgrade to Pro for 500 enrichments/month + social profiles
                 </p>
               </div>
@@ -221,9 +218,10 @@ export function EnrichmentUpsell({
           </div>
         )}
       </CardContent>
-      {(isLimitReached || (currentTier !== "enterprise" && usagePercentage > 70)) && (
+      {(isLimitReached ||
+        (currentTier !== "enterprise" && usagePercentage > 70)) && (
         <CardFooter>
-          <Button className="w-full" asChild>
+          <Button asChild className="w-full">
             <Link href="/dashboard/settings/subscriptions">
               <Crown className="mr-2 h-4 w-4" />
               Upgrade Plan
@@ -234,4 +232,3 @@ export function EnrichmentUpsell({
     </Card>
   );
 }
-
