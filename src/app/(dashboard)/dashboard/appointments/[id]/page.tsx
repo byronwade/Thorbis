@@ -1,0 +1,154 @@
+/**
+ * Appointment Details Page
+ *
+ * Displays comprehensive appointment information using unified layout system
+ */
+
+import { notFound } from "next/navigation";
+import { DetailPageLayout } from "@/components/layout/detail-page-layout";
+import { AppointmentStatsBar } from "@/components/appointments/appointment-stats-bar";
+import { AppointmentPageContent } from "@/components/appointments/appointment-page-content";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function AppointmentDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: appointmentId } = await params;
+
+  const supabase = await createClient();
+
+  if (!supabase) {
+    return notFound();
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return notFound();
+  }
+
+  // Get active company
+  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    return notFound();
+  }
+
+  // Verify user access
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .eq("company_id", activeCompanyId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (!teamMember) {
+    return notFound();
+  }
+
+  // Fetch appointment with all related data
+  const { data: appointment, error } = await supabase
+    .from("schedules")
+    .select(`
+      *,
+      customer:customers(*),
+      property:properties(*),
+      job:jobs(*),
+      assigned_user:users!assigned_to(*)
+    `)
+    .eq("id", appointmentId)
+    .is("deleted_at", null)
+    .single();
+
+  if (error || !appointment) {
+    return notFound();
+  }
+
+  // Verify belongs to company
+  if (appointment.company_id !== activeCompanyId) {
+    return notFound();
+  }
+
+  // Fetch related data
+  const [
+    { data: teamAssignments },
+    { data: tasks },
+    { data: notes },
+    { data: activities },
+  ] = await Promise.all([
+    supabase
+      .from("schedule_team_assignments")
+      .select("*, user:users(*)")
+      .eq("schedule_id", appointmentId),
+    supabase
+      .from("job_tasks")
+      .select("*")
+      .eq("job_id", appointment.job_id)
+      .eq("status", "pending"),
+    supabase
+      .from("job_notes")
+      .select("*, user:users(*)")
+      .eq("job_id", appointment.job_id)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabase
+      .from("activity_log")
+      .select("*, user:users(*)")
+      .eq("entity_type", "schedule")
+      .eq("entity_id", appointmentId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+  ]);
+
+  // Get customer and property from appointment
+  const customer = Array.isArray(appointment.customer)
+    ? appointment.customer[0]
+    : appointment.customer;
+  const property = Array.isArray(appointment.property)
+    ? appointment.property[0]
+    : appointment.property;
+  const job = Array.isArray(appointment.job) ? appointment.job[0] : appointment.job;
+
+  // Calculate metrics
+  const appointmentStart = new Date(appointment.start_time);
+  const appointmentEnd = new Date(appointment.end_time);
+  const duration = Math.floor(
+    (appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60)
+  );
+
+  const metrics = {
+    duration,
+    travelTime: 0, // Would fetch from travel-time API
+    teamMemberCount: teamAssignments?.length || 0,
+    jobValue: job?.total_amount || 0,
+  };
+
+  const appointmentData = {
+    appointment,
+    customer,
+    property,
+    job,
+    teamAssignments: teamAssignments || [],
+    tasks: tasks || [],
+    notes: notes || [],
+    activities: activities || [],
+  };
+
+  return (
+    <DetailPageLayout
+      entityId={appointmentId}
+      entityType="appointment"
+      entityData={appointmentData}
+      metrics={metrics}
+      StatsBarComponent={AppointmentStatsBar}
+      ContentComponent={AppointmentPageContent}
+    />
+  );
+}
