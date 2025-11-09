@@ -727,7 +727,9 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
         title: "Schedule",
         actions: <ScheduleToolbarActions />,
       },
-      sidebar: DEFAULT_SIDEBAR,
+      sidebar: {
+        show: false,
+      },
     },
     priority: 70,
     description: "Schedule/calendar view",

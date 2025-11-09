@@ -240,7 +240,7 @@ export function EstimatesTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search estimates by number, customer, project, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

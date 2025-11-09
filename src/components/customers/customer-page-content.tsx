@@ -48,6 +48,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { JobsTable } from "@/components/work/jobs-table";
+import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
+import { PropertiesTable } from "@/components/customers/properties-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -256,8 +259,8 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     });
   };
 
-  // Get status badge
-  const getStatusBadge = (status: string) => {
+  // Get status badge for customer status
+  const getCustomerStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; variant: string }> = {
       active: { label: "Active", variant: "default" },
       inactive: { label: "Inactive", variant: "secondary" },
@@ -271,6 +274,87 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         {config.label}
       </Badge>
     );
+  };
+
+  // Get status badge for jobs/invoices
+  const getJobInvoiceStatusBadge = (status: string) => {
+    const variants: Record<
+      string,
+      {
+        className: string;
+        label: string;
+      }
+    > = {
+      draft: {
+        className:
+          "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+        label: "Draft",
+      },
+      scheduled: {
+        className:
+          "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+        label: "Scheduled",
+      },
+      in_progress: {
+        className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
+        label: "In Progress",
+      },
+      completed: {
+        className:
+          "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+        label: "Completed",
+      },
+      cancelled: {
+        className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+        label: "Cancelled",
+      },
+      paid: {
+        className:
+          "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+        label: "Paid",
+      },
+      unpaid: {
+        className:
+          "border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400",
+        label: "Unpaid",
+      },
+      overdue: {
+        className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+        label: "Overdue",
+      },
+    };
+
+    const config = variants[status] || {
+      className: "border-border/50 bg-background text-muted-foreground",
+      label: status.replace("_", " "),
+    };
+
+    return (
+      <Badge className={`font-medium text-xs ${config.className}`} variant="outline">
+        {config.label}
+      </Badge>
+    );
+  };
+
+  // Format date for table display
+  const formatTableDate = (date: string | Date | null): string => {
+    if (!date) return "—";
+    const d = typeof date === "string" ? new Date(date) : date;
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(d);
+  };
+
+  // Format currency for table (amounts are stored in cents)
+  const formatTableCurrency = (amount: number | null): string => {
+    if (amount === null || amount === undefined) return "$0.00";
+    // Amounts are stored in cents, so divide by 100
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount / 100);
   };
 
   if (!mounted) {
@@ -295,7 +379,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                 value={displayName}
               />
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                {getStatusBadge(customerStatus || "active")}
+                {getCustomerStatusBadge(customerStatus || "active")}
                 {membershipLabel && (
                   <Badge variant="secondary">{membershipLabel}</Badge>
                 )}
@@ -448,7 +532,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
               value="customer-info"
               title="Customer Information"
               icon={<User />}
-              badge={getStatusBadge(customerStatus || "active")}
+              badge={getCustomerStatusBadge(customerStatus || "active")}
             >
               <div className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">
@@ -567,72 +651,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                 </CollapsibleActionButton>
               }
             >
-              {properties.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Address</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Jobs</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {properties.map((property: any) => (
-                      <TableRow key={property.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">
-                              {property.name || property.address}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {property.city}, {property.state} {property.zip_code}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {property.property_type || "N/A"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {
-                            jobs.filter(
-                              (j: any) => j.property_id === property.id
-                            ).length
-                          }
-                        </TableCell>
-                        <TableCell>
-                          <Button size="sm" variant="ghost" asChild>
-                            <Link href={`/dashboard/properties/${property.id}`}>
-                              View <ChevronRight className="ml-1 size-4" />
-                            </Link>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Building2 className="mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-semibold">No properties yet</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">
-                    Add a property to track service locations for this customer
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      router.push(
-                        `/dashboard/properties/new?customerId=${customer.id}`
-                      )
-                    }
-                  >
-                    <Plus className="mr-2 size-4" />
-                    Add First Property
-                  </Button>
-                </div>
-              )}
+              <PropertiesTable
+                customerId={customer.id}
+                itemsPerPage={10}
+                properties={properties}
+              />
             </CollapsibleDataSection>
 
             <CollapsibleDataSection
@@ -652,61 +675,46 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                 </CollapsibleActionButton>
               }
             >
-              {jobs.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Job #</TableHead>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {jobs.slice(0, 10).map((job: any) => (
-                      <TableRow key={job.id}>
-                        <TableCell className="font-mono text-sm">
-                          #{job.job_number || job.id.slice(0, 8)}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {job.title || "Untitled Job"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge>{job.status}</Badge>
-                        </TableCell>
-                        <TableCell>{formatCurrency(job.total_amount || 0)}</TableCell>
-                        <TableCell>{formatDate(job.created_at)}</TableCell>
-                        <TableCell>
-                          <Button size="sm" variant="ghost" asChild>
-                            <Link href={`/dashboard/work/${job.id}`}>
-                              View <ChevronRight className="ml-1 size-4" />
-                            </Link>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Wrench className="mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-semibold">No jobs yet</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">
-                    Create a new job to start tracking work for this customer
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      router.push(`/dashboard/work/new?customerId=${customer.id}`)
-                    }
-                  >
-                    <Plus className="mr-2 size-4" />
-                    Create First Job
-                  </Button>
-                </div>
-              )}
+              {(() => {
+                // Transform jobs to match Job type expected by JobsTable
+                const transformedJobs = (jobs || []).map((job: any) => ({
+                  id: job.id,
+                  companyId: job.company_id,
+                  propertyId: job.property_id,
+                  customerId: job.customer_id,
+                  assignedTo: job.assigned_to,
+                  jobNumber: job.job_number,
+                  title: job.title,
+                  description: job.description,
+                  status: job.status,
+                  priority: job.priority,
+                  jobType: job.job_type,
+                  scheduledStart: job.scheduled_start ? new Date(job.scheduled_start) : null,
+                  scheduledEnd: job.scheduled_end ? new Date(job.scheduled_end) : null,
+                  actualStart: job.actual_start ? new Date(job.actual_start) : null,
+                  actualEnd: job.actual_end ? new Date(job.actual_end) : null,
+                  totalAmount: job.total_amount || 0,
+                  paidAmount: job.paid_amount || 0,
+                  notes: job.notes,
+                  metadata: job.metadata,
+                  createdAt: job.created_at ? new Date(job.created_at) : new Date(),
+                  updatedAt: job.updated_at ? new Date(job.updated_at) : new Date(),
+                  aiCategories: job.ai_categories,
+                  aiEquipment: job.ai_equipment,
+                  aiServiceType: job.ai_service_type,
+                  aiPriorityScore: job.ai_priority_score,
+                  aiTags: job.ai_tags,
+                  aiProcessedAt: job.ai_processed_at ? new Date(job.ai_processed_at) : null,
+                }));
+
+                return (
+                  <JobsTable 
+                    itemsPerPage={10} 
+                    jobs={transformedJobs}
+                    showRefresh={false}
+                  />
+                );
+              })()}
             </CollapsibleDataSection>
 
             <CollapsibleDataSection
@@ -728,61 +736,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                 </CollapsibleActionButton>
               }
             >
-              {invoices.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Invoice #</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Due Date</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {invoices.slice(0, 10).map((invoice: any) => (
-                      <TableRow key={invoice.id}>
-                        <TableCell className="font-mono text-sm">
-                          #{invoice.invoice_number || invoice.id.slice(0, 8)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge>{invoice.status}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {formatCurrency(invoice.total_amount || 0)}
-                        </TableCell>
-                        <TableCell>{formatDate(invoice.due_date)}</TableCell>
-                        <TableCell>
-                          <Button size="sm" variant="ghost" asChild>
-                            <Link href={`/dashboard/work/invoices/${invoice.id}`}>
-                              View <ChevronRight className="ml-1 size-4" />
-                            </Link>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Receipt className="mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-semibold">No invoices yet</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">
-                    Create an invoice to bill this customer
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      router.push(
-                        `/dashboard/work/invoices/new?customerId=${customer.id}`
-                      )
-                    }
-                  >
-                    <Plus className="mr-2 size-4" />
-                    Create First Invoice
-                  </Button>
-                </div>
-              )}
+              <CustomerInvoicesTable 
+                invoices={invoices || []}
+                onUpdate={() => router.refresh()}
+              />
             </CollapsibleDataSection>
 
             <CollapsibleDataSection

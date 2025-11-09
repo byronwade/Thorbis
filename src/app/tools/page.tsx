@@ -541,8 +541,8 @@ export default function ToolsPage() {
             </Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/demo">
-              Schedule a Demo
+            <Link href="/register">
+              Create account
               <ChevronRight className="ml-2 size-4" />
             </Link>
           </Button>

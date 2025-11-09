@@ -87,13 +87,16 @@ export function DemoShowcaseSection() {
               className="group rounded-lg bg-primary px-8 py-6 font-semibold text-lg text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:scale-105 hover:bg-primary/90"
               size="lg"
             >
-              <Link href="/demo">
-                Schedule a Live Demo
+              <Link href="/features">
+                Explore the product
                 <span className="ml-2 transition-transform group-hover:translate-x-1">
                   →
                 </span>
               </Link>
             </Button>
+            <p className="text-foreground/70 text-sm">
+              Thorbis is $100/month with pay-as-you-go usage. Unlimited users, no contracts.
+            </p>
           </div>
 
           {/* Right - Video/Demo Mockup */}
@@ -117,7 +120,7 @@ export function DemoShowcaseSection() {
                     </svg>
                   </button>
                   <p className="font-semibold text-white text-xl">
-                    Watch 2-Minute Demo
+                    Watch a quick tour
                   </p>
                   <p className="text-center text-foreground text-sm">
                     See how Thorbis helps field service businesses

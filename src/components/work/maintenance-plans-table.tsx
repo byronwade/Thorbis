@@ -247,7 +247,7 @@ export function MaintenancePlansTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search plans by name, customer, service type, frequency, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

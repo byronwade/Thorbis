@@ -9,4 +9,5 @@ export type ScheduleView =
   | "calendar"
   | "map"
   | "board"
+  | "gantt"
   | "test";

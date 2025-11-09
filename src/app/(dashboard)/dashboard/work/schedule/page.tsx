@@ -20,26 +20,20 @@
  * - Better SEO and initial page load performance
  */
 
-import { useEffect } from "react";
 import { TimelineViewV2 } from "@/components/schedule/timeline-view-v2";
-import { useSidebar } from "@/components/ui/sidebar";
 // import { ListView } from "@/components/schedule/list-view"
 // import { CalendarView } from "@/components/schedule/calendar-view"
 // import { MapView } from "@/components/schedule/map-view"
+import { GanttScheduler } from "@/components/schedule/gantt-scheduler";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { TestSchedule } from "./test-schedule";
 
 export default function SchedulePage() {
-  const { setOpen } = useSidebar();
   const view = useScheduleViewStore((state) => state.view);
-
-  // Auto-close sidebar on mount
-  useEffect(() => {
-    setOpen(false);
-  }, [setOpen]);
 
   return (
     <div className="h-full w-full overflow-hidden">
+      {view === "gantt" && <GanttScheduler />}
       {view === "timeline" && <TimelineViewV2 />}
       {view === "test" && <TestSchedule />}
       {/* Temporarily disabled old views that use deprecated data model */}

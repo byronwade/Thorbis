@@ -10,6 +10,7 @@ import {
   Download,
   FileText,
   MoreHorizontal,
+  Plus,
   Send,
 } from "lucide-react";
 import Link from "next/link";
@@ -89,7 +90,7 @@ function getStatusBadge(status: string) {
 export function InvoicesTable({
   invoices,
   itemsPerPage = 50,
-  showRefresh = true,
+  showRefresh = false,
 }: InvoicesTableProps) {
   const columns: ColumnDef<Invoice>[] = [
     {
@@ -286,9 +287,16 @@ export function InvoicesTable({
       bulkActions={bulkActions}
       columns={columns}
       data={invoices}
-      emptyIcon={
-        <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+      emptyAction={
+        <Button
+          onClick={() => (window.location.href = "/dashboard/work/invoices/new")}
+          size="sm"
+        >
+          <Plus className="mr-2 size-4" />
+          Create Invoice
+        </Button>
       }
+      emptyIcon={<FileText className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No invoices found"
       enableSelection={true}
       getHighlightClass={() => "bg-red-50/30 dark:bg-red-950/10"}

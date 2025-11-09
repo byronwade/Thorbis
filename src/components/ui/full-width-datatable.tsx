@@ -74,7 +74,7 @@ export type FullWidthDataTableProps<T> = {
   emptyIcon?: React.ReactNode;
   /** Empty state action button (e.g., "Add Job") */
   emptyAction?: React.ReactNode;
-  /** Show refresh button */
+  /** Show refresh button (default: false for automatic updates) */
   showRefresh?: boolean;
   /** Refresh handler */
   onRefresh?: () => void;
@@ -103,7 +103,7 @@ export function FullWidthDataTable<T>({
   emptyMessage = "No items found",
   emptyIcon,
   emptyAction,
-  showRefresh = true,
+  showRefresh = false,
   onRefresh,
   showPagination = true,
   itemsPerPage = 50,

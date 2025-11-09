@@ -252,7 +252,7 @@ export function MaterialsTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search materials by code, description, category, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

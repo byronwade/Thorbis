@@ -204,7 +204,11 @@ export function AddressPropertiesAdaptiveBlockComponent({
         value="customer-properties"
       >
         {/* Full-width datatable with search/sort/pagination and hover maps */}
-        <PropertiesTable itemsPerPage={10} properties={properties} />
+        <PropertiesTable 
+          customerId={customerId}
+          itemsPerPage={10} 
+          properties={properties} 
+        />
       </CollapsibleDataSection>
     </NodeViewWrapper>
   );

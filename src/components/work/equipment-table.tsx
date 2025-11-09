@@ -4,6 +4,7 @@ import {
   Archive,
   Download,
   MoreHorizontal,
+  Plus,
   Settings,
   Trash2,
   Truck,
@@ -228,7 +229,16 @@ export function EquipmentTable({
       bulkActions={bulkActions}
       columns={columns}
       data={equipment}
-      emptyIcon={<Truck className="mx-auto h-12 w-12 text-muted-foreground" />}
+      emptyAction={
+        <Button
+          onClick={() => (window.location.href = "/dashboard/work/equipment/new")}
+          size="sm"
+        >
+          <Plus className="mr-2 size-4" />
+          Add Equipment
+        </Button>
+      }
+      emptyIcon={<Truck className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No equipment found"
       enableSelection={true}
       getHighlightClass={() => "bg-yellow-50/30 dark:bg-yellow-950/10"}
@@ -241,7 +251,7 @@ export function EquipmentTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

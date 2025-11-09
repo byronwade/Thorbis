@@ -359,7 +359,7 @@ export function LeadsDataTable({
       onRowClick={handleRowClick}
       searchFilter={searchFilter}
       searchPlaceholder="Search leads by name, email, or phone..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

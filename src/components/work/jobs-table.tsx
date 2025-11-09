@@ -159,7 +159,7 @@ export function JobsTable({
   jobs,
   itemsPerPage = 50,
   onJobClick,
-  showRefresh = true,
+  showRefresh = false,
 }: JobsTableProps) {
   const columns: ColumnDef<Job>[] = [
     {

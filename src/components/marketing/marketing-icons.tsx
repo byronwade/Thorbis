@@ -23,6 +23,7 @@ import {
   FolderOpen,
   Gauge,
   GitBranch,
+  GraduationCap,
   Handshake,
   Image as ImageIcon,
   LayoutDashboard,
@@ -113,6 +114,7 @@ const ICON_MAP = {
   "rotate-cw": RotateCw,
   sparkles: Sparkles,
   rocket: Rocket,
+  "graduation-cap": GraduationCap,
 } satisfies Record<string, LucideIcon>;
 
 type IconKey = keyof typeof ICON_MAP;

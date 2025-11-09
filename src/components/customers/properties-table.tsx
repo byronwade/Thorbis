@@ -18,6 +18,7 @@ import {
   ExternalLink,
   Factory,
   Home,
+  Plus,
   Sparkles,
   UserX,
 } from "lucide-react";
@@ -74,6 +75,7 @@ type Property = {
 type PropertiesTableProps = {
   properties: Property[];
   itemsPerPage?: number;
+  customerId?: string;
 };
 
 function formatCurrency(cents: number | undefined): string {
@@ -121,6 +123,7 @@ function getPropertyBadge(type?: string) {
 export function PropertiesTable({
   properties,
   itemsPerPage = 10,
+  customerId,
 }: PropertiesTableProps) {
   const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -350,6 +353,19 @@ export function PropertiesTable({
         bulkActions={bulkActions}
         columns={columns}
         data={properties}
+        emptyAction={
+          <Button
+            onClick={() =>
+              (window.location.href = `/dashboard/properties/new?customerId=${customerId || properties[0]?.customer_id || ""}`)
+            }
+            size="sm"
+          >
+            <Plus className="mr-2 size-4" />
+            Add Property
+          </Button>
+        }
+        emptyIcon={<Building2 className="h-8 w-8 text-muted-foreground" />}
+        emptyMessage="No properties found"
         enableSelection={true}
         getItemId={(property) => property.id}
         itemsPerPage={itemsPerPage}

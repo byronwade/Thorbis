@@ -64,10 +64,10 @@ export default function CompetitorOverviewPage() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button asChild>
-              <Link href="/demo">Talk through your migration</Link>
+              <Link href="/register">Create your account</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/contact">Connect with experts</Link>
+              <Link href="/pricing">Review pricing</Link>
             </Button>
           </div>
         </header>

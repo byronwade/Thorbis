@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   Accordion,
   AccordionContent,
@@ -29,12 +31,16 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <a href="/demo">Schedule a strategy session</a>
+              <Link href="/register">Create your account</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <a href="/contact">Talk to migrations</a>
+              <Link href="/contact">Talk to migrations</Link>
             </Button>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Thorbis pricing stays simple: $100/month base subscription with pay-as-you-go
+            usage. Unlimited users, no multi-year contracts.
+          </p>
         </div>
       </section>
 

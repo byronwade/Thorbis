@@ -5,6 +5,7 @@ import {
   Eye,
   FileSignature,
   MoreHorizontal,
+  Plus,
   Send,
   Trash2,
 } from "lucide-react";
@@ -291,9 +292,16 @@ export function ContractsTable({
       bulkActions={bulkActions}
       columns={columns}
       data={contracts}
-      emptyIcon={
-        <FileSignature className="mx-auto h-12 w-12 text-muted-foreground" />
+      emptyAction={
+        <Button
+          onClick={() => (window.location.href = "/dashboard/work/contracts/new")}
+          size="sm"
+        >
+          <Plus className="mr-2 size-4" />
+          Create Contract
+        </Button>
       }
+      emptyIcon={<FileSignature className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No contracts found"
       enableSelection={true}
       getHighlightClass={() => "bg-green-50/30 dark:bg-green-950/10"}
@@ -306,7 +314,7 @@ export function ContractsTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search contracts by number, customer, title, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

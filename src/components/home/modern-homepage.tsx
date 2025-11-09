@@ -23,7 +23,6 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -62,9 +61,13 @@ export function ModernHomepage() {
                   Business Smarter
                 </span>
               </h1>
-              <p className="mx-auto mb-8 max-w-3xl text-foreground/80 text-xl leading-relaxed md:text-2xl">
-                All-in-one platform for scheduling, invoicing, payments, and
-                customer management. Powered by AI to help you grow faster.
+              <p className="mx-auto mb-3 max-w-3xl text-foreground/80 text-xl leading-relaxed md:text-2xl">
+                All-in-one platform for scheduling, invoicing, payments, and customer
+                management. AI built in so every team member gets more done in less time.
+              </p>
+              <p className="mx-auto max-w-2xl text-muted-foreground text-base">
+                Pricing is simple: $100/month base subscription with pay-as-you-go usage.
+                Unlimited users, no contracts, cancel anytime.
               </p>
             </div>
 
@@ -114,7 +117,7 @@ export function ModernHomepage() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">Schedule a Demo</Link>
+                <Link href="/pricing">Compare plans</Link>
               </Button>
             </div>
 
@@ -122,7 +125,11 @@ export function ModernHomepage() {
             <div className="flex flex-wrap items-center justify-center gap-6 text-muted-foreground text-sm">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-500" />
-                <span>14-day free trial</span>
+                <span>$100/mo base + pay-as-you-go usage</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-green-500" />
+                <span>Unlimited users included</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-500" />
@@ -130,11 +137,11 @@ export function ModernHomepage() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-500" />
-                <span>Cancel anytime</span>
+                <span>Setup in 24 hours</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-500" />
-                <span>Setup in 24 hours</span>
+                <span>Cancel anytime</span>
               </div>
             </div>
 
@@ -428,7 +435,8 @@ export function ModernHomepage() {
             </h2>
             <p className="mx-auto mb-10 max-w-2xl text-foreground/70 text-xl">
               Join thousands of service businesses using Thorbis to grow faster,
-              work smarter, and deliver exceptional customer experiences.
+              work smarter, and deliver exceptional customer experiences. It&apos;s just
+              $100/month base plus pay-as-you-go usage—no per-user fees or long contracts.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
@@ -447,17 +455,16 @@ export function ModernHomepage() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">Schedule a Demo</Link>
+                <Link href="/pricing">Compare plans</Link>
               </Button>
             </div>
             <p className="mt-6 text-muted-foreground text-sm">
-              No credit card required • 14-day free trial • Cancel anytime
+              $100/month base • Pay-as-you-go usage • No credit card required • 14-day free
+              trial • Cancel anytime
             </p>
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

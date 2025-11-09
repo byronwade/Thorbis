@@ -313,8 +313,8 @@ export default async function HelpCenterPage() {
                 </div>
               ) : (
                 <p className="rounded-xl border border-dashed bg-muted/20 p-6 text-muted-foreground">
-                  Case studies are coming soon. In the meantime, book a demo to
-                  hear how teams like yours use Thorbis.
+                  Case studies are coming soon. In the meantime, create your account to
+                  explore how teams like yours use Thorbis.
                 </p>
               )}
             </div>

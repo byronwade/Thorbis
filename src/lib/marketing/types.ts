@@ -83,4 +83,34 @@ export type MarketingIndustryContent = {
 
 export type MarketingContent =
   | MarketingFeatureContent
-  | MarketingIndustryContent;
+  | MarketingIndustryContent
+  | MarketingIntegrationContent;
+
+export type IntegrationPartner = {
+  name: string;
+  website: string;
+  logo?: string;
+};
+
+export type MarketingIntegrationContent = {
+  kind: "integration";
+  slug: string;
+  name: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroDescription: string;
+  heroImage?: string;
+  summary: string;
+  partner: IntegrationPartner;
+  categories: string[];
+  primaryCta: MarketingCTA;
+  secondaryCta?: MarketingCTA;
+  seo: MarketingSEO;
+  valueProps: MarketingValueProp[];
+  workflows: MarketingWorkflow[];
+  stats?: MarketingStat[];
+  requirements?: string[];
+  resources?: MarketingCTA[];
+  related?: string[];
+  faq: MarketingFAQ[];
+};

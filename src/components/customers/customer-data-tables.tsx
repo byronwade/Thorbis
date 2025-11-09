@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, FileText } from "lucide-react";
+import { Briefcase, FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
+import {
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 /**
  * Customer Data Tables - Client Component
  *
- * Wraps DataTable components with column definitions that include render functions.
+ * Uses FullWidthDataTable for consistent Gmail-style table layout
  * Must be a Client Component because render functions can't be serialized.
  */
 
@@ -47,7 +50,7 @@ function formatCurrency(amount: number): string {
 }
 
 function formatDate(date: string | null): string {
-  if (!date) return "N/A";
+  if (!date) return "—";
   return new Date(date).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -56,20 +59,60 @@ function formatDate(date: string | null): string {
 }
 
 function getStatusBadge(status: string) {
-  const statusColors: Record<string, string> = {
-    draft: "bg-gray-500",
-    scheduled: "bg-blue-500",
-    in_progress: "bg-yellow-500",
-    completed: "bg-green-500",
-    cancelled: "bg-red-500",
-    paid: "bg-green-500",
-    unpaid: "bg-yellow-500",
-    overdue: "bg-red-500",
+  const variants: Record<
+    string,
+    {
+      className: string;
+      label: string;
+    }
+  > = {
+    draft: {
+      className:
+        "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+      label: "Draft",
+    },
+    scheduled: {
+      className:
+        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+      label: "Scheduled",
+    },
+    in_progress: {
+      className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
+      label: "In Progress",
+    },
+    completed: {
+      className:
+        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      label: "Completed",
+    },
+    cancelled: {
+      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      label: "Cancelled",
+    },
+    paid: {
+      className:
+        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      label: "Paid",
+    },
+    unpaid: {
+      className:
+        "border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400",
+      label: "Unpaid",
+    },
+    overdue: {
+      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      label: "Overdue",
+    },
+  };
+
+  const config = variants[status] || {
+    className: "border-border/50 bg-background text-muted-foreground",
+    label: status.replace("_", " "),
   };
 
   return (
-    <Badge className={statusColors[status] || "bg-gray-500"}>
-      {status.replace("_", " ")}
+    <Badge className={`font-medium text-xs ${config.className}`} variant="outline">
+      {config.label}
     </Badge>
   );
 }
@@ -85,79 +128,152 @@ export function CustomerDataTables({
   jobs,
   invoices,
 }: CustomerDataTablesProps) {
-  // Job columns for DataTable
-  const jobColumns: DataTableColumn<Job>[] = [
+  // Job columns for FullWidthDataTable
+  const jobColumns: ColumnDef<Job>[] = [
     {
       key: "jobNumber",
       header: "Job Number",
-      sortable: true,
-      filterable: true,
-      render: (job) => <span className="font-medium">{job.jobNumber}</span>,
-    },
-    {
-      key: "title",
-      header: "Title",
-      sortable: true,
-      filterable: true,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      filterable: true,
-      render: (job) => getStatusBadge(job.status),
-    },
-    {
-      key: "totalAmount",
-      header: "Amount",
-      sortable: true,
-      render: (job) => formatCurrency(job.totalAmount),
-    },
-    {
-      key: "scheduledStart",
-      header: "Scheduled",
-      sortable: true,
-      render: (job) => formatDate(job.scheduledStart),
-    },
-  ];
-
-  // Invoice columns
-  const invoiceColumns: DataTableColumn<Invoice>[] = [
-    {
-      key: "invoiceNumber",
-      header: "Invoice Number",
-      sortable: true,
-      filterable: true,
-      render: (invoice) => (
-        <span className="font-medium">{invoice.invoiceNumber}</span>
+      width: "w-36",
+      shrink: true,
+      render: (job) => (
+        <Link
+          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          href={`/dashboard/work/${job.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {job.jobNumber}
+        </Link>
       ),
     },
     {
       key: "title",
       header: "Title",
-      sortable: true,
-      filterable: true,
+      width: "flex-1",
+      render: (job) => (
+        <span className="font-medium text-sm">{job.title}</span>
+      ),
     },
     {
       key: "status",
       header: "Status",
-      sortable: true,
-      filterable: true,
+      width: "w-32",
+      shrink: true,
+      render: (job) => getStatusBadge(job.status),
+    },
+    {
+      key: "totalAmount",
+      header: "Amount",
+      width: "w-32",
+      shrink: true,
+      align: "right",
+      render: (job) => (
+        <span className="font-semibold tabular-nums text-sm">
+          {formatCurrency(job.totalAmount)}
+        </span>
+      ),
+    },
+    {
+      key: "scheduledStart",
+      header: "Scheduled",
+      width: "w-32",
+      shrink: true,
+      hideOnMobile: true,
+      render: (job) => (
+        <span className="text-muted-foreground text-sm tabular-nums">
+          {formatDate(job.scheduledStart)}
+        </span>
+      ),
+    },
+  ];
+
+  // Invoice columns
+  const invoiceColumns: ColumnDef<Invoice>[] = [
+    {
+      key: "invoiceNumber",
+      header: "Invoice Number",
+      width: "w-36",
+      shrink: true,
+      render: (invoice) => (
+        <Link
+          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          href={`/dashboard/work/invoices/${invoice.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {invoice.invoiceNumber}
+        </Link>
+      ),
+    },
+    {
+      key: "title",
+      header: "Title",
+      width: "flex-1",
+      render: (invoice) => (
+        <span className="font-medium text-sm">{invoice.title}</span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      width: "w-32",
+      shrink: true,
       render: (invoice) => getStatusBadge(invoice.status),
     },
     {
       key: "totalAmount",
       header: "Amount",
-      sortable: true,
-      render: (invoice) => formatCurrency(invoice.totalAmount),
+      width: "w-32",
+      shrink: true,
+      align: "right",
+      render: (invoice) => (
+        <span className="font-semibold tabular-nums text-sm">
+          {formatCurrency(invoice.totalAmount)}
+        </span>
+      ),
     },
     {
       key: "dueDate",
       header: "Due Date",
-      sortable: true,
-      render: (invoice) => formatDate(invoice.dueDate),
+      width: "w-32",
+      shrink: true,
+      hideOnMobile: true,
+      render: (invoice) => (
+        <span className="text-muted-foreground text-sm tabular-nums">
+          {formatDate(invoice.dueDate)}
+        </span>
+      ),
     },
   ];
+
+  // Search filter functions
+  const jobSearchFilter = (job: Job, query: string) => {
+    const searchStr = query.toLowerCase();
+    return (
+      job.jobNumber.toLowerCase().includes(searchStr) ||
+      job.title.toLowerCase().includes(searchStr) ||
+      job.status.toLowerCase().includes(searchStr)
+    );
+  };
+
+  const invoiceSearchFilter = (invoice: Invoice, query: string) => {
+    const searchStr = query.toLowerCase();
+    return (
+      invoice.invoiceNumber.toLowerCase().includes(searchStr) ||
+      invoice.title.toLowerCase().includes(searchStr) ||
+      invoice.status.toLowerCase().includes(searchStr)
+    );
+  };
+
+  const handleJobRowClick = (job: Job) => {
+    window.location.href = `/dashboard/work/${job.id}`;
+  };
+
+  const handleInvoiceRowClick = (invoice: Invoice) => {
+    window.location.href = `/dashboard/work/invoices/${invoice.id}`;
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   return (
     <>
@@ -177,14 +293,27 @@ export function CustomerDataTables({
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <DataTable
+        <CardContent className="p-0">
+          <FullWidthDataTable
             columns={jobColumns}
             data={jobs}
-            emptyMessage="No jobs found for this customer."
-            itemsPerPage={5}
-            keyField="id"
-            searchPlaceholder="Search jobs..."
+            emptyAction={
+              <Button asChild size="sm">
+                <Link href={`/dashboard/work/new?customer=${customerId}`}>
+                  <Plus className="mr-2 size-4" />
+                  Add Job
+                </Link>
+              </Button>
+            }
+            emptyIcon={<Briefcase className="h-8 w-8 text-muted-foreground" />}
+            emptyMessage="No jobs found for this customer"
+            enableSelection={false}
+            getItemId={(job) => job.id}
+            itemsPerPage={10}
+            onRefresh={handleRefresh}
+            onRowClick={handleJobRowClick}
+            searchFilter={jobSearchFilter}
+            searchPlaceholder="Search jobs by number, title, or status..."
           />
         </CardContent>
       </Card>
@@ -207,14 +336,29 @@ export function CustomerDataTables({
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <DataTable
+        <CardContent className="p-0">
+          <FullWidthDataTable
             columns={invoiceColumns}
             data={invoices}
-            emptyMessage="No invoices found for this customer."
-            itemsPerPage={5}
-            keyField="id"
-            searchPlaceholder="Search invoices..."
+            emptyAction={
+              <Button asChild size="sm">
+                <Link
+                  href={`/dashboard/work/invoices/new?customer=${customerId}`}
+                >
+                  <Plus className="mr-2 size-4" />
+                  Add Invoice
+                </Link>
+              </Button>
+            }
+            emptyIcon={<FileText className="h-8 w-8 text-muted-foreground" />}
+            emptyMessage="No invoices found for this customer"
+            enableSelection={false}
+            getItemId={(invoice) => invoice.id}
+            itemsPerPage={10}
+            onRefresh={handleRefresh}
+            onRowClick={handleInvoiceRowClick}
+            searchFilter={invoiceSearchFilter}
+            searchPlaceholder="Search invoices by number, title, or status..."
           />
         </CardContent>
       </Card>

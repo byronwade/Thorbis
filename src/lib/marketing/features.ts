@@ -14,8 +14,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
     summary:
       "Thorbis AI Assistant blends natural language processing with your pricebook, technician roster, and schedule commitments to keep the board full without adding headcount.",
     primaryCta: {
-      label: "Book a live AI demo",
-      href: "/demo",
+      label: "Create your account",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download the AI playbook",
@@ -134,7 +134,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Replace fragmented spreadsheets with a CRM designed for high-volume service operations. Track households, properties, and commercial accounts in one workspace.",
     primaryCta: {
       label: "Explore CRM capabilities",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Import your customer list",
@@ -252,7 +252,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Thorbis online booking brings the convenience of consumer apps to your service company—safely respecting technician capacity and travel buffers.",
     primaryCta: {
       label: "Launch your scheduling portal",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "View installation guide",
@@ -364,7 +364,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Trigger intelligent campaigns using customer behavior, equipment age, and plan renewals so every contact receives the right message at the right time.",
     primaryCta: {
       label: "See automation templates",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Access campaign calendar",
@@ -475,7 +475,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Deliver a white-glove experience without additional staff. Customers log in from any device to view history, upcoming visits, and documents.",
     primaryCta: {
       label: "Preview the portal",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Send login invites",
@@ -583,8 +583,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
     summary:
       "See every crew, truck, and commitment on one responsive board. Adjust on the fly with travel times and skill requirements built in.",
     primaryCta: {
-      label: "Watch the dispatch demo",
-      href: "/demo",
+      label: "Create your account",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download scheduling checklist",
@@ -693,7 +693,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Deliver a digital job folder with workflows, parts availability, and payment collection to turn every visit into a five-star experience.",
     primaryCta: {
       label: "Request a technician walkthrough",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download mobile onboarding kit",
@@ -803,7 +803,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Keep every truck moving efficiently with dynamic routing algorithms tuned for service businesses, not parcel delivery.",
     primaryCta: {
       label: "Optimize your routes",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Review routing benchmarks",
@@ -912,7 +912,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Eliminate callbacks caused by missing parts. Track serialized equipment, automate reorder points, and push purchase orders to vendors instantly.",
     primaryCta: {
       label: "See inventory control",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download truck stock template",
@@ -1024,7 +1024,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Centralize HR essentials for field teams—onboarding checklists, certifications, PTO, and productivity metrics.",
     primaryCta: {
       label: "Tour workforce tools",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download onboarding checklist",
@@ -1135,7 +1135,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Create professional invoices onsite or in the office, support progress billing, and let customers pay the way they prefer.",
     primaryCta: {
       label: "Streamline billing",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Review payment integrations",
@@ -1244,7 +1244,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Empower your finance team with accurate, timely data while letting operations run in Thorbis without double entry.",
     primaryCta: {
       label: "Connect QuickBooks",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Read implementation guide",
@@ -1356,7 +1356,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Present tiered recommendations, upsell accessories, and capture signatures instantly from any device.",
     primaryCta: {
       label: "Build a proposal",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download proposal templates",
@@ -1465,7 +1465,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Thorbis makes it simple to embed financing into every estimate, increasing conversion and average ticket value.",
     primaryCta: {
       label: "Enable financing partners",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download financing guide",
@@ -1575,7 +1575,7 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
       "Simplify payroll for hourly techs, spiff-driven sales reps, and salaried coordinators while maintaining compliance.",
     primaryCta: {
       label: "Automate payroll prep",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download commission templates",

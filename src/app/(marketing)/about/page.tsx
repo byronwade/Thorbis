@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
@@ -154,12 +155,13 @@ export default function AboutPage() {
               Thorbis builds software that helps home service and commercial trades deliver
               elite customer experiences. From the first phone call to final invoice, we use
               AI and automation to remove friction and let people focus on what matters—
-              delighting customers.
+              delighting customers. Pricing stays transparent: $100/month base subscription
+              with pay-as-you-go usage and unlimited users.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button asChild>
-                <a href="/demo">Meet with our team</a>
-              </Button>
+            <Button asChild>
+              <Link href="/register">Create your account</Link>
+            </Button>
               <Button variant="outline" asChild>
                 <a href="/careers">Join Thorbis</a>
               </Button>

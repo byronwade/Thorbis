@@ -77,8 +77,9 @@ export function SalesHomepage() {
             <p className="mx-auto mb-8 max-w-3xl text-foreground/70 text-xl leading-relaxed md:text-2xl">
               The complete field service management platform with built-in AI
               assistant. Do in <strong>10 seconds</strong> what takes{" "}
-              <strong>10 minutes</strong> in ServiceTitan. Pay{" "}
-              <strong>$49/month</strong> instead of <strong>$398/month</strong>.
+              <strong>10 minutes</strong> in ServiceTitan. Pay a simple{" "}
+              <strong>$100/month base with pay-as-you-go usage</strong> instead of{" "}
+              <strong>$398/month contracts</strong>.
             </p>
 
             {/* Social proof */}
@@ -116,9 +117,9 @@ export function SalesHomepage() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">
-                  <Phone className="mr-2 size-5" />
-                  Request Demo
+                <Link href="/pricing">
+                  <CreditCard className="mr-2 size-5" />
+                  See pricing
                 </Link>
               </Button>
             </div>
@@ -528,7 +529,7 @@ export function SalesHomepage() {
               </h2>
               <p className="mx-auto max-w-3xl text-foreground/70 text-xl">
                 Why pay $4,776/year for ServiceTitan when Thorbis gives you more
-                for just $588/year?
+                for just $1,200/year plus pay-as-you-go usage?
               </p>
             </div>
 
@@ -554,7 +555,7 @@ export function SalesHomepage() {
                     </span>
                   </div>
                   <h3 className="font-semibold">Thorbis</h3>
-                  <p className="mt-1 text-primary text-sm">$49/mo</p>
+                  <p className="mt-1 text-primary text-sm">$100/mo + usage</p>
                 </div>
 
                 {/* AI Assistant */}
@@ -845,9 +846,9 @@ export function SalesHomepage() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">
-                  <Phone className="mr-2 size-5" />
-                  Talk to Sales
+                <Link href="/pricing">
+                  <CreditCard className="mr-2 size-5" />
+                  See pricing
                 </Link>
               </Button>
             </div>

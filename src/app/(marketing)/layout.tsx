@@ -12,6 +12,7 @@
  */
 
 import { MarketingHeader } from "@/components/hero/marketing-header";
+import { Footer } from "@/components/layout/footer";
 
 export default function MarketingLayout({
   children,
@@ -19,9 +20,10 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <MarketingHeader />
-      {children}
+      <main className="flex-1">{children}</main>
+      <Footer />
     </div>
   );
 }

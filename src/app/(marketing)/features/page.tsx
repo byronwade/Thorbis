@@ -60,11 +60,12 @@ export default function FeaturesOverviewPage() {
           <p className="mt-4 text-lg text-muted-foreground">
             Select a module to explore deep-dive pages for dispatching, CRM,
             inventory, mobile workflows, and more. Build a connected tech stack
-            designed for high-growth field operations.
+            designed for high-growth field operations with transparent pricing—$100/month
+            base plus pay-as-you-go usage and unlimited users.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button asChild>
-              <Link href="/demo">Book a tailored walkthrough</Link>
+              <Link href="/register">Create your account</Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/pricing">Review pricing</Link>

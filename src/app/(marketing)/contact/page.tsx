@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
@@ -33,9 +34,9 @@ export const metadata = generateSEOMetadata({
 
 const CONTACT_OPTIONS = [
   {
-    title: "Sales & demos",
+    title: "Sales & onboarding",
     description:
-      "Considering Thorbis for your service company? Tell us about your business and we’ll tailor a product walkthrough.",
+      "Have questions before signing up? Share your goals and we’ll walk through the $100/month base + pay-as-you-go pricing and help you launch smoothly.",
     email: "sales@thorbis.com",
     phone: "+1 (415) 555-0123",
   },
@@ -80,12 +81,13 @@ export default function ContactPage() {
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
             Whether you’re exploring Thorbis, need support, or want to partner, our team
-            responds quickly. Choose the option that fits and we’ll get back within one
-            business day.
+            responds quickly. Pricing stays simple—$100/month base subscription with
+            pay-as-you-go usage, unlimited users, no contracts. Choose the option that fits
+            and we’ll get back within one business day.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <a href="/demo">Book a demo</a>
+              <Link href="/register">Create your account</Link>
             </Button>
             <Button variant="outline" asChild>
               <a href="https://status.thorbis.com" rel="noopener">

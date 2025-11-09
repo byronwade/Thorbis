@@ -14,8 +14,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
     summary:
       "Thorbis gives HVAC operators real-time dispatch, recurring plan management, and project billing tools purpose-built for heating and cooling businesses.",
     primaryCta: {
-      label: "See the HVAC demo",
-      href: "/demo",
+      label: "Create your account",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download HVAC playbook",
@@ -126,7 +126,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Handle 24/7 emergencies, recurring maintenance, and high-margin replacements with a dispatch board tuned for plumbing workflows.",
     primaryCta: {
       label: "Explore plumbing workflows",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download plumbing toolkit",
@@ -236,7 +236,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Track projects, capture documentation, and keep crews compliant with NEC requirements while delivering a polished customer experience.",
     primaryCta: {
       label: "Tour electrical features",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download electrical proposal pack",
@@ -345,7 +345,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Offer professional experiences with minimal admin overhead—perfect for owner-operators and multi-crew handyman operations.",
     primaryCta: {
       label: "Start a handyman trial",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download handyman templates",
@@ -455,7 +455,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Thorbis helps landscapers improve route density, track job costing, and stay on top of renewals.",
     primaryCta: {
       label: "See landscaping workflows",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download route optimization kit",
@@ -564,7 +564,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Thorbis gives pool operators the tools to stay compliant, track recurring visits, and grow retail revenue.",
     primaryCta: {
       label: "Tour pool service tools",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download chemical log template",
@@ -677,7 +677,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Spend less time on paperwork and more time delivering exceptional pest control service with automated routing and reporting.",
     primaryCta: {
       label: "Explore pest control tools",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download compliance checklist",
@@ -787,7 +787,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Track manufacturer warranties, manage depot inventory, and update customers automatically with technician ETAs.",
     primaryCta: {
       label: "Tour appliance repair workflows",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download parts management guide",
@@ -899,7 +899,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Handle storm response, retail re-roofs, and repair programs with clear workflows and customer communication.",
     primaryCta: {
       label: "See roofing operations",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download roofing project pack",
@@ -1010,7 +1010,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Coordinators schedule crews, supervisors run inspections, and clients view reports through a shared portal.",
     primaryCta: {
       label: "Explore cleaning workflows",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download cleaning checklist pack",
@@ -1126,7 +1126,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "From emergency lockouts to enterprise access systems, Thorbis streamlines scheduling, documentation, and invoicing.",
     primaryCta: {
       label: "See locksmith toolkit",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download emergency playbook",
@@ -1240,7 +1240,7 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
       "Combine responsive dispatch, project scheduling, and maintenance plan automation in one platform.",
     primaryCta: {
       label: "Explore garage door workflows",
-      href: "/demo",
+      href: "/register",
     },
     secondaryCta: {
       label: "Download maintenance agreement kit",

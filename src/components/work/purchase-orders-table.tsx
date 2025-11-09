@@ -344,7 +344,7 @@ export function PurchaseOrdersTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search by PO number, vendor, title, job, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

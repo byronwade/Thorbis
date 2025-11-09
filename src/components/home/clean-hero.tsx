@@ -23,14 +23,15 @@ export function CleanHero() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-primary" />
             </span>
-            Live Demo Available
+            Self-serve onboarding
           </Badge>
         </div>
         <h1 className="font-bold text-3xl tracking-tight md:text-4xl lg:text-5xl">
           Field Service Management Software
         </h1>
         <p className="text-lg text-muted-foreground">
-          Complete visibility and control over your field operations
+          Complete visibility and control over your field operations for a $100/month base
+          subscription with pay-as-you-go usage—unlimited users, no contracts.
         </p>
       </div>
 
@@ -88,14 +89,14 @@ export function CleanHero() {
       {/* CTAs */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <Button asChild className="group" size="lg">
-          <Link href="/dashboard">
+          <Link href="/register">
             Start Free Trial
             <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </Button>
         <Button asChild className="group" size="lg" variant="outline">
-          <Link href="/demo">
-            Book a Demo
+          <Link href="/pricing">
+            Compare plans
             <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </Button>
@@ -103,6 +104,10 @@ export function CleanHero() {
 
       {/* Trust Indicators */}
       <div className="flex flex-wrap gap-4 text-muted-foreground text-sm">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="size-4 text-green-500" />
+          <span>$100/mo base + pay-as-you-go usage</span>
+        </div>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="size-4 text-green-500" />
           <span>No credit card required</span>
@@ -139,7 +144,7 @@ export function CleanHero() {
                   See Your Business in Action
                 </h3>
                 <p className="text-muted-foreground">
-                  Schedule a personalized demo to see how Thorbis works
+                  Create your account to explore Thorbis with real data in minutes
                 </p>
               </div>
             </div>

@@ -241,7 +241,7 @@ export function InvoiceProgressPayments({
             }
             searchPlaceholder="Search progress payments..."
             showPagination={true}
-            showRefresh={true}
+            showRefresh={false}
           />
         </div>
       )}

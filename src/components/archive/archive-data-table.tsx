@@ -296,7 +296,7 @@ export function ArchiveDataTable({
         }}
         searchPlaceholder="Search archived items..."
         showPagination={true}
-        showRefresh={true}
+        showRefresh={false}
       />
 
       {/* Restore Confirmation Dialog */}

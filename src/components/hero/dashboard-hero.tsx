@@ -65,7 +65,7 @@ export function DashboardHero() {
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-primary" />
               </span>
-              Live Demo Available
+              Self-serve onboarding
             </Badge>
           </div>
 
@@ -76,8 +76,9 @@ export function DashboardHero() {
           </h1>
 
           <p className="max-w-3xl text-lg text-muted-foreground">
-            See how Thorbis gives you complete visibility and control over every
-            aspect of your field service operations—from scheduling to payments.
+            See how Thorbis gives you complete visibility and control over every aspect
+            of your field service operations—from scheduling to payments. All for a
+            $100/month base subscription with pay-as-you-go usage and unlimited users.
           </p>
         </div>
 
@@ -110,14 +111,14 @@ export function DashboardHero() {
         {/* CTAs */}
         <div className="mb-12 flex flex-col items-start gap-4 sm:flex-row">
           <Button asChild className="group h-auto px-6 py-3" size="lg">
-            <Link href="/dashboard">
+            <Link href="/register">
               Start Free Trial
               <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
           <Button asChild className="group h-auto" size="lg" variant="outline">
-            <Link href="/demo">
-              Book a Demo
+            <Link href="/pricing">
+              Compare plans
               <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
@@ -127,11 +128,15 @@ export function DashboardHero() {
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-4 text-green-500" />
-            <span>No credit card required</span>
+            <span>$100/mo base + pay-as-you-go usage</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-4 text-green-500" />
-            <span>14-day free trial</span>
+            <span>Unlimited users included</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="size-4 text-green-500" />
+            <span>No credit card required</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-4 text-green-500" />
@@ -154,7 +159,7 @@ export function DashboardHero() {
                 Real-time data and insights at your fingertips
               </p>
             </div>
-            <Badge variant="secondary">Interactive Demo</Badge>
+            <Badge variant="secondary">Product tour</Badge>
           </div>
 
           {/* Dashboard Preview Card */}
@@ -169,14 +174,12 @@ export function DashboardHero() {
                     See Your Business in Action
                   </h3>
                   <p className="text-muted-foreground">
-                    Schedule a personalized demo to see how Thorbis works
-                    <br />
-                    for businesses like yours
+                    Create your account to explore Thorbis with your data in minutes.
                   </p>
                 </div>
                 <Button asChild className="group mt-4">
-                  <Link href="/demo">
-                    Watch Demo
+                  <Link href="/register">
+                    Start free trial
                     <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>

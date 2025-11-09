@@ -130,6 +130,13 @@ const INDUSTRY_PATHS = [
   "/industries/garage-door",
 ];
 
+const INTEGRATION_PATHS = [
+  "/integrations",
+  "/integrations/quickbooks",
+  "/integrations/stripe",
+  "/integrations/zapier",
+];
+
 const COMPARISON_PATHS = [
   "/vs",
   "/vs/servicetitan",
@@ -147,6 +154,11 @@ const COMPANY_PATHS = [
   "/press",
   "/contact",
   "/demo",
+  "/switch",
+  "/roi",
+  "/free-tools",
+  "/implementation",
+  "/reviews",
   "/security",
   "/privacy",
   "/terms",
@@ -224,6 +236,7 @@ export default {
         priority: 0.9,
         lastmod: new Date().toISOString(),
       },
+      ...buildMarketingEntries(INTEGRATION_PATHS, "weekly", 0.8),
       ...buildMarketingEntries(FEATURES_PATHS, "weekly", 0.85),
       ...buildMarketingEntries(INDUSTRY_PATHS, "weekly", 0.8),
       ...buildMarketingEntries(COMPARISON_PATHS, "weekly", 0.75),

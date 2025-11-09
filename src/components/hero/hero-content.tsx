@@ -64,9 +64,13 @@ export function HeroContent() {
           </span>
         </h1>
 
-        <p className="mx-auto mb-8 max-w-2xl text-foreground text-xl leading-relaxed">
+        <p className="mx-auto mb-3 max-w-2xl text-foreground text-xl leading-relaxed">
           Save time, increase revenue by 40%, and build a top reputation—all
           with Thorbis field management software.
+        </p>
+        <p className="mx-auto mb-8 max-w-xl text-foreground/70 text-base">
+          Pricing is $100/month for the base platform with pay-as-you-go usage. No
+          per-user fees, no contracts, unlimited seats.
         </p>
 
         {/* Trust stats */}
@@ -93,7 +97,7 @@ export function HeroContent() {
             className="group rounded-lg bg-primary px-8 py-6 font-semibold text-lg text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-primary/30 hover:shadow-xl"
             size="lg"
           >
-            <Link href="/dashboard">
+            <Link href="/register">
               Start Free Trial
               <span className="ml-2 transition-transform group-hover:translate-x-1">
                 →
@@ -106,8 +110,8 @@ export function HeroContent() {
             size="lg"
             variant="outline"
           >
-            <Link href="/demo">
-              Book a Demo
+            <Link href="/pricing">
+              Compare plans
               <span className="ml-2 transition-transform group-hover:translate-x-1">
                 →
               </span>
@@ -117,7 +121,7 @@ export function HeroContent() {
 
         {/* No credit card badge */}
         <p className="mb-12 text-center text-foreground/60 text-sm">
-          No credit card required • 14-day free trial • Cancel anytime
+          $100/month base • Pay-as-you-go usage • No credit card required • 14-day free trial • Cancel anytime
         </p>
 
         {/* Industry badges */}

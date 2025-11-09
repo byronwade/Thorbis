@@ -13,7 +13,7 @@ export const revalidate = 900; // Revalidate every 15 minutes
 export const metadata = generateSEOMetadata({
   title: "Modern Business Management Platform",
   description:
-    "Thorbis is a modern business management platform designed for service companies. Manage customers, jobs, invoices, equipment, and more with our all-in-one solution.",
+    "Thorbis is the $100/month pay-as-you-go platform built for service companies. Manage customers, jobs, invoices, equipment, and more with our all-in-one solution.",
   path: "/",
   imageAlt: "Thorbis platform dashboard preview",
   keywords: [

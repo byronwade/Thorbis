@@ -88,12 +88,13 @@ export default async function WebinarsPage({
             Live Learning
           </span>
           <h1 className="mb-6 font-bold text-4xl tracking-tight sm:text-5xl">
-            Webinars, Workshops, and Live Demos
+            Webinars, Workshops, and Product Sessions
           </h1>
           <p className="text-lg text-muted-foreground">
             Learn proven playbooks from Thorbis strategists and operators. Save
             your seat for upcoming sessions or catch up with the on-demand
-            library.
+            library. All sessions are included with the $100/month base
+            subscription and pay-as-you-go usage.
           </p>
         </header>
 
@@ -126,7 +127,7 @@ export default async function WebinarsPage({
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="font-semibold text-2xl">Upcoming live sessions</h2>
             <Button asChild>
-              <Link href="/demo">Request a personalised demo</Link>
+              <Link href="/register">Create your account</Link>
             </Button>
           </div>
           {upcoming.length ? (

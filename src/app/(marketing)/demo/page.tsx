@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
@@ -5,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -18,36 +18,57 @@ import {
 export const revalidate = 900;
 
 export const metadata = generateSEOMetadata({
-  title: "Schedule a Thorbis Demo",
+  title: "Get Started with Thorbis",
   description:
-    "See Thorbis in action. Schedule a tailored walkthrough covering AI call handling, dispatch, mobile workflows, and analytics.",
+    "Create your Thorbis account in minutes. Choose a plan, invite your team, and start automating operations without waiting for a sales call.",
   path: "/demo",
   section: "Company",
   keywords: [
-    "thorbis demo",
-    "book thorbis walkthrough",
-    "thorbis product tour",
+    "thorbis signup",
+    "start thorbis trial",
+    "thorbis onboarding",
   ],
 });
 
-const DEMO_OPTIONS = [
+const GET_STARTED_STEPS = [
   {
-    title: "AI operations overview",
-    length: "30 minutes",
+    title: "Create your workspace",
     description:
-      "See how Thorbis AI Assistant answers calls, books jobs, and summarizes conversations. Ideal for owners and call center leaders.",
+      "Sign up with your business email, choose a plan, and secure your account. No scheduling or back-and-forth required.",
   },
   {
-    title: "Dispatch & scheduling deep dive",
-    length: "45 minutes",
+    title: "Import data & configure essentials",
     description:
-      "Explore drag-and-drop scheduling, capacity planning, routing, and technician visibility with live data.",
+      "Use guided import templates for customers, jobs, equipment, and pricebooks. Thorbis automates defaults so you can begin immediately.",
   },
   {
-    title: "Technician mobile and invoicing",
-    length: "30 minutes",
+    title: "Invite your team & launch",
     description:
-      "Walk through mobile workflows, checklists, photos, proposals, and payments. Perfect for operations and finance leaders.",
+      "Bring dispatchers, technicians, and admins into a shared workspace. Built-in training resources help everyone get productive fast.",
+  },
+];
+
+const ONBOARDING_RESOURCES = [
+  {
+    title: "Migration checklist",
+    description:
+      "Step-by-step guide covering exports, data cleanup, and go-live validation.",
+    href: "/templates?tag=migration",
+    cta: "Download checklist",
+  },
+  {
+    title: "Implementation playbook",
+    description:
+      "Understand the 45-day rollout process that Thorbis success teams follow with new customers.",
+    href: "/implementation",
+    cta: "View playbook",
+  },
+  {
+    title: "Knowledge base",
+    description:
+      "Read detailed guides for configuring scheduling, AI assistant, payments, and reporting.",
+    href: "/kb",
+    cta: "Browse articles",
   },
 ];
 
@@ -61,49 +82,65 @@ export default function DemoPage() {
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
               { name: "Home", url: siteUrl },
-              { name: "Demo", url: `${siteUrl}/demo` },
+              { name: "Get Started", url: `${siteUrl}/demo` },
             ])
           ),
         }}
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <section className="max-w-3xl space-y-6">
+        <section className="mx-auto max-w-3xl space-y-6 text-center">
           <Badge variant="secondary" className="uppercase tracking-wide">
-            Book a demo
+            Self-serve signup
           </Badge>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Experience Thorbis with a tailored walkthrough
+            Spin up your Thorbis account today
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            Share your goals and we’ll craft a live demo that shows how Thorbis improves
-            booking, dispatch, technician productivity, and customer experience. No
-            generic videos—only real workflows using your metrics.
+            Choose your plan, invite your team, and start automating operations without waiting for a sales call. Thorbis costs $100/month for the base platform with pay-as-you-go usage—unlimited users, no contracts.
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild>
-              <a href="https://cal.com/thorbis/demo" target="_blank" rel="noopener">
-                Pick a time on our calendar
-              </a>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button asChild size="lg">
+              <Link href="/register">Create account</Link>
             </Button>
-            <Button variant="outline" asChild>
-              <a href="/contact">Talk to sales</a>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/pricing">Review pricing</Link>
             </Button>
           </div>
         </section>
 
         <section className="mt-16 space-y-6">
-          <h2 className="text-2xl font-semibold">Popular demo agendas</h2>
+          <h2 className="text-2xl font-semibold text-center">Three simple steps</h2>
           <div className="grid gap-6 md:grid-cols-3">
-            {DEMO_OPTIONS.map((option) => (
-              <Card key={option.title}>
+            {GET_STARTED_STEPS.map((step) => (
+              <Card key={step.title} className="bg-muted/40">
                 <CardHeader>
-                  <CardTitle>{option.title}</CardTitle>
-                  <CardDescription>{option.length}</CardDescription>
+                  <CardTitle className="text-lg">{step.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {option.description}
+                    {step.description}
                   </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-16 space-y-6">
+          <h2 className="text-2xl font-semibold text-center">
+            Resources to guide your rollout
+          </h2>
+          <div className="grid gap-6 md:grid-cols-3">
+            {ONBOARDING_RESOURCES.map((resource) => (
+              <Card key={resource.title}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{resource.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                  <p>{resource.description}</p>
+                  <Button asChild variant="outline">
+                    <Link href={resource.href}>{resource.cta}</Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -112,11 +149,10 @@ export default function DemoPage() {
 
         <section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
           <p className="text-lg text-muted-foreground">
-            Already a customer? Visit the Help Center for training resources, live
-            webinars, and Office Hours with our success team.
+            Already a customer? Visit the Help Center for training resources, live webinars, and office hours with our success team.
           </p>
           <Button className="mt-6" variant="secondary" asChild>
-            <a href="/help">Visit the Help Center</a>
+            <Link href="/help">Visit the Help Center</Link>
           </Button>
         </section>
       </div>

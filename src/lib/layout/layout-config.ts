@@ -96,7 +96,7 @@ const LAYOUT_RULES: LayoutRule[] = [
       padding: "none",
       gap: "none",
       showToolbar: true,
-      showSidebar: true,
+      showSidebar: false,
       showHeader: true,
       fixedHeight: true,
     },

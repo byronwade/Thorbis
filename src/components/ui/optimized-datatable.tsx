@@ -51,6 +51,7 @@ export type OptimizedDataTableProps<T> = {
   emptyMessage?: string;
   emptyIcon?: React.ReactNode;
   emptyAction?: React.ReactNode;
+  /** Show refresh button (default: false for automatic updates) */
   showRefresh?: boolean;
   onRefresh?: () => void;
   showPagination?: boolean;
@@ -141,7 +142,7 @@ export function OptimizedDataTable<T>({
   emptyMessage = "No items found",
   emptyIcon,
   emptyAction,
-  showRefresh = true,
+  showRefresh = false,
   onRefresh,
   showPagination = true,
   itemsPerPage = 50,

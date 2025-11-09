@@ -59,13 +59,57 @@ export function TestSchedule() {
           <h2 className="mb-2 font-bold text-lg">First 3 Jobs</h2>
           <pre className="max-h-40 overflow-auto text-xs">
             {JSON.stringify(
-              jobs.slice(0, 3).map((j) => ({
-                id: j.id,
-                title: j.title,
-                technicianId: j.technicianId,
-                startTime: j.startTime.toISOString(),
-                endTime: j.endTime.toISOString(),
-              })),
+              jobs.slice(0, 3).map((j) => {
+                // Safely convert startTime
+                let startTime: string;
+                if (j.startTime instanceof Date) {
+                  startTime = isNaN(j.startTime.getTime())
+                    ? "Invalid Date"
+                    : j.startTime.toISOString();
+                } else if (typeof j.startTime === "string") {
+                  startTime = j.startTime;
+                } else if (j.startTime) {
+                  try {
+                    const date = new Date(j.startTime);
+                    startTime = isNaN(date.getTime())
+                      ? String(j.startTime)
+                      : date.toISOString();
+                  } catch {
+                    startTime = String(j.startTime);
+                  }
+                } else {
+                  startTime = "null";
+                }
+
+                // Safely convert endTime
+                let endTime: string;
+                if (j.endTime instanceof Date) {
+                  endTime = isNaN(j.endTime.getTime())
+                    ? "Invalid Date"
+                    : j.endTime.toISOString();
+                } else if (typeof j.endTime === "string") {
+                  endTime = j.endTime;
+                } else if (j.endTime) {
+                  try {
+                    const date = new Date(j.endTime);
+                    endTime = isNaN(date.getTime())
+                      ? String(j.endTime)
+                      : date.toISOString();
+                  } catch {
+                    endTime = String(j.endTime);
+                  }
+                } else {
+                  endTime = "null";
+                }
+
+                return {
+                  id: j.id,
+                  title: j.title,
+                  technicianId: j.technicianId,
+                  startTime,
+                  endTime,
+                };
+              }),
               null,
               2
             )}

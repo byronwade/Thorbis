@@ -86,21 +86,85 @@ export function useSchedule() {
             job:jobs(job_number, title)
           `)
           .is("deleted_at", null)
-          .order("scheduled_start", { ascending: true });
+          .order("start_time", { ascending: true });
 
         if (!isMounted) return;
 
         if (schedulesError) throw schedulesError;
 
-        // Fetch team members (technicians)
-        const { data: teamMembers, error: teamError } = await supabase
-          .from("team_members")
-          .select("*")
-          .eq("is_active", true);
+        // Try to load team members, but don't fail if it doesn't work
+        // This is wrapped in try-catch so schedule loading can continue even if team members fail
+        try {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
-        if (!isMounted) return;
+          if (user) {
+            // Get user's company - use maybeSingle() to avoid error if no record exists
+            const { data: userTeamMember } = await supabase
+              .from("team_members")
+              .select("company_id")
+              .eq("user_id", user.id)
+              .eq("status", "active")
+              .maybeSingle();
 
-        if (teamError) throw teamError;
+            if (userTeamMember?.company_id) {
+              // Fetch team members (technicians) for the user's company
+              const { data: teamMembers } = await supabase
+                .from("team_members")
+                .select(`
+                  *,
+                  users!team_members_user_id_fkey (
+                    id,
+                    name,
+                    email,
+                    avatar_url,
+                    phone
+                  )
+                `)
+                .eq("company_id", userTeamMember.company_id)
+                .eq("status", "active");
+
+              if (teamMembers && teamMembers.length > 0) {
+                // Convert team members to Technician format
+                const convertedTechnicians = teamMembers.map((member: any) => ({
+                  id: member.user_id,
+                  name: member.users?.name || member.job_title || "Team Member",
+                  email: member.users?.email || "",
+                  phone: member.users?.phone || member.phone || "",
+                  avatar: member.users?.avatar_url || member.avatar_url,
+                  color: "#3B82F6",
+                  role: member.job_title || "Team Member",
+                  isActive: member.status === "active",
+                  status: "available" as const,
+                  schedule: {
+                    workingHours: { start: "08:00", end: "17:00" },
+                    daysOff: [],
+                    availableHours: { start: 0, end: 40 },
+                  },
+                  createdAt: new Date(member.created_at),
+                  updatedAt: new Date(member.updated_at),
+                }));
+
+                if (isMounted) {
+                  setTechnicians(convertedTechnicians);
+                }
+              } else if (isMounted) {
+                setTechnicians([]);
+              }
+            } else if (isMounted) {
+              setTechnicians([]);
+            }
+          } else if (isMounted) {
+            setTechnicians([]);
+          }
+        } catch (teamError) {
+          // Silently fail - team members are optional for schedule display
+          console.warn("Failed to load team members (non-critical):", teamError);
+          if (isMounted) {
+            setTechnicians([]);
+          }
+        }
 
         // Convert schedules to Job format (filter out jobs without customers)
         const convertedJobs = (schedules || [])
@@ -114,50 +178,60 @@ export function useSchedule() {
               name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
               email: schedule.customer.email,
               phone: schedule.customer.phone,
-              location: schedule.location || "",
+              location: {
+                address: {
+                  street: "",
+                  city: "",
+                  state: "",
+                  zip: "",
+                  country: "",
+                },
+                coordinates: {
+                  lat: 0,
+                  lng: 0,
+                },
+              },
               createdAt: new Date(),
               updatedAt: new Date(),
+            },
+            location: {
+              address: {
+                street: "",
+                city: "",
+                state: "",
+                zip: "",
+                country: "",
+              },
+              coordinates: {
+                lat: 0,
+                lng: 0,
+              },
             },
             title: schedule.title || "",
             description: schedule.description || "",
             status: schedule.status || "scheduled",
             priority: schedule.priority || "normal",
-            startTime: new Date(schedule.scheduled_start),
-            endTime: new Date(schedule.scheduled_end),
-            location: schedule.location || "",
+            startTime: new Date(schedule.start_time),
+            endTime: new Date(schedule.end_time),
             notes: schedule.notes || "",
             metadata: {},
             createdAt: new Date(schedule.created_at),
             updatedAt: new Date(schedule.updated_at),
           }));
 
-        // Convert team members to Technician format
-        const convertedTechnicians = (teamMembers || []).map((member: any) => ({
-          id: member.user_id,
-          name: member.title || "Team Member",
-          email: "",
-          phone: "",
-          avatar: member.avatar_url,
-          color: "#3B82F6",
-          role: member.role,
-          isActive: member.is_active,
-          status: "available" as const,
-          schedule: {
-            workingHours: { start: "08:00", end: "17:00" },
-            daysOff: [],
-            availableHours: { start: 0, end: 40 },
-          },
-          createdAt: new Date(member.created_at),
-          updatedAt: new Date(member.updated_at),
-        }));
-
         if (!isMounted) return;
 
         setJobs(convertedJobs);
-        setTechnicians(convertedTechnicians);
       } catch (error) {
         if (!isMounted) return;
-        setError(error instanceof Error ? error.message : "Unknown error");
+        let errorMessage = "Unknown error";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "object" && error !== null && "message" in error) {
+          errorMessage = String(error.message);
+        }
+        console.error("Schedule loading error:", error);
+        setError(errorMessage);
       } finally {
         if (!isMounted) return;
         setLoading(false);

@@ -64,7 +64,7 @@ Legend:
 | `/webinars` | Webinars & Events | Prospects | M | Not Started | Event listings with registration. |
 | `/help` | Help Center | Customers & prospects | H | Not Started | Should aggregate KB, support channels, contact CTA. |
 | `/community` | Community Forum | Power users | M | Not Started | Surface Supabase content or link to external platform. |
-| `/contact` | Contact Support/Sales | Buyers needing demo | H | Not Started | Distinguish between support vs sales forms. |
+| `/contact` | Contact Support/Sales | Prospects needing guidance | H | Not Started | Distinguish between support vs sales forms. |
 | `/api-docs` | API Documentation | Developers | M | Not Started | Outline authentication, endpoints, changelog. |
 | `/templates` | Templates & Tools | Marketing ops | M | Not Started | Downloadable resources, gated content options. |
 | `/status` | System Status | Existing customers | M | Not Started | Embed status page or integrate with monitoring provider. |
@@ -77,7 +77,7 @@ Legend:
 | `/careers` | Careers | Candidates | M | Not Started | Job listings, culture. |
 | `/partners` | Partners | Potential partners | M | Not Started | Integration program, co-marketing. |
 | `/press` | Press & Media | Journalists | L | Not Started | Press kit, releases, contact. |
-| `/demo` | Request Demo | High-intent buyers | H | Not Started | Form capture, scheduling embed. |
+| `/demo` | Get Started | High-intent buyers | H | Not Started | Self-serve signup flow with pricing overview and onboarding resources. |
 | `/security` | Security | IT stakeholders | H | Not Started | Compliance, certifications, trust signals. |
 
 ## Competitor Comparisons

@@ -248,7 +248,7 @@ export const useScheduleStore = create<ScheduleState>()(
                 job:jobs(job_number, title)
               `)
               .is("deleted_at", null)
-              .order("scheduled_start", { ascending: true });
+              .order("start_time", { ascending: true });
 
             if (schedulesError) throw schedulesError;
 
@@ -272,17 +272,41 @@ export const useScheduleStore = create<ScheduleState>()(
                   name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
                   email: schedule.customer.email,
                   phone: schedule.customer.phone,
-                  location: schedule.location || "",
+                  location: {
+                    address: {
+                      street: "",
+                      city: "",
+                      state: "",
+                      zip: "",
+                      country: "",
+                    },
+                    coordinates: {
+                      lat: 0,
+                      lng: 0,
+                    },
+                  },
                   createdAt: new Date(),
                   updatedAt: new Date(),
+                },
+                location: {
+                  address: {
+                    street: "",
+                    city: "",
+                    state: "",
+                    zip: "",
+                    country: "",
+                  },
+                  coordinates: {
+                    lat: 0,
+                    lng: 0,
+                  },
                 },
                 title: schedule.title || "",
                 description: schedule.description || "",
                 status: schedule.status || "scheduled",
                 priority: schedule.priority || "normal",
-                startTime: new Date(schedule.scheduled_start),
-                endTime: new Date(schedule.scheduled_end),
-                location: schedule.location || "",
+                startTime: new Date(schedule.start_time),
+                endTime: new Date(schedule.end_time),
                 notes: schedule.notes || "",
                 metadata: {},
                 createdAt: new Date(schedule.created_at),

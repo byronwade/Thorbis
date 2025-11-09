@@ -252,7 +252,7 @@ export function ServiceAgreementsTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search agreements by number, customer, type, or status..."
-      showRefresh={true}
+      showRefresh={false}
     />
   );
 }

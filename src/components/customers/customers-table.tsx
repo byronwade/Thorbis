@@ -324,7 +324,16 @@ export function CustomersTable({
       bulkActions={bulkActions}
       columns={columns}
       data={customers}
-      emptyIcon={<Users className="mx-auto h-12 w-12 text-muted-foreground" />}
+      emptyAction={
+        <Button
+          onClick={() => (window.location.href = "/dashboard/customers/new")}
+          size="sm"
+        >
+          <Users className="mr-2 size-4" />
+          Add Customer
+        </Button>
+      }
+      emptyIcon={<Users className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No customers found"
       enableSelection={true}
       getHighlightClass={() => "bg-green-50/30 dark:bg-green-950/10"}
@@ -335,7 +344,6 @@ export function CustomersTable({
       onRowClick={handleRowClick}
       searchFilter={searchFilter}
       searchPlaceholder="Search customers by name, email, phone, address, or status..."
-      showRefresh={true}
     />
   );
 }

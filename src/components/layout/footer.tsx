@@ -219,6 +219,14 @@ export function Footer() {
                   All Features →
                 </Link>
               </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/switch"
+                >
+                  Switch to Thorbis
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -336,6 +344,22 @@ export function Footer() {
               <li>
                 <Link
                   className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/integrations"
+                >
+                  Integrations Directory
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/roi"
+                >
+                  ROI Calculator
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
                   href="/help"
                 >
                   Help Center
@@ -363,6 +387,22 @@ export function Footer() {
                   href="/templates"
                 >
                   Templates & Tools
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/free-tools"
+                >
+                  Free Tools Library
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/reviews"
+                >
+                  Reviews & Testimonials
                 </Link>
               </li>
               <li>
@@ -433,9 +473,17 @@ export function Footer() {
               <li>
                 <Link
                   className="text-muted-foreground text-sm transition-colors hover:text-foreground"
-                  href="/demo"
+                  href="/register"
                 >
-                  Request Demo
+                  Create Account
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/implementation"
+                >
+                  Implementation & Success
                 </Link>
               </li>
               <li>

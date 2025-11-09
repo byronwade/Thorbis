@@ -180,7 +180,7 @@ export function TestimonialsSection() {
               className="group rounded-lg bg-primary px-8 py-6 font-semibold text-lg text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:scale-105 hover:bg-primary/90"
               size="lg"
             >
-              <Link href="/dashboard">
+              <Link href="/register">
                 Start Free Trial
                 <span className="ml-2 transition-transform group-hover:translate-x-1">
                   →

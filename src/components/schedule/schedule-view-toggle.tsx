@@ -1,19 +1,20 @@
 "use client";
 
-import { Bug, LayoutGrid } from "lucide-react";
+import { Bug, LayoutGrid, GanttChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ScheduleView } from "@/types/schedule";
 
-interface ScheduleViewToggleProps {
+type ScheduleViewToggleProps = {
   view: ScheduleView;
   onViewChange: (view: ScheduleView) => void;
-}
+};
 
 export function ScheduleViewToggle({
   view,
   onViewChange,
 }: ScheduleViewToggleProps) {
   const views = [
+    { value: "gantt" as const, icon: GanttChart, label: "Gantt" },
     { value: "timeline" as const, icon: LayoutGrid, label: "Timeline" },
     { value: "test" as const, icon: Bug, label: "Debug" },
     // Temporarily disabled old views

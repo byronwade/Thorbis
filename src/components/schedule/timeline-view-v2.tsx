@@ -1,9 +1,8 @@
 "use client";
 
-import { Calendar, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   type GanttFeature,
   GanttFeatureList,
@@ -22,7 +21,6 @@ import { calculateDuration, formatDuration } from "@/lib/schedule-utils";
 import { cn } from "@/lib/utils";
 import { useViewStore } from "@/stores/view-store";
 import type { Job } from "./schedule-types";
-import { ZoomControls } from "./zoom-controls";
 
 /**
  * Enhanced Timeline View with:
@@ -250,7 +248,7 @@ function TimelineContent() {
 
 export function TimelineViewV2() {
   const [mounted, setMounted] = useState(false);
-  const { zoom, currentDate, goToToday, setCurrentDate } = useViewStore();
+  const { zoom } = useViewStore();
   const { isLoading, error } = useSchedule();
 
   // Prevent hydration mismatch
@@ -265,19 +263,8 @@ export function TimelineViewV2() {
   // Loading state
   if (!mounted || isLoading) {
     return (
-      <div className="flex h-full w-full flex-col">
-        <div className="flex items-center justify-between border-b bg-background p-3">
-          <div className="flex items-center gap-4">
-            <ZoomControls />
-          </div>
-          <Button onClick={goToToday} size="sm" variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            Today
-          </Button>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="text-muted-foreground">Loading schedule...</div>
-        </div>
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="text-muted-foreground">Loading schedule...</div>
       </div>
     );
   }
@@ -285,21 +272,10 @@ export function TimelineViewV2() {
   // Error state
   if (error) {
     return (
-      <div className="flex h-full w-full flex-col">
-        <div className="flex items-center justify-between border-b bg-background p-3">
-          <div className="flex items-center gap-4">
-            <ZoomControls />
-          </div>
-          <Button onClick={goToToday} size="sm" variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            Today
-          </Button>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="text-center">
-            <p className="mb-2 text-destructive">Error loading schedule</p>
-            <p className="text-muted-foreground text-sm">{error}</p>
-          </div>
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="text-center">
+          <p className="mb-2 text-destructive">Error loading schedule</p>
+          <p className="text-muted-foreground text-sm">{error}</p>
         </div>
       </div>
     );
@@ -307,17 +283,6 @@ export function TimelineViewV2() {
 
   return (
     <div className="flex h-full w-full flex-col">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between border-border/50 border-b bg-background/90 p-3 backdrop-blur-md">
-        <div className="flex items-center gap-4">
-          <ZoomControls />
-        </div>
-        <Button onClick={goToToday} size="sm" variant="outline">
-          <Calendar className="mr-2 h-4 w-4" />
-          Today
-        </Button>
-      </div>
-
       {/* Gantt Chart */}
       <GanttProvider range={ganttRange} zoom={zoom}>
         <TimelineContent />

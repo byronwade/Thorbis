@@ -11,11 +11,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function FinalCTASection() {
-  const trustMarkers = [
-    { icon: "⚡", label: "Setup in 24 hours" },
-    { icon: "💳", label: "No credit card required" },
-    { icon: "🔒", label: "Cancel anytime" },
-    { icon: "📞", label: "24/7 support" },
+const trustMarkers = [
+  { icon: "💵", label: "$100/month base + pay-as-you-go usage" },
+  { icon: "⚡", label: "Setup in 24 hours" },
+  { icon: "💳", label: "No credit card required" },
+  { icon: "🔒", label: "Cancel anytime" },
+  { icon: "📞", label: "24/7 support" },
   ];
 
   return (
@@ -51,7 +52,8 @@ export function FinalCTASection() {
 
             <p className="mx-auto mb-10 max-w-2xl text-foreground text-xl leading-relaxed">
               Join 10,000+ field service professionals who have increased
-              revenue by 40% and saved 8+ hours per week with Thorbis.
+              revenue by 40% and saved 8+ hours per week with Thorbis. Start for
+              just $100/month with pay-as-you-go usage—no per-user fees.
             </p>
 
             {/* CTA Buttons */}
@@ -61,7 +63,7 @@ export function FinalCTASection() {
                 className="group h-auto rounded-xl bg-primary px-10 py-6 font-bold text-primary-foreground text-xl shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-primary/50"
                 size="lg"
               >
-                <Link href="/dashboard">
+                <Link href="/register">
                   Start Free Trial
                   <span className="ml-3 text-2xl transition-transform group-hover:translate-x-1">
                     →
@@ -74,10 +76,10 @@ export function FinalCTASection() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">
-                  Watch Demo
+                <Link href="/pricing">
+                  Compare plans
                   <span className="ml-3 text-2xl transition-transform group-hover:translate-x-1">
-                    ▶
+                    →
                   </span>
                 </Link>
               </Button>

@@ -31,7 +31,6 @@ import {
   Heart,
   MessageSquare,
   Phone,
-  Play,
   Shield,
   Star,
   Target,
@@ -163,9 +162,9 @@ export function HonestSalesHomepage() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">
-                  <Play className="mr-2 size-5 fill-current" />
-                  Watch 2-Min Demo
+                <Link href="/features">
+                  Explore features
+                  <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
             </div>
@@ -963,9 +962,9 @@ export function HonestSalesHomepage() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/demo">
-                  <Play className="mr-2 size-5 fill-current" />
-                  Watch Demo
+                <Link href="/pricing">
+                  Compare plans
+                  <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
             </div>
