@@ -124,7 +124,7 @@ export default function RegisterPage() {
       </Script>
 
       {/* Subtle Background Gradient */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
+      <div className="-z-10 absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
         <div className="pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full bg-primary/10 opacity-40 blur-3xl" />
         <div className="pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full bg-blue-500/10 opacity-40 blur-3xl delay-1000" />
@@ -338,6 +338,6 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
+  </div>
+  )
 }
