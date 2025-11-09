@@ -14,7 +14,9 @@ import Script from "next/script";
 import { useState } from "react";
 import { signInWithOAuth, signUp } from "@/actions/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,7 +116,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background md:items-center md:justify-center">
+    <div className="h-full w-full">
       <Script
         id="register-howto-schema"
         strategy="afterInteractive"
@@ -122,28 +124,21 @@ export default function RegisterPage() {
       >
         {JSON.stringify(howToSchema)}
       </Script>
+      <div className="h-dvh lg:grid lg:grid-cols-2">
+        {/* Registration Form Side */}
+        <div className="flex h-full items-center justify-center space-y-6 px-6 py-12 sm:px-6 md:px-8">
+          {/* Back Button */}
+          <div className="absolute top-6 left-6">
+            <Link
+              className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+              href="/"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">Back to Home</span>
+            </Link>
+          </div>
 
-      {/* Subtle Background Gradient */}
-      <div className="-z-10 absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
-        <div className="pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full bg-primary/10 opacity-40 blur-3xl" />
-        <div className="pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full bg-blue-500/10 opacity-40 blur-3xl delay-1000" />
-      </div>
-
-      {/* Back Button */}
-      <div className="absolute top-6 left-6">
-        <Link
-          className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-          href="/"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span className="text-sm">Back to Home</span>
-        </Link>
-      </div>
-
-      {/* Centered Content - Full width on mobile, centered on desktop */}
-      <div className="w-full px-4 py-12 sm:px-6 md:w-auto md:max-w-md lg:px-8">
-        <div className="flex w-full flex-col gap-6">
+          <div className="flex w-full max-w-lg flex-col gap-6">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <Image
@@ -337,7 +332,210 @@ export default function RegisterPage() {
             </p>
           </div>
         </div>
+
+        {/* Space-themed Right Side */}
+        <div className="h-screen bg-muted p-5 max-lg:hidden">
+          <Card className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border border-none bg-primary py-8 text-card-foreground shadow-sm">
+            <CardHeader className="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-6 px-8 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
+              <CardTitle className="font-bold text-4xl text-primary-foreground lg:text-5xl/15.5">
+                Join the Field Service Revolution
+              </CardTitle>
+              <p className="text-primary-foreground text-xl">
+                Transform your field operations with Thorbis. Join thousands of
+                contractors who have streamlined their businesses and improved
+                customer satisfaction.
+              </p>
+            </CardHeader>
+
+            {/* Decorative Space Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+              {/* Space Background Image */}
+              <div
+                className="absolute inset-0 bg-center bg-cover opacity-20"
+                style={{
+                  backgroundImage: `url('https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=1200&h=800&fit=crop&crop=center')`,
+                }}
+              />
+
+              {/* Floating Space Elements */}
+              <div className="absolute top-20 right-20 h-32 w-32 animate-pulse rounded-full bg-gradient-to-br from-purple-400/20 to-pink-600/20 blur-xl" />
+              <div
+                className="absolute bottom-32 left-16 h-24 w-24 animate-pulse rounded-full bg-gradient-to-br from-green-400/15 to-blue-600/15 blur-lg"
+                style={{ animationDelay: "1s" }}
+              />
+              <div
+                className="absolute top-1/2 left-1/4 h-16 w-16 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/10 to-orange-600/10 blur-md"
+                style={{ animationDelay: "2s" }}
+              />
+
+              {/* Stars */}
+              <div className="absolute top-16 left-20 h-1 w-1 animate-pulse rounded-full bg-white" />
+              <div
+                className="absolute top-32 right-32 h-1 w-1 animate-pulse rounded-full bg-white"
+                style={{ animationDelay: "0.5s" }}
+              />
+              <div
+                className="absolute right-16 bottom-20 h-1 w-1 animate-pulse rounded-full bg-white"
+                style={{ animationDelay: "1.5s" }}
+              />
+              <div
+                className="absolute top-1/3 left-1/2 h-1 w-1 animate-pulse rounded-full bg-white"
+                style={{ animationDelay: "2.5s" }}
+              />
+            </div>
+
+            {/* Decorative SVG */}
+            <svg
+              aria-hidden="true"
+              className="-left-50 pointer-events-none absolute bottom-30 size-130 text-secondary/10"
+              fill="none"
+              height="1em"
+              viewBox="0 0 128 128"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M63.6734 24.8486V49.3899C63.6734 57.4589 57.1322 64.0001 49.0632 64.0001H25.2041"
+                stroke="currentColor"
+                strokeWidth="8.11681"
+              />
+              <path
+                d="M64.3266 103.152L64.3266 78.6106C64.3266 70.5416 70.8678 64.0003 78.9368 64.0003L102.796 64.0004"
+                stroke="currentColor"
+                strokeWidth="8.11681"
+              />
+              <line
+                stroke="currentColor"
+                strokeWidth="8.11681"
+                x1="93.3468"
+                x2="76.555"
+                y1="35.6108"
+                y2="52.205"
+              />
+              <line
+                stroke="currentColor"
+                strokeWidth="8.11681"
+                x1="51.7697"
+                x2="34.9778"
+                y1="77.0624"
+                y2="93.6567"
+              />
+              <line
+                stroke="currentColor"
+                strokeWidth="8.11681"
+                x1="50.9584"
+                x2="34.2651"
+                y1="51.3189"
+                y2="34.6256"
+              />
+              <line
+                stroke="currentColor"
+                strokeWidth="8.11681"
+                x1="93.1625"
+                x2="76.4692"
+                y1="93.6397"
+                y2="76.9464"
+              />
+            </svg>
+
+            <CardContent className="relative z-10 mx-8 h-62 overflow-hidden rounded-2xl px-0">
+              {/* Card Content Overlay */}
+              <div className="absolute top-0 right-0 flex size-15 items-center justify-center rounded-2xl bg-card/80 backdrop-blur-sm">
+                <svg
+                  aria-hidden="true"
+                  className="size-15"
+                  fill="none"
+                  height="1em"
+                  viewBox="0 0 128 128"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M63.6734 24.8486V49.3899C63.6734 57.4589 57.1322 64.0001 49.0632 64.0001H25.2041"
+                    stroke="currentColor"
+                    strokeWidth="8.11681"
+                  />
+                  <path
+                    d="M64.3266 103.152L64.3266 78.6106C64.3266 70.5416 70.8678 64.0003 78.9368 64.0003L102.796 64.0004"
+                    stroke="currentColor"
+                    strokeWidth="8.11681"
+                  />
+                  <line
+                    stroke="currentColor"
+                    strokeWidth="8.11681"
+                    x1="93.3468"
+                    x2="76.555"
+                    y1="35.6108"
+                    y2="52.205"
+                  />
+                  <line
+                    stroke="currentColor"
+                    strokeWidth="8.11681"
+                    x1="51.7697"
+                    x2="34.9778"
+                    y1="77.0624"
+                    y2="93.6567"
+                  />
+                  <line
+                    stroke="currentColor"
+                    strokeWidth="8.11681"
+                    x1="50.9584"
+                    x2="34.2651"
+                    y1="51.3189"
+                    y2="34.6256"
+                  />
+                  <line
+                    stroke="currentColor"
+                    strokeWidth="8.11681"
+                    x1="93.1625"
+                    x2="76.4692"
+                    y1="93.6397"
+                    y2="76.9464"
+                  />
+                </svg>
+              </div>
+
+              <div className="flex flex-col gap-5 rounded-2xl bg-card/60 p-6 backdrop-blur-sm">
+                <p className="line-clamp-2 pr-12 font-bold text-3xl">
+                  Start Your Free Trial Today
+                </p>
+                <p className="line-clamp-2 text-lg">
+                  Get started with Thorbis for free. No credit card required.
+                  Experience the power of modern field service management.
+                </p>
+                <div className="-space-x-4 flex self-end">
+                  <Avatar className="ring-2 ring-background">
+                    <AvatarImage
+                      alt="Business Owner"
+                      src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=64&h=64&fit=crop&crop=face"
+                    />
+                    <AvatarFallback>BO</AvatarFallback>
+                  </Avatar>
+                  <Avatar className="ring-2 ring-background">
+                    <AvatarImage
+                      alt="Field Manager"
+                      src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face"
+                    />
+                    <AvatarFallback>FM</AvatarFallback>
+                  </Avatar>
+                  <Avatar className="ring-2 ring-background">
+                    <AvatarImage
+                      alt="Operations Lead"
+                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop&crop=face"
+                    />
+                    <AvatarFallback>OL</AvatarFallback>
+                  </Avatar>
+                  <Avatar className="ring-2 ring-background">
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      +10K
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-  </div>
-  )
+    </div>
+  );
 }

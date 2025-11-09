@@ -220,9 +220,8 @@ export const useNotificationsStore = create<NotificationsState>()(
           const supabase = createClient();
 
           if (!supabase) {
-            console.error("Supabase client not configured");
+            console.warn("⚠️ Supabase client not configured, realtime updates disabled");
             set({
-              error: "Failed to initialize realtime updates",
               isSubscribed: false,
             });
             return;
@@ -240,7 +239,7 @@ export const useNotificationsStore = create<NotificationsState>()(
                 filter: `user_id=eq.${userId}`,
               },
               (payload: RealtimePostgresChangesPayload<Notification>) => {
-                console.log("New notification received:", payload.new);
+                // New notification received
                 if (payload.new) {
                   get().addNotification(payload.new as Notification);
 
@@ -289,7 +288,7 @@ export const useNotificationsStore = create<NotificationsState>()(
                 filter: `user_id=eq.${userId}`,
               },
               (payload: RealtimePostgresChangesPayload<Notification>) => {
-                console.log("Notification updated:", payload.new);
+                // Notification updated
                 if (payload.new) {
                   const notification = payload.new as Notification;
                   get().updateNotification(notification.id, notification);
@@ -305,27 +304,42 @@ export const useNotificationsStore = create<NotificationsState>()(
                 filter: `user_id=eq.${userId}`,
               },
               (payload: RealtimePostgresChangesPayload<Notification>) => {
-                console.log("Notification deleted:", payload.old);
+                // Notification deleted
                 if (payload.old) {
                   get().removeNotification((payload.old as Notification).id);
                 }
               }
             )
-            .subscribe((status) => {
+            .subscribe((status, err) => {
               if (status === "SUBSCRIBED") {
-                console.log("Successfully subscribed to notifications channel");
-                // isSubscribed already set to true above
+                console.log("✅ Successfully subscribed to notifications channel");
+                set({ error: null }); // Clear any previous errors
               } else if (status === "CHANNEL_ERROR") {
-                console.error("Error subscribing to notifications channel");
+                // Log as warning instead of error to avoid cluttering console
+                console.warn(
+                  "⚠️ Notifications real-time updates unavailable:",
+                  err || "Channel error"
+                );
+                console.warn(
+                  "💡 This is usually because:\n" +
+                    "  1. Realtime is not enabled on the 'notifications' table in Supabase\n" +
+                    "  2. RLS policies are blocking the subscription\n" +
+                    "  3. The app will still work, but won't receive live updates"
+                );
+                // Don't set error state to avoid breaking the UI
                 set({
-                  error: "Failed to subscribe to real-time updates",
                   isSubscribed: false,
                   realtimeChannel: null,
                 });
               } else if (status === "TIMED_OUT") {
-                console.error("Subscription timed out");
+                console.warn("⚠️ Notification subscription timed out");
                 set({
-                  error: "Real-time subscription timed out",
+                  isSubscribed: false,
+                  realtimeChannel: null,
+                });
+              } else if (status === "CLOSED") {
+                console.log("ℹ️ Notification channel closed");
+                set({
                   isSubscribed: false,
                   realtimeChannel: null,
                 });
@@ -334,12 +348,11 @@ export const useNotificationsStore = create<NotificationsState>()(
 
           set({ realtimeChannel: channel });
         } catch (error) {
-          console.error("Error setting up realtime subscription:", error);
+          console.warn("⚠️ Could not set up realtime subscription:", error);
+          // App will still work without realtime, so don't set error state
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to set up real-time updates",
+            isSubscribed: false,
+            realtimeChannel: null,
           });
         }
       },
