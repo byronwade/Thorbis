@@ -192,7 +192,7 @@ export default function ImplementationPage() {
             Launch Thorbis in 45 days with migration experts by your side
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Dedicated migration engineers, AI strategists, and customer success coaches guide your team from day-one planning to long-term optimization.
+            Dedicated migration engineers, AI strategists, and customer success coaches guide your team from day-one planning to long-term optimization. Implementation is included in the $100/month base subscription with pay-as-you-go usage—no surprise onboarding fees.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
@@ -351,7 +351,7 @@ export default function ImplementationPage() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <p>✔️ Go-live readiness checklist completed within 30 days</p>
-                <p>✔️ Dispatch adoption > 90% within first week</p>
+                <p>✔️ Dispatch adoption {">"}  90% within first week</p>
                 <p>✔️ AI assistant handling 40% of incoming calls by week six</p>
                 <p>✔️ Customer portal activation rate surpassing 60% after training campaign</p>
               </CardContent>
