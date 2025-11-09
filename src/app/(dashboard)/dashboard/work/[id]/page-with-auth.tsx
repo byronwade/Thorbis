@@ -467,6 +467,7 @@ export default async function JobDetailsPage({
         customer={customer}
         property={property}
         assignedUser={assignedUser}
+        enrichmentData={propertyEnrichment}
       />
 
       {/* Main Content - Tabbed Editor */}

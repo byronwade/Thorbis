@@ -13,6 +13,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
   ActionError,
   ERROR_CODES,
@@ -48,6 +49,8 @@ const propertySchema = z.object({
     .max(new Date().getFullYear() + 5)
     .optional(),
   notes: z.string().optional(),
+  lat: z.number().optional(), // Coordinates from Google Places (if available)
+  lon: z.number().optional(),
 });
 
 // ============================================================================
@@ -75,13 +78,9 @@ export async function findOrCreateProperty(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
+    // Get active company ID
+    const activeCompanyId = await getActiveCompanyId();
+    if (!activeCompanyId) {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -107,6 +106,8 @@ export async function findOrCreateProperty(
         ? Number(formData.get("yearBuilt"))
         : undefined,
       notes: formData.get("notes") || undefined,
+      lat: formData.get("lat") ? Number(formData.get("lat")) : undefined,
+      lon: formData.get("lon") ? Number(formData.get("lon")) : undefined,
     });
 
     // Verify customer exists and belongs to company
@@ -119,7 +120,7 @@ export async function findOrCreateProperty(
 
     assertExists(customer, "Customer");
 
-    if (customer.company_id !== teamMember.company_id) {
+    if (customer.company_id !== activeCompanyId) {
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -136,7 +137,7 @@ export async function findOrCreateProperty(
       .eq("city", data.city)
       .eq("state", data.state)
       .eq("zip_code", data.zipCode)
-      .eq("company_id", teamMember.company_id)
+      .eq("company_id", activeCompanyId)
       .maybeSingle();
 
     // If property exists, return its ID
@@ -144,26 +145,68 @@ export async function findOrCreateProperty(
       return existingProperty.id;
     }
 
-    // Otherwise, create new property
+    // Use coordinates from Google Places if provided, otherwise geocode in background
+    const fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
+    
+    // Create property immediately
+    const insertData: Record<string, any> = {
+      company_id: activeCompanyId,
+      customer_id: data.customerId,
+      name: data.name,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      zip_code: data.zipCode,
+      country: data.country,
+      notes: data.notes,
+    };
+
+    // Only include optional fields if they have values
+    if (data.address2) insertData.address2 = data.address2;
+    if (data.squareFootage) insertData.square_footage = data.squareFootage;
+    if (data.yearBuilt) insertData.year_built = data.yearBuilt;
+    
+    // If coordinates provided from Google Places, save them immediately
+    if (data.lat && data.lon) {
+      insertData.lat = data.lat;
+      insertData.lon = data.lon;
+      console.log(`[Property] Using Google Places coordinates: ${data.lat}, ${data.lon}`);
+    }
+
     const { data: property, error: createError } = await supabase
       .from("properties")
-      .insert({
-        company_id: teamMember.company_id,
-        customer_id: data.customerId,
-        name: data.name,
-        address: data.address,
-        address2: data.address2,
-        city: data.city,
-        state: data.state,
-        zip_code: data.zipCode,
-        country: data.country,
-        type: data.propertyType || "residential",
-        square_footage: data.squareFootage,
-        year_built: data.yearBuilt,
-        notes: data.notes,
-      })
+      .insert(insertData)
       .select("id")
       .single();
+
+    // Only geocode in background if coordinates weren't provided
+    if (property?.id && !data.lat && !data.lon) {
+      console.log(`[Property] No coordinates provided, geocoding in background...`);
+      // Fire and forget - don't wait for this
+      import("@/lib/services/location-services")
+        .then(({ LocationServices }) => {
+          const locationServices = new LocationServices();
+          return locationServices.geocode(fullAddress);
+        })
+        .then((geocoded) => {
+          if (geocoded) {
+            // Update property with coordinates
+            supabase
+              .from("properties")
+              .update({
+                lat: geocoded.lat,
+                lon: geocoded.lon,
+              })
+              .eq("id", property.id)
+              .then(() => {
+                console.log(`[Property] Geocoded ${fullAddress} to: ${geocoded.lat}, ${geocoded.lon}`);
+              });
+          }
+        })
+        .catch((error) => {
+          console.warn("[Property] Background geocoding failed:", error);
+        });
+    }
 
     if (createError) {
       console.error("Property creation error:", createError);

@@ -39,7 +39,10 @@ interface AppHeaderClientProps {
     id: string;
     name: string;
     plan: string;
+    onboardingComplete?: boolean;
+    hasPayment?: boolean;
   }>;
+  activeCompanyId?: string | null;
 }
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
@@ -185,7 +188,7 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
   );
 }
 
-export function AppHeaderClient({ userProfile, companies }: AppHeaderClientProps) {
+export function AppHeaderClient({ userProfile, companies, activeCompanyId }: AppHeaderClientProps) {
   const pathname = usePathname();
 
   // Hide header completely on TV display route (not settings)
@@ -456,12 +459,19 @@ export function AppHeaderClient({ userProfile, companies }: AppHeaderClientProps
           <HelpDropdown />
 
           {/* User Menu - Data passed from server, no loading state needed */}
+          {/* Deduplicate companies by ID to prevent duplicates */}
           <UserMenu
-            teams={companies.map((company) => ({
-              name: company.name,
-              logo: defaultLogo,
-              plan: company.plan,
-            }))}
+            teams={Array.from(
+              new Map(companies.map((company) => [company.id, {
+                id: company.id,
+                name: company.name,
+                logo: defaultLogo,
+                plan: company.plan,
+                onboardingComplete: company.onboardingComplete,
+                hasPayment: company.hasPayment,
+              }])).values()
+            )}
+            activeCompanyId={activeCompanyId}
             user={{
               name: userProfile.name,
               email: userProfile.email,

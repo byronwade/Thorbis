@@ -57,32 +57,37 @@ export function CollapsibleSectionWrapper({
   };
 
   return (
-    <div className="not-prose my-6 rounded-lg border bg-card">
+    <div className="not-prose my-6 rounded-lg border bg-card shadow-sm">
       {/* Header - Clickable to toggle */}
-      <div className="flex w-full items-center justify-between gap-4 p-4">
+      <div className="flex w-full items-center justify-between gap-4 px-6 py-3.5">
         <button
           type="button"
           onClick={toggleOpen}
-          className="flex flex-1 items-center gap-2 text-left transition-colors hover:bg-muted/50"
+          className="flex flex-1 items-center gap-3 text-left transition-colors hover:bg-muted/50 rounded-md"
         >
-          {/* Collapse/Expand Chevron */}
-          {isOpen ? (
-            <ChevronDown className="size-5 text-muted-foreground transition-transform" />
-          ) : (
-            <ChevronRight className="size-5 text-muted-foreground transition-transform" />
+          {/* Icon with Background */}
+          {icon && (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
+              <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+            </div>
           )}
-
-          {/* Icon and Title */}
-          {icon && <span className="text-primary">{icon}</span>}
-          <div className="flex-1">
+          
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-lg">{title}</h3>
+              <h3 className="font-medium text-sm">{title}</h3>
               {badge}
             </div>
             {summary && !isOpen && (
-              <p className="mt-0.5 text-muted-foreground text-sm">{summary}</p>
+              <p className="mt-0.5 text-muted-foreground text-xs">{summary}</p>
             )}
           </div>
+
+          {/* Collapse/Expand Chevron */}
+          {isOpen ? (
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform" />
+          ) : (
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform" />
+          )}
         </button>
 
         {/* Action Buttons - Always visible on far right */}

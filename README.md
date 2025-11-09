@@ -126,6 +126,113 @@ pnpm dev:clean
    ./scripts/clean-next.ps1
    ```
 
+## 🔑 API Configuration
+
+### Google Maps Services (Autocomplete, Street View, Suppliers, Time Zone)
+
+The application uses multiple Google Maps APIs for comprehensive location intelligence:
+
+**Features:**
+- 📍 **Address Autocomplete** - Quick property address entry (Places API)
+- 📸 **Street View Photos** - Actual property photos (Street View Static API)
+- 🏪 **Nearby Suppliers** - Home Depot, Lowe's, etc. with reviews & ratings (Places API)
+- 🌐 **Time Zone Detection** - Automatic timezone for scheduling (Time Zone API)
+- 🗺️ **Geocoding** - Address to coordinates conversion (Geocoding API)
+
+**Setup:**
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the following APIs:
+   - ✅ **Places API** (address autocomplete & supplier search)
+   - ✅ **Maps JavaScript API** (required for autocomplete)
+   - ✅ **Street View Static API** (property photos)
+   - ✅ **Time Zone API** (timezone detection)
+   - ✅ **Geocoding API** (address to coordinates)
+4. Create an API key:
+   - Navigate to **APIs & Services** → **Credentials**
+   - Click **Create Credentials** → **API Key**
+   - (Recommended) Restrict the key to your domain and the enabled APIs
+5. Add to your `.env.local`:
+   ```
+   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
+   ```
+
+**Cost:** ALL FREE within generous limits:
+- 🆓 Street View: 25,000 requests/month
+- 🆓 Places API: $200/month credit ≈ 8,000 requests
+- 🆓 Time Zone: **UNLIMITED** (no charge)
+- 🆓 Geocoding: $200/month credit ≈ 40,000 requests
+
+Every Google Cloud account gets $200/month free credit - more than enough for typical usage!
+
+### Optional: Free Data APIs (No Keys Required)
+
+The operational intelligence panel also uses these **100% free, zero-config APIs**:
+
+- 📊 **US Census Bureau** - Demographics (population, income, education)
+- 🌬️ **AirNow** - Air quality index and pollutants
+- 🏔️ **USGS Elevation** - Elevation data
+- 🏫 **OpenStreetMap** - Schools, walkability scores, building data
+- 🚰 **USGS Water Services** - Water quality data
+- 🌊 **FEMA NFHL** - Flood zone information
+- 🌦️ **National Weather Service** - Weather forecasts and alerts
+
+**No API keys needed!** These services work out of the box. The app gracefully handles rate limits or regional unavailability - if any service fails, the rest continue working normally.
+
+### RentCast API (Property Information) - RECOMMENDED
+
+The operational intelligence panel displays property characteristics, tax assessments, and market data using the RentCast API.
+
+**Setup:**
+
+1. Go to [RentCast](https://rentcast.io/api)
+2. Create a free account
+3. Generate an API key from your dashboard
+4. Add to your `.env.local`:
+   ```
+   RENTCAST_API_KEY=your_api_key_here
+   ```
+
+**Free Tier (Forever, No Trial):**
+- ✅ **50 requests per month** - PERMANENT free tier
+- ✅ Property details (year built, bedrooms, bathrooms, square footage, etc.)
+- ✅ Tax assessment data & annual property taxes
+- ✅ Market valuations & sale history
+- ✅ Owner information
+- ✅ Rental estimates
+
+**With 30-day caching:** 50 requests = ~1,500 effective property lookups per month!
+
+**Paid Tier (Optional):**
+- $99/month for 1,000 requests
+- Much cheaper than alternatives
+
+**Without API Key:** The system will still work but won't display detailed property information.
+
+---
+
+### Attom Data API (Optional Fallback)
+
+If you also add an Attom API key, the system will use it as a fallback if RentCast fails.
+
+**Setup:**
+
+1. Go to [Attom Data Solutions](https://api.developer.attomdata.com/)
+2. Create account (30-day trial)
+3. Add to your `.env.local`:
+   ```
+   ATTOM_API_KEY=your_api_key_here
+   ```
+
+**Note:** Attom's free tier is only a 30-day trial. RentCast is recommended as the primary source.
+
+**Features:**
+- Real-time address autocomplete
+- Automatic geocoding (latitude/longitude)
+- US address validation
+- Seamless property creation from search
+
 ## 📚 Documentation
 
 Comprehensive documentation is available in the `/docs` directory:

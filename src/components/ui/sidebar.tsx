@@ -229,21 +229,32 @@ function Sidebar({
       />
       <div
         className={cn(
-          "fixed inset-y-0 top-(--header-height) z-10 hidden h-[calc(100svh-var(--header-height))]! h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
-          side === "left"
-            ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
-            : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-          // Adjust the padding for floating and inset variants.
-          variant === "floating" || variant === "inset"
-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+          variant === "sidebar"
+            ? "sticky top-[calc(var(--header-height)+1px)] z-30 hidden h-[calc(100svh-var(--footer-height)-4rem)] overscroll-none bg-transparent lg:flex"
+            : "fixed inset-y-0 top-(--header-height) z-10 hidden h-[calc(100svh-var(--header-height))]! h-svh transition-[left,right,width] duration-200 ease-linear md:flex",
+          variant === "sidebar"
+            ? "w-(--sidebar-width) flex-col"
+            : "w-(--sidebar-width)",
+          variant !== "sidebar" && [
+            side === "left"
+              ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
+              : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+            // Adjust the padding for floating and inset variants.
+            variant === "floating" || variant === "inset"
+              ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+              : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+          ],
           className
         )}
         data-slot="sidebar-container"
         {...props}
       >
         <div
-          className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
+          className={cn(
+            "flex h-full w-full flex-col",
+            variant === "sidebar" && "bg-transparent",
+            variant !== "sidebar" && "bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
+          )}
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
         >
@@ -375,17 +386,23 @@ function SidebarSeparator({
   );
 }
 
-function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
+function SidebarContent({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden overflow-x-hidden px-2 no-scrollbar",
         className
       )}
       data-sidebar="content"
       data-slot="sidebar-content"
       {...props}
-    />
+    >
+      {/* Top gradient overlay */}
+      <div className="from-background via-background/80 to-background/50 sticky -top-1 z-10 h-8 shrink-0 bg-gradient-to-b blur-xs" />
+      {children}
+      {/* Bottom gradient overlay */}
+      <div className="from-background via-background/80 to-background/50 sticky -bottom-1 z-10 h-16 shrink-0 bg-gradient-to-t blur-xs" />
+    </div>
   );
 }
 

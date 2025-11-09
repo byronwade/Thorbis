@@ -21,6 +21,7 @@ import {
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { notifyJobCreated } from "@/lib/notifications/triggers";
 
 // Validation Schemas
@@ -49,6 +50,7 @@ const createJobSchema = z.object({
 const updateJobSchema = z.object({
   title: z.string().min(1, "Job title is required").optional(),
   description: z.string().optional(),
+  status: z.enum(["quoted", "scheduled", "in_progress", "on_hold", "completed", "cancelled"]).optional(),
   priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
   jobType: z
     .enum(["service", "installation", "repair", "maintenance", "inspection", "consultation"])
@@ -58,6 +60,8 @@ const updateJobSchema = z.object({
   scheduledStart: z.string().optional(),
   scheduledEnd: z.string().optional(),
   assignedTo: z.string().uuid("Invalid user ID").optional().nullable(),
+  customerId: z.string().uuid("Invalid customer ID").optional().nullable(),
+  propertyId: z.string().uuid("Invalid property ID").optional().nullable(),
 });
 
 const scheduleJobSchema = z.object({
@@ -445,20 +449,36 @@ export async function updateJob(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
+    // Get active company ID
+    const activeCompanyId = await getActiveCompanyId();
+    if (!activeCompanyId) {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
         403
       );
     }
+
+    // Get user's role to check if they're admin/owner
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select(`
+        role_id,
+        custom_roles!role_id(name, is_system)
+      `)
+      .eq("user_id", user.id)
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
+
+    const role = Array.isArray(teamMember?.custom_roles)
+      ? teamMember.custom_roles[0]
+      : teamMember?.custom_roles;
+    
+    const isAdminOrOwner =
+      role?.name === "Admin" ||
+      role?.name === "Owner" ||
+      role?.is_system === true;
 
     // Verify job belongs to company
     const { data: existingJob } = await supabase
@@ -469,7 +489,7 @@ export async function updateJob(
 
     assertExists(existingJob, "Job");
 
-    if (existingJob.company_id !== teamMember.company_id) {
+    if (existingJob.company_id !== activeCompanyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("job"),
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -477,10 +497,10 @@ export async function updateJob(
       );
     }
 
-    // Prevent editing completed or cancelled jobs
+    // Prevent editing completed or cancelled jobs (unless admin/owner)
     if (
-      existingJob.status === "completed" ||
-      existingJob.status === "cancelled"
+      !isAdminOrOwner &&
+      (existingJob.status === "completed" || existingJob.status === "cancelled")
     ) {
       throw new ActionError(
         `Cannot edit ${existingJob.status} jobs`,
@@ -488,9 +508,34 @@ export async function updateJob(
       );
     }
 
+    const customerIdValue = formData.get("customerId");
+    const propertyIdValue = formData.get("propertyId");
+    
+    // Handle customerId: empty string or "null" string means remove (set to null)
+    // undefined means don't change it
+    let parsedCustomerId: string | null | undefined;
+    if (customerIdValue === null || customerIdValue === undefined) {
+      parsedCustomerId = undefined; // Don't change
+    } else if (customerIdValue === "" || customerIdValue === "null") {
+      parsedCustomerId = null; // Remove customer
+    } else {
+      parsedCustomerId = customerIdValue as string; // Set to this customer
+    }
+    
+    // Handle propertyId: empty string means remove (set to null), undefined means don't change
+    let parsedPropertyId: string | null | undefined;
+    if (propertyIdValue === null || propertyIdValue === undefined) {
+      parsedPropertyId = undefined; // Don't change
+    } else if (propertyIdValue === "" || propertyIdValue === "null") {
+      parsedPropertyId = null; // Remove property
+    } else {
+      parsedPropertyId = propertyIdValue as string; // Set to this property
+    }
+
     const data = updateJobSchema.parse({
       title: formData.get("title") || undefined,
       description: formData.get("description") || undefined,
+      status: formData.get("status") || undefined,
       priority: formData.get("priority") || undefined,
       jobType: formData.get("jobType") || undefined,
       notes: formData.get("notes") || undefined,
@@ -500,12 +545,15 @@ export async function updateJob(
       scheduledStart: formData.get("scheduledStart") || undefined,
       scheduledEnd: formData.get("scheduledEnd") || undefined,
       assignedTo: formData.get("assignedTo") || null,
+      customerId: parsedCustomerId,
+      propertyId: parsedPropertyId,
     });
 
     // Build update object with only defined values
     const updateData: any = {};
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined) updateData.description = data.description;
+    if (data.status !== undefined) updateData.status = data.status;
     if (data.priority !== undefined) updateData.priority = data.priority;
     if (data.jobType !== undefined) updateData.job_type = data.jobType;
     if (data.notes !== undefined) updateData.notes = data.notes;
@@ -513,6 +561,25 @@ export async function updateJob(
     if (data.scheduledStart !== undefined) updateData.scheduled_start = data.scheduledStart;
     if (data.scheduledEnd !== undefined) updateData.scheduled_end = data.scheduledEnd;
     if (data.assignedTo !== undefined) updateData.assigned_to = data.assignedTo;
+    if (data.customerId !== undefined) updateData.customer_id = data.customerId;
+    if (data.propertyId !== undefined) {
+      updateData.property_id = data.propertyId;
+      // If property is being set (not null), verify it belongs to the customer (if customer is set)
+      if (data.propertyId !== null && data.customerId !== undefined && data.customerId !== null) {
+        const { data: property } = await supabase
+          .from("properties")
+          .select("customer_id")
+          .eq("id", data.propertyId)
+          .single();
+        
+        if (property && property.customer_id !== data.customerId) {
+          throw new ActionError(
+            "Property does not belong to the selected customer",
+            ERROR_CODES.VALIDATION_FAILED
+          );
+        }
+      }
+    }
 
     // Update job
     const { error: updateError } = await supabase
@@ -521,8 +588,9 @@ export async function updateJob(
       .eq("id", jobId);
 
     if (updateError) {
+      console.error("Database update error:", updateError);
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("update job"),
+        ERROR_MESSAGES.operationFailed("update job") + `: ${updateError.message}`,
         ERROR_CODES.DB_QUERY_ERROR
       );
     }

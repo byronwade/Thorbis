@@ -13,9 +13,18 @@
  */
 
 import { useState } from "react";
-import { Home, Building2, Factory, MapPin, ExternalLink, Archive, Trash2, UserX } from "lucide-react";
+import { Home, Building2, Factory, MapPin, ExternalLink, Archive, Trash2, UserX, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   type ColumnDef,
   type BulkAction,
@@ -23,6 +32,7 @@ import {
 } from "@/components/ui/full-width-datatable";
 import { cn } from "@/lib/utils";
 import { archiveProperty } from "@/actions/properties";
+import { JobEnrichmentPanel } from "@/components/work/job-enrichment-panel";
 
 type Property = {
   id: string;
@@ -50,6 +60,7 @@ type Property = {
       annualAmount?: number;
     };
   };
+  operationalIntelligence?: any; // Job enrichment data (weather, building, location, etc.)
 };
 
 type PropertiesTableProps = {
@@ -247,18 +258,54 @@ export function PropertiesTable({
     {
       key: "actions",
       header: "",
-      width: "w-20",
+      width: "w-36",
       shrink: true,
       align: "right",
       render: (property) => (
-        <Link
-          href={`/dashboard/customers/${property.customer_id}#property-${property.id}`}
-          className="inline-flex items-center gap-1 text-primary text-xs hover:underline"
-          onClick={(e) => e.stopPropagation()}
-        >
-          View
-          <ExternalLink className="size-3" />
-        </Link>
+        <div className="flex items-center justify-end gap-1">
+          {/* Operational Intelligence Button */}
+          {property.operationalIntelligence && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 gap-1 px-2 text-xs"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Sparkles className="size-3" />
+                  Intel
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Sparkles className="size-5 text-primary" />
+                    Operational Intelligence
+                  </SheetTitle>
+                  <SheetDescription>
+                    Live data for {property.address}, {property.city}
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6">
+                  <JobEnrichmentPanel
+                    enrichmentData={property.operationalIntelligence}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          )}
+
+          {/* View Link */}
+          <Link
+            href={`/dashboard/customers/${property.customer_id}#property-${property.id}`}
+            className="inline-flex items-center gap-1 text-primary text-xs hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            View
+            <ExternalLink className="size-3" />
+          </Link>
+        </div>
       ),
     },
   ];

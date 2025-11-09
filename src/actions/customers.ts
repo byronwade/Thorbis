@@ -1119,16 +1119,31 @@ export async function getAllCustomers(): Promise<
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
+    // Get active company ID (from cookie or first available)
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    const FORBIDDEN_STATUS_CODE = 403;
+    if (!activeCompanyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        FORBIDDEN_STATUS_CODE
+      );
+    }
+
+    // Verify user has access to the active company
     const { data: teamMember } = await supabase
       .from("team_members")
       .select("company_id")
       .eq("user_id", user.id)
-      .single();
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
 
-    const FORBIDDEN_STATUS_CODE = 403;
     if (!teamMember?.company_id) {
       throw new ActionError(
-        "You must be part of a company",
+        "You don't have access to this company",
         ERROR_CODES.AUTH_FORBIDDEN,
         FORBIDDEN_STATUS_CODE
       );
@@ -1137,7 +1152,7 @@ export async function getAllCustomers(): Promise<
     const { data: customers, error } = await supabase
       .from("customers")
       .select("*")
-      .eq("company_id", teamMember.company_id)
+      .eq("company_id", activeCompanyId)
       .is("deleted_at", null)
       .order("display_name", { ascending: true });
 

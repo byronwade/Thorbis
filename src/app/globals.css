@@ -50,6 +50,7 @@
 :root {
   --radius: 0.625rem;
   --header-height: 3.5rem; /* 56px = theme(spacing.14) */
+  --footer-height: 0rem; /* Footer height for KB sidebar calculations */
   --sidebar-width: 12rem;
   --top-spacing: 1rem;
 

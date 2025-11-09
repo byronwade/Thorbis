@@ -169,7 +169,25 @@ export async function updateSchedule(
   data: ScheduleUpdate
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const validated = scheduleUpdateSchema.parse(data);
+    // Convert Date objects to ISO strings for Supabase
+    const processedData: any = { ...data };
+    if (processedData.dispatch_time instanceof Date) {
+      processedData.dispatch_time = processedData.dispatch_time.toISOString();
+    }
+    if (processedData.actual_start_time instanceof Date) {
+      processedData.actual_start_time = processedData.actual_start_time.toISOString();
+    }
+    if (processedData.actual_end_time instanceof Date) {
+      processedData.actual_end_time = processedData.actual_end_time.toISOString();
+    }
+    if (processedData.start_time instanceof Date) {
+      processedData.start_time = processedData.start_time.toISOString();
+    }
+    if (processedData.end_time instanceof Date) {
+      processedData.end_time = processedData.end_time.toISOString();
+    }
+    
+    const validated = scheduleUpdateSchema.parse(processedData);
     const supabase = await createClient();
 
     if (!supabase) {
@@ -190,6 +208,8 @@ export async function updateSchedule(
     revalidatePath("/dashboard/schedule");
     revalidatePath("/dashboard/work/schedule");
     revalidatePath(`/dashboard/schedule/${scheduleId}`);
+    // Revalidate job detail pages (schedule might be linked to a job)
+    revalidatePath("/dashboard/work");
     return { success: true };
   } catch (error) {
     console.error("Update schedule error:", error);

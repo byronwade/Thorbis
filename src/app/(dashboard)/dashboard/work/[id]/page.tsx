@@ -3,11 +3,12 @@
  * Matches customer details page pattern
  */
 
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
 import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { createClient } from "@/lib/supabase/server";
+import { jobEnrichmentService } from "@/lib/services/job-enrichment";
 
 export default async function JobDetailsPage({
   params,
@@ -16,9 +17,12 @@ export default async function JobDetailsPage({
 }) {
   const { id: jobId } = await params;
 
+  console.log("[Job Details] Loading job:", jobId);
+
   const supabase = await createClient();
 
   if (!supabase) {
+    console.error("[Job Details] No supabase client");
     return notFound();
   }
 
@@ -28,19 +32,57 @@ export default async function JobDetailsPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
+    console.error("[Job Details] No authenticated user");
     return notFound();
   }
 
-  // Get user's company
-  const { data: teamMember } = await supabase
+  console.log("[Job Details] User authenticated:", user.id);
+
+  // Get active company ID (from cookie or first available)
+  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    console.log(
+      "[Job Details] No active company found for user:",
+      user.id,
+      "- redirecting to onboarding"
+    );
+    // Redirect to onboarding if user doesn't have an active company
+    redirect("/dashboard/welcome");
+  }
+
+  console.log("[Job Details] Active company:", activeCompanyId);
+
+  // Verify user has access to the active company
+  const { data: teamMember, error: teamMemberError } = await supabase
     .from("team_members")
     .select("company_id")
     .eq("user_id", user.id)
+    .eq("company_id", activeCompanyId)
     .eq("status", "active")
-    .single();
+    .maybeSingle();
+
+  // Check for real errors (not "no rows found")
+  const hasRealError =
+    teamMemberError &&
+    teamMemberError.code !== "PGRST116" &&
+    Object.keys(teamMemberError).length > 0 &&
+    teamMemberError.message;
+
+  if (hasRealError) {
+    console.error("[Job Details] Error fetching team member:", teamMemberError);
+    return notFound();
+  }
 
   if (!teamMember?.company_id) {
-    return notFound();
+    console.log(
+      "[Job Details] User doesn't have access to active company:",
+      activeCompanyId,
+      "- redirecting to onboarding"
+    );
+    // Redirect to onboarding if user doesn't have access to active company
+    redirect("/dashboard/welcome");
   }
 
   // Fetch job with all related data
@@ -58,7 +100,21 @@ export default async function JobDetailsPage({
     .is("deleted_at", null)
     .single();
 
-  if (jobError || !job || job.company_id !== teamMember.company_id) {
+  if (jobError) {
+    console.error("[Job Details] Error fetching job:", jobError);
+    return notFound();
+  }
+
+  if (!job) {
+    console.error("[Job Details] Job not found:", jobId);
+    return notFound();
+  }
+
+  if (job.company_id !== activeCompanyId) {
+    console.error(
+      "[Job Details] Job company mismatch:",
+      `Job company: ${job.company_id}, Active company: ${activeCompanyId}`
+    );
     return notFound();
   }
 
@@ -87,6 +143,9 @@ export default async function JobDetailsPage({
     { data: jobEquipment },
     { data: jobMaterials },
     { data: jobNotes },
+    { data: schedules },
+    { data: allCustomers },
+    { data: allProperties },
   ] = await Promise.all([
     supabase
       .from("job_team_assignments")
@@ -196,6 +255,28 @@ export default async function JobDetailsPage({
       .is("deleted_at", null)
       .order("is_pinned", { ascending: false })
       .order("created_at", { ascending: false }),
+    supabase
+      .from("schedules")
+      .select(`
+        *,
+        assigned_user:users!assigned_to(id, name, email, avatar),
+        customer:customers(id, first_name, last_name)
+      `)
+      .eq("job_id", jobId)
+      .is("deleted_at", null)
+      .order("start_time", { ascending: true }),
+    supabase
+      .from("customers")
+      .select("id, first_name, last_name, email, phone, company_name")
+      .eq("company_id", activeCompanyId)
+      .is("deleted_at", null)
+      .order("first_name", { ascending: true }),
+    supabase
+      .from("properties")
+      .select("id, name, address, city, state, customer_id")
+      .eq("company_id", activeCompanyId)
+      .is("deleted_at", null)
+      .order("address", { ascending: true }),
   ]);
 
   // Calculate metrics
@@ -238,6 +319,26 @@ export default async function JobDetailsPage({
   };
 
   // Prepare data for client component
+  // Enrich job with operational intelligence
+  let jobEnrichment = null;
+  try {
+    if (property?.address && property?.city && property?.state && property?.zip_code) {
+      jobEnrichment = await jobEnrichmentService.enrichJob({
+        id: jobId,
+        address: property.address,
+        address2: property.address2 || undefined,
+        city: property.city,
+        state: property.state,
+        zipCode: property.zip_code,
+        lat: property.lat || undefined,
+        lon: property.lon || undefined,
+      });
+      console.log("[Job Details] Job enrichment completed with sources:", jobEnrichment.sources);
+    }
+  } catch (error) {
+    console.error("[Job Details] Job enrichment failed:", error);
+  }
+
   const jobData = {
     job,
     customer,
@@ -259,6 +360,10 @@ export default async function JobDetailsPage({
     jobEquipment: jobEquipment || [], // Equipment serviced on this job
     jobMaterials: jobMaterials || [], // Materials used on this job
     jobNotes: jobNotes || [], // Job notes
+    schedules: schedules || [], // Appointments for this job
+    allCustomers: allCustomers || [], // All customers for selection
+    allProperties: allProperties || [], // All properties for selection
+    enrichmentData: jobEnrichment, // Operational intelligence
   };
 
   return (

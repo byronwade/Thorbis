@@ -1,8 +1,9 @@
 "use client";
 
-import { Download, Eye, MoreHorizontal, Package, Send } from "lucide-react";
+import { Archive, Download, Eye, MoreHorizontal, Package, Send } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +15,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   type ColumnDef,
+  type BulkAction,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
+import { bulkArchive } from "@/actions/archive";
 
 type PurchaseOrder = {
   id: string;
@@ -39,6 +43,10 @@ const CENTS_PER_DOLLAR = 100;
 export function JobPurchaseOrdersTable({
   purchaseOrders,
 }: JobPurchaseOrdersTableProps) {
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isArchiving, setIsArchiving] = useState(false);
+
   const formatCurrency = useCallback(
     (cents: number) =>
       new Intl.NumberFormat("en-US", {
@@ -49,6 +57,31 @@ export function JobPurchaseOrdersTable({
       }).format(cents / CENTS_PER_DOLLAR),
     []
   );
+
+  const handleArchive = useCallback(async () => {
+    if (selectedIds.size === 0) return;
+
+    setIsArchiving(true);
+    try {
+      const result = await bulkArchive(Array.from(selectedIds), "purchase_order");
+      
+      if (result.success && result.data) {
+        toast.success(
+          `Successfully archived ${result.data.archived} purchase order${result.data.archived === 1 ? "" : "s"}`
+        );
+        setShowArchiveDialog(false);
+        setSelectedIds(new Set());
+        // Refresh the page to reflect changes
+        window.location.reload();
+      } else {
+        toast.error("Failed to archive purchase orders");
+      }
+    } catch (error) {
+      toast.error("Failed to archive purchase orders");
+    } finally {
+      setIsArchiving(false);
+    }
+  }, [selectedIds]);
 
   const getStatusBadge = useCallback((status: string) => {
     const variants: Record<
@@ -75,18 +108,19 @@ export function JobPurchaseOrdersTable({
       {
         key: "po_number",
         header: "PO #",
-        width: "w-32",
+        width: "w-40",
         shrink: true,
         render: (po) => (
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <Link
-              className="font-medium text-primary hover:underline"
+              className="truncate font-medium text-primary text-sm hover:underline"
               href={`/dashboard/work/purchase-orders/${po.id}`}
+              title={po.po_number}
             >
               {po.po_number}
             </Link>
             {po.auto_generated && (
-              <Badge className="text-xs" variant="outline">
+              <Badge className="shrink-0 text-xs" variant="outline">
                 Auto
               </Badge>
             )}
@@ -96,40 +130,49 @@ export function JobPurchaseOrdersTable({
       {
         key: "title",
         header: "Title",
-        render: (po) => <span className="text-sm">{po.title || "—"}</span>,
+        width: "flex-1",
+        render: (po) => (
+          <span className="block truncate text-sm text-foreground" title={po.title || undefined}>
+            {po.title || "—"}
+          </span>
+        ),
       },
       {
         key: "vendor",
         header: "Vendor",
-        width: "w-36",
+        width: "w-48",
         shrink: true,
-        render: (po) => <span className="text-sm">{po.vendor}</span>,
+        render: (po) => (
+          <span className="block truncate text-sm text-foreground" title={po.vendor}>
+            {po.vendor}
+          </span>
+        ),
       },
       {
         key: "status",
         header: "Status",
-        width: "w-24",
+        width: "w-32",
         shrink: true,
         render: (po) => getStatusBadge(po.status),
       },
       {
         key: "total_amount",
         header: "Amount",
-        width: "w-32",
+        width: "w-36",
         shrink: true,
         align: "right",
         render: (po) => (
-          <span className="font-medium">{formatCurrency(po.total_amount)}</span>
+          <span className="font-semibold text-sm tabular-nums">{formatCurrency(po.total_amount)}</span>
         ),
       },
       {
         key: "expected_delivery",
         header: "Expected Delivery",
-        width: "w-28",
+        width: "w-40",
         shrink: true,
         hideOnMobile: true,
         render: (po) => (
-          <span className="text-sm">
+          <span className="text-sm text-muted-foreground tabular-nums">
             {po.expected_delivery
               ? new Date(po.expected_delivery).toLocaleDateString()
               : "—"}
@@ -171,24 +214,52 @@ export function JobPurchaseOrdersTable({
     [formatCurrency, getStatusBadge]
   );
 
+  const bulkActions: BulkAction[] = useMemo(
+    () => [
+      {
+        label: "Archive Selected",
+        icon: <Archive className="h-4 w-4" />,
+        onClick: (selectedIds: Set<string>) => {
+          setSelectedIds(selectedIds);
+          setShowArchiveDialog(true);
+        },
+        variant: "default",
+      },
+    ],
+    []
+  );
+
   return (
-    <FullWidthDataTable
-      columns={columns}
-      data={purchaseOrders}
-      emptyIcon={<Package className="size-12 text-muted-foreground/50" />}
-      emptyMessage="No purchase orders found for this job"
-      getItemId={(po) => po.id}
-      searchFilter={(po, query) => {
-        const searchLower = query.toLowerCase();
-        return (
-          po.po_number?.toLowerCase().includes(searchLower) ||
-          po.title?.toLowerCase().includes(searchLower) ||
-          po.vendor?.toLowerCase().includes(searchLower) ||
-          po.status?.toLowerCase().includes(searchLower)
-        );
-      }}
-      searchPlaceholder="Search purchase orders..."
-      showPagination={true}
-    />
+    <>
+      <FullWidthDataTable
+        columns={columns}
+        data={purchaseOrders}
+        emptyIcon={<Package className="size-12 text-muted-foreground/50" />}
+        emptyMessage="No purchase orders found for this job"
+        getItemId={(po) => po.id}
+        searchFilter={(po, query) => {
+          const searchLower = query.toLowerCase();
+          return (
+            po.po_number?.toLowerCase().includes(searchLower) ||
+            po.title?.toLowerCase().includes(searchLower) ||
+            po.vendor?.toLowerCase().includes(searchLower) ||
+            po.status?.toLowerCase().includes(searchLower)
+          );
+        }}
+        searchPlaceholder="Search purchase orders..."
+        showPagination={true}
+        bulkActions={bulkActions}
+        enableSelection={true}
+      />
+
+      <ArchiveConfirmDialog
+        open={showArchiveDialog}
+        onOpenChange={setShowArchiveDialog}
+        onConfirm={handleArchive}
+        itemCount={selectedIds.size}
+        entityType="purchase order"
+        isLoading={isArchiving}
+      />
+    </>
   );
 }

@@ -126,10 +126,39 @@ export function NumberPortingWizard({ open, onOpenChange }: NumberPortingWizardP
 
   const submitPorting = async () => {
     setSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setSubmitting(false);
-    nextStep();
+    try {
+      const formData = new FormData();
+      formData.append("phoneNumber", portingData.phoneNumber);
+      formData.append("currentCarrier", portingData.currentCarrier);
+      formData.append("accountNumber", portingData.accountNumber);
+      formData.append("accountPin", portingData.accountPin);
+      formData.append("addressLine1", portingData.addressLine1);
+      formData.append("city", portingData.city);
+      formData.append("state", portingData.state);
+      formData.append("zipCode", portingData.zipCode);
+      formData.append("authorizedPerson", portingData.authorizedPerson);
+      if (portingData.authorizedEmail) {
+        formData.append("authorizedEmail", portingData.authorizedEmail);
+      }
+      if (portingData.billDocument) {
+        formData.append("billDocument", portingData.billDocument);
+      }
+
+      const { portOnboardingPhoneNumber } = await import("@/actions/onboarding");
+      const result = await portOnboardingPhoneNumber(formData);
+
+      if (result.success) {
+        setSubmitting(false);
+        nextStep();
+      } else {
+        setSubmitting(false);
+        alert(result.error || "Failed to submit porting request");
+      }
+    } catch (error) {
+      console.error("Error submitting porting request:", error);
+      setSubmitting(false);
+      alert("An error occurred while submitting your porting request. Please try again.");
+    }
   };
 
   return (

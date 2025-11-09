@@ -309,6 +309,11 @@ export const scheduleInsertSchema = z.object({
   notes: z.string().optional().nullable(),
   tags: z.array(z.string()).optional().nullable(),
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+  // Dispatch and completion tracking
+  dispatch_time: z.union([z.date(), z.string()]).optional().nullable(),
+  actual_start_time: z.union([z.date(), z.string()]).optional().nullable(),
+  actual_end_time: z.union([z.date(), z.string()]).optional().nullable(),
+  actual_duration: z.number().int().optional().nullable(),
 });
 
 export const scheduleUpdateSchema = scheduleInsertSchema

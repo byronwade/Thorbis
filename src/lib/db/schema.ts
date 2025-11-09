@@ -1,8 +1,10 @@
 import {
   boolean as pgBoolean,
+  doublePrecision as pgDoublePrecision,
   integer as pgInteger,
   json as pgJson,
   pgTable,
+  real,
   text as pgText,
   timestamp,
   uuid,
@@ -543,6 +545,8 @@ export const properties = isProduction
       propertyType: pgText("property_type"), // 'residential' | 'commercial' | 'industrial'
       squareFootage: pgInteger("square_footage"),
       yearBuilt: pgInteger("year_built"),
+      lat: pgDoublePrecision("lat"), // Latitude for geocoding/enrichment
+      lon: pgDoublePrecision("lon"), // Longitude for geocoding/enrichment
       notes: pgText("notes"),
       metadata: pgJson("metadata"), // Additional property-specific data
       createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -571,6 +575,8 @@ export const properties = isProduction
       propertyType: text("property_type"),
       squareFootage: integer("square_footage"),
       yearBuilt: integer("year_built"),
+      lat: real("lat"), // Latitude for geocoding/enrichment
+      lon: real("lon"), // Longitude for geocoding/enrichment
       notes: text("notes"),
       metadata: text("metadata"), // JSON string
       createdAt: integer("created_at", { mode: "timestamp" })
@@ -749,9 +755,9 @@ export const jobs = isProduction
       companyId: uuid("company_id")
         .notNull()
         .references(() => companies.id as any, { onDelete: "cascade" }),
-      propertyId: uuid("property_id")
-        .notNull()
-        .references(() => properties.id as any, { onDelete: "cascade" }),
+      propertyId: uuid("property_id").references(() => properties.id as any, {
+        onDelete: "set null",
+      }),
       customerId: uuid("customer_id").references(() => customers.id as any, {
         onDelete: "set null",
       }),
@@ -792,9 +798,9 @@ export const jobs = isProduction
       companyId: text("company_id")
         .notNull()
         .references(() => companies.id as any, { onDelete: "cascade" }),
-      propertyId: text("property_id")
-        .notNull()
-        .references(() => properties.id as any, { onDelete: "cascade" }),
+      propertyId: text("property_id").references(() => properties.id as any, {
+        onDelete: "set null",
+      }),
       customerId: text("customer_id").references(() => customers.id as any, {
         onDelete: "set null",
       }),
@@ -2810,9 +2816,10 @@ export const schedules = isProduction
       status: pgText("status").notNull().default("scheduled"), // 'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'rescheduled'
       confirmedAt: timestamp("confirmed_at"),
       confirmedBy: pgText("confirmed_by"), // Customer name or method
-      // Completion tracking
-      actualStartTime: timestamp("actual_start_time"),
-      actualEndTime: timestamp("actual_end_time"),
+      // Dispatch and completion tracking
+      dispatchTime: timestamp("dispatch_time"), // When appointment was dispatched/assigned
+      actualStartTime: timestamp("actual_start_time"), // When technician arrived
+      actualEndTime: timestamp("actual_end_time"), // When appointment was closed/completed
       actualDuration: pgInteger("actual_duration"), // In minutes
       completedBy: uuid("completed_by").references(() => users.id as any, {
         onDelete: "set null",
@@ -2910,8 +2917,9 @@ export const schedules = isProduction
       status: text("status").notNull().default("scheduled"),
       confirmedAt: integer("confirmed_at", { mode: "timestamp" }),
       confirmedBy: text("confirmed_by"),
-      actualStartTime: integer("actual_start_time", { mode: "timestamp" }),
-      actualEndTime: integer("actual_end_time", { mode: "timestamp" }),
+      dispatchTime: integer("dispatch_time", { mode: "timestamp" }), // When appointment was dispatched/assigned
+      actualStartTime: integer("actual_start_time", { mode: "timestamp" }), // When technician arrived
+      actualEndTime: integer("actual_end_time", { mode: "timestamp" }), // When appointment was closed/completed
       actualDuration: integer("actual_duration"),
       completedBy: text("completed_by").references(() => users.id as any, {
         onDelete: "set null",
@@ -3356,6 +3364,230 @@ export const attachments = isProduction
       }),
     });
 
+/**
+ * Knowledge Base Categories - Hierarchical category structure
+ */
+export const kbCategories = isProduction
+  ? pgTable("kb_categories", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      slug: pgText("slug").notNull().unique(),
+      title: pgText("title").notNull(),
+      description: pgText("description"),
+      icon: pgText("icon"), // Icon name or emoji
+      parentId: uuid("parent_id").references((): any => kbCategories.id, {
+        onDelete: "cascade",
+      }),
+      order: pgInteger("order").default(0).notNull(),
+      isActive: pgBoolean("is_active").default(true).notNull(),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("kb_categories", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      slug: text("slug").notNull().unique(),
+      title: text("title").notNull(),
+      description: text("description"),
+      icon: text("icon"),
+      parentId: text("parent_id").references((): any => kbCategories.id, {
+        onDelete: "cascade",
+      }),
+      order: integer("order").default(0).notNull(),
+      isActive: integer("is_active", { mode: "boolean" })
+        .default(true)
+        .notNull(),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
+ * Knowledge Base Tags - Tag system for cross-categorization
+ */
+export const kbTags = isProduction
+  ? pgTable("kb_tags", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      slug: pgText("slug").notNull().unique(),
+      name: pgText("name").notNull(),
+      description: pgText("description"),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("kb_tags", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      slug: text("slug").notNull().unique(),
+      name: text("name").notNull(),
+      description: text("description"),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
+
+/**
+ * Knowledge Base Articles - Article content with metadata
+ */
+export const kbArticles = isProduction
+  ? pgTable("kb_articles", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      slug: pgText("slug").notNull(),
+      title: pgText("title").notNull(),
+      excerpt: pgText("excerpt"), // Brief description for SEO and previews
+      content: pgText("content").notNull(), // Markdown content
+      htmlContent: pgText("html_content"), // Rendered HTML (cached)
+      categoryId: uuid("category_id")
+        .notNull()
+        .references((): any => kbCategories.id, { onDelete: "cascade" }),
+      featuredImage: pgText("featured_image"), // URL to featured image
+      author: pgText("author"), // Author name
+      featured: pgBoolean("featured").default(false).notNull(),
+      published: pgBoolean("published").default(false).notNull(),
+      publishedAt: timestamp("published_at"),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+      viewCount: pgInteger("view_count").default(0).notNull(),
+      helpfulCount: pgInteger("helpful_count").default(0).notNull(),
+      notHelpfulCount: pgInteger("not_helpful_count").default(0).notNull(),
+      // SEO metadata
+      metaTitle: pgText("meta_title"), // Custom SEO title
+      metaDescription: pgText("meta_description"), // Custom SEO description
+      keywords: pgJson("keywords"), // Array of keywords
+      // Full-text search vector
+      searchVector: pgText("search_vector"), // tsvector for full-text search
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("kb_articles", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      slug: text("slug").notNull(),
+      title: text("title").notNull(),
+      excerpt: text("excerpt"),
+      content: text("content").notNull(),
+      htmlContent: text("html_content"),
+      categoryId: text("category_id")
+        .notNull()
+        .references((): any => kbCategories.id, { onDelete: "cascade" }),
+      featuredImage: text("featured_image"),
+      author: text("author"),
+      featured: integer("featured", { mode: "boolean" })
+        .default(false)
+        .notNull(),
+      published: integer("published", { mode: "boolean" })
+        .default(false)
+        .notNull(),
+      publishedAt: integer("published_at", { mode: "timestamp" }),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+      viewCount: integer("view_count").default(0).notNull(),
+      helpfulCount: integer("helpful_count").default(0).notNull(),
+      notHelpfulCount: integer("not_helpful_count").default(0).notNull(),
+      metaTitle: text("meta_title"),
+      metaDescription: text("meta_description"),
+      keywords: text("keywords"), // JSON string
+      searchVector: text("search_vector"),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
+
+/**
+ * Knowledge Base Article Tags - Many-to-many relationship
+ */
+export const kbArticleTags = isProduction
+  ? pgTable("kb_article_tags", {
+      articleId: uuid("article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      tagId: uuid("tag_id")
+        .notNull()
+        .references((): any => kbTags.id, { onDelete: "cascade" }),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("kb_article_tags", {
+      articleId: text("article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      tagId: text("tag_id")
+        .notNull()
+        .references((): any => kbTags.id, { onDelete: "cascade" }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
+
+/**
+ * Knowledge Base Related Articles - Related articles relationships
+ */
+export const kbArticleRelated = isProduction
+  ? pgTable("kb_article_related", {
+      articleId: uuid("article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      relatedArticleId: uuid("related_article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      order: pgInteger("order").default(0).notNull(),
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("kb_article_related", {
+      articleId: text("article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      relatedArticleId: text("related_article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      order: integer("order").default(0).notNull(),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
+
+/**
+ * Knowledge Base Feedback - User feedback (helpful/not helpful, comments)
+ */
+export const kbFeedback = isProduction
+  ? pgTable("kb_feedback", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      articleId: uuid("article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      helpful: pgBoolean("helpful"), // true = helpful, false = not helpful, null = comment only
+      comment: pgText("comment"),
+      userEmail: pgText("user_email"), // Optional user email
+      userAgent: pgText("user_agent"), // Browser user agent
+      ipAddress: pgText("ip_address"), // IP address (for analytics)
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+    })
+  : sqliteTable("kb_feedback", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      articleId: text("article_id")
+        .notNull()
+        .references((): any => kbArticles.id, { onDelete: "cascade" }),
+      helpful: integer("helpful", { mode: "boolean" }),
+      comment: text("comment"),
+      userEmail: text("user_email"),
+      userAgent: text("user_agent"),
+      ipAddress: text("ip_address"),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+    });
+
 // Export types for use in your application
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -3379,6 +3611,12 @@ export type NewStream = typeof streams.$inferInsert;
 // Customer Management types
 export type Customer = typeof customers.$inferSelect;
 export type NewCustomer = typeof customers.$inferInsert;
+
+// Customer Enrichment types
+export type CustomerEnrichmentData = any; // Will be defined after migration
+export type NewCustomerEnrichmentData = any;
+export type CustomerEnrichmentUsage = any;
+export type NewCustomerEnrichmentUsage = any;
 
 // Communication types
 export type Communication = typeof communications.$inferSelect;
@@ -3473,3 +3711,17 @@ export type NewEmailLog = typeof emailLogs.$inferInsert;
 // Verification tokens types
 export type VerificationToken = typeof verificationTokens.$inferSelect;
 export type NewVerificationToken = typeof verificationTokens.$inferInsert;
+
+// Knowledge Base types
+export type KBCategory = typeof kbCategories.$inferSelect;
+export type NewKBCategory = typeof kbCategories.$inferInsert;
+export type KBTag = typeof kbTags.$inferSelect;
+export type NewKBTag = typeof kbTags.$inferInsert;
+export type KBArticle = typeof kbArticles.$inferSelect;
+export type NewKBArticle = typeof kbArticles.$inferInsert;
+export type KBArticleTag = typeof kbArticleTags.$inferSelect;
+export type NewKBArticleTag = typeof kbArticleTags.$inferInsert;
+export type KBArticleRelated = typeof kbArticleRelated.$inferSelect;
+export type NewKBArticleRelated = typeof kbArticleRelated.$inferInsert;
+export type KBFeedback = typeof kbFeedback.$inferSelect;
+export type NewKBFeedback = typeof kbFeedback.$inferInsert;

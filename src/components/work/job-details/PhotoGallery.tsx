@@ -53,6 +53,8 @@ export interface JobPhoto {
 }
 
 interface PhotoGalleryProps {
+  jobId: string;
+  companyId: string;
   photos: JobPhoto[];
   onUpload?: () => void;
   onDelete?: (photoId: string) => void;
@@ -61,6 +63,8 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({
+  jobId,
+  companyId,
   photos,
   onUpload,
   onDelete,
@@ -384,10 +388,10 @@ export function PhotoGallery({
         <Dialog onOpenChange={setShowUploader} open={showUploader}>
           <DialogContent className="max-w-3xl">
             <PhotoUploader
+              jobId={jobId}
+              companyId={companyId}
               onCancel={() => setShowUploader(false)}
               onUpload={async (files) => {
-                // In a real app, this would upload to a server
-                // For now, we'll just close the dialog
                 setShowUploader(false);
                 // Call the onUpload prop if provided
                 onUpload?.();

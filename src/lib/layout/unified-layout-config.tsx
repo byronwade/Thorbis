@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button";
 import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions";
 import { ItemDetailToolbarWrapper } from "@/components/work/item-detail-toolbar-wrapper";
 import { JobDetailBreadcrumbs } from "@/components/work/job-details/job-detail-breadcrumbs";
-import { JobDetailToolbar } from "@/components/work/job-details/job-detail-toolbar";
+import { JobDetailToolbarWrapper } from "@/components/work/job-details/job-detail-toolbar-wrapper";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 import type { SidebarConfig } from "@/lib/sidebar/types";
@@ -106,8 +106,8 @@ export const ROUTE_PATTERNS = {
   // Training & Automation
   TRAINING_AUTOMATION: /^\/dashboard\/(automation|training)/,
 
-  // Organization Creation
-  ORGANIZATION_CREATE: /^\/dashboard\/settings\/organizations\/new$/,
+  // Organization Creation (now uses welcome/onboarding page)
+  ORGANIZATION_CREATE: /^\/dashboard\/welcome$/,
 
   // Add/Edit/Create Pages (Wizard-style full-screen experiences)
   JOB_CREATE: /^\/dashboard\/work\/(jobs\/)?new$/,
@@ -759,7 +759,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
         show: true,
         breadcrumbs: <JobDetailBreadcrumbs />,
         title: "Job Details",
-        actions: <JobDetailToolbar />,
+        actions: <JobDetailToolbarWrapper />,
       },
       sidebar: {
         show: false,

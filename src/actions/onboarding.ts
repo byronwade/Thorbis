@@ -1,9 +1,15 @@
 "use server";
 
 /**
- * Onboarding Server Actions
+ * Comprehensive Onboarding Server Actions
  *
- * Handles organization setup and onboarding completion
+ * Handles complete organization setup including:
+ * - Database connection check
+ * - Company creation with full details
+ * - Team member invitations
+ * - Phone number setup (purchase or port)
+ * - Notification settings
+ * - Payment setup (required)
  *
  * Security:
  * - Server-side validation with Zod
@@ -14,107 +20,1118 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { initiatePorting } from "@/lib/telnyx/numbers";
+import { updateNotificationSettings } from "./settings/communications";
+import { purchasePhoneNumber } from "./telnyx";
 
 const onboardingSchema = z.object({
-	orgName: z.string().min(2, "Organization name must be at least 2 characters"),
-	orgIndustry: z.string().min(2, "Industry is required"),
-	orgSize: z.string().min(1, "Company size is required"),
-	orgPhone: z.string().min(10, "Valid phone number is required"),
-	orgAddress: z.string().min(5, "Business address is required"),
+  orgName: z.string().min(2, "Organization name must be at least 2 characters"),
+  orgIndustry: z.string().min(2, "Industry is required"),
+  orgSize: z.string().min(1, "Company size is required"),
+  orgPhone: z.string().min(10, "Valid phone number is required"),
+  orgAddress: z.string().min(5, "Business address is required"),
+  orgCity: z.string().min(2, "City is required"),
+  orgState: z.string().min(2, "State is required"),
+  orgZip: z.string().min(5, "ZIP code is required"),
+  orgWebsite: z
+    .string()
+    .url("Please enter a valid URL")
+    .optional()
+    .or(z.literal("")),
+  orgTaxId: z.string().optional(),
 });
 
 type OnboardingResult = {
-	success: boolean;
-	error?: string;
-	companyId?: string;
+  success: boolean;
+  error?: string;
+  companyId?: string;
 };
 
-export async function completeOnboarding(formData: FormData): Promise<OnboardingResult> {
-	try {
-		// Parse and validate form data
-		const data = onboardingSchema.parse({
-			orgName: formData.get("orgName"),
-			orgIndustry: formData.get("orgIndustry"),
-			orgSize: formData.get("orgSize"),
-			orgPhone: formData.get("orgPhone"),
-			orgAddress: formData.get("orgAddress"),
-		});
+const INCOMPLETE_SUBSCRIPTION_STATUSES = [
+  "incomplete",
+  "past_due",
+  "canceled",
+  "unpaid",
+] as const;
 
-		// Get authenticated user
-		const supabase = await createClient();
+type IncompleteCompanyCandidate = {
+  id: string;
+  name: string;
+  normalizedName: string;
+};
 
-		if (!supabase) {
-			return {
-				success: false,
-				error: "Database not configured",
-			};
-		}
+type ProgressUpdate = {
+  step?: number;
+  stepData?: Record<string, unknown>;
+  patch?: Record<string, unknown>;
+};
 
-		const {
-			data: { user },
-			error: authError,
-		} = await supabase.auth.getUser();
+async function createServiceSupabaseClient() {
+  const { createClient: createServiceClient } = await import(
+    "@supabase/supabase-js"
+  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-		if (authError || !user) {
-			return {
-				success: false,
-				error: "You must be logged in to complete onboarding",
-			};
-		}
+  if (!(url && serviceRoleKey)) {
+    throw new Error("Supabase service role is not configured");
+  }
 
-		// Create organization/company
-		const { data: company, error: companyError } = await supabase
-			.from("companies")
-			.insert({
-				name: data.orgName,
-				industry: data.orgIndustry,
-				company_size: data.orgSize,
-				phone: data.orgPhone,
-				address: data.orgAddress,
-				created_by: user.id,
-			})
-			.select()
-			.single();
+  return createServiceClient(url, serviceRoleKey);
+}
 
-		if (companyError) {
-			console.error("Error creating company:", companyError);
-			return {
-				success: false,
-				error: "Failed to create organization. Please try again.",
-			};
-		}
+type ServiceSupabaseClient = Awaited<
+  ReturnType<typeof createServiceSupabaseClient>
+>;
 
-		// Update user profile to mark onboarding as complete
-		const { error: profileError } = await supabase.from("profiles").update({ onboarding_completed: true, active_company_id: company.id }).eq("id", user.id);
+function normalizeCompanyName(name: string): string {
+  return name.trim().toLowerCase();
+}
 
-		if (profileError) {
-			console.error("Error updating profile:", profileError);
-			// Don't fail the whole operation if profile update fails
-		}
+function buildFullAddress(data: {
+  orgAddress: string;
+  orgCity: string;
+  orgState: string;
+  orgZip: string;
+}): string {
+  return [data.orgAddress, data.orgCity, data.orgState, data.orgZip]
+    .filter(Boolean)
+    .join(", ");
+}
 
-		// TODO: Process payment with Stripe
-		// This is a placeholder - integrate with Stripe in production
-		// const paymentResult = await createStripeSubscription(company.id, paymentMethodId);
+async function uploadCompanyLogo(
+  serviceSupabase: ServiceSupabaseClient,
+  companyId: string,
+  logoFile: File | null
+): Promise<string | null> {
+  if (!logoFile || logoFile.size === 0) {
+    return null;
+  }
 
-		revalidatePath("/dashboard");
+  try {
+    const fileExt = logoFile.name.split(".").pop() || "png";
+    const fileName = `${companyId}-${Date.now()}.${fileExt}`;
+    const filePath = `logos/${fileName}`;
 
-		return {
-			success: true,
-			companyId: company.id,
-		};
-	} catch (error) {
-		console.error("Onboarding error:", error);
+    const { error: uploadError } = await serviceSupabase.storage
+      .from("company-assets")
+      .upload(filePath, logoFile, {
+        cacheControl: "3600",
+        upsert: false,
+      });
 
-		if (error instanceof z.ZodError) {
-			return {
-				success: false,
-				error: error.issues[0]?.message || "Validation error",
-			};
-		}
+    if (uploadError) {
+      console.warn("Failed to upload company logo:", uploadError);
+      return null;
+    }
 
-		return {
-			success: false,
-			error: "An unexpected error occurred. Please try again.",
-		};
-	}
+    const {
+      data: { publicUrl },
+    } = serviceSupabase.storage.from("company-assets").getPublicUrl(filePath);
+
+    const { error: updateError } = await serviceSupabase
+      .from("companies")
+      .update({ logo: publicUrl })
+      .eq("id", companyId);
+
+    if (updateError) {
+      console.warn(
+        "Uploaded logo but failed to attach to company:",
+        updateError
+      );
+    }
+
+    return publicUrl;
+  } catch (error) {
+    console.warn("Unexpected error uploading logo:", error);
+    return null;
+  }
+}
+
+async function ensureActiveMembership(
+  serviceSupabase: ServiceSupabaseClient,
+  companyId: string,
+  userId: string
+): Promise<void> {
+  const { data: membership, error } = await serviceSupabase
+    .from("team_members")
+    .select("id, status")
+    .eq("company_id", companyId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to load team membership:", error);
+    throw new Error(`Failed to verify organization access: ${error.message}`);
+  }
+
+  if (!membership) {
+    const { error: insertError } = await serviceSupabase
+      .from("team_members")
+      .insert({
+        company_id: companyId,
+        user_id: userId,
+        status: "active",
+      });
+
+    if (insertError) {
+      throw new Error(
+        `Failed to add you to the organization: ${insertError.message}`
+      );
+    }
+    return;
+  }
+
+  if (membership.status !== "active") {
+    const { error: updateError } = await serviceSupabase
+      .from("team_members")
+      .update({
+        status: "active",
+        deleted_at: null,
+        deleted_by: null,
+      })
+      .eq("id", membership.id);
+
+    if (updateError) {
+      throw new Error(
+        `Failed to reactivate your organization access: ${updateError.message}`
+      );
+    }
+  }
+}
+
+async function fetchIncompleteCompanyCandidates(
+  serviceSupabase: ServiceSupabaseClient,
+  userId: string
+): Promise<IncompleteCompanyCandidate[]> {
+  const { data, error } = await serviceSupabase
+    .from("team_members")
+    .select(
+      `
+        company_id,
+        status,
+        companies!inner (
+          id,
+          name,
+          stripe_subscription_status,
+          deleted_at
+        )
+      `
+    )
+    .eq("user_id", userId)
+    .neq("status", "archived")
+    .is("companies.deleted_at", null)
+    .in(
+      "companies.stripe_subscription_status",
+      INCOMPLETE_SUBSCRIPTION_STATUSES
+    );
+
+  if (error) {
+    console.error("Failed to load incomplete companies:", error);
+    return [];
+  }
+
+  return (data ?? [])
+    .filter((record: any) => record.companies)
+    .map((record: any) => ({
+      id: record.companies.id as string,
+      name: record.companies.name as string,
+      normalizedName: normalizeCompanyName(record.companies.name as string),
+    }));
+}
+
+async function validateCompanyForOnboarding(
+  serviceSupabase: ServiceSupabaseClient,
+  userId: string,
+  companyId?: string
+): Promise<IncompleteCompanyCandidate | null> {
+  if (!companyId) {
+    return null;
+  }
+
+  const { data: company, error } = await serviceSupabase
+    .from("companies")
+    .select("id, name, stripe_subscription_status, deleted_at")
+    .eq("id", companyId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to verify company:", error);
+    return null;
+  }
+
+  if (
+    !company ||
+    company.deleted_at ||
+    !INCOMPLETE_SUBSCRIPTION_STATUSES.includes(
+      company.stripe_subscription_status as (typeof INCOMPLETE_SUBSCRIPTION_STATUSES)[number]
+    )
+  ) {
+    return null;
+  }
+
+  const { data: membership, error: membershipError } = await serviceSupabase
+    .from("team_members")
+    .select("status")
+    .eq("user_id", userId)
+    .eq("company_id", companyId)
+    .neq("status", "archived")
+    .maybeSingle();
+
+  if (membershipError) {
+    console.error("Failed to verify company membership:", membershipError);
+    return null;
+  }
+
+  if (!membership) {
+    return null;
+  }
+
+  return {
+    id: company.id as string,
+    name: company.name as string,
+    normalizedName: normalizeCompanyName(company.name as string),
+  };
+}
+
+function pickCompanyCandidate(options: {
+  existing?: IncompleteCompanyCandidate | null;
+  normalizedName: string;
+  activeCompanyId?: string | null;
+  candidates: IncompleteCompanyCandidate[];
+}): string | null {
+  const { existing, normalizedName, activeCompanyId, candidates } = options;
+
+  if (existing) {
+    return existing.id;
+  }
+
+  const byName = candidates.find(
+    (candidate) => candidate.normalizedName === normalizedName
+  );
+  if (byName) {
+    return byName.id;
+  }
+
+  if (activeCompanyId) {
+    const activeMatch = candidates.find(
+      (candidate) => candidate.id === activeCompanyId
+    );
+    if (activeMatch) {
+      return activeMatch.id;
+    }
+  }
+
+  return candidates[0]?.id ?? null;
+}
+
+async function generateUniqueSlug(
+  serviceSupabase: ServiceSupabaseClient,
+  baseSlug: string
+): Promise<string> {
+  let slug = baseSlug;
+  let counter = 1;
+  let searching = true;
+
+  while (searching) {
+    const { data } = await serviceSupabase
+      .from("companies")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (data) {
+      slug = `${baseSlug}-${counter}`;
+      counter += 1;
+    } else {
+      searching = false;
+    }
+  }
+
+  return slug;
+}
+
+async function updateOnboardingProgressRecord(
+  serviceSupabase: ServiceSupabaseClient,
+  companyId: string,
+  update: ProgressUpdate
+): Promise<void> {
+  const { data: company, error } = await serviceSupabase
+    .from("companies")
+    .select("onboarding_progress")
+    .eq("id", companyId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to load onboarding progress: ${error.message}`);
+  }
+
+  const current =
+    (company?.onboarding_progress as Record<string, unknown>) || {};
+
+  const next: Record<string, unknown> = {
+    ...current,
+    ...(update.patch ?? {}),
+  };
+
+  if (typeof update.step === "number") {
+    next[`step${update.step}`] = update.stepData ?? {};
+    const existingStep =
+      typeof current.currentStep === "number"
+        ? (current.currentStep as number)
+        : 1;
+    next.currentStep = Math.max(existingStep, update.step);
+  }
+
+  next.lastUpdated = new Date().toISOString();
+
+  const { error: updateError } = await serviceSupabase
+    .from("companies")
+    .update({ onboarding_progress: next })
+    .eq("id", companyId);
+
+  if (updateError) {
+    throw new Error(
+      `Failed to update onboarding progress: ${updateError.message}`
+    );
+  }
+}
+
+/**
+ * Check database connection
+ */
+export async function checkDatabaseConnection(): Promise<boolean> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return false;
+    }
+
+    // Simple query to test connection
+    const { error } = await supabase.from("users").select("count").limit(1);
+    return !error;
+  } catch (error) {
+    console.error("Database connection check failed:", error);
+    return false;
+  }
+}
+
+const TEAM_MEMBER_PREFIX = "teamMember_";
+
+type TeamMemberProgressInput = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  role?: string;
+};
+
+function extractTeamMembers(formData: FormData): TeamMemberProgressInput[] {
+  const members: Record<number, TeamMemberProgressInput> = {};
+
+  for (const [key, value] of formData.entries()) {
+    if (!key.startsWith(TEAM_MEMBER_PREFIX) || typeof value !== "string") {
+      continue;
+    }
+
+    const match = key.match(/^teamMember_(\d+)_(\w+)$/);
+    if (!match) {
+      continue;
+    }
+
+    const index = Number.parseInt(match[1], 10);
+    const field = match[2];
+    if (!Number.isFinite(index)) {
+      continue;
+    }
+
+    const existing = members[index] || {
+      email: "",
+      firstName: "",
+      lastName: "",
+    };
+
+    switch (field) {
+      case "email":
+        existing.email = value.trim();
+        break;
+      case "firstName":
+        existing.firstName = value.trim();
+        break;
+      case "lastName":
+        existing.lastName = value.trim();
+        break;
+      case "role":
+        existing.role = value.trim();
+        break;
+      default:
+        break;
+    }
+
+    members[index] = existing;
+  }
+
+  return Object.values(members).filter(
+    (member) => member.email || member.firstName || member.lastName
+  );
+}
+
+export async function saveOnboardingProgress(
+  formData: FormData,
+  existingCompanyId?: string,
+  step?: number,
+  stepData?: Record<string, unknown>
+): Promise<OnboardingResult> {
+  try {
+    const data = onboardingSchema.parse({
+      orgName: formData.get("orgName"),
+      orgIndustry: formData.get("orgIndustry"),
+      orgSize: formData.get("orgSize"),
+      orgPhone: formData.get("orgPhone"),
+      orgAddress: formData.get("orgAddress"),
+      orgCity: formData.get("orgCity"),
+      orgState: formData.get("orgState"),
+      orgZip: formData.get("orgZip"),
+      orgWebsite: formData.get("orgWebsite"),
+      orgTaxId: formData.get("orgTaxId"),
+    });
+
+    const supabase = await createClient();
+    if (!supabase) {
+      return {
+        success: false,
+        error: "Database not configured",
+      };
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user || !user.id) {
+      return {
+        success: false,
+        error: "You must be logged in to save progress",
+      };
+    }
+
+    const userId = user.id as string;
+    const serviceSupabase = await createServiceSupabaseClient();
+
+    const normalizedName = normalizeCompanyName(data.orgName);
+    const logoFile = (formData.get("logo") as File | null) ?? null;
+
+    const companyContext = await import("@/lib/auth/company-context");
+    const activeCompanyId = await companyContext.getActiveCompanyId();
+
+    const [existingCandidate, candidates] = await Promise.all([
+      validateCompanyForOnboarding(serviceSupabase, userId, existingCompanyId),
+      fetchIncompleteCompanyCandidates(serviceSupabase, userId),
+    ]);
+
+    let companyId = pickCompanyCandidate({
+      existing: existingCandidate,
+      normalizedName,
+      activeCompanyId,
+      candidates,
+    });
+
+    const fullAddress = buildFullAddress(data);
+    const step1Snapshot = {
+      name: data.orgName,
+      industry: data.orgIndustry,
+      companySize: data.orgSize,
+      phone: data.orgPhone,
+      address: fullAddress,
+      website: data.orgWebsite || "",
+      taxId: data.orgTaxId || "",
+    };
+
+    let createdCompany = false;
+
+    if (companyId) {
+      const updatePayload = {
+        name: data.orgName,
+        industry: data.orgIndustry,
+        company_size: data.orgSize,
+        phone: data.orgPhone,
+        address: fullAddress,
+        website: data.orgWebsite || null,
+        tax_id: data.orgTaxId || null,
+      };
+
+      const { error: updateError } = await serviceSupabase
+        .from("companies")
+        .update(updatePayload)
+        .eq("id", companyId);
+
+      if (updateError) {
+        return {
+          success: false,
+          error: `Failed to update company: ${updateError.message}`,
+        };
+      }
+    } else {
+      const baseSlug =
+        data.orgName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "") || `company-${Date.now()}`;
+      const slug = await generateUniqueSlug(serviceSupabase, baseSlug);
+
+      const { data: company, error: companyError } = await serviceSupabase
+        .from("companies")
+        .insert({
+          name: data.orgName,
+          slug,
+          industry: data.orgIndustry,
+          company_size: data.orgSize,
+          phone: data.orgPhone,
+          address: fullAddress,
+          website: data.orgWebsite || null,
+          tax_id: data.orgTaxId || null,
+          created_by: userId,
+          owner_id: userId,
+          stripe_subscription_status: "incomplete",
+        })
+        .select("id")
+        .single();
+
+      if (companyError || !company) {
+        return {
+          success: false,
+          error: `Failed to create company: ${
+            companyError?.message || "Unknown error"
+          }`,
+        };
+      }
+
+      companyId = company.id;
+      createdCompany = true;
+    }
+
+    if (!companyId) {
+      return {
+        success: false,
+        error: "Company ID is required",
+      };
+    }
+
+    try {
+      await ensureActiveMembership(serviceSupabase, companyId, userId);
+    } catch (membershipError) {
+      console.error("Failed to ensure company membership:", membershipError);
+
+      if (createdCompany) {
+        try {
+          await serviceSupabase.from("companies").delete().eq("id", companyId);
+        } catch (cleanupError) {
+          console.error(
+            "Failed to clean up company after membership error:",
+            cleanupError
+          );
+        }
+      }
+
+      return {
+        success: false,
+        error:
+          membershipError instanceof Error
+            ? membershipError.message
+            : "Failed to add you to the organization",
+      };
+    }
+
+    await uploadCompanyLogo(serviceSupabase, companyId, logoFile);
+
+    const progressStep = typeof step === "number" ? step : 1;
+    const progressData = stepData ?? (progressStep === 1 ? step1Snapshot : {});
+
+    try {
+      await updateOnboardingProgressRecord(serviceSupabase, companyId, {
+        step: progressStep,
+        stepData: progressData,
+        patch: {
+          step1: step1Snapshot,
+        },
+      });
+    } catch (progressError) {
+      console.error("Failed to update onboarding progress:", progressError);
+      return {
+        success: false,
+        error:
+          progressError instanceof Error
+            ? progressError.message
+            : "Failed to save onboarding progress",
+      };
+    }
+
+    try {
+      await companyContext.setActiveCompany(companyId);
+    } catch (error) {
+      console.warn("Failed to set active company:", error);
+    }
+
+    revalidatePath("/dashboard/welcome");
+    revalidatePath("/", "layout");
+
+    return {
+      success: true,
+      companyId,
+    };
+  } catch (error) {
+    console.error("Save onboarding progress error:", error);
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
+    }
+
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again.",
+    };
+  }
+}
+
+export async function completeOnboarding(
+  formData: FormData
+): Promise<OnboardingResult> {
+  const result = await saveOnboardingProgress(formData);
+
+  if (!(result.success && result.companyId)) {
+    return result;
+  }
+
+  const teamMembers = extractTeamMembers(formData);
+  if (teamMembers.length > 0) {
+    const teamResult = await saveOnboardingStepProgress(result.companyId, 2, {
+      teamMembers,
+    });
+
+    if (!teamResult.success) {
+      return teamResult;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Save onboarding progress for a specific step (without company details)
+ * Used for steps 2-5 (team members, phone number, notifications, etc.)
+ *
+ * @param companyId - The ID of the company to save progress for
+ * @param step - The step number (2-5)
+ * @param stepData - The data to save for this step
+ * @returns Promise resolving to OnboardingResult
+ */
+export async function saveOnboardingStepProgress(
+  companyId: string,
+  step: number,
+  stepData: Record<string, unknown>
+): Promise<OnboardingResult> {
+  try {
+    const supabase = await createClient();
+
+    if (!supabase) {
+      return {
+        success: false,
+        error: "Database not configured",
+      };
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: "You must be logged in to save progress",
+      };
+    }
+
+    const serviceSupabase = await createServiceSupabaseClient();
+
+    const candidate = await validateCompanyForOnboarding(
+      serviceSupabase,
+      user.id,
+      companyId
+    );
+
+    if (!candidate) {
+      return {
+        success: false,
+        error: "Company not found. Please go back and complete step 1.",
+      };
+    }
+
+    try {
+      await ensureActiveMembership(serviceSupabase, companyId, user.id);
+    } catch (membershipError) {
+      console.error("Failed to ensure company membership:", membershipError);
+      return {
+        success: false,
+        error:
+          membershipError instanceof Error
+            ? membershipError.message
+            : "You don't have access to this company",
+      };
+    }
+
+    try {
+      await updateOnboardingProgressRecord(serviceSupabase, companyId, {
+        step,
+        stepData,
+      });
+    } catch (progressError) {
+      console.error("Error saving onboarding progress:", progressError);
+      return {
+        success: false,
+        error:
+          progressError instanceof Error
+            ? progressError.message
+            : "Failed to save progress",
+      };
+    }
+
+    revalidatePath("/dashboard/welcome");
+
+    return {
+      success: true,
+      companyId,
+    };
+  } catch (error) {
+    console.error("Save onboarding step progress error:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again.",
+    };
+  }
+}
+
+/**
+ * Purchase a phone number during onboarding
+ */
+export async function purchaseOnboardingPhoneNumber(
+  formData: FormData
+): Promise<{
+  success: boolean;
+  error?: string;
+  phoneNumberId?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Service unavailable" };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "You must be logged in" };
+    }
+
+    // Get active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      return { success: false, error: "Company not found" };
+    }
+
+    // Verify user has access to the active company
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (!teamMember?.company_id) {
+      return { success: false, error: "You don't have access to this company" };
+    }
+
+    const phoneNumber = formData.get("phoneNumber") as string;
+    const areaCode = formData.get("areaCode") as string | null;
+
+    if (!phoneNumber) {
+      return { success: false, error: "Phone number is required" };
+    }
+
+    const result = await purchasePhoneNumber({
+      phoneNumber,
+      companyId: activeCompanyId,
+    });
+
+    if (result.success) {
+      revalidatePath("/dashboard/welcome");
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error purchasing phone number:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to purchase phone number",
+    };
+  }
+}
+
+/**
+ * Port a phone number during onboarding
+ */
+export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
+  success: boolean;
+  error?: string;
+  portingOrderId?: string;
+}> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Service unavailable" };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "You must be logged in" };
+    }
+
+    // Get active company ID
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      return { success: false, error: "Company not found" };
+    }
+
+    // Verify user has access to the active company
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("company_id", activeCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (!teamMember?.company_id) {
+      return { success: false, error: "You don't have access to this company" };
+    }
+
+    const phoneNumber = formData.get("phoneNumber") as string;
+    const currentCarrier = formData.get("currentCarrier") as string;
+    const accountNumber = formData.get("accountNumber") as string;
+    const accountPin = formData.get("accountPin") as string;
+    const addressLine1 = formData.get("addressLine1") as string;
+    const city = formData.get("city") as string;
+    const state = formData.get("state") as string;
+    const zipCode = formData.get("zipCode") as string;
+    const authorizedPerson = formData.get("authorizedPerson") as string;
+    const authorizedEmail = formData.get("authorizedEmail") as string;
+
+    if (
+      !(
+        phoneNumber &&
+        currentCarrier &&
+        accountNumber &&
+        accountPin &&
+        addressLine1 &&
+        city &&
+        state &&
+        zipCode &&
+        authorizedPerson
+      )
+    ) {
+      return { success: false, error: "All required fields must be filled" };
+    }
+
+    const result = await initiatePorting({
+      phoneNumbers: [phoneNumber],
+      accountNumber,
+      accountPin,
+      authorizedPerson,
+      addressLine1,
+      city,
+      stateOrProvince: state,
+      zipOrPostalCode: zipCode,
+      countryCode: "US",
+    });
+
+    if (result.success) {
+      revalidatePath("/dashboard/welcome");
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error porting phone number:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to initiate porting",
+    };
+  }
+}
+
+/**
+ * Save notification settings during onboarding
+ */
+export async function saveOnboardingNotificationSettings(
+  formData: FormData
+): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    // Use existing notification settings action
+    const result = await updateNotificationSettings(formData);
+    return result;
+  } catch (error) {
+    console.error("Error saving notification settings:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to save notification settings",
+    };
+  }
+}
+
+export async function archiveIncompleteCompany(
+  companyId: string
+): Promise<OnboardingResult> {
+  try {
+    const supabase = await createClient();
+
+    if (!supabase) {
+      return {
+        success: false,
+        error: "Database not configured",
+      };
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: "You must be logged in to archive a company",
+      };
+    }
+
+    const serviceSupabase = await createServiceSupabaseClient();
+
+    const { data: company, error: companyError } = await serviceSupabase
+      .from("companies")
+      .select("id, stripe_subscription_status, owner_id")
+      .eq("id", companyId)
+      .maybeSingle();
+
+    if (companyError) {
+      console.error("Failed to load company for archiving:", companyError);
+      return {
+        success: false,
+        error: `Failed to verify company: ${companyError.message}`,
+      };
+    }
+
+    if (!company) {
+      return {
+        success: false,
+        error: "Company not found",
+      };
+    }
+
+    if (company.owner_id !== user.id) {
+      return {
+        success: false,
+        error: "You can only archive companies you own",
+      };
+    }
+
+    if (
+      company.stripe_subscription_status === "active" ||
+      company.stripe_subscription_status === "trialing"
+    ) {
+      return {
+        success: false,
+        error: "Cannot archive a company with an active subscription",
+      };
+    }
+
+    const now = new Date();
+    const permanentDeleteDate = new Date(now);
+    permanentDeleteDate.setDate(now.getDate() + 90);
+
+    const timestamp = now.toISOString();
+
+    const { error: archiveError } = await serviceSupabase
+      .from("companies")
+      .update({
+        deleted_at: timestamp,
+        deleted_by: user.id,
+        archived_at: timestamp,
+        permanent_delete_scheduled_at: permanentDeleteDate.toISOString(),
+      })
+      .eq("id", companyId);
+
+    if (archiveError) {
+      console.error("Failed to archive company:", archiveError);
+      return {
+        success: false,
+        error: `Failed to archive company: ${archiveError.message}`,
+      };
+    }
+
+    const { error: memberArchiveError } = await serviceSupabase
+      .from("team_members")
+      .update({
+        deleted_at: timestamp,
+        deleted_by: user.id,
+        status: "archived",
+      })
+      .eq("company_id", companyId);
+
+    if (memberArchiveError) {
+      console.error("Failed to archive team members:", memberArchiveError);
+    }
+
+    const { getActiveCompanyId, clearActiveCompany } = await import(
+      "@/lib/auth/company-context"
+    );
+    const activeCompanyId = await getActiveCompanyId();
+    if (activeCompanyId === companyId) {
+      await clearActiveCompany();
+    }
+
+    revalidatePath("/dashboard/welcome");
+    revalidatePath("/", "layout");
+    revalidatePath("/dashboard/settings/archive");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Archive incomplete company error:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again.",
+    };
+  }
 }

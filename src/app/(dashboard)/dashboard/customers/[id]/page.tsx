@@ -21,6 +21,8 @@ import { CustomerPageEditorWrapper } from "@/components/customers/customer-page-
 import { CustomerStatsBar } from "@/components/customers/customer-stats-bar";
 import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
+import { jobEnrichmentService } from "@/lib/services/job-enrichment";
+import { getEnrichmentData } from "@/actions/customer-enrichment";
 
 // Configure page for full width with no sidebars
 export const dynamic = "force-dynamic";
@@ -46,46 +48,113 @@ export default async function CustomerPageUnified({
   const supabase = await createClient();
 
   if (!supabase) {
+    console.error("[Customer Page] Supabase client not initialized");
     return notFound();
   }
 
   // Get authenticated user
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
 
+  if (authError) {
+    console.error("[Customer Page] Auth error:", authError);
+    return notFound();
+  }
+
   if (!user) {
+    console.error("[Customer Page] No authenticated user");
     return notFound();
   }
 
   // Get user's company
-  const { data: teamMember } = await supabase
+  const { data: teamMember, error: teamMemberError } = await supabase
     .from("team_members")
     .select("company_id")
     .eq("user_id", user.id)
-    .single();
+    .eq("status", "active")
+    .maybeSingle();
 
-  if (!teamMember?.company_id) {
+  // Check for real errors (not "no rows found")
+  // maybeSingle shouldn't return errors for no rows, but check anyway
+  const hasRealError =
+    teamMemberError &&
+    teamMemberError.code !== "PGRST116" &&
+    Object.keys(teamMemberError).length > 0;
+
+  if (hasRealError) {
+    // Log error with proper serialization
+    try {
+      console.error("[Customer Page] Team member query error:", JSON.stringify(teamMemberError, null, 2));
+      console.error("[Customer Page] Error object keys:", Object.keys(teamMemberError));
+      console.error("[Customer Page] Error message:", teamMemberError.message);
+      console.error("[Customer Page] Error code:", teamMemberError.code);
+      console.error("[Customer Page] User ID:", user.id);
+    } catch (e) {
+      console.error("[Customer Page] Team member error (could not serialize):", teamMemberError);
+      console.error("[Customer Page] User ID:", user.id);
+    }
     return notFound();
   }
 
-  // Fetch customer with all related data
-  const { data: customer, error } = await supabase
+  if (!teamMember?.company_id) {
+    console.error("[Customer Page] User has no active company membership. User ID:", user.id);
+    
+    // Check if user has any team_members record at all
+    const { data: anyMembership, error: checkError } = await supabase
+      .from("team_members")
+      .select("company_id, status")
+      .eq("user_id", user.id)
+      .limit(1)
+      .maybeSingle();
+    
+    if (checkError && checkError.code !== "PGRST116") {
+      console.error("[Customer Page] Error checking membership:", checkError);
+    } else if (anyMembership) {
+      console.error("[Customer Page] User has team membership but status is:", anyMembership.status);
+    } else {
+      console.error("[Customer Page] User has no team_members record at all");
+    }
+    
+    return notFound();
+  }
+
+  // First, try a simple query to check if customer exists
+  const { data: customer, error: customerError } = await supabase
     .from("customers")
-    .select(
-      `
-      *,
-      properties:properties!primary_contact_id(count),
-      jobs:jobs!customer_id(count),
-      invoices:invoices!customer_id(count)
-    `
-    )
+    .select("*")
     .eq("id", id)
     .eq("company_id", teamMember.company_id)
     .is("deleted_at", null)
     .single();
 
-  if (error || !customer) {
+  if (customerError) {
+    console.error("[Customer Page] Customer query error:", customerError);
+    console.error("[Customer Page] Customer ID:", id);
+    console.error("[Customer Page] Company ID:", teamMember.company_id);
+    
+    // Try to get more info about why it failed
+    const { data: customerWithoutCompanyCheck, error: simpleError } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("id", id)
+      .single();
+    
+    if (simpleError) {
+      console.error("[Customer Page] Customer doesn't exist at all:", simpleError);
+    } else if (customerWithoutCompanyCheck) {
+      console.error("[Customer Page] Customer exists but company_id mismatch:", {
+        customerCompanyId: customerWithoutCompanyCheck.company_id,
+        userCompanyId: teamMember.company_id,
+      });
+    }
+    
+    return notFound();
+  }
+
+  if (!customer) {
+    console.error("[Customer Page] Customer not found. ID:", id, "Company ID:", teamMember.company_id);
     return notFound();
   }
 
@@ -163,50 +232,70 @@ export default async function CustomerPageUnified({
     outstandingBalance: customer.outstanding_balance || 0,
   };
 
-  // Enrich property data with external APIs (property values, maps, etc.)
+  // Get enrichment data (cached if available)
+  const enrichmentResult = await getEnrichmentData(id);
+  const enrichmentData = enrichmentResult.success ? enrichmentResult.data : null;
+
+  // Enrich property data with external APIs
   const enrichedProperties = await Promise.all(
     (properties || []).map(async (property: any) => {
       try {
-        console.log(`Enriching property: ${property.address}, ${property.city}, ${property.state}`);
-        const enrichment = await propertyEnrichmentService.enrichProperty(
-          property.address,
-          property.city,
-          property.state,
-          property.zip_code
+        console.log(
+          `[Customer Page] Enriching property: ${property.address}, ${property.city}, ${property.state}`
         );
-        console.log(`Enrichment result for ${property.address}:`, enrichment);
+
+        // Get both property market data AND operational intelligence
+        const [propertyEnrichment, operationalIntelligence] = await Promise.all([
+          // Property market data (value, taxes, etc.)
+          propertyEnrichmentService
+            .enrichProperty(
+              property.address,
+              property.city,
+              property.state,
+              property.zip_code
+            )
+            .catch((e) => {
+              console.warn(
+                `[Customer Page] Property enrichment failed for ${property.id}:`,
+                e
+              );
+              return null;
+            }),
+          // Operational intelligence (weather, building, location, etc.)
+          jobEnrichmentService
+            .enrichJob({
+              id: property.id,
+              address: property.address,
+              address2: property.address2 || undefined,
+              city: property.city,
+              state: property.state,
+              zipCode: property.zip_code,
+              lat: property.lat || undefined,
+              lon: property.lon || undefined,
+            })
+            .catch((e) => {
+              console.warn(
+                `[Customer Page] Operational intelligence failed for ${property.id}:`,
+                e
+              );
+              return null;
+            }),
+        ]);
+
         return {
           ...property,
-          enrichment,
+          enrichment: propertyEnrichment,
+          operationalIntelligence,
         };
       } catch (error) {
-        console.error(`Failed to enrich property ${property.id}:`, error);
-        // Add mock enrichment data for development if API fails
+        console.error(
+          `[Customer Page] Failed to enrich property ${property.id}:`,
+          error
+        );
         return {
           ...property,
-          enrichment: {
-            details: {
-              squareFootage: property.square_footage || 2400,
-              bedrooms: 3,
-              bathrooms: 2,
-              yearBuilt: property.year_built || 1995,
-              lotSizeSquareFeet: 7500,
-              hasPool: false,
-              hasBasement: false,
-              heatingType: "Forced Air",
-              coolingType: "Central AC",
-            },
-            ownership: {
-              marketValue: 45000000, // $450,000 in cents
-              assessedValue: 42000000,
-              lastSalePrice: 40000000,
-              lastSaleDate: "2020-03-15",
-            },
-            taxes: {
-              annualAmount: 500000, // $5,000 in cents
-              taxYear: 2024,
-            },
-          },
+          enrichment: null,
+          operationalIntelligence: null,
         };
       }
     })
@@ -230,6 +319,7 @@ export default async function CustomerPageUnified({
         attachments={attachments || []}
         paymentMethods={paymentMethods || []}
         metrics={metrics}
+        enrichmentData={enrichmentData}
         initialMode={mode || "view"}
       />
     </div>

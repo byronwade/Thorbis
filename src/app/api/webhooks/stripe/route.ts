@@ -142,6 +142,7 @@ async function handleCheckoutSessionCompleted(
 
   const subscriptionId = session.subscription as string;
   const companyId = session.metadata?.company_id;
+  const phoneNumber = session.metadata?.phone_number;
 
   if (!companyId || !subscriptionId) {
     console.error("Missing company_id or subscription_id in session metadata");
@@ -170,6 +171,25 @@ async function handleCheckoutSessionCompleted(
         : null,
     })
     .eq("id", companyId);
+
+  // Purchase phone number if one was selected during onboarding
+  if (phoneNumber) {
+    try {
+      const { purchasePhoneNumber } = await import("@/actions/telnyx");
+      const purchaseResult = await purchasePhoneNumber({
+        phoneNumber,
+        companyId,
+      });
+      
+      if (purchaseResult.success) {
+        console.log(`Phone number ${phoneNumber} purchased for company ${companyId}`);
+      } else if ('error' in purchaseResult) {
+        console.error(`Failed to purchase phone number: ${purchaseResult.error}`);
+      }
+    } catch (error) {
+      console.error("Error purchasing phone number after payment:", error);
+    }
+  }
 
   console.log(
     `Subscription ${subscriptionId} created for company ${companyId}`

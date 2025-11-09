@@ -633,6 +633,7 @@ export function MarketingHeader() {
               <UserMenu
                 teams={[
                   {
+                    id: "temp",
                     name: "My Company", // TODO: Fetch from getUserCompanies()
                     logo: Wrench,
                     plan: "free", // TODO: Fetch from company data

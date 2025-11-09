@@ -125,9 +125,9 @@ export function BillingInfoBlockComponent({ node, updateAttributes, editor }: an
         actions={
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={handleAddPaymentMethod}
-            className="gap-1"
+            className="h-8 px-3 text-xs gap-1.5"
           >
             <Plus className="size-4" />
             Add Payment Method

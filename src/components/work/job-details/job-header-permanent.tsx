@@ -2,27 +2,22 @@
 
 import {
   Calendar,
+  ChevronRight,
+  Clock,
   Mail,
   MapPin,
   Navigation,
-  Phone,
-  User,
   Pencil,
-  Clock,
-  ChevronRight,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Job, Property } from "@/lib/db/schema";
+import { JobEnrichmentInline } from "./job-enrichment-inline";
+import { TravelTime } from "./travel-time";
 
 /**
  * Permanent Job Header - Client Component
@@ -65,6 +60,7 @@ type JobHeaderPermanentProps = {
   teamAssignments?: any[];
   allCustomers?: any[]; // All customers from job_customers
   allProperties?: any[]; // All properties from job_properties
+  enrichmentData?: any; // Job enrichment data
 };
 
 export function JobHeaderPermanent({
@@ -75,21 +71,53 @@ export function JobHeaderPermanent({
   teamAssignments = [],
   allCustomers = [],
   allProperties = [],
+  enrichmentData,
 }: JobHeaderPermanentProps) {
   // Status configuration
   const statusConfig = {
-    quoted: { label: "Quoted", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200" },
-    scheduled: { label: "Scheduled", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" },
-    in_progress: { label: "In Progress", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
-    completed: { label: "Completed", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
-    cancelled: { label: "Cancelled", color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
+    quoted: {
+      label: "Quoted",
+      color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+    },
+    scheduled: {
+      label: "Scheduled",
+      color:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+    },
+    in_progress: {
+      label: "In Progress",
+      color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+    },
+    completed: {
+      label: "Completed",
+      color:
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+    },
+    cancelled: {
+      label: "Cancelled",
+      color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+    },
   };
 
   const priorityConfig = {
-    low: { label: "Low", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200" },
-    medium: { label: "Medium", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
-    high: { label: "High", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200" },
-    urgent: { label: "Urgent", color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
+    low: {
+      label: "Low",
+      color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+    },
+    medium: {
+      label: "Medium",
+      color:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+    },
+    high: {
+      label: "High",
+      color:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+    },
+    urgent: {
+      label: "Urgent",
+      color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+    },
   };
 
   // Get full address
@@ -107,33 +135,39 @@ export function JobHeaderPermanent({
     : "??";
 
   // Format next appointment
-  const nextAppointment = job.scheduledStart ? new Date(job.scheduledStart) : null;
+  const nextAppointment = job.scheduledStart
+    ? new Date(job.scheduledStart)
+    : null;
   const appointmentEnd = job.scheduledEnd ? new Date(job.scheduledEnd) : null;
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
+  const formatDate = (date: Date) =>
+    new Intl.DateTimeFormat("en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
       year: "numeric",
     }).format(date);
-  };
 
-  const formatTime = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
+  const formatTime = (date: Date) =>
+    new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     }).format(date);
-  };
 
   // Get time window from notes if available
-  const timeWindow = job.notes?.match(/\[Scheduling\] Customer preferred time window: (\w+)/)?.[1];
+  const timeWindow = job.notes?.match(
+    /\[Scheduling\] Customer preferred time window: (\w+)/
+  )?.[1];
 
   // Calculate duration
-  const duration = nextAppointment && appointmentEnd
-    ? Math.round((appointmentEnd.getTime() - nextAppointment.getTime()) / (1000 * 60 * 60))
-    : null;
+  const duration =
+    nextAppointment && appointmentEnd
+      ? Math.round(
+          (appointmentEnd.getTime() - nextAppointment.getTime()) /
+            (1000 * 60 * 60)
+        )
+      : null;
 
   // Map URL for navigation
   const mapUrl = fullAddress
@@ -154,10 +188,7 @@ export function JobHeaderPermanent({
                   <h1 className="font-bold text-2xl tracking-tight">
                     {job.jobNumber}
                   </h1>
-                  <Badge
-                    variant="outline"
-                    className="text-xs capitalize"
-                  >
+                  <Badge className="text-xs capitalize" variant="outline">
                     {job.jobType || "service"}
                   </Badge>
                 </div>
@@ -176,8 +207,8 @@ export function JobHeaderPermanent({
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/dashboard/customers/${customer?.id}`}
                       className="font-semibold hover:underline"
+                      href={`/dashboard/customers/${customer?.id}`}
                     >
                       {customerName}
                     </Link>
@@ -187,7 +218,7 @@ export function JobHeaderPermanent({
                       </span>
                     )}
                     {allCustomers.length > 1 && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge className="text-xs" variant="secondary">
                         +{allCustomers.length - 1} more
                       </Badge>
                     )}
@@ -195,8 +226,8 @@ export function JobHeaderPermanent({
                   <div className="flex flex-wrap gap-3 text-sm">
                     {customer?.phone && (
                       <a
-                        href={`tel:${customer.phone}`}
                         className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+                        href={`tel:${customer.phone}`}
                       >
                         <Phone className="size-3.5" />
                         {customer.phone}
@@ -204,8 +235,8 @@ export function JobHeaderPermanent({
                     )}
                     {customer?.email && (
                       <a
-                        href={`mailto:${customer.email}`}
                         className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+                        href={`mailto:${customer.email}`}
                       >
                         <Mail className="size-3.5" />
                         {customer.email}
@@ -217,43 +248,54 @@ export function JobHeaderPermanent({
 
               {/* Service Address */}
               {property && (
-                <div className="flex items-start gap-2">
-                  <MapPin className="mt-0.5 size-4 text-muted-foreground" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm">
-                        <Link
-                          href={`/dashboard/properties/${property.id}`}
-                          className="hover:underline"
-                        >
-                          {property.name || property.address}
-                        </Link>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2">
+                    <MapPin className="mt-0.5 size-4 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm">
+                          <Link
+                            className="hover:underline"
+                            href={`/dashboard/properties/${property.id}`}
+                          >
+                            {property.name || property.address}
+                          </Link>
+                        </p>
+                        {allProperties.length > 1 && (
+                          <Badge className="text-xs" variant="outline">
+                            +{allProperties.length - 1} location
+                            {allProperties.length > 2 ? "s" : ""}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground text-xs">
+                        {property.address}
+                        {property.address2 && `, ${property.address2}`}
+                        <br />
+                        {property.city}, {property.state} {property.zipCode}
                       </p>
-                      {allProperties.length > 1 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{allProperties.length - 1} location{allProperties.length > 2 ? "s" : ""}
-                        </Badge>
+                      {mapUrl && (
+                        <a
+                          className="mt-1 inline-flex items-center gap-1 text-primary text-xs hover:underline"
+                          href={mapUrl}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <Navigation className="size-3" />
+                          Get Directions
+                        </a>
                       )}
                     </div>
-                    <p className="text-muted-foreground text-xs">
-                      {property.address}
-                      {property.address2 && `, ${property.address2}`}
-                      <br />
-                      {property.city}, {property.state} {property.zipCode}
-                    </p>
-                    {mapUrl && (
-                      <a
-                        href={mapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-1 inline-flex items-center gap-1 text-primary text-xs hover:underline"
-                      >
-                        <Navigation className="size-3" />
-                        Get Directions
-                      </a>
-                    )}
                   </div>
+
+                  {/* Travel Time */}
+                  <TravelTime property={property} />
                 </div>
+              )}
+
+              {/* Operational Intelligence - Inline */}
+              {enrichmentData && (
+                <JobEnrichmentInline enrichmentData={enrichmentData} />
               )}
             </div>
 
@@ -280,7 +322,7 @@ export function JobHeaderPermanent({
                           {appointmentEnd && ` - ${formatTime(appointmentEnd)}`}
                         </span>
                         {duration && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className="text-xs" variant="outline">
                             {duration}h
                           </Badge>
                         )}
@@ -337,21 +379,26 @@ export function JobHeaderPermanent({
             <div className="flex flex-col gap-2 md:items-end">
               {/* Status Badge */}
               <Badge
-                className={`px-3 py-1.5 text-sm font-semibold ${
-                  statusConfig[job.status as keyof typeof statusConfig]?.color || statusConfig.quoted.color
+                className={`px-3 py-1.5 font-semibold text-sm ${
+                  statusConfig[job.status as keyof typeof statusConfig]
+                    ?.color || statusConfig.quoted.color
                 }`}
               >
-                {statusConfig[job.status as keyof typeof statusConfig]?.label || job.status}
+                {statusConfig[job.status as keyof typeof statusConfig]?.label ||
+                  job.status}
               </Badge>
 
               {/* Priority Badge */}
               <Badge
-                variant="outline"
                 className={`px-2 py-1 text-xs ${
-                  priorityConfig[job.priority as keyof typeof priorityConfig]?.color || priorityConfig.medium.color
+                  priorityConfig[job.priority as keyof typeof priorityConfig]
+                    ?.color || priorityConfig.medium.color
                 }`}
+                variant="outline"
               >
-                {priorityConfig[job.priority as keyof typeof priorityConfig]?.label || job.priority} Priority
+                {priorityConfig[job.priority as keyof typeof priorityConfig]
+                  ?.label || job.priority}{" "}
+                Priority
               </Badge>
 
               {/* Financial Summary */}
@@ -377,7 +424,7 @@ export function JobHeaderPermanent({
 
       {/* Quick Actions Bar */}
       <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3">
-        <Button variant="outline" size="sm" asChild>
+        <Button asChild size="sm" variant="outline">
           <Link href={`/dashboard/work/${job.id}/edit`}>
             <Pencil className="mr-2 size-4" />
             Edit Job
@@ -385,7 +432,7 @@ export function JobHeaderPermanent({
         </Button>
 
         {customer?.phone && (
-          <Button variant="outline" size="sm" asChild>
+          <Button asChild size="sm" variant="outline">
             <a href={`tel:${customer.phone}`}>
               <Phone className="mr-2 size-4" />
               Call Customer
@@ -394,7 +441,7 @@ export function JobHeaderPermanent({
         )}
 
         {customer?.email && (
-          <Button variant="outline" size="sm" asChild>
+          <Button asChild size="sm" variant="outline">
             <a href={`mailto:${customer.email}`}>
               <Mail className="mr-2 size-4" />
               Email Customer
@@ -403,11 +450,11 @@ export function JobHeaderPermanent({
         )}
 
         {fullAddress && (
-          <Button variant="outline" size="sm" asChild>
+          <Button asChild size="sm" variant="outline">
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`}
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
               <Navigation className="mr-2 size-4" />
               Navigate
@@ -416,21 +463,21 @@ export function JobHeaderPermanent({
         )}
 
         {!nextAppointment && (
-          <Button variant="outline" size="sm">
+          <Button size="sm" variant="outline">
             <Calendar className="mr-2 size-4" />
             Schedule Appointment
           </Button>
         )}
 
         {job.status === "scheduled" && (
-          <Button variant="default" size="sm">
+          <Button size="sm" variant="default">
             <Clock className="mr-2 size-4" />
             Start Job
           </Button>
         )}
 
         {job.status === "in_progress" && (
-          <Button variant="default" size="sm">
+          <Button size="sm" variant="default">
             <ChevronRight className="mr-2 size-4" />
             Complete Job
           </Button>

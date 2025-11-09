@@ -11,8 +11,8 @@ import {
   Calendar,
   Camera,
   CheckCircle,
+  ChevronRight,
   Clock,
-  DollarSign,
   Download,
   FileText,
   Mail,
@@ -23,13 +23,17 @@ import {
   Receipt,
   Save,
   User,
-  Users,
   Wrench,
+  X,
+  Edit2,
 } from "lucide-react";
+import { JobEnrichmentInline } from "./job-enrichment-inline";
+import { TravelTime } from "./travel-time";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateJob } from "@/actions/jobs";
+import { findOrCreateProperty } from "@/actions/properties";
 import {
   Accordion,
   AccordionContent,
@@ -39,8 +43,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { CollapsibleSection } from "@/components/ui/collapsible-section";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { GooglePlacesAutocomplete } from "@/components/ui/google-places-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -50,8 +62,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { StatsCards } from "@/components/ui/stats-cards";
 import {
   Table,
   TableBody,
@@ -60,14 +85,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { JobAppointmentsTable } from "./job-appointments-table";
 import { JobEstimatesTable } from "./job-estimates-table";
 import { JobInvoicesTable } from "./job-invoices-table";
 import { JobNotesTable } from "./job-notes-table";
 import { JobPurchaseOrdersTable } from "./job-purchase-orders-table";
 import { JobQuickActions } from "./job-quick-actions";
+import { InlinePhotoUploader } from "./InlinePhotoUploader";
 
 type JobPageContentProps = {
   jobData: any;
@@ -79,15 +107,17 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   const { toast } = useToast();
   const [localJob, setLocalJob] = useState({
     ...jobData.job,
-    priority: jobData.job.priority || "normal", // Ensure default priority
+    priority: jobData.job.priority || "medium", // Ensure default priority
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showUploader, setShowUploader] = useState(false);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const {
     job,
-    customer,
-    property,
+    customer: initialCustomer,
+    property: initialProperty,
     assignedUser,
     teamAssignments,
     timeEntries,
@@ -105,13 +135,356 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     jobEquipment = [],
     jobMaterials = [],
     jobNotes = [],
+    schedules = [],
+    allCustomers = [],
+    allProperties = [],
   } = jobData;
+
+  // Local state for optimistic updates
+  const [customer, setCustomer] = useState(initialCustomer);
+  const [property, setProperty] = useState(initialProperty);
+
+  const [customerSearchQuery, setCustomerSearchQuery] = useState("");
+  const [propertySearchQuery, setPropertySearchQuery] = useState("");
+  const [propertyDropdownMode, setPropertyDropdownMode] = useState<"search" | "add">("search");
+  const [isUpdatingCustomer, setIsUpdatingCustomer] = useState(false);
+  const [isUpdatingProperty, setIsUpdatingProperty] = useState(false);
+  const [isCreatePropertyDialogOpen, setIsCreatePropertyDialogOpen] = useState(false);
+  const [isCreatingProperty, setIsCreatingProperty] = useState(false);
+  const [newProperty, setNewProperty] = useState({
+    name: "",
+    address: "",
+    address2: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  });
+
+  // Filter properties by customer for property dialog
+  const availableProperties = customer?.id
+    ? allProperties.filter((p: any) => p.customer_id === customer.id)
+    : [];
+
 
   // Handle field changes
   const handleFieldChange = (field: string, value: any) => {
     setLocalJob({ ...localJob, [field]: value });
     setHasChanges(true);
   };
+
+  // Handle customer change
+  const handleCustomerChange = async (newCustomerId: string | null) => {
+    if (newCustomerId === customer?.id) {
+      return;
+    }
+
+    // Store original values for rollback
+    const originalCustomer = customer;
+    const originalProperty = property;
+
+    // Optimistic update - update UI immediately
+    const newCustomer = newCustomerId
+      ? allCustomers.find((c: any) => c.id === newCustomerId)
+      : null;
+    setCustomer(newCustomer);
+
+    // Check if property needs to be cleared
+    let shouldClearProperty = false;
+    if (!newCustomerId) {
+      // Customer removed - clear property
+      shouldClearProperty = true;
+    } else if (property?.id) {
+      // Customer changed - clear property if it doesn't belong to new customer
+      const propertyBelongsToCustomer = allProperties.some(
+        (p: any) => p.id === property.id && p.customer_id === newCustomerId
+      );
+      if (!propertyBelongsToCustomer) {
+        shouldClearProperty = true;
+      }
+    }
+
+    if (shouldClearProperty) {
+      setProperty(null);
+    }
+
+    // Show loading toast
+    toast.loading("Updating customer...", { id: "customer-update" });
+
+    try {
+      const formData = new FormData();
+      formData.append("customerId", newCustomerId || "");
+      
+      if (shouldClearProperty) {
+        formData.append("propertyId", "");
+      }
+
+      const result = await updateJob(job.id, formData);
+      if (result.success) {
+        toast.success("Customer updated successfully", { id: "customer-update" });
+        // Refresh in background to get latest data
+        router.refresh();
+      } else {
+        // Rollback on error
+        setCustomer(originalCustomer);
+        setProperty(originalProperty);
+        toast.error(result.error || "Failed to update customer", {
+          id: "customer-update",
+        });
+      }
+    } catch (error) {
+      // Rollback on error
+      setCustomer(originalCustomer);
+      setProperty(originalProperty);
+      toast.error("Failed to update customer", { id: "customer-update" });
+    }
+  };
+
+  // Handle property change
+  const handlePropertyChange = async (newPropertyId: string | null) => {
+    if (newPropertyId === property?.id) {
+      return;
+    }
+
+    // Store original for rollback
+    const originalProperty = property;
+
+    // Optimistic update - update UI immediately
+    const newProperty = newPropertyId
+      ? allProperties.find((p: any) => p.id === newPropertyId)
+      : null;
+    setProperty(newProperty);
+
+    // Show loading toast
+    toast.loading("Updating property...", { id: "property-update" });
+
+    try {
+      const formData = new FormData();
+      formData.append("propertyId", newPropertyId || "");
+      
+      const result = await updateJob(job.id, formData);
+      if (result.success) {
+        toast.success("Property updated successfully", { id: "property-update" });
+        router.refresh();
+      } else {
+        // Rollback on error
+        setProperty(originalProperty);
+        toast.error(result.error || "Failed to update property", {
+          id: "property-update",
+        });
+      }
+    } catch (error) {
+      // Rollback on error
+      setProperty(originalProperty);
+      toast.error("Failed to update property", { id: "property-update" });
+    }
+  };
+
+  // Handle remove customer
+  const handleRemoveCustomer = async () => {
+    // Store original for rollback
+    const originalCustomer = customer;
+    const originalProperty = property;
+
+    // Optimistic update - clear immediately
+    setCustomer(null);
+    setProperty(null);
+
+    // Show loading toast
+    toast.loading("Removing customer...", { id: "customer-remove" });
+
+    try {
+      const formData = new FormData();
+      formData.append("customerId", "");
+      formData.append("propertyId", ""); // Also remove property since properties are linked to customers
+      
+      const result = await updateJob(job.id, formData);
+      if (result.success) {
+        toast.success("Customer and property removed successfully", {
+          id: "customer-remove",
+        });
+        router.refresh();
+      } else {
+        // Rollback on error
+        setCustomer(originalCustomer);
+        setProperty(originalProperty);
+        toast.error(result.error || "Failed to remove customer", {
+          id: "customer-remove",
+        });
+      }
+    } catch (error) {
+      // Rollback on error
+      setCustomer(originalCustomer);
+      setProperty(originalProperty);
+      toast.error("Failed to remove customer", { id: "customer-remove" });
+    }
+  };
+
+  // Handle create new property from Google Places
+  const handlePlaceSelect = async (place: {
+    address: string;
+    address2?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    lat: number;
+    lon: number;
+    formattedAddress: string;
+  }) => {
+    console.log("[JobPage] handlePlaceSelect called with:", place);
+    
+    if (!customer?.id) {
+      console.error("[JobPage] No customer selected");
+      toast.error("Please select a customer first");
+      return;
+    }
+
+    console.log("[JobPage] Creating property for customer:", customer.id);
+    
+    // Store original property for rollback
+    const originalProperty = property;
+    
+    // Create optimistic property object
+    const optimisticProperty = {
+      id: "temp-" + Date.now(),
+      customer_id: customer.id,
+      company_id: customer.company_id,
+      name: place.formattedAddress,
+      address: place.address,
+      address2: place.address2,
+      city: place.city,
+      state: place.state,
+      zip_code: place.zipCode,
+      country: place.country,
+      lat: place.lat,
+      lon: place.lon,
+    };
+
+    // Optimistically update UI immediately - feels instant!
+    setProperty(optimisticProperty as any);
+    setPropertyDropdownMode("search");
+    setIsUpdatingProperty(false);
+    
+    // Show success immediately
+    toast.success("Property added!", { duration: 2000 });
+
+    // Create property in background (fast because no blocking geocoding)
+    try {
+      const formData = new FormData();
+      formData.append("customerId", customer.id);
+      formData.append("name", place.formattedAddress);
+      formData.append("address", place.address);
+      formData.append("address2", place.address2 || "");
+      formData.append("city", place.city);
+      formData.append("state", place.state);
+      formData.append("zipCode", place.zipCode);
+      formData.append("country", place.country);
+      // Pass coordinates from Google Places - no need to geocode again!
+      formData.append("lat", place.lat.toString());
+      formData.append("lon", place.lon.toString());
+
+      const result = await findOrCreateProperty(formData);
+      if (result.success && result.data) {
+        // Update job with new property
+        const jobFormData = new FormData();
+        jobFormData.append("propertyId", result.data);
+        
+        const updateResult = await updateJob(job.id, jobFormData);
+        if (updateResult.success) {
+          // Silently refresh to get real data from server
+          router.refresh();
+        } else {
+          // Rollback on error
+          setProperty(originalProperty);
+          toast.error(updateResult.error || "Failed to assign property to job");
+        }
+      } else {
+        // Rollback on error
+        setProperty(originalProperty);
+        toast.error('error' in result ? result.error : "Failed to create property");
+      }
+    } catch (error) {
+      // Rollback on error
+      setProperty(originalProperty);
+      toast.error("Failed to create property");
+    }
+  };
+
+  // Handle create new property (from dialog)
+  const handleCreateProperty = async () => {
+    if (!customer?.id) {
+      toast.error("Please select a customer first");
+      return;
+    }
+
+    setIsCreatingProperty(true);
+    try {
+      const formData = new FormData();
+      formData.append("customerId", customer.id);
+      formData.append("name", newProperty.name);
+      formData.append("address", newProperty.address);
+      formData.append("address2", newProperty.address2);
+      formData.append("city", newProperty.city);
+      formData.append("state", newProperty.state);
+      formData.append("zipCode", newProperty.zipCode);
+
+      const result = await findOrCreateProperty(formData);
+      if (result.success && result.data) {
+        // Update job with new property
+        const jobFormData = new FormData();
+        jobFormData.append("propertyId", result.data);
+        
+        const updateResult = await updateJob(job.id, jobFormData);
+        if (updateResult.success) {
+          toast.success("Property created and assigned successfully");
+          setIsCreatePropertyDialogOpen(false);
+          setNewProperty({
+            name: "",
+            address: "",
+            address2: "",
+            city: "",
+            state: "",
+            zipCode: "",
+          });
+          router.refresh();
+        } else {
+          toast.error(updateResult.error || "Failed to assign property to job");
+        }
+      } else {
+        toast.error('error' in result ? result.error : "Failed to create property");
+      }
+    } catch (error) {
+      toast.error("Failed to create property");
+    } finally {
+      setIsCreatingProperty(false);
+    }
+  };
+
+  // Filter customers based on search
+  const filteredCustomers = allCustomers.filter((c: any) => {
+    if (!customerSearchQuery) return true;
+    const query = customerSearchQuery.toLowerCase();
+    const fullName = `${c.first_name} ${c.last_name}`.toLowerCase();
+    const phone = c.phone?.toLowerCase() || "";
+    const email = c.email?.toLowerCase() || "";
+    const company = c.company_name?.toLowerCase() || "";
+    return (
+      fullName.includes(query) ||
+      phone.includes(query) ||
+      email.includes(query) ||
+      company.includes(query)
+    );
+  });
+
+  // Filter properties based on search
+  const filteredProperties = availableProperties.filter((p: any) => {
+    if (!propertySearchQuery) return true;
+    const query = propertySearchQuery.toLowerCase();
+    const name = p.name?.toLowerCase() || "";
+    const address = p.address?.toLowerCase() || "";
+    const city = p.city?.toLowerCase() || "";
+    return name.includes(query) || address.includes(query) || city.includes(query);
+  });
 
   // Save changes
   const handleSave = async () => {
@@ -128,7 +501,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         formData.append("status", localJob.status);
       }
       if (localJob.priority !== jobData.job.priority) {
-        formData.append("priority", localJob.priority || "normal");
+        formData.append("priority", localJob.priority || "medium");
       }
       if (localJob.job_type !== jobData.job.job_type) {
         formData.append("jobType", localJob.job_type || "");
@@ -141,6 +514,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
       if (result.success) {
         toast.success("Changes saved successfully");
         setHasChanges(false);
+        // Update local state immediately with the saved values
+        const updatedJob = { ...localJob };
+        if (formData.has("title")) updatedJob.title = formData.get("title") as string;
+        if (formData.has("description")) updatedJob.description = formData.get("description") as string;
+        if (formData.has("status")) updatedJob.status = formData.get("status") as string;
+        if (formData.has("priority")) updatedJob.priority = formData.get("priority") as string;
+        if (formData.has("jobType")) updatedJob.job_type = formData.get("jobType") as string;
+        if (formData.has("notes")) updatedJob.notes = formData.get("notes") as string;
+        setLocalJob(updatedJob);
+        // Force router refresh to get latest data from server
         router.refresh();
       } else {
         toast.error(result.error || "Failed to save changes");
@@ -173,6 +556,31 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
 
   const formatHours = (hours: number) => `${hours.toFixed(1)}h`;
 
+  const formatTime = (date: string | null) => {
+    if (!date) {
+      return "Not set";
+    }
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(date));
+  };
+
+  const formatDuration = (minutes: number | null) => {
+    if (!minutes) {
+      return "-";
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours > 0 && mins > 0) {
+      return `${hours}h ${mins}m`;
+    }
+    if (hours > 0) {
+      return `${hours}h`;
+    }
+    return `${mins}m`;
+  };
+
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "paid":
@@ -181,10 +589,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         return "default";
       case "sent":
       case "scheduled":
+      case "confirmed":
         return "secondary";
+      case "in_progress":
+        return "default";
       case "overdue":
       case "cancelled":
+      case "no_show":
         return "destructive";
+      case "rescheduled":
+        return "outline";
       case "draft":
       case "pending":
         return "outline";
@@ -194,79 +608,100 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   };
 
   return (
-    <div className="w-full">
+    <>
       {/* Page Header - Not Fixed */}
       <div className="border-b bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-6">
-          {/* Title and Breadcrumb */}
-          <div className="mb-6">
-            <div className="mb-3 flex items-start justify-between gap-4">
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          {/* Title and Header Section */}
+          <div className="mb-8">
+            {/* Job Number Badge */}
+            <div className="mb-3">
+              <Badge className="h-6 font-mono text-xs" variant="outline">
+                #{job.job_number}
+              </Badge>
+            </div>
+
+            <div className="mb-4 flex items-start justify-between gap-4">
               <div className="flex-1">
+                {/* Large Job Title */}
                 <Input
-                  className="h-auto border-0 p-0 font-bold text-3xl tracking-tight shadow-none focus-visible:ring-0"
+                  className="h-auto border-0 p-0 font-bold text-5xl tracking-tight shadow-none focus-visible:ring-0 md:text-6xl"
                   onChange={(e) => handleFieldChange("title", e.target.value)}
+                  placeholder="Enter job title..."
                   value={localJob.title}
                 />
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-sm">
-                  <span className="font-medium font-mono">
-                    #{job.job_number}
-                  </span>
-                  {customer && (
-                    <>
-                      <span className="text-muted-foreground/50">•</span>
-                      <Link
-                        className="inline-flex items-center gap-1 transition-colors hover:text-foreground hover:underline"
-                        href={`/dashboard/customers/${customer.id}`}
-                      >
-                        <User className="h-3.5 w-3.5" />
-                        {customer.first_name} {customer.last_name}
-                      </Link>
-                    </>
-                  )}
-                  {property && (
-                    <>
-                      <span className="text-muted-foreground/50">•</span>
-                      <Link
-                        className="inline-flex items-center gap-1 transition-colors hover:text-foreground hover:underline"
-                        href={`/dashboard/properties/${property.id}`}
-                      >
-                        <MapPin className="h-3.5 w-3.5" />
-                        {property.name || property.address}
-                      </Link>
-                    </>
-                  )}
-                </div>
               </div>
 
               {/* Save Button */}
               {hasChanges && (
                 <Button
+                  className="mt-2"
                   disabled={isSaving}
                   onClick={handleSave}
-                  size="sm"
+                  size="default"
                   variant="default"
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save"}
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
               )}
             </div>
 
-            {/* Job Details Grid */}
-            <div className="mt-4 rounded-lg border bg-card p-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div className="space-y-2">
-                  <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    Status
-                  </Label>
+            {/* Operational Intelligence - Inline */}
+            {jobData.enrichmentData && (
+              <div className="mb-6">
+                <JobEnrichmentInline enrichmentData={jobData.enrichmentData} />
+              </div>
+            )}
+
+            {/* Customer and Property Links */}
+            {(customer || property) && (
+              <div className="mt-4 space-y-3">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  {customer && (
+                      <Link
+                    className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                        href={`/dashboard/customers/${customer.id}`}
+                      >
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">
+                        {customer.first_name} {customer.last_name}
+                    </span>
+                      </Link>
+                  )}
+                  {property && (
+                      <Link
+                    className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                        href={`/dashboard/properties/${property.id}`}
+                      >
+                    <MapPin className="h-4 w-4" />
+                    <span className="font-medium">
+                        {property.name || property.address}
+                    </span>
+                      </Link>
+                  )}
+                </div>
+                
+                {/* Travel Time - Important for CSR */}
+                {property && <TravelTime property={property} />}
+              </div>
+              )}
+            </div>
+
+            {/* Job Details - Inline Editable */}
+            <div className="mt-6 space-y-4">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                {/* Status */}
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">Status:</span>
                   <Select
                     onValueChange={(value) =>
                       handleFieldChange("status", value)
                     }
-                    value={localJob.status}
+                    value={localJob.status || undefined}
                   >
-                    <SelectTrigger className="h-10 border-muted">
-                      <SelectValue />
+                    <SelectTrigger className="h-auto border-0 bg-transparent p-0 shadow-none hover:underline focus:ring-0">
+                      <SelectValue placeholder="Set status..." />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="quoted">Quoted</SelectItem>
@@ -279,85 +714,70 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    Priority
-                  </Label>
+                {/* Priority */}
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">Priority:</span>
                   <Select
                     onValueChange={(value) =>
                       handleFieldChange("priority", value)
                     }
-                    value={localJob.priority}
+                    value={localJob.priority || undefined}
                   >
-                    <SelectTrigger className="h-10 border-muted">
-                      <SelectValue />
+                    <SelectTrigger className="h-auto border-0 bg-transparent p-0 shadow-none hover:underline focus:ring-0">
+                      <SelectValue placeholder="Set priority..." />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="high">High</SelectItem>
                       <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="emergency">Emergency</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    Job Type
-                  </Label>
+                {/* Job Type */}
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">Type:</span>
                   <Input
-                    className="h-10 border-muted"
+                    className="h-auto w-auto min-w-[150px] border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
                     onChange={(e) =>
                       handleFieldChange("service_type", e.target.value)
                     }
-                    placeholder="e.g., Service, Repair, Installation"
+                    placeholder="Enter type..."
                     value={localJob.service_type || localJob.job_type || ""}
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    Assigned To
-                  </Label>
-                  <Input
-                    className="h-10 border-muted bg-muted/50"
-                    readOnly
-                    value={
-                      assignedUser
-                        ? `${assignedUser.name || "Unassigned"}`
-                        : "Unassigned"
-                    }
-                  />
+                {/* Assigned To */}
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">Assigned:</span>
+                  <span className="text-sm">
+                    {assignedUser
+                      ? `${assignedUser.name || "Unassigned"}`
+                      : "Unassigned"}
+                  </span>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="mt-4 space-y-2">
-                <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                  Description
-                </Label>
+              <div className="space-y-1">
+                <span className="text-muted-foreground text-sm">Description:</span>
                 <Textarea
-                  className="min-h-[80px] resize-none border-muted text-sm"
+                  className="min-h-[80px] resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
                   onChange={(e) =>
                     handleFieldChange("description", e.target.value)
                   }
-                  placeholder="Enter job description..."
+                  placeholder="Add a description..."
                   value={localJob.description || ""}
                 />
               </div>
-            </div>
           </div>
 
-          {/* Core Actions - Dispatch, Arrive, Close */}
+          {/* Core Actions - Arrive, Close */}
           <JobQuickActions
-            actualEnd={job.actual_end}
-            actualStart={job.actual_start}
             currentStatus={job.status}
             jobId={job.id}
-            scheduledStart={job.scheduled_start}
           />
-        </div>
       </div>
 
       {/* All Sections - Collapsible */}
@@ -366,484 +786,803 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           className="space-y-3"
           defaultValue={[
             "customer",
-            "schedule",
+            "appointments",
             "equipment-serviced",
-            "financials",
             "invoices",
             "estimates",
             "purchase-orders",
-            "team",
             "tasks",
           ]}
           type="multiple"
         >
           {/* CUSTOMER & PROPERTY */}
-          <AccordionItem className="rounded-lg border bg-card" value="customer">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Customer & Property Details
-                </span>
+          <AccordionItem className="rounded-lg border bg-card shadow-sm" value="customer">
+            <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+              <AccordionTrigger className="flex-1 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="font-medium text-sm">Customer & Property Details</span>
+                </div>
+              </AccordionTrigger>
+              <div
+                className="flex shrink-0 items-center gap-2"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                {customer ? (
+                  <>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          disabled={isUpdatingCustomer}
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 px-3 text-xs"
+                        >
+                          <Edit2 className="mr-1.5 h-3.5 w-3.5" />
+                          Change
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-[400px] p-0"
+                      >
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            onValueChange={setCustomerSearchQuery}
+                            placeholder="Search customers..."
+                            value={customerSearchQuery}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              <div className="py-6 text-center text-muted-foreground text-sm">
+                                No customers found
+                              </div>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {filteredCustomers.slice(0, 50).map((c: any) => (
+                                <CommandItem
+                                  key={c.id}
+                                  className="cursor-pointer"
+                                  onSelect={() => {
+                                    handleCustomerChange(c.id);
+                                    setCustomerSearchQuery("");
+                                  }}
+                                  value={`${c.first_name} ${c.last_name} ${c.email} ${c.phone} ${c.company_name || ""}`}
+                                >
+                                  <div className="flex flex-1 flex-col">
+                                    <span className="font-medium">
+                                      {c.first_name} {c.last_name}
+                                    </span>
+                                    <span className="text-muted-foreground text-xs">
+                                      {c.company_name || c.email || c.phone}
+                                    </span>
+                                  </div>
+                                  {c.id === customer?.id && (
+                                    <CheckCircle className="ml-2 h-4 w-4 text-primary" />
+                                  )}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                        <DropdownMenuSeparator />
+                        <div className="p-2">
+                          <Button
+                            className="w-full"
+                            disabled={isUpdatingCustomer}
+                            onClick={handleRemoveCustomer}
+                            size="sm"
+                            variant="destructive"
+                          >
+                            <X className="mr-2 h-3 w-3" />
+                            Remove Customer
+                          </Button>
+                        </div>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    {property ? (
+                      <DropdownMenu
+                        modal={false}
+                        onOpenChange={(open) => {
+                          if (!open) setPropertyDropdownMode("search");
+                        }}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            disabled={isUpdatingProperty || !customer}
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 px-3 text-xs"
+                          >
+                            <Edit2 className="mr-1.5 h-3.5 w-3.5" />
+                            Change Property
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-[500px] p-0"
+                          onInteractOutside={(e) => {
+                            // Don't close if interacting with Google Places autocomplete
+                            const target = e.target as HTMLElement;
+                            if (target.closest(".pac-container")) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          {customer ? (
+                            <Tabs
+                              onValueChange={(value) =>
+                                setPropertyDropdownMode(value as "search" | "add")
+                              }
+                              value={propertyDropdownMode}
+                            >
+                              <TabsList className="w-full rounded-none border-b">
+                                <TabsTrigger className="flex-1" value="search">
+                                  Search Existing
+                                </TabsTrigger>
+                                <TabsTrigger className="flex-1" value="add">
+                                  Add New Address
+                                </TabsTrigger>
+                              </TabsList>
+                              
+                              <TabsContent className="m-0" value="search">
+                                <Command shouldFilter={false}>
+                                  <CommandInput
+                                    onValueChange={setPropertySearchQuery}
+                                    placeholder="Search properties..."
+                                    value={propertySearchQuery}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      <div className="py-6 text-center text-muted-foreground text-sm">
+                                        No properties found for this customer
+                                      </div>
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                      {filteredProperties.map((p: any) => (
+                                        <CommandItem
+                                          key={p.id}
+                                          className="cursor-pointer"
+                                          onSelect={() => {
+                                            handlePropertyChange(p.id);
+                                            setPropertySearchQuery("");
+                                          }}
+                                          value={`${p.name || p.address} ${p.city} ${p.state}`}
+                                        >
+                                          <div className="flex flex-1 flex-col">
+                                            <span className="font-medium">
+                                              {p.name || p.address}
+                                            </span>
+                                            <span className="text-muted-foreground text-xs">
+                                              {p.city}, {p.state}
+                                            </span>
+                                          </div>
+                                          {p.id === property?.id && (
+                                            <CheckCircle className="ml-2 h-4 w-4 text-primary" />
+                                          )}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </TabsContent>
+                              
+                              <TabsContent className="m-0 p-4" value="add">
+                                <div className="space-y-3">
+                                  <div>
+                                    <Label className="mb-2 text-sm">
+                                      Search for address using Google Places
+                                    </Label>
+                                    <GooglePlacesAutocomplete
+                                      autoFocus
+                                      onPlaceSelect={handlePlaceSelect}
+                                      placeholder="Start typing an address..."
+                                    />
+                                  </div>
+                                  <p className="text-muted-foreground text-xs">
+                                    Select an address from the dropdown to automatically
+                                    create and assign the property
+                                  </p>
+                                </div>
+                              </TabsContent>
+                            </Tabs>
+                          ) : (
+                            <div className="p-4 text-center text-muted-foreground text-sm">
+                              Please assign a customer first
+                            </div>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <DropdownMenu
+                        modal={false}
+                        onOpenChange={(open) => {
+                          if (!open) setPropertyDropdownMode("search");
+                        }}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            disabled={!customer}
+                            size="sm"
+                            variant="outline"
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Property
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-[500px] p-0"
+                          onInteractOutside={(e) => {
+                            // Don't close if interacting with Google Places autocomplete
+                            const target = e.target as HTMLElement;
+                            if (target.closest(".pac-container")) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          {customer ? (
+                            <Tabs
+                              onValueChange={(value) =>
+                                setPropertyDropdownMode(value as "search" | "add")
+                              }
+                              value={propertyDropdownMode}
+                            >
+                              <TabsList className="w-full rounded-none border-b">
+                                <TabsTrigger className="flex-1" value="search">
+                                  Search Existing
+                                </TabsTrigger>
+                                <TabsTrigger className="flex-1" value="add">
+                                  Add New Address
+                                </TabsTrigger>
+                              </TabsList>
+                              
+                              <TabsContent className="m-0" value="search">
+                                <Command shouldFilter={false}>
+                                  <CommandInput
+                                    onValueChange={setPropertySearchQuery}
+                                    placeholder="Search properties..."
+                                    value={propertySearchQuery}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      <div className="py-6 text-center text-muted-foreground text-sm">
+                                        No properties found for this customer
+                                      </div>
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                      {filteredProperties.map((p: any) => (
+                                        <CommandItem
+                                          key={p.id}
+                                          className="cursor-pointer"
+                                          onSelect={() => {
+                                            handlePropertyChange(p.id);
+                                            setPropertySearchQuery("");
+                                          }}
+                                          value={`${p.name || p.address} ${p.city} ${p.state}`}
+                                        >
+                                          <div className="flex flex-1 flex-col">
+                                            <span className="font-medium">
+                                              {p.name || p.address}
+                                            </span>
+                                            <span className="text-muted-foreground text-xs">
+                                              {p.city}, {p.state}
+                                            </span>
+                                          </div>
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </TabsContent>
+                              
+                              <TabsContent className="m-0 p-4" value="add">
+                                <div className="space-y-3">
+                                  <div>
+                                    <Label className="mb-2 text-sm">
+                                      Search for address using Google Places
+                                    </Label>
+                                    <GooglePlacesAutocomplete
+                                      autoFocus
+                                      onPlaceSelect={handlePlaceSelect}
+                                      placeholder="Start typing an address..."
+                                    />
+                                  </div>
+                                  <p className="text-muted-foreground text-xs">
+                                    Select an address from the dropdown to automatically
+                                    create and assign the property
+                                  </p>
+                                </div>
+                              </TabsContent>
+                            </Tabs>
+                          ) : (
+                            <div className="p-4 text-center text-muted-foreground text-sm">
+                              Please assign a customer first
+                            </div>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                    <Button
+                      disabled={isUpdatingCustomer}
+                      onClick={handleRemoveCustomer}
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 px-3 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <X className="mr-1.5 h-3.5 w-3.5" />
+                      Remove
+                    </Button>
+                  </>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="ghost" className="h-8 px-3 text-xs">
+                        <Plus className="mr-1.5 h-3.5 w-3.5" />
+                        Add Customer
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-[400px] p-0"
+                    >
+                      <Command shouldFilter={false}>
+                        <CommandInput
+                          onValueChange={setCustomerSearchQuery}
+                          placeholder="Search customers..."
+                          value={customerSearchQuery}
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            <div className="py-6 text-center text-muted-foreground text-sm">
+                              No customers found
+                            </div>
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {filteredCustomers.slice(0, 50).map((c: any) => (
+                              <CommandItem
+                                key={c.id}
+                                className="cursor-pointer"
+                                onSelect={() => {
+                                  handleCustomerChange(c.id);
+                                  setCustomerSearchQuery("");
+                                }}
+                                value={`${c.first_name} ${c.last_name} ${c.email} ${c.phone} ${c.company_name || ""}`}
+                              >
+                                <div className="flex flex-1 flex-col">
+                                  <span className="font-medium">
+                                    {c.first_name} {c.last_name}
+                                  </span>
+                                  <span className="text-muted-foreground text-xs">
+                                    {c.company_name || c.email || c.phone}
+                                  </span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-6">
-                {/* Customer */}
-                {customer && (
-                  <div>
-                    <h3 className="mb-3 flex items-center gap-2 font-semibold text-base">
-                      <User className="h-4 w-4" />
-                      Customer
-                    </h3>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="font-medium text-lg">
+            </div>
+            <AccordionContent className="p-4">
+              <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+                {/* Customer Info */}
+                {customer ? (
+                  <div className="flex min-w-0 flex-1 flex-col gap-[22px]">
+                    {/* Customer Header with Avatar */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-sm">
+                        {customer.first_name?.[0]}
+                        {customer.last_name?.[0]}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium">
                           {customer.first_name} {customer.last_name}
                         </p>
                         {customer.company_name && (
-                          <p className="text-muted-foreground text-sm">
+                          <p className="truncate text-muted-foreground text-xs">
                             {customer.company_name}
                           </p>
                         )}
                       </div>
+                    </div>
 
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {customer.email && (
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-muted-foreground" />
+                    {/* Contact Info - Compact */}
+                    <dl className="space-y-4">
+                      {customer.email && (
+                        <div className="flex flex-col">
+                          <dt className="mb-1 text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                            Email
+                          </dt>
+                          <dd>
                             <a
-                              className="text-blue-600 text-sm hover:underline"
+                              className="inline-flex items-center gap-1.5 text-foreground text-sm hover:underline"
                               href={`mailto:${customer.email}`}
                             >
-                              {customer.email}
+                              <Mail className="size-3.5 flex-shrink-0 text-muted-foreground" />
+                              <span className="truncate">{customer.email}</span>
                             </a>
-                          </div>
-                        )}
-                        {customer.phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-muted-foreground" />
+                          </dd>
+                        </div>
+                      )}
+
+                      {customer.phone && (
+                        <div className="flex flex-col">
+                          <dt className="mb-1 text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                            Phone
+                          </dt>
+                          <dd>
                             <a
-                              className="text-blue-600 text-sm hover:underline"
+                              className="inline-flex items-center gap-1.5 text-foreground text-sm hover:underline"
                               href={`tel:${customer.phone}`}
                             >
+                              <Phone className="size-3.5 flex-shrink-0 text-muted-foreground" />
                               {customer.phone}
                             </a>
-                          </div>
-                        )}
-                      </div>
+                          </dd>
+                        </div>
+                      )}
 
                       {customer.address && (
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
+                        <div className="flex flex-col">
+                          <dt className="mb-1 text-muted-foreground text-xs font-medium uppercase tracking-wide">
                             Billing Address
-                          </Label>
-                          <p className="text-sm">
+                          </dt>
+                          <dd className="text-sm leading-relaxed">
                             {customer.address}
-                            {customer.city && `, ${customer.city}`}
-                            {customer.state && `, ${customer.state}`}
-                            {customer.zip && ` ${customer.zip}`}
-                          </p>
+                            {customer.city && <>, {customer.city}</>}
+                            {customer.state && <>, {customer.state}</>}
+                            {customer.zip && <> {customer.zip}</>}
+                          </dd>
                         </div>
                       )}
+                    </dl>
 
-                      <div className="grid gap-3 md:grid-cols-3">
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
-                            Total Revenue
-                          </Label>
-                          <p className="font-medium text-sm">
-                            {formatCurrency(customer.total_revenue || 0)}
-                          </p>
+                    {/* Metrics Grid - Compact */}
+                    <div className="grid grid-cols-3 gap-4 rounded-md border bg-muted/30 p-4">
+                      <div>
+                        <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+                          Revenue
                         </div>
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
-                            Total Jobs
-                          </Label>
-                          <p className="font-medium text-sm">
-                            {customer.total_jobs || 0}
-                          </p>
-                        </div>
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
-                            Outstanding Balance
-                          </Label>
-                          <p className="font-medium text-orange-600 text-sm">
-                            {formatCurrency(customer.outstanding_balance || 0)}
-                          </p>
+                        <div className="mt-1 font-semibold tabular-nums">
+                          {formatCurrency(customer.total_revenue || 0)}
                         </div>
                       </div>
-
-                      {equipment.length > 0 && (
-                        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/30">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Wrench className="h-4 w-4 text-blue-600" />
-                              <span className="font-medium text-sm">
-                                {equipment.length} Equipment at Property
-                              </span>
-                            </div>
-                            <Button
-                              className="h-7 text-blue-600 text-xs hover:text-blue-700"
-                              onClick={() => {
-                                // Scroll to equipment section
-                                const equipmentSection = document.querySelector(
-                                  '[value="equipment"]'
-                                );
-                                equipmentSection?.scrollIntoView({
-                                  behavior: "smooth",
-                                });
-                              }}
-                              size="sm"
-                              variant="ghost"
-                            >
-                              View All →
-                            </Button>
-                          </div>
-                          <p className="mt-1 text-muted-foreground text-xs">
-                            HVAC, water heaters, and other equipment tracked at
-                            this customer's property
-                          </p>
+                      <div>
+                        <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+                          Jobs
                         </div>
-                      )}
+                        <div className="mt-1 font-semibold tabular-nums">
+                          {customer.total_jobs || 0}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+                          Balance
+                        </div>
+                        <div className="mt-1 font-semibold tabular-nums text-orange-600">
+                          {formatCurrency(customer.outstanding_balance || 0)}
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Equipment Badge */}
+                    {equipment.length > 0 && (
+                      <button
+                        className="flex items-center justify-between rounded-md border border-border bg-background p-3 text-left transition-colors hover:bg-muted/50"
+                        onClick={() => {
+                          const equipmentSection = document.querySelector(
+                            '[value="equipment"]'
+                          );
+                          equipmentSection?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                        }}
+                        type="button"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Wrench className="size-4 text-muted-foreground" />
+                          <span className="text-sm">
+                            <span className="font-medium">
+                              {equipment.length}
+                            </span>{" "}
+                            Equipment at Property
+                          </span>
+                        </div>
+                        <ChevronRight className="size-4 text-muted-foreground" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
+                    <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-muted">
+                      <User className="size-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      No customer assigned
+                    </p>
                   </div>
                 )}
 
-                <Separator />
+                {/* Divider between Customer and Property */}
+                {customer && property && (
+                  <div className="hidden h-auto w-px bg-border lg:block" />
+                )}
 
-                {/* Property */}
-                {property && (
-                  <div>
-                    <h3 className="mb-3 flex items-center gap-2 font-semibold text-base">
-                      <MapPin className="h-4 w-4" />
-                      Service Location
-                    </h3>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="font-medium">
-                          {property.name || "Property"}
-                        </p>
-                        <div className="mt-1 text-muted-foreground text-sm">
-                          <p>{property.address}</p>
-                          {property.address2 && <p>{property.address2}</p>}
-                          <p>
-                            {property.city}, {property.state}{" "}
-                            {property.zip_code}
-                          </p>
-                        </div>
+                {/* Property Info */}
+                {property ? (
+                  <div className="flex min-w-0 flex-1 flex-col gap-[22px]">
+                    {/* Property Header with Icon */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10">
+                        <MapPin className="size-5 text-blue-600" />
                       </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium">
+                          {property.name || "Service Location"}
+                        </p>
+                        <p className="truncate text-muted-foreground text-xs">
+                          {property.property_type ? (
+                            <span className="capitalize">
+                              {property.property_type}
+                            </span>
+                          ) : (
+                            "Property"
+                          )}
+                        </p>
+                      </div>
+                    </div>
 
-                      {(property.square_footage ||
-                        property.year_built ||
-                        property.property_type) && (
-                        <div className="grid gap-3 md:grid-cols-3">
-                          {property.square_footage && (
-                            <div>
-                              <Label className="text-muted-foreground text-xs">
-                                Square Footage
-                              </Label>
-                              <p className="font-medium text-sm">
-                                {property.square_footage.toLocaleString()} sq ft
-                              </p>
-                            </div>
+                    {/* Address - Compact */}
+                    <dl className="space-y-4">
+                      <div className="flex flex-col">
+                        <dt className="mb-1 text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                          Address
+                        </dt>
+                        <dd className="text-sm leading-relaxed">
+                          {property.address}
+                          {property.address2 && (
+                            <>
+                              <br />
+                              {property.address2}
+                            </>
                           )}
-                          {property.year_built && (
-                            <div>
-                              <Label className="text-muted-foreground text-xs">
-                                Year Built
-                              </Label>
-                              <p className="font-medium text-sm">
-                                {property.year_built}
-                              </p>
-                            </div>
-                          )}
-                          {property.property_type && (
-                            <div>
-                              <Label className="text-muted-foreground text-xs">
-                                Type
-                              </Label>
-                              <p className="font-medium text-sm capitalize">
-                                {property.property_type}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                          <br />
+                          {property.city}, {property.state} {property.zip_code}
+                        </dd>
+                      </div>
 
                       {property.notes && (
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
+                        <div className="flex flex-col">
+                          <dt className="mb-1 text-muted-foreground text-xs font-medium uppercase tracking-wide">
                             Access Instructions
-                          </Label>
-                          <p className="text-sm">{property.notes}</p>
+                          </dt>
+                          <dd className="text-sm leading-relaxed">
+                            {property.notes}
+                          </dd>
                         </div>
                       )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+                    </dl>
 
-          {/* SCHEDULE & TIMELINE */}
-          <AccordionItem className="rounded-lg border bg-card" value="schedule">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Schedule & Timeline
-                </span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label>Scheduled Start</Label>
-                    <div className="mt-1 flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">
-                        {formatDate(job.scheduled_start)}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Scheduled End</Label>
-                    <div className="mt-1 flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">
-                        {formatDate(job.scheduled_end)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {(job.actual_start || job.actual_end) && (
-                  <>
-                    <Separator />
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {job.actual_start && (
-                        <div>
-                          <Label>Actual Start</Label>
-                          <div className="mt-1 flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                            <span className="text-sm">
-                              {formatDate(job.actual_start)}
-                            </span>
+                    {/* Property Metrics - Compact Grid */}
+                    {(property.square_footage ||
+                      property.year_built ||
+                      property.property_type) && (
+                      <div className="grid grid-cols-3 gap-4 rounded-md border bg-muted/30 p-4">
+                        {property.square_footage && (
+                          <div>
+                            <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+                              Size
+                            </div>
+                            <div className="mt-1 font-semibold tabular-nums">
+                              {property.square_footage.toLocaleString()}
+                              <span className="ml-1 text-muted-foreground text-[10px] font-normal">
+                                sq ft
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {job.actual_end && (
-                        <div>
-                          <Label>Actual End</Label>
-                          <div className="mt-1 flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                            <span className="text-sm">
-                              {formatDate(job.actual_end)}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {(job.dispatch_zone || job.travel_time_minutes) && (
-                  <>
-                    <Separator />
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {job.dispatch_zone && (
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
-                            Dispatch Zone
-                          </Label>
-                          <p className="font-medium text-sm">
-                            {job.dispatch_zone}
-                          </p>
-                        </div>
-                      )}
-                      {job.travel_time_minutes && (
-                        <div>
-                          <Label className="text-muted-foreground text-xs">
-                            Travel Time
-                          </Label>
-                          <p className="font-medium text-sm">
-                            {job.travel_time_minutes} minutes
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* TEAM & TIME TRACKING */}
-          <AccordionItem className="rounded-lg border bg-card" value="team">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Team & Time Tracking
-                </span>
-                <Badge variant="secondary">{teamAssignments.length}</Badge>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-6">
-                {/* Labor Summary */}
-                <div className="grid gap-4 md:grid-cols-3">
-                  <Card>
-                    <CardContent className="pt-6">
-                      <p className="text-muted-foreground text-xs">
-                        Total Hours
-                      </p>
-                      <p className="font-bold text-2xl">
-                        {formatHours(metrics.totalLaborHours)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-6">
-                      <p className="text-muted-foreground text-xs">Estimated</p>
-                      <p className="font-bold text-2xl">
-                        {metrics.estimatedLaborHours > 0
-                          ? formatHours(metrics.estimatedLaborHours)
-                          : "N/A"}
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-6">
-                      <p className="text-muted-foreground text-xs">Variance</p>
-                      <p
-                        className={cn(
-                          "font-bold text-2xl",
-                          metrics.totalLaborHours > metrics.estimatedLaborHours
-                            ? "text-orange-600"
-                            : "text-green-600"
                         )}
-                      >
-                        {metrics.estimatedLaborHours > 0
-                          ? formatHours(
-                              metrics.totalLaborHours -
-                                metrics.estimatedLaborHours
-                            )
-                          : "N/A"}
+                        {property.year_built && (
+                          <div>
+                            <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+                              Built
+                            </div>
+                            <div className="mt-1 font-semibold tabular-nums">
+                              {property.year_built}
+                            </div>
+                          </div>
+                        )}
+                        {property.lat && property.lon && (
+                          <div>
+                            <div className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">
+                              Coords
+                            </div>
+                            <div className="mt-1 text-[11px] leading-tight tabular-nums">
+                              {property.lat.toFixed(4)},
+                              <br />
+                              {property.lon.toFixed(4)}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  customer && (
+                    <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
+                      <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-muted">
+                        <MapPin className="size-6 text-muted-foreground" />
+                      </div>
+                      <p className="mb-4 text-muted-foreground text-sm">
+                        No property assigned
                       </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Team Members */}
-                {assignedUser && (
-                  <div>
-                    <h4 className="mb-3 font-semibold">Primary Technician</h4>
-                    <div className="flex items-center gap-3 rounded-lg border p-3">
-                      <Avatar>
-                        <AvatarImage src={assignedUser.avatar} />
-                        <AvatarFallback>
-                          {assignedUser.name
-                            ?.split(" ")
-                            .map((n: string) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="font-medium">{assignedUser.name}</p>
-                        <div className="flex gap-3 text-muted-foreground text-xs">
-                          {assignedUser.email && (
-                            <span>{assignedUser.email}</span>
-                          )}
-                          {assignedUser.phone && (
-                            <span>{assignedUser.phone}</span>
+                      <DropdownMenu
+                        modal={false}
+                        onOpenChange={(open) => {
+                          if (!open) setPropertyDropdownMode("search");
+                        }}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            disabled={!customer}
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 px-3 text-xs"
+                          >
+                            <Plus className="mr-1.5 h-3.5 w-3.5" />
+                            Add Property
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="center"
+                          className="w-[500px] p-0"
+                          onInteractOutside={(e) => {
+                            // Don't close if interacting with Google Places autocomplete
+                            const target = e.target as HTMLElement;
+                            if (target.closest(".pac-container")) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          {customer ? (
+                            <Tabs
+                              onValueChange={(value) =>
+                                setPropertyDropdownMode(value as "search" | "add")
+                              }
+                              value={propertyDropdownMode}
+                            >
+                              <TabsList className="w-full rounded-none border-b">
+                                <TabsTrigger className="flex-1" value="search">
+                                  Search Existing
+                                </TabsTrigger>
+                                <TabsTrigger className="flex-1" value="add">
+                                  Add New Address
+                                </TabsTrigger>
+                              </TabsList>
+                              
+                              <TabsContent className="m-0" value="search">
+                                <Command shouldFilter={false}>
+                                  <CommandInput
+                                    onValueChange={setPropertySearchQuery}
+                                    placeholder="Search properties..."
+                                    value={propertySearchQuery}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      <div className="py-6 text-center text-muted-foreground text-sm">
+                                        No properties found for this customer
+              </div>
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                      {filteredProperties.map((p: any) => (
+                                        <CommandItem
+                                          key={p.id}
+                                          className="cursor-pointer"
+                                          onSelect={() => {
+                                            handlePropertyChange(p.id);
+                                            setPropertySearchQuery("");
+                                          }}
+                                          value={`${p.name || p.address} ${p.city} ${p.state}`}
+                                        >
+                                          <div className="flex flex-1 flex-col">
+                                            <span className="font-medium">
+                                              {p.name || p.address}
+                      </span>
+                                            <span className="text-muted-foreground text-xs">
+                                              {p.city}, {p.state}
+                      </span>
+                    </div>
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </TabsContent>
+                              
+                              <TabsContent className="m-0 p-4" value="add">
+                                <div className="space-y-3">
+                        <div>
+                                    <Label className="mb-2 text-sm">
+                                      Search for address using Google Places
+                          </Label>
+                                    <GooglePlacesAutocomplete
+                                      autoFocus
+                                      onPlaceSelect={handlePlaceSelect}
+                                      placeholder="Start typing an address..."
+                                    />
+                        </div>
+                                  <p className="text-muted-foreground text-xs">
+                                    Select an address from the dropdown to automatically
+                                    create and assign the property
+                          </p>
+                        </div>
+                              </TabsContent>
+                            </Tabs>
+                          ) : (
+                            <div className="p-4 text-center text-muted-foreground text-sm">
+                              Please assign a customer first
+                    </div>
+                )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+              </div>
+                  )
                           )}
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
-                {/* Time Entries */}
-                {timeEntries.length > 0 && (
-                  <div>
-                    <h4 className="mb-3 font-semibold">
-                      Time Entries ({timeEntries.length})
-                    </h4>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Technician</TableHead>
-                          <TableHead>Clock In</TableHead>
-                          <TableHead>Clock Out</TableHead>
-                          <TableHead>Break</TableHead>
-                          <TableHead>Total Hours</TableHead>
-                          <TableHead>Type</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {timeEntries.map((entry: any) => {
-                          const user = Array.isArray(entry.user)
-                            ? entry.user[0]
-                            : entry.user;
-                          return (
-                            <TableRow key={entry.id}>
-                              <TableCell className="font-medium">
-                                {user?.name || "Unknown"}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {formatDate(entry.clock_in)}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {entry.clock_out ? (
-                                  formatDate(entry.clock_out)
-                                ) : (
-                                  <Badge variant="default">Active</Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {entry.break_minutes || 0}m
-                              </TableCell>
-                              <TableCell className="font-medium">
-                                {entry.total_hours
-                                  ? formatHours(entry.total_hours)
-                                  : "-"}
-                              </TableCell>
-                              <TableCell>
-                                <Badge className="text-xs" variant="outline">
-                                  {entry.entry_type}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </div>
             </AccordionContent>
           </AccordionItem>
+
+
+          {/* APPOINTMENTS */}
+          <CollapsibleSection
+            actions={
+              <Button
+                onClick={() => {
+                  // TODO: Open appointment creation dialog or navigate to schedule page
+                  router.push(`/dashboard/schedule/new?jobId=${job.id}`);
+                }}
+                size="sm"
+                variant="ghost"
+                className="h-8 px-3 text-xs"
+              >
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add Appointment
+              </Button>
+            }
+            count={schedules.length}
+            fullWidthContent
+            icon={<Calendar className="h-5 w-5" />}
+            title="Appointments"
+            value="appointments"
+          >
+            <JobAppointmentsTable appointments={schedules} />
+          </CollapsibleSection>
 
           {/* JOB TASKS & CHECKLIST */}
-          <AccordionItem className="rounded-lg border bg-card" value="tasks">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Job Tasks & Checklist
-                </span>
-                <Badge variant="secondary">{tasks.length}</Badge>
-                {tasks.length > 0 && (
-                  <Badge variant="outline">
-                    {tasks.filter((t: any) => t.is_completed).length}/
-                    {tasks.length} Complete
-                  </Badge>
-                )}
-              </div>
-            </AccordionTrigger>
+          <AccordionItem className="rounded-lg border bg-card shadow-sm" value="tasks">
+            <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+              <AccordionTrigger className="flex-1 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="font-medium text-sm">Job Tasks & Checklist</span>
+                  <Badge variant="secondary" className="ml-1 text-xs">{tasks.length}</Badge>
+                  {tasks.length > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {tasks.filter((t: any) => t.is_completed).length}/{tasks.length} Complete
+                    </Badge>
+                  )}
+                </div>
+              </AccordionTrigger>
+            </div>
             <AccordionContent className="px-6 pb-6">
               <div className="space-y-6">
                 {/* Progress Bar */}
@@ -995,8 +1734,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                     <p className="mb-2 text-muted-foreground text-sm">
                       No tasks added yet
                     </p>
-                    <Button size="sm" variant="outline">
-                      <Plus className="mr-2 h-4 w-4" />
+                    <Button size="sm" variant="ghost" className="h-8 px-3 text-xs">
+                      <Plus className="mr-1.5 h-3.5 w-3.5" />
                       Add Task
                     </Button>
                   </div>
@@ -1006,17 +1745,17 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 {tasks.length > 0 && (
                   <div className="flex gap-2 border-t pt-4">
                     <Button
-                      className="hover:bg-accent"
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
+                      className="h-8 px-3 text-xs"
                     >
-                      <Plus className="mr-2 h-4 w-4" />
+                      <Plus className="mr-1.5 h-3.5 w-3.5" />
                       Add Task
                     </Button>
                     <Button
-                      className="hover:bg-accent"
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
+                      className="h-8 px-3 text-xs"
                     >
                       Load Template
                     </Button>
@@ -1026,115 +1765,11 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
             </AccordionContent>
           </AccordionItem>
 
-          {/* FINANCIALS - STATS ONLY */}
-          <AccordionItem
-            className="rounded-lg border bg-card"
-            value="financials"
-          >
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Financials & Billing
-                </span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-4">
-                {/* Financial Stats - Using StatsCards component */}
-                <StatsCards
-                  stats={[
-                    {
-                      label: "Job Value",
-                      value: formatCurrency(metrics.totalAmount),
-                      change:
-                        metrics.totalAmount > 0
-                          ? Number(
-                              (
-                                ((metrics.totalAmount - metrics.paidAmount) /
-                                  metrics.totalAmount) *
-                                -100
-                              ).toFixed(2)
-                            )
-                          : 0,
-                      changeLabel: `${invoices.length} invoice${invoices.length !== 1 ? "s" : ""}`,
-                    },
-                    {
-                      label: "Paid",
-                      value: formatCurrency(metrics.paidAmount),
-                      change:
-                        metrics.totalAmount > 0
-                          ? Number(
-                              (
-                                (metrics.paidAmount / metrics.totalAmount) *
-                                100
-                              ).toFixed(2)
-                            )
-                          : 0,
-                      changeLabel: `${payments.length} payment${payments.length !== 1 ? "s" : ""}`,
-                    },
-                    {
-                      label: "Outstanding",
-                      value: formatCurrency(
-                        metrics.totalAmount - metrics.paidAmount
-                      ),
-                      change:
-                        metrics.totalAmount > 0
-                          ? Number(
-                              (
-                                ((metrics.totalAmount - metrics.paidAmount) /
-                                  metrics.totalAmount) *
-                                100
-                              ).toFixed(2)
-                            )
-                          : 0,
-                      changeLabel: "remaining",
-                    },
-                    {
-                      label: "Profit",
-                      value: formatCurrency(
-                        metrics.totalAmount - metrics.materialsCost
-                      ),
-                      change: Number(metrics.profitMargin.toFixed(2)),
-                      changeLabel: "margin",
-                    },
-                  ]}
-                  variant="ticker"
-                />
-
-                {/* Payment Terms & Deposit */}
-                <div className="grid gap-4 md:grid-cols-2">
-                  {job.payment_terms && (
-                    <div>
-                      <Label>Payment Terms</Label>
-                      <p className="text-sm">{job.payment_terms}</p>
-                    </div>
-                  )}
-                  {job.deposit_amount > 0 && (
-                    <div>
-                      <Label>Deposit Required</Label>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-sm">
-                          {formatCurrency(job.deposit_amount)}
-                        </p>
-                        {job.deposit_paid_at && (
-                          <Badge variant="default">
-                            Paid {formatDate(job.deposit_paid_at)}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
           {/* INVOICES */}
           <CollapsibleSection
             actions={
-              <Button size="sm" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
+              <Button size="sm" variant="ghost" className="h-8 px-3 text-xs">
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Create Invoice
               </Button>
             }
@@ -1150,8 +1785,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           {/* ESTIMATES */}
           <CollapsibleSection
             actions={
-              <Button size="sm" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
+              <Button size="sm" variant="ghost" className="h-8 px-3 text-xs">
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Create Estimate
               </Button>
             }
@@ -1167,8 +1802,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           {/* PURCHASE ORDERS */}
           <CollapsibleSection
             actions={
-              <Button size="sm" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
+              <Button size="sm" variant="ghost" className="h-8 px-3 text-xs">
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Create PO
               </Button>
             }
@@ -1182,35 +1817,89 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           </CollapsibleSection>
 
           {/* PHOTOS & DOCUMENTS */}
-          <AccordionItem className="rounded-lg border bg-card" value="photos">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <Camera className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Photos & Documents
-                </span>
-                <Badge variant="secondary">
-                  {photos.length + documents.length}
-                </Badge>
-              </div>
-            </AccordionTrigger>
+          <AccordionItem 
+            className={cn(
+              "rounded-lg border bg-card shadow-sm transition-colors",
+              isDraggingOver && "border-primary bg-primary/5"
+            )} 
+            value="photos"
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsDraggingOver(true);
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsDraggingOver(false);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsDraggingOver(false);
+              setShowUploader(true);
+              // The InlinePhotoUploader will handle the files
+            }}
+          >
+            <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+              <AccordionTrigger className="flex-1 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                    <Camera className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="font-medium text-sm">Photos & Documents</span>
+                  <Badge variant="secondary" className="ml-1 text-xs">
+                    {photos.length + documents.length}
+                  </Badge>
+                </div>
+              </AccordionTrigger>
+              {!showUploader && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUploader(true);
+                    }}
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 px-3 text-xs"
+                  >
+                    <Plus className="mr-1.5 h-3.5 w-3.5" />
+                    Upload
+                  </Button>
+                </div>
+              )}
+            </div>
             <AccordionContent className="px-6 pb-6">
               <div className="space-y-6">
+                {/* Inline Uploader */}
+                {showUploader && (
+                  <InlinePhotoUploader
+                    jobId={job.id}
+                    companyId={job.company_id}
+                    onCancel={() => setShowUploader(false)}
+                    onUploadComplete={() => {
+                      setShowUploader(false);
+                      router.refresh();
+                    }}
+                  />
+                )}
+
                 {/* Photo Categories */}
                 <div>
                   <div className="mb-3 flex items-center justify-between">
                     <h4 className="font-semibold">
                       Photos by Category ({photos.length})
                     </h4>
-                    <Button
-                      className="hover:bg-accent"
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Upload Photos
-                    </Button>
                   </div>
+                  {photos.length > 0 ? (
                   <div className="grid gap-3 md:grid-cols-4">
                     {[
                       "before",
@@ -1237,6 +1926,17 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                       );
                     })}
                   </div>
+                  ) : (
+                    <div className="py-8 text-center">
+                      <Camera className="mx-auto mb-3 h-12 w-12 text-muted-foreground opacity-50" />
+                      <p className="mb-2 text-muted-foreground text-sm">
+                        No photos uploaded yet
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Upload photos to document the job progress
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <Separator />
@@ -1258,19 +1958,25 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                             <span className="text-sm">{doc.file_name}</span>
                           </div>
                           <Button
-                            className="hover:bg-accent"
                             size="sm"
                             variant="ghost"
+                            className="h-8 px-2"
                           >
-                            <Download className="h-3 w-3" />
+                            <Download className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-sm">
-                      No documents uploaded
+                    <div className="py-8 text-center">
+                      <FileText className="mx-auto mb-3 h-12 w-12 text-muted-foreground opacity-50" />
+                      <p className="mb-2 text-muted-foreground text-sm">
+                        No documents uploaded yet
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Upload documents, receipts, or other files related to this job
                     </p>
+                    </div>
                   )}
                 </div>
 
@@ -1346,22 +2052,25 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           </AccordionItem>
 
           {/* ACTIVITY & COMMUNICATIONS */}
-          <AccordionItem className="rounded-lg border bg-card" value="activity">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Activity & Communications
-                </span>
-                <Badge variant="secondary">
-                  {activities.length + communications.length}
-                </Badge>
-              </div>
-            </AccordionTrigger>
+          <AccordionItem className="rounded-lg border bg-card shadow-sm" value="activity">
+            <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+              <AccordionTrigger className="flex-1 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                    <Activity className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="font-medium text-sm">Activity & Communications</span>
+                  <Badge variant="secondary" className="ml-1 text-xs">
+                    {activities.length + communications.length}
+                  </Badge>
+                </div>
+              </AccordionTrigger>
+            </div>
             <AccordionContent className="px-6 pb-6">
               <div className="space-y-3">
                 {/* Combined timeline */}
-                {[...activities, ...communications]
+                {activities.length > 0 || communications.length > 0 ? (
+                  [...activities, ...communications]
                   .sort(
                     (a, b) =>
                       new Date(b.created_at).getTime() -
@@ -1413,25 +2122,38 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                         </div>
                       </div>
                     );
-                  })}
+                    })
+                ) : (
+                  <div className="py-8 text-center">
+                    <Activity className="mx-auto mb-3 h-12 w-12 text-muted-foreground opacity-50" />
+                    <p className="mb-2 text-muted-foreground text-sm">
+                      No activity or communications yet
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      Activity logs and communications will appear here
+                    </p>
+                  </div>
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>
 
           {/* EQUIPMENT SERVICED */}
           <AccordionItem
-            className="rounded-lg border bg-card"
+            className="rounded-lg border bg-card shadow-sm"
             value="equipment-serviced"
           >
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <Wrench className="h-5 w-5" />
-                <span className="font-semibold text-lg">
-                  Equipment Serviced on This Job
-                </span>
-                <Badge variant="default">{jobEquipment.length}</Badge>
-              </div>
-            </AccordionTrigger>
+            <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+              <AccordionTrigger className="flex-1 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                    <Wrench className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="font-medium text-sm">Equipment Serviced on This Job</span>
+                  <Badge variant="secondary" className="ml-1 text-xs">{jobEquipment.length}</Badge>
+                </div>
+              </AccordionTrigger>
+            </div>
             <AccordionContent className="px-6 pb-6">
               {jobEquipment.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -1509,18 +2231,20 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           {/* CUSTOMER EQUIPMENT AT PROPERTY */}
           {equipment.length > 0 && (
             <AccordionItem
-              className="rounded-lg border bg-card"
+              className="rounded-lg border bg-card shadow-sm"
               value="equipment"
             >
-              <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  <span className="font-semibold text-lg">
-                    Customer Equipment at Property
-                  </span>
-                  <Badge variant="secondary">{equipment.length}</Badge>
-                </div>
-              </AccordionTrigger>
+              <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+                <AccordionTrigger className="flex-1 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                      <Building2 className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="font-medium text-sm">Customer Equipment at Property</span>
+                    <Badge variant="secondary" className="ml-1 text-xs">{equipment.length}</Badge>
+                  </div>
+                </AccordionTrigger>
+              </div>
               <AccordionContent className="px-6 pb-6">
                 <Table>
                   <TableHeader>
@@ -1562,6 +2286,132 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         {/* Spacer for bottom padding */}
         <div className="h-24" />
       </div>
+
+      {/* Create Property Dialog */}
+      <Dialog
+        onOpenChange={setIsCreatePropertyDialogOpen}
+        open={isCreatePropertyDialogOpen}
+      >
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Property</DialogTitle>
+            <DialogDescription>
+              Add a new property for {customer?.first_name} {customer?.last_name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="property-name">Property Name</Label>
+              <Input
+                id="property-name"
+                onChange={(e) =>
+                  setNewProperty({ ...newProperty, name: e.target.value })
+                }
+                placeholder="Main Residence"
+                value={newProperty.name}
+              />
     </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="property-address">
+                Address <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="property-address"
+                onChange={(e) =>
+                  setNewProperty({ ...newProperty, address: e.target.value })
+                }
+                placeholder="123 Main St"
+                required
+                value={newProperty.address}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="property-address2">Address Line 2</Label>
+              <Input
+                id="property-address2"
+                onChange={(e) =>
+                  setNewProperty({ ...newProperty, address2: e.target.value })
+                }
+                placeholder="Apt 4B"
+                value={newProperty.address2}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="property-city">
+                  City <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="property-city"
+                  onChange={(e) =>
+                    setNewProperty({ ...newProperty, city: e.target.value })
+                  }
+                  placeholder="New York"
+                  required
+                  value={newProperty.city}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="property-state">
+                  State <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="property-state"
+                  onChange={(e) =>
+                    setNewProperty({ ...newProperty, state: e.target.value })
+                  }
+                  placeholder="NY"
+                  required
+                  value={newProperty.state}
+                />
+              </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="property-zip">
+                ZIP Code <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="property-zip"
+                onChange={(e) =>
+                  setNewProperty({ ...newProperty, zipCode: e.target.value })
+                }
+                placeholder="10001"
+                required
+                value={newProperty.zipCode}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              disabled={isCreatingProperty}
+              onClick={() => setIsCreatePropertyDialogOpen(false)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={
+                isCreatingProperty ||
+                !newProperty.address ||
+                !newProperty.city ||
+                !newProperty.state ||
+                !newProperty.zipCode
+              }
+              onClick={handleCreateProperty}
+            >
+              {isCreatingProperty ? "Creating..." : "Create Property"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      </div>
+    </>
   );
 }

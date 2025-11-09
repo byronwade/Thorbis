@@ -47,9 +47,11 @@ import {
   Shield,
   Wrench,
   AlertCircle,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useJobEditorStore } from "@/lib/stores/job-editor-store";
+import { TeamMemberSelector } from "../team-member-selector";
 
 interface OverviewTabProps {
   job: any;
@@ -221,6 +223,17 @@ export function OverviewTab({
               />
             </div>
           </div>
+
+          {/* Team Assignments */}
+          <div>
+            <Label className="mb-3 flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              Team Assigned
+            </Label>
+            <TeamMemberSelector jobId={job.id} isEditMode={isEditMode} />
+          </div>
+
+          <Separator />
 
           {/* Internal Notes */}
           <div>

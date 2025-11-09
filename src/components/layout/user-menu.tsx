@@ -11,11 +11,15 @@ import {
   ShoppingCart,
   Sun,
   Wrench,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { signOut } from "@/actions/auth";
+import { switchCompany } from "@/actions/company-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -28,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * UserMenu - Client Component
@@ -47,20 +52,45 @@ interface UserMenuProps {
     avatar: string;
   };
   teams: {
+    id: string;
     name: string;
     logo: LucideIcon;
     plan: string;
+    onboardingComplete?: boolean;
+    hasPayment?: boolean;
   }[];
+  activeCompanyId?: string | null;
 }
 
-export function UserMenu({ user, teams }: UserMenuProps) {
+export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [activeTeam, setActiveTeam] = useState(teams[0]);
+  // Find the active team based on activeCompanyId, fallback to first team
+  const initialActiveTeam = teams.find((t) => t.id === activeCompanyId) || teams[0];
+  const [activeTeam, setActiveTeam] = useState(initialActiveTeam);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleCompanySwitch = async (team: typeof teams[0]) => {
+    // Don't switch if already active
+    if (activeTeam?.id === team.id) {
+      return;
+    }
+
+    const result = await switchCompany(team.id);
+    if (result.success) {
+      setActiveTeam(team);
+      // If onboarding is not complete, redirect to onboarding page
+      if (!team.onboardingComplete) {
+        router.push("/dashboard/welcome");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -124,21 +154,37 @@ export function UserMenu({ user, teams }: UserMenuProps) {
           Organizations
         </DropdownMenuLabel>
         {teams.map((team, index) => {
-          const isActive = team === activeTeam;
+          const isActive = activeTeam?.id === team.id;
           return (
             <DropdownMenuItem
               className={`gap-2 p-2 ${isActive ? "bg-accent" : ""}`}
-              key={team.name}
-              onClick={() => setActiveTeam(team)}
+              key={team.id}
+              onClick={() => handleCompanySwitch(team)}
             >
               <div className="flex size-6 items-center justify-center rounded-sm border">
                 <team.logo className="size-4 shrink-0" />
               </div>
-              <div className="flex flex-1 flex-col">
+                <div className="flex flex-1 flex-col">
                 <span className="font-medium text-sm">{team.name}</span>
-                <span className="text-muted-foreground text-xs">
-                  {team.plan}
-                </span>
+                <div className="flex items-center gap-2">
+                  {team.onboardingComplete !== undefined ? (
+                    team.onboardingComplete ? (
+                      <Badge variant="default" className="h-4 px-1.5 text-[10px]">
+                        <CheckCircle2 className="mr-1 size-3" />
+                        Complete
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
+                        <XCircle className="mr-1 size-3" />
+                        {team.plan === "Incomplete Onboarding" ? "Incomplete Onboarding" : "Not Complete"}
+                      </Badge>
+                    )
+                  ) : (
+                    <span className="text-muted-foreground text-xs">
+                      {team.plan}
+                    </span>
+                  )}
+                </div>
               </div>
               {isActive && (
                 <div className="ml-auto size-2 rounded-full bg-primary" />
@@ -148,7 +194,7 @@ export function UserMenu({ user, teams }: UserMenuProps) {
           );
         })}
         <DropdownMenuItem asChild className="gap-2 p-2">
-          <Link href="/dashboard/settings/organizations/new">
+          <Link href="/dashboard/welcome">
             <div className="flex size-6 items-center justify-center rounded-md border">
               <Plus className="size-4" />
             </div>

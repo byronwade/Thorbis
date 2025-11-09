@@ -1,16 +1,21 @@
 import type { NextConfig } from "next";
 import { withBotId } from "botid/next/config";
 
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
-  openAnalyzer: false, // Don't auto-open browser
-});
+// Only load bundle analyzer when ANALYZE=true to avoid build overhead
+const withBundleAnalyzer =
+  process.env.ANALYZE === "true"
+    ? require("@next/bundle-analyzer")({
+        enabled: true,
+        openAnalyzer: false,
+      })
+    : (config: NextConfig) => config;
 
 const withPWA = require("next-pwa")({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  buildExcludes: [/app-build-manifest\.json$/], // Exclude from build for faster builds
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
@@ -57,7 +62,20 @@ const nextConfig: NextConfig = {
   // PERFORMANCE: Static generation RE-ENABLED! ✅
   // Fixed Zustand SSR issues by adding skipHydration: true to all persisted stores
   // This allows Next.js to generate static pages for massive performance gains
-  // output: "standalone", // REMOVED - no longer needed
+
+  // BUILD OPTIMIZATIONS: Faster compilation and smaller bundles
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? {
+      exclude: ["error", "warn"], // Keep error/warn logs in production
+    } : false,
+  },
+
+  // TypeScript optimizations
+  typescript: {
+    // Speed up builds by skipping type checking during build (use CI/CD for type checking)
+    // Set to false if you want Next.js to type-check during build (slower)
+    ignoreBuildErrors: false, // Keep false for safety, but can set true for faster builds
+  },
 
   // Enable experimental features for better performance
   experimental: {
@@ -68,7 +86,24 @@ const nextConfig: NextConfig = {
       "date-fns",
       "@supabase/supabase-js",
       "zod",
+      "@radix-ui/react-accordion",
+      "@radix-ui/react-alert-dialog",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-checkbox",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-label",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-separator",
+      "@radix-ui/react-slider",
+      "@radix-ui/react-switch",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-toggle",
+      "@radix-ui/react-tooltip",
     ],
+    // Enable faster refresh for better DX
+    optimizeCss: true,
   },
 
   // Empty turbopack config to silence webpack warning
@@ -87,8 +122,24 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    // Optimize image loading
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60,
   },
+
+  // Build output optimizations
+  poweredByHeader: false, // Remove X-Powered-By header
+  compress: true, // Enable gzip compression
 };
 
+// Conditionally wrap configs only when needed
+let config = nextConfig;
+
+// Only apply bundle analyzer when ANALYZE=true
+config = withBundleAnalyzer(config);
+
+// Apply PWA (already optimized to skip in dev)
+config = withPWA(config);
+
 // Wrap with BotID protection (outermost wrapper for security)
-export default withBotId(withPWA(withBundleAnalyzer(nextConfig)));
+export default withBotId(config);

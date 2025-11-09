@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, FileImage, Upload, X } from "lucide-react";
+import { Camera, FileImage, FileText, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { uploadDocument } from "@/actions/documents";
+import { useToast } from "@/hooks/use-toast";
 import type { PhotoCategory } from "./PhotoGallery";
 
 interface PhotoFile {
@@ -30,29 +32,48 @@ interface PhotoFile {
   preview: string;
   category: PhotoCategory;
   caption: string;
+  isDocument: boolean;
 }
 
 interface PhotoUploaderProps {
+  jobId: string;
+  companyId: string;
   onUpload?: (files: PhotoFile[]) => Promise<void>;
   onCancel?: () => void;
   className?: string;
 }
 
+// Comprehensive file type support
 const ACCEPTED_FILE_TYPES = {
+  // Images
   "image/jpeg": [".jpg", ".jpeg"],
   "image/png": [".png"],
   "image/heic": [".heic"],
+  "image/heif": [".heif"],
   "image/webp": [".webp"],
+  "image/gif": [".gif"],
+  "image/bmp": [".bmp"],
+  "image/tiff": [".tiff", ".tif"],
+  // Documents
   "application/pdf": [".pdf"],
+  "application/msword": [".doc"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+  "application/vnd.ms-excel": [".xls"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "text/plain": [".txt"],
+  "text/csv": [".csv"],
 };
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB for job files
 
 export function PhotoUploader({
+  jobId,
+  companyId,
   onUpload,
   onCancel,
   className,
 }: PhotoUploaderProps) {
+  const { toast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<PhotoFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -60,17 +81,21 @@ export function PhotoUploader({
 
   const generateId = () => Math.random().toString(36).substring(2, 15);
 
+  const isImageFile = (mimeType: string): boolean => {
+    return mimeType.startsWith('image/');
+  };
+
   const validateFile = (file: File): string | null => {
     // Check file type
     const fileType = file.type;
     const acceptedTypes = Object.keys(ACCEPTED_FILE_TYPES);
     if (!acceptedTypes.includes(fileType)) {
-      return `File type ${fileType} is not supported. Please upload JPG, PNG, HEIC, WEBP, or PDF files.`;
+      return `File type ${fileType} is not supported. Please upload images (JPG, PNG, HEIC, WEBP, etc.) or documents (PDF, DOC, XLS, etc.).`;
     }
 
     // Check file size
     if (file.size > MAX_FILE_SIZE) {
-      return `File ${file.name} is too large. Maximum size is 10MB.`;
+      return `File ${file.name} is too large. Maximum size is 100MB.`;
     }
 
     return null;
@@ -92,21 +117,24 @@ export function PhotoUploader({
       }
 
       const preview = URL.createObjectURL(file);
+      const isDoc = !isImageFile(file.type);
+      
       newFiles.push({
         id: generateId(),
         file,
         preview,
         category: "other",
         caption: "",
+        isDocument: isDoc,
       });
     });
 
     if (errors.length > 0) {
-      // TODO: Show toast notifications for upload errors
+      toast.error(errors.join("\n"));
     }
 
     setFiles((prev) => [...prev, ...newFiles]);
-  }, []);
+  }, [toast]);
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -170,7 +198,7 @@ export function PhotoUploader({
   }, []);
 
   const handleUpload = async () => {
-    if (files.length === 0 || !onUpload) {
+    if (files.length === 0) {
       return;
     }
 
@@ -178,35 +206,82 @@ export function PhotoUploader({
     setUploadProgress(0);
 
     try {
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
+      let successCount = 0;
+      let errorCount = 0;
+
+      // Upload files one by one
+      for (let i = 0; i < files.length; i++) {
+        const photoFile = files[i];
+        
+        try {
+          const formData = new FormData();
+          formData.append('file', photoFile.file);
+          formData.append('companyId', companyId);
+          formData.append('contextType', 'job');
+          formData.append('contextId', jobId);
+          
+          // Add folder based on file type
+          if (photoFile.isDocument) {
+            formData.append('folder', 'documents');
+          } else {
+            formData.append('folder', 'photos');
           }
-          return prev + 10;
-        });
-      }, 200);
+          
+          // Add description if provided
+          if (photoFile.caption) {
+            formData.append('description', photoFile.caption);
+          }
+          
+          // Add category as a tag
+          if (photoFile.category) {
+            formData.append('tags', JSON.stringify([photoFile.category]));
+          }
 
-      await onUpload(files);
+          const result = await uploadDocument(formData);
+          
+          if (result.success) {
+            successCount++;
+          } else {
+            errorCount++;
+            console.error('Upload failed:', result.error);
+          }
+        } catch (error) {
+          errorCount++;
+          console.error('Upload error:', error);
+        }
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
+        // Update progress
+        setUploadProgress(Math.round(((i + 1) / files.length) * 100));
+      }
+
+      // Show results
+      if (successCount > 0) {
+        toast.success(`Successfully uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'}${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
+      }
+
+      if (errorCount > 0 && successCount === 0) {
+        toast.error("All uploads failed. Please try again.");
+      }
 
       // Clean up previews
       files.forEach((file) => {
         URL.revokeObjectURL(file.preview);
       });
 
+      // Call onUpload callback if provided
+      if (onUpload) {
+        await onUpload(files);
+      }
+
       // Reset state
       setTimeout(() => {
         setFiles([]);
         setIsUploading(false);
         setUploadProgress(0);
+        onCancel?.();
       }, 500);
     } catch (error) {
-      // TODO: Show error toast notification
+      toast.error(error instanceof Error ? error.message : "Failed to upload files");
       setIsUploading(false);
       setUploadProgress(0);
     }
@@ -249,11 +324,11 @@ export function PhotoUploader({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="size-5" />
-          Upload Photos
+          Upload Photos & Documents
         </CardTitle>
         <CardDescription>
-          Add photos to document this job. Supported formats: JPG, PNG, HEIC,
-          WEBP, PDF (max 10MB)
+          Add photos and documents to this job. Supported formats: Images (JPG, PNG, HEIC, WEBP, etc.), 
+          Documents (PDF, DOC, DOCX, XLS, XLSX, TXT, CSV) up to 100MB
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -279,15 +354,20 @@ export function PhotoUploader({
             type="file"
           />
           <div className="flex flex-col items-center gap-2 text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
-              <Camera className="size-6 text-primary" />
+            <div className="flex gap-2">
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                <Camera className="size-6 text-primary" />
+              </div>
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                <FileText className="size-6 text-primary" />
+              </div>
             </div>
             <div>
               <p className="font-medium">
                 Drag and drop files here, or click to browse
               </p>
               <p className="text-muted-foreground text-sm">
-                JPG, PNG, HEIC, WEBP, or PDF up to 10MB
+                Images and documents up to 100MB
               </p>
             </div>
           </div>
@@ -322,17 +402,17 @@ export function PhotoUploader({
                 >
                   {/* Preview */}
                   <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted">
-                    {photoFile.file.type.startsWith("image/") ? (
+                    {photoFile.isDocument ? (
+                      <div className="flex size-full items-center justify-center">
+                        <FileText className="size-8 text-muted-foreground" />
+                      </div>
+                    ) : (
                       <Image
                         alt={photoFile.file.name}
                         className="object-cover"
                         fill
                         src={photoFile.preview}
                       />
-                    ) : (
-                      <div className="flex size-full items-center justify-center">
-                        <FileImage className="size-8 text-muted-foreground" />
-                      </div>
                     )}
                   </div>
 
@@ -446,7 +526,7 @@ export function PhotoUploader({
             ) : (
               <>
                 <Upload className="mr-2 size-4" />
-                Upload {files.length} {files.length === 1 ? "Photo" : "Photos"}
+                Upload {files.length} {files.length === 1 ? "File" : "Files"}
               </>
             )}
           </Button>

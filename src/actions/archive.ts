@@ -32,7 +32,8 @@ export type ArchivableEntityType =
   | "job"
   | "customer"
   | "property"
-  | "equipment";
+  | "equipment"
+  | "purchase_order";
 
 // Archived item representation
 export type ArchivedItem = {
@@ -60,6 +61,7 @@ const getArchivedItemsSchema = z.object({
       "customer",
       "property",
       "equipment",
+      "purchase_order",
       "all",
     ])
     .default("all"),
@@ -164,7 +166,8 @@ export async function getArchivedItems(
           item.permanent_delete_scheduled_at || item.deleted_at
         );
         const daysUntil = Math.ceil(
-          (permanentDeleteDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          (permanentDeleteDate.getTime() - now.getTime()) /
+            (1000 * 60 * 60 * 24)
         );
 
         return {
@@ -188,17 +191,29 @@ export async function getArchivedItems(
 
     // Fetch from requested entity types
     if (validated.entityType === "all" || validated.entityType === "invoice") {
-      const items = await fetchArchived("invoices", "invoice", "invoice_number");
+      const items = await fetchArchived(
+        "invoices",
+        "invoice",
+        "invoice_number"
+      );
       archivedItems.push(...items);
     }
 
     if (validated.entityType === "all" || validated.entityType === "estimate") {
-      const items = await fetchArchived("estimates", "estimate", "estimate_number");
+      const items = await fetchArchived(
+        "estimates",
+        "estimate",
+        "estimate_number"
+      );
       archivedItems.push(...items);
     }
 
     if (validated.entityType === "all" || validated.entityType === "contract") {
-      const items = await fetchArchived("contracts", "contract", "contract_number");
+      const items = await fetchArchived(
+        "contracts",
+        "contract",
+        "contract_number"
+      );
       archivedItems.push(...items);
     }
 
@@ -217,7 +232,10 @@ export async function getArchivedItems(
       archivedItems.push(...items);
     }
 
-    if (validated.entityType === "all" || validated.entityType === "equipment") {
+    if (
+      validated.entityType === "all" ||
+      validated.entityType === "equipment"
+    ) {
       const items = await fetchArchived(
         "equipment",
         "equipment",
@@ -328,6 +346,7 @@ export async function getArchiveStats(): Promise<
       customerCount,
       propertyCount,
       equipmentCount,
+      purchaseOrderCount,
     ] = await Promise.all([
       countArchived("invoices"),
       countArchived("estimates"),
@@ -336,6 +355,7 @@ export async function getArchiveStats(): Promise<
       countArchived("customers"),
       countArchived("properties"),
       countArchived("equipment"),
+      countArchived("purchase_orders"),
     ]);
 
     return {
@@ -346,6 +366,7 @@ export async function getArchiveStats(): Promise<
       customer: customerCount,
       property: propertyCount,
       equipment: equipmentCount,
+      purchase_order: purchaseOrderCount,
     };
   });
 }
@@ -394,6 +415,7 @@ export async function bulkRestore(
       customer: "customers",
       property: "properties",
       equipment: "equipment",
+      purchase_order: "purchase_orders",
     };
 
     const tableName = tableMap[entityType];
@@ -424,6 +446,95 @@ export async function bulkRestore(
 
     return {
       restored: count || 0,
+      failed: itemIds.length - (count || 0),
+    };
+  });
+}
+
+/**
+ * Bulk archive multiple items
+ */
+export async function bulkArchive(
+  itemIds: string[],
+  entityType: ArchivableEntityType
+): Promise<ActionResult<{ archived: number; failed: number }>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    if (!itemIds || itemIds.length === 0) {
+      throw new ActionError("No items provided", ERROR_CODES.VALIDATION_FAILED);
+    }
+
+    // Map entity type to table name
+    const tableMap: Record<ArchivableEntityType, string> = {
+      invoice: "invoices",
+      estimate: "estimates",
+      contract: "contracts",
+      job: "jobs",
+      customer: "customers",
+      property: "properties",
+      equipment: "equipment",
+      purchase_order: "purchase_orders",
+    };
+
+    const tableName = tableMap[entityType];
+
+    // Calculate permanent delete date (90 days from now)
+    const permanentDeleteDate = new Date();
+    permanentDeleteDate.setDate(permanentDeleteDate.getDate() + 90);
+
+    // Archive items (soft delete)
+    const { error, count } = await supabase
+      .from(tableName)
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id,
+        archived_at: new Date().toISOString(),
+        permanent_delete_scheduled_at: permanentDeleteDate.toISOString(),
+      })
+      .in("id", itemIds)
+      .eq("company_id", teamMember.company_id)
+      .is("deleted_at", null); // Only archive non-archived items
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("archive items"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Revalidate relevant paths
+    revalidatePath("/dashboard/settings/archive");
+    revalidatePath("/dashboard/work");
+    revalidatePath("/dashboard/customers");
+
+    return {
+      archived: count || 0,
       failed: itemIds.length - (count || 0),
     };
   });
@@ -473,6 +584,7 @@ export async function permanentDelete(
       customer: "customers",
       property: "properties",
       equipment: "equipment",
+      purchase_order: "purchase_orders",
     };
 
     const tableName = tableMap[entityType];
@@ -485,7 +597,7 @@ export async function permanentDelete(
       .eq("company_id", teamMember.company_id)
       .single();
 
-    if (!item || !item.deleted_at) {
+    if (!(item && item.deleted_at)) {
       throw new ActionError(
         "Item is not archived",
         ERROR_CODES.OPERATION_NOT_ALLOWED

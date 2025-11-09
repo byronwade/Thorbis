@@ -69,6 +69,7 @@ export async function getActiveCompany(): Promise<CompanyInfo | null> {
     .from("companies")
     .select("id, name, logo")
     .eq("id", companyId)
+    .is("deleted_at", null) // Exclude archived companies
     .single();
 
   return company;
@@ -133,12 +134,14 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
       companies!inner (
         id,
         name,
-        logo
+        logo,
+        deleted_at
       )
     `
     )
     .eq("user_id", user.id)
-    .eq("status", "active");
+    .eq("status", "active")
+    .is("companies.deleted_at", null); // Exclude archived companies
 
   if (!memberships) return [];
 
@@ -164,6 +167,17 @@ async function verifyCompanyAccess(companyId: string): Promise<boolean> {
   const supabase = await createClient();
   if (!supabase) return false;
 
+  // Check if company exists and is not archived
+  const { data: company } = await supabase
+    .from("companies")
+    .select("id")
+    .eq("id", companyId)
+    .is("deleted_at", null) // Exclude archived companies
+    .single();
+
+  if (!company) return false;
+
+  // Check if user has active membership
   const { data } = await supabase
     .from("team_members")
     .select("id")

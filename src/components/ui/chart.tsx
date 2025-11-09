@@ -46,8 +46,17 @@ function ChartContainer({
     typeof RechartsPrimitive.ResponsiveContainer
   >["children"];
 }) {
+  // Generate a stable ID that works consistently on both server and client
+  // Use useId() which should be stable, but handle the case where it might differ
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const [chartId] = React.useState(() => {
+    if (id) {
+      return `chart-${id}`;
+    }
+    // Use useId() which should be stable across server/client in React 18+
+    // The replace removes colons which can cause issues in CSS selectors
+    return `chart-${uniqueId.replace(/:/g, "")}`;
+  });
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -58,6 +67,7 @@ function ChartContainer({
         )}
         data-chart={chartId}
         data-slot="chart"
+        suppressHydrationWarning
         {...props}
       >
         <ChartStyle config={config} id={chartId} />
@@ -80,6 +90,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
+      suppressHydrationWarning
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(

@@ -14,6 +14,7 @@ import { Check, Loader2, MapPin, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { loadGoogleMapsScript, isGoogleMapsLoaded } from "@/lib/utils/load-google-maps";
 
 type AddressData = {
   address: string;
@@ -37,27 +38,25 @@ export function SmartAddressInput({
   label = "Address",
   required = false,
 }: SmartAddressInputProps) {
-  const [address, setAddress] = useState<AddressData>(
-    initialAddress || {
-      address: "",
-      address2: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "USA",
-    }
-  );
+  const [address, setAddress] = useState<AddressData>({
+    address: initialAddress?.address || "",
+    address2: initialAddress?.address2 || "",
+    city: initialAddress?.city || "",
+    state: initialAddress?.state || "",
+    zipCode: initialAddress?.zipCode || "",
+    country: initialAddress?.country || "USA",
+  });
   const [isAutocompleteLoaded, setIsAutocompleteLoaded] = useState(false);
   const [isManualMode, setIsManualMode] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const autocompleteInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  // Load Google Places API
+  // Load Google Places API using singleton loader
   useEffect(() => {
     const loadGooglePlaces = async () => {
       // Check if Google Maps is already loaded
-      if (typeof window !== "undefined" && (window as any).google?.maps) {
+      if (isGoogleMapsLoaded()) {
         setIsAutocompleteLoaded(true);
         return;
       }
@@ -70,14 +69,11 @@ export function SmartAddressInput({
       }
 
       try {
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-        script.async = true;
-        script.defer = true;
-        script.onload = () => setIsAutocompleteLoaded(true);
-        script.onerror = () => setIsManualMode(true);
-        document.head.appendChild(script);
-      } catch {
+        // Use singleton loader to prevent multiple script loads
+        await loadGoogleMapsScript();
+        setIsAutocompleteLoaded(true);
+      } catch (error) {
+        console.error("Failed to load Google Maps:", error);
         setIsManualMode(true);
       }
     };
@@ -161,7 +157,7 @@ export function SmartAddressInput({
             onChange={(e) => handleManualChange("address", e.target.value)}
             placeholder="123 Main St"
             required={required}
-            value={address.address}
+            value={address.address || ""}
           />
         </div>
 
@@ -171,7 +167,7 @@ export function SmartAddressInput({
             id="address2"
             onChange={(e) => handleManualChange("address2", e.target.value)}
             placeholder="Apt 4B"
-            value={address.address2}
+            value={address.address2 || ""}
           />
         </div>
 
@@ -182,7 +178,7 @@ export function SmartAddressInput({
               id="city"
               onChange={(e) => handleManualChange("city", e.target.value)}
               placeholder="San Francisco"
-              value={address.city}
+              value={address.city || ""}
             />
           </div>
           <div className="space-y-2">
@@ -191,7 +187,7 @@ export function SmartAddressInput({
               id="state"
               onChange={(e) => handleManualChange("state", e.target.value)}
               placeholder="CA"
-              value={address.state}
+              value={address.state || ""}
             />
           </div>
           <div className="space-y-2">
@@ -200,7 +196,7 @@ export function SmartAddressInput({
               id="zipCode"
               onChange={(e) => handleManualChange("zipCode", e.target.value)}
               placeholder="94103"
-              value={address.zipCode}
+              value={address.zipCode || ""}
             />
           </div>
         </div>
@@ -265,7 +261,7 @@ export function SmartAddressInput({
               id="address-street"
               onChange={(e) => handleManualChange("address", e.target.value)}
               placeholder="123 Main St"
-              value={address.address}
+              value={address.address || ""}
             />
           </div>
 
@@ -275,7 +271,7 @@ export function SmartAddressInput({
               id="address-line2"
               onChange={(e) => handleManualChange("address2", e.target.value)}
               placeholder="Apt 4B"
-              value={address.address2}
+              value={address.address2 || ""}
             />
           </div>
 
@@ -286,7 +282,7 @@ export function SmartAddressInput({
                 id="address-city"
                 onChange={(e) => handleManualChange("city", e.target.value)}
                 placeholder="San Francisco"
-                value={address.city}
+                value={address.city || ""}
               />
             </div>
             <div className="space-y-2">
@@ -295,7 +291,7 @@ export function SmartAddressInput({
                 id="address-state"
                 onChange={(e) => handleManualChange("state", e.target.value)}
                 placeholder="CA"
-                value={address.state}
+                value={address.state || ""}
               />
             </div>
             <div className="space-y-2">
@@ -304,7 +300,7 @@ export function SmartAddressInput({
                 id="address-zip"
                 onChange={(e) => handleManualChange("zipCode", e.target.value)}
                 placeholder="94103"
-                value={address.zipCode}
+                value={address.zipCode || ""}
               />
             </div>
           </div>
@@ -312,12 +308,12 @@ export function SmartAddressInput({
       )}
 
       {/* Hidden inputs for form submission */}
-      <input name="address" type="hidden" value={address.address} />
-      <input name="address2" type="hidden" value={address.address2} />
-      <input name="city" type="hidden" value={address.city} />
-      <input name="state" type="hidden" value={address.state} />
-      <input name="zipCode" type="hidden" value={address.zipCode} />
-      <input name="country" type="hidden" value={address.country} />
+      <input name="address" type="hidden" value={address.address || ""} />
+      <input name="address2" type="hidden" value={address.address2 || ""} />
+      <input name="city" type="hidden" value={address.city || ""} />
+      <input name="state" type="hidden" value={address.state || ""} />
+      <input name="zipCode" type="hidden" value={address.zipCode || ""} />
+      <input name="country" type="hidden" value={address.country || "USA"} />
     </div>
   );
 }

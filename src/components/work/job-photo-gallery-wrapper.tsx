@@ -15,17 +15,21 @@
 import { type JobPhoto, PhotoGallery } from "./job-details/PhotoGallery";
 
 type JobPhotoGalleryWrapperProps = {
+  jobId: string;
+  companyId: string;
   photos: JobPhoto[];
   className?: string;
 };
 
 export function JobPhotoGalleryWrapper({
+  jobId,
+  companyId,
   photos,
   className,
 }: JobPhotoGalleryWrapperProps) {
   const handleUpload = () => {
-    // TODO: Implement photo upload
-    console.log("Upload photo");
+    // Handled by PhotoUploader component
+    console.log("Upload triggered");
   };
 
   const handleDelete = (photoId: string) => {
@@ -40,6 +44,8 @@ export function JobPhotoGalleryWrapper({
 
   return (
     <PhotoGallery
+      jobId={jobId}
+      companyId={companyId}
       className={className}
       onDelete={handleDelete}
       onDownloadAll={handleDownloadAll}

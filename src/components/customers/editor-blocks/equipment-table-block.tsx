@@ -101,9 +101,9 @@ export function EquipmentTableBlockComponent({ node, editor }: any) {
           actions={
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={handleAddEquipment}
-              className="gap-1"
+              className="h-8 px-3 text-xs gap-1.5"
             >
               <Plus className="size-4" />
               Add Equipment

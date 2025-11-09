@@ -4,10 +4,13 @@
 
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Camera, FileText, Upload, Pen } from "lucide-react";
+import { Camera, FileText, Upload, Pen, Plus } from "lucide-react";
+import { InlinePhotoUploader } from "../InlinePhotoUploader";
 
 interface PhotosDocsTabProps {
   job: any;
@@ -30,21 +33,36 @@ export function PhotosDocsTab({
   technicianSignature,
   isEditMode,
 }: PhotosDocsTabProps) {
+  const router = useRouter();
+  const [showUploader, setShowUploader] = useState(false);
   return (
     <div className="mx-auto max-w-6xl space-y-6">
+      {/* Upload Section */}
+      {isEditMode && showUploader && (
+        <InlinePhotoUploader
+          jobId={job.id}
+          companyId={job.company_id}
+          onCancel={() => setShowUploader(false)}
+          onUploadComplete={() => {
+            setShowUploader(false);
+            router.refresh();
+          }}
+        />
+      )}
+
       {/* Photos by Category */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2">
               <Camera className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Photos</CardTitle>
               <Badge variant="secondary">{photos.length}</Badge>
             </div>
-            {isEditMode && (
-              <Button size="sm">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Photos
+            {isEditMode && !showUploader && (
+              <Button size="sm" onClick={() => setShowUploader(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Upload
               </Button>
             )}
           </div>
@@ -64,16 +82,16 @@ export function PhotosDocsTab({
       {/* Documents */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Documents</CardTitle>
               <Badge variant="secondary">{documents.length}</Badge>
             </div>
-            {isEditMode && (
-              <Button size="sm" variant="outline">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Document
+            {isEditMode && !showUploader && (
+              <Button size="sm" variant="outline" onClick={() => setShowUploader(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Upload
               </Button>
             )}
           </div>

@@ -49,11 +49,11 @@ export function NotesCollapsibleBlockComponent({ node, editor }: any) {
         actions={
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={handleAddNote}
-            className="gap-1"
+            className="h-8 px-3 text-xs gap-1.5"
           >
-            <Plus className="size-4" />
+            <Plus className="h-3.5 w-3.5" />
             Add Note
           </Button>
         }

@@ -43,29 +43,36 @@ export function CollapsibleSection({
 }: CollapsibleSectionProps) {
   return (
     <AccordionItem
-      className={cn("rounded-lg border bg-card", className)}
+      className={cn("rounded-lg border bg-card shadow-sm", className)}
       value={value}
     >
-      <AccordionTrigger className="px-6 py-4 hover:no-underline">
-        <div className="flex w-full items-center justify-between gap-4 pr-4">
-          <div className="flex flex-1 items-center gap-2">
-            {icon && <span className="text-primary">{icon}</span>}
-            <span className="font-semibold text-lg">{title}</span>
-            {count !== undefined && <Badge variant="secondary">{count}</Badge>}
+      <div className="flex items-center justify-between gap-4 px-6 py-3.5">
+        <AccordionTrigger className="flex-1 hover:no-underline">
+          <div className="flex items-center gap-3">
+            {icon && (
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+              </div>
+            )}
+            <span className="font-medium text-sm">{title}</span>
+            {count !== undefined && (
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {count}
+              </Badge>
+            )}
             {badge}
           </div>
-          {actions && (
-            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions: Container to prevent accordion toggle when clicking action buttons
-            <div
-              className="flex shrink-0 items-center gap-2"
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-            >
-              {actions}
-            </div>
-          )}
-        </div>
-      </AccordionTrigger>
+        </AccordionTrigger>
+        {actions && (
+          <div
+            className="flex shrink-0 items-center gap-2"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {actions}
+          </div>
+        )}
+      </div>
       <AccordionContent
         className={cn("px-6 pb-6", fullWidthContent && "-mx-6 -mt-6 -mb-6")}
       >

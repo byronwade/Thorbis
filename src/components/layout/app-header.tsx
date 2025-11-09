@@ -1,4 +1,5 @@
 import { getUserProfile, getUserCompanies } from "@/lib/auth/user-data";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { AppHeaderClient } from "./app-header-client";
 
 /**
@@ -24,9 +25,10 @@ import { AppHeaderClient } from "./app-header-client";
 export async function AppHeader() {
   // Fetch user profile and companies on server (cached with React cache())
   // This runs on server BEFORE sending HTML to client
-  const [userProfile, companies] = await Promise.all([
+  const [userProfile, companies, activeCompanyId] = await Promise.all([
     getUserProfile(),
     getUserCompanies(),
+    getActiveCompanyId(),
   ]);
 
   // If no user, this should never happen because dashboard is protected by middleware
@@ -37,5 +39,5 @@ export async function AppHeader() {
 
   // Pass server-fetched data to client component for interactivity
   // Client component only handles interactive parts (mobile menu, active nav state)
-  return <AppHeaderClient userProfile={userProfile} companies={companies} />;
+  return <AppHeaderClient userProfile={userProfile} companies={companies} activeCompanyId={activeCompanyId} />;
 }

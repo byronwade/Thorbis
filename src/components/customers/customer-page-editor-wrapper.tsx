@@ -52,6 +52,7 @@ interface CustomerPageEditorWrapperProps {
     totalProperties: number;
     outstandingBalance: number;
   };
+  enrichmentData?: any;
   initialMode?: "view" | "edit";
 }
 
@@ -65,6 +66,7 @@ export function CustomerPageEditorWrapper({
   attachments,
   paymentMethods,
   metrics,
+  enrichmentData,
   initialMode = "view",
 }: CustomerPageEditorWrapperProps) {
   const router = useRouter();
@@ -174,6 +176,7 @@ export function CustomerPageEditorWrapper({
           attachments,
           paymentMethods,
           metrics,
+          enrichmentData,
         }}
         isEditable={true}
         onChange={handleContentChange}

@@ -91,12 +91,14 @@ export async function createCheckoutSession({
   isAdditionalOrg,
   successUrl,
   cancelUrl,
+  phoneNumber,
 }: {
   customerId: string;
   companyId: string;
   isAdditionalOrg: boolean;
   successUrl: string;
   cancelUrl: string;
+  phoneNumber?: string;
 }): Promise<string | null> {
   if (!stripe) return null;
 
@@ -134,6 +136,7 @@ export async function createCheckoutSession({
       metadata: {
         company_id: companyId,
         is_additional_org: isAdditionalOrg.toString(),
+        ...(phoneNumber && { phone_number: phoneNumber }),
       },
       subscription_data: {
         metadata: {

@@ -257,11 +257,11 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
               />
               <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
                 onClick={handleAddDocument}
-                className="gap-1"
+                className="h-8 px-3 text-xs gap-1.5"
               >
-                <Plus className="size-4" />
+                <Plus className="h-3.5 w-3.5" />
                 Add Document
               </Button>
             </>

@@ -75,9 +75,9 @@ export function PropertiesBlockComponent({ node, editor }: any) {
         actions={
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={handleAddProperty}
-            className="gap-1"
+            className="h-8 px-3 text-xs gap-1.5"
           >
             <Plus className="size-4" />
             Add Property

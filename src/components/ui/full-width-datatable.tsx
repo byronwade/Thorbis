@@ -265,7 +265,7 @@ export function FullWidthDataTable<T>({
 
       {/* Table Header */}
       {paginatedData.length > 0 && (
-        <div className="sticky top-[53px] z-20 flex items-center gap-4 border-b bg-muted/40 px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+        <div className="sticky top-[53px] z-20 flex items-center gap-6 border-b bg-muted/40 px-4 py-3 font-medium text-muted-foreground text-sm">
           {/* Spacer for checkbox */}
           {enableSelection && <div className="w-4 shrink-0" />}
 
@@ -283,7 +283,7 @@ export function FullWidthDataTable<T>({
 
             return (
               <div
-                className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} min-w-0`}
+                className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} min-w-0 overflow-hidden`}
                 key={column.key}
               >
                 {column.header}
@@ -331,7 +331,7 @@ export function FullWidthDataTable<T>({
 
               return (
                 <div
-                  className={`group flex cursor-pointer items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/40 ${highlightClass} ${
+                  className={`group flex cursor-pointer items-center gap-6 px-4 py-3.5 transition-colors hover:bg-muted/40 ${highlightClass} ${
                     isSelected ? "bg-muted/50" : ""
                   } ${customRowClass}`}
                   key={itemId}
@@ -364,7 +364,7 @@ export function FullWidthDataTable<T>({
 
                     return (
                       <div
-                        className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} min-w-0 items-center`}
+                        className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} min-w-0 items-center overflow-hidden`}
                         key={column.key}
                       >
                         {column.render(item)}

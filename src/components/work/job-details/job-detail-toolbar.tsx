@@ -7,7 +7,7 @@
  * - Quick actions (New Invoice, New Estimate, Clone Job, Archive Job)
  */
 
-import { Archive, Copy, FileText, Receipt } from "lucide-react";
+import { Archive, BarChart3, Copy, FileText, Receipt } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveJob } from "@/actions/jobs";
@@ -21,14 +21,34 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { JobStatisticsSheet } from "./job-statistics-sheet";
 
-export function JobDetailToolbar() {
+type JobDetailToolbarProps = {
+  job?: any;
+  metrics?: any;
+  timeEntries?: any[];
+  teamAssignments?: any[];
+  invoices?: any[];
+  payments?: any[];
+  jobMaterials?: any[];
+};
+
+export function JobDetailToolbar({
+  job,
+  metrics,
+  timeEntries = [],
+  teamAssignments = [],
+  invoices = [],
+  payments = [],
+  jobMaterials = [],
+}: JobDetailToolbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
   const jobId = pathname.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
 
   const handleArchive = async () => {
     if (!jobId) {
@@ -57,6 +77,17 @@ export function JobDetailToolbar() {
   return (
     <>
       <div className="flex items-center gap-2">
+        {/* Statistics Button */}
+        {job && metrics && (
+          <Button
+            onClick={() => setIsStatisticsOpen(true)}
+            size="sm"
+            variant="outline"
+          >
+            <BarChart3 className="mr-2 size-4" />
+            Statistics
+          </Button>
+        )}
         {/* Quick Actions */}
         <Button asChild size="sm" variant="outline">
           <a href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
@@ -115,6 +146,21 @@ export function JobDetailToolbar() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Statistics Sheet */}
+      {job && metrics && (
+        <JobStatisticsSheet
+          invoices={invoices}
+          job={job}
+          jobMaterials={jobMaterials}
+          metrics={metrics}
+          onOpenChange={setIsStatisticsOpen}
+          open={isStatisticsOpen}
+          payments={payments}
+          teamAssignments={teamAssignments}
+          timeEntries={timeEntries}
+        />
+      )}
     </>
   );
 }

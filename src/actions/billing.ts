@@ -43,7 +43,10 @@ type BillingActionResult = {
  * Handles both first organization (base plan) and additional organizations (base + $100)
  */
 export async function createOrganizationCheckoutSession(
-  companyId: string
+  companyId: string,
+  successUrl?: string,
+  cancelUrl?: string,
+  phoneNumber?: string
 ): Promise<BillingActionResult> {
   try {
     const user = await getCurrentUser();
@@ -111,8 +114,9 @@ export async function createOrganizationCheckoutSession(
       customerId,
       companyId,
       isAdditionalOrg,
-      successUrl: `${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${siteUrl}/dashboard/settings/organizations/new`,
+      successUrl: successUrl || `${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: cancelUrl || `${siteUrl}/dashboard/welcome`,
+      phoneNumber,
     });
 
     if (!checkoutUrl) {
