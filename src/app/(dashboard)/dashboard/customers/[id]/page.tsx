@@ -4,12 +4,9 @@
  */
 
 import { notFound } from "next/navigation";
-import { getEnrichmentData } from "@/actions/customer-enrichment";
 import { CustomerPageContent } from "@/components/customers/customer-page-content";
 import { CustomerStatsBar } from "@/components/customers/customer-stats-bar";
 import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
-import { jobEnrichmentService } from "@/lib/services/job-enrichment";
-import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
 import { createClient } from "@/lib/supabase/server";
 
 // Configure page for full width with no sidebars
@@ -263,90 +260,22 @@ export default async function CustomerDetailsPage({
     outstandingBalance: customer.outstanding_balance || 0,
   };
 
-  // Get enrichment data (cached if available)
-  const enrichmentResult = await getEnrichmentData(id);
-  const enrichmentData = enrichmentResult.success
-    ? enrichmentResult.data
-    : null;
+  // PERFORMANCE OPTIMIZATION: Don't await enrichment data
+  // Load enrichment client-side for instant page render
+  // Enrichment is optional and shouldn't block page load
 
-  // Enrich property data with external APIs
-  const enrichedProperties = await Promise.all(
-    (properties || []).map(async (property: any) => {
-      try {
-        console.log(
-          `[Customer Page] Enriching property: ${property.address}, ${property.city}, ${property.state}`
-        );
-
-        // Get both property market data AND operational intelligence
-        const [propertyEnrichment, operationalIntelligence] = await Promise.all(
-          [
-            // Property market data (value, taxes, etc.)
-            propertyEnrichmentService
-              .enrichProperty(
-                property.address,
-                property.city,
-                property.state,
-                property.zip_code
-              )
-              .catch((e) => {
-                console.warn(
-                  `[Customer Page] Property enrichment failed for ${property.id}:`,
-                  e
-                );
-                return null;
-              }),
-            // Operational intelligence (weather, building, location, etc.)
-            jobEnrichmentService
-              .enrichJob({
-                id: property.id,
-                address: property.address,
-                address2: property.address2 || undefined,
-                city: property.city,
-                state: property.state,
-                zipCode: property.zip_code,
-                lat: property.lat || undefined,
-                lon: property.lon || undefined,
-              })
-              .catch((e) => {
-                console.warn(
-                  `[Customer Page] Operational intelligence failed for ${property.id}:`,
-                  e
-                );
-                return null;
-              }),
-          ]
-        );
-
-        return {
-          ...property,
-          enrichment: propertyEnrichment,
-          operationalIntelligence,
-        };
-      } catch (error) {
-        console.error(
-          `[Customer Page] Failed to enrich property ${property.id}:`,
-          error
-        );
-        return {
-          ...property,
-          enrichment: null,
-          operationalIntelligence: null,
-        };
-      }
-    })
-  );
-
-  // Prepare customer data object
+  // Prepare customer data object with raw data
+  // Client component will load enrichment in background
   const customerData = {
     customer,
-    properties: enrichedProperties,
+    properties: properties || [], // Pass raw properties, enrichment loads client-side
     jobs: jobs || [],
     invoices: invoices || [],
     activities: activities || [],
     equipment: equipment || [],
     attachments: attachments || [],
     paymentMethods: paymentMethods || [],
-    enrichmentData,
+    enrichmentData: null, // Loaded client-side for optimistic rendering
   };
 
   return (
