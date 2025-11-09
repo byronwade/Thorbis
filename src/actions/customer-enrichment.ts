@@ -242,7 +242,6 @@ export async function getEnrichmentData(
       .order("created_at", { ascending: false });
 
     // If enrichment data fetch fails, return null instead of throwing
-    if (enrichmentError) {
       // Enrichment is optional and shouldn't block page load
       console.warn(
         `[getEnrichmentData] Failed to fetch enrichment for customer ${customerId}:`,
