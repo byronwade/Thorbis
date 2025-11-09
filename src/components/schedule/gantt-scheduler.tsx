@@ -13,6 +13,12 @@ import { WeekTimeGrid } from "./week-time-grid";
 import { MonthTimeGrid } from "./month-time-grid";
 import { TechnicianSidebar } from "./technician-sidebar";
 import { useGanttSchedulerStore } from "@/lib/stores/gantt-scheduler-store";
+import {
+  EmptyState,
+  NoTechniciansEmptyState,
+  NoJobsEmptyState,
+  ErrorState,
+} from "./empty-states";
 import type { Job } from "./schedule-types";
 
 export function GanttScheduler() {
@@ -31,6 +37,7 @@ export function GanttScheduler() {
     view,
     selectedTechnicianId,
     statusFilter,
+    setSelectedTechnicianId,
   } = useGanttSchedulerStore();
 
   // Filter technicians if needed
@@ -90,19 +97,37 @@ export function GanttScheduler() {
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <div className="text-muted-foreground">Loading schedule...</div>
+        <div className="text-center">
+          <div className="text-muted-foreground mb-2">Loading schedule...</div>
+          <div className="text-muted-foreground text-xs">
+            Please wait while we fetch your schedule data
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="text-center">
-          <p className="mb-2 text-destructive">Error loading schedule</p>
-          <p className="text-muted-foreground text-sm">{error}</p>
-        </div>
-      </div>
+      <ErrorState
+        error={error}
+        onRetry={() => {
+          // Retry by reloading the page or calling a refresh function
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
+  // Empty state: No technicians
+  if (technicians.length === 0) {
+    return (
+      <NoTechniciansEmptyState
+        onAddTechnician={() => {
+          // TODO: Navigate to add technician page or open modal
+          console.log("Add technician clicked");
+        }}
+      />
     );
   }
 
@@ -152,57 +177,67 @@ export function GanttScheduler() {
           ) : (
             // Multi-technician view - show grid for each technician
             <div className="flex h-full flex-col overflow-y-auto">
-              {filteredTechnicians.map((technician) => {
-                const jobs = getJobsForDisplay(technician.id);
-                const rowHeight = view === "month" ? "auto" : "200px";
-                return (
-                  <div
-                    className="flex flex-col border-b"
-                    key={technician.id}
-                    style={{ minHeight: rowHeight, height: rowHeight }}
-                  >
-                    {/* Technician Header */}
-                    <div className="flex h-10 shrink-0 items-center border-b bg-muted/30 px-4">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-sm">
-                          {technician.name}
-                        </h4>
-                        <span className="text-muted-foreground text-xs">
-                          {jobs.length} {jobs.length === 1 ? "job" : "jobs"}
-                        </span>
+              {filteredTechnicians.length === 0 ? (
+                <EmptyState
+                  title="No Technicians Selected"
+                  description="Select a technician from the sidebar or clear filters to view all technicians."
+                />
+              ) : (
+                filteredTechnicians.map((technician) => {
+                  const jobs = getJobsForDisplay(technician.id);
+                  const rowHeight = view === "month" ? "auto" : "200px";
+                  return (
+                    <div
+                      className="flex flex-col border-b"
+                      key={technician.id}
+                      style={{ minHeight: rowHeight, height: rowHeight }}
+                    >
+                      {/* Technician Header */}
+                      <div className="flex h-10 shrink-0 items-center border-b bg-muted/30 px-4">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-sm">
+                            {technician.name}
+                          </h4>
+                          <span className="text-muted-foreground text-xs">
+                            {jobs.length} {jobs.length === 1 ? "job" : "jobs"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Time Grid */}
+                      <div
+                        className="flex-1"
+                        style={{ height: view === "month" ? "auto" : "150px" }}
+                      >
+                        {view === "day" && (
+                          <HourlyTimeGrid
+                            date={currentDate}
+                            jobs={jobs}
+                            selectedJobId={selectedJobId}
+                            onJobClick={selectJob}
+                          />
+                        )}
+                        {view === "week" && (
+                          <WeekTimeGrid
+                            date={currentDate}
+                            jobs={jobs}
+                            selectedJobId={selectedJobId}
+                            onJobClick={selectJob}
+                          />
+                        )}
+                        {view === "month" && (
+                          <MonthTimeGrid
+                            date={currentDate}
+                            jobs={jobs}
+                            selectedJobId={selectedJobId}
+                            onJobClick={selectJob}
+                          />
+                        )}
                       </div>
                     </div>
-
-                    {/* Time Grid */}
-                    <div className="flex-1" style={{ height: view === "month" ? "auto" : "150px" }}>
-                      {view === "day" && (
-                        <HourlyTimeGrid
-                          date={currentDate}
-                          jobs={jobs}
-                          selectedJobId={selectedJobId}
-                          onJobClick={selectJob}
-                        />
-                      )}
-                      {view === "week" && (
-                        <WeekTimeGrid
-                          date={currentDate}
-                          jobs={jobs}
-                          selectedJobId={selectedJobId}
-                          onJobClick={selectJob}
-                        />
-                      )}
-                      {view === "month" && (
-                        <MonthTimeGrid
-                          date={currentDate}
-                          jobs={jobs}
-                          selectedJobId={selectedJobId}
-                          onJobClick={selectJob}
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           )}
         </div>

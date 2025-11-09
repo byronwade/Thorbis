@@ -67,7 +67,7 @@ export function ModernHomepage() {
               </p>
               <p className="mx-auto max-w-2xl text-muted-foreground text-base">
                 Pricing is simple: $100/month base subscription with pay-as-you-go usage.
-                Unlimited users, no contracts, cancel anytime.
+                Unlimited users, no contracts, no lock-in—cancel anytime and export your data whenever you like.
               </p>
             </div>
 
@@ -138,6 +138,10 @@ export function ModernHomepage() {
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-500" />
                 <span>Setup in 24 hours</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-green-500" />
+                <span>No lock-in contracts</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-500" />
@@ -460,7 +464,7 @@ export function ModernHomepage() {
             </div>
             <p className="mt-6 text-muted-foreground text-sm">
               $100/month base • Pay-as-you-go usage • No credit card required • 14-day free
-              trial • Cancel anytime
+              trial • No lock-in • Cancel anytime
             </p>
           </div>
         </div>

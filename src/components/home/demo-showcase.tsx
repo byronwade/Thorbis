@@ -95,7 +95,7 @@ export function DemoShowcaseSection() {
               </Link>
             </Button>
             <p className="text-foreground/70 text-sm">
-              Thorbis is $100/month with pay-as-you-go usage. Unlimited users, no contracts.
+              Thorbis is $100/month with pay-as-you-go usage. Unlimited users, no contracts, no lock-in.
             </p>
           </div>
 

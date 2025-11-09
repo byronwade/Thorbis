@@ -113,7 +113,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         shrink: true,
         render: (estimate) => (
           <Link
-            className="block truncate font-medium text-primary text-sm hover:underline"
+            className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
             href={`/dashboard/work/estimates/${estimate.id}`}
             title={estimate.estimate_number}
           >

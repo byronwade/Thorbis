@@ -54,7 +54,7 @@ export default async function IntegrationsPage() {
           <p className="text-lg text-muted-foreground leading-relaxed">
             Thorbis integrates with leading accounting, payments, marketing, and
             automation platforms. Browse verified integrations and discover new
-            ways to streamline back-office work.
+            ways to streamline back-office work—all included in the $100/month base subscription with pay-as-you-go usage and no lock-in.
           </p>
         </header>
 

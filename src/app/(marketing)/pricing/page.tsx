@@ -12,7 +12,7 @@ export const metadata = generateSEOMetadata({
   title: "Pricing",
   section: "Plans",
   description:
-    "$100/month base + pay-as-you-go pricing. No per-user fees. Calculate your exact monthly cost with our interactive pricing calculator. Transparent, scalable pricing for service businesses.",
+    "$100/month base + pay-as-you-go pricing. No per-user fees, no lock-in contracts. Calculate your exact monthly cost with our interactive pricing calculator. Transparent, scalable pricing for service businesses.",
   path: "/pricing",
   imageAlt: "Thorbis pricing calculator interface",
   keywords: [

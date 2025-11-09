@@ -96,7 +96,7 @@ export default function DemoPage() {
             Spin up your Thorbis account today
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            Choose your plan, invite your team, and start automating operations without waiting for a sales call. Thorbis costs $100/month for the base platform with pay-as-you-go usage—unlimited users, no contracts.
+            Choose your plan, invite your team, and start automating operations without waiting for a sales call. Thorbis costs $100/month for the base platform with pay-as-you-go usage—unlimited users, no contracts, no lock-in.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">

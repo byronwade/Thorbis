@@ -15,6 +15,7 @@ const trustMarkers = [
   { icon: "💵", label: "$100/month base + pay-as-you-go usage" },
   { icon: "⚡", label: "Setup in 24 hours" },
   { icon: "💳", label: "No credit card required" },
+  { icon: "🔓", label: "No lock-in contracts" },
   { icon: "🔒", label: "Cancel anytime" },
   { icon: "📞", label: "24/7 support" },
   ];

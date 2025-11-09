@@ -70,7 +70,7 @@ export function HeroContent() {
         </p>
         <p className="mx-auto mb-8 max-w-xl text-foreground/70 text-base">
           Pricing is $100/month for the base platform with pay-as-you-go usage. No
-          per-user fees, no contracts, unlimited seats.
+          per-user fees, no contracts, no lock-in—unlimited seats and your data stays yours.
         </p>
 
         {/* Trust stats */}
@@ -121,7 +121,7 @@ export function HeroContent() {
 
         {/* No credit card badge */}
         <p className="mb-12 text-center text-foreground/60 text-sm">
-          $100/month base • Pay-as-you-go usage • No credit card required • 14-day free trial • Cancel anytime
+          $100/month base • Pay-as-you-go usage • No credit card required • 14-day free trial • No lock-in • Cancel anytime
         </p>
 
         {/* Industry badges */}

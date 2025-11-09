@@ -36,7 +36,7 @@ const CONTACT_OPTIONS = [
   {
     title: "Sales & onboarding",
     description:
-      "Have questions before signing up? Share your goals and we’ll walk through the $100/month base + pay-as-you-go pricing and help you launch smoothly.",
+      "Have questions before signing up? Share your goals and we’ll walk through the $100/month base + pay-as-you-go pricing—no lock-in—and help you launch smoothly.",
     email: "sales@thorbis.com",
     phone: "+1 (415) 555-0123",
   },
@@ -82,7 +82,7 @@ export default function ContactPage() {
           <p className="text-muted-foreground text-lg leading-relaxed">
             Whether you’re exploring Thorbis, need support, or want to partner, our team
             responds quickly. Pricing stays simple—$100/month base subscription with
-            pay-as-you-go usage, unlimited users, no contracts. Choose the option that fits
+            pay-as-you-go usage, unlimited users, no contracts, no lock-in. Choose the option that fits
             and we’ll get back within one business day.
           </p>
           <div className="flex flex-wrap gap-3">

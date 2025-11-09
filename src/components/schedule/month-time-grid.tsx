@@ -130,18 +130,28 @@ export function MonthTimeGrid({
 
                   {/* Jobs for this day */}
                   <div className="flex-1 space-y-1 overflow-y-auto p-1">
-                    {dayJobs.slice(0, 3).map((job) => (
-                      <GanttJobBlock
-                        job={job}
-                        isSelected={selectedJobId === job.id}
-                        key={job.id}
-                        onClick={() => onJobClick?.(job.id)}
-                      />
-                    ))}
-                    {dayJobs.length > 3 && (
-                      <div className="text-muted-foreground text-[10px] px-1">
-                        +{dayJobs.length - 3} more
+                    {dayJobs.length === 0 ? (
+                      <div className="flex h-full items-center justify-center">
+                        <div className="text-muted-foreground text-[10px]">
+                          No jobs
+                        </div>
                       </div>
+                    ) : (
+                      <>
+                        {dayJobs.slice(0, 3).map((job) => (
+                          <GanttJobBlock
+                            job={job}
+                            isSelected={selectedJobId === job.id}
+                            key={job.id}
+                            onClick={() => onJobClick?.(job.id)}
+                          />
+                        ))}
+                        {dayJobs.length > 3 && (
+                          <div className="text-muted-foreground text-[10px] px-1">
+                            +{dayJobs.length - 3} more
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

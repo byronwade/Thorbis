@@ -114,6 +114,7 @@ export default function ReviewsPage() {
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             Contractors choose Thorbis for transparent pricing, fast implementation, and AI-powered workflows.
+            Every customer pays the same $100/month base with pay-as-you-go usage—no per-user surprises.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">

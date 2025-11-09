@@ -110,7 +110,7 @@ export default function RoiPage() {
             Quantify the ROI of switching to Thorbis
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Use your real numbers to project labor savings, net-new revenue, and net ROI after Thorbis replaces your legacy field service stack. Thorbis pricing starts at $100/month with pay-as-you-go usage—no per-user fees.
+            Use your real numbers to project labor savings, net-new revenue, and net ROI after Thorbis replaces your legacy field service stack. Thorbis pricing starts at $100/month with pay-as-you-go usage—no per-user fees and absolutely no lock-in.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">

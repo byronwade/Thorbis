@@ -348,7 +348,7 @@ export function PropertiesTable({
   };
 
   return (
-    <div className="-mt-6 -mb-6 relative">
+    <>
       <FullWidthDataTable
         bulkActions={bulkActions}
         columns={columns}
@@ -412,6 +412,6 @@ export function PropertiesTable({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

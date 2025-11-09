@@ -31,7 +31,7 @@ export function CleanHero() {
         </h1>
         <p className="text-lg text-muted-foreground">
           Complete visibility and control over your field operations for a $100/month base
-          subscription with pay-as-you-go usage—unlimited users, no contracts.
+          subscription with pay-as-you-go usage—unlimited users, no contracts, no lock-in.
         </p>
       </div>
 
@@ -119,6 +119,10 @@ export function CleanHero() {
         <div className="flex items-center gap-2">
           <CheckCircle2 className="size-4 text-green-500" />
           <span>Setup in 24 hours</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="size-4 text-green-500" />
+          <span>No lock-in contracts</span>
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="size-4 text-green-500" />

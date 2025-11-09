@@ -124,7 +124,7 @@ export default function SwitchToThorbisPage() {
             Switch to Thorbis with a guided 45-day migration program
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            We migrate data, re-engineer workflows, and train your team while you stay focused on customers. Compare migration paths from ServiceTitan, Housecall Pro, Jobber, and more.
+            We migrate data, re-engineer workflows, and train your team while you stay focused on customers. Compare migration paths from ServiceTitan, Housecall Pro, Jobber, and more knowing pricing is just $100/month base with pay-as-you-go usage, unlimited users, and no lock-in.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg">

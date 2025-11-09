@@ -166,22 +166,32 @@ export function HourlyTimeGrid({
 
           {/* Job Blocks */}
           <div className="relative h-full">
-            {jobPositions.map(({ job, left, width }) => (
-              <div
-                className="absolute top-2"
-                key={job.id}
-                style={{
-                  left: `${left}px`,
-                  width: `${width}px`,
-                }}
-              >
-                <GanttJobBlock
-                  job={job}
-                  isSelected={selectedJobId === job.id}
-                  onClick={() => onJobClick?.(job.id)}
-                />
+            {jobPositions.length === 0 ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center">
+                  <p className="text-muted-foreground text-sm">
+                    No jobs scheduled for this time period
+                  </p>
+                </div>
               </div>
-            ))}
+            ) : (
+              jobPositions.map(({ job, left, width }) => (
+                <div
+                  className="absolute top-2"
+                  key={job.id}
+                  style={{
+                    left: `${left}px`,
+                    width: `${width}px`,
+                  }}
+                >
+                  <GanttJobBlock
+                    job={job}
+                    isSelected={selectedJobId === job.id}
+                    onClick={() => onJobClick?.(job.id)}
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

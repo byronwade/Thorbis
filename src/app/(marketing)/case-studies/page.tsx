@@ -75,7 +75,7 @@ export default async function CaseStudiesPage({
           <p className="text-lg text-muted-foreground">
             Discover how high-performing service companies reduce windshield
             time, improve first-time fix rate, and grow recurring revenue with
-            the Thorbis field management platform.
+            the Thorbis field management platform—all for a $100/month base subscription, pay-as-you-go usage, and no lock-in.
           </p>
         </header>
 

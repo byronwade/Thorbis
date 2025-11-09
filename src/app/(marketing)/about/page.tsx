@@ -156,7 +156,7 @@ export default function AboutPage() {
               elite customer experiences. From the first phone call to final invoice, we use
               AI and automation to remove friction and let people focus on what matters—
               delighting customers. Pricing stays transparent: $100/month base subscription
-              with pay-as-you-go usage and unlimited users.
+              with pay-as-you-go usage, unlimited users, and zero lock-in.
             </p>
             <div className="flex flex-wrap gap-3">
             <Button asChild>

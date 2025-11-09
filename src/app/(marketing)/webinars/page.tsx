@@ -94,7 +94,7 @@ export default async function WebinarsPage({
             Learn proven playbooks from Thorbis strategists and operators. Save
             your seat for upcoming sessions or catch up with the on-demand
             library. All sessions are included with the $100/month base
-            subscription and pay-as-you-go usage.
+            subscription and pay-as-you-go usage—no lock-in required.
           </p>
         </header>
 

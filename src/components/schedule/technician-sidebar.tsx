@@ -43,7 +43,14 @@ export function TechnicianSidebar({
 
       {/* Technician List */}
       <div className="flex-1 overflow-y-auto">
-        {technicians.map((technician) => {
+        {technicians.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center p-4">
+            <p className="text-muted-foreground text-center text-sm">
+              No technicians available
+            </p>
+          </div>
+        ) : (
+          technicians.map((technician) => {
           const isSelected = selectedTechnicianId === technician.id;
           const jobCount = getJobCount?.(technician.id) ?? 0;
 
@@ -98,7 +105,8 @@ export function TechnicianSidebar({
               </div>
             </div>
           );
-        })}
+          })
+        )}
       </div>
     </div>
   );

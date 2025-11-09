@@ -128,7 +128,7 @@ export default async function FreeToolsPage() {
             Download templates, calculators, and guides built for contractors
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Explore battle-tested tools from Thorbis customers—covering operations, finance, training, and marketing. No paywall, no fluff.
+            Explore battle-tested tools from Thorbis customers—covering operations, finance, training, and marketing. No paywall, no fluff, and included with the $100/month base subscription, pay-as-you-go usage, and zero lock-in.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">

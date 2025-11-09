@@ -61,6 +61,7 @@ export default function CompetitorOverviewPage() {
           <p className="text-muted-foreground mt-4 text-lg">
             Thorbis delivers AI-powered automation, transparent pricing, and rapid innovation.
             Explore detailed head-to-head comparisons to decide if now is the right time to upgrade.
+            Switching means a flat $100/month base subscription with pay-as-you-go usage—no per-user fees and no lock-in contracts.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button asChild>

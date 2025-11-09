@@ -64,7 +64,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(wc:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

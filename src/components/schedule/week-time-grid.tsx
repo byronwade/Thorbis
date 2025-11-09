@@ -143,27 +143,37 @@ export function WeekTimeGrid({
 
           {/* Job Blocks */}
           <div className="relative">
-            {visibleJobs.map((job) => {
-              const position = getJobPosition(job);
-              return (
-                <div
-                  className="absolute"
-                  key={job.id}
-                  style={{
-                    left: `${position.left + 2}px`,
-                    top: `${position.top}px`,
-                    width: `${position.width}px`,
-                    height: `${position.height}px`,
-                  }}
-                >
-                  <GanttJobBlock
-                    job={job}
-                    isSelected={selectedJobId === job.id}
-                    onClick={() => onJobClick?.(job.id)}
-                  />
+            {visibleJobs.length === 0 ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center">
+                  <p className="text-muted-foreground text-sm">
+                    No jobs scheduled for this week
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            ) : (
+              visibleJobs.map((job) => {
+                const position = getJobPosition(job);
+                return (
+                  <div
+                    className="absolute"
+                    key={job.id}
+                    style={{
+                      left: `${position.left + 2}px`,
+                      top: `${position.top}px`,
+                      width: `${position.width}px`,
+                      height: `${position.height}px`,
+                    }}
+                  >
+                    <GanttJobBlock
+                      job={job}
+                      isSelected={selectedJobId === job.id}
+                      onClick={() => onJobClick?.(job.id)}
+                    />
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

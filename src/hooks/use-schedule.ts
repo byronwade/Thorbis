@@ -56,74 +56,81 @@ export function useSchedule() {
     let isMounted = true;
 
     const loadData = async () => {
-      // If already loaded or currently loading, skip
+      // If already loaded, skip
       if (jobs.size > 0) {
+        setLoading(false);
         return;
       }
 
       // If another instance is already loading, wait for it
       if (loadingPromise) {
         await loadingPromise;
+        setLoading(false);
         return;
       }
 
-      try {
-        setLoading(true);
-        setError(null);
-
-        const supabase = createClient();
-
-        if (!supabase) {
-          throw new Error("Database connection not available");
-        }
-
-        // Fetch schedules from Supabase
-        const { data: schedules, error: schedulesError } = await supabase
-          .from("schedules")
-          .select(`
-            *,
-            customer:customers(first_name, last_name, email, phone),
-            job:jobs(job_number, title)
-          `)
-          .is("deleted_at", null)
-          .order("start_time", { ascending: true });
-
-        if (!isMounted) return;
-
-        if (schedulesError) throw schedulesError;
-
-        // Try to load team members, but don't fail if it doesn't work
-        // This is wrapped in try-catch so schedule loading can continue even if team members fail
+      // Create and store the loading promise
+      loadingPromise = (async () => {
         try {
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
+          setLoading(true);
+          setError(null);
 
-          if (user) {
-            // Get user's company - use maybeSingle() to avoid error if no record exists
-            const { data: userTeamMember } = await supabase
-              .from("team_members")
-              .select("company_id")
-              .eq("user_id", user.id)
-              .eq("status", "active")
-              .maybeSingle();
+          const supabase = createClient();
 
-            if (userTeamMember?.company_id) {
-              // Fetch team members (technicians) for the user's company
-              const { data: teamMembers } = await supabase
+          if (!supabase) {
+            throw new Error("Database connection not available");
+          }
+
+          // Fetch schedules from Supabase
+          const { data: schedules, error: schedulesError } = await supabase
+            .from("schedules")
+            .select(`
+              *,
+              customer:customers(first_name, last_name, email, phone),
+              job:jobs(job_number, title)
+            `)
+            .is("deleted_at", null)
+            .order("start_time", { ascending: true });
+
+          if (!isMounted) {
+            setLoading(false);
+            return;
+          }
+
+          if (schedulesError) throw schedulesError;
+
+          // Try to load team members, but don't fail if it doesn't work
+          // This is wrapped in try-catch so schedule loading can continue even if team members fail
+          try {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
+
+            if (user) {
+              // Get user's company - use maybeSingle() to avoid error if no record exists
+              const { data: userTeamMember } = await supabase
                 .from("team_members")
-                .select(`
-                  *,
-                  users!team_members_user_id_fkey (
-                    id,
-                    name,
-                    email,
-                    avatar_url,
-                    phone
-                  )
-                `)
-                .eq("company_id", userTeamMember.company_id)
-                .eq("status", "active");
+                .select("company_id")
+                .eq("user_id", user.id)
+                .eq("status", "active")
+                .maybeSingle();
+
+              if (userTeamMember?.company_id) {
+                // Fetch team members (technicians) for the user's company
+                const { data: teamMembers } = await supabase
+                  .from("team_members")
+                  .select(`
+                    *,
+                    users!team_members_user_id_fkey (
+                      id,
+                      name,
+                      email,
+                      avatar_url,
+                      phone
+                    )
+                  `)
+                  .eq("company_id", userTeamMember.company_id)
+                  .eq("status", "active");
 
               if (teamMembers && teamMembers.length > 0) {
                 // Convert team members to Technician format
@@ -219,24 +226,34 @@ export function useSchedule() {
             updatedAt: new Date(schedule.updated_at),
           }));
 
-        if (!isMounted) return;
+          if (!isMounted) {
+            setLoading(false);
+            return;
+          }
 
-        setJobs(convertedJobs);
-      } catch (error) {
-        if (!isMounted) return;
-        let errorMessage = "Unknown error";
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        } else if (typeof error === "object" && error !== null && "message" in error) {
-          errorMessage = String(error.message);
+          setJobs(convertedJobs);
+        } catch (error) {
+          if (!isMounted) {
+            setLoading(false);
+            return;
+          }
+          let errorMessage = "Unknown error";
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          } else if (typeof error === "object" && error !== null && "message" in error) {
+            errorMessage = String(error.message);
+          }
+          console.error("Schedule loading error:", error);
+          setError(errorMessage);
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+          loadingPromise = null;
         }
-        console.error("Schedule loading error:", error);
-        setError(errorMessage);
-      } finally {
-        if (!isMounted) return;
-        setLoading(false);
-        loadingPromise = null;
-      }
+      })();
+
+      await loadingPromise;
     };
 
     loadData();

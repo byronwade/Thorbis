@@ -79,7 +79,7 @@ export function SalesHomepage() {
               assistant. Do in <strong>10 seconds</strong> what takes{" "}
               <strong>10 minutes</strong> in ServiceTitan. Pay a simple{" "}
               <strong>$100/month base with pay-as-you-go usage</strong> instead of{" "}
-              <strong>$398/month contracts</strong>.
+              <strong>$398/month contracts</strong>. We never lock you in—cancel anytime and keep your data.
             </p>
 
             {/* Social proof */}
@@ -133,6 +133,10 @@ export function SalesHomepage() {
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
                 <span>No setup fees</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
+                <span>No lock-in contracts</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />

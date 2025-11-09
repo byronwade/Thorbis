@@ -122,13 +122,13 @@ export function JobPurchaseOrdersTable({
         shrink: true,
         render: (po) => (
           <div className="flex min-w-0 items-center gap-2">
-            <Link
-              className="truncate font-medium text-primary text-sm hover:underline"
-              href={`/dashboard/work/purchase-orders/${po.id}`}
-              title={po.po_number}
-            >
-              {po.po_number}
-            </Link>
+          <Link
+            className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+            href={`/dashboard/work/purchase-orders/${po.id}`}
+            title={po.po_number}
+          >
+            {po.po_number}
+          </Link>
             {po.auto_generated && (
               <Badge className="shrink-0 text-xs" variant="outline">
                 Auto

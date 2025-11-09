@@ -172,7 +172,7 @@ export function TestimonialsSection() {
           </h3>
           <p className="mx-auto mb-8 max-w-2xl text-foreground text-lg">
             Join thousands of field service professionals who have transformed
-            their operations with Thorbis
+            their operations with Thorbis for just $100/month base plus pay-as-you-go usage.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button
@@ -202,7 +202,7 @@ export function TestimonialsSection() {
             </Button>
           </div>
           <p className="mt-6 text-foreground/60 text-sm">
-            No credit card required • 14-day free trial • Cancel anytime
+            $100/month base • Pay-as-you-go usage • No credit card required • 14-day free trial • Cancel anytime
           </p>
         </div>
       </div>

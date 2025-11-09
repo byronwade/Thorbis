@@ -81,7 +81,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         shrink: true,
         render: (invoice) => (
           <Link
-            className="font-medium text-primary hover:underline"
+            className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
             href={`/dashboard/work/invoices/${invoice.id}`}
           >
             {invoice.invoice_number}
