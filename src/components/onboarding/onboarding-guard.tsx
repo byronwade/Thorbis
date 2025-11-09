@@ -12,16 +12,32 @@
  * - Customer pages (detail/edit/new - have server-side auth checks)
  *
  * All other pages are checked and redirected to welcome if onboarding incomplete
+ *
+ * Performance optimizations:
+ * - In-flight guard prevents duplicate API calls
+ * - Pathname stability check prevents unnecessary executions
+ * - Debounce prevents rapid re-executions with multiple tabs
  */
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  // Track if API call is in-flight to prevent duplicates
+  const isCheckingRef = useRef(false);
+  // Track previous pathname to detect actual changes
+  const prevPathnameRef = useRef(pathname);
+
   useEffect(() => {
+    // Only run if pathname actually changed
+    if (prevPathnameRef.current === pathname) {
+      return;
+    }
+    prevPathnameRef.current = pathname;
+
     // Calculate these inside useEffect to ensure stable dependency array
     const isWelcomePage = pathname === "/dashboard/welcome";
     // Job detail pages handle their own auth checks - don't redirect them
@@ -48,21 +64,39 @@ export function OnboardingGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // For other pages, check ACTIVE company's onboarding status
-    // Redirect to welcome if active company has no payment
-    fetch("/api/check-onboarding-status")
-      .then((res) => res.json())
-      .then((data) => {
-        // Redirect to welcome if:
-        // - No active company, OR
-        // - Active company has no payment
-        if (!(data.companyId && data.hasPayment)) {
-          router.push("/dashboard/welcome");
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking onboarding:", error);
-      });
+    // Prevent duplicate API calls
+    if (isCheckingRef.current) {
+      return;
+    }
+
+    // Debounce to prevent rapid executions (especially with multiple tabs)
+    const timeoutId = setTimeout(() => {
+      isCheckingRef.current = true;
+
+      // For other pages, check ACTIVE company's onboarding status
+      // Redirect to welcome if active company has no payment
+      fetch("/api/check-onboarding-status")
+        .then((res) => res.json())
+        .then((data) => {
+          // Redirect to welcome if:
+          // - No active company, OR
+          // - Active company has no payment
+          if (!(data.companyId && data.hasPayment)) {
+            router.push("/dashboard/welcome");
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking onboarding:", error);
+        })
+        .finally(() => {
+          isCheckingRef.current = false;
+        });
+    }, 500); // 500ms debounce
+
+    return () => {
+      clearTimeout(timeoutId);
+      isCheckingRef.current = false;
+    };
   }, [pathname, router]);
 
   // Always render children - redirects happen via useEffect
