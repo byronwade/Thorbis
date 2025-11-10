@@ -68,7 +68,8 @@ async function getAuthContext() {
     .single();
 
   if (teamError || !teamMember) {
-    throw new Error("No active company found");
+    console.warn("No active company for notifications, returning empty");
+    return { notifications: [], unreadCount: 0 };
   }
 
   return {
