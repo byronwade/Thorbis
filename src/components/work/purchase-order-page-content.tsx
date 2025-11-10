@@ -177,153 +177,190 @@ export function PurchaseOrderPageContent({
         </div>
       </div>
 
-      {/* Collapsible Sections */}
-      <div className="mx-auto w-full max-w-7xl px-6 py-8">
-        <div suppressHydrationWarning>
-          <Accordion
-            className="space-y-3"
-            defaultValue={defaultAccordionSections}
-            type="multiple"
-          >
-            {/* PO Information */}
-            <CollapsibleDataSection
-              value="po-info"
-              title="Purchase Order Information"
-              icon={<Package className="size-4" />}
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label>PO Number</Label>
-                  <Input value={po.po_number || po.poNumber} readOnly />
-                </div>
-                <div>
-                  <Label>Vendor</Label>
-                  <Input value={po.vendor || "Unknown"} readOnly />
-                </div>
-                <div>
-                  <Label>Status</Label>
-                  <Badge>{po.status}</Badge>
-                </div>
-                <div>
-                  <Label>Priority</Label>
-                  <Badge>{po.priority || "Normal"}</Badge>
-                </div>
-                <div>
-                  <Label>Expected Delivery</Label>
-                  <Input
-                    value={po.expected_delivery ? new Date(po.expected_delivery).toLocaleDateString() : "Not set"}
-                    readOnly
-                  />
-                </div>
-                <div>
-                  <Label>Created</Label>
-                  <Input
-                    value={po.created_at ? new Date(po.created_at).toLocaleDateString() : "Unknown"}
-                    readOnly
-                  />
+      {/* Split Screen Layout: Line Items Left, Details Right */}
+      <div className="mx-auto flex h-full w-full max-w-[1800px] gap-6 px-6 py-8">
+        {/* Left Side: Line Items (Primary Content) */}
+        <div className="flex w-full flex-1 flex-col lg:w-3/5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-semibold text-xl">Line Items ({lineItems.length})</h2>
+          </div>
+
+          <div className="flex-1 overflow-auto rounded-lg border">
+            {lineItems.length > 0 ? (
+              <Table>
+                <TableHeader className="sticky top-0 bg-background">
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right w-24">Qty</TableHead>
+                    <TableHead className="text-right w-32">Unit Price</TableHead>
+                    <TableHead className="text-right w-32">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lineItems.map((item: any) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.description}</TableCell>
+                      <TableCell className="text-right">{item.quantity}</TableCell>
+                      <TableCell className="text-right">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(item.unit_price || 0)}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format((item.quantity || 0) * (item.unit_price || 0))}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {/* Total Row */}
+                  <TableRow className="border-t-2 bg-muted/50">
+                    <TableCell colSpan={3} className="font-semibold text-right">Total</TableCell>
+                    <TableCell className="text-right font-bold text-lg">
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(
+                        lineItems.reduce((sum, item) => sum + (item.quantity || 0) * (item.unit_price || 0), 0)
+                      )}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex h-64 items-center justify-center">
+                <div className="text-center">
+                  <FileText className="mx-auto size-12 text-muted-foreground/50" />
+                  <p className="mt-4 text-muted-foreground text-sm">No line items yet</p>
+                  <p className="text-muted-foreground text-xs">Add items to this purchase order</p>
                 </div>
               </div>
-            </CollapsibleDataSection>
+            )}
+          </div>
+        </div>
 
-            {/* Line Items */}
-            <CollapsibleDataSection
-              value="line-items"
-              title="Line Items"
-              icon={<FileText className="size-4" />}
-              count={lineItems.length}
-              fullWidthContent
+        {/* Right Side: Collapsible Details */}
+        <div className="hidden w-full flex-col space-y-3 lg:flex lg:w-2/5">
+          <div suppressHydrationWarning>
+            <Accordion
+              className="space-y-3"
+              defaultValue={defaultAccordionSections}
+              type="multiple"
             >
-              {lineItems.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Description</TableHead>
-                      <TableHead className="text-right">Qty</TableHead>
-                      <TableHead className="text-right">Unit Price</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lineItems.map((item: any) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.description}</TableCell>
-                        <TableCell className="text-right">{item.quantity}</TableCell>
-                        <TableCell className="text-right">
-                          {new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          }).format(item.unit_price || 0)}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          }).format((item.quantity || 0) * (item.unit_price || 0))}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="py-8 text-center text-muted-foreground text-sm">
-                  No line items yet
-                </p>
-              )}
-            </CollapsibleDataSection>
-
-            {/* Job Details */}
-            {job && (
+              {/* PO Information */}
               <CollapsibleDataSection
-                value="job-details"
-                title="Related Job"
-                icon={<Wrench className="size-4" />}
+                value="po-info"
+                title="Purchase Order Info"
+                icon={<Package className="size-4" />}
               >
                 <div className="space-y-4">
                   <div>
-                    <Label>Job Number</Label>
-                    <Link
-                      href={`/dashboard/work/${job.id}`}
-                      className="text-primary hover:underline"
-                    >
-                      #{job.job_number}
-                    </Link>
+                    <Label className="text-xs">PO Number</Label>
+                    <p className="font-medium text-sm">{po.po_number || po.poNumber}</p>
                   </div>
                   <div>
-                    <Label>Title</Label>
-                    <p className="text-sm">{job.title}</p>
+                    <Label className="text-xs">Vendor</Label>
+                    <p className="font-medium text-sm">{po.vendor || "Unknown"}</p>
                   </div>
+                  <div>
+                    <Label className="text-xs">Expected Delivery</Label>
+                    <p className="font-medium text-sm">
+                      {po.expected_delivery ? new Date(po.expected_delivery).toLocaleDateString() : "Not set"}
+                    </p>
+                  </div>
+                  {po.auto_generated && (
+                    <div>
+                      <Badge variant="outline">Auto-generated from estimate</Badge>
+                    </div>
+                  )}
                 </div>
               </CollapsibleDataSection>
-            )}
 
-            {/* Activity Log */}
-            <CollapsibleDataSection
-              value="activity"
-              title="Activity Log"
-              icon={<Activity className="size-4" />}
-              count={activities.length}
-            >
-              <div className="space-y-3">
-                {activities.length > 0 ? (
-                  activities.map((activity: any) => (
-                    <div key={activity.id} className="rounded-lg border p-4">
-                      <p className="text-sm">{activity.description}</p>
-                      <p className="mt-2 text-muted-foreground text-xs">
-                        {activity.user?.name} •{" "}
-                        {formatDistance(new Date(activity.created_at), new Date(), {
-                          addSuffix: true,
-                        })}
-                      </p>
+              {/* Job Details */}
+              {job && (
+                <CollapsibleDataSection
+                  value="job-details"
+                  title="Related Job"
+                  icon={<Wrench className="size-4" />}
+                >
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs">Job Number</Label>
+                      <Link
+                        href={`/dashboard/work/${job.id}`}
+                        className="block font-medium text-primary text-sm hover:underline"
+                      >
+                        #{job.job_number}
+                      </Link>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-center text-muted-foreground text-sm">
-                    No activity yet
-                  </p>
-                )}
-              </div>
-            </CollapsibleDataSection>
-          </Accordion>
+                    <div>
+                      <Label className="text-xs">Title</Label>
+                      <p className="text-sm">{job.title}</p>
+                    </div>
+                  </div>
+                </CollapsibleDataSection>
+              )}
+
+              {/* Delivery Information */}
+              <CollapsibleDataSection
+                value="delivery"
+                title="Delivery"
+                icon={<MapPin className="size-4" />}
+              >
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs">Expected Date</Label>
+                    <p className="text-sm">
+                      {po.expected_delivery
+                        ? new Date(po.expected_delivery).toLocaleDateString("en-US", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "Not set"}
+                    </p>
+                  </div>
+                  {po.tracking_number && (
+                    <div>
+                      <Label className="text-xs">Tracking Number</Label>
+                      <p className="font-mono text-sm">{po.tracking_number}</p>
+                    </div>
+                  )}
+                </div>
+              </CollapsibleDataSection>
+
+              {/* Activity Log */}
+              <CollapsibleDataSection
+                value="activity"
+                title="Activity"
+                icon={<Activity className="size-4" />}
+                count={activities.length}
+              >
+                <div className="max-h-96 space-y-2 overflow-y-auto">
+                  {activities.length > 0 ? (
+                    activities.map((activity: any) => (
+                      <div key={activity.id} className="rounded-lg border p-3">
+                        <p className="text-sm">{activity.description}</p>
+                        <p className="mt-1 text-muted-foreground text-xs">
+                          {activity.user?.name} •{" "}
+                          {formatDistance(new Date(activity.created_at), new Date(), {
+                            addSuffix: true,
+                          })}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-muted-foreground text-sm">
+                      No activity yet
+                    </p>
+                  )}
+                </div>
+              </CollapsibleDataSection>
+            </Accordion>
+          </div>
         </div>
       </div>
     </div>
