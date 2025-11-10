@@ -78,11 +78,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     setMounted(true);
   }, []);
 
-  // IMPORTANT: Early return MUST come before all other hooks
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
+  // Extract data before hooks
   const {
     customer,
     properties = [],
@@ -906,6 +902,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
     return items;
   }, [jobs, primaryProperty]);
+
+  // Conditional render AFTER all hooks
+  if (!mounted) {
+    return <div className="flex-1 p-6">Loading...</div>;
+  }
 
   return (
     <DetailPageContentLayout
