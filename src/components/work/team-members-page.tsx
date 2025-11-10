@@ -174,7 +174,8 @@ export function TeamMembersPage() {
       }
     }
     loadTeamMembers();
-  }, [toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount - toast is stable from useToast hook
 
   // Helper functions for colors
   function getRoleColor(roleName: string | undefined): string {
