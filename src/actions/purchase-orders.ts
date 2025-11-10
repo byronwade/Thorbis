@@ -115,47 +115,10 @@ export async function getPurchaseOrder(
       );
     }
 
+    // Simplified query without vendors table (doesn't exist in current schema)
     const { data: po, error } = await supabase
       .from("purchase_orders")
-      .select(
-        `
-        *,
-        vendor:vendors!vendor_id(
-          id,
-          name,
-          display_name,
-          vendor_number,
-          email,
-          phone,
-          website
-        ),
-        job:jobs!job_id(
-          id,
-          job_number,
-          title
-        ),
-        estimate:estimates!estimate_id(
-          id,
-          estimate_number,
-          title
-        ),
-        invoice:invoices!invoice_id(
-          id,
-          invoice_number,
-          title
-        ),
-        requested_by_user:users!requested_by(
-          id,
-          name,
-          email
-        ),
-        approved_by_user:users!approved_by(
-          id,
-          name,
-          email
-        )
-      `
-      )
+      .select("*")
       .eq("id", poId)
       .eq("company_id", activeCompanyId)
       .single();
