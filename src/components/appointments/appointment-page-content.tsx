@@ -73,7 +73,7 @@ export type AppointmentData = {
 };
 
 export type AppointmentPageContentProps = {
-  appointmentData: AppointmentData;
+  entityData: AppointmentData;
   metrics: any;
 };
 
@@ -85,9 +85,10 @@ const defaultAccordionSections = [
 ];
 
 export function AppointmentPageContent({
-  appointmentData,
+  entityData,
   metrics,
 }: AppointmentPageContentProps) {
+  const appointmentData = entityData; // Alias for easier refactoring
   const router = useRouter();
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
