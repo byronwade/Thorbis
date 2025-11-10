@@ -1,548 +1,129 @@
 /**
- * Work > Purchase Orders > [Id] Page - Server Component
+ * Purchase Order Details Page
  *
- * Performance optimizations:
- * - Static content rendered on server
- * - ISR revalidation every 5 minutes
- * - Next.js 16+ async params pattern
+ * Displays comprehensive purchase order information using unified layout system
+ * Matches job, customer, appointment, team member page patterns
  */
 
-/**
- * Server Component
- *
- * Performance optimizations:
- * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
- * - Only interactive table/chart components are client-side
- * - Better SEO and initial page load performance
- */
-
-import {
-  Calendar,
-  ChevronLeft,
-  Clock,
-  Edit,
-  Mail,
-  MoreVertical,
-  Package,
-  Phone,
-  User,
-} from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-
-export const revalidate = 300; // Revalidate every 5 minutes
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-type LineItem = {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-};
-
-type POStatus =
-  | "draft"
-  | "pending_approval"
-  | "approved"
-  | "ordered"
-  | "partially_received"
-  | "received"
-  | "cancelled";
+import { notFound } from "next/navigation";
+import { DetailPageLayout } from "@/components/layout/detail-page-layout";
+import { PurchaseOrderStatsBar } from "@/components/work/purchase-order-stats-bar";
+import { PurchaseOrderPageContent } from "@/components/work/purchase-order-page-content";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function PurchaseOrderDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // Await params (Next.js 16+ requirement)
-  const { id } = await params;
+  const { id: poId } = await params;
 
-  // Import server action
-  const { getPurchaseOrder } = await import("@/actions/purchase-orders");
-  const result = await getPurchaseOrder(id);
+  const supabase = await createClient();
 
-  if (!result.success || !result.data) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <h2 className="font-semibold text-lg">Purchase Order Not Found</h2>
-          <p className="text-muted-foreground text-sm">
-            {result.error || "The purchase order you're looking for doesn't exist."}
-          </p>
-        </div>
-      </div>
-    );
+  if (!supabase) {
+    return notFound();
   }
 
-  const poData = result.data;
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Transform data for display
-  const po = {
-    id: poData.id,
-    poNumber: poData.po_number,
-    vendor: {
-      name: poData.vendor?.display_name || poData.vendor?.name || poData.vendor,
-      email: poData.vendor?.email || poData.vendor_email,
-      phone: poData.vendor?.phone || poData.vendor_phone,
-      website: poData.vendor?.website,
-    },
-    title: poData.title,
-    description: poData.description,
-    status: poData.status as POStatus,
-    priority: poData.priority as "low" | "normal" | "high" | "urgent",
-    jobNumber: poData.job?.job_number,
-    jobId: poData.job_id,
-    estimateNumber: poData.estimate?.estimate_number,
-    estimateId: poData.estimate_id,
-    invoiceNumber: poData.invoice?.invoice_number,
-    invoiceId: poData.invoice_id,
-    requestedBy: {
-      name: poData.requested_by_user?.name || "Unknown",
-      email: poData.requested_by_user?.email,
-    },
-    approvedBy: poData.approved_by_user
-      ? {
-          name: poData.approved_by_user.name,
-          email: poData.approved_by_user.email,
-        }
-      : undefined,
-    createdAt: poData.created_at,
-    approvedAt: poData.approved_at,
-    orderedAt: poData.ordered_at,
-    receivedAt: poData.received_at,
-    expectedDelivery: poData.expected_delivery,
-    actualDelivery: poData.actual_delivery,
-    deliveryAddress: poData.delivery_address,
-    lineItems: Array.isArray(poData.line_items)
-      ? poData.line_items.map((item: any) => ({
-          id: item.id || crypto.randomUUID(),
-          description: item.description,
-          quantity: item.quantity,
-          unitPrice: typeof item.unit_price === "number" ? item.unit_price / 100 : item.unit_price || 0,
-          total: typeof item.total === "number" ? item.total / 100 : item.total || 0,
-        }))
-      : [],
-    subtotal: poData.subtotal / 100, // Convert from cents
-    taxAmount: poData.tax_amount / 100,
-    shippingAmount: poData.shipping_amount / 100,
-    totalAmount: poData.total_amount / 100,
-    notes: poData.notes,
-    internalNotes: poData.internal_notes,
-    autoGenerated: poData.auto_generated,
+  if (!user) {
+    return notFound();
+  }
+
+  // Get active company
+  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    return notFound();
+  }
+
+  // Verify user access
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .eq("company_id", activeCompanyId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (!teamMember) {
+    return notFound();
+  }
+
+  // Fetch purchase order
+  const { data: po, error } = await supabase
+    .from("purchase_orders")
+    .select("*")
+    .eq("id", poId)
+    .eq("company_id", activeCompanyId)
+    .single();
+
+  if (error || !po) {
+    return notFound();
+  }
+
+  // Fetch related data
+  const [
+    { data: lineItems },
+    { data: job },
+    { data: activities },
+  ] = await Promise.all([
+    supabase
+      .from("purchase_order_line_items")
+      .select("*")
+      .eq("purchase_order_id", poId)
+      .order("created_at", { ascending: true }),
+
+    po.job_id
+      ? supabase
+          .from("jobs")
+          .select("id, job_number, title")
+          .eq("id", po.job_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
+    supabase
+      .from("activity_log")
+      .select("*, user:users(*)")
+      .eq("entity_type", "purchase_order")
+      .eq("entity_id", poId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+  ]);
+
+  // Calculate metrics
+  const totalAmount = po.total_amount || 0;
+  const lineItemCount = lineItems?.length || 0;
+  const daysUntilDelivery = po.expected_delivery
+    ? Math.ceil((new Date(po.expected_delivery).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : undefined;
+
+  const metrics = {
+    totalAmount,
+    lineItemCount,
+    status: po.status || "Unknown",
+    daysUntilDelivery,
   };
 
-  const statusConfig = {
-    draft: { label: "Draft", color: "bg-gray-100 text-gray-800" },
-    pending_approval: {
-      label: "Pending Approval",
-      color: "bg-amber-100 text-amber-800",
-    },
-    approved: { label: "Approved", color: "bg-blue-100 text-blue-800" },
-    ordered: { label: "Ordered", color: "bg-green-100 text-green-800" },
-    partially_received: {
-      label: "Partially Received",
-      color: "bg-purple-100 text-purple-800",
-    },
-    received: { label: "Received", color: "bg-green-100 text-green-800" },
-    cancelled: { label: "Cancelled", color: "bg-red-100 text-red-800" },
-  };
-
-  const priorityConfig = {
-    low: { label: "Low", color: "bg-blue-100 text-blue-800" },
-    normal: { label: "Normal", color: "bg-gray-100 text-gray-800" },
-    high: { label: "High", color: "bg-orange-100 text-orange-800" },
-    urgent: { label: "Urgent", color: "bg-red-100 text-red-800" },
+  const purchaseOrderData = {
+    purchaseOrder: po,
+    job,
+    lineItems: lineItems || [],
+    activities: activities || [],
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button asChild size="icon" variant="ghost">
-            <Link href="/dashboard/work/purchase-orders">
-              <ChevronLeft className="size-4" />
-            </Link>
-          </Button>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-bold text-2xl tracking-tight">
-                {po.poNumber}
-              </h1>
-              <Badge className={statusConfig[po.status]?.color || ""}>
-                {statusConfig[po.status]?.label || po.status}
-              </Badge>
-              <Badge className={priorityConfig[po.priority]?.color || ""}>
-                {priorityConfig[po.priority]?.label || po.priority}
-              </Badge>
-              {po.autoGenerated && (
-                <Badge variant="outline">Auto-Generated</Badge>
-              )}
-            </div>
-            <p className="mt-1 text-muted-foreground text-sm">{po.title}</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline">
-            <Edit className="mr-2 size-4" />
-            Edit
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline">
-                <MoreVertical className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Download PDF</DropdownMenuItem>
-              <DropdownMenuItem>Send to Vendor</DropdownMenuItem>
-              <DropdownMenuItem>Duplicate PO</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {po.status === "pending_approval" && (
-                <>
-                  <DropdownMenuItem>Approve PO</DropdownMenuItem>
-                  <DropdownMenuItem>Reject PO</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              {po.status === "approved" && (
-                <>
-                  <DropdownMenuItem>Mark as Ordered</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              {(po.status === "ordered" ||
-                po.status === "partially_received") && (
-                <>
-                  <DropdownMenuItem>Mark as Received</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem className="text-destructive">
-                Cancel PO
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column - Main Details */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Description */}
-          {po.description && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Description</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{po.description}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Line Items */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Line Items</CardTitle>
-              <CardDescription>
-                {po.lineItems.length} item{po.lineItems.length !== 1 ? "s" : ""}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Qty</TableHead>
-                    <TableHead className="text-right">Unit Price</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {po.lineItems.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.description}</TableCell>
-                      <TableCell className="text-right">
-                        {item.quantity}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        ${item.unitPrice.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        ${item.total.toFixed(2)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow>
-                    <TableCell className="text-right" colSpan={3}>
-                      Subtotal
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      ${po.subtotal.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                  {po.taxAmount > 0 && (
-                    <TableRow>
-                      <TableCell className="text-right" colSpan={3}>
-                        Tax
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        ${po.taxAmount.toFixed(2)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {po.shippingAmount > 0 && (
-                    <TableRow>
-                      <TableCell className="text-right" colSpan={3}>
-                        Shipping
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        ${po.shippingAmount.toFixed(2)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  <TableRow>
-                    <TableCell className="text-right font-semibold" colSpan={3}>
-                      Total
-                    </TableCell>
-                    <TableCell className="text-right font-bold text-lg">
-                      ${po.totalAmount.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Notes */}
-          {(po.notes || po.internalNotes) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Notes</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {po.notes && (
-                  <div>
-                    <p className="mb-1 font-medium text-sm">Vendor Notes</p>
-                    <p className="text-muted-foreground text-sm">{po.notes}</p>
-                  </div>
-                )}
-                {po.internalNotes && (
-                  <>
-                    {po.notes && <Separator />}
-                    <div>
-                      <p className="mb-1 font-medium text-sm">Internal Notes</p>
-                      <p className="text-muted-foreground text-sm">
-                        {po.internalNotes}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Right Column - Sidebar Info */}
-        <div className="space-y-6">
-          {/* Vendor Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Vendor</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{po.vendor.name}</span>
-              </div>
-              {po.vendor.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    className="text-primary text-sm hover:underline"
-                    href={`mailto:${po.vendor.email}`}
-                  >
-                    {po.vendor.email}
-                  </a>
-                </div>
-              )}
-              {po.vendor.phone && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    className="text-primary text-sm hover:underline"
-                    href={`tel:${po.vendor.phone}`}
-                  >
-                    {po.vendor.phone}
-                  </a>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Related Documents */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Related</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {po.jobId && (
-                <div>
-                  <p className="mb-1 text-muted-foreground text-xs">Job</p>
-                  <Link
-                    className="text-primary text-sm hover:underline"
-                    href={`/dashboard/work/jobs/${po.jobId}`}
-                  >
-                    {po.jobNumber || po.jobId}
-                  </Link>
-                </div>
-              )}
-              {po.estimateId && (
-                <div>
-                  <p className="mb-1 text-muted-foreground text-xs">Estimate</p>
-                  <Link
-                    className="text-primary text-sm hover:underline"
-                    href={`/dashboard/work/estimates/${po.estimateId}`}
-                  >
-                    {po.estimateNumber || po.estimateId}
-                  </Link>
-                </div>
-              )}
-              {po.invoiceId && (
-                <div>
-                  <p className="mb-1 text-muted-foreground text-xs">Invoice</p>
-                  <Link
-                    className="text-primary text-sm hover:underline"
-                    href={`/dashboard/work/invoices/${po.invoiceId}`}
-                  >
-                    {po.invoiceNumber || po.invoiceId}
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Delivery Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Delivery</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {po.expectedDelivery && (
-                <div>
-                  <p className="mb-1 text-muted-foreground text-xs">
-                    Expected Delivery
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {new Date(po.expectedDelivery).toLocaleDateString(
-                        "en-US",
-                        {
-                          weekday: "short",
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        }
-                      )}
-                    </span>
-                  </div>
-                </div>
-              )}
-              {po.deliveryAddress && (
-                <div>
-                  <p className="mb-1 text-muted-foreground text-xs">
-                    Delivery Address
-                  </p>
-                  <p className="text-sm">{po.deliveryAddress}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Timeline */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Timeline</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                    <Clock className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">Created</p>
-                    <p className="text-muted-foreground text-xs">
-                      {new Date(po.createdAt).toLocaleDateString()} by{" "}
-                      {po.requestedBy.name}
-                    </p>
-                  </div>
-                </div>
-
-                {po.approvedAt && (
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                      <User className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">Approved</p>
-                      <p className="text-muted-foreground text-xs">
-                        {new Date(po.approvedAt).toLocaleDateString()} by{" "}
-                        {po.approvedBy?.name}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {po.orderedAt && (
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                      <Package className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">Ordered</p>
-                      <p className="text-muted-foreground text-xs">
-                        {new Date(po.orderedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+    <DetailPageLayout
+      entityId={poId}
+      entityType="purchase-order"
+      entityData={purchaseOrderData}
+      metrics={metrics}
+      StatsBarComponent={PurchaseOrderStatsBar}
+      ContentComponent={PurchaseOrderPageContent}
+    />
   );
 }
