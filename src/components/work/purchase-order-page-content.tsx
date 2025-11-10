@@ -26,6 +26,7 @@ import {
   Mail,
   Save,
   X,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,7 @@ import { Label } from "@/components/ui/label";
 import {
   Accordion,
 } from "@/components/ui/accordion";
-import { CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
+import { CollapsibleDataSection, CollapsibleActionButton } from "@/components/ui/collapsible-data-section";
 import {
   Table,
   TableBody,
@@ -181,11 +182,28 @@ export function PurchaseOrderPageContent({
       <div className="mx-auto flex h-full w-full max-w-[1800px] gap-6 px-6 py-8">
         {/* Left Side: Line Items (Primary Content) */}
         <div className="flex w-full flex-1 flex-col lg:w-3/5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-semibold text-xl">Line Items ({lineItems.length})</h2>
-          </div>
-
-          <div className="flex-1 overflow-auto rounded-lg border">
+          <CollapsibleDataSection
+            value="line-items"
+            title="Line Items"
+            icon={<FileText className="size-4" />}
+            count={lineItems.length}
+            actions={
+              <CollapsibleActionButton
+                icon={<Plus className="size-3.5" />}
+                onClick={() => {
+                  toast({
+                    title: "Add Line Item",
+                    description: "Line item form will open here",
+                  });
+                }}
+              >
+                Add Item
+              </CollapsibleActionButton>
+            }
+            fullWidthContent
+            defaultOpen
+            standalone
+          >
             {lineItems.length > 0 ? (
               <Table>
                 <TableHeader className="sticky top-0 bg-background">
