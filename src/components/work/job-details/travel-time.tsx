@@ -161,7 +161,8 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 
     // Always return cleanup function
     return () => clearInterval(interval);
-  }, [property?.address]); // Only re-run if address changes (component remounts basically)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - only run once on mount, never re-run
 
   if (!property?.address) {
     return null;

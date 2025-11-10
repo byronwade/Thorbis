@@ -480,86 +480,14 @@ function InvoiceRow({
       </div>
       <div className="text-right">
         <p className="font-semibold text-sm">
-          {formatCurrency(invoice.balanceAmountCents /
-import {
-  Activity,
-  AlertTriangle,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  DollarSign,
-  Mail,
-  Phone,
-  TrendingUp,
-  Users,
-  Wifi,
-} from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { StatsCards, type StatCard } from "@/components/ui/stats-cards";
-import {
-  type MissionControlData,
-  getMissionControlData,
-} from "@/lib/dashboard/mission-control-data";
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "2-digit",
-});
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
-
-const relativeFormatter = new Intl.RelativeTimeFormat("en", {
-  numeric: "auto",
-});
-
-function formatCurrency(amount: number | null | undefined) {
-  if (!amount || Number.isNaN(amount)) {
-    return "$0";
-  }
-  return currencyFormatter.format(amount);
-}
-
-function formatDateTime(value: string | null | undefined) {
-  if (!value) {
-    return "--";
-  }
-  const date = new Date(value);
-  return `${dateFormatter.format(date)} · ${timeFormatter.format(date)}`;
-}
-
-function formatTime(value: string | null | undefined) {
-  if (!value) {
-    return "--";
-  }
-  return timeFormatter.format(new Date(value));
-}
-
-function formatRelative(iso: string | null | undefined) {
-  if (!iso) {
-    return "";
-  }
-  const now = Date.now();
-  const then = new Date(iso).getTime();
-  const diffMinutes = Math.round((then - now) / (1000 * 60));
-
-  if (Math.abs(diffMinutes) < 60) {
-    return relativeFormatter.format(diffMinutes, "minute");
-  }
-
-  const diffHours = Math.round(diffMinutes / 60);
-  return relativeFormatter.format(diffHours, "hour");
+          {formatCurrency(invoice.balanceAmountCents / 100)}
+        </p>
+        <p className="text-muted-foreground text-xs capitalize">
+          {invoice.status}
+        </p>
+      </div>
+    </Link>
+  );
 }
 
 function buildSummaryStats(data: MissionControlData): StatCard[] {
