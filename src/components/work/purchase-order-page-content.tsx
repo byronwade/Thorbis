@@ -27,6 +27,16 @@ import {
   Save,
   X,
   Plus,
+  Printer,
+  Download,
+  CheckCircle2,
+  Clock,
+  User,
+  DollarSign,
+  Paperclip,
+  FileCheck,
+  AlertCircle,
+  MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -39,6 +49,21 @@ import {
   Accordion,
 } from "@/components/ui/accordion";
 import { CollapsibleDataSection, CollapsibleActionButton } from "@/components/ui/collapsible-data-section";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -55,6 +80,9 @@ export type PurchaseOrderData = {
   job?: any;
   lineItems?: any[];
   activities?: any[];
+  attachments?: any[];
+  requestedByUser?: any;
+  approvedByUser?: any;
 };
 
 export type PurchaseOrderPageContentProps = {
@@ -256,7 +284,7 @@ export function PurchaseOrderPageContent({
                 </div>
               </div>
             )}
-          </div>
+          </CollapsibleDataSection>
         </div>
 
         {/* Right Side: Collapsible Details */}
