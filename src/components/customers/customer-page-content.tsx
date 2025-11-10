@@ -352,10 +352,6 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     }).format(amount / 100);
   };
 
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   const headerBadges = [
     <Badge key="identifier" className="font-mono" variant="outline">
       {customerIdentifier}
