@@ -153,7 +153,7 @@ export function GanttScheduler() {
                 <HourlyTimeGrid
                   date={currentDate}
                   jobs={getJobsForDisplay(selectedTechnicianId)}
-                  selectedJobId={selectedJobId}
+                  selectedJobId={selectedJobId || undefined}
                   onJobClick={selectJob}
                 />
               )}
@@ -161,7 +161,7 @@ export function GanttScheduler() {
                 <WeekTimeGrid
                   date={currentDate}
                   jobs={getJobsForDisplay(selectedTechnicianId)}
-                  selectedJobId={selectedJobId}
+                  selectedJobId={selectedJobId || undefined}
                   onJobClick={selectJob}
                 />
               )}
@@ -169,7 +169,7 @@ export function GanttScheduler() {
                 <MonthTimeGrid
                   date={currentDate}
                   jobs={getJobsForDisplay(selectedTechnicianId)}
-                  selectedJobId={selectedJobId}
+                  selectedJobId={selectedJobId || undefined}
                   onJobClick={selectJob}
                 />
               )}
@@ -213,7 +213,7 @@ export function GanttScheduler() {
                           <HourlyTimeGrid
                             date={currentDate}
                             jobs={jobs}
-                            selectedJobId={selectedJobId}
+                            selectedJobId={selectedJobId || undefined}
                             onJobClick={selectJob}
                           />
                         )}
@@ -221,7 +221,7 @@ export function GanttScheduler() {
                           <WeekTimeGrid
                             date={currentDate}
                             jobs={jobs}
-                            selectedJobId={selectedJobId}
+                            selectedJobId={selectedJobId || undefined}
                             onJobClick={selectJob}
                           />
                         )}
@@ -229,7 +229,7 @@ export function GanttScheduler() {
                           <MonthTimeGrid
                             date={currentDate}
                             jobs={jobs}
-                            selectedJobId={selectedJobId}
+                            selectedJobId={selectedJobId || undefined}
                             onJobClick={selectJob}
                           />
                         )}
