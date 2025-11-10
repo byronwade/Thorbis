@@ -109,8 +109,15 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
   ];
 }
 
-export default async function OwnerDashboard() {
-  const data = await getMissionControlData();
+export default function OwnerDashboard({ data }: { data?: MissionControlData }) {
+  if (!data) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-muted-foreground">No dashboard data available</p>
+      </div>
+    );
+  }
+
   const stats = buildSummaryStats(data);
 
   return (
@@ -588,8 +595,15 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
   ];
 }
 
-export default async function OwnerDashboard() {
-  const data = await getMissionControlData();
+export default function OwnerDashboard({ data }: { data?: MissionControlData }) {
+  if (!data) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-muted-foreground">No dashboard data available</p>
+      </div>
+    );
+  }
+
   const stats = buildSummaryStats(data);
 
   return (
