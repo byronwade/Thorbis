@@ -1,20 +1,18 @@
-"use client";
+/**
+ * Main Dashboard Page - Server Component
+ *
+ * Fetches dashboard data server-side and passes to client components
+ * This prevents server/client boundary violations with next/headers
+ */
 
 import { RoleBasedDashboard } from "@/components/dashboard/role-based-dashboard";
+import { getMissionControlData } from "@/lib/dashboard/mission-control-data";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 
-/**
- * Main Dashboard Page - Role-Based Router
- *
- * Routes users to their appropriate dashboard view based on their role:
- * - Owner: Business financials, profitability, growth metrics
- * - Dispatcher: Real-time operations, technician locations, job assignments
- * - Manager: Team performance, customer satisfaction, operational oversight
- * - Technician: Personal schedule, active jobs, earnings, performance
- * - CSR: Call handling, bookings, customer search, follow-ups
- *
- * Note: This is a client component because RoleBasedDashboard uses Zustand store
- * which requires client-side state management.
- */
-export default function DashboardPage() {
-  return <RoleBasedDashboard />;
+export default async function DashboardPage() {
+  // Fetch company ID and data server-side
+  const companyId = await getActiveCompanyId();
+  const dashboardData = companyId ? await getMissionControlData(companyId) : null;
+
+  return <RoleBasedDashboard dashboardData={dashboardData} />;
 }
