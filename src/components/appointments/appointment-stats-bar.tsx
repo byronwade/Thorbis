@@ -27,13 +27,13 @@ export type AppointmentMetrics = {
 };
 
 export type AppointmentStatsBarProps = {
-  appointmentId: string;
+  entityId: string;
   metrics: AppointmentMetrics;
   compact?: boolean;
 };
 
 export function AppointmentStatsBar({
-  appointmentId,
+  entityId,
   metrics,
   compact = false,
 }: AppointmentStatsBarProps) {
