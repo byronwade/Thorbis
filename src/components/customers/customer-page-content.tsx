@@ -78,6 +78,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     setMounted(true);
   }, []);
 
+  // IMPORTANT: Early return MUST come before all other hooks
+  if (!mounted) {
+    return <div className="flex-1 p-6">Loading...</div>;
+  }
+
   const {
     customer,
     properties = [],
@@ -740,11 +745,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                 <Plus className="mr-2 h-4 w-4" /> New Job
               </Button>
             </div>
-            <JobsTable
-              jobs={jobs}
-              itemsPerPage={10}
-              onJobSelect={(jobId) => router.push(`/dashboard/work/${jobId}`)}
-            />
+            <JobsTable jobs={jobs} itemsPerPage={10} />
           </UnifiedAccordionContent>
         ),
       },
@@ -769,7 +770,6 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
               </Button>
             </div>
             <CustomerInvoicesTable
-              customerId={customer.id}
               invoices={invoices || []}
               onUpdate={() => router.refresh()}
             />
