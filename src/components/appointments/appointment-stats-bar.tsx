@@ -41,23 +41,17 @@ export function AppointmentStatsBar({
     {
       label: "Duration",
       value: `${Math.floor(metrics.duration / 60)}h ${metrics.duration % 60}m`,
-      icon: Clock,
-      trend: undefined,
-      description: "Scheduled appointment duration",
+      change: undefined,
     },
     {
       label: "Travel Time",
       value: metrics.travelTime > 0 ? `${metrics.travelTime}m` : "N/A",
-      icon: Route,
-      trend: undefined,
-      description: "Estimated travel time from shop",
+      change: undefined,
     },
     {
       label: "Team Members",
       value: metrics.teamMemberCount,
-      icon: Users,
-      trend: undefined,
-      description: "Assigned team members",
+      change: undefined,
     },
     {
       label: "Job Value",
@@ -67,12 +61,7 @@ export function AppointmentStatsBar({
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       }).format(metrics.jobValue),
-      icon: DollarSign,
-      trend:
-        metrics.jobValue > 1000
-          ? { direction: "up" as const, value: "High Value" }
-          : undefined,
-      description: "Linked job total value",
+      change: metrics.jobValue > 1000 ? 10 : undefined,
     },
   ];
 

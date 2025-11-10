@@ -44,26 +44,14 @@ export function TeamMemberStatsBar({
     {
       label: "Total Jobs",
       value: metrics.totalJobs,
-      icon: Briefcase,
-      trend: metrics.jobsTrend
-        ? {
-            direction: metrics.jobsTrend > 0 ? ("up" as const) : ("down" as const),
-            value: `${Math.abs(metrics.jobsTrend)}%`,
-          }
-        : undefined,
-      description: "Completed jobs all-time",
+      change: metrics.jobsTrend || undefined,
+      changeLabel: metrics.jobsTrend ? "vs last month" : undefined,
     },
     {
       label: "Hours Worked",
       value: `${Math.floor(metrics.hoursWorked)}h`,
-      icon: Clock,
-      trend: metrics.hoursTrend
-        ? {
-            direction: metrics.hoursTrend > 0 ? ("up" as const) : ("down" as const),
-            value: `${Math.abs(metrics.hoursTrend)}%`,
-          }
-        : undefined,
-      description: "Total hours logged",
+      change: metrics.hoursTrend || undefined,
+      changeLabel: metrics.hoursTrend ? "vs last month" : undefined,
     },
     {
       label: "Revenue",
@@ -73,28 +61,13 @@ export function TeamMemberStatsBar({
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       }).format(metrics.revenueGenerated),
-      icon: DollarSign,
-      trend: metrics.revenueTrend
-        ? {
-            direction: metrics.revenueTrend > 0 ? ("up" as const) : ("down" as const),
-            value: `${Math.abs(metrics.revenueTrend)}%`,
-          }
-        : undefined,
-      description: "Revenue from completed jobs",
+      change: metrics.revenueTrend || undefined,
+      changeLabel: metrics.revenueTrend ? "vs last month" : undefined,
     },
     {
       label: "Rating",
       value: metrics.customerRating > 0 ? metrics.customerRating.toFixed(1) : "N/A",
-      icon: Star,
-      trend:
-        metrics.customerRating >= 4.5
-          ? { direction: "up" as const, value: "Excellent" }
-          : metrics.customerRating >= 4.0
-            ? { direction: "neutral" as const, value: "Good" }
-            : metrics.customerRating > 0
-              ? { direction: "down" as const, value: "Needs Improvement" }
-              : undefined,
-      description: "Average customer rating",
+      change: metrics.customerRating >= 4.5 ? 5 : metrics.customerRating >= 4.0 ? 0 : -5,
     },
   ];
 
