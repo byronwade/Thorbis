@@ -26,9 +26,12 @@ import {
   getGapClass,
   getMaxWidthClass,
   getPaddingClass,
+  getBackgroundClass,
+  getInsetPaddingClass,
   getUnifiedLayoutConfig,
 } from "@/lib/layout/unified-layout-config";
 import { useSidebarStateStore } from "@/lib/stores/sidebar-state-store";
+import { cn } from "@/lib/utils";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -79,6 +82,22 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   );
   const gapClass = getGapClass(structure.gap);
   const isFullWidth = structure.maxWidth === "full";
+  const insetPaddingClass = getInsetPaddingClass(structure.insetPadding);
+  const backgroundClass = getBackgroundClass(structure.background);
+  const variant = structure.variant ?? "default";
+  const insetClassName = cn(
+    "relative w-full",
+    backgroundClass,
+    insetPaddingClass,
+    variant === "detail" && "flex flex-col gap-6"
+  );
+  const mainBaseClass = "flex w-full flex-1 flex-col overflow-y-auto";
+  const mainClassName = cn(
+    mainBaseClass,
+    gapClass,
+    paddingClass,
+    variant === "detail" && "px-0"
+  );
 
   // Right sidebar rendering - calculate from subscribed state
   const isRightSidebarOpen = rightSidebar?.show
@@ -137,8 +156,9 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
 
           {/* Main Content Area */}
           <SidebarInset
-            className="relative w-full"
+            className={insetClassName}
             data-has-right-sidebar={isRightSidebarOpen ? "true" : undefined}
+            data-layout-variant={variant}
           >
             {/* Page Toolbar (title, actions) */}
             {toolbar.show && (
@@ -157,15 +177,9 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
 
             {/* Page Content */}
             {isFullWidth ? (
-              <main
-                className={`flex w-full flex-1 flex-col overflow-y-auto ${gapClass} ${paddingClass}`}
-              >
-                {children}
-              </main>
+              <main className={mainClassName}>{children}</main>
             ) : (
-              <main
-                className={`flex w-full flex-1 flex-col overflow-y-auto ${gapClass} ${paddingClass}`}
-              >
+              <main className={mainClassName}>
                 <div className={`w-full ${maxWidthClass}`}>{children}</div>
               </main>
             )}

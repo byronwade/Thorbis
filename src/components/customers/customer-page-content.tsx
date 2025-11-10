@@ -31,9 +31,10 @@ import {
   Save,
   Hash,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import {
   UnifiedAccordionContent,
   UnifiedAccordionSection,
@@ -232,6 +234,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     }
   };
 
+  const handleCancel = () => {
+    setLocalCustomer(customer);
+    setHasChanges(false);
+  };
+
   // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -369,154 +376,270 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     ) : null,
   ].filter(Boolean);
 
-  const customHeader = (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="rounded-md bg-muted/50 shadow-sm">
-        <div className="flex flex-col gap-4 p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex-1 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
-              </div>
-              <Input
-                className={cn(
-                  "h-auto border-0 p-0 text-3xl font-semibold tracking-tight shadow-none focus-visible:ring-0 sm:text-4xl md:text-5xl",
-                )}
-                onChange={(e) => handlePrimaryNameChange(e.target.value)}
-                placeholder="Enter customer name..."
-                value={displayName}
-              />
-            </div>
-            {hasChanges && (
-              <div className="flex shrink-0 items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setLocalCustomer(customer);
-                    setHasChanges(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button size="sm" onClick={handleSave} disabled={isSaving}>
-                  <Save className="mr-2 h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            )}
-          </div>
+  const quickActionConfigs = [
+    {
+      key: "new-job",
+      label: "New Job",
+      icon: Plus,
+      onClick: () => router.push(`/dashboard/work/new?customerId=${customer.id}`),
+    },
+    {
+      key: "new-invoice",
+      label: "New Invoice",
+      icon: FileText,
+      variant: "secondary" as const,
+      onClick: () =>
+        router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`),
+    },
+    {
+      key: "add-property",
+      label: "Add Property",
+      icon: Building2,
+      variant: "outline" as const,
+      onClick: () =>
+        router.push(`/dashboard/properties/new?customerId=${customer.id}`),
+    },
+  ] as const;
 
-          <div className="flex flex-wrap items-center gap-3">
-            {primaryEmail && (
-              <a
-                className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                href={`mailto:${primaryEmail}`}
-              >
-                <Mail className="h-4 w-4" />
-                <span className="font-medium">{primaryEmail}</span>
-              </a>
-            )}
-            {primaryPhone && (
-              <a
-                className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                href={`tel:${primaryPhone}`}
-              >
-                <Phone className="h-4 w-4" />
-                <span className="font-medium">{primaryPhone}</span>
-              </a>
-            )}
-            {primaryProperty && (
-              <Link
-                className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                href={`/dashboard/properties/${primaryProperty.id}`}
-              >
-                <MapPin className="h-4 w-4" />
-                <span className="font-medium">
-                  {primaryProperty.name || primaryProperty.address}
-                </span>
-              </Link>
-            )}
-            {customerSince && (
-              <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-                <Calendar className="h-4 w-4" />
-                <span className="font-medium">
-                  Customer since {formatDate(customerSince)}
-                </span>
-              </div>
-            )}
-          </div>
+  const renderQuickActions = () =>
+    quickActionConfigs.map(({ key, label, icon: Icon, variant, onClick }) => (
+      <Button
+        key={key}
+        onClick={onClick}
+        size="sm"
+        variant={variant ?? "default"}
+      >
+        <Icon className="mr-2 h-4 w-4" />
+        {label}
+      </Button>
+    ));
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-              <TrendingUp className="h-4 w-4" />
-              <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Total Jobs
-                </span>
-                <span className="font-medium">
-                  {metrics?.totalJobs ?? jobs.length}
-                </span>
-              </div>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-              <Building2 className="h-4 w-4" />
-              <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Properties
-                </span>
-                <span className="font-medium">
-                  {metrics?.totalProperties ?? properties.length}
-                </span>
-              </div>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-              <FileText className="h-4 w-4" />
-              <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Outstanding
-                </span>
-                <span className="font-medium">
-                  {formatCurrency(outstandingBalance)}
-                </span>
-              </div>
-            </div>
-          </div>
+  const primaryHeaderActions = hasChanges
+    ? [
+        <Button
+          key="save"
+          onClick={handleSave}
+          size="sm"
+          disabled={isSaving}
+        >
+          <Save className="mr-2 h-4 w-4" />
+          {isSaving ? "Saving..." : "Save Changes"}
+        </Button>,
+        <Button key="cancel" onClick={handleCancel} size="sm" variant="outline">
+          Cancel
+        </Button>,
+      ]
+    : renderQuickActions();
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              onClick={() => router.push(`/dashboard/work/new?customerId=${customer.id}`)}
+  const secondaryHeaderActions = hasChanges ? renderQuickActions() : undefined;
+
+  const metadataItems: DetailPageHeaderConfig["metadata"] = [
+    {
+      label: "Outstanding Balance",
+      icon: <CreditCard className="h-3.5 w-3.5" />,
+      value: formatCurrency(outstandingBalance),
+      helperText: "Open invoices",
+    },
+    {
+      label: "Lifetime Revenue",
+      icon: <TrendingUp className="h-3.5 w-3.5" />,
+      value: formatCurrency(metrics?.totalRevenue ?? 0),
+    },
+    {
+      label: "Jobs",
+      icon: <Wrench className="h-3.5 w-3.5" />,
+      value: metrics?.totalJobs ?? jobs.length,
+      helperText: "All time",
+    },
+    {
+      label: "Properties",
+      icon: <Building2 className="h-3.5 w-3.5" />,
+      value: metrics?.totalProperties ?? properties.length,
+    },
+  ];
+
+  const subtitleContent = (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="inline-flex items-center gap-1">
+        <Calendar className="h-4 w-4" />
+        {customerSince
+          ? `Customer since ${formatDate(customerSince)}`
+          : "Customer since —"}
+      </span>
+      {primaryProperty ? (
+        <>
+          <span aria-hidden="true">•</span>
+          <Link
+            className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+            href={`/dashboard/properties/${primaryProperty.id}`}
+          >
+            <MapPin className="h-4 w-4" />
+            {primaryProperty.name || primaryProperty.address}
+          </Link>
+        </>
+      ) : null}
+    </div>
+  );
+
+  const avatarInitials = displayName
+    .split(" ")
+    .map((part) => part?.[0])
+    .filter(Boolean)
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const headerConfig: DetailPageHeaderConfig = {
+    title: displayName,
+    subtitle: subtitleContent,
+    badges: headerBadges,
+    actions: primaryHeaderActions,
+    secondaryActions: secondaryHeaderActions,
+    metadata: metadataItems,
+    leadingVisual: (
+      <Avatar className="h-12 w-12">
+        <AvatarImage
+          alt={displayName}
+          src={customer?.avatar_url ?? undefined}
+        />
+        <AvatarFallback>{avatarInitials || "CU"}</AvatarFallback>
+      </Avatar>
+    ),
+  };
+
+  const contactTileData: Array<{
+    key: string;
+    icon: LucideIcon;
+    label: string;
+    value: ReactNode;
+    href?: string;
+  }> = [
+    {
+      key: "primary-email",
+      icon: Mail,
+      label: "Primary Email",
+      value: primaryEmail ?? "Not provided",
+      href: primaryEmail ? `mailto:${primaryEmail}` : undefined,
+    },
+    {
+      key: "primary-phone",
+      icon: Phone,
+      label: "Primary Phone",
+      value: primaryPhone ?? "Not provided",
+      href: primaryPhone ? `tel:${primaryPhone}` : undefined,
+    },
+    {
+      key: "portal",
+      icon: Sparkles,
+      label: "Portal Access",
+      value: portalEnabled ? "Enabled" : "Disabled",
+    },
+    {
+      key: "membership",
+      icon: ShieldCheck,
+      label: "Membership",
+      value: membershipLabel ?? "Standard",
+    },
+  ];
+
+  const metricTileData: Array<{
+    key: string;
+    icon: LucideIcon;
+    label: string;
+    value: ReactNode;
+  }> = [
+    {
+      key: "outstanding",
+      icon: FileText,
+      label: "Outstanding",
+      value: formatCurrency(outstandingBalance),
+    },
+    {
+      key: "jobs",
+      icon: TrendingUp,
+      label: "Total Jobs",
+      value: metrics?.totalJobs ?? jobs.length,
+    },
+    {
+      key: "properties",
+      icon: Building2,
+      label: "Properties",
+      value: metrics?.totalProperties ?? properties.length,
+    },
+    {
+      key: "lifetime-revenue",
+      icon: Receipt,
+      label: "Lifetime Revenue",
+      value: formatCurrency(metrics?.totalRevenue ?? 0),
+    },
+  ];
+
+  const overviewSurface = (
+    <DetailPageSurface padding="lg" variant="muted">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3">
+          <Label className="text-xs font-medium uppercase text-muted-foreground">
+            Display Name
+          </Label>
+          <Input
+            className={cn(
+              "h-12 rounded-lg border border-border/40 bg-background px-4 text-xl font-semibold shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl"
+            )}
+            onChange={(e) => handlePrimaryNameChange(e.target.value)}
+            placeholder="Enter customer name..."
+            value={displayName}
+          />
+          <p className="text-xs text-muted-foreground">
+            Update how this customer appears across Stratos. Changes are saved
+            when you select Save changes.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {contactTileData.map(({ key, icon: Icon, label, value, href }) => (
+            <div
+              key={key}
+              className="rounded-lg border border-border/40 bg-background px-3 py-3"
             >
-              <Plus className="mr-2 h-4 w-4" />
-              New Job
-            </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() =>
-                router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`)
-              }
+              <div className="flex items-center gap-3">
+                <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium uppercase text-muted-foreground">
+                    {label}
+                  </span>
+                  {href ? (
+                    <a className="text-sm font-semibold hover:underline" href={href}>
+                      {value}
+                    </a>
+                  ) : (
+                    <span className="text-sm font-semibold">{value}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {metricTileData.map(({ key, icon: Icon, label, value }) => (
+            <div
+              key={key}
+              className="rounded-lg border border-border/40 bg-background px-3 py-3"
             >
-              <FileText className="mr-2 h-4 w-4" />
-              New Invoice
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                router.push(`/dashboard/properties/new?customerId=${customer.id}`)
-              }
-            >
-              <Building2 className="mr-2 h-4 w-4" />
-              Add Property
-            </Button>
-          </div>
+              <div className="flex items-center gap-3">
+                <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium uppercase text-muted-foreground">
+                    {label}
+                  </span>
+                  <span className="text-sm font-semibold">{value}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </DetailPageSurface>
   );
 
   const customSections = useMemo<UnifiedAccordionSection[]>(() => {
@@ -910,7 +1033,8 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
   return (
     <DetailPageContentLayout
-      customHeader={customHeader}
+      header={headerConfig}
+      beforeContent={overviewSurface}
       customSections={customSections}
       activities={activities}
       notes={[]}

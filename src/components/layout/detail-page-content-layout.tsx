@@ -11,18 +11,13 @@ import { NotesSection } from "./standard-sections/notes-section";
 import { AttachmentsSection } from "./standard-sections/attachments-section";
 import { RelatedItemsSection } from "./standard-sections/related-items-section";
 import { cn } from "@/lib/utils";
+import {
+  DetailPageShell,
+  DetailPageSurface,
+  type DetailPageHeaderConfig,
+} from "./detail-page-shell";
 
-interface DetailPageHeaderConfig {
-  title: string;
-  subtitle?: string;
-  badges?: ReactNode[];
-  actions?: ReactNode[];
-  metadata?: Array<{
-    icon?: ReactNode;
-    label: string;
-    value: ReactNode;
-  }>;
-}
+export type { DetailPageHeaderConfig };
 
 interface DetailPageContentLayoutProps {
   /** Header configuration */
@@ -53,6 +48,20 @@ interface DetailPageContentLayoutProps {
 
   /** Default open section ID */
   defaultOpenSection?: string;
+
+  /** Content rendered between header and main sections */
+  beforeContent?: ReactNode;
+
+  /** Content rendered after main sections */
+  afterContent?: ReactNode;
+
+  /** Custom gap classes applied to stacked surfaces */
+  contentGapClassName?: string;
+
+  /** Surface customisation */
+  surfacePadding?: "none" | "sm" | "md" | "lg";
+  surfaceVariant?: "default" | "muted" | "subtle" | "ghost";
+  surfaceClassName?: string;
 }
 
 export function DetailPageContentLayout({
@@ -71,6 +80,12 @@ export function DetailPageContentLayout({
   },
   className,
   defaultOpenSection,
+  beforeContent,
+  afterContent,
+  contentGapClassName,
+  surfacePadding = "none",
+  surfaceVariant = "default",
+  surfaceClassName,
 }: DetailPageContentLayoutProps) {
   // Build standard sections based on provided data and visibility settings
   const standardSections: UnifiedAccordionSection[] = [];
@@ -123,55 +138,25 @@ export function DetailPageContentLayout({
   const allSections = [...customSections, ...standardSections];
 
   return (
-    <div className={cn("flex flex-col", className)}>
-      {/* Header Section */}
-      {customHeader ? (
-        customHeader
-      ) : header ? (
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-          <div className="flex flex-col gap-6">
-            {/* Title and Actions */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold">{header.title}</h1>
-                {header.subtitle && (
-                  <p className="text-sm text-muted-foreground">{header.subtitle}</p>
-                )}
-                {header.badges && header.badges.length > 0 && (
-                  <div className="flex gap-2 flex-wrap">{header.badges}</div>
-                )}
-              </div>
-              {header.actions && header.actions.length > 0 && (
-                <div className="flex gap-2 flex-wrap">{header.actions}</div>
-              )}
-            </div>
-
-            {/* Metadata Grid */}
-            {header.metadata && header.metadata.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {header.metadata.map((item, index) => (
-                  <div key={index} className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground flex items-center gap-2">
-                      {item.icon}
-                      {item.label}
-                    </span>
-                    <div className="text-sm font-medium">{item.value}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      ) : null}
-
-      {/* Unified Accordion Section */}
-      <div className="mx-auto max-w-7xl w-full px-4 sm:px-6">
+    <DetailPageShell
+      className={cn("mx-auto w-full max-w-7xl", className)}
+      customHeader={customHeader}
+      header={header}
+      beforeContent={beforeContent}
+      afterContent={afterContent}
+      contentGapClassName={contentGapClassName ?? "gap-6"}
+    >
+      <DetailPageSurface
+        className={cn("overflow-hidden", surfaceClassName)}
+        padding={surfacePadding}
+        variant={surfaceVariant}
+      >
         <UnifiedAccordion
           sections={allSections}
           defaultOpenSection={defaultOpenSection || allSections[0]?.id}
         />
-      </div>
-    </div>
+      </DetailPageSurface>
+    </DetailPageShell>
   );
 }
 

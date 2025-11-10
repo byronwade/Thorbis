@@ -186,6 +186,16 @@ export type RightSidebarConfig = {
 /**
  * Page structure configuration
  */
+export type PageStructureVariant = "default" | "detail";
+
+export type PageStructureBackground =
+  | "default"
+  | "muted"
+  | "subtle"
+  | "transparent";
+
+export type PageStructureInsetPadding = "none" | "sm" | "md" | "lg";
+
 export type PageStructureConfig = {
   /** Max width constraint */
   maxWidth?:
@@ -210,6 +220,12 @@ export type PageStructureConfig = {
   gap?: "none" | "sm" | "md" | "lg";
   /** Whether content area has fixed height */
   fixedHeight?: boolean;
+  /** Layout variant for specialized styling */
+  variant?: PageStructureVariant;
+  /** Background treatment for the content area */
+  background?: PageStructureBackground;
+  /** Additional inset padding applied to the main container */
+  insetPadding?: PageStructureInsetPadding;
 };
 
 /**
@@ -253,6 +269,9 @@ const DEFAULT_STRUCTURE: PageStructureConfig = {
   padding: "md",
   gap: "md",
   fixedHeight: false,
+  variant: "default",
+  background: "default",
+  insetPadding: "none",
 };
 
 const DEFAULT_HEADER: HeaderConfig = {
@@ -270,11 +289,27 @@ const DEFAULT_SIDEBAR: LeftSidebarConfig = {
 };
 
 // Full width page structure (for data tables, etc.)
+// STANDARDIZED: All list pages use this structure
 const FULL_WIDTH_STRUCTURE: PageStructureConfig = {
   maxWidth: "full",
   padding: "none",
   gap: "none",
   fixedHeight: true,
+  variant: "default",
+  background: "default",
+  insetPadding: "none",
+};
+
+// STANDARDIZED: All detail pages use this structure
+// This ensures consistent layout across all detail pages (customers, jobs, invoices, properties, etc.)
+const DETAIL_PAGE_STRUCTURE: PageStructureConfig = {
+  maxWidth: "full",
+  padding: "none",
+  gap: "lg",
+  fixedHeight: false,
+  variant: "detail",
+  background: "default",
+  insetPadding: "md",
 };
 
 // ============================================================================
@@ -405,12 +440,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.CUSTOMER_DETAIL,
     config: {
-      structure: {
-        maxWidth: "full",
-        padding: "none",
-        gap: "none",
-        fixedHeight: false,
-      },
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
@@ -664,7 +694,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.WORK_PRICEBOOK_DETAILS,
     config: {
-      structure: FULL_WIDTH_STRUCTURE,
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
@@ -694,7 +724,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.WORK_INVOICES_DETAILS,
     config: {
-      structure: DEFAULT_STRUCTURE, // Use default structure like other pages
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
@@ -758,7 +788,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.PURCHASE_ORDER_DETAILS,
     config: {
-      structure: FULL_WIDTH_STRUCTURE,
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: false, // Purchase order details page has its own header, no toolbar needed
@@ -768,14 +798,15 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       },
     },
     priority: 57,
-    description: "Purchase order details page - full width with custom header, no toolbar",
+    description:
+      "Purchase order details page - full width with custom header, no toolbar",
   },
 
   // Job details pages
   {
     pattern: ROUTE_PATTERNS.JOB_DETAILS,
     config: {
-      structure: FULL_WIDTH_STRUCTURE,
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
@@ -812,7 +843,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.COMMUNICATION_DETAIL,
     config: {
-      structure: FULL_WIDTH_STRUCTURE,
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
@@ -952,8 +983,12 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     config: {
       structure: {
         maxWidth: "7xl",
-        padding: "md",
-        gap: "md",
+        padding: "none",
+        gap: "lg",
+        fixedHeight: false,
+        variant: "detail",
+        background: "default",
+        insetPadding: "md",
       },
       header: DEFAULT_HEADER,
       toolbar: {
@@ -1161,5 +1196,35 @@ export function getGapClass(gap: PageStructureConfig["gap"]): string {
       return "gap-6";
     default:
       return "gap-4";
+  }
+}
+
+export function getBackgroundClass(
+  background: PageStructureConfig["background"]
+): string {
+  switch (background) {
+    case "muted":
+      return "bg-muted";
+    case "subtle":
+      return "bg-muted/40";
+    case "transparent":
+      return "bg-transparent";
+    default:
+      return "bg-background";
+  }
+}
+
+export function getInsetPaddingClass(
+  insetPadding: PageStructureConfig["insetPadding"]
+): string {
+  switch (insetPadding) {
+    case "sm":
+      return "px-4 py-4";
+    case "md":
+      return "px-6 py-6";
+    case "lg":
+      return "px-8 py-8";
+    default:
+      return "";
   }
 }

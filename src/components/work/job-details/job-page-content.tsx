@@ -18,7 +18,9 @@ import {
   ChevronRight,
   Clock,
   Copy,
+  CreditCard,
   Download,
+  DollarSign,
   Edit2,
   FileText,
   Globe,
@@ -32,13 +34,14 @@ import {
   Save,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
   User,
   Wrench,
   X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { archiveJob, updateJob } from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";
@@ -93,6 +96,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import {
+  DetailPageSurface,
+  type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-shell";
 import {
   UnifiedAccordionContent,
   UnifiedAccordionSection,
@@ -1161,320 +1168,338 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     }
   };
 
-  const quickActionButtons: Array<{
-    key: string;
-    label: string;
-    icon: LucideIcon;
-    tooltip: string;
-    href?: string;
-    onClick?: () => void;
-    disabled?: boolean;
-    className?: string;
-  }> = [
-    ...(metrics
-      ? [
-          {
-            key: "statistics",
-            label: "Statistics",
-            icon: BarChart3,
-            tooltip: "Review profitability, labor, and material metrics",
-            onClick: () => setIsStatisticsOpen(true),
-          },
-        ]
-      : []),
+  // Build breadcrumbs
+  const breadcrumbs = (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <Link
+        className="font-medium text-foreground transition-colors hover:text-primary"
+        href="/dashboard/work"
+      >
+        Jobs
+      </Link>
+      <ChevronRight className="size-3 text-muted-foreground" />
+      <span className="font-semibold text-foreground">#{job.job_number}</span>
+    </div>
+  );
+
+  // Build subtitle with customer and property links
+  const subtitleContent = (
+    <div className="flex flex-wrap items-center gap-2">
+      {customer && (
+        <Link
+          className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          href={`/dashboard/customers/${customer.id}`}
+        >
+          <User className="h-4 w-4" />
+          {customer.first_name} {customer.last_name}
+        </Link>
+      )}
+      {customer && property && <span aria-hidden="true">•</span>}
+      {property && (
+        <Link
+          className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          href={`/dashboard/properties/${property.id}`}
+        >
+          <MapPin className="h-4 w-4" />
+          {property.name || property.address}
+        </Link>
+      )}
+    </div>
+  );
+
+  // Build action buttons
+  const primaryActions: ReactNode[] = [];
+  
+  if (metrics) {
+    primaryActions.push(
+      <Tooltip key="statistics" delayDuration={300}>
+        <TooltipTrigger asChild>
+          <Button
+            aria-label="Statistics"
+            onClick={() => setIsStatisticsOpen(true)}
+            size="sm"
+            variant="outline"
+          >
+            <BarChart3 className="size-4" />
+            <span className="hidden sm:inline">Statistics</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" align="end">
+          Review profitability, labor, and material metrics
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  primaryActions.push(
+    <Tooltip key="invoice" delayDuration={300}>
+      <TooltipTrigger asChild>
+        <Button aria-label="Invoice" asChild size="sm" variant="outline">
+          <Link href={`/dashboard/work/invoices/new?jobId=${job.id}`}>
+            <Receipt className="size-4" />
+            <span className="hidden sm:inline">Invoice</span>
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" align="end">
+        Generate a customer invoice
+      </TooltipContent>
+    </Tooltip>,
+    <Tooltip key="estimate" delayDuration={300}>
+      <TooltipTrigger asChild>
+        <Button aria-label="Estimate" asChild size="sm" variant="outline">
+          <Link href={`/dashboard/work/estimates/new?jobId=${job.id}`}>
+            <FileText className="size-4" />
+            <span className="hidden sm:inline">Estimate</span>
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" align="end">
+        Create a follow-up estimate
+      </TooltipContent>
+    </Tooltip>,
+    <Tooltip key="clone" delayDuration={300}>
+      <TooltipTrigger asChild>
+        <Button
+          aria-label="Clone"
+          onClick={() => router.push(`/dashboard/work/new?cloneFrom=${job.id}`)}
+          size="sm"
+          variant="outline"
+        >
+          <Copy className="size-4" />
+          <span className="hidden sm:inline">Clone</span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" align="end">
+        Duplicate this job into a new draft
+      </TooltipContent>
+    </Tooltip>
+  );
+
+  const secondaryActions: ReactNode[] = [
+    <Tooltip key="archive" delayDuration={300}>
+      <TooltipTrigger asChild>
+        <Button
+          aria-label="Archive"
+          className="border-destructive/40 text-destructive hover:bg-destructive/10"
+          disabled={isArchiving}
+          onClick={() => setIsArchiveDialogOpen(true)}
+          size="sm"
+          variant="outline"
+        >
+          <Archive className="size-4" />
+          <span className="hidden sm:inline">Archive</span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" align="end">
+        Archive this job and remove it from active workflows
+      </TooltipContent>
+    </Tooltip>,
+  ];
+
+  // Add save/cancel buttons if there are changes
+  if (hasChanges) {
+    secondaryActions.unshift(
+      <Button
+        key="cancel"
+        onClick={() => {
+          setLocalJob({
+            ...job,
+            priority: job.priority || "medium",
+          });
+          setHasChanges(false);
+        }}
+        size="sm"
+        variant="outline"
+      >
+        Cancel
+      </Button>,
+      <Button
+        key="save"
+        disabled={isSaving}
+        onClick={handleSave}
+        size="sm"
+      >
+        <Save className="mr-2 h-4 w-4" />
+        {isSaving ? "Saving..." : "Save Changes"}
+      </Button>
+    );
+  }
+
+  // Build metadata items
+  const metadataItems: DetailPageHeaderConfig["metadata"] = [
     {
-      key: "invoice",
-      label: "Invoice",
-      icon: Receipt,
-      tooltip: "Generate a customer invoice",
-      href: `/dashboard/work/invoices/new?jobId=${job.id}`,
+      label: "Total Amount",
+      icon: <DollarSign className="h-3.5 w-3.5" />,
+      value: formatCurrency(metrics.totalAmount),
     },
     {
-      key: "estimate",
-      label: "Estimate",
-      icon: FileText,
-      tooltip: "Create a follow-up estimate",
-      href: `/dashboard/work/estimates/new?jobId=${job.id}`,
+      label: "Paid Amount",
+      icon: <CreditCard className="h-3.5 w-3.5" />,
+      value: formatCurrency(metrics.paidAmount),
+      helperText: `${formatCurrency(metrics.totalAmount - metrics.paidAmount)} remaining`,
     },
     {
-      key: "clone",
-      label: "Clone",
-      icon: Copy,
-      tooltip: "Duplicate this job into a new draft",
-      onClick: () => router.push(`/dashboard/work/new?cloneFrom=${job.id}`),
+      label: "Labor Hours",
+      icon: <Clock className="h-3.5 w-3.5" />,
+      value: formatHours(metrics.totalLaborHours),
+      helperText: metrics.estimatedLaborHours
+        ? `${formatHours(metrics.estimatedLaborHours)} estimated`
+        : undefined,
     },
     {
-      key: "archive",
-      label: "Archive",
-      icon: Archive,
-      tooltip: "Archive this job and remove it from active workflows",
-      onClick: () => setIsArchiveDialogOpen(true),
-      disabled: isArchiving,
-      className:
-        "border-destructive/40 text-destructive hover:bg-destructive/10",
+      label: "Profit Margin",
+      icon: <TrendingUp className="h-3.5 w-3.5" />,
+      value: `${metrics.profitMargin.toFixed(1)}%`,
     },
   ];
 
-  const customHeader = (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="rounded-2xl border border-border/60 bg-card shadow-sm">
-        <div className="relative">
-          <div className="sticky top-[4.5rem] z-30 rounded-t-2xl border-b border-border/60 bg-card/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-card/75 sm:px-8">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Link
-                  className="font-medium text-foreground transition-colors hover:text-primary"
-                  href="/dashboard/work"
-                >
-                  Jobs
-                </Link>
-                <ChevronRight className="size-3 text-muted-foreground" />
-                <span className="font-semibold text-foreground">
-                  #{job.job_number}
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {quickActionButtons.map((action) => {
-                  const Icon = action.icon;
-                  const buttonContent = action.href ? (
-                    <Button
-                      aria-label={action.label}
-                      asChild
-                      className={cn(
-                        "gap-2 whitespace-nowrap",
-                        action.className
-                      )}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Link href={action.href}>
-                        <Icon className="size-4" />
-                        <span className="hidden sm:inline">{action.label}</span>
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button
-                      aria-label={action.label}
-                      className={cn(
-                        "gap-2 whitespace-nowrap",
-                        action.className
-                      )}
-                      disabled={action.disabled}
-                      onClick={action.onClick}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      <Icon className="size-4" />
-                      <span className="hidden sm:inline">{action.label}</span>
-                    </Button>
-                  );
+  // Build header config
+  const headerConfig: DetailPageHeaderConfig = {
+    breadcrumbs,
+    title: (
+      <Input
+        className="h-auto border-0 p-0 font-bold text-2xl tracking-tight shadow-none focus-visible:ring-0 md:text-3xl"
+        onChange={(e) => handleFieldChange("title", e.target.value)}
+        placeholder="Enter job title..."
+        value={localJob.title}
+      />
+    ),
+    subtitle: subtitleContent,
+    badges: headerBadges,
+    actions: primaryActions,
+    secondaryActions: secondaryActions.length > 0 ? secondaryActions : undefined,
+    metadata: metadataItems,
+  };
 
-                  return (
-                    <Tooltip key={action.key} delayDuration={300}>
-                      <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
-                      <TooltipContent side="bottom" align="end">
-                        {action.tooltip}
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                })}
+  // Content to show before sections (editable fields, enrichment, travel time)
+  const beforeContent = (
+    <div className="space-y-6">
+      {/* Job Enrichment */}
+      <JobEnrichmentInline
+        enrichmentData={jobData.enrichmentData}
+        jobId={jobData.job.id}
+        property={
+          property
+            ? {
+                address: property.address,
+                city: property.city,
+                state: property.state,
+                zip_code: property.zip_code,
+                lat: property.lat,
+                lon: property.lon,
+              }
+            : undefined
+        }
+      />
+
+      {/* Travel Time */}
+      {property && (
+        <div className="overflow-hidden rounded-xl border border-border/60 shadow-sm">
+          <TravelTime property={property} />
+        </div>
+      )}
+
+      {/* Editable Fields */}
+      <DetailPageSurface padding="md" variant="default">
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4">
+            {mounted ? (
+              <Select
+                onValueChange={(value) => handleFieldChange("status", value)}
+                value={localJob.status || undefined}
+              >
+                <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
+                  <SelectValue placeholder="Set status...">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      <span className="font-medium">
+                        {localJob.status || "Set status..."}
+                      </span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="quoted">Quoted</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="on_hold">On Hold</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
+                <CheckCircle className="h-4 w-4" />
+                <span className="font-medium">{localJob.status || "—"}</span>
               </div>
+            )}
+
+            {mounted ? (
+              <Select
+                onValueChange={(value) => handleFieldChange("priority", value)}
+                value={localJob.priority || undefined}
+              >
+                <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
+                  <SelectValue placeholder="Set priority...">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      <span className="font-medium">
+                        {localJob.priority || "Set priority..."}
+                      </span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="urgent">Urgent</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
+                <AlertCircle className="h-4 w-4" />
+                <span className="font-medium">{localJob.priority || "—"}</span>
+              </div>
+            )}
+
+            <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+              <Wrench className="h-4 w-4" />
+              <Input
+                className="h-auto w-auto min-w-[120px] border-0 bg-transparent p-0 font-medium shadow-none focus-visible:ring-0"
+                onChange={(e) => handleFieldChange("service_type", e.target.value)}
+                placeholder="Enter type..."
+                value={localJob.service_type || localJob.job_type || ""}
+              />
             </div>
+
+            {assignedUser && (
+              <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+                <User className="h-4 w-4" />
+                <span className="font-medium">{assignedUser.name}</span>
+              </div>
+            )}
           </div>
 
-          <div className="flex flex-col gap-8 px-6 py-6 sm:px-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex-1 space-y-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  {headerBadges.map((badge, index) => (
-                    <span key={index}>{badge}</span>
-                  ))}
-                </div>
-                <Input
-                  className="h-auto border-0 p-0 font-bold text-4xl tracking-tight shadow-none focus-visible:ring-0 md:text-5xl"
-                  onChange={(e) => handleFieldChange("title", e.target.value)}
-                  placeholder="Enter job title..."
-                  value={localJob.title}
-                />
-                <JobEnrichmentInline
-                  enrichmentData={jobData.enrichmentData}
-                  jobId={jobData.job.id}
-                  property={
-                    property
-                      ? {
-                          address: property.address,
-                          city: property.city,
-                          state: property.state,
-                          zip_code: property.zip_code,
-                          lat: property.lat,
-                          lon: property.lon,
-                        }
-                      : undefined
-                  }
-                />
-              </div>
-              {hasChanges && (
-                <div className="flex shrink-0 items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setLocalJob({
-                        ...job,
-                        priority: job.priority || "medium",
-                      });
-                      setHasChanges(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button size="sm" onClick={handleSave} disabled={isSaving}>
-                    <Save className="mr-2 h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              )}
-            </div>
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-sm">Description:</span>
+            <Textarea
+              className="min-h-[80px] resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
+              onChange={(e) => handleFieldChange("description", e.target.value)}
+              placeholder="Add a description..."
+              value={localJob.description || ""}
+            />
+          </div>
 
-            {(customer || property) && (
-              <div className="flex flex-wrap items-center gap-2">
-                {customer && (
-                  <Link
-                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                    href={`/dashboard/customers/${customer.id}`}
-                  >
-                    <User className="h-4 w-4" />
-                    <span className="font-medium">
-                      {customer.first_name} {customer.last_name}
-                    </span>
-                  </Link>
-                )}
-                {property && (
-                  <Link
-                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                    href={`/dashboard/properties/${property.id}`}
-                  >
-                    <MapPin className="h-4 w-4" />
-                    <span className="font-medium">
-                      {property.name || property.address}
-                    </span>
-                  </Link>
-                )}
-              </div>
-            )}
-
-            {property && (
-              <div className="overflow-hidden rounded-xl border border-border/60 shadow-sm">
-                <TravelTime property={property} />
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4">
-                {mounted ? (
-                  <Select
-                    onValueChange={(value) => handleFieldChange("status", value)}
-                    value={localJob.status || undefined}
-                  >
-                    <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
-                      <SelectValue placeholder="Set status...">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4" />
-                          <span className="font-medium">
-                            {localJob.status || "Set status..."}
-                          </span>
-                        </div>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="quoted">Quoted</SelectItem>
-                      <SelectItem value="scheduled">Scheduled</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="on_hold">On Hold</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">
-                      {localJob.status || "—"}
-                    </span>
-                  </div>
-                )}
-
-                {mounted ? (
-                  <Select
-                    onValueChange={(value) => handleFieldChange("priority", value)}
-                    value={localJob.priority || undefined}
-                  >
-                    <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
-                      <SelectValue placeholder="Set priority...">
-                        <div className="flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4" />
-                          <span className="font-medium">
-                            {localJob.priority || "Set priority..."}
-                          </span>
-                        </div>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="font-medium">
-                      {localJob.priority || "—"}
-                    </span>
-                  </div>
-                )}
-
-                <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
-                  <Wrench className="h-4 w-4" />
-                  <Input
-                    className="h-auto w-auto min-w-[120px] border-0 bg-transparent p-0 font-medium shadow-none focus-visible:ring-0"
-                    onChange={(e) => handleFieldChange("service_type", e.target.value)}
-                    placeholder="Enter type..."
-                    value={localJob.service_type || localJob.job_type || ""}
-                  />
-                </div>
-
-                {assignedUser && (
-                  <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
-                    <User className="h-4 w-4" />
-                    <span className="font-medium">{assignedUser.name}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <span className="text-muted-foreground text-sm">Description:</span>
-                <Textarea
-                  className="min-h-[80px] resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
-                  onChange={(e) =>
-                    handleFieldChange("description", e.target.value)
-                  }
-                  placeholder="Add a description..."
-                  value={localJob.description || ""}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <JobQuickActions currentStatus={job.status} jobId={job.id} />
-            </div>
+          <div className="flex justify-end">
+            <JobQuickActions currentStatus={job.status} jobId={job.id} />
           </div>
         </div>
-      </div>
+      </DetailPageSurface>
     </div>
   );
+
 
   const sections: UnifiedAccordionSection[] = [];
 
@@ -2568,7 +2593,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   return (
     <>
       <DetailPageContentLayout
-        customHeader={customHeader}
+        header={headerConfig}
+        beforeContent={beforeContent}
         customSections={sections}
         activities={activities}
         notes={jobNotes}
