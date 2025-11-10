@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { endOfDay, startOfDay } from "@/lib/schedule-utils";
 
 const CENTS_IN_DOLLAR = 100;
@@ -138,7 +137,7 @@ function resolveName(
   return combined.length > 0 ? combined : undefined;
 }
 
-export async function getMissionControlData(): Promise<MissionControlData> {
+export async function getMissionControlData(companyId?: string): Promise<MissionControlData> {
   try {
     const supabase = await createClient();
 
@@ -146,11 +145,11 @@ export async function getMissionControlData(): Promise<MissionControlData> {
       return EMPTY_DATA;
     }
 
-    const activeCompanyId = await getActiveCompanyId();
-
-    if (!activeCompanyId) {
+    if (!companyId) {
       return EMPTY_DATA;
     }
+
+    const activeCompanyId = companyId;
 
     const now = new Date();
     const dayStart = startOfDay(now).toISOString();
