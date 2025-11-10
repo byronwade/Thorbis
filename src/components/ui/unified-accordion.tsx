@@ -11,6 +11,7 @@ export interface UnifiedAccordionSection {
   count?: number;
   content: ReactNode;
   defaultOpen?: boolean;
+  actions?: ReactNode;
 }
 
 interface UnifiedAccordionProps {
@@ -41,27 +42,37 @@ export function UnifiedAccordion({
               data-state={isOpen ? "open" : "closed"}
               data-orientation="vertical"
             >
-              <button
-                type="button"
-                onClick={() => setOpenSection(isOpen ? null : section.id)}
+              <div
                 className={cn(
-                  "ease flex h-12 w-full items-center justify-between border-0 bg-transparent px-4 transition-all duration-200 hover:bg-muted/50 cursor-pointer disabled:text-muted-foreground",
-                  !isLast && "border-b border-border",
+                  "group flex items-center gap-3 px-4 transition-colors",
+                  !isLast && "border-b border-border/60",
+                  isOpen
+                    ? "bg-muted/60"
+                    : "bg-background/80 hover:bg-muted/40 dark:bg-muted/30",
                   isLast && !isOpen && "rounded-b-md"
                 )}
-                data-radix-collection-item=""
               >
-                <span className="flex items-center gap-2 w-full">
+                <button
+                  type="button"
+                  onClick={() => setOpenSection(isOpen ? null : section.id)}
+                  className={cn(
+                    "flex h-12 w-full flex-1 items-center gap-2 bg-transparent text-left transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 group-hover:bg-muted/40",
+                    section.actions && "pr-2"
+                  )}
+                  data-radix-collection-item=""
+                >
                   <ChevronRight
                     className={cn(
-                      "ease-[ease] size-4 transition-transform duration-200",
+                      "ease-[ease] size-4 flex-shrink-0 transition-transform duration-200",
                       isOpen && "rotate-90"
                     )}
                   />
-                  <span className="flex items-center gap-2 w-full">
-                    {section.icon && (
-                      <span className="text-muted-foreground">{section.icon}</span>
-                    )}
+                  {section.icon && (
+                    <span className="flex flex-shrink-0 items-center text-muted-foreground">
+                      {section.icon}
+                    </span>
+                  )}
+                  <span className="flex flex-1 items-center gap-2">
                     <span className="text-sm font-medium">{section.title}</span>
                     {section.count !== undefined && (
                       <span className="text-xs text-muted-foreground">
@@ -69,8 +80,17 @@ export function UnifiedAccordion({
                       </span>
                     )}
                   </span>
-                </span>
-              </button>
+                </button>
+                {section.actions && (
+                  <div
+                    className="flex items-center gap-2 py-2"
+                    onClick={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => event.stopPropagation()}
+                  >
+                    {section.actions}
+                  </div>
+                )}
+              </div>
               <div
                 data-state={isOpen ? "open" : "closed"}
                 role="region"
@@ -99,6 +119,6 @@ export function UnifiedAccordionContent({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={cn("p-4", className)}>{children}</div>;
+  return <div className={cn("p-4 sm:p-6", className)}>{children}</div>;
 }
 

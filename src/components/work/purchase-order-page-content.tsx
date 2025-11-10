@@ -426,10 +426,10 @@ export function PurchaseOrderPageContent({
     });
   }
 
-  // Add Attachments section
+  // Add Documents section (renamed from attachments to avoid duplicate key)
   accordionSections.push({
-    id: "attachments",
-    title: "Attachments",
+    id: "documents",
+    title: "Documents",
     icon: <Paperclip className="size-4" />,
     count: attachments.length,
     content: <AttachmentsSection attachments={attachments} />,

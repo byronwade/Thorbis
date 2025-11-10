@@ -5,15 +5,19 @@
 
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import {
+  Archive,
   Activity,
   AlertCircle,
+  BarChart3,
   Building2,
   Calendar,
   Camera,
   CheckCircle,
   ChevronRight,
   Clock,
+  Copy,
   Download,
   Edit2,
   FileText,
@@ -35,7 +39,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { updateJob } from "@/actions/jobs";
+import { archiveJob, updateJob } from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";
 import { SMSDialog } from "@/components/communication/sms-dialog";
@@ -93,6 +97,12 @@ import {
   UnifiedAccordionContent,
   UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 import { InlinePhotoUploader } from "./InlinePhotoUploader";
 import { JobAppointmentsTable } from "./job-appointments-table";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
@@ -102,6 +112,7 @@ import { JobPurchaseOrdersTable } from "./job-purchase-orders-table";
 import { JobQuickActions } from "./job-quick-actions";
 import { TravelTime } from "./travel-time";
 import { PropertyLocationVisual } from "./widgets/property-location-visual";
+import { JobStatisticsSheet } from "./job-statistics-sheet";
 
 type JobPageContentProps = {
   jobData: any;
@@ -120,6 +131,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [showUploader, setShowUploader] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
 
   // Prevent hydration mismatch by only rendering Radix components after mount
   useEffect(() => {
@@ -156,6 +170,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   // Local state for optimistic updates
   const [customer, setCustomer] = useState(initialCustomer);
   const [property, setProperty] = useState(initialProperty);
+
+  const hasMapsApiKey = Boolean(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
+  const canShowInteractiveMap =
+    Boolean(property?.lat && property?.lon) || hasMapsApiKey;
 
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
   const [propertySearchQuery, setPropertySearchQuery] = useState("");
@@ -1124,186 +1142,335 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     ) : null,
   ].filter(Boolean);
 
+  const handleArchiveJob = async () => {
+    setIsArchiving(true);
+    try {
+      const result = await archiveJob(job.id);
+      if (result.success) {
+        toast.success("Job archived successfully");
+        setIsArchiveDialogOpen(false);
+        router.push("/dashboard/work");
+        router.refresh();
+      } else {
+        toast.error(result.error || "Failed to archive job");
+      }
+    } catch {
+      toast.error("Failed to archive job");
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
+  const quickActionButtons: Array<{
+    key: string;
+    label: string;
+    icon: LucideIcon;
+    tooltip: string;
+    href?: string;
+    onClick?: () => void;
+    disabled?: boolean;
+    className?: string;
+  }> = [
+    ...(metrics
+      ? [
+          {
+            key: "statistics",
+            label: "Statistics",
+            icon: BarChart3,
+            tooltip: "Review profitability, labor, and material metrics",
+            onClick: () => setIsStatisticsOpen(true),
+          },
+        ]
+      : []),
+    {
+      key: "invoice",
+      label: "Invoice",
+      icon: Receipt,
+      tooltip: "Generate a customer invoice",
+      href: `/dashboard/work/invoices/new?jobId=${job.id}`,
+    },
+    {
+      key: "estimate",
+      label: "Estimate",
+      icon: FileText,
+      tooltip: "Create a follow-up estimate",
+      href: `/dashboard/work/estimates/new?jobId=${job.id}`,
+    },
+    {
+      key: "clone",
+      label: "Clone",
+      icon: Copy,
+      tooltip: "Duplicate this job into a new draft",
+      onClick: () => router.push(`/dashboard/work/new?cloneFrom=${job.id}`),
+    },
+    {
+      key: "archive",
+      label: "Archive",
+      icon: Archive,
+      tooltip: "Archive this job and remove it from active workflows",
+      onClick: () => setIsArchiveDialogOpen(true),
+      disabled: isArchiving,
+      className:
+        "border-destructive/40 text-destructive hover:bg-destructive/10",
+    },
+  ];
+
   const customHeader = (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="rounded-md bg-muted/50 shadow-sm">
-        <div className="flex flex-col gap-6 p-4 sm:p-6">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex-1 space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
-              </div>
-              <Input
-                className="h-auto border-0 p-0 font-bold text-4xl tracking-tight shadow-none focus-visible:ring-0 md:text-5xl"
-                onChange={(e) => handleFieldChange("title", e.target.value)}
-                placeholder="Enter job title..."
-                value={localJob.title}
-              />
-              <JobEnrichmentInline
-                enrichmentData={jobData.enrichmentData}
-                jobId={jobData.job.id}
-                property={
-                  property
-                    ? {
-                        address: property.address,
-                        city: property.city,
-                        state: property.state,
-                        zip_code: property.zip_code,
-                        lat: property.lat,
-                        lon: property.lon,
-                      }
-                    : undefined
-                }
-              />
-            </div>
-            {hasChanges && (
-              <div className="flex shrink-0 items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setLocalJob({
-                      ...job,
-                      priority: job.priority || "medium",
-                    });
-                    setHasChanges(false);
-                  }}
+      <div className="rounded-2xl border border-border/60 bg-card shadow-sm">
+        <div className="relative">
+          <div className="sticky top-[4.5rem] z-30 rounded-t-2xl border-b border-border/60 bg-card/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-card/75 sm:px-8">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Link
+                  className="font-medium text-foreground transition-colors hover:text-primary"
+                  href="/dashboard/work"
                 >
-                  Cancel
-                </Button>
-                <Button size="sm" onClick={handleSave} disabled={isSaving}>
-                  <Save className="mr-2 h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save Changes"}
-                </Button>
+                  Jobs
+                </Link>
+                <ChevronRight className="size-3 text-muted-foreground" />
+                <span className="font-semibold text-foreground">
+                  #{job.job_number}
+                </span>
               </div>
-            )}
+              <div className="flex flex-wrap items-center gap-2">
+                {quickActionButtons.map((action) => {
+                  const Icon = action.icon;
+                  const buttonContent = action.href ? (
+                    <Button
+                      aria-label={action.label}
+                      asChild
+                      className={cn(
+                        "gap-2 whitespace-nowrap",
+                        action.className
+                      )}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Link href={action.href}>
+                        <Icon className="size-4" />
+                        <span className="hidden sm:inline">{action.label}</span>
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      aria-label={action.label}
+                      className={cn(
+                        "gap-2 whitespace-nowrap",
+                        action.className
+                      )}
+                      disabled={action.disabled}
+                      onClick={action.onClick}
+                      size="sm"
+                      type="button"
+                      variant="outline"
+                    >
+                      <Icon className="size-4" />
+                      <span className="hidden sm:inline">{action.label}</span>
+                    </Button>
+                  );
+
+                  return (
+                    <Tooltip key={action.key} delayDuration={300}>
+                      <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+                      <TooltipContent side="bottom" align="end">
+                        {action.tooltip}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {(customer || property) && (
-            <div className="flex flex-wrap items-center gap-3">
-              {customer && (
-                <Link
-                  className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                  href={`/dashboard/customers/${customer.id}`}
-                >
-                  <User className="h-4 w-4" />
-                  <span className="font-medium">
-                    {customer.first_name} {customer.last_name}
-                  </span>
-                </Link>
-              )}
-              {property && (
-                <Link
-                  className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                  href={`/dashboard/properties/${property.id}`}
-                >
-                  <MapPin className="h-4 w-4" />
-                  <span className="font-medium">
-                    {property.name || property.address}
-                  </span>
-                </Link>
-              )}
-            </div>
-          )}
-
-          {property && <TravelTime property={property} />}
-
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              {mounted ? (
-                <Select
-                  onValueChange={(value) => handleFieldChange("status", value)}
-                  value={localJob.status || undefined}
-                >
-                  <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
-                    <SelectValue placeholder="Set status...">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="font-medium">
-                          {localJob.status || "Set status..."}
-                        </span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="quoted">Quoted</SelectItem>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="on_hold">On Hold</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-                  <CheckCircle className="h-4 w-4" />
-                  <span className="font-medium">{localJob.status || "—"}</span>
+          <div className="flex flex-col gap-8 px-6 py-6 sm:px-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex-1 space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  {headerBadges.map((badge, index) => (
+                    <span key={index}>{badge}</span>
+                  ))}
                 </div>
-              )}
-
-              {mounted ? (
-                <Select
-                  onValueChange={(value) => handleFieldChange("priority", value)}
-                  value={localJob.priority || undefined}
-                >
-                  <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
-                    <SelectValue placeholder="Set priority...">
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4" />
-                        <span className="font-medium">
-                          {localJob.priority || "Set priority..."}
-                        </span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-                  <AlertCircle className="h-4 w-4" />
-                  <span className="font-medium">
-                    {localJob.priority || "—"}
-                  </span>
-                </div>
-              )}
-
-              <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
-                <Wrench className="h-4 w-4" />
                 <Input
-                  className="h-auto w-auto min-w-[120px] border-0 bg-transparent p-0 font-medium shadow-none focus-visible:ring-0"
-                  onChange={(e) => handleFieldChange("service_type", e.target.value)}
-                  placeholder="Enter type..."
-                  value={localJob.service_type || localJob.job_type || ""}
+                  className="h-auto border-0 p-0 font-bold text-4xl tracking-tight shadow-none focus-visible:ring-0 md:text-5xl"
+                  onChange={(e) => handleFieldChange("title", e.target.value)}
+                  placeholder="Enter job title..."
+                  value={localJob.title}
+                />
+                <JobEnrichmentInline
+                  enrichmentData={jobData.enrichmentData}
+                  jobId={jobData.job.id}
+                  property={
+                    property
+                      ? {
+                          address: property.address,
+                          city: property.city,
+                          state: property.state,
+                          zip_code: property.zip_code,
+                          lat: property.lat,
+                          lon: property.lon,
+                        }
+                      : undefined
+                  }
                 />
               </div>
-
-              {assignedUser && (
-                <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
-                  <User className="h-4 w-4" />
-                  <span className="font-medium">{assignedUser.name}</span>
+              {hasChanges && (
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setLocalJob({
+                        ...job,
+                        priority: job.priority || "medium",
+                      });
+                      setHasChanges(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {isSaving ? "Saving..." : "Save Changes"}
+                  </Button>
                 </div>
               )}
             </div>
 
-            <div className="space-y-1">
-              <span className="text-muted-foreground text-sm">Description:</span>
-              <Textarea
-                className="min-h-[80px] resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
-                onChange={(e) => handleFieldChange("description", e.target.value)}
-                placeholder="Add a description..."
-                value={localJob.description || ""}
-              />
+            {(customer || property) && (
+              <div className="flex flex-wrap items-center gap-2">
+                {customer && (
+                  <Link
+                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                    href={`/dashboard/customers/${customer.id}`}
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">
+                      {customer.first_name} {customer.last_name}
+                    </span>
+                  </Link>
+                )}
+                {property && (
+                  <Link
+                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                    href={`/dashboard/properties/${property.id}`}
+                  >
+                    <MapPin className="h-4 w-4" />
+                    <span className="font-medium">
+                      {property.name || property.address}
+                    </span>
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {property && (
+              <div className="overflow-hidden rounded-xl border border-border/60 shadow-sm">
+                <TravelTime property={property} />
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4">
+                {mounted ? (
+                  <Select
+                    onValueChange={(value) => handleFieldChange("status", value)}
+                    value={localJob.status || undefined}
+                  >
+                    <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
+                      <SelectValue placeholder="Set status...">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          <span className="font-medium">
+                            {localJob.status || "Set status..."}
+                          </span>
+                        </div>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="quoted">Quoted</SelectItem>
+                      <SelectItem value="scheduled">Scheduled</SelectItem>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="on_hold">On Hold</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">
+                      {localJob.status || "—"}
+                    </span>
+                  </div>
+                )}
+
+                {mounted ? (
+                  <Select
+                    onValueChange={(value) => handleFieldChange("priority", value)}
+                    value={localJob.priority || undefined}
+                  >
+                    <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
+                      <SelectValue placeholder="Set priority...">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4" />
+                          <span className="font-medium">
+                            {localJob.priority || "Set priority..."}
+                          </span>
+                        </div>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="font-medium">
+                      {localJob.priority || "—"}
+                    </span>
+                  </div>
+                )}
+
+                <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+                  <Wrench className="h-4 w-4" />
+                  <Input
+                    className="h-auto w-auto min-w-[120px] border-0 bg-transparent p-0 font-medium shadow-none focus-visible:ring-0"
+                    onChange={(e) => handleFieldChange("service_type", e.target.value)}
+                    placeholder="Enter type..."
+                    value={localJob.service_type || localJob.job_type || ""}
+                  />
+                </div>
+
+                {assignedUser && (
+                  <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">{assignedUser.name}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-muted-foreground text-sm">Description:</span>
+                <Textarea
+                  className="min-h-[80px] resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
+                  onChange={(e) =>
+                    handleFieldChange("description", e.target.value)
+                  }
+                  placeholder="Add a description..."
+                  value={localJob.description || ""}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <JobQuickActions currentStatus={job.status} jobId={job.id} />
             </div>
           </div>
-
-          <JobQuickActions currentStatus={job.status} jobId={job.id} />
         </div>
       </div>
     </div>
@@ -1318,691 +1485,358 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: customer ? 1 : 0,
     content: (
       <UnifiedAccordionContent className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-              <User className="h-4 w-4 text-primary" />
-            </div>
-            <span className="font-medium text-sm">Customer & Property Details</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {customer ? (
-              <>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      className="h-8 px-3 text-xs"
-                      disabled={isUpdatingCustomer}
-                      size="sm"
-                      variant="secondary"
-                    >
-                      <Edit2 className="mr-1.5 h-3.5 w-3.5" />
-                      Change Customer
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[400px] p-0">
-                    <Command shouldFilter={false}>
-                      <CommandInput
-                        onValueChange={setCustomerSearchQuery}
-                        placeholder="Search customers..."
-                        value={customerSearchQuery}
-                      />
-                      <CommandList>
-                        <CommandEmpty>
-                          <div className="py-6 text-center text-muted-foreground text-sm">
-                            No customers found
-                          </div>
-                        </CommandEmpty>
-                        <CommandGroup>
-                          {filteredCustomers.slice(0, 50).map((c: any) => (
-                            <CommandItem
-                              className="cursor-pointer"
-                              key={c.id}
-                              onSelect={() => {
-                                handleCustomerChange(c.id);
-                                setCustomerSearchQuery("");
-                              }}
-                              value={`${c.first_name} ${c.last_name} ${c.email} ${c.phone} ${c.company_name || ""}`}
-                            >
-                              <div className="flex flex-1 flex-col">
-                                <span className="font-medium">
-                                  {c.first_name} {c.last_name}
-                                </span>
-                                <span className="text-muted-foreground text-xs">
-                                  {c.company_name || c.email || c.phone}
-                                </span>
-                              </div>
-                              {c.id === customer?.id && (
-                                <CheckCircle className="ml-2 h-4 w-4 text-primary" />
-                              )}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                    <DropdownMenuSeparator />
-                    <div className="p-2">
-                      <Button
-                        className="w-full"
-                        disabled={isUpdatingCustomer}
-                        onClick={handleRemoveCustomer}
-                        size="sm"
-                        variant="destructive"
-                      >
-                        <X className="mr-2 h-3 w-3" />
-                        Remove Customer
-                      </Button>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {property ? (
-                  <DropdownMenu
-                    modal={false}
-                    onOpenChange={(open) => {
-                      if (!open) setPropertyDropdownMode("search");
-                    }}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        className="h-8 px-3 text-xs"
-                        disabled={isUpdatingProperty || !customer}
-                        size="sm"
-                        variant="secondary"
-                      >
-                        <Edit2 className="mr-1.5 h-3.5 w-3.5" />
-                        Change Property
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-[500px] p-0"
-                      onInteractOutside={(e) => {
-                        const target = e.target as HTMLElement;
-                        if (target.closest(".pac-container")) {
-                          e.preventDefault();
-                        }
-                      }}
-                    >
-                      {customer ? (
-                        <Tabs
-                          onValueChange={(value) =>
-                            setPropertyDropdownMode(value as "search" | "add")
-                          }
-                          value={propertyDropdownMode}
-                        >
-                          <TabsList className="w-full rounded-none border-b">
-                            <TabsTrigger className="flex-1" value="search">
-                              Search Existing
-                            </TabsTrigger>
-                            <TabsTrigger className="flex-1" value="add">
-                              Add New Address
-                            </TabsTrigger>
-                          </TabsList>
-                          <TabsContent className="m-0" value="search">
-                            <Command shouldFilter={false}>
-                              <CommandInput
-                                onValueChange={setPropertySearchQuery}
-                                placeholder="Search properties..."
-                                value={propertySearchQuery}
-                              />
-                              <CommandList>
-                                <CommandEmpty>
-                                  <div className="py-6 text-center text-muted-foreground text-sm">
-                                    No properties found for this customer
-                                  </div>
-                                </CommandEmpty>
-                                <CommandGroup>
-                                  {filteredProperties.map((p: any) => (
-                                    <CommandItem
-                                      className="cursor-pointer"
-                                      key={p.id}
-                                      onSelect={() => {
-                                        handlePropertyChange(p.id);
-                                        setPropertySearchQuery("");
-                                      }}
-                                      value={`${p.name || p.address} ${p.city} ${p.state}`}
-                                    >
-                                      <div className="flex flex-1 flex-col">
-                                        <span className="font-medium">
-                                          {p.name || p.address}
-                                        </span>
-                                        <span className="text-muted-foreground text-xs">
-                                          {p.city}, {p.state}
-                                        </span>
-                                      </div>
-                                      {p.id === property?.id && (
-                                        <CheckCircle className="ml-2 h-4 w-4 text-primary" />
-                                      )}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </TabsContent>
-                          <TabsContent className="m-0 p-4" value="add">
-                            <div className="space-y-3">
-                              <div>
-                                <Label className="mb-2 text-sm">
-                                  Search for address using Google Places
-                                </Label>
-                                <GooglePlacesAutocomplete
-                                  autoFocus
-                                  onPlaceSelect={handlePlaceSelect}
-                                  placeholder="Start typing an address..."
-                                />
-                              </div>
-                              <p className="text-muted-foreground text-xs">
-                                Select an address from the dropdown to automatically create and assign the property
-                              </p>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                      ) : (
-                        <div className="p-4 text-center text-muted-foreground text-sm">
-                          Please assign a customer first
-                        </div>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <DropdownMenu
-                    modal={false}
-                    onOpenChange={(open) => {
-                      if (!open) setPropertyDropdownMode("search");
-                    }}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <Button disabled={!customer} size="sm" variant="outline">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Property
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-[500px] p-0"
-                      onInteractOutside={(e) => {
-                        const target = e.target as HTMLElement;
-                        if (target.closest(".pac-container")) {
-                          e.preventDefault();
-                        }
-                      }}
-                    >
-                      {customer ? (
-                        <Tabs
-                          onValueChange={(value) =>
-                            setPropertyDropdownMode(value as "search" | "add")
-                          }
-                          value={propertyDropdownMode}
-                        >
-                          <TabsList className="w-full rounded-none border-b">
-                            <TabsTrigger className="flex-1" value="search">
-                              Search Existing
-                            </TabsTrigger>
-                            <TabsTrigger className="flex-1" value="add">
-                              Add New Address
-                            </TabsTrigger>
-                          </TabsList>
-                          <TabsContent className="m-0" value="search">
-                            <Command shouldFilter={false}>
-                              <CommandInput
-                                onValueChange={setPropertySearchQuery}
-                                placeholder="Search properties..."
-                                value={propertySearchQuery}
-                              />
-                              <CommandList>
-                                <CommandEmpty>
-                                  <div className="py-6 text-center text-muted-foreground text-sm">
-                                    No properties found for this customer
-                                  </div>
-                                </CommandEmpty>
-                                <CommandGroup>
-                                  {filteredProperties.map((p: any) => (
-                                    <CommandItem
-                                      className="cursor-pointer"
-                                      key={p.id}
-                                      onSelect={() => {
-                                        handlePropertyChange(p.id);
-                                        setPropertySearchQuery("");
-                                      }}
-                                      value={`${p.name || p.address} ${p.city} ${p.state}`}
-                                    >
-                                      <div className="flex flex-1 flex-col">
-                                        <span className="font-medium">
-                                          {p.name || p.address}
-                                        </span>
-                                        <span className="text-muted-foreground text-xs">
-                                          {p.city}, {p.state}
-                                        </span>
-                                      </div>
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </TabsContent>
-                          <TabsContent className="m-0 p-4" value="add">
-                            <div className="space-y-3">
-                              <div>
-                                <Label className="mb-2 text-sm">
-                                  Search for address using Google Places
-                                </Label>
-                                <GooglePlacesAutocomplete
-                                  autoFocus
-                                  onPlaceSelect={handlePlaceSelect}
-                                  placeholder="Start typing an address..."
-                                />
-                              </div>
-                              <p className="text-muted-foreground text-xs">
-                                Select an address from the dropdown to automatically create and assign the property
-                              </p>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                      ) : (
-                        <div className="p-4 text-center text-muted-foreground text-sm">
-                          Please assign a customer first
-                        </div>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="outline">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Assign Customer
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[400px] p-0">
-                  <Command shouldFilter={false}>
-                    <CommandInput
-                      onValueChange={setCustomerSearchQuery}
-                      placeholder="Search customers..."
-                      value={customerSearchQuery}
-                    />
-                    <CommandList>
-                      <CommandEmpty>
-                        <div className="py-6 text-center text-muted-foreground text-sm">
-                          No customers found
-                        </div>
-                      </CommandEmpty>
-                      <CommandGroup>
-                        {filteredCustomers.slice(0, 50).map((c: any) => (
-                          <CommandItem
-                            className="cursor-pointer"
-                            key={c.id}
-                            onSelect={() => {
-                              handleCustomerChange(c.id);
-                              setCustomerSearchQuery("");
-                            }}
-                            value={`${c.first_name} ${c.last_name} ${c.email} ${c.phone} ${c.company_name || ""}`}
-                          >
-                            <div className="flex flex-1 flex-col">
-                              <span className="font-medium">
-                                {c.first_name} {c.last_name}
-                              </span>
-                              <span className="text-muted-foreground text-xs">
-                                {c.company_name || c.email || c.phone}
-                              </span>
-                            </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-0 lg:flex-row">
+        <div className="flex flex-col gap-6 lg:flex-row">
           {customer ? (
-            <div className="flex min-w-0 flex-1 flex-col divide-y divide-border/40">
-              {/** Customer profile summary */}
-              {/* The following blocks are copied from the legacy accordion content to preserve all UI context */}
-              <div className="flex items-start justify-between gap-6 p-6">
-                <div className="flex min-w-0 items-start gap-4">
-                  <div className="flex size-14 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xl">
-                    {customer.first_name?.[0]}
-                    {customer.last_name?.[0]}
-                  </div>
-                  <div className="min-w-0 space-y-1.5">
-                    {customerDetailPath ? (
-                      <Link
-                        className="block font-semibold text-foreground text-lg transition-colors hover:text-primary"
-                        href={customerDetailPath}
-                      >
-                        {customer.first_name} {customer.last_name}
-                      </Link>
-                    ) : (
-                      <span className="block font-semibold text-foreground text-lg">
-                        {customer.first_name} {customer.last_name}
-                      </span>
-                    )}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge className="h-6 rounded-full px-2.5 font-medium text-[11px] capitalize" variant="outline">
-                        {customerStatusLabel}
-                      </Badge>
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-medium text-[11px]",
-                          accountToneClass
-                        )}
-                        title={accountHealth.description}
-                      >
-                        <ShieldCheck className="h-3 w-3" />
-                        {accountHealth.label}
-                      </span>
-                      {membershipLabel && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-[11px] text-primary">
-                          <Sparkles className="h-3 w-3" />
-                          {membershipLabel}
+            <div className="flex min-w-0 flex-1 flex-col gap-6">
+              <div className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex min-w-0 items-start gap-4">
+                    <div className="flex size-14 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xl">
+                      {customer.first_name?.[0]}
+                      {customer.last_name?.[0]}
+                    </div>
+                    <div className="min-w-0 space-y-1.5">
+                      {customerDetailPath ? (
+                        <Link
+                          className="block font-semibold text-foreground text-lg transition-colors hover:text-primary"
+                          href={customerDetailPath}
+                        >
+                          {customer.first_name} {customer.last_name}
+                        </Link>
+                      ) : (
+                        <span className="block font-semibold text-foreground text-lg">
+                          {customer.first_name} {customer.last_name}
                         </span>
                       )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className="h-6 rounded-full px-2.5 font-medium text-[11px] capitalize" variant="outline">
+                          {customerStatusLabel}
+                        </Badge>
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-medium text-[11px]",
+                            accountToneClass
+                          )}
+                          title={accountHealth.description}
+                        >
+                          <ShieldCheck className="h-3 w-3" />
+                          {accountHealth.label}
+                        </span>
+                        {membershipLabel && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-[11px] text-primary">
+                            <Sparkles className="h-3 w-3" />
+                            {membershipLabel}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {customerDetailPath && (
+                    <Button asChild className="flex-shrink-0" size="sm" variant="outline">
+                      <Link className="flex items-center gap-1.5" href={customerDetailPath}>
+                        View Profile
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border/60 bg-card/80 shadow-sm">
+                <div className="grid grid-cols-4 divide-x divide-border/40 bg-muted/20 px-6 py-4">
+                  <div className="px-3 first:pl-0 last:pr-0">
+                    <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Lifetime Value
+                    </div>
+                    <div className="mt-1 font-bold text-foreground text-lg">
+                      {formatCurrency(totalRevenue)}
+                    </div>
+                    <div className="mt-0.5 text-muted-foreground text-xs">
+                      {totalJobs} job{totalJobs === 1 ? "" : "s"} · {formatCurrency(averageJobValue)} avg
+                    </div>
+                  </div>
+                  <div className="px-3 first:pl-0 last:pr-0">
+                    <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Balance Due
+                    </div>
+                    <div
+                      className={cn(
+                        "mt-1 font-bold text-lg",
+                        outstandingBalance > 0 ? "text-orange-600" : "text-foreground"
+                      )}
+                    >
+                      {formatCurrency(outstandingBalance)}
+                    </div>
+                    <div className="mt-0.5 text-muted-foreground text-xs">
+                      {overdueInvoicesCount > 0
+                        ? `${overdueInvoicesCount} overdue`
+                        : normalizedPaymentTerms}
+                    </div>
+                  </div>
+                  <div className="px-3 first:pl-0 last:pr-0">
+                    <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Credit Limit
+                    </div>
+                    <div className="mt-1 font-bold text-foreground text-lg">
+                      {creditLimit > 0 ? formatCurrency(creditLimit) : "None"}
+                    </div>
+                    <div className="mt-0.5 text-muted-foreground text-xs">
+                      {creditLimit > 0 && outstandingBalance > 0
+                        ? `${Math.round((outstandingBalance / creditLimit) * 100)}% used`
+                        : creditLimit > 0
+                          ? "Available"
+                          : "Cash only"}
+                    </div>
+                  </div>
+                  <div className="px-3 first:pl-0 last:pr-0">
+                    <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Customer Since
+                    </div>
+                    <div className="mt-1 font-bold text-foreground text-lg">
+                      {customerSince ? formatRelativeTime(customerSince) : "—"}
+                    </div>
+                    <div className="mt-0.5 text-muted-foreground text-xs capitalize">
+                      via {customerSource}
                     </div>
                   </div>
                 </div>
-                {customerDetailPath && (
-                  <Button asChild className="flex-shrink-0" size="sm" variant="outline">
-                    <Link className="flex items-center gap-1.5" href={customerDetailPath}>
-                      View Profile
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                )}
               </div>
 
-              <div className="grid grid-cols-4 divide-x divide-border/40 bg-muted/20 px-6 py-4">
-                <div className="px-3 first:pl-0 last:pr-0">
-                  <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Lifetime Value
+              <div className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Contact
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {customer.email && (
+                        <Button
+                          className="h-7 w-7 p-0"
+                          onClick={() => setIsEmailDialogOpen(true)}
+                          size="sm"
+                          title="Send Email"
+                          variant="outline"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      {customer.phone && (
+                        <>
+                          <Button
+                            className="h-7 w-7 p-0"
+                            onClick={() => {
+                              setIncomingCall({
+                                number: customer.phone,
+                                name: `${customer.first_name} ${customer.last_name}`,
+                                avatar: customer.avatar_url,
+                              });
+                            }}
+                            size="sm"
+                            title="Call"
+                            variant="outline"
+                          >
+                            <Phone className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            className="h-7 w-7 p-0"
+                            onClick={() => setIsSMSDialogOpen(true)}
+                            size="sm"
+                            title="Send Text Message"
+                            variant="outline"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="mt-1 font-bold text-foreground text-lg">
-                    {formatCurrency(totalRevenue)}
-                  </div>
-                  <div className="mt-0.5 text-muted-foreground text-xs">
-                    {totalJobs} job{totalJobs === 1 ? "" : "s"} · {formatCurrency(averageJobValue)} avg
-                  </div>
-                </div>
-                <div className="px-3 first:pl-0 last:pr-0">
-                  <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Balance Due
-                  </div>
-                  <div
-                    className={cn(
-                      "mt-1 font-bold text-lg",
-                      outstandingBalance > 0 ? "text-orange-600" : "text-foreground"
-                    )}
-                  >
-                    {formatCurrency(outstandingBalance)}
-                  </div>
-                  <div className="mt-0.5 text-muted-foreground text-xs">
-                    {overdueInvoicesCount > 0
-                      ? `${overdueInvoicesCount} overdue`
-                      : normalizedPaymentTerms}
-                  </div>
-                </div>
-                <div className="px-3 first:pl-0 last:pr-0">
-                  <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Credit Limit
-                  </div>
-                  <div className="mt-1 font-bold text-foreground text-lg">
-                    {creditLimit > 0 ? formatCurrency(creditLimit) : "None"}
-                  </div>
-                  <div className="mt-0.5 text-muted-foreground text-xs">
-                    {creditLimit > 0 && outstandingBalance > 0
-                      ? `${Math.round((outstandingBalance / creditLimit) * 100)}% used`
-                      : creditLimit > 0
-                        ? "Available"
-                        : "Cash only"}
-                  </div>
-                </div>
-                <div className="px-3 first:pl-0 last:pr-0">
-                  <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Customer Since
-                  </div>
-                  <div className="mt-1 font-bold text-foreground text-lg">
-                    {customerSince ? formatRelativeTime(customerSince) : "—"}
-                  </div>
-                  <div className="mt-0.5 text-muted-foreground text-xs capitalize">
-                    via {customerSource}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4 p-6">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Contact
-                  </div>
-                  <div className="flex items-center gap-1.5">
+                  <dl className="grid gap-3">
                     {customer.email && (
-                      <Button
-                        className="h-7 w-7 p-0"
-                        onClick={() => setIsEmailDialogOpen(true)}
-                        size="sm"
-                        title="Send Email"
-                        variant="outline"
-                      >
-                        <Mail className="h-3.5 w-3.5" />
-                      </Button>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+                            Email
+                          </dt>
+                          <dd className="truncate font-medium text-foreground text-sm">
+                            {customer.email}
+                          </dd>
+                        </div>
+                      </div>
                     )}
                     {customer.phone && (
-                      <>
-                        <Button
-                          className="h-7 w-7 p-0"
-                          onClick={() => {
-                            setIncomingCall({
-                              number: customer.phone,
-                              name: `${customer.first_name} ${customer.last_name}`,
-                              avatar: customer.avatar_url,
-                            });
-                          }}
-                          size="sm"
-                          title="Call"
-                          variant="outline"
-                        >
-                          <Phone className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          className="h-7 w-7 p-0"
-                          onClick={() => setIsSMSDialogOpen(true)}
-                          size="sm"
-                          title="Send Text Message"
-                          variant="outline"
-                        >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                        </Button>
-                      </>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+                            Phone
+                          </dt>
+                          <dd className="font-medium text-foreground text-sm">
+                            {customer.phone}
+                          </dd>
+                        </div>
+                      </div>
                     )}
-                  </div>
+                    {secondaryPhone && (
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+                            Alt Phone
+                          </dt>
+                          <dd className="font-medium text-foreground text-sm">
+                            {secondaryPhone}
+                          </dd>
+                        </div>
+                      </div>
+                    )}
+                    {billingEmail && billingEmail !== customer.email && (
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <Receipt className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+                            Billing Email
+                          </dt>
+                          <dd className="truncate font-medium text-foreground text-sm">
+                            {billingEmail}
+                          </dd>
+                        </div>
+                      </div>
+                    )}
+                  </dl>
                 </div>
-                <dl className="grid gap-3">
-                  {customer.email && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                        <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
-                          Email
-                        </dt>
-                        <dd className="truncate font-medium text-foreground text-sm">
-                          {customer.email}
-                        </dd>
-                      </div>
-                    </div>
-                  )}
-                  {customer.phone && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                        <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
-                          Phone
-                        </dt>
-                        <dd className="font-medium text-foreground text-sm">
-                          {customer.phone}
-                        </dd>
-                      </div>
-                    </div>
-                  )}
-                  {secondaryPhone && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                        <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
-                          Alt Phone
-                        </dt>
-                        <dd className="font-medium text-foreground text-sm">
-                          {secondaryPhone}
-                        </dd>
-                      </div>
-                    </div>
-                  )}
-                  {billingEmail && billingEmail !== customer.email && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                        <Receipt className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
-                          Billing Email
-                        </dt>
-                        <dd className="truncate font-medium text-foreground text-sm">
-                          {billingEmail}
-                        </dd>
-                      </div>
-                    </div>
-                  )}
-                </dl>
               </div>
 
-              <div className="space-y-4 p-6">
-                <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Account Details
-                </div>
-                <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <div>
-                    <dt className="text-muted-foreground text-xs">Portal Access</dt>
-                    <dd className="mt-1 font-medium text-foreground text-sm">
-                      {portalEnabled ? (
-                        <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-200">
-                          <Globe className="h-3.5 w-3.5" /> Enabled
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">Disabled</span>
-                      )}
-                    </dd>
-                    {portalEnabled && lastPortalLogin && (
-                      <dd className="mt-0.5 text-muted-foreground text-xs">
-                        Last login {formatRelativeTime(lastPortalLogin)}
-                      </dd>
-                    )}
+              <div className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm">
+                <div className="space-y-4">
+                  <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Account Details
                   </div>
-                  <div>
-                    <dt className="text-muted-foreground text-xs">Preferred Contact</dt>
-                    <dd className="mt-1 font-medium text-foreground text-sm capitalize">
-                      {normalizedPreferredContact}
-                    </dd>
-                    {communicationChannels && (
-                      <dd className="mt-1.5 flex flex-wrap gap-1.5">
-                        {communicationChannels.map(
-                          (channel) =>
-                            channel.enabled && (
-                              <span
-                                className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-[10px] text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-200"
-                                key={channel.key}
-                              >
-                                {channel.label}
-                              </span>
-                            )
+                  <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div>
+                      <dt className="text-muted-foreground text-xs">Portal Access</dt>
+                      <dd className="mt-1 font-medium text-foreground text-sm">
+                        {portalEnabled ? (
+                          <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-200">
+                            <Globe className="h-3.5 w-3.5" /> Enabled
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">Disabled</span>
                         )}
                       </dd>
-                    )}
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground text-xs">Last Activity</dt>
-                    <dd className="mt-1 font-medium text-foreground text-sm">
-                      {lastJobDate ? formatRelativeTime(lastJobDate) : "No activity"}
-                    </dd>
-                    {nextVisit && (
-                      <dd className="mt-0.5 text-muted-foreground text-xs">
-                        Next: {formatRelativeTime(nextVisit.start_time ?? nextVisit.startTime ?? nextVisit.start_at ?? nextVisit.startAt)}
+                      {portalEnabled && lastPortalLogin && (
+                        <dd className="mt-0.5 text-muted-foreground text-xs">
+                          Last login {formatRelativeTime(lastPortalLogin)}
+                        </dd>
+                      )}
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground text-xs">Preferred Contact</dt>
+                      <dd className="mt-1 font-medium text-foreground text-sm capitalize">
+                        {normalizedPreferredContact}
                       </dd>
-                    )}
-                  </div>
-                </dl>
+                      {communicationChannels && (
+                        <dd className="mt-1.5 flex flex-wrap gap-1.5">
+                          {communicationChannels.map(
+                            (channel) =>
+                              channel.enabled && (
+                                <span
+                                  className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-[10px] text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-200"
+                                  key={channel.key}
+                                >
+                                  {channel.label}
+                                </span>
+                              )
+                          )}
+                        </dd>
+                      )}
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground text-xs">Last Activity</dt>
+                      <dd className="mt-1 font-medium text-foreground text-sm">
+                        {lastJobDate ? formatRelativeTime(lastJobDate) : "No activity"}
+                      </dd>
+                      {nextVisit && (
+                        <dd className="mt-0.5 text-muted-foreground text-xs">
+                          Next: {formatRelativeTime(nextVisit.start_time ?? nextVisit.startTime ?? nextVisit.start_at ?? nextVisit.startAt)}
+                        </dd>
+                      )}
+                    </div>
+                  </dl>
+                </div>
               </div>
 
               {(assignedTeamMembers.length > 0 || customerTags.length > 0) && (
-                <div className="space-y-4 p-6">
-                  {assignedTeamMembers.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                        Assigned Team
+                <div className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm">
+                  <div className="space-y-4">
+                    {assignedTeamMembers.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                          Assigned Team
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {assignedTeamMembers.filter(Boolean).map((member) => (
+                            <Link
+                              className="group inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground text-xs transition-colors hover:border-primary/50 hover:bg-primary/5"
+                              href={
+                                member?.id
+                                  ? `/dashboard/settings/team/${member.id}`
+                                  : "/dashboard/settings/team"
+                              }
+                              key={member?.id || "unknown"}
+                            >
+                              <Avatar className="h-6 w-6 border border-white/10 bg-muted">
+                                {member?.avatar ? (
+                                  <AvatarImage alt={member?.name || "Team Member"} src={member.avatar} />
+                                ) : (
+                                  <AvatarFallback className="text-[10px]">
+                                    {member?.name
+                                      ?.split(" ")
+                                      .map((part: string) => part[0])
+                                      .join("")
+                                      .slice(0, 2)
+                                      .toUpperCase() || "TM"}
+                                  </AvatarFallback>
+                                )}
+                              </Avatar>
+                              <span>{member?.name || "Unknown"}</span>
+                            </Link>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {assignedTeamMembers.filter(Boolean).map((member) => (
-                          <Link
-                            className="group inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground text-xs transition-colors hover:border-primary/50 hover:bg-primary/5"
-                            href={
-                              member?.id
-                                ? `/dashboard/settings/team/${member.id}`
-                                : "/dashboard/settings/team"
-                            }
-                            key={member?.id || "unknown"}
-                          >
-                            <Avatar className="h-6 w-6 border border-white/10 bg-muted">
-                              {member?.avatar ? (
-                                <AvatarImage alt={member?.name || "Team Member"} src={member.avatar} />
-                              ) : (
-                                <AvatarFallback className="text-[10px]">
-                                  {member?.name
-                                    ?.split(" ")
-                                    .map((part: string) => part[0])
-                                    .join("")
-                                    .slice(0, 2)
-                                    .toUpperCase() || "TM"}
-                                </AvatarFallback>
-                              )}
-                            </Avatar>
-                            <span>{member?.name || "Unknown"}</span>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  {customerTags.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
-                        Tags
+                    {customerTags.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                          Tags
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {customerTags.map((tag) => (
+                            <span
+                              className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                              key={tag}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {customerTags.map((tag) => (
-                          <span
-                            className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
-                            key={tag}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-background p-6 text-center">
               <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-muted">
                 <User className="size-6 text-muted-foreground" />
               </div>
@@ -2013,11 +1847,26 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
             </div>
           )}
 
-          <div className="flex flex-col gap-6 border-t border-border/40 p-6 lg:w-[360px] lg:border-l lg:border-t-0">
+          <aside className="mt-6 space-y-6 lg:mt-0 lg:w-[360px]">
             {property ? (
               <>
-                <PropertyLocationVisual property={property} />
-                <div className="space-y-3">
+                <div className="rounded-xl border border-border/60 bg-card/80 p-0 shadow-sm">
+                  {canShowInteractiveMap ? (
+                    <PropertyLocationVisual property={property} />
+                  ) : (
+                    <div className="space-y-4 p-6">
+                      <Skeleton className="h-40 w-full rounded-lg" />
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <p>Connect a Google Maps API key or add coordinates to visualize this location.</p>
+                        <p className="text-xs">
+                          Update property details to include latitude and longitude for enhanced routing.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm space-y-3">
                   <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
                     Property Details
                   </div>
@@ -2047,11 +1896,11 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 </div>
               </>
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-background p-6 text-center text-sm text-muted-foreground">
                 No property assigned
               </div>
             )}
-          </div>
+          </aside>
         </div>
       </UnifiedAccordionContent>
     ),
@@ -2062,21 +1911,23 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Appointments",
     icon: <Calendar className="size-4" />,
     count: schedules.length,
+    actions: (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => router.push(`/dashboard/schedule/new?jobId=${job.id}`)}
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Appointment
+      </Button>
+    ),
     content: (
-      <UnifiedAccordionContent>
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Manage scheduled visits and dispatch activities.
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => router.push(`/dashboard/schedule/new?jobId=${job.id}`)}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add Appointment
-          </Button>
+      <UnifiedAccordionContent className="p-0">
+        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+          Manage scheduled visits and dispatch activities.
         </div>
-        <JobAppointmentsTable appointments={schedules} />
+        <div className="overflow-x-auto">
+          <JobAppointmentsTable appointments={schedules} />
+        </div>
       </UnifiedAccordionContent>
     ),
   });
@@ -2086,6 +1937,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Job Tasks & Checklist",
     icon: <CheckCircle className="size-4" />,
     count: tasks.length,
+    actions: (
+      <div className="flex items-center gap-2">
+        <Button className="h-8 px-3 text-xs" size="sm" variant="secondary">
+          <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Task
+        </Button>
+        <Button className="h-8 px-3 text-xs" size="sm" variant="outline">
+          Load Template
+        </Button>
+      </div>
+    ),
     content: (
       <UnifiedAccordionContent>
         <div className="space-y-6">
@@ -2095,9 +1956,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 <span className="font-medium">Overall Progress</span>
                 <span className="text-muted-foreground">
                   {Math.round(
-                    (tasks.filter((t: any) => t.is_completed).length /
-                      tasks.length) *
-                      100
+                    (tasks.filter((t: any) => t.is_completed).length / tasks.length) * 100
                   )}
                   %
                 </span>
@@ -2114,105 +1973,104 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           )}
 
           {tasks.length > 0 ? (
-            ["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map(
-              (category) => {
-                const categoryTasks = tasks.filter((t: any) =>
-                  category === null ? !t.category : t.category === category
-                );
+            ["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map((category) => {
+              const categoryTasks = tasks.filter((t: any) =>
+                category === null ? !t.category : t.category === category
+              );
 
-                if (categoryTasks.length === 0) {
-                  return null;
-                }
+              if (categoryTasks.length === 0) {
+                return null;
+              }
 
-                return (
-                  <div key={category || "uncategorized"}>
-                    <h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase">
-                      {category || "Other Tasks"}
-                    </h4>
-                    <div className="space-y-2">
-                      {categoryTasks.map((task: any) => {
-                        const assignedTaskUser = Array.isArray(task.assigned_user)
-                          ? task.assigned_user[0]
-                          : task.assigned_user;
+              return (
+                <div key={category || "uncategorized"}>
+                  <h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase">
+                    {category || "Other Tasks"}
+                  </h4>
+                  <div className="space-y-2">
+                    {categoryTasks.map((task: any) => {
+                      const assignedTaskUser = Array.isArray(task.assigned_user)
+                        ? task.assigned_user[0]
+                        : task.assigned_user;
 
-                        return (
-                          <div
-                            className={cn(
-                              "flex items-start gap-3 rounded-lg border p-3 transition-colors",
-                              task.is_completed && "bg-gray-50 opacity-75"
-                            )}
-                            key={task.id}
-                          >
-                            <div className="flex items-center pt-0.5">
-                              <input
-                                checked={task.is_completed}
-                                className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500"
-                                onChange={() => {}}
-                                type="checkbox"
-                              />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1">
-                                  <p
-                                    className={cn(
-                                      "font-medium",
-                                      task.is_completed && "text-muted-foreground line-through"
-                                    )}
-                                  >
-                                    {task.title}
-                                    {task.is_required && (
-                                      <Badge className="ml-2 text-xs" variant="destructive">
-                                        Required
-                                      </Badge>
-                                    )}
-                                  </p>
-                                  {task.description && (
-                                    <p className="mt-1 text-muted-foreground text-sm">
-                                      {task.description}
-                                    </p>
+                      return (
+                        <div
+                          className={cn(
+                            "flex items-start gap-3 rounded-lg border p-3 transition-colors",
+                            task.is_completed && "bg-gray-50 opacity-75"
+                          )}
+                          key={task.id}
+                        >
+                          <div className="flex items-center pt-0.5">
+                            <input
+                              checked={task.is_completed}
+                              className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500"
+                              onChange={() => {}}
+                              type="checkbox"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1">
+                                <p
+                                  className={cn(
+                                    "font-medium",
+                                    task.is_completed && "text-muted-foreground line-through"
                                   )}
+                                >
+                                  {task.title}
+                                  {task.is_required && (
+                                    <Badge className="ml-2 text-xs" variant="destructive">
+                                      Required
+                                    </Badge>
+                                  )}
+                                </p>
+                                {task.description && (
+                                  <p className="mt-1 text-muted-foreground text-sm">
+                                    {task.description}
+                                  </p>
+                                )}
+                              </div>
+                              {assignedTaskUser && (
+                                <div className="flex items-center gap-1">
+                                  <Avatar className="h-6 w-6">
+                                    <AvatarImage src={assignedTaskUser.avatar} />
+                                    <AvatarFallback className="text-xs">
+                                      {assignedTaskUser.name?.substring(0, 2).toUpperCase() || "TM"}
+                                    </AvatarFallback>
+                                  </Avatar>
                                 </div>
-                                {assignedTaskUser && (
-                                  <div className="flex items-center gap-1">
-                                    <Avatar className="h-6 w-6">
-                                      <AvatarImage src={assignedTaskUser.avatar} />
-                                      <AvatarFallback className="text-xs">
-                                        {assignedTaskUser.name
-                                          ?.substring(0, 2)
-                                          .toUpperCase() || "TM"}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </div>
-                                )}
-                              </div>
-                              <div className="mt-2 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
-                                {task.is_completed && task.completed_at && (
-                                  <span className="flex items-center gap-1">
-                                    <CheckCircle className="h-3 w-3 text-green-600" />
-                                    Completed {formatDate(task.completed_at)}
-                                  </span>
-                                )}
-                                {!task.is_completed && task.due_date && (
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    Due {formatDate(task.due_date)}
-                                  </span>
-                                )}
-                              </div>
+                              )}
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+                              {task.is_completed && task.completed_at && (
+                                <span className="flex items-center gap-1">
+                                  <CheckCircle className="h-3 w-3 text-green-600" />
+                                  Completed {formatDate(task.completed_at)}
+                                </span>
+                              )}
+                              {!task.is_completed && task.due_date && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  Due {formatDate(task.due_date)}
+                                </span>
+                              )}
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              }
-            )
+                </div>
+              );
+            })
           ) : (
             <div className="rounded-lg border border-dashed p-6 text-center">
               <CheckCircle className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-              <p className="mb-2 text-muted-foreground text-sm">No tasks added yet</p>
+              <p className="mb-1 text-muted-foreground text-sm">No tasks added yet</p>
+              <p className="mb-3 text-muted-foreground text-xs">
+                Create a step-by-step checklist so the field crew knows exactly what to complete on-site.
+              </p>
               <Button className="h-8 px-3 text-xs" size="sm" variant="secondary">
                 <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Task
               </Button>
@@ -2228,21 +2086,23 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Invoices",
     icon: <FileText className="size-4" />,
     count: invoices.length,
+    actions: (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => console.log("Create invoice")}
+      >
+        <Plus className="mr-2 h-4 w-4" /> Create Invoice
+      </Button>
+    ),
     content: (
-      <UnifiedAccordionContent>
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Billing history and outstanding invoices for this job.
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => console.log("Create invoice")}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Create Invoice
-          </Button>
+      <UnifiedAccordionContent className="p-0">
+        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+          Billing history and outstanding invoices for this job.
         </div>
-        <JobInvoicesTable invoices={invoices} />
+        <div className="overflow-x-auto">
+          <JobInvoicesTable invoices={invoices} />
+        </div>
       </UnifiedAccordionContent>
     ),
   });
@@ -2252,21 +2112,23 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Estimates",
     icon: <Receipt className="size-4" />,
     count: estimates.length,
+    actions: (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => console.log("Create estimate")}
+      >
+        <Plus className="mr-2 h-4 w-4" /> Create Estimate
+      </Button>
+    ),
     content: (
-      <UnifiedAccordionContent>
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Proposals and estimates created for this job.
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => console.log("Create estimate")}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Create Estimate
-          </Button>
+      <UnifiedAccordionContent className="p-0">
+        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+          Proposals and estimates created for this job.
         </div>
-        <JobEstimatesTable estimates={estimates} />
+        <div className="overflow-x-auto">
+          <JobEstimatesTable estimates={estimates} />
+        </div>
       </UnifiedAccordionContent>
     ),
   });
@@ -2276,21 +2138,23 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Purchase Orders",
     icon: <Package className="size-4" />,
     count: purchaseOrders.length,
+    actions: (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => console.log("Create PO")}
+      >
+        <Plus className="mr-2 h-4 w-4" /> Create PO
+      </Button>
+    ),
     content: (
-      <UnifiedAccordionContent>
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Track materials and purchases tied to this job.
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => console.log("Create PO")}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Create PO
-          </Button>
+      <UnifiedAccordionContent className="p-0">
+        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+          Track materials and purchases tied to this job.
         </div>
-        <JobPurchaseOrdersTable purchaseOrders={purchaseOrders} />
+        <div className="overflow-x-auto">
+          <JobPurchaseOrdersTable purchaseOrders={purchaseOrders} />
+        </div>
       </UnifiedAccordionContent>
     ),
   });
@@ -2300,12 +2164,22 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Photos & Documents",
     icon: <Camera className="size-4" />,
     count: photos.length + documents.length,
+    actions: (
+      <Button
+        className="h-8 px-3 text-xs"
+        size="sm"
+        variant="secondary"
+        onClick={() => setShowUploader(true)}
+      >
+        <Plus className="mr-1.5 h-3.5 w-3.5" /> Upload
+      </Button>
+    ),
     content: (
-      <UnifiedAccordionContent>
+      <UnifiedAccordionContent className="p-0">
         <div
           className={cn(
-            "rounded-lg border bg-card shadow-sm transition-colors",
-            isDraggingOver && "border-primary bg-primary/5"
+            "transition-colors",
+            isDraggingOver && "bg-primary/5"
           )}
           onDragEnter={(e) => {
             e.preventDefault();
@@ -2328,28 +2202,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
             setShowUploader(true);
           }}
         >
-          <div className="flex items-center justify-between gap-4 px-6 py-3.5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                <Camera className="h-4 w-4 text-primary" />
-              </div>
-              <span className="font-medium text-sm">Photos & Documents</span>
-              <Badge className="ml-1 text-xs" variant="secondary">
-                {photos.length + documents.length}
-              </Badge>
-            </div>
-            {!showUploader && (
-              <Button
-                className="h-8 px-3 text-xs"
-                onClick={() => setShowUploader(true)}
-                size="sm"
-                variant="secondary"
-              >
-                <Plus className="mr-1.5 h-3.5 w-3.5" /> Upload
-              </Button>
-            )}
+          <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+            Drag and drop files to upload photos, documents, and signatures for this job.
           </div>
-          <div className="space-y-6 px-6 pb-6">
+          <div className="space-y-6 px-6 py-6">
             {showUploader && (
               <InlinePhotoUploader
                 companyId={job.company_id}
@@ -2550,6 +2406,17 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Equipment Serviced",
     icon: <Wrench className="size-4" />,
     count: jobEquipment.length,
+    actions: (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          console.log("Add equipment");
+        }}
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Equipment
+      </Button>
+    ),
     content: (
       <UnifiedAccordionContent>
         {jobEquipment.length === 0 ? (
@@ -2623,33 +2490,35 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
       icon: <Building2 className="size-4" />,
       count: equipment.length,
       content: (
-        <UnifiedAccordionContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Equipment</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Manufacturer</TableHead>
-                <TableHead>Model</TableHead>
-                <TableHead>Serial #</TableHead>
-                <TableHead>Last Service</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {equipment.map((item: any) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>{item.type}</TableCell>
-                  <TableCell>{item.manufacturer || "N/A"}</TableCell>
-                  <TableCell>{item.model || "N/A"}</TableCell>
-                  <TableCell className="font-mono text-sm">{item.serial_number || "N/A"}</TableCell>
-                  <TableCell className="text-sm">
-                    {item.last_service_date ? formatDate(item.last_service_date) : "Never"}
-                  </TableCell>
+        <UnifiedAccordionContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Equipment</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Manufacturer</TableHead>
+                  <TableHead>Model</TableHead>
+                  <TableHead>Serial #</TableHead>
+                  <TableHead>Last Service</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {equipment.map((item: any) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>{item.type}</TableCell>
+                    <TableCell>{item.manufacturer || "N/A"}</TableCell>
+                    <TableCell>{item.model || "N/A"}</TableCell>
+                    <TableCell className="font-mono text-sm">{item.serial_number || "N/A"}</TableCell>
+                    <TableCell className="text-sm">
+                      {item.last_service_date ? formatDate(item.last_service_date) : "Never"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </UnifiedAccordionContent>
       ),
     });
@@ -2855,6 +2724,47 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           customerPhone={customer.phone}
           onOpenChange={setIsSMSDialogOpen}
           open={isSMSDialogOpen}
+        />
+      )}
+
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Job</DialogTitle>
+            <DialogDescription>
+              Archiving removes this job from active workflows. You can restore it from the archive within 90 days.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isArchiving}
+              onClick={handleArchiveJob}
+              variant="destructive"
+            >
+              {isArchiving ? "Archiving..." : "Archive Job"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {metrics && (
+        <JobStatisticsSheet
+          invoices={invoices}
+          job={job}
+          jobMaterials={jobMaterials}
+          metrics={metrics}
+          onOpenChange={setIsStatisticsOpen}
+          open={isStatisticsOpen}
+          payments={payments}
+          teamAssignments={teamAssignments}
+          timeEntries={timeEntries}
         />
       )}
     </>
