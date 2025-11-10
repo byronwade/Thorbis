@@ -108,8 +108,7 @@ export default async function TeamMemberDetailsPage({
       .select("*")
       .eq("team_member_id", teamMemberId)
       .is("deleted_at", null)
-      .then((result) => ({ data: result.data || [], error: null }))
-      .catch(() => ({ data: [], error: null })),
+      .then((result) => (result.error ? { data: [], error: null } : { data: result.data || [], error: null })),
 
     // Get activity log
     supabase
