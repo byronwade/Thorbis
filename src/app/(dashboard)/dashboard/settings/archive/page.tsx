@@ -16,6 +16,7 @@ import { notFound, redirect } from "next/navigation";
 import { getArchiveStats } from "@/actions/archive";
 import { ArchiveDataTable } from "@/components/archive/archive-data-table";
 import { ArchiveStats } from "@/components/archive/archive-stats";
+import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -51,15 +52,11 @@ export default async function ArchivePage({
     return notFound();
   }
 
-  // Get user's company
-  const { data: teamMember } = await supabase
-    .from("team_members")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .single();
+  // Check if active company has completed onboarding (has payment)
+  const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
-  if (!teamMember?.company_id) {
-    // User hasn't completed onboarding or doesn't have an active company membership
+  if (!isOnboardingComplete) {
+    // User hasn't completed onboarding or doesn't have an active company with payment
     // Redirect to onboarding for better UX
     redirect("/dashboard/welcome");
   }

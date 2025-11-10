@@ -5,6 +5,7 @@
 
 import { notFound, redirect } from "next/navigation";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
+import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
@@ -37,6 +38,19 @@ export default async function JobDetailsPage({
   }
 
   console.log("[Job Details] User authenticated:", user.id);
+
+  // Check if active company has completed onboarding (has payment)
+  const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
+
+  if (!isOnboardingComplete) {
+    console.log(
+      "[Job Details] Company onboarding incomplete for user:",
+      user.id,
+      "- redirecting to onboarding"
+    );
+    // Redirect to onboarding if company hasn't completed setup
+    redirect("/dashboard/welcome");
+  }
 
   // Get active company ID (from cookie or first available)
   const { getActiveCompanyId } = await import("@/lib/auth/company-context");

@@ -76,6 +76,8 @@ export const ROUTE_PATTERNS = {
   WORK_PRICEBOOK_MASS_UPDATE: /^\/dashboard\/work\/pricebook\/mass-update$/,
   WORK_PRICEBOOK_DETAILS:
     /^\/dashboard\/work\/pricebook\/(?!new|export|import|mass-update|c\/)([^/]+)$/,
+  // Purchase order details
+  PURCHASE_ORDER_DETAILS: /^\/dashboard\/work\/purchase-orders\/[^/]+$/,
   // Job details - excludes known work subpages
   JOB_DETAILS:
     /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)([^/]+)$/,
@@ -750,6 +752,23 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 50,
     description: "Work hub/job board",
+  },
+
+  // Purchase order details pages
+  {
+    pattern: ROUTE_PATTERNS.PURCHASE_ORDER_DETAILS,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: false, // Purchase order details page has its own header, no toolbar needed
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 57,
+    description: "Purchase order details page - full width with custom header, no toolbar",
   },
 
   // Job details pages

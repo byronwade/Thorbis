@@ -219,3 +219,44 @@ export async function hasMultipleCompanies(): Promise<boolean> {
   const companies = await getUserCompanies();
   return companies.length > 1;
 }
+
+/**
+ * Check if Active Company Has Completed Onboarding
+ *
+ * Checks if the active company has an active payment subscription.
+ * This is used to determine if onboarding is complete.
+ *
+ * @returns true if company has active/trialing subscription, false otherwise
+ */
+export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
+  const user = await getCurrentUser();
+  if (!user) return false;
+
+  const supabase = await createClient();
+  if (!supabase) return false;
+
+  const activeCompanyId = await getActiveCompanyId();
+  if (!activeCompanyId) return false;
+
+  // Check the ACTIVE company's payment status
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id, companies!inner(stripe_subscription_status)")
+    .eq("user_id", user.id)
+    .eq("company_id", activeCompanyId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (!teamMember) return false;
+
+  const companies = Array.isArray(teamMember.companies)
+    ? teamMember.companies[0]
+    : teamMember.companies;
+  const subscriptionStatus = companies?.stripe_subscription_status;
+
+  return (
+    subscriptionStatus === "active" ||
+    subscriptionStatus === "trialing" ||
+    process.env.NODE_ENV === "development" // Allow in dev mode
+  );
+}

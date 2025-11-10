@@ -350,6 +350,22 @@ export default function WelcomePage() {
   });
 
   // Load saved company data if active company has incomplete onboarding
+  // Check if company is already fully set up - redirect away if so
+  useEffect(() => {
+    fetch("/api/check-onboarding-status")
+      .then((res) => res.json())
+      .then((data) => {
+        // If company is fully set up (has payment), redirect to dashboard
+        if (data.companyId && data.hasPayment) {
+          router.push("/dashboard");
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking onboarding status:", error);
+        // Don't redirect on error - allow user to stay on welcome page
+      });
+  }, [router]);
+
   useEffect(() => {
     async function loadSavedCompanyData() {
       try {

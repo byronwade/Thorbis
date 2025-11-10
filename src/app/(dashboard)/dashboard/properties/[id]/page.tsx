@@ -9,6 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  getActiveCompanyId,
+  isActiveCompanyOnboardingComplete,
+} from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -45,16 +49,20 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     return notFound();
   }
 
-  // Get user's company
-  const { data: teamMember } = await supabase
-    .from("team_members")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .single();
+  // Check if active company has completed onboarding (has payment)
+  const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
-  if (!teamMember?.company_id) {
-    // User hasn't completed onboarding or doesn't have an active company membership
+  if (!isOnboardingComplete) {
+    // User hasn't completed onboarding or doesn't have an active company with payment
     // Redirect to onboarding for better UX
+    redirect("/dashboard/welcome");
+  }
+
+  // Get active company ID
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    // Should not happen if onboarding is complete, but handle gracefully
     redirect("/dashboard/welcome");
   }
 
@@ -75,7 +83,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     `
     )
     .eq("id", id)
-    .eq("company_id", teamMember.company_id)
+    .eq("company_id", activeCompanyId)
     .single();
 
   if (error || !property) {
@@ -97,7 +105,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     `
     )
     .eq("property_id", id)
-    .eq("company_id", teamMember.company_id)
+    .eq("company_id", activeCompanyId)
     .order("created_at", { ascending: false })
     .limit(10);
 

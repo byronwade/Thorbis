@@ -22,22 +22,16 @@ import {
   Calendar,
   Clock,
   MapPin,
+  Mail,
+  Phone,
+  Save,
   User,
   Users,
   Wrench,
-  Route,
-  CheckSquare,
-  FileText,
-  Activity,
-  Phone,
-  Mail,
-  Building2,
-  Save,
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,17 +43,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { CollapsibleDataSection, CollapsibleActionButton } from "@/components/ui/collapsible-data-section";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast";
-import { formatDistance } from "date-fns";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import {
+  UnifiedAccordionContent,
+  UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 
 export type AppointmentData = {
   appointment: any;
@@ -77,20 +66,9 @@ export type AppointmentPageContentProps = {
   metrics: any;
 };
 
-const defaultAccordionSections = [
-  "appointment-info",
-  "customer-details",
-  "property-location",
-  "team-assignments",
-];
-
 export function AppointmentPageContent({
   entityData,
-  metrics,
 }: AppointmentPageContentProps) {
-  const appointmentData = entityData; // Alias for easier refactoring
-  const router = useRouter();
-  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -101,12 +79,10 @@ export function AppointmentPageContent({
     property,
     job,
     teamAssignments = [],
-    tasks = [],
     notes = [],
     activities = [],
-  } = appointmentData;
+  } = entityData;
 
-  // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -115,62 +91,71 @@ export function AppointmentPageContent({
     return <div className="flex-1 p-6">Loading...</div>;
   }
 
-  const appointmentDate = new Date(appointment.start_time);
-  const appointmentEndDate = new Date(appointment.end_time);
-  const duration = Math.floor(
-    (appointmentEndDate.getTime() - appointmentDate.getTime()) / (1000 * 60)
+  const appointmentStart = new Date(appointment.start_time);
+  const appointmentEnd = new Date(appointment.end_time);
+  const durationMinutes = Math.max(
+    0,
+    Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60))
   );
 
-  return (
-    <div className="flex-1">
-      {/* Hero Header */}
-      <div className="border-b bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          {/* Appointment ID Badge */}
-          <div className="mb-3">
-            <Badge variant="outline">
-              APT-{appointment.id.slice(0, 8).toUpperCase()}
-            </Badge>
-          </div>
+  const statusBadgeVariant =
+    appointment.status === "confirmed"
+      ? "default"
+      : appointment.status === "completed"
+        ? "secondary"
+        : "outline";
 
-          {/* Title and Status */}
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="font-bold text-4xl">
-                {appointmentDate.toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </h1>
-              <p className="mt-2 text-muted-foreground text-xl">
-                {appointmentDate.toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })} - {appointmentEndDate.toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
-              </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Badge
-                  variant={
-                    appointment.status === "confirmed"
-                      ? "default"
-                      : appointment.status === "completed"
-                        ? "secondary"
-                        : "outline"
-                  }
-                >
-                  {appointment.status}
-                </Badge>
-                <Badge variant="outline">{appointment.appointment_type || "Service"}</Badge>
+  const headerBadges = [
+    <Badge key="id" variant="outline">
+      APT-{appointment.id.slice(0, 8).toUpperCase()}
+    </Badge>,
+    <Badge key="status" variant={statusBadgeVariant}>
+      {appointment.status}
+    </Badge>,
+    appointment.appointment_type ? (
+      <Badge key="type" variant="outline">
+        {appointment.appointment_type}
+      </Badge>
+    ) : null,
+  ].filter(Boolean);
+
+  const customHeader = (
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+      <div className="rounded-md bg-muted/50 shadow-sm">
+        <div className="flex flex-col gap-4 p-4 sm:p-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {headerBadges.map((badge, index) => (
+                  <span key={index}>{badge}</span>
+                ))}
+              </div>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-2xl font-semibold sm:text-3xl">
+                  {appointmentStart.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </h1>
+                <p className="text-sm text-muted-foreground sm:text-base">
+                  {appointmentStart.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}{" "}
+                  -
+                  {" "}
+                  {appointmentEnd.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </p>
               </div>
             </div>
 
             {hasChanges && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={() => setHasChanges(false)}
                   size="sm"
@@ -179,11 +164,7 @@ export function AppointmentPageContent({
                   <X className="mr-2 size-4" />
                   Cancel
                 </Button>
-                <Button
-                  disabled={isSaving}
-                  onClick={() => {}}
-                  size="sm"
-                >
+                <Button disabled={isSaving} onClick={() => {}} size="sm">
                   <Save className="mr-2 size-4" />
                   {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
@@ -191,9 +172,8 @@ export function AppointmentPageContent({
             )}
           </div>
 
-          {/* Quick Links */}
           {customer && (
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <Link
                 className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
                 href={`/dashboard/customers/${customer.id}`}
@@ -224,17 +204,18 @@ export function AppointmentPageContent({
             </div>
           )}
 
-          {/* Metadata Chips */}
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
               <Clock className="size-4 text-muted-foreground" />
-              <span className="font-medium">{duration} minutes</span>
+              <span className="font-medium">{durationMinutes} minutes</span>
             </div>
 
             {teamAssignments.length > 0 && (
               <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
                 <Users className="size-4 text-muted-foreground" />
-                <span className="font-medium">{teamAssignments.length} team members</span>
+                <span className="font-medium">
+                  {teamAssignments.length} team member{teamAssignments.length === 1 ? "" : "s"}
+                </span>
               </div>
             )}
 
@@ -250,274 +231,264 @@ export function AppointmentPageContent({
           </div>
         </div>
       </div>
+    </div>
+  );
 
-      {/* Collapsible Sections */}
-      <div className="mx-auto w-full max-w-7xl px-6 py-8">
-        <div suppressHydrationWarning>
-          <Accordion
-            className="space-y-3"
-            defaultValue={defaultAccordionSections}
-            type="multiple"
-          >
-            {/* Appointment Info */}
-            <CollapsibleDataSection
-              value="appointment-info"
-              title="Appointment Information"
-              icon={<Calendar className="size-4" />}
-            >
-              <div className="grid gap-4 md:grid-cols-2">
+  const customSections = useMemo<UnifiedAccordionSection[]>(() => {
+    const sections: UnifiedAccordionSection[] = [
+      {
+        id: "appointment-info",
+        title: "Appointment Information",
+        icon: <Calendar className="size-4" />,
+        defaultOpen: true,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Start Time</Label>
+                <Input
+                  type="datetime-local"
+                  value={new Date(appointment.start_time).toISOString().slice(0, 16)}
+                  readOnly
+                />
+              </div>
+              <div>
+                <Label>End Time</Label>
+                <Input
+                  type="datetime-local"
+                  value={new Date(appointment.end_time).toISOString().slice(0, 16)}
+                  readOnly
+                />
+              </div>
+              <div>
+                <Label>Status</Label>
+                <Select value={appointment.status}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                    <SelectItem value="confirmed">Confirmed</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Type</Label>
+                <Input value={appointment.appointment_type || "Service"} readOnly />
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      },
+    ];
+
+    if (customer) {
+      sections.push({
+        id: "customer-details",
+        title: "Customer Details",
+        icon: <User className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="grid flex-1 gap-4 md:grid-cols-2">
                 <div>
-                  <Label>Start Time</Label>
-                  <Input
-                    type="datetime-local"
-                    value={new Date(appointment.start_time).toISOString().slice(0, 16)}
-                    readOnly
-                  />
+                  <Label>Name</Label>
+                  <p className="text-sm">
+                    {customer.first_name} {customer.last_name}
+                  </p>
                 </div>
                 <div>
-                  <Label>End Time</Label>
-                  <Input
-                    type="datetime-local"
-                    value={new Date(appointment.end_time).toISOString().slice(0, 16)}
-                    readOnly
-                  />
+                  <Label>Email</Label>
+                  <p className="text-sm">{customer.email || "N/A"}</p>
+                </div>
+                <div>
+                  <Label>Phone</Label>
+                  <p className="text-sm">{customer.phone || "N/A"}</p>
+                </div>
+                <div>
+                  <Label>Company</Label>
+                  <p className="text-sm">{customer.company_name || "N/A"}</p>
+                </div>
+              </div>
+              <Button asChild size="sm" variant="ghost">
+                <Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+              </Button>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
+    if (property) {
+      sections.push({
+        id: "property-location",
+        title: "Property Location",
+        icon: <MapPin className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="space-y-4">
+              <div>
+                <Label>Service Address</Label>
+                <p className="text-sm">
+                  {property.address}
+                  {property.address2 && `, ${property.address2}`}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {property.city}, {property.state} {property.zip_code}
+                </p>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    `${property.address}, ${property.city}, ${property.state}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MapPin className="mr-2 size-4" />
+                  Open in Google Maps
+                </a>
+              </Button>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
+    sections.push({
+      id: "team-assignments",
+      title: "Team Assignments",
+      icon: <Users className="size-4" />,
+      count: teamAssignments.length,
+      content: (
+        <UnifiedAccordionContent>
+          <div className="space-y-3">
+            {teamAssignments.length > 0 ? (
+              teamAssignments.map((assignment: any) => (
+                <div
+                  key={assignment.id}
+                  className="flex items-center gap-4 rounded-lg border p-4"
+                >
+                  <Avatar>
+                    <AvatarImage src={assignment.user?.avatar} />
+                    <AvatarFallback>
+                      {assignment.user?.name
+                        ?.split(" ")
+                        .map((n: string) => n[0])
+                        .join("")
+                        .toUpperCase() || "TM"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-medium">{assignment.user?.name || "Unknown"}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {assignment.role || "Technician"}
+                    </p>
+                  </div>
+                  <Badge variant="outline">{assignment.status || "assigned"}</Badge>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground text-sm">
+                No team members assigned
+              </p>
+            )}
+          </div>
+        </UnifiedAccordionContent>
+      ),
+    });
+
+    if (job) {
+      sections.push({
+        id: "job-details",
+        title: "Job Details",
+        icon: <Wrench className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="grid flex-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label>Job Number</Label>
+                  <p className="text-sm">#{job.job_number}</p>
+                </div>
+                <div>
+                  <Label>Title</Label>
+                  <p className="text-sm">{job.title}</p>
                 </div>
                 <div>
                   <Label>Status</Label>
-                  <Select value={appointment.status}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="scheduled">Scheduled</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Badge variant="outline">{job.status}</Badge>
                 </div>
                 <div>
-                  <Label>Type</Label>
-                  <Input value={appointment.appointment_type || "Service"} readOnly />
+                  <Label>Priority</Label>
+                  <Badge variant="outline">{job.priority}</Badge>
                 </div>
               </div>
-            </CollapsibleDataSection>
+              <Button asChild size="sm" variant="ghost">
+                <Link href={`/dashboard/work/${job.id}`}>View Full Job</Link>
+              </Button>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
 
-            {/* Customer Details */}
-            {customer && (
-              <CollapsibleDataSection
-                value="customer-details"
-                title="Customer Details"
-                icon={<User className="size-4" />}
-                actions={
-                  <Button asChild size="sm" variant="ghost">
-                    <Link href={`/dashboard/customers/${customer.id}`}>
-                      View Full Profile
-                    </Link>
-                  </Button>
-                }
-              >
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label>Name</Label>
-                    <p className="text-sm">{customer.first_name} {customer.last_name}</p>
-                  </div>
-                  <div>
-                    <Label>Email</Label>
-                    <p className="text-sm">{customer.email || "N/A"}</p>
-                  </div>
-                  <div>
-                    <Label>Phone</Label>
-                    <p className="text-sm">{customer.phone || "N/A"}</p>
-                  </div>
-                  <div>
-                    <Label>Company</Label>
-                    <p className="text-sm">{customer.company_name || "N/A"}</p>
-                  </div>
-                </div>
-              </CollapsibleDataSection>
-            )}
+    return sections;
+  }, [appointment, customer, job, property, teamAssignments]);
 
-            {/* Property Location */}
-            {property && (
-              <CollapsibleDataSection
-                value="property-location"
-                title="Property Location"
-                icon={<MapPin className="size-4" />}
-              >
-                <div className="space-y-4">
-                  <div>
-                    <Label>Service Address</Label>
-                    <p className="text-sm">
-                      {property.address}
-                      {property.address2 && `, ${property.address2}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {property.city}, {property.state} {property.zip_code}
-                    </p>
-                  </div>
-                  <Button asChild variant="outline" size="sm">
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        `${property.address}, ${property.city}, ${property.state}`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <MapPin className="mr-2 size-4" />
-                      Open in Google Maps
-                    </a>
-                  </Button>
-                </div>
-              </CollapsibleDataSection>
-            )}
+  const relatedItems = useMemo(() => {
+    const items: any[] = [];
 
-            {/* Team Assignments */}
-            <CollapsibleDataSection
-              value="team-assignments"
-              title="Team Assignments"
-              icon={<Users className="size-4" />}
-              badge={<Badge variant="secondary">{teamAssignments.length}</Badge>}
-            >
-              <div className="space-y-3">
-                {teamAssignments.map((assignment: any) => (
-                  <div
-                    key={assignment.id}
-                    className="flex items-center gap-4 rounded-lg border p-4"
-                  >
-                    <Avatar>
-                      <AvatarImage src={assignment.user?.avatar} />
-                      <AvatarFallback>
-                        {assignment.user?.name
-                          ?.split(" ")
-                          .map((n: string) => n[0])
-                          .join("")
-                          .toUpperCase() || "TM"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-medium">{assignment.user?.name || "Unknown"}</p>
-                      <p className="text-muted-foreground text-sm">
-                        {assignment.role || "Technician"}
-                      </p>
-                    </div>
-                    <Badge variant="outline">{assignment.status || "assigned"}</Badge>
-                  </div>
-                ))}
+    if (customer) {
+      items.push({
+        id: `customer-${customer.id}`,
+        type: "customer",
+        title: `${customer.first_name} ${customer.last_name}`,
+        subtitle: customer.email || customer.phone || undefined,
+        href: `/dashboard/customers/${customer.id}`,
+      });
+    }
 
-                {teamAssignments.length === 0 && (
-                  <p className="text-center text-muted-foreground text-sm">
-                    No team members assigned
-                  </p>
-                )}
-              </div>
-            </CollapsibleDataSection>
+    if (property) {
+      items.push({
+        id: `property-${property.id}`,
+        type: "property",
+        title: property.address,
+        subtitle: `${property.city}, ${property.state}`,
+        href: `/dashboard/properties/${property.id}`,
+      });
+    }
 
-            {/* Job Details */}
-            {job && (
-              <CollapsibleDataSection
-                value="job-details"
-                title="Job Details"
-                icon={<Wrench className="size-4" />}
-                actions={
-                  <Button asChild size="sm" variant="ghost">
-                    <Link href={`/dashboard/work/${job.id}`}>
-                      View Full Job
-                    </Link>
-                  </Button>
-                }
-              >
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label>Job Number</Label>
-                    <p className="text-sm">#{job.job_number}</p>
-                  </div>
-                  <div>
-                    <Label>Title</Label>
-                    <p className="text-sm">{job.title}</p>
-                  </div>
-                  <div>
-                    <Label>Status</Label>
-                    <Badge variant="outline">{job.status}</Badge>
-                  </div>
-                  <div>
-                    <Label>Priority</Label>
-                    <Badge variant="outline">{job.priority}</Badge>
-                  </div>
-                </div>
-              </CollapsibleDataSection>
-            )}
+    if (job) {
+      items.push({
+        id: `job-${job.id}`,
+        type: "job",
+        title: job.title || `Job #${job.job_number}`,
+        subtitle: job.status,
+        href: `/dashboard/work/${job.id}`,
+        badge: job.status
+          ? { label: job.status, variant: "outline" as const }
+          : undefined,
+      });
+    }
 
-            {/* Notes */}
-            <CollapsibleDataSection
-              value="notes"
-              title="Notes"
-              icon={<FileText className="size-4" />}
-              count={notes.length}
-            >
-              <div className="space-y-3">
-                {notes.length > 0 ? (
-                  notes.map((note: any) => (
-                    <div key={note.id} className="rounded-lg border p-4">
-                      <p className="text-sm">{note.content}</p>
-                      <p className="mt-2 text-muted-foreground text-xs">
-                        {note.user?.name} •{" "}
-                        {formatDistance(new Date(note.created_at), new Date(), {
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-center text-muted-foreground text-sm">
-                    No notes yet
-                  </p>
-                )}
-              </div>
-            </CollapsibleDataSection>
+    return items;
+  }, [customer, property, job]);
 
-            {/* Activity Log */}
-            <CollapsibleDataSection
-              value="activity"
-              title="Activity Log"
-              icon={<Activity className="size-4" />}
-              count={activities.length}
-            >
-              <div className="space-y-3">
-                {activities.length > 0 ? (
-                  activities.map((activity: any) => (
-                    <div key={activity.id} className="flex gap-4 rounded-lg border p-4">
-                      <Avatar className="size-8">
-                        <AvatarFallback>
-                          {activity.user?.name
-                            ?.split(" ")
-                            .map((n: string) => n[0])
-                            .join("")
-                            .toUpperCase() || "?"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="text-sm">{activity.description}</p>
-                        <p className="mt-1 text-muted-foreground text-xs">
-                          {activity.user?.name} •{" "}
-                          {formatDistance(new Date(activity.created_at), new Date(), {
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-center text-muted-foreground text-sm">
-                    No activity yet
-                  </p>
-                )}
-              </div>
-            </CollapsibleDataSection>
-          </Accordion>
-        </div>
-      </div>
-    </div>
+  return (
+    <DetailPageContentLayout
+      customHeader={customHeader}
+      customSections={customSections}
+      activities={activities}
+      notes={notes}
+      relatedItems={relatedItems}
+      showStandardSections={{
+        attachments: false,
+      }}
+      defaultOpenSection="appointment-info"
+    />
   );
 }

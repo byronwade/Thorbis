@@ -203,6 +203,11 @@ const navigationSections = {
           icon: ClipboardList,
         },
         {
+          title: "Team Members",
+          url: "/dashboard/work/team",
+          icon: UserPlus,
+        },
+        {
           title: "Schedule",
           url: "/dashboard/work/schedule",
           icon: Calendar,
@@ -1632,10 +1637,6 @@ const navigationSections = {
         {
           title: "Billing",
           url: "/dashboard/settings/billing",
-        },
-        {
-          title: "Team & Permissions",
-          url: "/dashboard/settings/team",
         },
       ],
     },

@@ -17,12 +17,25 @@
  * - In-flight guard prevents duplicate API calls
  * - Pathname stability check prevents unnecessary executions
  * - Debounce prevents rapid re-executions with multiple tabs
+ * - Skips checks entirely if company is already fully set up
  */
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-export function OnboardingGuard({ children }: { children: React.ReactNode }) {
+interface OnboardingGuardProps {
+  children: React.ReactNode;
+  /**
+   * If true, company is fully set up and we can skip all checks
+   * This prevents unnecessary API calls when company is already configured
+   */
+  isOnboardingComplete?: boolean;
+}
+
+export function OnboardingGuard({
+  children,
+  isOnboardingComplete = false,
+}: OnboardingGuardProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -30,8 +43,19 @@ export function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const isCheckingRef = useRef(false);
   // Track previous pathname to detect actual changes
   const prevPathnameRef = useRef(pathname);
+  // Cache the onboarding status to avoid repeated checks
+  const onboardingStatusRef = useRef<{
+    companyId: string | null;
+    hasPayment: boolean;
+  } | null>(null);
 
   useEffect(() => {
+    // If company is already fully set up, skip all checks
+    if (isOnboardingComplete) {
+      onboardingStatusRef.current = { companyId: "complete", hasPayment: true };
+      return;
+    }
+
     // Only run if pathname actually changed
     if (prevPathnameRef.current === pathname) {
       return;
@@ -64,6 +88,14 @@ export function OnboardingGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // If we've already checked and company is set up, skip
+    if (
+      onboardingStatusRef.current?.companyId &&
+      onboardingStatusRef.current?.hasPayment
+    ) {
+      return;
+    }
+
     // Prevent duplicate API calls
     if (isCheckingRef.current) {
       return;
@@ -78,6 +110,12 @@ export function OnboardingGuard({ children }: { children: React.ReactNode }) {
       fetch("/api/check-onboarding-status")
         .then((res) => res.json())
         .then((data) => {
+          // Cache the result
+          onboardingStatusRef.current = {
+            companyId: data.companyId,
+            hasPayment: data.hasPayment,
+          };
+
           // Redirect to welcome if:
           // - No active company, OR
           // - Active company has no payment
@@ -97,7 +135,7 @@ export function OnboardingGuard({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutId);
       isCheckingRef.current = false;
     };
-  }, [pathname, router]);
+  }, [pathname, router, isOnboardingComplete]);
 
   // Always render children - redirects happen via useEffect
   return <>{children}</>;

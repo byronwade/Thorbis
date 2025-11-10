@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
 import { filterJobs, sortJobsByStartTime } from "@/lib/schedule-utils";
 import { createClient } from "@/lib/supabase/client";
@@ -51,13 +51,23 @@ export function useSchedule() {
     [currentDate, zoom]
   );
 
+  // Track if we've loaded to prevent infinite loops
+  const hasLoadedRef = useRef(false);
+
   // Load initial data - ONLY ONCE ON MOUNT
   useEffect(() => {
+    // Prevent multiple loads
+    if (hasLoadedRef.current) {
+      return;
+    }
+
     let isMounted = true;
 
     const loadData = async () => {
       // If already loaded, skip
-      if (jobs.size > 0) {
+      const currentJobs = useScheduleStore.getState().jobs;
+      if (currentJobs.size > 0) {
+        hasLoadedRef.current = true;
         setLoading(false);
         return;
       }
@@ -65,9 +75,13 @@ export function useSchedule() {
       // If another instance is already loading, wait for it
       if (loadingPromise) {
         await loadingPromise;
+        hasLoadedRef.current = true;
         setLoading(false);
         return;
       }
+
+      // Mark as loading to prevent duplicate loads
+      hasLoadedRef.current = true;
 
       // Create and store the loading promise
       loadingPromise = (async () => {

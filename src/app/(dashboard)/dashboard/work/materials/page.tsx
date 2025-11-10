@@ -7,9 +7,10 @@
  *
  * Performance optimizations:
  * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
  * - Only interactive table/chart components are client-side
  * - Better SEO and initial page load performance
+ *
+ * Note: Materials table doesn't exist yet - page shows empty state
  */
 
 import { Download, Plus, Upload } from "lucide-react";
@@ -21,87 +22,9 @@ import {
   type Material,
   MaterialsTable,
 } from "@/components/work/materials-table";
-
-// Mock data - replace with real data from database
-const mockMaterials: Material[] = [
-  {
-    id: "1",
-    itemCode: "MAT-001",
-    description: 'Copper Pipe 3/4"',
-    category: "Plumbing",
-    quantity: 250,
-    unit: "ft",
-    unitCost: 250,
-    totalValue: 62_500,
-    status: "in-stock",
-  },
-  {
-    id: "2",
-    itemCode: "MAT-002",
-    description: "Circuit Breaker 20A",
-    category: "Electrical",
-    quantity: 45,
-    unit: "units",
-    unitCost: 1250,
-    totalValue: 56_250,
-    status: "in-stock",
-  },
-  {
-    id: "3",
-    itemCode: "MAT-003",
-    description: "HVAC Filter 20x25x1",
-    category: "HVAC",
-    quantity: 8,
-    unit: "units",
-    unitCost: 1500,
-    totalValue: 12_000,
-    status: "low-stock",
-  },
-  {
-    id: "4",
-    itemCode: "MAT-004",
-    description: 'PVC Pipe 2"',
-    category: "Plumbing",
-    quantity: 0,
-    unit: "ft",
-    unitCost: 175,
-    totalValue: 0,
-    status: "out-of-stock",
-  },
-  {
-    id: "5",
-    itemCode: "MAT-005",
-    description: "Wire Nuts (Pack of 100)",
-    category: "Electrical",
-    quantity: 120,
-    unit: "packs",
-    unitCost: 850,
-    totalValue: 102_000,
-    status: "in-stock",
-  },
-  {
-    id: "6",
-    itemCode: "MAT-006",
-    description: "Refrigerant R-410A",
-    category: "HVAC",
-    quantity: 15,
-    unit: "lbs",
-    unitCost: 4500,
-    totalValue: 67_500,
-    status: "low-stock",
-  },
-  {
-    id: "7",
-    itemCode: "MAT-007",
-    description: 'Ball Valve 1/2"',
-    category: "Plumbing",
-    quantity: 75,
-    unit: "units",
-    unitCost: 850,
-    totalValue: 63_750,
-    status: "in-stock",
-  },
-];
+import { MaterialsKanban } from "@/components/work/materials-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
+import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -111,20 +34,20 @@ function formatCurrency(cents: number): string {
 }
 
 export default function MaterialsPage() {
-  // Calculate stats from data
-  const totalItems = mockMaterials.length;
-  const inStock = mockMaterials.filter((m) => m.status === "in-stock").length;
-  const lowStock = mockMaterials.filter((m) => m.status === "low-stock").length;
-  const outOfStock = mockMaterials.filter(
-    (m) => m.status === "out-of-stock"
-  ).length;
-  const totalValue = mockMaterials.reduce((sum, m) => sum + m.totalValue, 0);
+  // Materials table doesn't exist yet - show empty state
+  const mockMaterials: Material[] = [];
+  const totalItems = 0;
+  const inStock = 0;
+  const lowStock = 0;
+  const outOfStock = 0;
+  const totalValue = 0;
 
   return (
     <div className="flex h-full flex-col">
       <DataTablePageHeader
         actions={
-          <>
+          <div className="flex items-center gap-2">
+            <WorkViewSwitcher section="materials" />
             <Button
               className="md:hidden"
               size="sm"
@@ -163,10 +86,10 @@ export default function MaterialsPage() {
               <Link href="/dashboard/work/materials/new">
                 <Plus className="mr-2 size-4" />
                 <span className="hidden sm:inline">Add Material</span>
-                <span className="sm:hidden">Add</span>
+                <span className="sm-hidden">Add</span>
               </Link>
             </Button>
-          </>
+          </div>
         }
         description="Track and manage company materials, parts, and supplies"
         stats={
@@ -227,7 +150,11 @@ export default function MaterialsPage() {
       />
 
       <div className="flex-1 overflow-auto">
-        <MaterialsTable itemsPerPage={50} materials={mockMaterials} />
+        <WorkDataView
+          kanban={<MaterialsKanban materials={mockMaterials} />}
+          section="materials"
+          table={<MaterialsTable materials={mockMaterials} itemsPerPage={50} />}
+        />
       </div>
     </div>
   );

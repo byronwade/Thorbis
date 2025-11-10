@@ -11,6 +11,7 @@ import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions
 import { JobDetailsToolbarActions } from "@/components/work/job-details-toolbar-actions";
 import { PriceBookItemToolbarActions } from "@/components/work/pricebook-item-toolbar-actions";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
+import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-toolbar-actions";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 
 type ToolbarConfig = {
@@ -63,6 +64,11 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
     subtitle: "Manage services and materials pricing",
     actions: <PriceBookToolbarActions />,
   },
+  "/dashboard/work/purchase-orders": {
+    title: "Purchase Orders",
+    subtitle: "Manage material orders and vendor purchases",
+    actions: <PurchaseOrderToolbarActions />,
+  },
   "/dashboard/customers": {
     title: "Customers",
     subtitle: "Manage customer relationships and contacts",
@@ -100,6 +106,7 @@ const JOB_DETAILS_PATTERN =
   /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)([^/]+)$/;
 const PRODUCT_DETAILS_PATTERN = /^\/dashboard\/shop\/([^/]+)$/;
 const INVOICE_DETAILS_PATTERN = /^\/dashboard\/work\/invoices\/([^/]+)$/;
+const PURCHASE_ORDER_DETAILS_PATTERN = /^\/dashboard\/work\/purchase-orders\/([^/]+)$/;
 const PRICEBOOK_DETAILS_PATTERN =
   /^\/dashboard\/work\/pricebook\/(?!new)([^/]+)$/;
 const PRICEBOOK_NEW_PATTERN = /^\/dashboard\/work\/pricebook\/new$/;
@@ -143,6 +150,24 @@ export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
           </Button>
           <Separator className="h-6" orientation="vertical" />
           <PriceBookItemToolbarActions />
+        </>
+      ),
+    };
+  }
+
+  // Check for purchase order details page pattern: /dashboard/work/purchase-orders/[id]
+  const purchaseOrderDetailsMatch = pathname.match(PURCHASE_ORDER_DETAILS_PATTERN);
+  if (purchaseOrderDetailsMatch) {
+    return {
+      title: "Purchase Order Details",
+      actions: (
+        <>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/dashboard/work/purchase-orders">
+              <ArrowLeft className="mr-2 size-4" />
+              Back to Purchase Orders
+            </Link>
+          </Button>
         </>
       ),
     };

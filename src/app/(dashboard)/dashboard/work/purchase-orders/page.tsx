@@ -126,6 +126,7 @@ export default async function PurchaseOrdersPage() {
     <>
       <AppToolbar
         config={{
+          show: true,
           title: "Purchase Orders",
           subtitle: `${totalPOs} orders • ${formatCurrency(totalValue)} total`,
           actions: <PurchaseOrderToolbarActions />,

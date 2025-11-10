@@ -1107,6 +1107,98 @@ export const contracts = isProduction
     });
 
 /**
+ * Vendors table - Vendor management system
+ */
+export const vendors = isProduction
+  ? pgTable("vendors", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      companyId: uuid("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      name: pgText("name").notNull(),
+      displayName: pgText("display_name").notNull(),
+      vendorNumber: pgText("vendor_number").notNull(),
+      // Contact information
+      email: pgText("email"),
+      phone: pgText("phone"),
+      secondaryPhone: pgText("secondary_phone"),
+      website: pgText("website"),
+      // Address
+      address: pgText("address"),
+      address2: pgText("address2"),
+      city: pgText("city"),
+      state: pgText("state"),
+      zipCode: pgText("zip_code"),
+      country: pgText("country").default("USA"),
+      // Business information
+      taxId: pgText("tax_id"),
+      paymentTerms: pgText("payment_terms").default("net_30"), // 'net_15' | 'net_30' | 'net_60' | 'due_on_receipt' | 'custom'
+      creditLimit: pgInteger("credit_limit").default(0), // In cents
+      preferredPaymentMethod: pgText("preferred_payment_method"), // 'check' | 'ach' | 'credit_card' | 'wire'
+      // Classification
+      category: pgText("category"), // 'supplier' | 'distributor' | 'manufacturer' | 'service_provider' | 'other'
+      tags: pgJson("tags"), // Array of tag strings
+      status: pgText("status").notNull().default("active"), // 'active' | 'inactive'
+      // Metadata
+      notes: pgText("notes"),
+      internalNotes: pgText("internal_notes"),
+      customFields: pgJson("custom_fields"), // JSON object for custom fields
+      // Soft delete
+      deletedAt: timestamp("deleted_at"),
+      deletedBy: uuid("deleted_by").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      // Timestamps
+      createdAt: timestamp("created_at").defaultNow().notNull(),
+      updatedAt: timestamp("updated_at")
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+    })
+  : sqliteTable("vendors", {
+      id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      companyId: text("company_id")
+        .notNull()
+        .references(() => companies.id as any, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      displayName: text("display_name").notNull(),
+      vendorNumber: text("vendor_number").notNull(),
+      email: text("email"),
+      phone: text("phone"),
+      secondaryPhone: text("secondary_phone"),
+      website: text("website"),
+      address: text("address"),
+      address2: text("address2"),
+      city: text("city"),
+      state: text("state"),
+      zipCode: text("zip_code"),
+      country: text("country").default("USA"),
+      taxId: text("tax_id"),
+      paymentTerms: text("payment_terms").default("net_30"),
+      creditLimit: integer("credit_limit").default(0),
+      preferredPaymentMethod: text("preferred_payment_method"),
+      category: text("category"),
+      tags: text("tags"), // JSON string
+      status: text("status").notNull().default("active"),
+      notes: text("notes"),
+      internalNotes: text("internal_notes"),
+      customFields: text("custom_fields"), // JSON string
+      deletedAt: integer("deleted_at", { mode: "timestamp" }),
+      deletedBy: text("deleted_by").references(() => users.id as any, {
+        onDelete: "set null",
+      }),
+      createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date()),
+      updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdate(() => new Date()),
+    });
+
+/**
  * Purchase Orders table - Material ordering system
  */
 export const purchaseOrders = isProduction
@@ -1130,9 +1222,12 @@ export const purchaseOrders = isProduction
       approvedBy: uuid("approved_by").references(() => users.id as any, {
         onDelete: "set null",
       }),
-      vendor: pgText("vendor").notNull(),
-      vendorEmail: pgText("vendor_email"),
-      vendorPhone: pgText("vendor_phone"),
+      vendorId: uuid("vendor_id").references(() => vendors.id as any, {
+        onDelete: "set null",
+      }),
+      vendor: pgText("vendor").notNull(), // Denormalized for historical records
+      vendorEmail: pgText("vendor_email"), // Denormalized for historical records
+      vendorPhone: pgText("vendor_phone"), // Denormalized for historical records
       poNumber: pgText("po_number").notNull().unique(),
       title: pgText("title").notNull(),
       description: pgText("description"),
@@ -1180,9 +1275,12 @@ export const purchaseOrders = isProduction
       approvedBy: text("approved_by").references(() => users.id as any, {
         onDelete: "set null",
       }),
-      vendor: text("vendor").notNull(),
-      vendorEmail: text("vendor_email"),
-      vendorPhone: text("vendor_phone"),
+      vendorId: text("vendor_id").references(() => vendors.id as any, {
+        onDelete: "set null",
+      }),
+      vendor: text("vendor").notNull(), // Denormalized for historical records
+      vendorEmail: text("vendor_email"), // Denormalized for historical records
+      vendorPhone: text("vendor_phone"), // Denormalized for historical records
       poNumber: text("po_number").notNull().unique(),
       title: text("title").notNull(),
       description: text("description"),

@@ -71,6 +71,9 @@ export default async function PurchaseOrderDetailPage({
     { data: lineItems },
     { data: job },
     { data: activities },
+    { data: attachments },
+    { data: requestedByUser },
+    { data: approvedByUser },
   ] = await Promise.all([
     supabase
       .from("purchase_order_line_items")
@@ -93,6 +96,29 @@ export default async function PurchaseOrderDetailPage({
       .eq("entity_id", poId)
       .order("created_at", { ascending: false })
       .limit(20),
+
+    supabase
+      .from("attachments")
+      .select("*")
+      .eq("entity_type", "purchase_order")
+      .eq("entity_id", poId)
+      .order("created_at", { ascending: false }),
+
+    po.requested_by
+      ? supabase
+          .from("users")
+          .select("id, name, email")
+          .eq("id", po.requested_by)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
+    po.approved_by
+      ? supabase
+          .from("users")
+          .select("id, name, email")
+          .eq("id", po.approved_by)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
   ]);
 
   // Calculate metrics
@@ -114,6 +140,9 @@ export default async function PurchaseOrderDetailPage({
     job,
     lineItems: lineItems || [],
     activities: activities || [],
+    attachments: attachments || [],
+    requestedByUser: requestedByUser || null,
+    approvedByUser: approvedByUser || null,
   };
 
   return (

@@ -1,5 +1,6 @@
 import { Download, FileSignature, Plus } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
@@ -7,94 +8,124 @@ import {
   type Contract,
   ContractsTable,
 } from "@/components/work/contracts-table";
+import { ContractsKanban } from "@/components/work/contracts-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
+import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Contracts Page - Server Component
  *
  * Performance optimizations:
  * - Server Component calculates statistics before rendering (no loading flash)
- * - Mock data and calculations stay on server (will be replaced with real DB queries)
  * - Only ContractsTable component is client-side for sorting/filtering/pagination
  * - Better SEO and initial page load performance
  *
  * Seamless datatable layout with inline statistics
  */
 
-const mockContracts: Contract[] = [
-  {
-    id: "1",
-    contractNumber: "CNT-2025-001",
-    customer: "Acme Corp",
-    title: "HVAC Service Agreement",
-    date: "Jan 10, 2025",
-    validUntil: "Jan 10, 2026",
-    status: "signed",
-    contractType: "service",
-    signerName: "John Smith",
-  },
-  {
-    id: "2",
-    contractNumber: "CNT-2025-002",
-    customer: "Tech Solutions",
-    title: "Maintenance Contract",
-    date: "Jan 12, 2025",
-    validUntil: "Jan 12, 2026",
-    status: "sent",
-    contractType: "maintenance",
-    signerName: "Jane Doe",
-  },
-  {
-    id: "3",
-    contractNumber: "CNT-2025-003",
-    customer: "Global Industries",
-    title: "Emergency Service Contract",
-    date: "Jan 15, 2025",
-    validUntil: "Jan 15, 2026",
-    status: "draft",
-    contractType: "custom",
-    signerName: null,
-  },
-  {
-    id: "4",
-    contractNumber: "CNT-2025-004",
-    customer: "Summit LLC",
-    title: "Annual Service Plan",
-    date: "Jan 18, 2025",
-    validUntil: "Jan 18, 2026",
-    status: "viewed",
-    contractType: "service",
-    signerName: "Mike Johnson",
-  },
-  {
-    id: "5",
-    contractNumber: "CNT-2025-005",
-    customer: "Peak Industries",
-    title: "Equipment Warranty",
-    date: "Jan 20, 2025",
-    validUntil: "Jan 20, 2027",
-    status: "expired",
-    contractType: "custom",
-    signerName: "Sarah Wilson",
-  },
-];
+export default async function ContractsPage() {
+  const supabase = await createClient();
 
-export default function ContractsPage() {
-  // Server-side calculations - no client-side computation needed
-  // TODO: Replace with real database query and calculations
-  // const contracts = await db.select().from(contractsTable).where(...);
+  if (!supabase) {
+    return notFound();
+  }
 
-  const totalContracts = mockContracts.length;
-  const signed = mockContracts.filter((c) => c.status === "signed").length;
-  const pending = mockContracts.filter(
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return notFound();
+  }
+
+  // Get active company ID
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    return notFound();
+  }
+
+  // Fetch contracts from database
+  const { data: contractsRaw, error } = await supabase
+    .from("contracts")
+    .select(
+      `
+      id,
+      contract_number,
+      title,
+      status,
+      contract_type,
+      created_at,
+      expires_at,
+      signed_at,
+      signer_name,
+      signer_email,
+      customers!customer_id(display_name, first_name, last_name)
+    `
+    )
+    .eq("company_id", activeCompanyId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching contracts:", error);
+  }
+
+  // Transform data for table component
+  const contracts: Contract[] = (contractsRaw || []).map((contract: any) => {
+    const customer = Array.isArray(contract.customers)
+      ? contract.customers[0]
+      : contract.customers;
+
+    return {
+      id: contract.id,
+      contractNumber: contract.contract_number,
+      customer:
+        customer?.display_name ||
+        `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
+        contract.signer_email ||
+        "Unknown",
+      title: contract.title,
+      date: new Date(contract.created_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      validUntil: contract.expires_at
+        ? new Date(contract.expires_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "",
+      status: contract.status as
+        | "signed"
+        | "sent"
+        | "draft"
+        | "viewed"
+        | "expired",
+      contractType: contract.contract_type || "custom",
+      signerName: contract.signer_name || null,
+    };
+  });
+
+  // Calculate stats from data
+  const totalContracts = contracts.length;
+  const signed = contracts.filter((c) => c.status === "signed").length;
+  const pending = contracts.filter(
     (c) => c.status === "sent" || c.status === "viewed"
   ).length;
-  const draft = mockContracts.filter((c) => c.status === "draft").length;
+  const draft = contracts.filter((c) => c.status === "draft").length;
 
   return (
     <div className="flex h-full flex-col">
       <DataTablePageHeader
         actions={
-          <>
+          <div className="flex items-center gap-2">
+            <WorkViewSwitcher section="contracts" />
             <Button
               className="md:hidden"
               size="sm"
@@ -142,7 +173,7 @@ export default function ContractsPage() {
                 <span className="sm:hidden">New</span>
               </Link>
             </Button>
-          </>
+          </div>
         }
         description="Create and manage digital contracts for estimates, invoices, and standalone agreements"
         stats={
@@ -200,9 +231,12 @@ export default function ContractsPage() {
         title="Contracts"
       />
 
-      {/* ContractsTable - Client component handles interactive features */}
       <div className="flex-1 overflow-auto">
-        <ContractsTable contracts={mockContracts} itemsPerPage={50} />
+        <WorkDataView
+          kanban={<ContractsKanban contracts={contracts} />}
+          section="contracts"
+          table={<ContractsTable contracts={contracts} itemsPerPage={50} />}
+        />
       </div>
     </div>
   );

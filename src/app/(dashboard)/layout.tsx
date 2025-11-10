@@ -91,8 +91,9 @@ export default async function DashboardLayout({
   // Wrap in OnboardingGuard to handle client-side pathname checks
   // This prevents redirect loops when on welcome page
   // OnboardingGuard will allow welcome page to render, and redirect other pages if needed
+  // Pass isOnboardingComplete to skip unnecessary checks when company is fully set up
   return (
-    <OnboardingGuard>
+    <OnboardingGuard isOnboardingComplete={isOnboardingComplete}>
       {isOnboardingComplete ? (
         <>
           {/* Header - wrapped in client component that checks route */}

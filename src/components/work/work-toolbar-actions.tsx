@@ -12,10 +12,12 @@ import { Filter, Plus } from "lucide-react";
 import Link from "next/link";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
+import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 
 export function WorkToolbarActions() {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
+      <WorkViewSwitcher section="jobs" />
       <Button size="sm" variant="ghost">
         <Filter className="mr-2 size-4" />
         Filter

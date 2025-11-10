@@ -127,7 +127,7 @@ export async function getPurchaseOrder(
       console.error("Error fetching purchase order:", error);
       throw new ActionError(
         "Failed to fetch purchase order",
-        ERROR_CODES.DB_ERROR
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -295,7 +295,7 @@ export async function createPurchaseOrder(
       console.error("Error creating purchase order:", error);
       throw new ActionError(
         "Failed to create purchase order",
-        ERROR_CODES.DB_ERROR
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -389,7 +389,102 @@ export async function updatePurchaseOrderStatus(
       console.error("Error updating purchase order status:", error);
       throw new ActionError(
         "Failed to update purchase order status",
-        ERROR_CODES.DB_ERROR
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/work/purchase-orders");
+    revalidatePath(`/dashboard/work/purchase-orders/${poId}`);
+  });
+}
+
+/**
+ * Update purchase order vendor
+ */
+export async function updatePurchaseOrderVendor(
+  poId: string,
+  vendorId: string | null,
+  vendorName: string,
+  vendorEmail?: string | null,
+  vendorPhone?: string | null
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify PO exists and belongs to company
+    const { data: existingPO } = await supabase
+      .from("purchase_orders")
+      .select("id, company_id")
+      .eq("id", poId)
+      .single();
+
+    assertExists(existingPO, "Purchase order");
+
+    if (existingPO.company_id !== activeCompanyId) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("purchase order"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // If vendor_id is provided, fetch vendor details
+    let finalVendorName = vendorName;
+    let finalVendorEmail = vendorEmail;
+    let finalVendorPhone = vendorPhone;
+
+    if (vendorId) {
+      const { data: vendor } = await supabase
+        .from("vendors")
+        .select("name, display_name, email, phone")
+        .eq("id", vendorId)
+        .single();
+
+      if (vendor) {
+        finalVendorName = vendor.display_name || vendor.name;
+        finalVendorEmail = vendor.email || finalVendorEmail;
+        finalVendorPhone = vendor.phone || finalVendorPhone;
+      }
+    }
+
+    // Update purchase order
+    const { error } = await supabase
+      .from("purchase_orders")
+      .update({
+        vendor_id: vendorId || null,
+        vendor: finalVendorName,
+        vendor_email: finalVendorEmail || null,
+        vendor_phone: finalVendorPhone || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", poId);
+
+    if (error) {
+      console.error("Error updating purchase order vendor:", error);
+      throw new ActionError(
+        "Failed to update vendor",
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 
@@ -474,7 +569,7 @@ export async function updatePurchaseOrderLineItems(
       console.error("Error updating purchase order line items:", error);
       throw new ActionError(
         "Failed to update purchase order line items",
-        ERROR_CODES.DB_ERROR
+        ERROR_CODES.DB_QUERY_ERROR
       );
     }
 

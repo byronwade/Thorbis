@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
 import { JobsTable } from "@/components/work/jobs-table";
+import { JobsKanban } from "@/components/work/jobs-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -96,9 +98,15 @@ export default async function JobsPage() {
       <JobStatusPipeline />
 
       {/* Jobs Table - Client component handles sorting, filtering, pagination */}
-      <div>
-        <JobsTable itemsPerPage={50} jobs={jobs} />
-      </div>
+      <WorkDataView
+        kanban={<JobsKanban jobs={jobs} />}
+        section="jobs"
+        table={
+          <div>
+            <JobsTable itemsPerPage={50} jobs={jobs} />
+          </div>
+        }
+      />
     </>
   );
 }

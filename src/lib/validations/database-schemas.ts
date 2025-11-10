@@ -807,3 +807,131 @@ export type JobSignatureSelect = z.infer<typeof jobSignatureSelectSchema>;
 export type JobInsert = z.infer<typeof jobInsertSchema>;
 export type JobUpdate = z.infer<typeof jobUpdateSchema>;
 export type JobSelect = z.infer<typeof jobSelectSchema>;
+
+// ============================================================================
+// VENDORS
+// ============================================================================
+
+export const vendorInsertSchema = z.object({
+  company_id: z.string().uuid(),
+  name: z.string().min(1, "Vendor name is required").max(200),
+  display_name: z.string().min(1, "Display name is required").max(200),
+  vendor_number: z.string().min(1, "Vendor number is required").max(50),
+  email: z.string().email("Invalid email address").optional().nullable(),
+  phone: z.string().max(20).optional().nullable(),
+  secondary_phone: z.string().max(20).optional().nullable(),
+  website: z.string().url("Invalid URL").optional().nullable(),
+  address: z.string().max(500).optional().nullable(),
+  address2: z.string().max(500).optional().nullable(),
+  city: z.string().max(100).optional().nullable(),
+  state: z.string().max(100).optional().nullable(),
+  zip_code: z.string().max(20).optional().nullable(),
+  country: z.string().max(100).default("USA"),
+  tax_id: z.string().max(50).optional().nullable(),
+  payment_terms: z
+    .enum(["net_15", "net_30", "net_60", "due_on_receipt", "custom"])
+    .default("net_30"),
+  credit_limit: z.number().int().min(0).default(0), // In cents
+  preferred_payment_method: z
+    .enum(["check", "ach", "credit_card", "wire"])
+    .optional()
+    .nullable(),
+  category: z
+    .enum(["supplier", "distributor", "manufacturer", "service_provider", "other"])
+    .optional()
+    .nullable(),
+  tags: z.array(z.string()).optional().nullable(),
+  status: z.enum(["active", "inactive"]).default("active"),
+  notes: z.string().optional().nullable(),
+  internal_notes: z.string().optional().nullable(),
+  custom_fields: z.record(z.string(), z.any()).optional().nullable(),
+});
+
+export const vendorUpdateSchema = vendorInsertSchema
+  .partial()
+  .omit({ company_id: true });
+
+export const vendorSelectSchema = vendorInsertSchema.extend({
+  id: z.string().uuid(),
+  created_at: z.date(),
+  updated_at: z.date(),
+  deleted_at: z.date().optional().nullable(),
+  deleted_by: z.string().uuid().optional().nullable(),
+});
+
+// ============================================================================
+// PURCHASE ORDERS
+// ============================================================================
+
+export const purchaseOrderLineItemSchema = z.object({
+  id: z.string().uuid().optional(),
+  description: z.string().min(1, "Description is required"),
+  quantity: z.number().positive("Quantity must be positive"),
+  unit_price: z.number().nonnegative("Unit price must be non-negative"), // In cents
+  total: z.number().nonnegative("Total must be non-negative"), // In cents
+});
+
+export const purchaseOrderInsertSchema = z.object({
+  company_id: z.string().uuid(),
+  job_id: z.string().uuid().optional().nullable(),
+  estimate_id: z.string().uuid().optional().nullable(),
+  invoice_id: z.string().uuid().optional().nullable(),
+  requested_by: z.string().uuid(),
+  approved_by: z.string().uuid().optional().nullable(),
+  vendor_id: z.string().uuid().optional().nullable(),
+  vendor: z.string().min(1, "Vendor name is required").max(200),
+  vendor_email: z.string().email("Invalid email address").optional().nullable(),
+  vendor_phone: z.string().max(20).optional().nullable(),
+  po_number: z.string().min(1, "PO number is required").max(100),
+  title: z.string().min(1, "Title is required").max(200),
+  description: z.string().optional().nullable(),
+  status: z
+    .enum([
+      "draft",
+      "pending_approval",
+      "approved",
+      "ordered",
+      "partially_received",
+      "received",
+      "cancelled",
+    ])
+    .default("draft"),
+  priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
+  line_items: z.array(purchaseOrderLineItemSchema).min(1, "At least one line item is required"),
+  subtotal: z.number().int().nonnegative().default(0), // In cents
+  tax_amount: z.number().int().nonnegative().default(0), // In cents
+  shipping_amount: z.number().int().nonnegative().default(0), // In cents
+  total_amount: z.number().int().nonnegative().default(0), // In cents
+  expected_delivery: z.date().optional().nullable(),
+  actual_delivery: z.date().optional().nullable(),
+  delivery_address: z.string().max(500).optional().nullable(),
+  notes: z.string().optional().nullable(),
+  internal_notes: z.string().optional().nullable(),
+  auto_generated: z.boolean().default(false),
+});
+
+export const purchaseOrderUpdateSchema = purchaseOrderInsertSchema
+  .partial()
+  .omit({ company_id: true });
+
+export const purchaseOrderSelectSchema = purchaseOrderInsertSchema.extend({
+  id: z.string().uuid(),
+  created_at: z.date(),
+  updated_at: z.date(),
+  approved_at: z.date().optional().nullable(),
+  ordered_at: z.date().optional().nullable(),
+  received_at: z.date().optional().nullable(),
+});
+
+// ============================================================================
+// HELPER TYPES
+// ============================================================================
+
+export type VendorInsert = z.infer<typeof vendorInsertSchema>;
+export type VendorUpdate = z.infer<typeof vendorUpdateSchema>;
+export type VendorSelect = z.infer<typeof vendorSelectSchema>;
+
+export type PurchaseOrderLineItem = z.infer<typeof purchaseOrderLineItemSchema>;
+export type PurchaseOrderInsert = z.infer<typeof purchaseOrderInsertSchema>;
+export type PurchaseOrderUpdate = z.infer<typeof purchaseOrderUpdateSchema>;
+export type PurchaseOrderSelect = z.infer<typeof purchaseOrderSelectSchema>;

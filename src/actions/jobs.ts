@@ -681,6 +681,7 @@ export async function updateJobStatus(
       "quoted",
       "scheduled",
       "in_progress",
+      "on_hold",
       "completed",
       "cancelled",
     ];

@@ -7,9 +7,11 @@
  *
  * Performance optimizations:
  * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
  * - Only interactive table/chart components are client-side
  * - Better SEO and initial page load performance
+ *
+ * Note: Service agreements table (service_level_agreements) exists but structure may differ.
+ * Page shows empty state until table structure is confirmed.
  */
 
 import { Download, Plus, Upload } from "lucide-react";
@@ -21,60 +23,9 @@ import {
   type ServiceAgreement,
   ServiceAgreementsTable,
 } from "@/components/work/service-agreements-table";
-
-// Mock data - replace with real data from database
-const mockAgreements: ServiceAgreement[] = [
-  {
-    id: "1",
-    agreementNumber: "SLA-2025-001",
-    customer: "Acme Corp",
-    type: "Service Level Agreement",
-    startDate: "Jan 1, 2025",
-    endDate: "Dec 31, 2025",
-    value: 2_500_000,
-    status: "active",
-  },
-  {
-    id: "2",
-    agreementNumber: "SLA-2025-002",
-    customer: "Tech Solutions",
-    type: "Extended Warranty",
-    startDate: "Jan 5, 2025",
-    endDate: "Jan 4, 2027",
-    value: 1_250_000,
-    status: "active",
-  },
-  {
-    id: "3",
-    agreementNumber: "SLA-2025-003",
-    customer: "Global Industries",
-    type: "Maintenance Contract",
-    startDate: "Feb 1, 2025",
-    endDate: "Jan 31, 2026",
-    value: 1_875_000,
-    status: "pending",
-  },
-  {
-    id: "4",
-    agreementNumber: "SLA-2025-004",
-    customer: "Summit LLC",
-    type: "Service Level Agreement",
-    startDate: "Mar 1, 2025",
-    endDate: "Feb 28, 2026",
-    value: 3_500_000,
-    status: "active",
-  },
-  {
-    id: "5",
-    agreementNumber: "SLA-2025-005",
-    customer: "Downtown Retail LLC",
-    type: "Support Contract",
-    startDate: "Jan 15, 2025",
-    endDate: "Jan 14, 2026",
-    value: 950_000,
-    status: "active",
-  },
-];
+import { ServiceAgreementsKanban } from "@/components/work/service-agreements-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
+import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -84,26 +35,21 @@ function formatCurrency(cents: number): string {
 }
 
 export default function ServiceAgreementsPage() {
-  // Calculate stats from data
-  const totalAgreements = mockAgreements.length;
-  const activeAgreements = mockAgreements.filter(
-    (a) => a.status === "active"
-  ).length;
-  const pendingSignatures = mockAgreements.filter(
-    (a) => a.status === "pending"
-  ).length;
-  const totalValue = mockAgreements
-    .filter((a) => a.status === "active")
-    .reduce((sum, a) => sum + a.value, 0);
-
-  // Mock values
-  const expiringSoon = 8; // Agreements expiring in next 30 days
+  // Service agreements table (service_level_agreements) exists but structure may differ
+  // For now, show empty state until table structure is confirmed
+  const mockAgreements: ServiceAgreement[] = [];
+  const totalAgreements = 0;
+  const activeAgreements = 0;
+  const pendingSignatures = 0;
+  const totalValue = 0;
+  const expiringSoon = 0;
 
   return (
     <div className="flex h-full flex-col">
       <DataTablePageHeader
         actions={
-          <>
+          <div className="flex items-center gap-2">
+            <WorkViewSwitcher section="serviceAgreements" />
             <Button
               className="md:hidden"
               size="sm"
@@ -142,10 +88,10 @@ export default function ServiceAgreementsPage() {
               <Link href="/dashboard/work/service-agreements/new">
                 <Plus className="mr-2 size-4" />
                 <span className="hidden sm:inline">Create Agreement</span>
-                <span className="sm:hidden">New</span>
+                <span className="sm-hidden">New</span>
               </Link>
             </Button>
-          </>
+          </div>
         }
         description="Manage customer service contracts and warranties"
         stats={
@@ -208,7 +154,11 @@ export default function ServiceAgreementsPage() {
       />
 
       <div className="flex-1 overflow-auto">
-        <ServiceAgreementsTable agreements={mockAgreements} itemsPerPage={50} />
+        <WorkDataView
+          kanban={<ServiceAgreementsKanban agreements={mockAgreements} />}
+          section="serviceAgreements"
+          table={<ServiceAgreementsTable agreements={mockAgreements} itemsPerPage={50} />}
+        />
       </div>
     </div>
   );

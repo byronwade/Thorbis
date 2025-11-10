@@ -10,16 +10,7 @@
  * - Uses Zustand for schedule view state (no Context Provider needed)
  */
 
-/**
- * Server Component
- *
- * Performance optimizations:
- * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
- * - Only interactive table/chart components are client-side
- * - Better SEO and initial page load performance
- */
-
+import { useEffect, useState } from "react";
 import { TimelineViewV2 } from "@/components/schedule/timeline-view-v2";
 // import { ListView } from "@/components/schedule/list-view"
 // import { CalendarView } from "@/components/schedule/calendar-view"
@@ -29,6 +20,27 @@ import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { TestSchedule } from "./test-schedule";
 
 export default function SchedulePage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent SSR hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="text-muted-foreground">Loading schedule...</div>
+      </div>
+    );
+  }
+
+  // Only access Zustand store after component mounts (client-side only)
+  // This prevents useSyncExternalStore from being called during SSR
+  return <ScheduleContent />;
+}
+
+function ScheduleContent() {
   const view = useScheduleViewStore((state) => state.view);
 
   return (

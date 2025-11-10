@@ -29,7 +29,7 @@ interface DetailPageLayoutProps<TData, TMetrics> {
   entityId: string;
 
   /** Entity type for logging and analytics */
-  entityType: "job" | "customer" | "appointment" | "team-member";
+  entityType: "job" | "customer" | "appointment" | "team-member" | "purchase-order";
 
   /** All entity data to pass to content component */
   entityData: TData;

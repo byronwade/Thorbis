@@ -7,9 +7,11 @@
  *
  * Performance optimizations:
  * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
  * - Only interactive table/chart components are client-side
  * - Better SEO and initial page load performance
+ *
+ * Note: Equipment table exists but is for customer property equipment.
+ * This page is for company equipment/tools which doesn't have a table yet.
  */
 
 import { Download, Plus, Upload } from "lucide-react";
@@ -21,100 +23,26 @@ import {
   type Equipment,
   EquipmentTable,
 } from "@/components/work/equipment-table";
-
-// Mock data - replace with real data from database
-const mockEquipment: Equipment[] = [
-  {
-    id: "1",
-    assetId: "EQP-001",
-    name: "2023 Ford F-150 (Truck #1)",
-    type: "Vehicle",
-    assignedTo: "John Smith",
-    lastService: "Jan 5, 2025",
-    nextService: "Apr 5, 2025",
-    status: "available",
-  },
-  {
-    id: "2",
-    assetId: "EQP-002",
-    name: "Pipe Threading Machine",
-    type: "Tool",
-    assignedTo: "Workshop",
-    lastService: "Dec 15, 2024",
-    nextService: "Mar 15, 2025",
-    status: "available",
-  },
-  {
-    id: "3",
-    assetId: "EQP-003",
-    name: "Ladder 32ft Extension",
-    type: "Equipment",
-    assignedTo: "Mike Johnson",
-    lastService: "Jan 10, 2025",
-    nextService: "—",
-    status: "in-use",
-  },
-  {
-    id: "4",
-    assetId: "EQP-004",
-    name: "Power Drill Set",
-    type: "Tool",
-    assignedTo: "Sarah Williams",
-    lastService: "Jan 1, 2025",
-    nextService: "—",
-    status: "maintenance",
-  },
-  {
-    id: "5",
-    assetId: "EQP-005",
-    name: "2022 Chevy Silverado (Truck #2)",
-    type: "Vehicle",
-    assignedTo: "Tom Brown",
-    lastService: "Jan 8, 2025",
-    nextService: "Apr 8, 2025",
-    status: "in-use",
-  },
-  {
-    id: "6",
-    assetId: "EQP-006",
-    name: "Hydraulic Pipe Bender",
-    type: "Tool",
-    assignedTo: "Workshop",
-    lastService: "Dec 20, 2024",
-    nextService: "Mar 20, 2025",
-    status: "available",
-  },
-  {
-    id: "7",
-    assetId: "EQP-007",
-    name: "Portable Generator 5000W",
-    type: "Equipment",
-    assignedTo: "Mobile Storage",
-    lastService: "Jan 3, 2025",
-    nextService: "Apr 3, 2025",
-    status: "available",
-  },
-];
+import { EquipmentKanban } from "@/components/work/equipment-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
+import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 
 export default function EquipmentPage() {
-  // Calculate stats from data
-  const totalEquipment = mockEquipment.length;
-  const available = mockEquipment.filter(
-    (e) => e.status === "available"
-  ).length;
-  const inUse = mockEquipment.filter((e) => e.status === "in-use").length;
-  const maintenance = mockEquipment.filter(
-    (e) => e.status === "maintenance"
-  ).length;
-
-  // Calculate equipment needing service (next service in the next 30 days)
-  const needsAttention = 7; // Mock value
+  // Equipment table exists but is for customer property equipment, not company equipment/tools
+  // This page is for company equipment/tools which doesn't have a table yet
+  const mockEquipment: Equipment[] = [];
+  const totalEquipment = 0;
+  const available = 0;
+  const inUse = 0;
+  const maintenance = 0;
+  const needsAttention = 0;
 
   return (
     <div className="flex h-full flex-col">
       <DataTablePageHeader
         actions={
-          <>
+          <div className="flex items-center gap-2">
+            <WorkViewSwitcher section="equipment" />
             <Button
               className="md:hidden"
               size="sm"
@@ -153,10 +81,10 @@ export default function EquipmentPage() {
               <Link href="/dashboard/work/equipment/new">
                 <Plus className="mr-2 size-4" />
                 <span className="hidden sm:inline">Add Equipment</span>
-                <span className="sm:hidden">Add</span>
+                <span className="sm-hidden">Add</span>
               </Link>
             </Button>
-          </>
+          </div>
         }
         description="Track company equipment, tools, and vehicles"
         stats={
@@ -216,7 +144,11 @@ export default function EquipmentPage() {
       />
 
       <div className="flex-1 overflow-auto">
-        <EquipmentTable equipment={mockEquipment} itemsPerPage={50} />
+        <WorkDataView
+          kanban={<EquipmentKanban equipment={mockEquipment} />}
+          section="equipment"
+          table={<EquipmentTable equipment={mockEquipment} itemsPerPage={50} />}
+        />
       </div>
     </div>
   );

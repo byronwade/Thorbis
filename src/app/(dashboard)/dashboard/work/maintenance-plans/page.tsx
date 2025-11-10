@@ -7,9 +7,11 @@
  *
  * Performance optimizations:
  * - Server Component fetches data before rendering (no loading flash)
- * - Mock data defined on server (will be replaced with real DB queries)
  * - Only interactive table/chart components are client-side
  * - Better SEO and initial page load performance
+ *
+ * Note: Service plans table exists but structure may differ from page requirements.
+ * Page shows empty state until table structure is confirmed.
  */
 
 import { Download, Plus, Upload } from "lucide-react";
@@ -21,70 +23,9 @@ import {
   type MaintenancePlan,
   MaintenancePlansTable,
 } from "@/components/work/maintenance-plans-table";
-
-// Mock data - replace with real data from database
-const mockPlans: MaintenancePlan[] = [
-  {
-    id: "1",
-    planName: "HVAC Premium",
-    customer: "Acme Corp",
-    serviceType: "HVAC Maintenance",
-    frequency: "Quarterly",
-    nextVisit: "Feb 15, 2025",
-    monthlyFee: 19_900,
-    status: "active",
-  },
-  {
-    id: "2",
-    planName: "Electrical Plus",
-    customer: "Tech Solutions",
-    serviceType: "Electrical Inspection",
-    frequency: "Monthly",
-    nextVisit: "Feb 1, 2025",
-    monthlyFee: 14_900,
-    status: "active",
-  },
-  {
-    id: "3",
-    planName: "Plumbing Basic",
-    customer: "Global Industries",
-    serviceType: "Plumbing Check",
-    frequency: "Bi-Annual",
-    nextVisit: "Mar 10, 2025",
-    monthlyFee: 7900,
-    status: "pending",
-  },
-  {
-    id: "4",
-    planName: "Fire Safety Pro",
-    customer: "Summit LLC",
-    serviceType: "Fire System Inspection",
-    frequency: "Annual",
-    nextVisit: "Apr 5, 2025",
-    monthlyFee: 24_900,
-    status: "active",
-  },
-  {
-    id: "5",
-    planName: "Comprehensive Care",
-    customer: "Downtown Retail LLC",
-    serviceType: "Multi-System Maintenance",
-    frequency: "Monthly",
-    nextVisit: "Feb 10, 2025",
-    monthlyFee: 39_900,
-    status: "active",
-  },
-  {
-    id: "6",
-    planName: "Seasonal Check",
-    customer: "Medical Plaza Group",
-    serviceType: "HVAC Seasonal Service",
-    frequency: "Bi-Annual",
-    nextVisit: "Mar 1, 2025",
-    monthlyFee: 12_900,
-    status: "active",
-  },
-];
+import { MaintenancePlansKanban } from "@/components/work/maintenance-plans-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
+import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -94,22 +35,21 @@ function formatCurrency(cents: number): string {
 }
 
 export default function MaintenancePlansPage() {
-  // Calculate stats from data
-  const totalPlans = mockPlans.length;
-  const activePlans = mockPlans.filter((p) => p.status === "active").length;
-  const enrolledCustomers = 189; // Mock value
-  const monthlyRevenue = mockPlans
-    .filter((p) => p.status === "active")
-    .reduce((sum, p) => sum + p.monthlyFee, 0);
-
-  // Count visits this month (mock calculation)
-  const visitsThisMonth = 45; // Mock value
+  // Service plans table exists but structure may differ from mock data
+  // For now, show empty state until table structure is confirmed
+  const mockPlans: MaintenancePlan[] = [];
+  const totalPlans = 0;
+  const activePlans = 0;
+  const enrolledCustomers = 0;
+  const monthlyRevenue = 0;
+  const visitsThisMonth = 0;
 
   return (
     <div className="flex h-full flex-col">
       <DataTablePageHeader
         actions={
-          <>
+          <div className="flex items-center gap-2">
+            <WorkViewSwitcher section="maintenancePlans" />
             <Button
               className="md:hidden"
               size="sm"
@@ -148,10 +88,10 @@ export default function MaintenancePlansPage() {
               <Link href="/dashboard/work/maintenance-plans/new">
                 <Plus className="mr-2 size-4" />
                 <span className="hidden sm:inline">Create Plan</span>
-                <span className="sm:hidden">New</span>
+                <span className="sm-hidden">New</span>
               </Link>
             </Button>
-          </>
+          </div>
         }
         description="Manage recurring maintenance contracts and schedules"
         stats={
@@ -216,7 +156,11 @@ export default function MaintenancePlansPage() {
       />
 
       <div className="flex-1 overflow-auto">
-        <MaintenancePlansTable itemsPerPage={50} plans={mockPlans} />
+        <WorkDataView
+          kanban={<MaintenancePlansKanban plans={mockPlans} />}
+          section="maintenancePlans"
+          table={<MaintenancePlansTable plans={mockPlans} itemsPerPage={50} />}
+        />
       </div>
     </div>
   );

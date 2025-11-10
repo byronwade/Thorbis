@@ -29,17 +29,15 @@ import {
   Wrench,
   Edit2,
   Save,
+  Hash,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Accordion } from "@/components/ui/accordion";
-import { CollapsibleActionButton, CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -56,6 +54,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import {
+  UnifiedAccordionContent,
+  UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 
 type CustomerPageContentProps = {
   customerData: any;
@@ -212,19 +215,6 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     customer?.portalEnabled ??
     false;
 
-  const defaultAccordionSections = useMemo(
-    () => [
-      "customer-info",
-      "properties",
-      "jobs",
-      "invoices",
-      "equipment",
-      "payment-methods",
-      "activity",
-    ],
-    []
-  );
-
   // Save changes
   const handleSave = async () => {
     setIsSaving(true);
@@ -361,35 +351,46 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     return <div className="flex-1 p-6">Loading...</div>;
   }
 
-  return (
-    <div className="flex-1">
-      <div className="border-b bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="mb-3">
-            <Badge className="h-6 font-mono text-xs" variant="outline">
-              {customerIdentifier}
-            </Badge>
-          </div>
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div className="flex-1">
+  const headerBadges = [
+    <Badge key="identifier" className="font-mono" variant="outline">
+      {customerIdentifier}
+    </Badge>,
+    getCustomerStatusBadge(customerStatus || "active"),
+    membershipLabel ? (
+      <Badge key="membership" variant="secondary">
+        {membershipLabel}
+      </Badge>
+    ) : null,
+    portalEnabled ? (
+      <Badge
+        key="portal"
+        variant="outline"
+        className="gap-1 text-xs"
+      >
+        <Sparkles className="h-3.5 w-3.5" /> Portal Enabled
+      </Badge>
+    ) : null,
+  ].filter(Boolean);
+
+  const customHeader = (
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+      <div className="rounded-md bg-muted/50 shadow-sm">
+        <div className="flex flex-col gap-4 p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex-1 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {headerBadges.map((badge, index) => (
+                  <span key={index}>{badge}</span>
+                ))}
+              </div>
               <Input
-                className="h-auto border-0 p-0 font-bold text-5xl tracking-tight shadow-none focus-visible:ring-0 md:text-6xl"
+                className={cn(
+                  "h-auto border-0 p-0 text-3xl font-semibold tracking-tight shadow-none focus-visible:ring-0 sm:text-4xl md:text-5xl",
+                )}
                 onChange={(e) => handlePrimaryNameChange(e.target.value)}
                 placeholder="Enter customer name..."
                 value={displayName}
               />
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {getCustomerStatusBadge(customerStatus || "active")}
-                {membershipLabel && (
-                  <Badge variant="secondary">{membershipLabel}</Badge>
-                )}
-                {portalEnabled && (
-                  <Badge variant="outline" className="gap-1 text-xs">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Portal Enabled
-                  </Badge>
-                )}
-              </div>
             </div>
             {hasChanges && (
               <div className="flex shrink-0 items-center gap-2">
@@ -411,7 +412,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
             )}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {primaryEmail && (
               <a
                 className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -451,7 +452,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
             )}
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
               <TrendingUp className="h-4 w-4" />
               <div className="flex flex-col">
@@ -487,12 +488,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
-              onClick={() =>
-                router.push(`/dashboard/work/new?customerId=${customer.id}`)
-              }
+              onClick={() => router.push(`/dashboard/work/new?customerId=${customer.id}`)}
             >
               <Plus className="mr-2 h-4 w-4" />
               New Job
@@ -520,371 +519,411 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
           </div>
         </div>
       </div>
+    </div>
+  );
 
-      <div className="mx-auto w-full max-w-7xl px-6 py-8">
-        <div suppressHydrationWarning>
-          <Accordion
-            className="space-y-3"
-            defaultValue={defaultAccordionSections}
-            type="multiple"
-          >
-            <CollapsibleDataSection
-              value="customer-info"
-              title="Customer Information"
-              icon={<User />}
-              badge={getCustomerStatusBadge(customerStatus || "active")}
-            >
-              <div className="space-y-6">
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="first_name">First Name</Label>
+  const customSections = useMemo<UnifiedAccordionSection[]>(() => {
+    const sections: UnifiedAccordionSection[] = [
+      {
+        id: "customer-info",
+        title: "Customer Information",
+        icon: <User className="size-4" />,
+        defaultOpen: true,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="first_name">First Name</Label>
+                    <Input
+                      id="first_name"
+                      value={localCustomer.first_name || ""}
+                      onChange={(e) => handleFieldChange("first_name", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="last_name">Last Name</Label>
+                    <Input
+                      id="last_name"
+                      value={localCustomer.last_name || ""}
+                      onChange={(e) => handleFieldChange("last_name", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="company_name">Company Name</Label>
+                    <Input
+                      id="company_name"
+                      value={localCustomer.company_name || ""}
+                      onChange={(e) => handleFieldChange("company_name", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <div className="flex gap-2">
                       <Input
-                        id="first_name"
-                        value={localCustomer.first_name || ""}
-                        onChange={(e) =>
-                          handleFieldChange("first_name", e.target.value)
-                        }
+                        id="email"
+                        type="email"
+                        value={localCustomer.email || ""}
+                        onChange={(e) => handleFieldChange("email", e.target.value)}
                       />
-                    </div>
-                    <div>
-                      <Label htmlFor="last_name">Last Name</Label>
-                      <Input
-                        id="last_name"
-                        value={localCustomer.last_name || ""}
-                        onChange={(e) =>
-                          handleFieldChange("last_name", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="company_name">Company Name</Label>
-                      <Input
-                        id="company_name"
-                        value={localCustomer.company_name || ""}
-                        onChange={(e) =>
-                          handleFieldChange("company_name", e.target.value)
-                        }
-                      />
+                      {customer.email && (
+                        <Button variant="outline" size="icon" asChild>
+                          <a href={`mailto:${customer.email}`}>
+                            <Mail className="size-4" />
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="email"
-                          type="email"
-                          value={localCustomer.email || ""}
-                          onChange={(e) =>
-                            handleFieldChange("email", e.target.value)
-                          }
-                        />
-                        {customer.email && (
-                          <Button variant="outline" size="icon" asChild>
-                            <a href={`mailto:${customer.email}`}>
-                              <Mail className="size-4" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
+                  <div>
+                    <Label htmlFor="phone">Phone</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={localCustomer.phone || ""}
+                        onChange={(e) => handleFieldChange("phone", e.target.value)}
+                      />
+                      {customer.phone && (
+                        <Button variant="outline" size="icon" asChild>
+                          <a href={`tel:${customer.phone}`}>
+                            <Phone className="size-4" />
+                          </a>
+                        </Button>
+                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="phone">Phone</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="phone"
-                          type="tel"
-                          value={localCustomer.phone || ""}
-                          onChange={(e) =>
-                            handleFieldChange("phone", e.target.value)
-                          }
-                        />
-                        {customer.phone && (
-                          <Button variant="outline" size="icon" asChild>
-                            <a href={`tel:${customer.phone}`}>
-                              <Phone className="size-4" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="mobile_phone">Mobile Phone</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="mobile_phone"
-                          type="tel"
-                          value={localCustomer.mobile_phone || ""}
-                          onChange={(e) =>
-                            handleFieldChange("mobile_phone", e.target.value)
-                          }
-                        />
-                        {customer.mobile_phone && (
-                          <Button variant="outline" size="icon" asChild>
-                            <a href={`tel:${customer.mobile_phone}`}>
-                              <Phone className="size-4" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="mobile_phone">Mobile Phone</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="mobile_phone"
+                        type="tel"
+                        value={localCustomer.mobile_phone || ""}
+                        onChange={(e) => handleFieldChange("mobile_phone", e.target.value)}
+                      />
+                      {customer.mobile_phone && (
+                        <Button variant="outline" size="icon" asChild>
+                          <a href={`tel:${customer.mobile_phone}`}>
+                            <Phone className="size-4" />
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-            </CollapsibleDataSection>
 
-            <CollapsibleDataSection
-              value="properties"
-              title="Properties"
-              icon={<Building2 />}
-              badge={<Badge variant="secondary">{properties.length}</Badge>}
-              fullWidthContent
-              actions={
-                <CollapsibleActionButton
-                  icon={<Plus className="h-3.5 w-3.5" />}
-                  onClick={() =>
-                    router.push(`/dashboard/properties/new?customerId=${customer.id}`)
-                  }
-                >
-                  Add Property
-                </CollapsibleActionButton>
-              }
-            >
-              <PropertiesTable
-                customerId={customer.id}
-                itemsPerPage={10}
-                properties={properties}
-              />
-            </CollapsibleDataSection>
-
-            <CollapsibleDataSection
-              value="jobs"
-              title="Jobs"
-              icon={<Wrench />}
-              badge={<Badge variant="secondary">{jobs.length}</Badge>}
-              fullWidthContent
-              actions={
-                <CollapsibleActionButton
-                  icon={<Plus className="h-3.5 w-3.5" />}
-                  onClick={() =>
-                    router.push(`/dashboard/work/new?customerId=${customer.id}`)
-                  }
-                >
-                  New Job
-                </CollapsibleActionButton>
-              }
-            >
-              {(() => {
-                // Transform jobs to match Job type expected by JobsTable
-                const transformedJobs = (jobs || []).map((job: any) => ({
-                  id: job.id,
-                  companyId: job.company_id,
-                  propertyId: job.property_id,
-                  customerId: job.customer_id,
-                  assignedTo: job.assigned_to,
-                  jobNumber: job.job_number,
-                  title: job.title,
-                  description: job.description,
-                  status: job.status,
-                  priority: job.priority,
-                  jobType: job.job_type,
-                  scheduledStart: job.scheduled_start ? new Date(job.scheduled_start) : null,
-                  scheduledEnd: job.scheduled_end ? new Date(job.scheduled_end) : null,
-                  actualStart: job.actual_start ? new Date(job.actual_start) : null,
-                  actualEnd: job.actual_end ? new Date(job.actual_end) : null,
-                  totalAmount: job.total_amount || 0,
-                  paidAmount: job.paid_amount || 0,
-                  notes: job.notes,
-                  metadata: job.metadata,
-                  createdAt: job.created_at ? new Date(job.created_at) : new Date(),
-                  updatedAt: job.updated_at ? new Date(job.updated_at) : new Date(),
-                  aiCategories: job.ai_categories,
-                  aiEquipment: job.ai_equipment,
-                  aiServiceType: job.ai_service_type,
-                  aiPriorityScore: job.ai_priority_score,
-                  aiTags: job.ai_tags,
-                  aiProcessedAt: job.ai_processed_at ? new Date(job.ai_processed_at) : null,
-                }));
-
-                return (
-                  <JobsTable 
-                    itemsPerPage={10} 
-                    jobs={transformedJobs}
-                    showRefresh={false}
-                  />
-                );
-              })()}
-            </CollapsibleDataSection>
-
-            <CollapsibleDataSection
-              value="invoices"
-              title="Invoices"
-              icon={<Receipt />}
-              badge={<Badge variant="secondary">{invoices.length}</Badge>}
-              fullWidthContent
-              actions={
-                <CollapsibleActionButton
-                  icon={<Plus className="h-3.5 w-3.5" />}
-                  onClick={() =>
-                    router.push(
-                      `/dashboard/work/invoices/new?customerId=${customer.id}`
-                    )
-                  }
-                >
-                  New Invoice
-                </CollapsibleActionButton>
-              }
-            >
-              <CustomerInvoicesTable 
-                invoices={invoices || []}
-                onUpdate={() => router.refresh()}
-              />
-            </CollapsibleDataSection>
-
-            <CollapsibleDataSection
-              value="equipment"
-              title="Equipment"
-              icon={<Package />}
-              badge={<Badge variant="secondary">{equipment.length}</Badge>}
-              fullWidthContent
-            >
-              {equipment.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Manufacturer</TableHead>
-                      <TableHead>Model</TableHead>
-                      <TableHead>Serial Number</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {equipment.map((item: any) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell>{item.type}</TableCell>
-                        <TableCell>{item.manufacturer || "N/A"}</TableCell>
-                        <TableCell>{item.model || "N/A"}</TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {item.serial_number || "N/A"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="py-10 text-center text-sm text-muted-foreground">
-                  No equipment on record for this customer yet.
-                </p>
-              )}
-            </CollapsibleDataSection>
-
-            <CollapsibleDataSection
-              value="payment-methods"
-              title="Payment Methods"
-              icon={<CreditCard />}
-              badge={<Badge variant="secondary">{paymentMethods.length}</Badge>}
-            >
-              {paymentMethods.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
-                  {paymentMethods.map((method: any) => {
-                    const brand =
-                      method?.brand ??
-                      method?.card_brand ??
-                      method?.card_brand_name ??
-                      method?.type;
-                    const formattedBrand =
-                      typeof brand === "string" && brand.length > 0
-                        ? brand.toUpperCase()
-                        : "CARD";
-                    const last4 =
-                      method?.last4 ??
-                      method?.card?.last4 ??
-                      method?.card_last4 ??
-                      "••••";
-                    const expMonth =
-                      method?.exp_month ?? method?.card?.exp_month ?? null;
-                    const expYear =
-                      method?.exp_year ?? method?.card?.exp_year ?? null;
-                    const formattedExpiration =
-                      expMonth && expYear
-                        ? `${String(expMonth).padStart(2, "0")}/${expYear}`
-                        : "Unknown";
-                    const key =
-                      method?.id ??
-                      `${formattedBrand}-${last4}-${formattedExpiration}`;
-
-                    return (
-                      <div
-                        key={key}
-                        className="flex items-center justify-between rounded-lg border p-4"
-                      >
-                        <div className="flex items-center gap-4">
-                          <CreditCard className="size-6 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">
-                              {formattedBrand} ****{last4}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Expires {formattedExpiration}
-                            </p>
-                          </div>
-                        </div>
-                        {method?.is_default && (
-                          <Badge variant="secondary">Default</Badge>
-                        )}
-                      </div>
-                    );
-                  })}
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Textarea
+                      id="address"
+                      rows={3}
+                      value={localCustomer.address || ""}
+                      onChange={(e) => handleFieldChange("address", e.target.value)}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        value={localCustomer.city || ""}
+                        onChange={(e) => handleFieldChange("city", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                        id="state"
+                        value={localCustomer.state || ""}
+                        onChange={(e) => handleFieldChange("state", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="postal_code">Postal Code</Label>
+                      <Input
+                        id="postal_code"
+                        value={localCustomer.postal_code || ""}
+                        onChange={(e) => handleFieldChange("postal_code", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="country">Country</Label>
+                      <Input
+                        id="country"
+                        value={localCustomer.country || ""}
+                        onChange={(e) => handleFieldChange("country", e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <p className="py-10 text-center text-sm text-muted-foreground">
-                  No payment methods on file.
-                </p>
-              )}
-            </CollapsibleDataSection>
 
-            <CollapsibleDataSection
-              value="activity"
-              title="Activity Timeline"
-              icon={<Activity />}
-              badge={<Badge variant="secondary">{activities.length}</Badge>}
-            >
-              {activities.length > 0 ? (
                 <div className="space-y-4">
-                  {activities.slice(0, 20).map((activity: any, index: number) => (
-                    <div key={activity.id} className="flex gap-4">
-                      <div className="relative">
-                        <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
-                          <Activity className="size-4 text-primary" />
-                        </div>
-                        {index < activities.length - 1 && (
-                          <div className="absolute left-4 top-8 h-full w-px bg-border" />
-                        )}
+                  <div>
+                    <Label htmlFor="tags">Tags</Label>
+                    <Input
+                      id="tags"
+                      placeholder="Comma separated tags"
+                      value={(localCustomer.tags || []).join(", ")}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "tags",
+                          e.target.value.split(",").map((tag) => tag.trim())
+                        )
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="notes">Notes</Label>
+                    <Textarea
+                      id="notes"
+                      rows={4}
+                      placeholder="Internal notes about this customer"
+                      value={localCustomer.notes || ""}
+                      onChange={(e) => handleFieldChange("notes", e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      },
+      {
+        id: "properties",
+        title: "Properties",
+        icon: <Building2 className="size-4" />,
+        count: properties.length,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Manage service locations for this customer.
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => router.push(`/dashboard/properties/new?customerId=${customer.id}`)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Property
+              </Button>
+            </div>
+            <PropertiesTable
+              customerId={customer.id}
+              itemsPerPage={10}
+              properties={properties}
+            />
+          </UnifiedAccordionContent>
+        ),
+      },
+      {
+        id: "jobs",
+        title: "Jobs",
+        icon: <Wrench className="size-4" />,
+        count: jobs.length,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Recent jobs associated with this customer.
+              </p>
+              <Button
+                size="sm"
+                onClick={() => router.push(`/dashboard/work/new?customerId=${customer.id}`)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> New Job
+              </Button>
+            </div>
+            <JobsTable
+              jobs={jobs}
+              itemsPerPage={10}
+              onJobSelect={(jobId) => router.push(`/dashboard/work/${jobId}`)}
+            />
+          </UnifiedAccordionContent>
+        ),
+      },
+      {
+        id: "invoices",
+        title: "Invoices",
+        icon: <Receipt className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Billing history and outstanding invoices.
+              </p>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() =>
+                  router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`)
+                }
+              >
+                <FileText className="mr-2 h-4 w-4" /> New Invoice
+              </Button>
+            </div>
+            <CustomerInvoicesTable
+              customerId={customer.id}
+              invoices={invoices || []}
+              onUpdate={() => router.refresh()}
+            />
+          </UnifiedAccordionContent>
+        ),
+      },
+      {
+        id: "equipment",
+        title: "Equipment",
+        icon: <Package className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            {equipment.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {equipment.map((item: any) => (
+                  <div key={item.id} className="rounded-lg border p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-md bg-primary/10 p-2">
+                        <Wrench className="h-4 w-4 text-primary" />
                       </div>
-                      <div className="flex-1 pb-4">
-                        <p className="text-sm">{activity.action}</p>
+                      <div>
+                        <p className="font-medium">{item.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {formatDate(activity.created_at)}
-                          {activity.user &&
-                            ` by ${activity.user.name || activity.user.email}`}
+                          {item.type || item.category || "Equipment"}
                         </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  No activity recorded yet
+                    <div className="mt-3 space-y-1 text-sm">
+                      {item.serial_number && (
+                        <p className="text-muted-foreground">
+                          Serial: {item.serial_number}
+                        </p>
+                      )}
+                      {item.manufacturer && (
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                          <Building2 className="h-4 w-4" />
+                          {item.manufacturer}
+                        </p>
+                      )}
+                      {item.install_date && (
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          Installed {formatDate(item.install_date)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
+                <Package className="h-6 w-6 text-muted-foreground" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  No equipment on record for this customer yet.
                 </p>
-              )}
-            </CollapsibleDataSection>
-          </Accordion>
-        </div>
-      </div>
-    </div>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      {
+        id: "payment-methods",
+        title: "Payment Methods",
+        icon: <CreditCard className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            {paymentMethods.length > 0 ? (
+              <div className="space-y-3">
+                {paymentMethods.map((method: any) => (
+                  <div key={method.id} className="flex items-start justify-between rounded-lg border p-4">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium">
+                        {method.brand?.toUpperCase() || method.type} ending in {method.last4 || method.card_last_four}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Expires {method.exp_month}/{method.exp_year}
+                      </span>
+                    </div>
+                    {method.is_default && (
+                      <Badge variant="secondary">Default</Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground text-sm">
+                No payment methods on file.
+              </p>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+    ];
+
+    return sections;
+  }, [
+    customer.id,
+    customer.email,
+    customer.mobile_phone,
+    customer.phone,
+    equipment,
+    formatCurrency,
+    formatDate,
+    handleFieldChange,
+    jobs,
+    localCustomer,
+    paymentMethods,
+    properties,
+    router,
+  ]);
+
+  const relatedItems = useMemo(() => {
+    const items: any[] = [];
+
+    if (primaryProperty) {
+      items.push({
+        id: `property-${primaryProperty.id}`,
+        type: "property",
+        title: primaryProperty.name || primaryProperty.address,
+        subtitle: `${primaryProperty.city || ""}, ${primaryProperty.state || ""}`,
+        href: `/dashboard/properties/${primaryProperty.id}`,
+      });
+    }
+
+    if (jobs.length > 0) {
+      const recentJob = jobs[0];
+      items.push({
+        id: `job-${recentJob.id}`,
+        type: "job",
+        title: recentJob.title || `Job #${recentJob.job_number}`,
+        subtitle: recentJob.status,
+        href: `/dashboard/work/${recentJob.id}`,
+        badge: recentJob.status
+          ? { label: recentJob.status, variant: "outline" as const }
+          : undefined,
+      });
+    }
+
+    return items;
+  }, [jobs, primaryProperty]);
+
+  return (
+    <DetailPageContentLayout
+      customHeader={customHeader}
+      customSections={customSections}
+      activities={activities}
+      notes={[]}
+      attachments={attachments}
+      relatedItems={relatedItems}
+      showStandardSections={{
+        notes: false,
+      }}
+      defaultOpenSection="customer-info"
+    />
   );
 }
 
