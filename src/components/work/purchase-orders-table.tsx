@@ -217,10 +217,10 @@ export function PurchaseOrdersTable({
         const config = statusConfig[po.status];
         return (
           <Badge
-            className={`font-medium text-xs ${config.className}`}
+            className={`font-medium text-xs ${config?.className || ""}`}
             variant="outline"
           >
-            {config.label}
+            {config?.label || po.status}
           </Badge>
         );
       },
