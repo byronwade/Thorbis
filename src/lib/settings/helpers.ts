@@ -5,6 +5,7 @@
  */
 
 import type { ActionResult } from "@/lib/errors/with-error-handling";
+import { formatPhone } from "@/lib/utils/format";
 
 /**
  * Convert camelCase to snake_case for database fields
@@ -135,17 +136,9 @@ export function isValidPhone(phone: string): boolean {
 
 /**
  * Format phone number to (XXX) XXX-XXXX
+ * Re-exported from @/lib/utils/format for backward compatibility
  */
-export function formatPhone(phone: string): string {
-  const cleaned = phone.replace(/\D/g, "");
-  if (cleaned.length === 10) {
-    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-  }
-  if (cleaned.length === 11 && cleaned[0] === "1") {
-    return `(${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
-  }
-  return phone;
-}
+export { formatPhone } from "@/lib/utils/format";
 
 /**
  * Get default settings for a given settings type

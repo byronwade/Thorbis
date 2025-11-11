@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatCurrency } from "@/lib/formatters";
 
 const mockCosts = {
   labor: 450_000,
@@ -11,12 +12,7 @@ const mockCosts = {
   other: 10_000,
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
+import { formatCurrency } from "@/lib/formatters";
 
 export function JobCostingWidget({ job }: { job: Job }) {
   const totalCost = Object.values(mockCosts).reduce((a, b) => a + b, 0);

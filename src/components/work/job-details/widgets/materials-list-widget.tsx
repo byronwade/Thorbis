@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatDate } from "@/lib/formatters";
 
 interface MaterialsListWidgetProps {
   job: Job;

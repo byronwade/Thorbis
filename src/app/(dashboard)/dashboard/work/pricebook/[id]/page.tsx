@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+// import { getSupabaseClient } from "@/lib/db";
 
 /**
  * Price Book Item Detail Page - Server Component
@@ -141,9 +142,17 @@ export default async function PriceBookItemPage({
   const { id } = await params;
 
   // TODO: Fetch from database
-  // const item = await db.select().from(priceBookItems).where(eq(priceBookItems.id, id)).limit(1);
-  // const history = await db.select().from(priceHistory).where(eq(priceHistory.itemId, id));
-  // if (!item[0]) notFound();
+  // const supabase = await getSupabaseClient();
+  // const { data: item, error: itemError } = await supabase
+  //   .from("price_book_items")
+  //   .select("*")
+  //   .eq("id", id)
+  //   .single();
+  // const { data: history, error: historyError } = await supabase
+  //   .from("price_history")
+  //   .select("*")
+  //   .eq("item_id", id);
+  // if (itemError || !item) notFound();
 
   const item = mockItem;
   const history = mockPriceHistory;
@@ -154,8 +163,10 @@ export default async function PriceBookItemPage({
   const marginPercent = ((revenue / item.price) * 100).toFixed(1);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-6">
-      {/* Item Header - Simplified (Actions now in AppToolbar) */}
+    <div className="flex h-full w-full flex-col overflow-auto">
+      <div className="flex-1">
+        <div className="mx-auto max-w-7xl space-y-6 p-6">
+          {/* Item Header - Simplified (Actions now in AppToolbar) */}
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <h1 className="font-semibold text-3xl tracking-tight">{item.name}</h1>
@@ -472,6 +483,8 @@ export default async function PriceBookItemPage({
               </div>
             </CardContent>
           </Card>
+        </div>
+      </div>
         </div>
       </div>
     </div>

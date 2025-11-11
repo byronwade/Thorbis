@@ -150,7 +150,7 @@ import { useDraggablePosition } from "@/hooks/use-draggable-position";
 import { usePopOutDrag } from "@/hooks/use-pop-out-drag";
 import { useResizableMulti } from "@/hooks/use-resizable-multi";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
-import { useUIStore } from "@/lib/store";
+import { useUIStore } from "@/lib/stores";
 import {
   type CardType,
   useCallPreferencesStore,

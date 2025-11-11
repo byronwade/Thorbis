@@ -26,6 +26,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 
 export type Equipment = {
   id: string;
@@ -38,41 +39,27 @@ export type Equipment = {
   status: "available" | "in-use" | "maintenance" | "retired";
 };
 
-function getStatusBadge(status: string) {
-  const config = {
-    available: {
-      className: "bg-green-500 hover:bg-green-600 text-white",
-      label: "Available",
-    },
-    "in-use": {
-      className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-      label: "In Use",
-    },
-    maintenance: {
-      className:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-      label: "Maintenance",
-    },
-    retired: {
-      className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-      label: "Retired",
-    },
-  };
-
-  const statusConfig =
-    config[status as keyof typeof config] || config.available;
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
+const EQUIPMENT_STATUS_CONFIG = {
+  available: {
+    className: "bg-green-500 hover:bg-green-600 text-white",
+    label: "Available",
+  },
+  "in-use": {
+    className:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    label: "In Use",
+  },
+  maintenance: {
+    className:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    label: "Maintenance",
+  },
+  retired: {
+    className:
+      "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+    label: "Retired",
+  },
+} as const;
 
 export function EquipmentTable({
   equipment,
@@ -151,7 +138,13 @@ export function EquipmentTable({
       header: "Status",
       width: "w-32",
       shrink: true,
-      render: (item) => getStatusBadge(item.status),
+      render: (item) => (
+        <GenericStatusBadge
+          status={item.status}
+          config={EQUIPMENT_STATUS_CONFIG}
+          defaultStatus="available"
+        />
+      ),
     },
     {
       key: "actions",

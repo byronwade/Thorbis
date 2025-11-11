@@ -1,75 +1,71 @@
-/**
- * Team Member Stats Bar
- *
- * Displays key team member performance metrics:
- * - Total Jobs (completed count)
- * - Hours Worked (total time logged)
- * - Revenue Generated (from completed jobs)
- * - Customer Rating (average rating)
- *
- * Features:
- * - Compact mode support (when scrolled)
- * - Ticker variant for stock-ticker style
- * - Performance trend indicators
- */
-
 "use client";
 
-import { Briefcase, Clock, DollarSign, Star } from "lucide-react";
-import type { StatCard } from "@/components/ui/stats-cards";
-import { StatsCards } from "@/components/ui/stats-cards";
+/**
+ * Team Member Stats Bar - Client Component
+ * Statistics bar for team member metrics
+ *
+ * Features:
+ * - Permanent stats bar above team member details
+ * - Jobs, Hours, Revenue, Rating metrics
+ * - Full-width seamless design
+ * - Supports compact mode for sticky scrolling
+ */
 
-export type TeamMemberMetrics = {
-  totalJobs: number;
-  hoursWorked: number;
-  revenueGenerated: number;
-  customerRating: number; // 0-5
-  jobsTrend?: number; // % change
-  hoursTrend?: number; // % change
-  revenueTrend?: number; // % change
-};
+import { type StatCard } from "@/components/ui/stats-cards";
+import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
 
-export type TeamMemberStatsBarProps = {
+interface TeamMemberStatsBarProps {
+  metrics: {
+    totalJobs: number;
+    hoursWorked: number;
+    revenueGenerated: number;
+    customerRating: number;
+    jobsTrend?: number;
+    hoursTrend?: number;
+    revenueTrend?: number;
+  };
   entityId: string;
-  metrics: TeamMemberMetrics;
   compact?: boolean;
-};
+}
 
 export function TeamMemberStatsBar({
-  entityId,
   metrics,
   compact = false,
 }: TeamMemberStatsBarProps) {
-  const stats: StatCard[] = [
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(cents / 100);
+
+  const teamMemberStats: StatCard[] = [
     {
       label: "Total Jobs",
       value: metrics.totalJobs,
-      change: metrics.jobsTrend || undefined,
-      changeLabel: metrics.jobsTrend ? "vs last month" : undefined,
+      change: metrics.jobsTrend || 0,
+      changeLabel: "vs last month",
     },
     {
       label: "Hours Worked",
-      value: `${Math.floor(metrics.hoursWorked)}h`,
-      change: metrics.hoursTrend || undefined,
-      changeLabel: metrics.hoursTrend ? "vs last month" : undefined,
+      value: metrics.hoursWorked.toFixed(1),
+      change: metrics.hoursTrend || 0,
+      changeLabel: "vs last month",
     },
     {
-      label: "Revenue",
-      value: new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(metrics.revenueGenerated),
-      change: metrics.revenueTrend || undefined,
-      changeLabel: metrics.revenueTrend ? "vs last month" : undefined,
+      label: "Revenue Generated",
+      value: formatCurrency(metrics.revenueGenerated),
+      change: metrics.revenueTrend || 0,
+      changeLabel: "vs last month",
     },
     {
       label: "Rating",
       value: metrics.customerRating > 0 ? metrics.customerRating.toFixed(1) : "N/A",
-      change: metrics.customerRating >= 4.5 ? 5 : metrics.customerRating >= 4.0 ? 0 : -5,
+      change: 0,
+      changeLabel: "customer rating",
     },
   ];
 
-  return <StatsCards compact={compact} stats={stats} variant="ticker" />;
+  return <EntityStatsBar compact={compact} stats={teamMemberStats} />;
 }

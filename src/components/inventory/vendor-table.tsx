@@ -17,6 +17,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
 
 export type Vendor = {
   id: string;
@@ -29,13 +30,6 @@ export type Vendor = {
   status: "active" | "inactive";
   created_at: string;
 };
-
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
 
 const statusConfig: Record<
   "active" | "inactive",

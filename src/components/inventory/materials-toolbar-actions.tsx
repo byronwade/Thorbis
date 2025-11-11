@@ -8,21 +8,16 @@
  * - Import/Export actions
  */
 
-import { Plus } from "lucide-react";
-import Link from "next/link";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
-import { Button } from "@/components/ui/button";
+import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 
 export function MaterialsToolbarActions() {
   return (
-    <div className="flex items-center gap-2">
-      <Button asChild size="sm" variant="default">
-        <Link href="/dashboard/inventory/materials/new">
-          <Plus className="mr-2 size-4" />
-          Add Material
-        </Link>
-      </Button>
-      <ImportExportDropdown dataType="materials" />
-    </div>
+    <BaseToolbarActions
+      primaryAction={{
+        href: "/dashboard/inventory/materials/new",
+        label: "Add Material",
+      }}
+      importExportDataType="materials"
+    />
   );
 }

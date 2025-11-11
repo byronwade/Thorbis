@@ -3,7 +3,7 @@
 import { Calendar, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { useViewStore } from "@/stores/view-store";
+import { useViewStore } from "@/lib/stores/view-store";
 
 /**
  * Zoom Controls Component

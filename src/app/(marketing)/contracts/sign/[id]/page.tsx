@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { ContractSigningForm } from "@/components/work/contract-signing-form";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
+// import { getSupabaseClient } from "@/lib/db";
 
 /**
  * Public Contract Signing Page - Server Component
@@ -102,8 +103,13 @@ export default async function ContractSignPage({
   const { id } = await params;
 
   // TODO: Fetch from database and verify contract is signable
-  // const contract = await db.select().from(contracts).where(eq(contracts.id, id)).limit(1);
-  // if (!contract[0] || contract[0].status === 'signed') notFound();
+  // const supabase = await getSupabaseClient();
+  // const { data: contract, error } = await supabase
+  //   .from("contracts")
+  //   .select("*")
+  //   .eq("id", id)
+  //   .single();
+  // if (error || !contract || contract.status === "signed") notFound();
 
   const contract = mockContract;
 

@@ -1,16 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-  type KanbanMoveEvent,
-} from "@/components/ui/shadcn-io/kanban";
+import { useTransition } from "react";
+import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/db/schema";
@@ -20,9 +13,9 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarDays,
-  Loader2,
   MapPin,
 } from "lucide-react";
+import { formatCurrency, formatDate, formatDateRange } from "@/lib/formatters";
 
 type JobStatus =
   | "quoted"
@@ -75,22 +68,6 @@ const JOB_STATUS_COLUMNS: Array<{
 const COLUMN_LABEL = new Map(JOB_STATUS_COLUMNS.map((column) => [column.id, column.name]));
 const DEFAULT_STATUS: JobStatus = "quoted";
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
-
-const fullDateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
-
 function resolveStatus(status: Job["status"] | null | undefined): JobStatus {
   if (!status) {
     return DEFAULT_STATUS;
@@ -123,35 +100,12 @@ function cloneItems(items: JobsKanbanItem[]): JobsKanbanItem[] {
   }));
 }
 
-function formatCurrency(cents: number | null | undefined) {
-  if (cents === null || cents === undefined) {
-    return currencyFormatter.format(0);
-  }
-
-  return currencyFormatter.format(cents / 100);
-}
-
 function formatScheduledRange(job: ExtendedJob) {
   if (!job.scheduledStart) {
     return null;
   }
 
-  const start = new Date(job.scheduledStart);
-  if (!job.scheduledEnd) {
-    return dateFormatter.format(start);
-  }
-
-  const end = new Date(job.scheduledEnd);
-  const sameDay =
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth() &&
-    start.getDate() === end.getDate();
-
-  if (sameDay) {
-    return dateFormatter.format(start);
-  }
-
-  return `${dateFormatter.format(start)} → ${dateFormatter.format(end)}`;
+  return formatDateRange(job.scheduledStart, job.scheduledEnd ?? undefined);
 }
 
 function getCustomerName(job: ExtendedJob) {
@@ -298,7 +252,7 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 
       <div className="flex items-center justify-between pt-2 text-[11px] tracking-wide text-muted-foreground">
         <span>
-          Updated {fullDateFormatter.format(new Date(job.updatedAt))}
+          Updated {formatDate(job.updatedAt, { preset: "short" })}
         </span>
         <span className="uppercase">
           {COLUMN_LABEL.get(columnId as JobStatus) ?? columnId}
@@ -324,44 +278,16 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 
 export function JobsKanban({ jobs }: JobsKanbanProps) {
   const { toast } = useToast();
-  const columns = useMemo(() => JOB_STATUS_COLUMNS, []);
-  const initialItems = useMemo(() => createItems(jobs), [jobs]);
-  const [kanbanItems, setKanbanItems] = useState<JobsKanbanItem[]>(initialItems);
   const [isPending, startTransition] = useTransition();
 
-  const itemsRef = useRef<JobsKanbanItem[]>(initialItems);
-  const previousItemsRef = useRef<JobsKanbanItem[]>(initialItems);
-
-  useEffect(() => {
-    const items = createItems(jobs);
-    itemsRef.current = items;
-    previousItemsRef.current = cloneItems(items);
-    setKanbanItems(items);
-  }, [jobs]);
-
-  useEffect(() => {
-    itemsRef.current = kanbanItems;
-  }, [kanbanItems]);
-
-  const handleDataChange = (nextItems: JobsKanbanItem[]) => {
-    previousItemsRef.current = cloneItems(itemsRef.current);
-    const normalized = nextItems.map((item) => ({
-      ...item,
-      job: {
-        ...item.job,
-        status: item.columnId as JobStatus,
-      },
-    }));
-    itemsRef.current = normalized;
-    setKanbanItems(normalized);
-  };
-
-  const handleItemMove = ({ item, fromColumnId, toColumnId }: KanbanMoveEvent<JobsKanbanItem>) => {
+  const handleItemMove = async ({
+    item,
+    fromColumnId,
+    toColumnId,
+  }: KanbanMoveEvent<JobsKanbanItem>) => {
     if (fromColumnId === toColumnId) {
       return;
     }
-
-    const previous = cloneItems(previousItemsRef.current);
 
     startTransition(() => {
       void (async () => {
@@ -369,16 +295,12 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
         const result = await updateJobStatus(item.job.id, toColumnId);
 
         if (!result.success) {
-          itemsRef.current = previous;
-          previousItemsRef.current = previous;
-          setKanbanItems(previous);
           toast.error("Unable to move job", {
             description: result.error,
           });
           return;
         }
 
-        previousItemsRef.current = cloneItems(itemsRef.current);
         toast.success(
           `Job ${item.job.jobNumber} moved to ${COLUMN_LABEL.get(
             toColumnId as JobStatus
@@ -388,93 +310,39 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
     });
   };
 
-  const columnMeta = useMemo(() => {
-    return columns.reduce<Record<string, { count: number; total: number }>>(
-      (acc, column) => {
-        const columnItems = kanbanItems.filter(
-          (item) => item.columnId === column.id
-        );
+  return (
+    <EntityKanban<ExtendedJob, JobStatus>
+      columns={JOB_STATUS_COLUMNS}
+      data={jobs}
+      entityName="jobs"
+      mapToKanbanItem={(job) => ({
+        id: job.id,
+        columnId: resolveStatus(job.status),
+        entity: job,
+        job,
+      })}
+      updateEntityStatus={(job, newStatus) => ({
+        ...job,
+        status: newStatus,
+      })}
+      calculateColumnMeta={(columnId, items) => {
+        const columnItems = items.filter((item) => item.columnId === columnId);
         const total = columnItems.reduce(
-          (sum, item) => sum + (item.job.totalAmount ?? 0),
+          (sum, item) => sum + ((item.entity as ExtendedJob).totalAmount ?? 0),
           0
         );
-        acc[column.id] = { count: columnItems.length, total };
-        return acc;
-      },
-      {}
-    );
-  }, [columns, kanbanItems]);
-
-  return (
-    <KanbanProvider<JobsKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={kanbanItems}
-      onDataChange={handleDataChange}
+        return { count: columnItems.length, total };
+      }}
+      showTotals={true}
+      formatTotal={(total) => formatCurrency(total)}
       onItemMove={handleItemMove}
+      renderCard={(item) => <JobCardContent item={{ ...item, job: item.entity } as JobsKanbanItem} />}
       renderDragOverlay={(item) => (
         <div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
-          <JobCardContent item={item} />
+          <JobCardContent item={{ ...item, job: item.entity } as JobsKanbanItem} />
         </div>
       )}
-    >
-      {columns.map((column, columnIndex) => {
-        const meta = columnMeta[column.id] ?? { count: 0, total: 0 };
-        const showPending = isPending && columnIndex === 0;
-        return (
-          <KanbanBoard
-            className="min-h-[320px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                    variant="secondary"
-                  >
-                    {meta.count} jobs
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {formatCurrency(meta.total)}
-                  </span>
-                </div>
-              </div>
-              {showPending && (
-                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Loader2 className="size-3 animate-spin" />
-                  Updating…
-                </span>
-              )}
-            </KanbanHeader>
-            <KanbanCards<JobsKanbanItem>
-              className="min-h-[200px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-md border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No jobs in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <JobCardContent item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
-      })}
-    </KanbanProvider>
+    />
   );
 }
 

@@ -10,7 +10,6 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,7 +24,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { cn } from "@/lib/utils";
+import { ContractStatusBadge, ContractTypeBadge } from "@/components/ui/status-badge";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 export type Contract = {
   id: string;
@@ -39,81 +39,6 @@ export type Contract = {
   signerName: string | null;
 };
 
-function getStatusBadge(status: string) {
-  const config = {
-    signed: {
-      className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
-      label: "Signed",
-    },
-    sent: {
-      className:
-        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
-      label: "Sent",
-    },
-    viewed: {
-      className:
-        "border-purple-200/50 bg-purple-50/50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-400",
-      label: "Viewed",
-    },
-    draft: {
-      className:
-        "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
-      label: "Draft",
-    },
-    rejected: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
-      label: "Rejected",
-    },
-    expired: {
-      className:
-        "border-orange-200/50 bg-orange-50/50 text-orange-700 dark:border-orange-900/50 dark:bg-orange-950/30 dark:text-orange-400",
-      label: "Expired",
-    },
-  };
-
-  const statusConfig = config[status as keyof typeof config] || config.draft;
-
-  return (
-    <Badge
-      className={cn("font-medium text-xs", statusConfig.className)}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
-
-function getContractTypeBadge(type: string) {
-  const config = {
-    service: {
-      className:
-        "border-blue-200/50 bg-blue-50/50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400",
-      label: "Service",
-    },
-    maintenance: {
-      className:
-        "border-green-200/50 bg-green-50/50 text-green-700 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400",
-      label: "Maintenance",
-    },
-    custom: {
-      className:
-        "border-purple-200/50 bg-purple-50/50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-400",
-      label: "Custom",
-    },
-  };
-
-  const typeConfig = config[type as keyof typeof config] || config.custom;
-
-  return (
-    <Badge
-      className={cn("font-medium text-xs", typeConfig.className)}
-      variant="outline"
-    >
-      {typeConfig.label}
-    </Badge>
-  );
-}
 
 export function ContractsTable({
   contracts,
@@ -167,7 +92,7 @@ export function ContractsTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
-      render: (contract) => getContractTypeBadge(contract.contractType),
+      render: (contract) => <ContractTypeBadge type={contract.contractType} />,
     },
     {
       key: "signerName",
@@ -212,7 +137,7 @@ export function ContractsTable({
       header: "Status",
       width: "w-28",
       shrink: true,
-      render: (contract) => getStatusBadge(contract.status),
+      render: (contract) => <ContractStatusBadge status={contract.status} />,
     },
     {
       key: "actions",

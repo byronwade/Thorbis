@@ -93,7 +93,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useUIStore } from "@/lib/store";
+import { useUIStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import {

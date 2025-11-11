@@ -84,7 +84,7 @@ export function ImportExportDropdown({
       <DropdownMenuTrigger asChild>
         <Button
           aria-label="Data management options"
-          className="size-9"
+          className="h-9 w-9"
           size="icon"
           variant="ghost"
         >

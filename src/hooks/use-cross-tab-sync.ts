@@ -19,7 +19,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { useUIStore } from "@/lib/store";
+import { useUIStore } from "@/lib/stores";
 import { useCallPreferencesStore } from "@/lib/stores/call-preferences-store";
 
 type CallSyncMessage = {

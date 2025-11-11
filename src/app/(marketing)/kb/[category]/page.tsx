@@ -38,7 +38,11 @@ export async function generateMetadata({ params }: CategoryPageProps) {
     return {};
   }
 
-  return generateCategoryMetadata(category);
+  return generateCategoryMetadata({
+    title: category.title as string,
+    slug: category.slug as string,
+    description: category.description as string | undefined,
+  });
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
@@ -78,25 +82,25 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             { name: "Home", url: SEO_URLS.site },
             { name: "Knowledge Base", url: `${SEO_URLS.site}/kb` },
             {
-              name: category.title,
+              name: String(category.title),
               url: `${SEO_URLS.site}/kb/${category.slug}`,
             },
           ])
         )}
       </Script>
-      <KBSidebarWrapper currentCategory={category.slug}>
+      <KBSidebarWrapper currentCategory={String(category.slug)}>
         <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
           {/* Category Header */}
           <div className="mb-8">
             {category.icon && (
-              <span className="mb-4 block text-4xl">{category.icon}</span>
+              <span className="mb-4 block text-4xl">{String(category.icon)}</span>
             )}
             <h1 className="mb-2 font-bold text-4xl tracking-tight">
-              {category.title}
+              {String(category.title)}
             </h1>
             {category.description && (
               <p className="text-lg text-muted-foreground">
-                {category.description}
+                {String(category.description)}
               </p>
             )}
           </div>

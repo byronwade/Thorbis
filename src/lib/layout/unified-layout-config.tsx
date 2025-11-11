@@ -34,12 +34,26 @@ import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs
 import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
+import { EstimateDetailToolbarActions } from "@/components/work/estimate-detail-toolbar-actions";
+import { EstimateToolbarActions } from "@/components/work/estimate-toolbar-actions";
 import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions";
+import { InvoicesListToolbarActions } from "@/components/work/invoices-list-toolbar-actions";
 import { ItemDetailToolbarWrapper } from "@/components/work/item-detail-toolbar-wrapper";
 import { JobDetailBreadcrumbs } from "@/components/work/job-details/job-detail-breadcrumbs";
 import { JobDetailToolbarWrapper } from "@/components/work/job-details/job-detail-toolbar-wrapper";
+import { ContractToolbarActions } from "@/components/work/contract-toolbar-actions";
+import { MaintenancePlanToolbarActions } from "@/components/work/maintenance-plan-toolbar-actions";
+import { ServiceAgreementToolbarActions } from "@/components/work/service-agreement-toolbar-actions";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
+import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
+import { PaymentsToolbarActions } from "@/components/work/payments-toolbar-actions";
+import { MaterialsToolbarActions } from "@/components/inventory/materials-toolbar-actions";
+import { EquipmentToolbarActions } from "@/components/inventory/equipment-toolbar-actions";
+import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-toolbar-actions";
+import { TeamToolbarActions } from "@/components/work/team-toolbar-actions";
+import { TeamMemberDetailBreadcrumbs } from "@/components/work/team-member-detail-breadcrumbs";
+import { TeamMemberDetailToolbar } from "@/components/work/team-member-detail-toolbar";
 import type { SidebarConfig } from "@/lib/sidebar/types";
 
 // ============================================================================
@@ -63,11 +77,23 @@ export const ROUTE_PATTERNS = {
 
   // Work Routes
   WORK_ROOT: /^\/dashboard\/work$/,
-  WORK_SCHEDULE: /^\/dashboard\/work\/schedule/,
+  WORK_SCHEDULE: /^\/dashboard\/schedule/,
   WORK_INVOICES_LIST: /^\/dashboard\/work\/invoices$/,
   WORK_INVOICES_DETAILS: /^\/dashboard\/work\/invoices\/[^/]+$/,
   WORK_ESTIMATES_LIST: /^\/dashboard\/work\/estimates$/,
+  WORK_APPOINTMENTS_LIST: /^\/dashboard\/work\/appointments$/,
+  WORK_APPOINTMENTS_DETAIL: /^\/dashboard\/work\/appointments\/[^/]+$/,
+  WORK_PAYMENTS_LIST: /^\/dashboard\/work\/payments$/,
+  WORK_PAYMENTS_DETAIL: /^\/dashboard\/work\/payments\/[^/]+$/,
+  WORK_ESTIMATES_DETAIL: /^\/dashboard\/work\/estimates\/[^/]+$/,
+  WORK_MAINTENANCE_PLANS_DETAIL: /^\/dashboard\/work\/maintenance-plans\/[^/]+$/,
+  WORK_SERVICE_AGREEMENTS_DETAIL: /^\/dashboard\/work\/service-agreements\/[^/]+$/,
+  WORK_EQUIPMENT_DETAIL: /^\/dashboard\/work\/equipment\/[^/]+$/,
   WORK_CONTRACTS_LIST: /^\/dashboard\/work\/contracts$/,
+  WORK_CONTRACTS_DETAIL: /^\/dashboard\/work\/contracts\/[^/]+$/,
+  WORK_PURCHASE_ORDERS_LIST: /^\/dashboard\/work\/purchase-orders$/,
+  WORK_TEAM_LIST: /^\/dashboard\/work\/team$/,
+  WORK_TEAM_MEMBER_DETAIL: /^\/dashboard\/work\/team\/[^/]+$/,
   WORK_PRICEBOOK_LIST: /^\/dashboard\/work\/pricebook$/,
   WORK_PRICEBOOK_CATEGORIES: /^\/dashboard\/work\/pricebook\/c\//,
   WORK_PRICEBOOK_NEW: /^\/dashboard\/work\/pricebook\/new$/,
@@ -78,9 +104,9 @@ export const ROUTE_PATTERNS = {
     /^\/dashboard\/work\/pricebook\/(?!new|export|import|mass-update|c\/)([^/]+)$/,
   // Purchase order details
   PURCHASE_ORDER_DETAILS: /^\/dashboard\/work\/purchase-orders\/[^/]+$/,
-  // Job details - excludes known work subpages
+  // Job details - excludes known work subpages (schedule moved to /dashboard/schedule)
   JOB_DETAILS:
-    /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)([^/]+)$/,
+    /^\/dashboard\/work\/(?!invoices|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team)([^/]+)$/,
 
   // Communication
   COMMUNICATION_DETAIL:
@@ -580,7 +606,8 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        breadcrumbs: <CategoryBreadcrumbs />,
+        title: "Price Book",
+        subtitle: "Manage services, materials, and equipment pricing",
         actions: <PriceBookToolbarActions />,
       },
       sidebar: {
@@ -592,7 +619,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       },
     },
     priority: 77,
-    description: "Price book with drill-down card navigation",
+    description: "Price book with table view",
   },
 
   {
@@ -752,19 +779,24 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.WORK_SCHEDULE,
     config: {
-      structure: FULL_WIDTH_STRUCTURE,
-      header: DEFAULT_HEADER,
+      structure: {
+        maxWidth: "full",
+        padding: "none",
+        gap: "none",
+        fixedHeight: true,
+      },
+      header: {
+        show: false, // Full screen - no header
+      },
       toolbar: {
-        show: true,
-        title: "Schedule",
-        actions: <ScheduleToolbarActions />,
+        show: false, // Full screen - no toolbar
       },
       sidebar: {
-        show: false,
+        show: false, // Full screen - no sidebar
       },
     },
     priority: 70,
-    description: "Schedule/calendar view",
+    description: "Schedule/calendar view - full screen",
   },
 
   {
@@ -822,10 +854,355 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     description: "Job detail pages - full width with toolbar and back button",
   },
 
-  // Work list pages
+  // Appointments detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_APPOINTMENTS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Appointment Details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Appointment detail page - full width with toolbar",
+  },
+
+  // Payments detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PAYMENTS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Payment Details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Payment detail page - full width with toolbar",
+  },
+
+  // Estimates detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_ESTIMATES_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Estimate Details",
+        actions: <EstimateDetailToolbarActions />,
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Estimate detail page - full width with toolbar",
+  },
+
+  // Maintenance Plans detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_MAINTENANCE_PLANS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Maintenance Plan Details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Maintenance plan detail page - full width with toolbar",
+  },
+
+  // Service Agreements detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_SERVICE_AGREEMENTS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Service Agreement Details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Service agreement detail page - full width with toolbar",
+  },
+
+  // Equipment detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_EQUIPMENT_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Equipment Details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Equipment detail page - full width with toolbar",
+  },
+
+  // Contracts detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_CONTRACTS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Contract Details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Contract detail page - full width with toolbar",
+  },
+
+  // Invoices list page (specific config with toolbar actions)
+  {
+    pattern: ROUTE_PATTERNS.WORK_INVOICES_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Invoices",
+        subtitle: "Create, track, and manage customer invoices",
+        actions: <InvoicesListToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Invoices list page with view switcher in toolbar",
+  },
+
+  // Appointments list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_APPOINTMENTS_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Appointments",
+        subtitle: "Manage customer appointments and schedules",
+        actions: <AppointmentsToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Appointments list page with view switcher in toolbar",
+  },
+
+  // Payments list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PAYMENTS_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Payments",
+        subtitle: "Track and manage customer payments",
+        actions: <PaymentsToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Payments list page with view switcher in toolbar",
+  },
+
+  // Estimates list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_ESTIMATES_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Estimates",
+        subtitle: "Create and manage project estimates and quotes",
+        actions: <EstimateToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Estimates list page with view switcher in toolbar",
+  },
+
+  // Contracts list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_CONTRACTS_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Contracts",
+        subtitle: "Create and manage digital contracts and agreements",
+        actions: <ContractToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Contracts list page with view switcher in toolbar",
+  },
+
+  // Maintenance Plans list page
+  {
+    pattern: /^\/dashboard\/work\/maintenance-plans$/,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Maintenance Plans",
+        subtitle: "Manage recurring maintenance contracts and schedules",
+        actions: <MaintenancePlanToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Maintenance plans list page with view switcher in toolbar",
+  },
+
+  // Service Agreements list page
+  {
+    pattern: /^\/dashboard\/work\/service-agreements$/,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Service Agreements",
+        subtitle: "Manage customer service contracts and warranties",
+        actions: <ServiceAgreementToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Service agreements list page with view switcher in toolbar",
+  },
+
+  // Materials list page
+  {
+    pattern: /^\/dashboard\/work\/materials$/,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Materials Inventory",
+        subtitle: "Track and manage company materials, parts, and supplies",
+        actions: <MaterialsToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Materials list page with view switcher in toolbar",
+  },
+
+  // Equipment list page
+  {
+    pattern: /^\/dashboard\/work\/equipment$/,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Equipment & Tools",
+        subtitle: "Track company equipment, tools, and vehicles",
+        actions: <EquipmentToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Equipment list page with view switcher in toolbar",
+  },
+
+  // Purchase Orders list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PURCHASE_ORDERS_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Purchase Orders",
+        subtitle: "Manage vendor orders and track inventory purchases",
+        actions: <PurchaseOrderToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Purchase orders list page with view switcher in toolbar",
+  },
+
+  // Team list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_TEAM_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Team Members",
+        subtitle: "Manage team members, roles, and permissions",
+        actions: <TeamToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Team members list page with view switcher in toolbar",
+  },
+
+  // Team member detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_TEAM_MEMBER_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        breadcrumbs: <TeamMemberDetailBreadcrumbs />,
+        title: "Team Member Details",
+        actions: <TeamMemberDetailToolbar />,
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 57,
+    description: "Team member detail page - full width with toolbar, no sidebar",
+  },
+
+  // Other work list pages
   {
     pattern:
-      /^\/dashboard\/work\/(invoices|estimates|materials|equipment|maintenance-plans|service-agreements|purchase-orders|pricebook)/,
+      /^\/dashboard\/work\/(pricebook)/,
     config: {
       structure: FULL_WIDTH_STRUCTURE,
       header: DEFAULT_HEADER,
@@ -833,7 +1210,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       sidebar: DEFAULT_SIDEBAR,
     },
     priority: 55,
-    description: "Work list pages (invoices, estimates, etc.)",
+    description: "Work list pages (pricebook)",
   },
 
   // ========================================
@@ -878,6 +1255,24 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     description: "Communication hub",
   },
 
+  // Customers list page
+  {
+    pattern: ROUTE_PATTERNS.CUSTOMERS_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Customers",
+        subtitle: "Manage customer relationships and contacts",
+        actions: <CustomersToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 64,
+    description: "Customers list page with view switcher",
+  },
+
   {
     pattern: ROUTE_PATTERNS.REPORTING,
     config: {
@@ -895,7 +1290,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
         show: false,
       },
     },
-    priority: 64,
+    priority: 63,
     description: "Reports and analytics - Coming Soon layout",
   },
 
@@ -1021,23 +1416,6 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 57,
     description: "Shop listing page",
-  },
-
-  {
-    pattern: ROUTE_PATTERNS.CUSTOMERS_LIST,
-    config: {
-      structure: FULL_WIDTH_STRUCTURE,
-      header: DEFAULT_HEADER,
-      toolbar: {
-        show: true,
-        title: "Customers",
-        subtitle: "Manage customer relationships and contacts",
-        actions: <CustomersToolbarActions />,
-      },
-      sidebar: DEFAULT_SIDEBAR,
-    },
-    priority: 50,
-    description: "Customers list",
   },
 
   // ========================================

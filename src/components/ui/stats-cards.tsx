@@ -110,7 +110,7 @@ export function StatsCards({
 
   if (variant === "ticker") {
     return (
-      <div className="w-full rounded-xl border border-border/60 bg-card/80 shadow-sm">
+      <div className="mx-4 my-3 w-auto rounded-xl border border-border/60 bg-card/80 shadow-sm">
         {/* Stats Grid - Stock ticker style */}
         <div
           className={cn("grid w-full divide-x divide-border/60", gridColsClass)}

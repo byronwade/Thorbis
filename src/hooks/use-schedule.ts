@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
 import { filterJobs, sortJobsByStartTime } from "@/lib/schedule-utils";
 import { createClient } from "@/lib/supabase/client";
-import { useScheduleStore } from "@/stores/schedule-store";
-import { useViewStore } from "@/stores/view-store";
+import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { useViewStore } from "@/lib/stores/view-store";
 
 /**
  * Custom hook for managing schedule data

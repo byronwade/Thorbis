@@ -16,6 +16,8 @@
 
 import { notFound, redirect } from "next/navigation";
 import { InvoiceEditorWrapper } from "@/components/invoices/invoice-editor-wrapper";
+import { InvoiceStatsBar } from "@/components/invoices/invoice-stats-bar";
+import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import {
   getActiveCompanyId,
   isActiveCompanyOnboardingComplete,
@@ -170,15 +172,33 @@ export default async function InvoiceDetailsPage({
       .limit(50),
   ]);
 
+  // Calculate metrics for stats bar
+  const metrics = {
+    totalAmount: invoice.total_amount || 0,
+    paidAmount: invoice.paid_amount || 0,
+    balanceAmount: invoice.balance_amount || 0,
+    dueDate: invoice.due_date,
+    status: invoice.status,
+    createdAt: invoice.created_at,
+  };
+
   return (
-    <InvoiceEditorWrapper
-      activities={activities || []}
-      company={company}
-      customer={customer}
-      invoice={invoice}
-      job={job}
-      paymentMethods={paymentMethods || []}
-      property={property}
-    />
+    <div className="flex h-full w-full flex-col overflow-auto">
+      {/* Sticky Stats Bar - Becomes compact on scroll */}
+      <StickyStatsBar>
+        <InvoiceStatsBar invoice={invoice} />
+      </StickyStatsBar>
+
+      {/* Full-Width Content */}
+      <InvoiceEditorWrapper
+        activities={activities || []}
+        company={company}
+        customer={customer}
+        invoice={invoice}
+        job={job}
+        paymentMethods={paymentMethods || []}
+        property={property}
+      />
+    </div>
   );
 }

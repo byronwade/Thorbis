@@ -2,67 +2,37 @@
 
 /**
  * TeamsTable Component
- * Full-width table for displaying team members
+ * Full-width table for displaying team members using standard FullWidthDataTable
  *
  * Features:
- * - Full-width responsive layout
+ * - Consistent with all other work page tables
  * - Row selection with bulk actions
- * - Search and filtering
  * - Status and role badges
- * - Click to view member details
+ * - Sortable columns
+ * - Archive filtering with visual styling
+ * - Archived items greyed out and hidden by default
  */
 
-import {
-  Archive,
-  ArrowUpDown,
-  Check,
-  ChevronDown,
-  Download,
-  Filter,
-  MoreVertical,
-  Search,
-} from "lucide-react";
+import { Archive, ArchiveRestore, Eye, Mail, MoreHorizontal, UserX, Users } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveTeamMember, restoreTeamMember, suspendTeamMember } from "@/actions/team";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  type BulkAction,
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
+import { ArchiveFilterSelect } from "@/components/ui/archive-filter-select";
+import { useArchiveStore } from "@/lib/stores/archive-store";
+import { filterByArchiveStatus, getArchivedRowClassName, isItemArchived } from "@/lib/utils/archive";
 
 type UserStatus = "active" | "invited" | "suspended";
-type SortField =
-  | "name"
-  | "email"
-  | "role"
-  | "department"
-  | "lastActive"
-  | "joinedDate";
-type SortOrder = "asc" | "desc";
 
 export type TeamMember = {
   id: string;
@@ -80,6 +50,7 @@ export type TeamMember = {
   phone?: string;
   joinedDate: string;
   lastActive: string;
+  archived_at?: string | null;
 };
 
 type TeamsTableProps = {
@@ -88,134 +59,78 @@ type TeamsTableProps = {
 };
 
 export function TeamsTable({
-  teamMembers: initialMembers,
-  itemsPerPage = 25,
+  teamMembers,
+  itemsPerPage = 50,
 }: TeamsTableProps) {
-  const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
-  const [selectedRole, setSelectedRole] = useState<string>("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
-    new Set()
-  );
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPageState, setItemsPerPageState] = useState(itemsPerPage);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Extract unique departments and roles from team members
-  const departments = Array.from(
-    new Set(
-      initialMembers
-        .map((m) => ({
-          id: m.departmentId || "unknown",
-          name: m.departmentName || "Unknown",
-        }))
-        .filter((d) => d.id !== "unknown")
-        .map((d) => JSON.stringify(d))
-    )
-  ).map((d) => JSON.parse(d));
+  // Archive filter from store
+  const archiveFilter = useArchiveStore((state) => state.filters.team_members);
 
-  const customRoles = Array.from(
-    new Set(
-      initialMembers
-        .map((m) => ({
-          id: m.roleId || "unknown",
-          name: m.roleName || "Unknown",
-        }))
-        .map((r) => JSON.stringify(r))
-    )
-  ).map((r) => JSON.parse(r));
+  // Filter data based on archive status
+  const filteredTeamMembers = useMemo(() => {
+    return filterByArchiveStatus(teamMembers, archiveFilter);
+  }, [teamMembers, archiveFilter]);
 
-  function getRelativeTime(date: Date): string {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60_000);
+  // Calculate counts for filter dropdown
+  const activeCount = useMemo(() => teamMembers.filter(m => !isItemArchived(m.archived_at)).length, [teamMembers]);
+  const archivedCount = useMemo(() => teamMembers.filter(m => isItemArchived(m.archived_at)).length, [teamMembers]);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24)
-      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  }
-
-  // Filtering
-  const filteredMembers = initialMembers.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDepartment =
-      selectedDepartment === "all" ||
-      member.departmentId === selectedDepartment;
-    const matchesRole =
-      selectedRole === "all" || member.roleId === selectedRole;
-    const matchesStatus =
-      selectedStatus === "all" || member.status === selectedStatus;
-    return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
-  });
-
-  // Sorting
-  const sortedMembers = [...filteredMembers].sort((a, b) => {
-    let aVal: string | undefined;
-    let bVal: string | undefined;
-
-    switch (sortField) {
-      case "name":
-        aVal = a.name;
-        bVal = b.name;
-        break;
-      case "email":
-        aVal = a.email;
-        bVal = b.email;
-        break;
-      case "role":
-        aVal = a.roleName;
-        bVal = b.roleName;
-        break;
-      case "department":
-        aVal = a.departmentName;
-        bVal = b.departmentName;
-        break;
-      case "lastActive":
-        aVal = a.lastActive;
-        bVal = b.lastActive;
-        break;
-      case "joinedDate":
-        aVal = a.joinedDate;
-        bVal = b.joinedDate;
-        break;
-    }
-
-    if (!(aVal || bVal)) {
-      return 0;
-    }
-    if (!aVal) {
-      return 1;
-    }
-    if (!bVal) {
-      return -1;
-    }
-
-    const comparison = aVal.localeCompare(bVal);
-    return sortOrder === "asc" ? comparison : -comparison;
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(sortedMembers.length / itemsPerPageState);
-  const paginatedMembers = sortedMembers.slice(
-    (currentPage - 1) * itemsPerPageState,
-    currentPage * itemsPerPageState
-  );
-
+  // Helper functions
   const getInitials = (name: string) =>
     name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase();
+
+  const handleSuspendMember = async (memberId: string) => {
+    if (!confirm("Are you sure you want to suspend this team member?")) {
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await suspendTeamMember(memberId);
+    setIsLoading(false);
+
+    if (result.success) {
+      toast.success("Team member suspended successfully");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to suspend team member");
+    }
+  };
+
+  const handleArchiveMember = async (memberId: string) => {
+    if (!confirm("Are you sure you want to archive this team member?")) {
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await archiveTeamMember(memberId);
+    setIsLoading(false);
+
+    if (result.success) {
+      toast.success("Team member archived successfully");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to archive team member");
+    }
+  };
+
+  const handleRestoreMember = async (memberId: string) => {
+    setIsLoading(true);
+    const result = await restoreTeamMember(memberId);
+    setIsLoading(false);
+
+    if (result.success) {
+      toast.success("Team member restored successfully");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to restore team member");
+    }
+  };
 
   const getStatusBadgeVariant = (
     status: UserStatus
@@ -230,382 +145,344 @@ export function TeamsTable({
     }
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedMembers(new Set(paginatedMembers.map((m) => m.id)));
-    } else {
-      setSelectedMembers(new Set());
+  const getStatusLabel = (status: UserStatus): string => {
+    switch (status) {
+      case "active":
+        return "Active";
+      case "invited":
+        return "Invited";
+      case "suspended":
+        return "Suspended";
     }
   };
 
-  const handleSelectMember = (memberId: string, checked: boolean) => {
-    const newSelected = new Set(selectedMembers);
-    if (checked) {
-      newSelected.add(memberId);
-    } else {
-      newSelected.delete(memberId);
-    }
-    setSelectedMembers(newSelected);
-  };
+  // Define columns
+  const columns: ColumnDef<TeamMember>[] = [
+    {
+      key: "member",
+      header: "Member",
+      render: (member) => (
+        <Link
+          className="flex items-center gap-3 hover:underline"
+          href={`/dashboard/work/team/${member.id}`}
+        >
+          <Avatar className="size-8">
+            <AvatarImage alt={member.name} src={member.avatar} />
+            <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="font-medium">{member.name}</div>
+            <div className="text-sm text-muted-foreground">
+              {member.email}
+            </div>
+          </div>
+        </Link>
+      ),
+      width: "flex-1",
+    },
+    {
+      key: "role",
+      header: "Role",
+      render: (member) => (
+        <Badge
+          style={{
+            backgroundColor: member.roleColor || undefined,
+          }}
+          variant={member.roleColor ? "default" : "secondary"}
+        >
+          {member.roleName}
+        </Badge>
+      ),
+      width: "w-32",
+      hideOnMobile: true,
+    },
+    {
+      key: "department",
+      header: "Department",
+      render: (member) => {
+        if (!member.departmentName) return <span className="text-muted-foreground">—</span>;
+        return (
+          <Badge
+            style={{
+              backgroundColor: member.departmentColor || undefined,
+            }}
+            variant={member.departmentColor ? "default" : "outline"}
+          >
+            {member.departmentName}
+          </Badge>
+        );
+      },
+      width: "w-32",
+      hideOnMobile: true,
+    },
+    {
+      key: "jobTitle",
+      header: "Job Title",
+      render: (member) => member.jobTitle || <span className="text-muted-foreground">—</span>,
+      width: "w-40",
+      hideOnMobile: true,
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (member) => {
+        const isArchived = isItemArchived(member.archived_at);
 
-  const handleBulkAction = (_action: string) => {
-    setSelectedMembers(new Set());
+        if (isArchived) {
+          return (
+            <div className="flex flex-col gap-1">
+              <Badge variant="outline" className="text-orange-600 border-orange-300">
+                Archived
+              </Badge>
+              <Badge variant={getStatusBadgeVariant(member.status)} className="text-xs">
+                {getStatusLabel(member.status)}
+              </Badge>
+            </div>
+          );
+        }
+
+        return (
+          <Badge variant={getStatusBadgeVariant(member.status)}>
+            {getStatusLabel(member.status)}
+          </Badge>
+        );
+      },
+      width: "w-28",
+    },
+    {
+      key: "lastActive",
+      header: "Last Active",
+      render: (member) => (
+        <span className="text-sm text-muted-foreground">
+          {member.lastActive}
+        </span>
+      ),
+      width: "w-32",
+      hideOnMobile: true,
+    },
+    {
+      key: "actions",
+      header: "",
+      render: (member) => {
+        const isArchived = isItemArchived(member.archived_at);
+
+        return (
+          <RowActionsDropdown
+            actions={[
+              {
+                label: "View Details",
+                icon: Eye,
+                href: `/dashboard/work/team/${member.id}`,
+              },
+              ...(!isArchived ? [
+                {
+                  label: "Send Email",
+                  icon: Mail,
+                  onClick: () => {
+                    window.location.href = `mailto:${member.email}`;
+                  },
+                },
+                {
+                  label: "Suspend",
+                  icon: UserX,
+                  variant: "destructive" as const,
+                  separatorBefore: true,
+                  onClick: () => handleSuspendMember(member.id),
+                },
+                {
+                  label: "Archive",
+                  icon: Archive,
+                  variant: "destructive" as const,
+                  onClick: () => handleArchiveMember(member.id),
+                },
+              ] : [
+                {
+                  label: "Restore",
+                  icon: ArchiveRestore,
+                  variant: "default" as const,
+                  separatorBefore: true,
+                  onClick: () => handleRestoreMember(member.id),
+                },
+              ]),
+            ]}
+          />
+        );
+      },
+      width: "w-12",
+      shrink: true,
+    },
+  ];
+
+  // Define bulk actions based on archive filter
+  const bulkActions: BulkAction[] = useMemo(() => {
+    const isViewingArchived = archiveFilter === "archived";
+
+    if (isViewingArchived) {
+      // Only show restore for archived items
+      return [
+        {
+          label: "Restore",
+          icon: <ArchiveRestore className="size-4" />,
+          variant: "default",
+          onClick: async (selectedIds) => {
+            if (!confirm(`Are you sure you want to restore ${selectedIds.size} team member(s)?`)) {
+              return;
+            }
+
+            setIsLoading(true);
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const memberId of selectedIds) {
+              const result = await restoreTeamMember(memberId);
+              if (result.success) {
+                successCount++;
+              } else {
+                failCount++;
+              }
+            }
+
+            setIsLoading(false);
+
+            if (successCount > 0) {
+              toast.success(`${successCount} team member(s) restored successfully`);
+            }
+            if (failCount > 0) {
+              toast.error(`Failed to restore ${failCount} team member(s)`);
+            }
+
+            router.refresh();
+          },
+        },
+      ];
+    }
+
+    // Default actions for active items
+    return [
+      {
+        label: "Send Email",
+        icon: <Mail className="size-4" />,
+        variant: "default",
+        onClick: (selectedIds) => {
+          const selectedMembers = filteredTeamMembers.filter((m) => selectedIds.has(m.id));
+          const emails = selectedMembers.map((m) => m.email).join(",");
+          window.location.href = `mailto:${emails}`;
+        },
+      },
+      {
+        label: "Suspend",
+        icon: <UserX className="size-4" />,
+        variant: "destructive",
+        onClick: async (selectedIds) => {
+          if (!confirm(`Are you sure you want to suspend ${selectedIds.size} team member(s)?`)) {
+            return;
+          }
+
+          setIsLoading(true);
+          let successCount = 0;
+          let failCount = 0;
+
+          for (const memberId of selectedIds) {
+            const result = await suspendTeamMember(memberId);
+            if (result.success) {
+              successCount++;
+            } else {
+              failCount++;
+            }
+          }
+
+          setIsLoading(false);
+
+          if (successCount > 0) {
+            toast.success(`${successCount} team member(s) suspended successfully`);
+          }
+          if (failCount > 0) {
+            toast.error(`Failed to suspend ${failCount} team member(s)`);
+          }
+
+          router.refresh();
+        },
+      },
+      {
+        label: "Archive",
+        icon: <Archive className="size-4" />,
+        variant: "destructive",
+        onClick: async (selectedIds) => {
+          if (!confirm(`Are you sure you want to archive ${selectedIds.size} team member(s)?`)) {
+            return;
+          }
+
+          setIsLoading(true);
+          let successCount = 0;
+          let failCount = 0;
+
+          for (const memberId of selectedIds) {
+            const result = await archiveTeamMember(memberId);
+            if (result.success) {
+              successCount++;
+            } else {
+              failCount++;
+            }
+          }
+
+          setIsLoading(false);
+
+          if (successCount > 0) {
+            toast.success(`${successCount} team member(s) archived successfully`);
+          }
+          if (failCount > 0) {
+            toast.error(`Failed to archive ${failCount} team member(s)`);
+          }
+
+          router.refresh();
+        },
+      },
+    ];
+  }, [archiveFilter, filteredTeamMembers, router]);
+
+  const handleInviteMember = () => {
+    window.location.href = "/dashboard/work/team/invite";
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <CardTitle>Team Members</CardTitle>
-            <CardDescription>
-              {filteredMembers.length} members
-              {selectedMembers.size > 0 &&
-                ` • ${selectedMembers.size} selected`}
-            </CardDescription>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {/* Search */}
-            <div className="relative w-64">
-              <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                className="pl-9"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search members..."
-                value={searchQuery}
-              />
-            </div>
-
-            {/* Filters */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button type="button" variant="outline">
-                  <Filter className="mr-2 size-4" />
-                  Filters
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>Filter by Department</DropdownMenuLabel>
-                <DropdownMenuCheckboxItem
-                  checked={selectedDepartment === "all"}
-                  onCheckedChange={() => setSelectedDepartment("all")}
-                >
-                  All Departments
-                </DropdownMenuCheckboxItem>
-                {departments.map((dept) => (
-                  <DropdownMenuCheckboxItem
-                    checked={selectedDepartment === dept.id}
-                    key={dept.id}
-                    onCheckedChange={() => setSelectedDepartment(dept.id)}
-                  >
-                    {dept.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>Filter by Role</DropdownMenuLabel>
-                <DropdownMenuCheckboxItem
-                  checked={selectedRole === "all"}
-                  onCheckedChange={() => setSelectedRole("all")}
-                >
-                  All Roles
-                </DropdownMenuCheckboxItem>
-                {customRoles.map((role) => (
-                  <DropdownMenuCheckboxItem
-                    checked={selectedRole === role.id}
-                    key={role.id}
-                    onCheckedChange={() => setSelectedRole(role.id)}
-                  >
-                    {role.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-                <DropdownMenuCheckboxItem
-                  checked={selectedStatus === "all"}
-                  onCheckedChange={() => setSelectedStatus("all")}
-                >
-                  All Statuses
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedStatus === "active"}
-                  onCheckedChange={() => setSelectedStatus("active")}
-                >
-                  Active
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedStatus === "invited"}
-                  onCheckedChange={() => setSelectedStatus("invited")}
-                >
-                  Invited
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={selectedStatus === "suspended"}
-                  onCheckedChange={() => setSelectedStatus("suspended")}
-                >
-                  Suspended
-                </DropdownMenuCheckboxItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Sort */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button type="button" variant="outline">
-                  <ArrowUpDown className="mr-2 size-4" />
-                  Sort
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setSortField("name")}>
-                  Name{" "}
-                  {sortField === "name" && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortField("email")}>
-                  Email{" "}
-                  {sortField === "email" && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortField("role")}>
-                  Role{" "}
-                  {sortField === "role" && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortField("department")}>
-                  Department{" "}
-                  {sortField === "department" && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortField("lastActive")}>
-                  Last Active{" "}
-                  {sortField === "lastActive" && (
-                    <Check className="ml-auto h-4 w-4" />
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() =>
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                  }
-                >
-                  {sortOrder === "asc" ? "Ascending" : "Descending"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Bulk Actions */}
-            {selectedMembers.size > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button type="button" variant="outline">
-                    Bulk Actions
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => handleBulkAction("change_role")}
-                  >
-                    Change Role
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleBulkAction("change_department")}
-                  >
-                    Change Department
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleBulkAction("suspend")}
-                  >
-                    Suspend Members
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => handleBulkAction("export")}
-                  >
-                    <Download className="mr-2 size-4" />
-                    Export Selected
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => handleBulkAction("archive")}
-                  >
-                    <Archive className="mr-2 size-4" />
-                    Archive Members
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {/* Table Header */}
-          <div className="flex items-center gap-4 rounded-md border bg-muted/50 p-3 font-medium text-sm">
-            <Checkbox
-              checked={
-                selectedMembers.size > 0 &&
-                selectedMembers.size === paginatedMembers.length
-              }
-              onCheckedChange={handleSelectAll}
-            />
-            <div className="flex-1">Name</div>
-            <div className="w-32">Role</div>
-            <div className="w-32">Department</div>
-            <div className="w-24">Status</div>
-            <div className="w-10" />
-          </div>
-
-          {/* Table Rows */}
-          {paginatedMembers.map((member) => (
-            <div
-              className="flex items-center gap-4 rounded-md border p-3 text-sm transition-colors hover:bg-muted/50"
-              key={member.id}
-            >
-              <Checkbox
-                checked={selectedMembers.has(member.id)}
-                onCheckedChange={(checked) =>
-                  handleSelectMember(member.id, checked as boolean)
-                }
-                onClick={(e) => e.stopPropagation()}
-              />
-              <Link
-                className="flex min-w-0 flex-1 items-center gap-3 hover:cursor-pointer"
-                href={`/dashboard/work/team/${member.id}`}
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={member.avatar} />
-                  <AvatarFallback className="text-xs">
-                    {getInitials(member.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="truncate font-medium">{member.name}</p>
-                  <p className="truncate text-muted-foreground text-xs">
-                    {member.email}
-                  </p>
-                </div>
-              </Link>
-              <div className="w-32">
-                <Badge
-                  style={{
-                    backgroundColor: member.roleColor,
-                    color: "white",
-                  }}
-                  variant="secondary"
-                >
-                  {member.roleName}
-                </Badge>
-              </div>
-              <div className="w-32">
-                {member.departmentName && (
-                  <Badge
-                    style={{
-                      backgroundColor: member.departmentColor,
-                      color: "white",
-                    }}
-                    variant="outline"
-                  >
-                    {member.departmentName}
-                  </Badge>
-                )}
-              </div>
-              <div className="w-24">
-                <Badge variant={getStatusBadgeVariant(member.status)}>
-                  {member.status}
-                </Badge>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="h-8 w-8"
-                    onClick={(e) => e.stopPropagation()}
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <MoreVertical className="size-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href={`/dashboard/work/team/${member.id}`}>
-                      View Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Change Role</DropdownMenuItem>
-                  <DropdownMenuItem>Change Department</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    {member.status === "active" ? "Suspend" : "Activate"}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive">
-                    <Archive className="mr-2 size-4" />
-                    Archive Member
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ))}
-        </div>
-
-        {/* Pagination */}
-        <div className="mt-4 flex items-center justify-between border-t pt-4">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Show</span>
-            <Select
-              onValueChange={(value) => {
-                setItemsPerPageState(Number.parseInt(value, 10));
-                setCurrentPage(1);
-              }}
-              value={itemsPerPageState.toString()}
-            >
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className="text-muted-foreground">
-              of {filteredMembers.length} members
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              Previous
-            </Button>
-            <span className="text-sm">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <FullWidthDataTable
+      bulkActions={bulkActions}
+      columns={columns}
+      customToolbarContent={
+        <ArchiveFilterSelect
+          activeCount={activeCount}
+          archivedCount={archivedCount}
+          entity="team_members"
+          totalCount={teamMembers.length}
+        />
+      }
+      data={filteredTeamMembers}
+      emptyAction={
+        <Button onClick={handleInviteMember} size="sm">
+          Invite Team Member
+        </Button>
+      }
+      emptyIcon={<Users className="size-8 text-muted-foreground" />}
+      emptyMessage={
+        archiveFilter === "archived"
+          ? "No archived team members"
+          : "No team members yet"
+      }
+      enableSelection={true}
+      getItemId={(member) => member.id}
+      getRowClassName={(member) => getArchivedRowClassName(isItemArchived(member.archived_at))}
+      itemsPerPage={itemsPerPage}
+      searchFilter={(member, query) => {
+        const searchLower = query.toLowerCase();
+        return (
+          member.name.toLowerCase().includes(searchLower) ||
+          member.email.toLowerCase().includes(searchLower) ||
+          (member.roleName && member.roleName.toLowerCase().includes(searchLower)) ||
+          (member.departmentName && member.departmentName.toLowerCase().includes(searchLower)) ||
+          (member.jobTitle && member.jobTitle.toLowerCase().includes(searchLower))
+        );
+      }}
+      searchPlaceholder="Search by name or email..."
+    />
   );
 }
-

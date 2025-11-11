@@ -8,9 +8,10 @@
  * - More dropdown (duplicate, add to invoice, deactivate, delete)
  */
 
-import { Archive, Copy, Edit, ShoppingCart, Trash2 } from "lucide-react";
+import { Archive, Copy, Edit, MoreVertical, ShoppingCart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +20,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function PriceBookItemToolbarActions() {
   const pathname = usePathname();
@@ -26,20 +34,32 @@ export function PriceBookItemToolbarActions() {
   const itemId = segments[segments.length - 1];
 
   return (
-    <div className="flex items-center gap-1">
-      <Button asChild size="sm" variant="default">
+    <div className="flex items-center gap-1.5">
+      {/* Primary Action - Edit */}
+      <Button asChild className="gap-2 font-medium" size="sm" variant="default">
         <Link href={`/dashboard/work/pricebook/${itemId}/edit`}>
-          <Edit className="mr-2 size-4" />
+          <Edit className="size-4" />
           Edit
         </Link>
       </Button>
 
+      {/* More Actions Dropdown */}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="ghost">
-            More
-          </Button>
-        </DropdownMenuTrigger>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button className="gap-2 hover:bg-muted" size="sm" variant="ghost">
+                  <MoreVertical className="size-4" />
+                  <span className="hidden sm:inline">More</span>
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>More actions</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => console.log("Duplicate")}>
             <Copy className="mr-2 size-4" />
@@ -66,6 +86,10 @@ export function PriceBookItemToolbarActions() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Ellipsis Menu - Export/Import & More */}
+      <Separator className="h-6" orientation="vertical" />
+      <ImportExportDropdown dataType="pricebook" />
     </div>
   );
 }

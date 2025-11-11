@@ -27,6 +27,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 type PurchaseOrder = {
   id: string;
@@ -45,8 +47,6 @@ type JobPurchaseOrdersTableProps = {
   purchaseOrders: PurchaseOrder[];
 };
 
-const CENTS_PER_DOLLAR = 100;
-
 export function JobPurchaseOrdersTable({
   purchaseOrders,
 }: JobPurchaseOrdersTableProps) {
@@ -54,14 +54,8 @@ export function JobPurchaseOrdersTable({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isArchiving, setIsArchiving] = useState(false);
 
-  const formatCurrency = useCallback(
-    (cents: number) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(cents / CENTS_PER_DOLLAR),
+  const formatCurrencyCents = useCallback(
+    (cents: number) => formatCurrency(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
     []
   );
 
@@ -93,25 +87,6 @@ export function JobPurchaseOrdersTable({
     }
   }, [selectedIds]);
 
-  const getStatusBadge = useCallback((status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      ordered: "default",
-      pending_approval: "secondary",
-      approved: "default",
-      partially_received: "secondary",
-      received: "default",
-      cancelled: "destructive",
-    };
-
-    return (
-      <Badge className="text-xs" variant={variants[status] || "outline"}>
-        {status.replace(/_/g, " ")}
-      </Badge>
-    );
-  }, []);
 
   const columns: ColumnDef<PurchaseOrder>[] = useMemo(
     () => [
@@ -169,7 +144,7 @@ export function JobPurchaseOrdersTable({
         header: "Status",
         width: "w-32",
         shrink: true,
-        render: (po) => getStatusBadge(po.status),
+        render: (po) => <StatusBadge status={po.status} type="purchase_order" />,
       },
       {
         key: "total_amount",
@@ -179,7 +154,7 @@ export function JobPurchaseOrdersTable({
         align: "right",
         render: (po) => (
           <span className="font-semibold text-sm tabular-nums">
-            {formatCurrency(po.total_amount)}
+            {formatCurrencyCents(po.total_amount)}
           </span>
         ),
       },
@@ -192,7 +167,7 @@ export function JobPurchaseOrdersTable({
         render: (po) => (
           <span className="text-muted-foreground text-sm tabular-nums">
             {po.expected_delivery
-              ? new Date(po.expected_delivery).toLocaleDateString()
+              ? formatDate(po.expected_delivery, "short")
               : "—"}
           </span>
         ),
@@ -229,7 +204,7 @@ export function JobPurchaseOrdersTable({
         ),
       },
     ],
-    [formatCurrency, getStatusBadge]
+    [formatCurrencyCents]
   );
 
   const bulkActions: BulkAction[] = useMemo(

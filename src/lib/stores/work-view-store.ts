@@ -3,6 +3,8 @@ import { devtools, persist } from "zustand/middleware";
 
 export type WorkSection =
   | "jobs"
+  | "appointments"
+  | "payments"
   | "estimates"
   | "invoices"
   | "contracts"
@@ -11,7 +13,8 @@ export type WorkSection =
   | "purchaseOrders"
   | "serviceAgreements"
   | "equipment"
-  | "teams";
+  | "teams"
+  | "customers";
 
 export type WorkViewMode = "table" | "kanban";
 
@@ -24,6 +27,8 @@ type WorkViewState = {
 
 const defaultViews: Record<WorkSection, WorkViewMode> = {
   jobs: "table",
+  appointments: "table",
+  payments: "table",
   estimates: "table",
   invoices: "table",
   contracts: "table",
@@ -33,6 +38,7 @@ const defaultViews: Record<WorkSection, WorkViewMode> = {
   serviceAgreements: "table",
   equipment: "table",
   teams: "table",
+  customers: "table",
 };
 
 function createInitialState(): WorkViewState {

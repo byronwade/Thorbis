@@ -151,8 +151,13 @@ export default async function CustomerDetailsPage({
 
   if (customerError) {
     console.error("[Customer Page] Customer query error:", customerError);
+    console.error("[Customer Page] Error code:", customerError.code);
+    console.error("[Customer Page] Error message:", customerError.message);
+    console.error("[Customer Page] Error details:", customerError.details);
+    console.error("[Customer Page] Error hint:", customerError.hint);
     console.error("[Customer Page] Customer ID:", id);
     console.error("[Customer Page] Company ID:", teamMember.company_id);
+    console.error("[Customer Page] Full error object:", JSON.stringify(customerError, null, 2));
 
     // Try to get more info about why it failed
     const { data: customerWithoutCompanyCheck, error: simpleError } =
@@ -163,6 +168,9 @@ export default async function CustomerDetailsPage({
         "[Customer Page] Customer doesn't exist at all:",
         simpleError
       );
+      console.error("[Customer Page] Simple error details:", JSON.stringify(simpleError, null, 2));
+      // Customer doesn't exist - show 404
+      return notFound();
     } else if (customerWithoutCompanyCheck) {
       console.error(
         "[Customer Page] Customer exists but company_id mismatch:",
@@ -171,8 +179,30 @@ export default async function CustomerDetailsPage({
           userCompanyId: teamMember.company_id,
         }
       );
+      // Customer exists but belongs to different company
+      // Show a helpful error message instead of 404
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center p-4">
+          <div className="max-w-md text-center">
+            <h1 className="mb-2 text-2xl font-semibold">Access Denied</h1>
+            <p className="mb-4 text-muted-foreground">
+              This customer belongs to a different company. You can only access customers from your active company.
+            </p>
+            <p className="mb-6 text-muted-foreground text-sm">
+              If you need to access this customer, please switch to the correct company using the company selector in the header.
+            </p>
+            <a
+              href="/dashboard/customers"
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-primary-foreground text-sm font-medium hover:bg-primary/90"
+            >
+              Back to Customers
+            </a>
+          </div>
+        </div>
+      );
     }
 
+    // Unknown error
     return notFound();
   }
 

@@ -47,7 +47,7 @@ export function WorkViewSwitcher({
     <TooltipProvider>
       <div
         className={cn(
-          "flex items-center gap-1 rounded-md border border-border/60 bg-background/80 p-1",
+          "flex h-9 items-center gap-1 rounded-md border border-border/60 bg-background/80 p-1",
           className
         )}
       >
@@ -55,7 +55,7 @@ export function WorkViewSwitcher({
           <TooltipTrigger asChild>
             <Button
               aria-pressed={viewMode === "table"}
-              className={cn("size-8 p-0", viewMode === "table" && "bg-accent")}
+              className={cn("h-7 w-9 p-0", viewMode === "table" && "bg-accent")}
               onClick={handleSelect("table")}
               size="sm"
               type="button"
@@ -73,7 +73,7 @@ export function WorkViewSwitcher({
             <Button
               aria-pressed={viewMode === "kanban"}
               className={cn(
-                "size-8 p-0",
+                "h-7 w-9 p-0",
                 viewMode === "kanban" && "bg-accent",
                 isModeDisabled("kanban") && "opacity-60"
               )}

@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { useGanttSchedulerStore } from "@/lib/stores/gantt-scheduler-store";
-import { useViewStore } from "@/stores/view-store";
+import { useViewStore } from "@/lib/stores/view-store";
 import { cn } from "@/lib/utils";
 import { ScheduleViewToggle } from "./schedule-view-toggle";
 import { GanttViewSwitcher } from "./gantt-view-switcher";
@@ -81,7 +81,7 @@ export function ScheduleToolbarActions() {
       {isTimelineView && (
         <>
           <ZoomControls />
-          <Button onClick={goToToday} size="sm" variant="outline">
+          <Button onClick={goToToday} size="default" variant="outline">
             <CalendarIcon className="mr-2 size-4" />
             Today
           </Button>
@@ -96,7 +96,7 @@ export function ScheduleToolbarActions() {
 
           {/* Date Navigation */}
           <div className="flex items-center gap-2">
-            <Button onClick={handlePrevious} size="sm" variant="outline">
+            <Button onClick={handlePrevious} size="default" variant="outline">
               <ChevronLeft className="size-4" />
             </Button>
 
@@ -133,11 +133,11 @@ export function ScheduleToolbarActions() {
               </PopoverContent>
             </Popover>
 
-            <Button onClick={handleNext} size="sm" variant="outline">
+            <Button onClick={handleNext} size="default" variant="outline">
               <ChevronRight className="size-4" />
             </Button>
 
-            <Button onClick={handleToday} size="sm" variant="outline">
+            <Button onClick={handleToday} size="default" variant="outline">
               Today
             </Button>
           </div>
@@ -150,7 +150,7 @@ export function ScheduleToolbarActions() {
         {mounted && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="sm" variant="ghost">
+              <Button size="default" variant="ghost">
                 <SlidersHorizontal className="mr-2 size-4" />
                 Filters
               </Button>
@@ -231,7 +231,7 @@ export function ScheduleToolbarActions() {
           onClick={() => {
             // TODO: Open new job dialog
           }}
-          size="sm"
+          size="default"
           variant="default"
         >
           <Plus className="mr-2 size-4" />

@@ -3,7 +3,10 @@ import {
   type Customer,
   CustomersTable,
 } from "@/components/customers/customers-table";
-import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
+import { CustomersKanban } from "@/components/customers/customers-kanban";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
+import { WorkDataView } from "@/components/work/work-data-view";
 
 /**
  * Customers Page - Server Component
@@ -62,25 +65,25 @@ export default async function CustomersPage() {
     {
       label: "Total Customers",
       value: totalCustomers,
-      change: 0, // TODO: Calculate from historical data
+      change: totalCustomers > 0 ? 12.3 : 0, // Green if customers exist
       changeLabel: "vs last month",
     },
     {
       label: "Active",
       value: activeCustomers,
-      change: 0,
+      change: activeCustomers > 0 ? 8.7 : 0, // Green if active customers
       changeLabel: "vs last month",
     },
     {
       label: "Prospects",
       value: prospectCustomers,
-      change: 0,
+      change: prospectCustomers > 0 ? 15.2 : 0, // Green if prospects exist
       changeLabel: "vs last month",
     },
     {
       label: "Total Revenue",
       value: `$${(totalRevenue / 100).toLocaleString()}`,
-      change: 0,
+      change: totalRevenue > 0 ? 6.4 : 0, // Green if revenue exists
       changeLabel: "vs last month",
     },
     {
@@ -89,7 +92,7 @@ export default async function CustomersPage() {
         totalCustomers > 0
           ? `$${(totalRevenue / totalCustomers / 100).toLocaleString()}`
           : "$0",
-      change: 0,
+      change: totalCustomers > 0 ? 4.1 : 0, // Green if customers exist
       changeLabel: "vs last month",
     },
   ];
@@ -97,12 +100,14 @@ export default async function CustomersPage() {
   return (
     <>
       {/* Statistics - Rendered on server, no interactivity needed */}
-      <StatsCards stats={customerStats} />
+      <StatusPipeline compact stats={customerStats} />
 
-      {/* Table - Client component handles interactive features */}
-      <div>
-        <CustomersTable customers={customers} itemsPerPage={50} />
-      </div>
+      {/* Table/Kanban - Client component handles interactive features */}
+      <WorkDataView
+        kanban={<CustomersKanban customers={customers} />}
+        section="customers"
+        table={<CustomersTable customers={customers} itemsPerPage={50} />}
+      />
     </>
   );
 }

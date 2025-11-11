@@ -1,15 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban } from "@/components/ui/entity-kanban";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,14 +29,6 @@ const TEAM_COLUMNS: Array<{
 const columnLabel = new Map(
   TEAM_COLUMNS.map((column) => [column.id, column.name])
 );
-
-function createItems(members: TeamMember[]): TeamsKanbanItem[] {
-  return members.map((member) => ({
-    id: member.id,
-    columnId: member.status,
-    member,
-  }));
-}
 
 function getInitials(name: string) {
   return name
@@ -132,92 +117,28 @@ function MemberCard({ item }: { item: TeamsKanbanItem }) {
 }
 
 export function TeamsKanban({ members }: { members: TeamMember[] }) {
-  const columns = useMemo(() => TEAM_COLUMNS, []);
-  const [items, setItems] = useState<TeamsKanbanItem[]>(() =>
-    createItems(members)
-  );
-
-  useEffect(() => {
-    setItems(createItems(members));
-  }, [members]);
-
-  const handleDataChange = useCallback(
-    (newItems: TeamsKanbanItem[]) => {
-      setItems(newItems);
-    },
-    []
-  );
-
-  const columnMeta = useMemo(() => {
-    return items.reduce(
-      (acc, item) => {
-        const columnId = item.columnId;
-        acc[columnId] = (acc[columnId] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-  }, [items]);
-
   return (
-    <KanbanProvider<TeamsKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={items}
-      onDataChange={handleDataChange}
-      renderDragOverlay={(item) => {
-        return (
-          <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-            <MemberCard item={item} />
-          </div>
-        );
-      }}
-    >
-      {columns.map((column) => {
-        const count = columnMeta[column.id] ?? 0;
-        return (
-          <KanbanBoard
-            className="min-h-[300px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                  variant="secondary"
-                >
-                  {count} {count === 1 ? "member" : "members"}
-                </Badge>
-              </div>
-            </KanbanHeader>
-            <KanbanCards<TeamsKanbanItem>
-              className="min-h-[200px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No members in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <MemberCard item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
+    <EntityKanban<TeamMember, TeamMemberStatus>
+      columns={TEAM_COLUMNS}
+      data={members}
+      entityName="members"
+      mapToKanbanItem={(member) => ({
+        id: member.id,
+        columnId: member.status,
+        entity: member,
+        member,
       })}
-    </KanbanProvider>
+      updateEntityStatus={(member, newStatus) => ({
+        ...member,
+        status: newStatus,
+      })}
+      renderCard={(item) => <MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />
+        </div>
+      )}
+    />
   );
 }
 

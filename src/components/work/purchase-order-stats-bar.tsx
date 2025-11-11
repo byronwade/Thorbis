@@ -16,7 +16,7 @@
 
 import { Package, ListChecks, Clock, DollarSign } from "lucide-react";
 import type { StatCard } from "@/components/ui/stats-cards";
-import { StatsCards } from "@/components/ui/stats-cards";
+import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
 
 export type PurchaseOrderMetrics = {
   totalAmount: number;
@@ -67,5 +67,5 @@ export function PurchaseOrderStatsBar({
     },
   ];
 
-  return <StatsCards compact={compact} stats={stats} variant="ticker" />;
+  return <EntityStatsBar compact={compact} stats={stats} />;
 }

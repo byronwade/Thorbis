@@ -29,6 +29,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
 export type LeadSource =
@@ -57,15 +58,6 @@ type LeadsDataTableProps = {
   leads: Lead[];
   itemsPerPage?: number;
 };
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 function formatTimeAgo(date: Date): string {
   const hours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));

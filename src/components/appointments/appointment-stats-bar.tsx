@@ -17,7 +17,7 @@
 
 import { Clock, Route, Users, DollarSign } from "lucide-react";
 import type { StatCard } from "@/components/ui/stats-cards";
-import { StatsCards } from "@/components/ui/stats-cards";
+import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
 
 export type AppointmentMetrics = {
   duration: number; // minutes
@@ -65,5 +65,5 @@ export function AppointmentStatsBar({
     },
   ];
 
-  return <StatsCards compact={compact} stats={stats} variant="ticker" />;
+  return <EntityStatsBar compact={compact} stats={stats} />;
 }

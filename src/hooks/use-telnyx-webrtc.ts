@@ -406,6 +406,16 @@ export function useTelnyxWebRTC(
    * Load audio devices
    */
   const loadAudioDevices = useCallback(async () => {
+    // Check if MediaDevices API is available
+    if (
+      typeof navigator === "undefined" ||
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.enumerateDevices
+    ) {
+      console.warn("MediaDevices API not available");
+      return;
+    }
+
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const audioOutputDevices = devices.filter(
@@ -422,6 +432,17 @@ export function useTelnyxWebRTC(
    * Uses ref pattern to prevent infinite loop from dependency chain
    */
   useEffect(() => {
+    // Check if MediaDevices API is available
+    if (
+      typeof navigator === "undefined" ||
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.enumerateDevices
+    ) {
+      return () => {
+        // No-op cleanup when MediaDevices API is not available
+      };
+    }
+
     // Load audio devices on mount
     loadAudioDevices();
 
@@ -435,12 +456,15 @@ export function useTelnyxWebRTC(
     );
 
     return () => {
-      navigator.mediaDevices.removeEventListener(
-        "devicechange",
-        deviceChangeHandler
-      );
+      if (navigator.mediaDevices) {
+        navigator.mediaDevices.removeEventListener(
+          "devicechange",
+          deviceChangeHandler
+        );
+      }
     };
-  }, []); // ✅ Runs once on mount only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ✅ Runs once on mount only - loadAudioDevices is stable (useCallback with no deps)
 
   /**
    * Separate effect for auto-connect to prevent dependency loop

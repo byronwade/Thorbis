@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatCurrency } from "@/lib/formatters";
 
 interface ProfitabilityWidgetProps {
   job: Job;
@@ -147,14 +148,6 @@ export function ProfitabilityWidget({
   const estimatedProfit = estimatedAmount * 0.25; // 25% target margin
   const profitVariance = grossProfit - estimatedProfit;
   const isOverPerforming = profitVariance > 0;
-
-  function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(amount);
-  }
 
   function getCostPercentage(cost: number): number {
     return totalRevenue > 0 ? (cost / totalRevenue) * 100 : 0;

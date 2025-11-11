@@ -171,7 +171,7 @@ BEGIN
       'Schedule Conflict Detected',
       'You have overlapping appointments scheduled for tomorrow.',
       false,
-      '/dashboard/work/schedule',
+      '/dashboard/schedule',
       'View Schedule',
       '{"conflict_date": "2025-11-02", "jobs_affected": 2}'::jsonb,
       NOW() - INTERVAL '1 hour'

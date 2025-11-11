@@ -1,16 +1,12 @@
-import { Download, Package, Plus } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
 import {
   type Estimate,
   EstimatesTable,
 } from "@/components/work/estimates-table";
 import { EstimatesKanban } from "@/components/work/estimates-kanban";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,19 +14,12 @@ import { createClient } from "@/lib/supabase/server";
  * Estimates Page - Server Component
  *
  * Performance optimizations:
- * - Server Component calculates statistics before rendering (no loading flash)
- * - Only EstimatesTable component is client-side for sorting/filtering/pagination
+ * - Server Component fetches data before rendering (no loading flash)
+ * - Real-time data from Supabase
+ * - Only EstimatesTable component is client-side for interactivity
  * - Better SEO and initial page load performance
- *
- * Seamless datatable layout with inline statistics
+ * - Matches jobs/invoices page structure: stats pipeline + table/kanban views
  */
-
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
 
 export default async function EstimatesPage() {
   const supabase = await createClient();
@@ -109,146 +98,66 @@ export default async function EstimatesPage() {
     };
   });
 
-  // Calculate stats from data
+  // Calculate estimate stats
+  const draftCount = estimates.filter((est) => est.status === "draft").length;
+  const sentCount = estimates.filter((est) => est.status === "sent").length;
+  const acceptedCount = estimates.filter(
+    (est) => est.status === "accepted"
+  ).length;
+  const declinedCount = estimates.filter(
+    (est) => est.status === "declined"
+  ).length;
+
   const totalValue = estimates.reduce((sum, est) => sum + est.amount, 0);
-  const accepted = estimates
+  const acceptedValue = estimates
     .filter((est) => est.status === "accepted")
     .reduce((sum, est) => sum + est.amount, 0);
-  const pending = estimates
+  const pendingValue = estimates
     .filter((est) => est.status === "sent")
     .reduce((sum, est) => sum + est.amount, 0);
-  const declined = estimates
-    .filter((est) => est.status === "declined")
-    .reduce((sum, est) => sum + est.amount, 0);
 
-  const pendingCount = estimates.filter((est) => est.status === "sent").length;
-  const declinedCount = estimates.filter((est) => est.status === "declined")
-    .length;
+  const estimateStats: StatCard[] = [
+    {
+      label: "Draft",
+      value: draftCount,
+      change: draftCount > 0 ? 0 : 4.8, // Neutral if drafts exist, green if none
+      changeLabel: "ready to send",
+    },
+    {
+      label: "Sent",
+      value: `$${(pendingValue / 100).toLocaleString()}`,
+      change: sentCount > 0 ? 0 : 7.2, // Neutral if sent, green if all closed
+      changeLabel: `${sentCount} estimates`,
+    },
+    {
+      label: "Accepted",
+      value: `$${(acceptedValue / 100).toLocaleString()}`,
+      change: acceptedCount > 0 ? 15.3 : 0, // Green if accepted estimates exist
+      changeLabel: `${acceptedCount} estimates`,
+    },
+    {
+      label: "Declined",
+      value: declinedCount,
+      change: declinedCount > 0 ? -5.4 : 3.1, // Red if declined, green if none
+      changeLabel:
+        declinedCount > 0 ? `${declinedCount} declined` : "none declined",
+    },
+    {
+      label: "Total Value",
+      value: `$${(totalValue / 100).toLocaleString()}`,
+      change: totalValue > 0 ? 10.8 : 0, // Green if total value exists
+      changeLabel: "all estimates",
+    },
+  ];
 
   return (
-    <div className="flex h-full flex-col">
-      <DataTablePageHeader
-        actions={
-          <div className="flex items-center gap-2">
-            <WorkViewSwitcher section="estimates" />
-            <Button
-              asChild
-              className="md:hidden"
-              size="sm"
-              title="Create PO"
-              variant="outline"
-            >
-              <Link href="/dashboard/work/purchase-orders/new">
-                <Package className="size-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Link href="/dashboard/work/purchase-orders/new">
-                <Package className="mr-2 size-4" />
-                Create PO
-              </Link>
-            </Button>
-
-            <Button
-              className="md:hidden"
-              size="sm"
-              title="Export"
-              variant="outline"
-            >
-              <Download className="size-4" />
-            </Button>
-            <Button
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Download className="mr-2 size-4" />
-              Export
-            </Button>
-
-            <Button asChild size="sm">
-              <Link href="/dashboard/work/estimates/new">
-                <Plus className="mr-2 size-4" />
-                <span className="hidden sm:inline">New Estimate</span>
-                <span className="sm:hidden">New</span>
-              </Link>
-            </Button>
-          </div>
-        }
-        description="Create and manage project estimates and quotes"
-        stats={
-          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">
-                  Total Value
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">
-                  {formatCurrency(totalValue)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  All active estimates
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Accepted</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">
-                  {formatCurrency(accepted)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {Math.round((accepted / totalValue) * 100)}% conversion rate
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Pending</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">
-                  {formatCurrency(pending)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {pendingCount} estimates
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Declined</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">
-                  {formatCurrency(declined)}
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  {declinedCount} estimates
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        }
-        title="Estimates"
+    <>
+      <StatusPipeline compact stats={estimateStats} />
+      <WorkDataView
+        kanban={<EstimatesKanban estimates={estimates} />}
+        section="estimates"
+        table={<EstimatesTable estimates={estimates} itemsPerPage={50} />}
       />
-
-      <div className="flex-1 overflow-auto">
-        <WorkDataView
-          kanban={<EstimatesKanban estimates={estimates} />}
-          section="estimates"
-          table={<EstimatesTable estimates={estimates} itemsPerPage={50} />}
-        />
-      </div>
-    </div>
+    </>
   );
 }

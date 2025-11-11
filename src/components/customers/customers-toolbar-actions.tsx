@@ -4,26 +4,25 @@
  * CustomersToolbarActions Component
  *
  * Toolbar actions for the customers page
+ * - View switcher (table/kanban)
  * - Add New Customer button
  * - Import Customers
  * - Export Customers
  */
 
 import { UserPlus } from "lucide-react";
-import Link from "next/link";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
-import { Button } from "@/components/ui/button";
+import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 
 export function CustomersToolbarActions() {
   return (
-    <div className="flex items-center gap-2">
-      <Button asChild size="sm">
-        <Link href="/dashboard/customers/new">
-          <UserPlus className="mr-2 size-4" />
-          Add Customer
-        </Link>
-      </Button>
-      <ImportExportDropdown dataType="customers" />
-    </div>
+    <BaseToolbarActions
+      viewSwitcherSection="customers"
+      primaryAction={{
+        href: "/dashboard/customers/new",
+        label: "Add Customer",
+        icon: <UserPlus className="mr-2 size-4" />,
+      }}
+      importExportDataType="customers"
+    />
   );
 }

@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Equipment } from "@/components/work/equipment-table";
@@ -35,102 +28,29 @@ const EQUIPMENT_COLUMNS: Array<{
 
 const columnLabel = new Map(EQUIPMENT_COLUMNS.map((column) => [column.id, column.name]));
 
-function createItems(equipment: Equipment[]): EquipmentKanbanItem[] {
-  return equipment.map((item) => ({
-    id: item.id,
-    columnId: item.status,
-    equipment: item,
-  }));
-}
-
 export function EquipmentKanban({ equipment }: { equipment: Equipment[] }) {
-  const columns = useMemo(() => EQUIPMENT_COLUMNS, []);
-  const [items, setItems] = useState<EquipmentKanbanItem[]>(() =>
-    createItems(equipment)
-  );
-
-  useEffect(() => {
-    setItems(createItems(equipment));
-  }, [equipment]);
-
-  const handleDataChange = (next: EquipmentKanbanItem[]) => {
-    setItems(
-      next.map((item) => ({
-        ...item,
-        equipment: {
-          ...item.equipment,
-          status: item.columnId as EquipmentStatus,
-        },
-      }))
-    );
-  };
-
-  const columnMeta = useMemo(() => {
-    return columns.reduce<Record<string, number>>((acc, column) => {
-      acc[column.id] = items.filter((item) => item.columnId === column.id).length;
-      return acc;
-    }, {});
-  }, [columns, items]);
-
   return (
-    <KanbanProvider<EquipmentKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={items}
-      onDataChange={handleDataChange}
-      renderDragOverlay={(item) => {
-        return (
-          <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-            <EquipmentCard item={item} />
-          </div>
-        );
-      }}
-    >
-      {columns.map((column) => {
-        const count = columnMeta[column.id] ?? 0;
-        return (
-          <KanbanBoard
-            className="min-h-[300px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                  variant="secondary"
-                >
-                  {count} assets
-                </Badge>
-              </div>
-            </KanbanHeader>
-            <KanbanCards<EquipmentKanbanItem>
-              className="min-h-[200px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No equipment in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <EquipmentCard item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
+    <EntityKanban<Equipment, EquipmentStatus>
+      columns={EQUIPMENT_COLUMNS}
+      data={equipment}
+      entityName="assets"
+      mapToKanbanItem={(item) => ({
+        id: item.id,
+        columnId: item.status,
+        entity: item,
+        equipment: item,
       })}
-    </KanbanProvider>
+      updateEntityStatus={(item, newStatus) => ({
+        ...item,
+        status: newStatus,
+      })}
+      renderCard={(item) => <EquipmentCard item={{ ...item, equipment: item.entity } as EquipmentKanbanItem} />}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <EquipmentCard item={{ ...item, equipment: item.entity } as EquipmentKanbanItem} />
+        </div>
+      )}
+    />
   );
 }
 

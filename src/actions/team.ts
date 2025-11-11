@@ -8,6 +8,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { hasRole, isCompanyOwner } from "@/lib/auth/permissions";
+import { sendEmail } from "@/lib/email/email-sender";
+import { PasswordResetTemplate } from "@/components/emails/password-reset-template";
 import {
   ActionError,
   ERROR_CODES,
@@ -221,7 +225,7 @@ export async function updateTeamMember(
     // Verify team member belongs to same company
     const { data: targetMember } = await supabase
       .from("team_members")
-      .select("company_id")
+      .select("company_id, user_id")
       .eq("id", memberId)
       .single();
 
@@ -263,10 +267,28 @@ export async function updateTeamMember(
       departmentId = dept?.id || null;
     }
 
+    // Check if trying to change owner's status
+    const newStatus = formData.get("status") as string;
+    if (newStatus && newStatus !== "active") {
+      // Check if this team member is the company owner
+      const { data: company } = await supabase
+        .from("companies")
+        .select("owner_id")
+        .eq("id", currentUserTeam.company_id)
+        .single();
+
+      if (company && company.owner_id === targetMember.user_id) {
+        throw new ActionError(
+          "Cannot archive or deactivate company owner. Transfer ownership first.",
+          ERROR_CODES.BUSINESS_RULE_VIOLATION
+        );
+      }
+    }
+
     const updateData: any = {
       role_id: roleId,
       department_id: departmentId,
-      status: formData.get("status") as string,
+      status: newStatus,
       job_title: formData.get("jobTitle") as string,
     };
 
@@ -349,6 +371,22 @@ export async function removeTeamMember(
       );
     }
 
+    // Check if team member can be deleted (prevents owner deletion)
+    const { canDeleteTeamMember } = await import("./roles");
+    const canDeleteResult = await canDeleteTeamMember(memberId);
+
+    if (
+      canDeleteResult.success &&
+      canDeleteResult.data &&
+      !canDeleteResult.data.canDelete
+    ) {
+      throw new ActionError(
+        canDeleteResult.data.reason ||
+          "Cannot delete this team member",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
     // Soft delete: set status to 'suspended'
     const { error: updateError } = await supabase
       .from("team_members")
@@ -363,6 +401,713 @@ export async function removeTeamMember(
     }
 
     revalidatePath("/dashboard/settings/team");
+    revalidatePath("/dashboard/work/team");
+  });
+}
+
+/**
+ * Suspend team member - sets status to 'suspended'
+ */
+export async function suspendTeamMember(
+  memberId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify team member belongs to same company
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("company_id, user_id, status")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    // Prevent suspending yourself
+    if (targetMember.user_id === user.id) {
+      throw new ActionError(
+        "You cannot suspend yourself",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Check if already suspended
+    if (targetMember.status === "suspended") {
+      throw new ActionError(
+        "Team member is already suspended",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Check if team member can be suspended (prevents owner suspension)
+    const { canDeleteTeamMember } = await import("./roles");
+    const canSuspendResult = await canDeleteTeamMember(memberId);
+
+    if (
+      canSuspendResult.success &&
+      canSuspendResult.data &&
+      !canSuspendResult.data.canDelete
+    ) {
+      throw new ActionError(
+        canSuspendResult.data.reason ||
+          "Cannot suspend this team member",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Update status to suspended
+    const { error: updateError } = await supabase
+      .from("team_members")
+      .update({ status: "suspended" })
+      .eq("id", memberId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("suspend team member"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/settings/team");
+    revalidatePath("/dashboard/work/team");
+    revalidatePath(`/dashboard/work/team/${memberId}`);
+  });
+}
+
+/**
+ * Activate team member - sets status to 'active'
+ */
+export async function activateTeamMember(
+  memberId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify team member belongs to same company
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("company_id, status")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    // Check if already active
+    if (targetMember.status === "active") {
+      throw new ActionError(
+        "Team member is already active",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Update status to active
+    const { error: updateError } = await supabase
+      .from("team_members")
+      .update({ status: "active" })
+      .eq("id", memberId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("activate team member"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/settings/team");
+    revalidatePath("/dashboard/work/team");
+    revalidatePath(`/dashboard/work/team/${memberId}`);
+  });
+}
+
+/**
+ * Archive team member - permanently removes from team
+ */
+export async function archiveTeamMember(
+  memberId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify team member belongs to same company
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("company_id, user_id")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    // Prevent archiving yourself
+    if (targetMember.user_id === user.id) {
+      throw new ActionError(
+        "You cannot archive yourself",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Check if team member can be archived (prevents owner archival)
+    const { canDeleteTeamMember } = await import("./roles");
+    const canArchiveResult = await canDeleteTeamMember(memberId);
+
+    if (
+      canArchiveResult.success &&
+      canArchiveResult.data &&
+      !canArchiveResult.data.canDelete
+    ) {
+      throw new ActionError(
+        canArchiveResult.data.reason ||
+          "Cannot archive this team member",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Soft delete the team member record (set archived_at timestamp)
+    const { error: updateError } = await supabase
+      .from("team_members")
+      .update({ archived_at: new Date().toISOString() })
+      .eq("id", memberId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("archive team member"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Log the archive action
+    await supabase.from("activity_logs").insert({
+      company_id: companyId,
+      user_id: user.id,
+      action_type: "team_member_archived",
+      entity_type: "team_member",
+      entity_id: memberId,
+      metadata: {
+        archived_by_name:
+          (await supabase.from("users").select("name").eq("id", user.id).single()).data
+            ?.name || "Unknown",
+      },
+    });
+
+    revalidatePath("/dashboard/settings/team");
+    revalidatePath("/dashboard/work/team");
+  });
+}
+
+/**
+ * Restore an archived team member
+ */
+export async function restoreTeamMember(
+  memberId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Check if user is owner or manager
+    const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+    const isManager = await hasRole(supabase, user.id, "manager", companyId);
+
+    if (!isOwner && !isManager) {
+      throw new ActionError(
+        "Only owners and managers can restore team members",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify team member belongs to same company and is archived
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("company_id, user_id, archived_at")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    if (!targetMember.archived_at) {
+      throw new ActionError(
+        "Team member is not archived",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Restore the team member (clear archived_at timestamp)
+    const { error: updateError } = await supabase
+      .from("team_members")
+      .update({ archived_at: null })
+      .eq("id", memberId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("restore team member"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Log the restore action
+    await supabase.from("activity_logs").insert({
+      company_id: companyId,
+      user_id: user.id,
+      action_type: "team_member_restored",
+      entity_type: "team_member",
+      entity_id: memberId,
+      metadata: {
+        restored_by_name:
+          (await supabase.from("users").select("name").eq("id", user.id).single()).data
+            ?.name || "Unknown",
+      },
+    });
+
+    revalidatePath("/dashboard/settings/team");
+    revalidatePath("/dashboard/work/team");
+  });
+}
+
+/**
+ * Send password reset email to team member
+ * Only accessible by owners and managers
+ */
+export async function sendPasswordResetEmail(
+  memberId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Check if user is owner or manager
+    const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+    const isManager = await hasRole(supabase, user.id, "manager", companyId);
+
+    if (!isOwner && !isManager) {
+      throw new ActionError(
+        "Only owners and managers can reset passwords",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Fetch team member details
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("user_id, company_id")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    // Get user details for email
+    const { data: userData } = await supabase
+      .from("users")
+      .select("name, email")
+      .eq("id", targetMember.user_id)
+      .single();
+
+    const { data: currentUserData } = await supabase
+      .from("users")
+      .select("name")
+      .eq("id", user.id)
+      .single();
+
+    const { data: companyData } = await supabase
+      .from("companies")
+      .select("name")
+      .eq("id", companyId)
+      .single();
+
+    if (!userData?.email) {
+      throw new ActionError(
+        "Team member email not found",
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    // Generate password reset link via Supabase Admin API
+    const { data: resetData, error: resetError } =
+      await supabase.auth.admin.generateLink({
+        type: "recovery",
+        email: userData.email,
+      });
+
+    if (resetError || !resetData?.properties?.action_link) {
+      throw new ActionError(
+        "Failed to generate password reset link",
+        ERROR_CODES.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    // Send password reset email
+    const emailResult = await sendEmail({
+      to: userData.email,
+      subject: `Password Reset - ${companyData?.name || "Your Account"}`,
+      template: PasswordResetTemplate({
+        teamMemberName: userData.name || "Team Member",
+        resetByName: currentUserData?.name || "Your Manager",
+        resetLink: resetData.properties.action_link,
+        companyName: companyData?.name || "Your Company",
+        expiresInHours: 24,
+      }),
+      templateType: "password_reset" as any,
+      tags: [
+        { name: "action", value: "password_reset" },
+        { name: "initiated_by", value: user.id },
+      ],
+    });
+
+    if (!emailResult.success) {
+      throw new ActionError(
+        emailResult.error || "Failed to send password reset email",
+        ERROR_CODES.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    // Log the password reset action
+    await supabase.from("activity_logs").insert({
+      company_id: companyId,
+      user_id: user.id,
+      action_type: "password_reset_sent",
+      resource_type: "team_member",
+      resource_id: memberId,
+      metadata: {
+        target_user_id: targetMember.user_id,
+        target_email: userData.email,
+      },
+    });
+  });
+}
+
+/**
+ * Check if current user can manage team member
+ * Returns true if current user is owner or manager
+ */
+export async function canManageTeamMember(
+  memberId: string
+): Promise<ActionResult<boolean>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      return false;
+    }
+
+    // Check if user is owner or manager
+    const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+    const isManager = await hasRole(supabase, user.id, "manager", companyId);
+    const isAdmin = await hasRole(supabase, user.id, "admin", companyId);
+
+    return isOwner || isManager || isAdmin;
+  });
+}
+
+/**
+ * Get team member permissions and settings
+ * Only accessible by owners and managers
+ */
+export async function getTeamMemberPermissions(
+  memberId: string
+): Promise<
+  ActionResult<{
+    role: string;
+    permissions: Record<string, boolean>;
+    canManage: boolean;
+  }>
+> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Check if user can manage team members
+    const canManageResult = await canManageTeamMember(memberId);
+    const canManage = canManageResult.success && canManageResult.data === true;
+
+    // Fetch team member details
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("role_id, company_id")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    // Get role details
+    const { data: roleData } = await supabase
+      .from("custom_roles")
+      .select("name, permissions")
+      .eq("id", targetMember.role_id)
+      .single();
+
+    return {
+      role: roleData?.name || "unknown",
+      permissions: (roleData?.permissions as Record<string, boolean>) || {},
+      canManage,
+    };
+  });
+}
+
+/**
+ * Update team member permissions
+ * Only accessible by owners and managers
+ */
+export async function updateTeamMemberPermissions(
+  memberId: string,
+  newRole: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get active company ID
+    const companyId = await getActiveCompanyId();
+
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Check if user is owner or manager
+    const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+    const isManager = await hasRole(supabase, user.id, "manager", companyId);
+    const isAdmin = await hasRole(supabase, user.id, "admin", companyId);
+
+    if (!isOwner && !isManager && !isAdmin) {
+      throw new ActionError(
+        "Only owners, admins, and managers can update permissions",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify team member belongs to same company
+    const { data: targetMember } = await supabase
+      .from("team_members")
+      .select("company_id, user_id")
+      .eq("id", memberId)
+      .eq("company_id", companyId)
+      .single();
+
+    assertExists(targetMember, "Team member");
+
+    // Prevent changing your own role
+    if (targetMember.user_id === user.id) {
+      throw new ActionError(
+        "You cannot change your own role",
+        ERROR_CODES.BUSINESS_RULE_VIOLATION
+      );
+    }
+
+    // Get the new role ID
+    const { data: roleData } = await supabase
+      .from("custom_roles")
+      .select("id")
+      .eq("name", newRole)
+      .eq("company_id", companyId)
+      .single();
+
+    if (!roleData) {
+      throw new ActionError(
+        `Role '${newRole}' not found`,
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    // Update team member role
+    const { error: updateError } = await supabase
+      .from("team_members")
+      .update({ role_id: roleData.id })
+      .eq("id", memberId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update permissions"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Log the permission change
+    await supabase.from("activity_logs").insert({
+      company_id: companyId,
+      user_id: user.id,
+      action_type: "permissions_updated",
+      resource_type: "team_member",
+      resource_id: memberId,
+      metadata: {
+        new_role: newRole,
+        target_user_id: targetMember.user_id,
+      },
+    });
+
+    revalidatePath("/dashboard/settings/team");
+    revalidatePath("/dashboard/work/team");
+    revalidatePath(`/dashboard/work/team/${memberId}`);
   });
 }
 
@@ -934,9 +1679,7 @@ export type TeamMemberWithDetails = {
 /**
  * Get all team members for current user's company
  */
-export async function getTeamMembers(): Promise<
-  ActionResult<TeamMemberWithDetails[]>
-> {
+export async function getTeamMembers() {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -951,15 +1694,10 @@ export async function getTeamMembers(): Promise<
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .single();
+    // Get active company ID (handles users in multiple companies)
+    const companyId = await getActiveCompanyId();
 
-    if (!teamMember?.company_id) {
+    if (!companyId) {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -967,8 +1705,8 @@ export async function getTeamMembers(): Promise<
       );
     }
 
-    // Fetch all team members with related data
-    const { data: members, error } = await supabase
+    // Fetch all team members for the company (including archived)
+    const { data: members, error: membersError } = await supabase
       .from("team_members")
       .select(
         `
@@ -984,33 +1722,45 @@ export async function getTeamMembers(): Promise<
         joined_at,
         last_active_at,
         created_at,
-        users!team_members_user_id_fkey (
-          id,
-          name,
-          email,
-          avatar
-        ),
-        custom_roles!team_members_role_id_fkey (
-          id,
-          name,
-          color
-        ),
-        departments!team_members_department_id_fkey (
-          id,
-          name,
-          color
-        )
+        archived_at
       `
       )
-      .eq("company_id", teamMember.company_id)
+      .eq("company_id", companyId)
       .order("created_at", { ascending: false });
 
-    if (error) {
+    if (membersError) {
+      console.error("Team members query error:", membersError);
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("fetch team members"),
-        ERROR_CODES.DB_QUERY_ERROR
+        ERROR_CODES.DB_QUERY_ERROR,
+        undefined,
+        membersError
       );
     }
+
+    if (!members || members.length === 0) {
+      return [];
+    }
+
+    // Get unique user IDs and role IDs
+    const userIds = [...new Set(members.map((m) => m.user_id))];
+    const roleIds = [...new Set(members.map((m) => m.role_id).filter(Boolean))];
+
+    // Fetch user details from public.users
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name, email, avatar")
+      .in("id", userIds);
+
+    // Fetch role details
+    const { data: roles } = await supabase
+      .from("custom_roles")
+      .select("id, name, color")
+      .in("id", roleIds);
+
+    // Create lookup maps
+    const usersMap = new Map(users?.map((u) => [u.id, u]) || []);
+    const rolesMap = new Map(roles?.map((r) => [r.id, r]) || []);
 
     // Transform the data to match expected structure
     const transformedMembers = members.map((member: any) => ({
@@ -1026,9 +1776,9 @@ export async function getTeamMembers(): Promise<
       joined_at: member.joined_at,
       last_active_at: member.last_active_at,
       created_at: member.created_at,
-      user: member.users,
-      role: member.custom_roles,
-      department: member.departments,
+      user: usersMap.get(member.user_id) || null,
+      role: rolesMap.get(member.role_id) || null,
+      department: null, // Department FK constraint doesn't exist yet
     }));
 
     return transformedMembers;

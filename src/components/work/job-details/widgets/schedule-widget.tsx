@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatDate } from "@/lib/formatters";
 
 interface ScheduleWidgetProps {
   job: Job;
@@ -133,14 +134,7 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
   const Icon = config.icon;
 
   function formatDateTime(date: Date): string {
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(date);
+    return formatDate(date, { preset: "datetime" });
   }
 
   function formatTime(date: Date): string {
@@ -183,7 +177,7 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
             Not scheduled yet
           </p>
           <Button asChild size="sm" variant="outline">
-            <Link href={`/dashboard/work/schedule?jobId=${job.id}`}>
+            <Link href={`/dashboard/schedule?jobId=${job.id}`}>
               <Clock className="mr-2 size-4" />
               Schedule Job
             </Link>
@@ -406,13 +400,13 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
       <Separator />
       <div className="space-y-2">
         <Button asChild className="w-full" size="sm" variant="outline">
-          <Link href={`/dashboard/work/schedule?jobId=${job.id}`}>
+          <Link href={`/dashboard/schedule?jobId=${job.id}`}>
             <Calendar className="mr-2 size-4" />
             View Full Schedule
           </Link>
         </Button>
         <Button asChild className="w-full" size="sm" variant="outline">
-          <Link href={"/dashboard/work/schedule/dispatch"}>Dispatch Board</Link>
+          <Link href={"/dashboard/schedule/dispatch"}>Dispatch Board</Link>
         </Button>
       </div>
     </div>

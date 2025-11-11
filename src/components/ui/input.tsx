@@ -12,6 +12,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         className
       )}
       data-slot="input"
+      suppressHydrationWarning
       type={type}
       {...props}
     />

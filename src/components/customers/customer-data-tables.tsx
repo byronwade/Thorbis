@@ -15,6 +15,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
 /**
  * Customer Data Tables - Client Component
@@ -40,23 +41,6 @@ type Invoice = {
   totalAmount: number;
   dueDate: string | null;
 };
-
-// Utility functions
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
-}
-
-function formatDate(date: string | null): string {
-  if (!date) return "—";
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function getStatusBadge(status: string) {
   const variants: Record<
@@ -168,7 +152,7 @@ export function CustomerDataTables({
       align: "right",
       render: (job) => (
         <span className="font-semibold tabular-nums text-sm">
-          {formatCurrency(job.totalAmount)}
+          {formatCurrencyFromDollars(job.totalAmount)}
         </span>
       ),
     },
@@ -180,7 +164,7 @@ export function CustomerDataTables({
       hideOnMobile: true,
       render: (job) => (
         <span className="text-muted-foreground text-sm tabular-nums">
-          {formatDate(job.scheduledStart)}
+          {formatDate(job.scheduledStart, "short")}
         </span>
       ),
     },
@@ -226,7 +210,7 @@ export function CustomerDataTables({
       align: "right",
       render: (invoice) => (
         <span className="font-semibold tabular-nums text-sm">
-          {formatCurrency(invoice.totalAmount)}
+          {formatCurrencyFromDollars(invoice.totalAmount)}
         </span>
       ),
     },
@@ -238,7 +222,7 @@ export function CustomerDataTables({
       hideOnMobile: true,
       render: (invoice) => (
         <span className="text-muted-foreground text-sm tabular-nums">
-          {formatDate(invoice.dueDate)}
+          {formatDate(invoice.dueDate, "short")}
         </span>
       ),
     },

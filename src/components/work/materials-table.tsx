@@ -24,6 +24,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
+import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 
 export type Material = {
   id: string;
@@ -37,47 +39,26 @@ export type Material = {
   status: "in-stock" | "low-stock" | "out-of-stock" | "on-order";
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function getStatusBadge(status: string) {
-  const config = {
-    "in-stock": {
-      className: "bg-green-500 hover:bg-green-600 text-white",
-      label: "In Stock",
-    },
-    "low-stock": {
-      className:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-      label: "Low Stock",
-    },
-    "out-of-stock": {
-      className: "bg-red-500 hover:bg-red-600 text-white",
-      label: "Out of Stock",
-    },
-    "on-order": {
-      className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-      label: "On Order",
-    },
-  };
-
-  const statusConfig =
-    config[status as keyof typeof config] || config["in-stock"];
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
+const MATERIAL_STATUS_CONFIG = {
+  "in-stock": {
+    className: "bg-green-500 hover:bg-green-600 text-white",
+    label: "In Stock",
+  },
+  "low-stock": {
+    className:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    label: "Low Stock",
+  },
+  "out-of-stock": {
+    className: "bg-red-500 hover:bg-red-600 text-white",
+    label: "Out of Stock",
+  },
+  "on-order": {
+    className:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    label: "On Order",
+  },
+} as const;
 
 export function MaterialsTable({
   materials,

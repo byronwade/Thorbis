@@ -24,17 +24,10 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatCurrency } from "@/lib/formatters";
 
 interface PaymentTrackerWidgetProps {
   job: Job;
-}
-
-function formatCurrency(cents: number | null): string {
-  if (!cents) return "$0.00";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
 }
 
 export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {

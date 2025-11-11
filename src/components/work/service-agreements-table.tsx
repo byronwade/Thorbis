@@ -9,7 +9,6 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,6 +23,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
+import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 
 export type ServiceAgreement = {
   id: string;
@@ -40,46 +41,26 @@ export type ServiceAgreement = {
   status: "active" | "pending" | "expired" | "cancelled";
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function getStatusBadge(status: string) {
-  const config = {
-    active: {
-      className: "bg-green-500 hover:bg-green-600 text-white",
-      label: "Active",
-    },
-    pending: {
-      className:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-      label: "Pending",
-    },
-    expired: {
-      className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-      label: "Expired",
-    },
-    cancelled: {
-      className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-      label: "Cancelled",
-    },
-  };
-
-  const statusConfig = config[status as keyof typeof config] || config.pending;
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
+const SERVICE_AGREEMENT_STATUS_CONFIG = {
+  active: {
+    className: "bg-green-500 hover:bg-green-600 text-white",
+    label: "Active",
+  },
+  pending: {
+    className:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    label: "Pending",
+  },
+  expired: {
+    className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+    label: "Expired",
+  },
+  cancelled: {
+    className:
+      "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+    label: "Cancelled",
+  },
+} as const;
 
 export function ServiceAgreementsTable({
   agreements,
@@ -160,7 +141,13 @@ export function ServiceAgreementsTable({
       header: "Status",
       width: "w-28",
       shrink: true,
-      render: (agreement) => getStatusBadge(agreement.status),
+      render: (agreement) => (
+        <GenericStatusBadge
+          status={agreement.status}
+          config={SERVICE_AGREEMENT_STATUS_CONFIG}
+          defaultStatus="pending"
+        />
+      ),
     },
     {
       key: "actions",

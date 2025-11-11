@@ -90,7 +90,7 @@ import {
   X,
   Zap,
 } from "@/lib/icons/icon-registry";
-import { useChatStore } from "@/lib/store/chat-store";
+import { useChatStore } from "@/lib/stores/chat-store";
 
 // Navigation sections for each route
 const navigationSections = {
@@ -203,14 +203,14 @@ const navigationSections = {
           icon: ClipboardList,
         },
         {
+          title: "Appointments",
+          url: "/dashboard/work/appointments",
+          icon: Calendar,
+        },
+        {
           title: "Team Members",
           url: "/dashboard/work/team",
           icon: UserPlus,
-        },
-        {
-          title: "Schedule",
-          url: "/dashboard/work/schedule",
-          icon: Calendar,
         },
         {
           title: "Customers",
@@ -231,6 +231,11 @@ const navigationSections = {
           title: "Estimates",
           url: "/dashboard/work/estimates",
           icon: FileText,
+        },
+        {
+          title: "Payments",
+          url: "/dashboard/work/payments",
+          icon: CreditCard,
         },
         {
           title: "Contracts",
@@ -257,11 +262,6 @@ const navigationSections = {
           url: "/dashboard/work/service-agreements",
           icon: ShieldCheck,
         },
-        {
-          title: "Service Tickets",
-          url: "/dashboard/work/tickets",
-          icon: Ticket,
-        },
       ],
     },
     {
@@ -281,48 +281,6 @@ const navigationSections = {
           title: "Equipment & Tools",
           url: "/dashboard/work/equipment",
           icon: Package,
-        },
-      ],
-    },
-  ],
-  customers: [
-    {
-      label: undefined,
-      items: [
-        {
-          title: "Back to Work",
-          url: "/dashboard/work",
-          icon: ArrowLeft,
-        },
-      ],
-    },
-    {
-      label: "Customers",
-      items: [
-        {
-          title: "Customer Database",
-          url: "/dashboard/customers",
-          icon: Users,
-        },
-        {
-          title: "Profiles",
-          url: "/dashboard/customers/profiles",
-        },
-        {
-          title: "Service History",
-          url: "/dashboard/customers/history",
-        },
-        {
-          title: "Communication",
-          url: "/dashboard/customers/communication",
-        },
-        {
-          title: "Reviews & Feedback",
-          url: "/dashboard/customers/feedback",
-        },
-        {
-          title: "Portal",
-          url: "/dashboard/customers/portal",
         },
       ],
     },
@@ -2259,7 +2217,7 @@ const navigationSections = {
 // Match only job detail pages with numeric/UUID IDs, not page names like "invoices", "schedule", etc.
 // This prevents the job details sidebar from showing on other work pages
 const JOB_DETAILS_PATTERN =
-  /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)[^/]+$/;
+  /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team)[^/]+$/;
 
 // Match communication detail pages (e.g., /dashboard/communication/123)
 // Exclude special routes like unread, starred, archive, trash, spam, teams, feed
@@ -2291,7 +2249,7 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
     return "work";
   }
   if (pathname.startsWith("/dashboard/customers")) {
-    return "customers";
+    return "work";
   }
   if (pathname.startsWith("/dashboard/finance")) {
     return "finance";
@@ -2341,12 +2299,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isCommunicationDetail =
     pathname.match(COMMUNICATION_DETAIL_PATTERN) !== null;
 
-  // Use grouped navigation for settings, ai, work, customers, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
+  // Use grouped navigation for settings, ai, work, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
   const useGroupedNav =
     currentSection === "settings" ||
     currentSection === "ai" ||
     currentSection === "work" ||
-    currentSection === "customers" ||
     currentSection === "communication" ||
     currentSection === "finance" ||
     currentSection === "marketing" ||

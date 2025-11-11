@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { JobStatusPipeline } from "@/components/dashboard/job-status-pipeline";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
 import { JobsTable } from "@/components/work/jobs-table";
 import { JobsKanban } from "@/components/work/jobs-kanban";
 import { WorkDataView } from "@/components/work/work-data-view";
@@ -92,10 +93,44 @@ export default async function JobsPage() {
     properties: job.properties,
   }));
 
+  // Calculate job stats
+  const jobStats: StatCard[] = [
+    {
+      label: "Scheduled",
+      value: 18,
+      change: 5.2,
+      changeLabel: "vs last week",
+    },
+    {
+      label: "En Route",
+      value: 7,
+      change: -2.1,
+      changeLabel: "vs last week",
+    },
+    {
+      label: "In Progress",
+      value: 12,
+      change: 8.3,
+      changeLabel: "vs last week",
+    },
+    {
+      label: "Completed",
+      value: 24,
+      change: 12.5,
+      changeLabel: "vs last week",
+    },
+    {
+      label: "Invoiced",
+      value: 20,
+      change: 3.7,
+      changeLabel: "vs last week",
+    },
+  ];
+
   return (
     <>
       {/* Job Flow Pipeline - Rendered on server, passed to client component */}
-      <JobStatusPipeline />
+      <StatusPipeline compact stats={jobStats} />
 
       {/* Jobs Table - Client component handles sorting, filtering, pagination */}
       <WorkDataView

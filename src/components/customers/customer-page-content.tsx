@@ -47,6 +47,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CustomerStatusBadge, JobStatusBadge, InvoiceStatusBadge } from "@/components/ui/status-badge";
 import { JobsTable } from "@/components/work/jobs-table";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PropertiesTable } from "@/components/customers/properties-table";
@@ -54,8 +55,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
 import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import {
   UnifiedAccordionContent,
@@ -239,127 +241,20 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     setHasChanges(false);
   };
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+  // Helper to determine badge type based on status
+  const getStatusBadge = (status: string, entityType: "job" | "invoice" = "job") => {
+    if (entityType === "invoice") {
+      return <InvoiceStatusBadge status={status} />;
+    }
+    return <JobStatusBadge status={status} />;
   };
 
-  // Format date
-  const formatDate = (date: string | null) => {
-    if (!date) return "N/A";
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  // Get status badge for customer status
-  const getCustomerStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; variant: string }> = {
-      active: { label: "Active", variant: "default" },
-      inactive: { label: "Inactive", variant: "secondary" },
-      lead: { label: "Lead", variant: "outline" },
-    };
-
-    const config = statusConfig[status] || statusConfig.active;
-
-    return (
-      <Badge variant={config.variant as any}>
-        {config.label}
-      </Badge>
-    );
-  };
-
-  // Get status badge for jobs/invoices
-  const getJobInvoiceStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      {
-        className: string;
-        label: string;
-      }
-    > = {
-      draft: {
-        className:
-          "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
-        label: "Draft",
-      },
-      scheduled: {
-        className:
-          "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
-        label: "Scheduled",
-      },
-      in_progress: {
-        className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
-        label: "In Progress",
-      },
-      completed: {
-        className:
-          "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
-        label: "Completed",
-      },
-      cancelled: {
-        className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
-        label: "Cancelled",
-      },
-      paid: {
-        className:
-          "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
-        label: "Paid",
-      },
-      unpaid: {
-        className:
-          "border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400",
-        label: "Unpaid",
-      },
-      overdue: {
-        className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
-        label: "Overdue",
-      },
-    };
-
-    const config = variants[status] || {
-      className: "border-border/50 bg-background text-muted-foreground",
-      label: status.replace("_", " "),
-    };
-
-    return (
-      <Badge className={`font-medium text-xs ${config.className}`} variant="outline">
-        {config.label}
-      </Badge>
-    );
-  };
-
-  // Format date for table display
-  const formatTableDate = (date: string | Date | null): string => {
-    if (!date) return "—";
-    const d = typeof date === "string" ? new Date(date) : date;
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(d);
-  };
-
-  // Format currency for table (amounts are stored in cents)
-  const formatTableCurrency = (amount: number | null): string => {
-    if (amount === null || amount === undefined) return "$0.00";
-    // Amounts are stored in cents, so divide by 100
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount / 100);
-  };
 
   const headerBadges = [
     <Badge key="identifier" className="font-mono" variant="outline">
       {customerIdentifier}
     </Badge>,
-    getCustomerStatusBadge(customerStatus || "active"),
+    <CustomerStatusBadge status={customerStatus || "active"} />,
     membershipLabel ? (
       <Badge key="membership" variant="secondary">
         {membershipLabel}
@@ -437,13 +332,13 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     {
       label: "Outstanding Balance",
       icon: <CreditCard className="h-3.5 w-3.5" />,
-      value: formatCurrency(outstandingBalance),
+      value: formatCurrencyFromDollars(outstandingBalance, { decimals: 0 }),
       helperText: "Open invoices",
     },
     {
       label: "Lifetime Revenue",
       icon: <TrendingUp className="h-3.5 w-3.5" />,
-      value: formatCurrency(metrics?.totalRevenue ?? 0),
+      value: formatCurrencyFromDollars(metrics?.totalRevenue ?? 0, { decimals: 0 }),
     },
     {
       label: "Jobs",
@@ -463,7 +358,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       <span className="inline-flex items-center gap-1">
         <Calendar className="h-4 w-4" />
         {customerSince
-          ? `Customer since ${formatDate(customerSince)}`
+          ? `Customer since ${formatDate(customerSince, "short")}`
           : "Customer since —"}
       </span>
       {primaryProperty ? (
@@ -483,7 +378,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
   const avatarInitials = displayName
     .split(" ")
-    .map((part) => part?.[0])
+    .map((part: string) => part?.[0])
     .filter(Boolean)
     .join("")
     .slice(0, 2)
@@ -552,7 +447,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       key: "outstanding",
       icon: FileText,
       label: "Outstanding",
-      value: formatCurrency(outstandingBalance),
+      value: formatCurrencyFromDollars(outstandingBalance, { decimals: 0 }),
     },
     {
       key: "jobs",
@@ -570,7 +465,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       key: "lifetime-revenue",
       icon: Receipt,
       label: "Lifetime Revenue",
-      value: formatCurrency(metrics?.totalRevenue ?? 0),
+      value: formatCurrencyFromDollars(metrics?.totalRevenue ?? 0, { decimals: 0 }),
     },
   ];
 
@@ -927,7 +822,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                       {item.install_date && (
                         <p className="flex items-center gap-2 text-muted-foreground">
                           <Calendar className="h-4 w-4" />
-                          Installed {formatDate(item.install_date)}
+                          Installed {formatDate(item.install_date, "short")}
                         </p>
                       )}
                     </div>
@@ -986,7 +881,6 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     customer.mobile_phone,
     customer.phone,
     equipment,
-    formatCurrency,
     formatDate,
     handleFieldChange,
     jobs,

@@ -15,28 +15,21 @@
 import {
   Archive,
   Mail,
-  MoreHorizontal,
   Phone,
   Trash2,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import {
   type BulkAction,
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { CustomerStatusBadge } from "@/components/ui/status-badge";
+import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
 export type Customer = {
   id: string;
@@ -60,43 +53,6 @@ type CustomersTableProps = {
   onCustomerClick?: (customer: Customer) => void;
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function getStatusBadge(status: string) {
-  const config = {
-    active: {
-      className:
-        "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-      label: "Active",
-    },
-    inactive: {
-      className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-      label: "Inactive",
-    },
-    prospect: {
-      className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-      label: "Prospect",
-    },
-  };
-
-  const statusConfig = config[status as keyof typeof config] || config.prospect;
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
 
 export function CustomersTable({
   customers,
@@ -187,7 +143,7 @@ export function CustomersTable({
       header: "Status",
       width: "w-28",
       shrink: true,
-      render: (customer) => getStatusBadge(customer.status),
+      render: (customer) => <CustomerStatusBadge status={customer.status} />,
     },
     {
       key: "service",
@@ -220,7 +176,7 @@ export function CustomersTable({
       align: "right",
       render: (customer) => (
         <span className="font-semibold tabular-nums">
-          {formatCurrency(customer.totalValue)}
+          {formatCurrencyFromDollars(customer.totalValue)}
         </span>
       ),
     },
@@ -230,43 +186,34 @@ export function CustomersTable({
       width: "w-10",
       shrink: true,
       render: (customer) => (
-        <div data-no-row-click>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <MoreHorizontal className="size-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/customers/${customer.id}`}>
-                  <Users className="mr-2 size-4" />
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`mailto:${customer.email}`}>
-                  <Mail className="mr-2 size-4" />
-                  Send Email
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`tel:${customer.phone}`}>
-                  <Phone className="mr-2 size-4" />
-                  Call Customer
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete Customer
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <RowActionsDropdown
+          actions={[
+            {
+              label: "View Details",
+              icon: Users,
+              href: `/dashboard/customers/${customer.id}`,
+            },
+            {
+              label: "Send Email",
+              icon: Mail,
+              href: `mailto:${customer.email}`,
+            },
+            {
+              label: "Call Customer",
+              icon: Phone,
+              href: `tel:${customer.phone}`,
+            },
+            {
+              label: "Delete Customer",
+              icon: Trash2,
+              variant: "destructive",
+              separatorBefore: true,
+              onClick: () => {
+                // TODO: Implement delete functionality
+              },
+            },
+          ]}
+        />
       ),
     },
   ];
@@ -316,9 +263,6 @@ export function CustomersTable({
     }
   };
 
-  // Highlight active customers
-  const isHighlighted = (customer: Customer) => customer.status === "active";
-
   return (
     <FullWidthDataTable
       bulkActions={bulkActions}
@@ -336,9 +280,7 @@ export function CustomersTable({
       emptyIcon={<Users className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No customers found"
       enableSelection={true}
-      getHighlightClass={() => "bg-green-50/30 dark:bg-green-950/10"}
       getItemId={(customer) => customer.id}
-      isHighlighted={isHighlighted}
       itemsPerPage={itemsPerPage}
       onRefresh={() => window.location.reload()}
       onRowClick={handleRowClick}

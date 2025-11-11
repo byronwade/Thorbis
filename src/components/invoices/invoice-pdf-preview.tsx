@@ -7,6 +7,8 @@
 
 "use client";
 
+import { formatCurrency, formatDate } from "@/lib/formatters";
+
 export function InvoicePDFPreview({
   invoice,
   customer,
@@ -16,22 +18,6 @@ export function InvoicePDFPreview({
   customer: any;
   company: any;
 }) {
-  // Format currency
-  const formatCurrency = (cents: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(cents / 100);
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   const lineItems = invoice.line_items || [];
 
@@ -68,12 +54,12 @@ export function InvoicePDFPreview({
             </div>
             <div>
               <span className="text-gray-600">Date:</span>{" "}
-              {formatDate(invoice.created_at)}
+              {formatDate(invoice.created_at, "long", "")}
             </div>
             <div>
               <span className="text-gray-600">Due:</span>{" "}
               <span className="font-semibold">
-                {formatDate(invoice.due_date)}
+                {formatDate(invoice.due_date, "long", "")}
               </span>
             </div>
           </div>

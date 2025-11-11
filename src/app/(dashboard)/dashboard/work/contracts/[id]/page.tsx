@@ -10,6 +10,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { ContractActions } from "@/components/work/contract-actions";
+import { createClient } from "@/lib/supabase/server";
+import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 
 /**
  * Contract Detail Page - Server Component
@@ -30,59 +33,6 @@ import { ContractActions } from "@/components/work/contract-actions";
  * - Server Component fetches contract data
  * - Client components only for interactive actions
  */
-
-// Mock data - will be replaced with database query
-const mockContract = {
-  id: "1",
-  contractNumber: "CNT-2025-001",
-  title: "HVAC Service Agreement",
-  description: "Annual service and maintenance agreement for HVAC systems",
-  customer: "Acme Corp",
-  customerId: "1",
-  status: "signed",
-  contractType: "service",
-  signerName: "John Smith",
-  signerEmail: "john@acmecorp.com",
-  signerTitle: "Facilities Manager",
-  signerCompany: "Acme Corp",
-  signedAt: "2025-01-10T14:30:00Z",
-  sentAt: "2025-01-08T10:00:00Z",
-  viewedAt: "2025-01-09T15:20:00Z",
-  createdAt: "2025-01-05T09:00:00Z",
-  validFrom: "2025-01-01",
-  validUntil: "2026-01-01",
-  ipAddress: "192.168.1.1",
-  content: `This Service Agreement is entered into on January 1, 2025 between Thorbis Service Company and Acme Corp.
-
-SERVICES TO BE PROVIDED:
-
-1. Quarterly HVAC system inspections and maintenance
-2. Priority emergency service response
-3. Filter replacements and cleaning
-4. System performance optimization
-5. Annual efficiency reports
-
-PAYMENT TERMS:
-
-- Annual fee: $2,400 (payable quarterly at $600)
-- Emergency service calls included (2 per year)
-- Additional service calls billed at standard rates
-
-DURATION:
-
-- This agreement is valid from January 1, 2025 to December 31, 2025
-- Automatically renews unless cancelled 30 days before end date
-
-TERMINATION:
-
-- Either party may terminate with 30 days written notice
-- Full refund for unused quarters if cancelled by provider
-- Pro-rated refund if cancelled by customer
-
-By signing below, both parties agree to these terms and conditions.`,
-  terms: "Standard terms and conditions apply as per company policy.",
-  notes: "Customer requested quarterly reminders for scheduled maintenance.",
-};
 
 function getStatusBadge(status: string) {
   const config = {
@@ -125,16 +75,20 @@ function getStatusBadge(status: string) {
   );
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
+function formatDate(dateString: string | Date | null) {
+  if (!dateString) return "N/A";
+  const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+  return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 }
 
-function formatDateTime(dateString: string) {
-  return new Date(dateString).toLocaleString("en-US", {
+function formatDateTime(dateString: string | Date | null) {
+  if (!dateString) return "N/A";
+  const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+  return date.toLocaleString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -151,14 +105,117 @@ export default async function ContractDetailPage({
   // Await params in Next.js 16+
   const { id } = await params;
 
-  // TODO: Fetch from database
-  // const contract = await db.select().from(contracts).where(eq(contracts.id, id)).limit(1);
-  // if (!contract[0]) notFound();
+  const supabase = await createClient();
 
-  const contract = mockContract;
+  if (!supabase) {
+    return notFound();
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return notFound();
+  }
+
+  // Check if active company has completed onboarding
+  const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
+
+  if (!isOnboardingComplete) {
+    redirect("/dashboard/welcome");
+  }
+
+  // Get active company ID
+  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    redirect("/dashboard/welcome");
+  }
+
+  // Fetch contract with all related data
+  const { data: contractRaw, error: contractError } = await supabase
+    .from("contracts")
+    .select(`
+      *,
+      estimate:estimates!estimate_id(
+        id,
+        estimate_number,
+        title,
+        customer_id,
+        customer:customers!customer_id(*)
+      ),
+      invoice:invoices!invoice_id(
+        id,
+        invoice_number,
+        title,
+        customer_id,
+        customer:customers!customer_id(*)
+      ),
+      job:jobs!job_id(
+        id,
+        job_number,
+        title,
+        customer_id,
+        customer:customers!customer_id(*)
+      )
+    `)
+    .eq("id", id)
+    .eq("company_id", activeCompanyId)
+    .is("deleted_at", null)
+    .single();
+
+  if (contractError || !contractRaw) {
+    return notFound();
+  }
+
+  // Get customer from estimate, invoice, or job
+  const estimate = Array.isArray(contractRaw.estimate) ? contractRaw.estimate[0] : contractRaw.estimate;
+  const invoice = Array.isArray(contractRaw.invoice) ? contractRaw.invoice[0] : contractRaw.invoice;
+  const job = Array.isArray(contractRaw.job) ? contractRaw.job[0] : contractRaw.job;
+  
+  const customer = estimate?.customer 
+    ? (Array.isArray(estimate.customer) ? estimate.customer[0] : estimate.customer)
+    : invoice?.customer
+    ? (Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer)
+    : job?.customer
+    ? (Array.isArray(job.customer) ? job.customer[0] : job.customer)
+    : null;
+
+  const customerId = estimate?.customer_id || invoice?.customer_id || job?.customer_id;
+
+  // Transform contract data
+  const contract = {
+    id: contractRaw.id,
+    contractNumber: contractRaw.contract_number,
+    title: contractRaw.title,
+    description: contractRaw.description,
+    customer: customer
+      ? (customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer")
+      : contractRaw.signer_email || "Unknown",
+    customerId: customerId || null,
+    status: contractRaw.status,
+    contractType: contractRaw.contract_type,
+    signerName: contractRaw.signer_name,
+    signerEmail: contractRaw.signer_email,
+    signerTitle: contractRaw.signer_title,
+    signerCompany: contractRaw.signer_company,
+    signedAt: contractRaw.signed_at,
+    sentAt: contractRaw.sent_at,
+    viewedAt: contractRaw.viewed_at,
+    createdAt: contractRaw.created_at,
+    validFrom: contractRaw.valid_from,
+    validUntil: contractRaw.expires_at || contractRaw.valid_until,
+    ipAddress: contractRaw.signer_ip_address,
+    content: contractRaw.content,
+    terms: contractRaw.terms,
+    notes: contractRaw.notes,
+  };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full w-full flex-col overflow-auto">
       {/* Header */}
       <div className="border-b bg-background">
         <div className="flex items-center gap-4 px-6 py-4">
@@ -215,8 +272,8 @@ export default async function ContractDetailPage({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-5xl space-y-6 p-6">
+      <div className="flex-1">
+        <div className="mx-auto max-w-7xl space-y-6 p-6">
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Main Content */}
             <div className="space-y-6 lg:col-span-2">
@@ -298,19 +355,23 @@ export default async function ContractDetailPage({
 
                   <Separator />
 
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground text-xs">Valid From</p>
-                    <p className="font-medium text-sm">
-                      {formatDate(contract.validFrom)}
-                    </p>
-                  </div>
+                  {contract.validFrom && (
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground text-xs">Valid From</p>
+                      <p className="font-medium text-sm">
+                        {formatDate(contract.validFrom)}
+                      </p>
+                    </div>
+                  )}
 
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground text-xs">Valid Until</p>
-                    <p className="font-medium text-sm">
-                      {formatDate(contract.validUntil)}
-                    </p>
-                  </div>
+                  {contract.validUntil && (
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground text-xs">Valid Until</p>
+                      <p className="font-medium text-sm">
+                        {formatDate(contract.validUntil)}
+                      </p>
+                    </div>
+                  )}
 
                   <Separator />
 
@@ -331,12 +392,18 @@ export default async function ContractDetailPage({
                   <CardTitle>Customer</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button asChild className="w-full" variant="outline">
-                    <Link href={`/dashboard/customers/${contract.customerId}`}>
-                      <User className="mr-2 size-4" />
+                  {contract.customerId ? (
+                    <Button asChild className="w-full" variant="outline">
+                      <Link href={`/dashboard/customers/${contract.customerId}`}>
+                        <User className="mr-2 size-4" />
+                        {contract.customer}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <div className="text-muted-foreground text-sm">
                       {contract.customer}
-                    </Link>
-                  </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 

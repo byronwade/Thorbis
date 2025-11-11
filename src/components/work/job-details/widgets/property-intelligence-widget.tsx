@@ -21,28 +21,11 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/lib/db/schema";
 import type { PropertyEnrichment } from "@/lib/services/property-enrichment";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 // ============================================================================
 // Helper Functions
 // ============================================================================
-
-function formatCurrency(cents: number | undefined): string {
-  if (!cents) return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(cents / 100);
-}
-
-function formatDate(dateString: string | undefined): string {
-  if (!dateString) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(dateString));
-}
 
 function getRiskColor(zone: string | undefined): string {
   if (!zone) return "text-muted-foreground";

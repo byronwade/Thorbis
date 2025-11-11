@@ -1,185 +1,107 @@
 # Database Setup
 
-This project uses **Drizzle ORM** with:
-- **SQLite** for local development (fast, no setup required)
-- **PostgreSQL (Supabase)** for production
+This project uses **Supabase** directly for all database operations.
 
 ## Quick Start
 
-### 1. Initialize Database
-
-Generate migrations from your schema:
-
-```bash
-pnpm db:generate
-```
-
-Push schema to database (development):
-
-```bash
-pnpm db:push
-```
-
-### 2. Seed Database
-
-Populate with sample data:
-
-```bash
-pnpm db:seed
-```
-
-### 3. View Database
-
-Open Drizzle Studio to browse your data:
-
-```bash
-pnpm db:studio
-```
-
-This opens a GUI at `https://local.drizzle.studio`
-
-## Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `pnpm db:generate` | Generate migration files from schema changes |
-| `pnpm db:migrate` | Run pending migrations |
-| `pnpm db:push` | Push schema directly (dev only) |
-| `pnpm db:studio` | Open Drizzle Studio GUI |
-| `pnpm db:seed` | Populate database with sample data |
-
-## Environment Variables
-
-### Development (SQLite)
-No configuration needed! Just run the commands above.
-
-Database file: `local.db` (auto-created)
-
-### Production (Supabase)
+### 1. Supabase Setup
 
 1. Create a Supabase project: https://supabase.com/dashboard
 2. Get your connection details from: Settings → Database
 3. Add to `.env.local`:
 
 ```env
-NODE_ENV=production
-DATABASE_URL=postgresql://postgres:[password]@[host]:5432/postgres
 NEXT_PUBLIC_SUPABASE_URL=https://[project].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-4. Run migrations:
+### 2. Database Migrations
+
+Use Supabase migrations directly. Migrations are located in `supabase/migrations/`.
+
+To apply migrations:
+```bash
+# Using Supabase CLI
+supabase db push
+```
+
+### 3. Generate TypeScript Types
+
+Generate TypeScript types from your Supabase schema:
 
 ```bash
-pnpm db:push
+npx supabase gen types typescript --project-id <your-project-id> > src/lib/db/supabase-types.ts
 ```
+
+Or use the Supabase dashboard to generate types.
 
 ## Using the Database
 
-### Import the client
+### Import the Supabase client
 
 ```typescript
-import { db, schema } from "@/lib/db";
+import { getSupabaseClient } from "@/lib/db";
+
+// In Server Components or Server Actions
+const supabase = await getSupabaseClient();
 ```
 
 ### Query Examples
 
 ```typescript
 // Get all users
-const users = await db.select().from(schema.users);
+const { data: users, error } = await supabase
+  .from("users")
+  .select("*");
 
 // Get user by email
-const user = await db
-  .select()
-  .from(schema.users)
-  .where(eq(schema.users.email, "alice@example.com"))
-  .limit(1);
+const { data: user, error } = await supabase
+  .from("users")
+  .select("*")
+  .eq("email", "alice@example.com")
+  .single();
 
 // Create a user
-const newUser = await db
-  .insert(schema.users)
-  .values({
-    name: "John Doe",
-    email: "john@example.com",
+const { data: newUser, error } = await supabase
+  .from("users")
+  .insert({
+    name: "Alice",
+    email: "alice@example.com",
   })
-  .returning();
+  .select()
+  .single();
 
 // Update a user
-await db
-  .update(schema.users)
-  .set({ name: "Jane Doe" })
-  .where(eq(schema.users.id, userId));
+const { data: updatedUser, error } = await supabase
+  .from("users")
+  .update({ name: "Alice Johnson" })
+  .eq("id", userId)
+  .select()
+  .single();
 
 // Delete a user
-await db
-  .delete(schema.users)
-  .where(eq(schema.users.id, userId));
-
-// Join query
-const postsWithAuthors = await db
-  .select()
-  .from(schema.posts)
-  .leftJoin(schema.users, eq(schema.posts.authorId, schema.users.id));
+const { error } = await supabase
+  .from("users")
+  .delete()
+  .eq("id", userId);
 ```
 
-### Using TypeScript Types
+## TypeScript Types
 
-```typescript
-import type { User, NewUser, Post, NewPost } from "@/lib/db";
+Type definitions are in `src/lib/db/schema.ts`. For the most up-to-date types, generate them from your Supabase schema:
 
-// Type-safe user creation
-const newUser: NewUser = {
-  name: "Alice",
-  email: "alice@example.com",
-};
-
-// Type-safe user query result
-const user: User = await db
-  .select()
-  .from(schema.users)
-  .where(eq(schema.users.id, userId))
-  .limit(1);
+```bash
+npx supabase gen types typescript --project-id <your-project-id> > src/lib/db/supabase-types.ts
 ```
 
-## Schema Changes
+## Row Level Security (RLS)
 
-1. Edit `lib/db/schema.ts`
-2. Generate migration: `pnpm db:generate`
-3. Review migration in `drizzle/` directory
-4. Apply migration: `pnpm db:migrate` or `pnpm db:push`
+Make sure to enable RLS policies on all tables in Supabase. This is critical for security.
 
-## Supabase Features
+## Notes
 
-While Drizzle handles the database, you can still use Supabase for:
-- **Authentication** - Use Supabase Auth
-- **Storage** - File uploads and management
-- **Realtime** - Live data subscriptions
-- **Edge Functions** - Serverless functions
-
-```typescript
-import { createClient } from "@/lib/supabase/client";
-
-const supabase = createClient();
-
-// Use Supabase Auth
-const { data, error } = await supabase.auth.signUp({
-  email: "user@example.com",
-  password: "password",
-});
-```
-
-## Best Practices
-
-1. **Always use transactions** for related operations
-2. **Index frequently queried columns** in production
-3. **Use prepared statements** for repeated queries
-4. **Test migrations** on staging before production
-5. **Keep seed data** realistic and useful
-
-## Resources
-
-- [Drizzle ORM Docs](https://orm.drizzle.team/docs/overview)
-- [Drizzle Kit Docs](https://orm.drizzle.team/kit-docs/overview)
-- [Supabase Docs](https://supabase.com/docs)
-- [PostgreSQL Docs](https://www.postgresql.org/docs/)
+- This project previously used Drizzle ORM but has been migrated to use Supabase directly
+- All database operations should use the Supabase client
+- Use Supabase migrations for schema changes
+- Generate types from Supabase schema for TypeScript support

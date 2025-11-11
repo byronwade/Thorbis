@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 interface PurchaseOrdersWidgetProps {
   job: Job;
@@ -148,23 +149,6 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
   const totalOrders = purchaseOrders.length;
   const progressPercentage =
     totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
-
-  function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(amount);
-  }
-
-  function formatDate(date?: Date): string {
-    if (!date) return "N/A";
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(date);
-  }
 
   function getDaysUntil(date?: Date): string {
     if (!date) return "";

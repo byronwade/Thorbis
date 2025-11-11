@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ContractForm } from "@/components/work/contract-form";
+// import { getSupabaseClient } from "@/lib/db";
 
 /**
  * New Contract Page - Server Component
@@ -25,14 +26,21 @@ export default async function NewContractPage({
   const params = await searchParams;
 
   // TODO: Fetch related data from database to pre-fill form
+  // const supabase = await getSupabaseClient();
   // if (params.estimateId) {
-  //   const estimate = await db.select().from(estimates)
-  //     .where(eq(estimates.id, params.estimateId)).limit(1);
+  //   const { data: estimate } = await supabase
+  //     .from("estimates")
+  //     .select("*")
+  //     .eq("id", params.estimateId)
+  //     .single();
   //   // Pre-fill signer email from estimate.customerId -> users.email
   // }
   // if (params.invoiceId) {
-  //   const invoice = await db.select().from(invoices)
-  //     .where(eq(invoices.id, params.invoiceId)).limit(1);
+  //   const { data: invoice } = await supabase
+  //     .from("invoices")
+  //     .select("*")
+  //     .eq("id", params.invoiceId)
+  //     .single();
   //   // Pre-fill signer email from invoice.customerId -> users.email
   // }
 

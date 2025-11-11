@@ -43,7 +43,11 @@ const UpdateNotificationPreferencesSchema = z.array(
 /**
  * Get authenticated user and company context
  */
-async function getAuthContext() {
+async function getAuthContext(): Promise<{
+  userId: string;
+  companyId: string;
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>;
+}> {
   const supabase = await createClient();
 
   if (!supabase) {
@@ -65,11 +69,14 @@ async function getAuthContext() {
     .select("company_id")
     .eq("user_id", user.id)
     .eq("status", "active")
-    .single();
+    .maybeSingle();
 
-  if (teamError || !teamMember) {
-    console.warn("No active company for notifications, returning empty");
-    return { notifications: [], unreadCount: 0 };
+  if (teamError) {
+    throw new Error("Failed to fetch user company");
+  }
+
+  if (!teamMember) {
+    throw new Error("No active company found");
   }
 
   return {
@@ -93,7 +100,24 @@ export async function getNotifications(
   options?: Partial<GetNotificationsInput>
 ) {
   try {
-    const { userId, supabase } = await getAuthContext();
+    // Notifications are user-specific, not company-specific
+    // So we don't need the full auth context with company
+    const supabase = await createClient();
+
+    if (!supabase) {
+      throw new Error("Supabase client not configured");
+    }
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error("Not authenticated");
+    }
+
+    const userId = user.id;
 
     // Validate input
     const validatedOptions = GetNotificationsSchema.parse(options || {});

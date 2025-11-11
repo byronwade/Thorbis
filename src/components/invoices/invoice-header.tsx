@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
+import { formatCurrency, formatDate } from "@/lib/utils/format";
 
 type Invoice = {
   id: string;
@@ -50,15 +51,6 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
     return date.toISOString().split("T")[0];
   };
 
-  // Format dates for display
-  const formatDateForDisplay = (dateString: string | null) => {
-    if (!dateString) return "Not set";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   return (
     <Card
@@ -109,7 +101,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
               Issue Date
             </Label>
             <div className="mt-1 text-sm">
-              {formatDateForDisplay(invoice.created_at)}
+              {formatDate(invoice.created_at, "long")}
             </div>
           </div>
 
@@ -149,10 +141,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
             <div
               className={`mt-1 font-bold text-3xl ${isOverdue ? overdueStatus.colors.text : ""}`}
             >
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(invoice.balance_amount / 100)}
+              {formatCurrency(invoice.balance_amount || 0, { decimals: 2 })}
             </div>
           </div>
         </div>

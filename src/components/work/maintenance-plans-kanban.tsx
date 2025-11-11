@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { MaintenancePlan } from "@/components/work/maintenance-plans-table";
@@ -42,114 +35,29 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-function createItems(plans: MaintenancePlan[]): MaintenanceKanbanItem[] {
-  return plans.map((plan) => ({
-    id: plan.id,
-    columnId: plan.status,
-    plan,
-  }));
-}
-
 export function MaintenancePlansKanban({ plans }: { plans: MaintenancePlan[] }) {
-  const columns = useMemo(() => MAINTENANCE_COLUMNS, []);
-  const [items, setItems] = useState<MaintenanceKanbanItem[]>(() =>
-    createItems(plans)
-  );
-
-  useEffect(() => {
-    setItems(createItems(plans));
-  }, [plans]);
-
-  const handleDataChange = (next: MaintenanceKanbanItem[]) => {
-    setItems(
-      next.map((item) => ({
-        ...item,
-        plan: {
-          ...item.plan,
-          status: item.columnId as MaintenanceStatus,
-        },
-      }))
-    );
-  };
-
-  const columnMeta = useMemo(() => {
-    return columns.reduce<Record<string, { count: number; recurring: number }>>(
-      (acc, column) => {
-        const columnItems = items.filter(
-          (item) => item.columnId === column.id
-        );
-        const recurring = columnItems.filter(
-          (item) => item.plan.frequency !== "Annual"
-        ).length;
-        acc[column.id] = { count: columnItems.length, recurring };
-        return acc;
-      },
-      {}
-    );
-  }, [columns, items]);
-
   return (
-    <KanbanProvider<MaintenanceKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={items}
-      onDataChange={handleDataChange}
-      renderDragOverlay={(item) => {
-        return (
-          <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-            <MaintenancePlanCard item={item} />
-          </div>
-        );
-      }}
-    >
-      {columns.map((column) => {
-        const meta = columnMeta[column.id] ?? { count: 0, recurring: 0 };
-        return (
-          <KanbanBoard
-            className="min-h-[300px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                  variant="secondary"
-                >
-                  {meta.count} plans
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {meta.recurring} recurring
-                </span>
-              </div>
-            </KanbanHeader>
-            <KanbanCards<MaintenanceKanbanItem>
-              className="min-h-[200px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No maintenance plans in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <MaintenancePlanCard item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
+    <EntityKanban<MaintenancePlan, MaintenanceStatus>
+      columns={MAINTENANCE_COLUMNS}
+      data={plans}
+      entityName="plans"
+      mapToKanbanItem={(plan) => ({
+        id: plan.id,
+        columnId: plan.status,
+        entity: plan,
+        plan,
       })}
-    </KanbanProvider>
+      updateEntityStatus={(plan, newStatus) => ({
+        ...plan,
+        status: newStatus,
+      })}
+      renderCard={(item) => <MaintenancePlanCard item={{ ...item, plan: item.entity } as MaintenanceKanbanItem} />}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <MaintenancePlanCard item={{ ...item, plan: item.entity } as MaintenanceKanbanItem} />
+        </div>
+      )}
+    />
   );
 }
 

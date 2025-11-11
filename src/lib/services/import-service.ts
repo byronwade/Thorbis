@@ -4,8 +4,8 @@
  * Business logic for handling data imports
  */
 
-import type { DataType } from "@/lib/validation/import-schemas";
-import { validateImportData } from "@/lib/validation/import-schemas";
+import type { DataType } from "@/lib/validations/import-schemas";
+import { validateImportData } from "@/lib/validations/import-schemas";
 
 export interface ImportOptions {
   dataType: DataType;

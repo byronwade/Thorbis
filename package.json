@@ -9,7 +9,7 @@
     "build:analyze": "ANALYZE=true NODE_OPTIONS='--max-old-space-size=4096' next build --webpack",
     "build:fast": "NODE_OPTIONS='--max-old-space-size=4096' SKIP_ENV_VALIDATION=true next build",
     "sitemap": "next-sitemap --config next-sitemap.config.mjs",
-    "seo:validate": "tsx scripts/validate-structured-data.ts",
+    "seo:validate": "tsx scripts/testing/validate-structured-data.ts",
     "start": "next start",
     "clean": "rimraf .next node_modules/.cache",
     "lint": "pnpm dlx ultracite check",
@@ -22,12 +22,7 @@
     "analyze:deps": "depcheck",
     "analyze:circular": "madge --circular --extensions ts,tsx ./src",
     "analyze:graph": "madge --image graph.svg --extensions ts,tsx ./src",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/lib/db/seed.ts",
-    "setup:default-user": "tsx scripts/setup-default-user-with-payment.ts"
+    "setup:default-user": "tsx scripts/setup/setup-default-user-with-payment.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.37",
@@ -99,7 +94,6 @@
     "cmdk": "^1.1.1",
     "critters": "^0.0.25",
     "date-fns": "^4.1.0",
-    "drizzle-orm": "^0.44.7",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.24",
     "gray-matter": "^4.0.3",
@@ -109,11 +103,10 @@
     "lodash.throttle": "^4.1.1",
     "lucide-react": "^0.552.0",
     "nanoid": "^5.1.6",
-    "next": "16.0.0",
+    "next": "16.0.1",
     "next-themes": "^0.4.6",
     "novel": "^1.0.2",
     "postcss": "^8.4.49",
-    "postgres": "^3.4.7",
     "react": "19.2.0",
     "react-day-picker": "^9.11.1",
     "react-dom": "19.2.0",
@@ -148,19 +141,16 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.0",
-    "@next/bundle-analyzer": "^16.0.0",
+    "@next/bundle-analyzer": "16.0.1",
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/google.maps": "^3.58.1",
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20.19.24",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "@types/three": "^0.180.0",
-    "better-sqlite3": "^12.4.1",
     "depcheck": "^1.4.7",
     "dotenv": "^17.2.3",
-    "drizzle-kit": "^0.31.5",
     "husky": "^9.1.7",
     "knip": "^5.66.2",
     "lint-staged": "^16.2.6",
@@ -181,5 +171,11 @@
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "pnpm dlx ultracite fix"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    }
   }
 }

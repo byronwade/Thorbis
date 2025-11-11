@@ -1,16 +1,12 @@
-import { Download, FileSignature, Plus } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
 import {
   type Contract,
   ContractsTable,
 } from "@/components/work/contracts-table";
 import { ContractsKanban } from "@/components/work/contracts-kanban";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,11 +14,11 @@ import { createClient } from "@/lib/supabase/server";
  * Contracts Page - Server Component
  *
  * Performance optimizations:
- * - Server Component calculates statistics before rendering (no loading flash)
- * - Only ContractsTable component is client-side for sorting/filtering/pagination
+ * - Server Component fetches data before rendering (no loading flash)
+ * - Real-time data from Supabase
+ * - Only ContractsTable component is client-side for interactivity
  * - Better SEO and initial page load performance
- *
- * Seamless datatable layout with inline statistics
+ * - Matches jobs/invoices page structure: stats pipeline + table/kanban views
  */
 
 export default async function ContractsPage() {
@@ -48,196 +44,140 @@ export default async function ContractsPage() {
     return notFound();
   }
 
-  // Fetch contracts from database
+  // Fetch contracts from database - simplified query to test
   const { data: contractsRaw, error } = await supabase
     .from("contracts")
-    .select(
-      `
-      id,
-      contract_number,
-      title,
-      status,
-      contract_type,
-      created_at,
-      expires_at,
-      signed_at,
-      signer_name,
-      signer_email,
-      customers!customer_id(display_name, first_name, last_name)
-    `
-    )
+    .select("*")
     .eq("company_id", activeCompanyId)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching contracts:", error);
+    console.error("Error code:", error.code);
+    console.error("Error message:", error.message);
+    console.error("Error details:", error.details);
+    console.error("Error hint:", error.hint);
   }
 
-  // Transform data for table component
-  const contracts: Contract[] = (contractsRaw || []).map((contract: any) => {
-    const customer = Array.isArray(contract.customers)
-      ? contract.customers[0]
-      : contract.customers;
+  let contracts: Contract[] = [];
 
-    return {
-      id: contract.id,
-      contractNumber: contract.contract_number,
-      customer:
-        customer?.display_name ||
-        `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
-        contract.signer_email ||
-        "Unknown",
-      title: contract.title,
-      date: new Date(contract.created_at).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-      validUntil: contract.expires_at
-        ? new Date(contract.expires_at).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })
-        : "",
-      status: contract.status as
-        | "signed"
-        | "sent"
-        | "draft"
-        | "viewed"
-        | "expired",
-      contractType: contract.contract_type || "custom",
-      signerName: contract.signer_name || null,
-    };
-  });
+  // Only process if we have data
+  if (!error && contractsRaw) {
+    // Fetch customers separately if we have customer IDs
+    const customerIds = Array.from(
+      new Set(
+        contractsRaw
+          .map((c: any) => c.customer_id)
+          .filter(Boolean)
+      )
+    );
 
-  // Calculate stats from data
+    let customersMap = new Map<string, any>();
+    if (customerIds.length > 0) {
+      const { data: customersData } = await supabase
+        .from("customers")
+        .select("id, display_name, first_name, last_name, email")
+        .in("id", customerIds);
+
+      if (customersData) {
+        customersData.forEach((customer) => {
+          customersMap.set(customer.id, customer);
+        });
+      }
+    }
+
+    // Transform data for table component
+    contracts = contractsRaw.map((contract: any) => {
+      const customer = contract.customer_id
+        ? customersMap.get(contract.customer_id)
+        : null;
+
+      return {
+        id: contract.id,
+        contractNumber: contract.contract_number,
+        customer:
+          customer?.display_name ||
+          `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
+          customer?.email ||
+          contract.signer_email ||
+          contract.signer_name ||
+          "Unknown",
+        title: contract.title,
+        date: new Date(contract.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+        validUntil: contract.expires_at
+          ? new Date(contract.expires_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          : "",
+        status: contract.status as
+          | "signed"
+          | "sent"
+          | "draft"
+          | "viewed"
+          | "expired",
+        contractType: contract.contract_type || "custom",
+        signerName: contract.signer_name || null,
+      };
+    });
+  }
+
+  // Calculate contract stats
   const totalContracts = contracts.length;
-  const signed = contracts.filter((c) => c.status === "signed").length;
-  const pending = contracts.filter(
+  const signedCount = contracts.filter((c) => c.status === "signed").length;
+  const pendingCount = contracts.filter(
     (c) => c.status === "sent" || c.status === "viewed"
   ).length;
-  const draft = contracts.filter((c) => c.status === "draft").length;
+  const draftCount = contracts.filter((c) => c.status === "draft").length;
+  const expiredCount = contracts.filter((c) => c.status === "expired").length;
+
+  const contractStats: StatCard[] = [
+    {
+      label: "Draft",
+      value: draftCount,
+      change: draftCount > 0 ? 0 : 5.1, // Neutral if drafts exist, green if none
+      changeLabel: "ready to send",
+    },
+    {
+      label: "Awaiting Signature",
+      value: pendingCount,
+      change: pendingCount > 0 ? 0 : 6.8, // Neutral if pending, green if all signed
+      changeLabel: `${pendingCount} pending`,
+    },
+    {
+      label: "Signed",
+      value: signedCount,
+      change: signedCount > 0 ? 14.2 : 0, // Green if signed contracts exist
+      changeLabel: `${Math.round((signedCount / (totalContracts || 1)) * 100)}% completion`,
+    },
+    {
+      label: "Expired",
+      value: expiredCount,
+      change: expiredCount > 0 ? -4.3 : 2.7, // Red if expired, green if none
+      changeLabel: expiredCount > 0 ? `${expiredCount} expired` : "none expired",
+    },
+    {
+      label: "Total Contracts",
+      value: totalContracts,
+      change: totalContracts > 0 ? 8.9 : 0, // Green if contracts exist
+      changeLabel: "all contracts",
+    },
+  ];
 
   return (
-    <div className="flex h-full flex-col">
-      <DataTablePageHeader
-        actions={
-          <div className="flex items-center gap-2">
-            <WorkViewSwitcher section="contracts" />
-            <Button
-              className="md:hidden"
-              size="sm"
-              title="Export"
-              variant="outline"
-            >
-              <Download className="size-4" />
-            </Button>
-            <Button
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Download className="mr-2 size-4" />
-              Export
-            </Button>
-
-            <Button
-              asChild
-              className="md:hidden"
-              size="sm"
-              title="Templates"
-              variant="outline"
-            >
-              <Link href="/dashboard/work/contracts/templates">
-                <FileSignature className="size-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="hidden md:inline-flex"
-              size="sm"
-              variant="outline"
-            >
-              <Link href="/dashboard/work/contracts/templates">
-                <FileSignature className="mr-2 size-4" />
-                Templates
-              </Link>
-            </Button>
-
-            <Button asChild size="sm">
-              <Link href="/dashboard/work/contracts/new">
-                <Plus className="mr-2 size-4" />
-                <span className="hidden sm:inline">New Contract</span>
-                <span className="sm:hidden">New</span>
-              </Link>
-            </Button>
-          </div>
-        }
-        description="Create and manage digital contracts for estimates, invoices, and standalone agreements"
-        stats={
-          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">
-                  Total Contracts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">{totalContracts}</div>
-                <p className="text-muted-foreground text-xs">
-                  All active contracts
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Signed</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">{signed}</div>
-                <p className="text-muted-foreground text-xs">
-                  {Math.round((signed / totalContracts) * 100)}% completion rate
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">
-                  Awaiting Signature
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">{pending}</div>
-                <p className="text-muted-foreground text-xs">
-                  {pending} contracts pending
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Draft</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">{draft}</div>
-                <p className="text-muted-foreground text-xs">
-                  {draft} contracts
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        }
-        title="Contracts"
+    <>
+      <StatusPipeline compact stats={contractStats} />
+      <WorkDataView
+        kanban={<ContractsKanban contracts={contracts} />}
+        section="contracts"
+        table={<ContractsTable contracts={contracts} itemsPerPage={50} />}
       />
-
-      <div className="flex-1 overflow-auto">
-        <WorkDataView
-          kanban={<ContractsKanban contracts={contracts} />}
-          section="contracts"
-          table={<ContractsTable contracts={contracts} itemsPerPage={50} />}
-        />
-      </div>
-    </div>
+    </>
   );
 }

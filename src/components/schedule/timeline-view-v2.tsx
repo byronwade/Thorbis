@@ -19,7 +19,7 @@ import {
 import { useSchedule } from "@/hooks/use-schedule";
 import { calculateDuration, formatDuration } from "@/lib/schedule-utils";
 import { cn } from "@/lib/utils";
-import { useViewStore } from "@/stores/view-store";
+import { useViewStore } from "@/lib/stores/view-store";
 import type { Job } from "./schedule-types";
 
 /**

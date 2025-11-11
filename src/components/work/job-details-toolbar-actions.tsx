@@ -19,6 +19,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useState } from "react";
+import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -39,6 +40,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { JobActivityTimeline } from "@/components/work/job-activity-timeline";
 import { ALL_PRESETS } from "@/lib/presets/job-layout-presets";
 import { useEditModeStore } from "@/lib/stores/edit-mode-store";
@@ -109,28 +116,39 @@ export function JobDetailsToolbarActions({
   }
 
   return (
-    <div className="flex items-center gap-1">
-      {/* Edit Mode Toggle - Minimal */}
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
+      {/* Edit Mode Toggle */}
+      <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-1.5">
         {isEditMode ? (
           <Edit3 className="size-4 text-primary" />
         ) : (
           <Eye className="size-4 text-muted-foreground" />
         )}
-        <span className="text-sm">{isEditMode ? "Edit" : "View"}</span>
+        <span className="text-sm font-medium">{isEditMode ? "Edit" : "View"}</span>
         <Switch checked={isEditMode} onCheckedChange={setIsEditMode} />
       </div>
 
       <Separator className="h-6" orientation="vertical" />
 
-      {/* Presets */}
-      <Dialog onOpenChange={setIsPresetsOpen} open={isPresetsOpen}>
-        <DialogTrigger asChild>
-          <Button size="sm" variant="ghost">
-            <LayoutGrid className="mr-2 size-4" />
-            Presets
-          </Button>
-        </DialogTrigger>
+      {/* Layout Actions Group */}
+      <div className="flex items-center gap-1 rounded-lg border bg-muted/30 p-1">
+        {/* Presets */}
+        <Dialog onOpenChange={setIsPresetsOpen} open={isPresetsOpen}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                  <Button className="gap-2 hover:bg-background" size="sm" variant="ghost">
+                    <LayoutGrid className="size-4" />
+                    <span className="hidden sm:inline">Presets</span>
+                  </Button>
+                </DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Choose a layout preset</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Layout Presets</DialogTitle>
@@ -166,14 +184,23 @@ export function JobDetailsToolbarActions({
         </DialogContent>
       </Dialog>
 
-      {/* Add Widget */}
-      <Sheet onOpenChange={setIsAddWidgetOpen} open={isAddWidgetOpen}>
-        <SheetTrigger asChild>
-          <Button size="sm" variant="ghost">
-            <Plus className="mr-2 size-4" />
-            Add Widget
-          </Button>
-        </SheetTrigger>
+        {/* Add Widget */}
+        <Sheet onOpenChange={setIsAddWidgetOpen} open={isAddWidgetOpen}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SheetTrigger asChild>
+                  <Button className="gap-2 hover:bg-background" size="sm" variant="ghost">
+                    <Plus className="size-4" />
+                    <span className="hidden sm:inline">Widget</span>
+                  </Button>
+                </SheetTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add a widget to the layout</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         <SheetContent className="w-full sm:max-w-xl">
           <SheetHeader>
             <SheetTitle>Add Widget</SheetTitle>
@@ -217,22 +244,46 @@ export function JobDetailsToolbarActions({
         </SheetContent>
       </Sheet>
 
-      {/* Reset */}
-      <Button onClick={handleReset} size="sm" variant="ghost">
-        <RotateCcw className="mr-2 size-4" />
-        Reset
-      </Button>
+        {/* Reset */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="gap-2 hover:bg-background"
+                onClick={handleReset}
+                size="sm"
+                variant="ghost"
+              >
+                <RotateCcw className="size-4" />
+                <span className="hidden sm:inline">Reset</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Reset layout to default</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
       <Separator className="h-6" orientation="vertical" />
 
       {/* Activity Timeline */}
       <Sheet onOpenChange={setIsActivityOpen} open={isActivityOpen}>
-        <SheetTrigger asChild>
-          <Button size="sm" variant="ghost">
-            <ClipboardList className="mr-2 size-4" />
-            Activity
-          </Button>
-        </SheetTrigger>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SheetTrigger asChild>
+                <Button className="gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30" size="sm" variant="outline">
+                  <ClipboardList className="size-4 text-primary" />
+                  <span className="hidden sm:inline font-medium">Activity</span>
+                </Button>
+              </SheetTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View activity timeline</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <SheetContent className="flex w-full flex-col p-0 sm:max-w-2xl">
           <SheetHeader className="shrink-0 p-4">
             <SheetTitle>Activity Timeline</SheetTitle>
@@ -243,6 +294,10 @@ export function JobDetailsToolbarActions({
           <JobActivityTimeline entityType="job" jobId={jobId} />
         </SheetContent>
       </Sheet>
+
+      {/* Ellipsis Menu - Export/Import & More */}
+      <Separator className="h-6" orientation="vertical" />
+      <ImportExportDropdown dataType="jobs" />
     </div>
   );
 }

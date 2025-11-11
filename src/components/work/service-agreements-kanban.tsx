@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ServiceAgreement } from "@/components/work/service-agreements-table";
@@ -42,117 +35,43 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-function createItems(agreements: ServiceAgreement[]): ServiceAgreementKanbanItem[] {
-  return agreements.map((agreement) => ({
-    id: agreement.id,
-    columnId: agreement.status,
-    agreement,
-  }));
-}
-
 export function ServiceAgreementsKanban({
   agreements,
 }: {
   agreements: ServiceAgreement[];
 }) {
-  const columns = useMemo(() => AGREEMENT_COLUMNS, []);
-  const [items, setItems] = useState<ServiceAgreementKanbanItem[]>(() =>
-    createItems(agreements)
-  );
-
-  useEffect(() => {
-    setItems(createItems(agreements));
-  }, [agreements]);
-
-  const handleDataChange = (next: ServiceAgreementKanbanItem[]) => {
-    setItems(
-      next.map((item) => ({
-        ...item,
-        agreement: {
-          ...item.agreement,
-          status: item.columnId as AgreementStatus,
-        },
-      }))
-    );
-  };
-
-  const columnMeta = useMemo(() => {
-    return columns.reduce<Record<string, { count: number; total: number }>>(
-      (acc, column) => {
-        const columnItems = items.filter((i) => i.columnId === column.id);
+  return (
+    <EntityKanban<ServiceAgreement, AgreementStatus>
+      columns={AGREEMENT_COLUMNS}
+      data={agreements}
+      entityName="agreements"
+      mapToKanbanItem={(agreement) => ({
+        id: agreement.id,
+        columnId: agreement.status,
+        entity: agreement,
+        agreement,
+      })}
+      updateEntityStatus={(agreement, newStatus) => ({
+        ...agreement,
+        status: newStatus,
+      })}
+      calculateColumnMeta={(columnId, items): ColumnMeta => {
+        const columnItems = items.filter((item) => item.columnId === columnId);
         const total = columnItems.reduce(
-          (sum, item) => sum + item.agreement.value,
+          (sum, item) => sum + (item.entity as ServiceAgreement).value,
           0
         );
-        acc[column.id] = { count: columnItems.length, total };
-        return acc;
-      },
-      {}
-    );
-  }, [columns, items]);
-
-  return (
-    <KanbanProvider<ServiceAgreementKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={items}
-      onDataChange={handleDataChange}
-      renderDragOverlay={(item) => {
-        return (
-          <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-            <ServiceAgreementCard item={item} />
-          </div>
-        );
+        return { count: columnItems.length, total };
       }}
-    >
-      {columns.map((column) => {
-        const meta = columnMeta[column.id] ?? { count: 0, total: 0 };
-        return (
-          <KanbanBoard
-            className="min-h-[300px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                  variant="secondary"
-                >
-                  {meta.count} agreements
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {currencyFormatter.format(meta.total / 100)}
-                </span>
-              </div>
-            </KanbanHeader>
-            <KanbanCards<ServiceAgreementKanbanItem>
-              className="min-h-[200px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No agreements in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <ServiceAgreementCard item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
-      })}
-    </KanbanProvider>
+      showTotals={true}
+      formatTotal={(total) => currencyFormatter.format(total / 100)}
+      renderCard={(item) => <ServiceAgreementCard item={{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem} />}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <ServiceAgreementCard item={{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem} />
+        </div>
+      )}
+    />
   );
 }
 

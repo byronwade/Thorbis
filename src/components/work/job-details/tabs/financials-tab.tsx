@@ -40,6 +40,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 interface FinancialsTabProps {
   job: any;
@@ -56,22 +57,6 @@ export function FinancialsTab({
   metrics,
   isEditMode,
 }: FinancialsTabProps) {
-  // Format currency
-  const formatCurrency = (cents: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(cents / 100);
-
-  // Format date
-  const formatDate = (date: string) =>
-    new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(new Date(date));
 
   // Calculate totals
   const totalInvoiced = invoices.reduce(
@@ -110,7 +95,7 @@ export function FinancialsTab({
               <div>
                 <p className="text-muted-foreground text-xs">Job Value</p>
                 <p className="font-bold text-2xl">
-                  {formatCurrency(job.total_amount || 0)}
+                  {formatCurrency(job.total_amount || 0, { decimals: 2 })}
                 </p>
               </div>
               <DollarSign className="h-8 w-8 text-muted-foreground" />
@@ -124,7 +109,7 @@ export function FinancialsTab({
               <div>
                 <p className="text-muted-foreground text-xs">Paid</p>
                 <p className="font-bold text-2xl text-green-600">
-                  {formatCurrency(totalPaid)}
+                  {formatCurrency(totalPaid, { decimals: 2 })}
                 </p>
               </div>
               <CreditCard className="h-8 w-8 text-green-600" />
@@ -138,7 +123,7 @@ export function FinancialsTab({
               <div>
                 <p className="text-muted-foreground text-xs">Outstanding</p>
                 <p className="font-bold text-2xl text-orange-600">
-                  {formatCurrency(totalOutstanding)}
+                  {formatCurrency(totalOutstanding, { decimals: 2 })}
                 </p>
               </div>
               <Receipt className="h-8 w-8 text-orange-600" />
@@ -152,7 +137,7 @@ export function FinancialsTab({
               <div>
                 <p className="text-muted-foreground text-xs">Profit</p>
                 <p className="font-bold text-2xl text-blue-600">
-                  {formatCurrency(metrics.totalAmount - metrics.materialsCost)}
+                  {formatCurrency(metrics.totalAmount - metrics.materialsCost, { decimals: 2 })}
                 </p>
                 <p className="text-muted-foreground text-xs">
                   {metrics.profitMargin.toFixed(2)}% margin
@@ -202,26 +187,27 @@ export function FinancialsTab({
                       {invoice.invoice_number}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {formatDate(invoice.created_at)}
+                      {formatDate(invoice.created_at, "short")}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {formatCurrency(invoice.total_amount || 0)}
+                      {formatCurrency(invoice.total_amount || 0, { decimals: 2 })}
                     </TableCell>
                     <TableCell className="text-green-600">
-                      {formatCurrency(invoice.paid_amount || 0)}
+                      {formatCurrency(invoice.paid_amount || 0, { decimals: 2 })}
                     </TableCell>
                     <TableCell
                       className={cn(
                         "font-medium",
                         (invoice.total_amount || 0) -
                           (invoice.paid_amount || 0) >
-                          0
+                        0
                           ? "text-orange-600"
                           : "text-green-600"
                       )}
                     >
                       {formatCurrency(
-                        (invoice.total_amount || 0) - (invoice.paid_amount || 0)
+                        (invoice.total_amount || 0) - (invoice.paid_amount || 0),
+                        { decimals: 2 }
                       )}
                     </TableCell>
                     <TableCell>
@@ -296,14 +282,14 @@ export function FinancialsTab({
                       {estimate.estimate_number}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {formatDate(estimate.created_at)}
+                      {formatDate(estimate.created_at, "short")}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {formatCurrency(estimate.total_amount || 0)}
+                      {formatCurrency(estimate.total_amount || 0, { decimals: 2 })}
                     </TableCell>
                     <TableCell className="text-sm">
                       {estimate.valid_until
-                        ? formatDate(estimate.valid_until)
+                        ? formatDate(estimate.valid_until, "short")
                         : "N/A"}
                     </TableCell>
                     <TableCell>

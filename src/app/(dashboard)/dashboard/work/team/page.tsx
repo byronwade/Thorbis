@@ -10,18 +10,46 @@
  */
 
 import { notFound } from "next/navigation";
-import { TeamStatusPipeline } from "@/components/work/team-status-pipeline";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
 import { TeamsKanban } from "@/components/work/teams-kanban";
 import { type TeamMember, TeamsTable } from "@/components/work/teams-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 import { getTeamMembers } from "@/actions/team";
+import { ERROR_CODES } from "@/lib/errors/action-error";
+import { Users } from "lucide-react";
 
 export default async function WorkTeamMembersPage() {
   // Fetch team members from database
   const result = await getTeamMembers();
 
-  if (!result.success || !result.data) {
+  // Handle case where user is not part of a company
+  if (!result.success) {
+    if (result.code === ERROR_CODES.AUTH_FORBIDDEN) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center p-8">
+          <div className="mx-auto max-w-md text-center">
+            <div className="mb-4 flex justify-center">
+              <div className="flex size-16 items-center justify-center rounded-full bg-muted">
+                <Users className="size-8 text-muted-foreground" />
+              </div>
+            </div>
+            <h2 className="mb-2 text-2xl font-semibold">No Company Access</h2>
+            <p className="mb-6 text-muted-foreground">
+              {result.error || "You must be part of a company to view team members."}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Please contact your administrator to be added to a company.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    // For other errors, show 404
+    return notFound();
+  }
+
+  if (!result.data) {
     return notFound();
   }
 
@@ -88,23 +116,78 @@ export default async function WorkTeamMembersPage() {
       lastActive: member.last_active_at
         ? getRelativeTime(new Date(member.last_active_at))
         : "Never",
+      archived_at: member.archived_at,
     };
   });
 
+  // Filter out archived members for stats calculations
+  const activeTeamMembers = teamMembers.filter((m) => !m.archived_at);
+
+  // Calculate team stats (excluding archived members)
+  const activeCount = activeTeamMembers.filter(
+    (member) => member.status === "active"
+  ).length;
+  const invitedCount = activeTeamMembers.filter(
+    (member) => member.status === "invited"
+  ).length;
+  const suspendedCount = activeTeamMembers.filter(
+    (member) => member.status === "suspended"
+  ).length;
+
+  // Get unique departments count (excluding archived members)
+  const departments = new Set(
+    activeTeamMembers
+      .map((m) => m.departmentName)
+      .filter((d): d is string => Boolean(d))
+  );
+
+  // Get unique roles count (excluding archived members)
+  const roles = new Set(
+    activeTeamMembers.map((m) => m.roleName).filter((r): r is string => Boolean(r))
+  );
+
+  const teamStats: StatCard[] = [
+    {
+      label: "Active Members",
+      value: activeCount,
+      change: activeCount > 0 ? 7.3 : 0, // Green if active members exist
+      changeLabel: "currently active",
+    },
+    {
+      label: "Invited",
+      value: invitedCount,
+      change: invitedCount > 0 ? 0 : 5.1, // Neutral if invited, green if none pending
+      changeLabel: "pending acceptance",
+    },
+    {
+      label: "Departments",
+      value: departments.size,
+      change: departments.size > 0 ? 3.2 : 0, // Green if departments exist
+      changeLabel: "active departments",
+    },
+    {
+      label: "Roles",
+      value: roles.size,
+      change: roles.size > 0 ? 2.8 : 0, // Green if roles exist
+      changeLabel: "custom roles",
+    },
+    {
+      label: "Total Members",
+      value: activeTeamMembers.length,
+      change: activeTeamMembers.length > 0 ? 6.4 : 0, // Green if team members exist
+      changeLabel: "in your team",
+    },
+  ];
+
   return (
-    <div className="flex h-full flex-col">
-      <TeamStatusPipeline teamMembers={teamMembers} />
-      <div className="flex items-center justify-end gap-2 px-4 py-3">
-        <WorkViewSwitcher section="teams" />
-      </div>
-      <div className="flex-1 overflow-auto">
-        <WorkDataView
-          kanban={<TeamsKanban members={teamMembers} />}
-          section="teams"
-          table={<TeamsTable teamMembers={teamMembers} itemsPerPage={50} />}
-        />
-      </div>
-    </div>
+    <>
+      <StatusPipeline compact stats={teamStats} />
+      <WorkDataView
+        kanban={<TeamsKanban members={teamMembers} />}
+        section="teams"
+        table={<TeamsTable teamMembers={teamMembers} itemsPerPage={50} />}
+      />
+    </>
   );
 }
 

@@ -71,6 +71,13 @@ const navigationItems: NavItemWithMobile[] = [
     mobileIconColor: "text-primary",
   },
   {
+    label: "Schedule",
+    href: "/dashboard/schedule",
+    mobileIcon: "S",
+    mobileIconBg: "bg-indigo-500/10",
+    mobileIconColor: "text-indigo-600",
+  },
+  {
     label: "Communication",
     href: "/dashboard/communication",
     mobileIcon: "C",

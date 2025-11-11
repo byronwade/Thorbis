@@ -29,7 +29,7 @@ import { AIAutofillPreview } from "@/components/communication/ai-autofill-previe
 import { TranscriptPanel } from "@/components/communication/transcript-panel";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useUIStore } from "@/lib/store";
+import { useUIStore } from "@/lib/stores";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 import {
   getCallIdFromUrl,

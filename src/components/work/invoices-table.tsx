@@ -9,26 +9,19 @@ import {
   Archive,
   Download,
   FileText,
-  MoreHorizontal,
   Plus,
   Send,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import {
   type BulkAction,
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { InvoiceStatusBadge } from "@/components/ui/status-badge";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 export type Invoice = {
   id: string;
@@ -46,46 +39,6 @@ type InvoicesTableProps = {
   showRefresh?: boolean;
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function getStatusBadge(status: string) {
-  const config = {
-    paid: {
-      className: "bg-green-500 hover:bg-green-600 text-white",
-      label: "Paid",
-    },
-    pending: {
-      className:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-      label: "Pending",
-    },
-    draft: {
-      className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-      label: "Draft",
-    },
-    overdue: {
-      className: "bg-red-500 hover:bg-red-600 text-white",
-      label: "Overdue",
-    },
-  };
-
-  const statusConfig = config[status as keyof typeof config] || config.draft;
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
 
 export function InvoicesTable({
   invoices,
@@ -150,7 +103,7 @@ export function InvoicesTable({
       align: "right",
       render: (invoice) => (
         <span className="font-semibold tabular-nums">
-          {formatCurrency(invoice.amount)}
+          {formatCurrency(invoice.amount, { decimals: 2 })}
         </span>
       ),
     },
@@ -159,7 +112,7 @@ export function InvoicesTable({
       header: "Status",
       width: "w-28",
       shrink: true,
-      render: (invoice) => getStatusBadge(invoice.status),
+      render: (invoice) => <InvoiceStatusBadge status={invoice.status} />,
     },
     {
       key: "actions",
@@ -167,55 +120,49 @@ export function InvoicesTable({
       width: "w-10",
       shrink: true,
       render: (invoice) => (
-        <div data-no-row-click>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <MoreHorizontal className="size-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/work/invoices/${invoice.id}`}>
-                  <FileText className="mr-2 size-4" />
-                  View Invoice
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Send className="mr-2 size-4" />
-                Send to Customer
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Download className="mr-2 size-4" />
-                Download PDF
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={async () => {
-                  if (
-                    !confirm(
-                      "Archive this invoice? It can be restored within 90 days."
-                    )
-                  ) {
-                    return;
-                  }
-                  const { archiveInvoice } = await import("@/actions/invoices");
-                  const result = await archiveInvoice(invoice.id);
-                  if (result.success) {
-                    window.location.reload();
-                  }
-                }}
-              >
-                <Archive className="mr-2 size-4" />
-                Archive Invoice
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <RowActionsDropdown
+          actions={[
+            {
+              label: "View Invoice",
+              icon: FileText,
+              href: `/dashboard/work/invoices/${invoice.id}`,
+            },
+            {
+              label: "Send to Customer",
+              icon: Send,
+              onClick: () => {
+                // TODO: Implement send functionality
+              },
+            },
+            {
+              label: "Download PDF",
+              icon: Download,
+              onClick: () => {
+                // TODO: Implement download functionality
+              },
+            },
+            {
+              label: "Archive Invoice",
+              icon: Archive,
+              variant: "destructive",
+              separatorBefore: true,
+              onClick: async () => {
+                if (
+                  !confirm(
+                    "Archive this invoice? It can be restored within 90 days."
+                  )
+                ) {
+                  return;
+                }
+                const { archiveInvoice } = await import("@/actions/invoices");
+                const result = await archiveInvoice(invoice.id);
+                if (result.success) {
+                  window.location.reload();
+                }
+              },
+            },
+          ]}
+        />
       ),
     },
   ];

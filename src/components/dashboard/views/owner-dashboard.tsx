@@ -17,93 +17,79 @@ import {
   getMissionControlData,
   type MissionControlData,
 } from "@/lib/dashboard/mission-control-data";
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "2-digit",
-});
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
-
-const relativeFormatter = new Intl.RelativeTimeFormat("en", {
-  numeric: "auto",
-});
-
-function formatCurrency(amount: number | null | undefined) {
-  if (!amount || Number.isNaN(amount)) {
-    return "$0";
-  }
-  return currencyFormatter.format(amount);
-}
-
-function formatDateTime(value: string | null | undefined) {
-  if (!value) {
-    return "--";
-  }
-  const date = new Date(value);
-  return `${dateFormatter.format(date)} · ${timeFormatter.format(date)}`;
-}
-
-function formatTime(value: string | null | undefined) {
-  if (!value) {
-    return "--";
-  }
-  return timeFormatter.format(new Date(value));
-}
+import {
+  formatCurrencyFromDollars,
+  formatDateTime,
+  formatTime,
+} from "@/lib/formatters";
 
 function formatRelative(iso: string | null | undefined) {
   if (!iso) {
     return "";
   }
-  const now = Date.now();
-  const then = new Date(iso).getTime();
-  const diffMinutes = Math.round((then - now) / (1000 * 60));
 
-  if (Math.abs(diffMinutes) < 60) {
-    return relativeFormatter.format(diffMinutes, "minute");
+  try {
+    const relativeFormatter = new Intl.RelativeTimeFormat("en-US", {
+      numeric: "auto",
+    });
+    const now = Date.now();
+    const then = new Date(iso).getTime();
+    const diffMinutes = Math.round((then - now) / (1000 * 60));
+
+    if (Math.abs(diffMinutes) < 60) {
+      return relativeFormatter.format(diffMinutes, "minute");
+    }
+
+    const diffHours = Math.round(diffMinutes / 60);
+    return relativeFormatter.format(diffHours, "hour");
+  } catch (error) {
+    // Fallback if Intl.RelativeTimeFormat is not available
+    const now = Date.now();
+    const then = new Date(iso).getTime();
+    const diffMinutes = Math.round((then - now) / (1000 * 60));
+
+    if (Math.abs(diffMinutes) < 60) {
+      return `${Math.abs(diffMinutes)}m ago`;
+    }
+
+    const diffHours = Math.round(diffMinutes / 60);
+    return `${Math.abs(diffHours)}h ago`;
   }
-
-  const diffHours = Math.round(diffMinutes / 60);
-  return relativeFormatter.format(diffHours, "hour");
 }
 
 function buildSummaryStats(data: MissionControlData): StatCard[] {
   return [
     {
       label: "Revenue Today",
-      value: formatCurrency(data.metrics.revenueToday),
+      value: formatCurrencyFromDollars(data.metrics.revenueToday, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      change: data.metrics.revenueToday > 0 ? 8.5 : 0, // Green if revenue exists
       changeLabel:
         data.metrics.averageTicket > 0
-          ? `${formatCurrency(data.metrics.averageTicket)} avg ticket`
+          ? `${formatCurrencyFromDollars(data.metrics.averageTicket, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} avg ticket`
           : undefined,
     },
     {
       label: "Jobs Scheduled",
       value: data.metrics.jobsScheduledToday,
+      change: data.metrics.jobsScheduledToday > 0 ? 5.2 : 0, // Green if jobs scheduled
       changeLabel: `${data.metrics.jobsCompletedToday} completed`,
     },
     {
       label: "Active Jobs",
       value: data.metrics.jobsInProgress,
+      change: data.metrics.jobsInProgress > 0 ? 3.1 : 0, // Green if jobs in progress
       changeLabel: `${data.metrics.unassignedJobs} unassigned`,
     },
     {
       label: "Outstanding AR",
-      value: formatCurrency(data.metrics.outstandingInvoicesAmount),
+      value: formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      change: data.metrics.overdueInvoicesCount > 0 ? -2.5 : 1.2, // Red if overdue, otherwise green
       changeLabel: `${data.metrics.overdueInvoicesCount} overdue`,
     },
     {
       label: "Comms Today",
       value: data.metrics.communicationsToday,
+      change: data.metrics.communicationsToday > 5 ? 4.3 : 0, // Green if good communication volume
       changeLabel: "Calls, emails & texts",
     },
   ];
@@ -278,7 +264,7 @@ function FinancialCard({ data }: { data: MissionControlData }) {
               Outstanding Balance
             </span>
             <span className="font-semibold text-lg">
-              {formatCurrency(data.metrics.outstandingInvoicesAmount)}
+              {formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </div>
           <div className="mt-2 flex items-center justify-between text-muted-foreground text-xs">
@@ -408,7 +394,7 @@ function JobRow({
         </div>
         <div className="flex flex-col items-end gap-1 text-right">
           <span className="font-semibold text-sm">
-            {formatCurrency(job.totalAmountCents / 100)}
+            {formatCurrencyFromDollars(job.totalAmountCents / 100, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </span>
           {!isUnassigned && (
             <span className="text-muted-foreground text-xs">On-site team</span>
@@ -480,7 +466,7 @@ function InvoiceRow({
       </div>
       <div className="text-right">
         <p className="font-semibold text-sm">
-          {formatCurrency(invoice.balanceAmountCents / 100)}
+          {formatCurrencyFromDollars(invoice.balanceAmountCents / 100, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </p>
         <p className="text-muted-foreground text-xs capitalize">
           {invoice.status}

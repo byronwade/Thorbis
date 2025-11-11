@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type {
@@ -54,113 +47,39 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-function createItems(orders: PurchaseOrder[]): PurchaseOrderKanbanItem[] {
-  return orders.map((order) => ({
-    id: order.id,
-    columnId: order.status,
-    order,
-  }));
-}
-
 export function PurchaseOrdersKanban({ orders }: { orders: PurchaseOrder[] }) {
-  const columns = useMemo(() => PO_COLUMNS, []);
-  const [items, setItems] = useState<PurchaseOrderKanbanItem[]>(() =>
-    createItems(orders)
-  );
-
-  useEffect(() => {
-    setItems(createItems(orders));
-  }, [orders]);
-
-  const handleDataChange = (next: PurchaseOrderKanbanItem[]) => {
-    setItems(
-      next.map((item) => ({
-        ...item,
-        order: {
-          ...item.order,
-          status: item.columnId as POStatus,
-        },
-      }))
-    );
-  };
-
-  const columnMeta = useMemo(() => {
-    return columns.reduce<Record<string, { count: number; total: number }>>(
-      (acc, column) => {
-        const columnItems = items.filter((item) => item.columnId === column.id);
+  return (
+    <EntityKanban<PurchaseOrder, POStatus>
+      columns={PO_COLUMNS}
+      data={orders}
+      entityName="POs"
+      mapToKanbanItem={(order) => ({
+        id: order.id,
+        columnId: order.status,
+        entity: order,
+        order,
+      })}
+      updateEntityStatus={(order, newStatus) => ({
+        ...order,
+        status: newStatus,
+      })}
+      calculateColumnMeta={(columnId, items): ColumnMeta => {
+        const columnItems = items.filter((item) => item.columnId === columnId);
         const total = columnItems.reduce(
-          (sum, item) => sum + item.order.totalAmount,
+          (sum, item) => sum + (item.entity as PurchaseOrder).totalAmount,
           0
         );
-        acc[column.id] = { count: columnItems.length, total };
-        return acc;
-      },
-      {}
-    );
-  }, [columns, items]);
-
-  return (
-    <KanbanProvider<PurchaseOrderKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={items}
-      onDataChange={handleDataChange}
-      renderDragOverlay={(item) => {
-        return (
-          <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-            <PurchaseOrderCard item={item} />
-          </div>
-        );
+        return { count: columnItems.length, total };
       }}
-    >
-      {columns.map((column) => {
-        const meta = columnMeta[column.id] ?? { count: 0, total: 0 };
-        return (
-          <KanbanBoard
-            className="min-h-[320px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                  variant="secondary"
-                >
-                  {meta.count} POs
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {currencyFormatter.format(meta.total / 100)}
-                </span>
-              </div>
-            </KanbanHeader>
-            <KanbanCards<PurchaseOrderKanbanItem>
-              className="min-h-[220px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No purchase orders in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <PurchaseOrderCard item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
-      })}
-    </KanbanProvider>
+      showTotals={true}
+      formatTotal={(total) => currencyFormatter.format(total / 100)}
+      renderCard={(item) => <PurchaseOrderCard item={{ ...item, order: item.entity } as PurchaseOrderKanbanItem} />}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <PurchaseOrderCard item={{ ...item, order: item.entity } as PurchaseOrderKanbanItem} />
+        </div>
+      )}
+    />
   );
 }
 

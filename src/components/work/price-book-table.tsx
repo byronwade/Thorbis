@@ -49,6 +49,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
 import { usePriceBookStore } from "@/lib/stores/pricebook-store";
 import { cn } from "@/lib/utils";
 
@@ -94,14 +95,6 @@ export type PriceBookItem = {
   tags?: string[];
   lastUpdated?: Date;
 };
-
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(cents / 100);
-}
 
 export function PriceBookTable({
   items,

@@ -283,7 +283,7 @@ export function TeamAssignmentsWidget({
           </Link>
         </Button>
         <Button asChild className="w-full" size="sm" variant="outline">
-          <Link href={"/dashboard/work/schedule/technicians"}>
+          <Link href={"/dashboard/schedule/technicians"}>
             <Calendar className="mr-2 size-4" />
             View Technician Schedule
           </Link>

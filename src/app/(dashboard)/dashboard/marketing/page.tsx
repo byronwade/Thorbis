@@ -163,7 +163,7 @@ export default function MarketingPage() {
   return (
     <>
       {/* Statistics - Full width, no padding */}
-      <StatsCards stats={leadStats} />
+      <StatsCards compact stats={leadStats} />
 
       {/* Full-width seamless table (no padding) */}
       <div>

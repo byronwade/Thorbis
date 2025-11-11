@@ -10,15 +10,14 @@
  * - Image thumbnails for items
  *
  * Performance optimizations:
- * - Server Component calculates statistics before rendering
- * - Only PriceBookTable component is client-side for interactions
+ * - Server Component fetches data before rendering
+ * - PriceBookTable component is client-side for interactions
  * - Better SEO and initial page load performance
  */
 
 import { notFound } from "next/navigation";
-import { CategoryNavigationSync } from "@/components/pricebook/category-navigation-sync";
-import { DrillDownView } from "@/components/pricebook/drill-down-view";
-import { getCategoryTree } from "@/lib/pricebook/category-tree-server";
+import { PriceBookTable } from "@/components/work/price-book-table";
+import type { PriceBookItem } from "@/components/work/price-book-table";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PriceBookPage() {
@@ -28,36 +27,67 @@ export default async function PriceBookPage() {
     return notFound();
   }
 
-  if (!supabase) {
-    throw new Error("Database connection not available");
+  try {
+    // Fetch price book items from Supabase
+    const { data: rawItems, error } = await supabase
+      .from("price_book_items")
+      .select("*")
+      .eq("is_active", true)
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching price book items:", error);
+      // Return empty state instead of throwing
+      return (
+        <div className="flex h-full items-center justify-center">
+          <div className="text-center">
+            <h3 className="mb-2 font-semibold text-lg">Failed to load price book items</h3>
+            <p className="text-muted-foreground text-sm">{error.message}</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Transform database items to PriceBookItem format
+    const items: PriceBookItem[] = (rawItems || []).map((item: any) => ({
+      id: item.id,
+      itemType: item.item_type || "service",
+      name: item.name || "",
+      description: item.description,
+      sku: item.sku || "",
+      category: item.category || "General",
+      subcategory: item.subcategory || null,
+      cost: item.cost || 0,
+      price: item.price || 0,
+      priceTier: item.price_tier,
+      markupPercent: item.markup_percent || 0,
+      laborHours: item.labor_hours,
+      unit: item.unit || "each",
+      imageUrl: item.image_url,
+      isActive: item.is_active ?? true,
+      isFlatRate: item.is_flat_rate ?? false,
+      supplierName: item.supplier_name,
+      supplierSku: item.supplier_sku,
+      tags: item.tags || [],
+      lastUpdated: item.updated_at ? new Date(item.updated_at) : undefined,
+    }));
+
+    return (
+      <div className="flex h-full flex-col">
+        <PriceBookTable items={items} itemsPerPage={50} />
+      </div>
+    );
+  } catch (error) {
+    console.error("Unexpected error in PriceBookPage:", error);
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <h3 className="mb-2 font-semibold text-lg">Something went wrong</h3>
+          <p className="text-muted-foreground text-sm">
+            {error instanceof Error ? error.message : "Failed to load price book"}
+          </p>
+        </div>
+      </div>
+    );
   }
-
-  // Fetch price book items from Supabase
-  const { data: items, error } = await supabase
-    .from("price_book_items")
-    .select("*")
-    .eq("is_active", true)
-    .order("name", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching price book items:", error);
-    throw new Error(`Failed to load price book items: ${error.message}`);
-  }
-
-  // Fetch category tree
-  const categories = await getCategoryTree();
-
-  return (
-    <>
-      {/* Sync root level (empty path) with Zustand store */}
-      <CategoryNavigationSync categoryPath={[]} />
-
-      {/* Render drill-down view with categories */}
-      <DrillDownView
-        categories={categories}
-        items={items || []}
-        itemsPerPage={50}
-      />
-    </>
-  );
 }

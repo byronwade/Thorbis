@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/lib/utils/format";
 
 interface LineItem {
   description: string;
@@ -89,11 +90,6 @@ export function InvoiceLineItems({
   };
 
   // Format currency
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(value);
 
   return (
     <Card className="mb-8 p-6">
@@ -165,7 +161,7 @@ export function InvoiceLineItems({
                   </div>
                 </TableCell>
                 <TableCell className="text-right font-medium">
-                  {formatCurrency(item.total)}
+                  {formatCurrency(item.total * 100, { decimals: 2 })}
                 </TableCell>
                 <TableCell>
                   <Button

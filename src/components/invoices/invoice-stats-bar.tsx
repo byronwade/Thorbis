@@ -4,7 +4,7 @@
  * Invoice Stats Bar - Client Component
  *
  * Displays key invoice metrics at the top of the page (like customer stats bar).
- * Uses the StatsCards component with ticker variant.
+ * Uses the EntityStatsBar component with ticker variant.
  *
  * Stats:
  * - Total Amount
@@ -17,7 +17,8 @@
  * - Supports compact mode for sticky scrolling
  */
 
-import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
+import { type StatCard } from "@/components/ui/stats-cards";
+import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
 
 interface InvoiceStatsBarProps {
   invoice: {
@@ -118,5 +119,5 @@ export function InvoiceStatsBar({
     },
   ];
 
-  return <StatsCards compact={compact} stats={stats} variant="ticker" />;
+  return <EntityStatsBar compact={compact} stats={stats} />;
 }

@@ -7,15 +7,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
-
-function formatDate(date: Date | null): string {
-  if (!date) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-}
+import { formatDate } from "@/lib/formatters";
 
 interface JobDetailsWidgetProps {
   job: Job;

@@ -43,7 +43,7 @@ export const toolbarConfigs: Record<string, ToolbarConfig> = {
     subtitle: "81 total jobs today",
     actions: <WorkToolbarActions />,
   },
-  "/dashboard/work/schedule": {
+  "/dashboard/schedule": {
     title: "Schedule",
     actions: <ScheduleToolbarActions />,
   },

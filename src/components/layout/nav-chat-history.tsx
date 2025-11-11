@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { chatSelectors, useChatStore } from "@/lib/store/chat-store";
+import { chatSelectors, useChatStore } from "@/lib/stores/chat-store";
 
 export function NavChatHistory() {
   const chats = useChatStore(chatSelectors.chats);

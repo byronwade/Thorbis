@@ -47,7 +47,6 @@ export async function createSchedule(
     }
 
     revalidatePath("/dashboard/schedule");
-    revalidatePath("/dashboard/work/schedule");
     return { success: true, scheduleId: schedule.id };
   } catch (error) {
     console.error("Create schedule error:", error);
@@ -208,7 +207,6 @@ export async function updateSchedule(
     }
 
     revalidatePath("/dashboard/schedule");
-    revalidatePath("/dashboard/work/schedule");
     revalidatePath(`/dashboard/schedule/${scheduleId}`);
     // Revalidate job detail pages (schedule might be linked to a job)
     revalidatePath("/dashboard/work");
@@ -250,7 +248,6 @@ export async function updateScheduleStatus(
     }
 
     revalidatePath("/dashboard/schedule");
-    revalidatePath("/dashboard/work/schedule");
     return { success: true };
   } catch (error) {
     console.error("Update schedule status error:", error);
@@ -359,7 +356,6 @@ export async function createRecurringSchedule(
     }
 
     revalidatePath("/dashboard/schedule");
-    revalidatePath("/dashboard/work/schedule");
     return {
       success: true,
       scheduleIds: [
@@ -446,7 +442,6 @@ export async function deleteSchedule(
     }
 
     revalidatePath("/dashboard/schedule");
-    revalidatePath("/dashboard/work/schedule");
     return { success: true };
   } catch (error) {
     console.error("Delete schedule error:", error);

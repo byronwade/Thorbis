@@ -54,7 +54,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const article = articleResult.article;
+  const article = articleResult.article as any;
   const htmlContent = await markdownToHtml(article.content);
 
   // Track view (fire and forget)
@@ -73,7 +73,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       : [];
 
   const publishedDate = article.publishedAt
-    ? new Date(article.publishedAt)
+    ? new Date(article.publishedAt as string)
     : null;
 
   return (
@@ -92,16 +92,19 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         type="application/ld+json"
       >
         {JSON.stringify(
-          generateBreadcrumbStructuredData(article.category, {
-            slug: article.slug,
-            title: article.title,
-          })
+          generateBreadcrumbStructuredData(
+            { slug: article.category.slug, title: article.category.title } as { slug: string; title: string },
+            {
+              slug: article.slug as string,
+              title: article.title as string,
+            }
+          )
         )}
       </Script>
 
       <KBSidebarWrapper
-        currentArticleId={article.id}
-        currentCategory={article.category.slug}
+        currentArticleId={article.id as string}
+        currentCategory={article.category.slug as string}
         htmlContent={htmlContent}
         relatedArticles={relatedArticles}
       >
@@ -119,10 +122,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               className="text-muted-foreground hover:text-foreground"
               href={`/kb/${article.category.slug}`}
             >
-              {article.category.title}
+              {String(article.category.title)}
             </Link>
             <span className="text-muted-foreground">/</span>
-            <span className="text-foreground">{article.title}</span>
+            <span className="text-foreground">{String(article.title)}</span>
           </nav>
 
           {/* Main Content */}
@@ -131,16 +134,16 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <header className="mb-8">
               <div className="mb-4 flex items-center gap-2">
                 <Link href={`/kb/${article.category.slug}`}>
-                  <Badge variant="secondary">{article.category.title}</Badge>
+                  <Badge variant="secondary">{String(article.category.title)}</Badge>
                 </Link>
-                {article.featured && <Badge variant="default">Featured</Badge>}
+                {Boolean(article.featured) && <Badge variant="default">Featured</Badge>}
               </div>
               <h1 className="mb-4 font-bold text-4xl tracking-tight">
-                {article.title}
+                {String(article.title)}
               </h1>
               {article.excerpt && (
                 <p className="mb-6 text-muted-foreground text-xl">
-                  {article.excerpt}
+                  {String(article.excerpt)}
                 </p>
               )}
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
@@ -156,15 +159,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     </time>
                   </div>
                 )}
-                {article.viewCount > 0 && (
+                {(article.viewCount as number) > 0 && (
                   <div className="flex items-center gap-1">
                     <Eye className="size-4" />
-                    <span>{article.viewCount.toLocaleString()} views</span>
+                    <span>{(article.viewCount as number).toLocaleString()} views</span>
                   </div>
                 )}
                 {article.author && (
                   <div>
-                    <span>By {article.author}</span>
+                    <span>By {String(article.author)}</span>
                   </div>
                 )}
               </div>
@@ -174,18 +177,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {article.featuredImage && (
               <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
                 <Image
-                  alt={article.title}
+                  alt={String(article.title)}
                   className="object-cover"
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                  src={article.featuredImage}
+                  src={String(article.featuredImage)}
                 />
               </div>
             )}
 
             {/* Article Content */}
-            <KBArticleContent content={article.content} />
+            <KBArticleContent content={article.content as string} />
 
             {/* Tags */}
             {article.tags && article.tags.length > 0 && (
@@ -206,9 +209,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
             {/* Feedback */}
             <KBFeedback
-              articleId={article.id}
-              helpfulCount={article.helpfulCount}
-              notHelpfulCount={article.notHelpfulCount}
+              articleId={article.id as string}
+              helpfulCount={article.helpfulCount as number}
+              notHelpfulCount={article.notHelpfulCount as number}
             />
 
             {/* Back to Category */}
@@ -216,7 +219,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <Link href={`/kb/${article.category.slug}`}>
                 <Button variant="outline">
                   <ArrowLeft className="mr-2 size-4" />
-                  Back to {article.category.title}
+                  Back to {String(article.category.title)}
                 </Button>
               </Link>
             </div>

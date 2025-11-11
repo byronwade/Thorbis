@@ -33,7 +33,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 
@@ -831,8 +830,6 @@ export function PricingCalculator() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

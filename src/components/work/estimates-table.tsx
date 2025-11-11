@@ -2,7 +2,6 @@
 
 import { Download, FileText, MoreHorizontal, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +16,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { EstimateStatusBadge } from "@/components/ui/status-badge";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 export type Estimate = {
   id: string;
@@ -29,46 +30,6 @@ export type Estimate = {
   status: "accepted" | "sent" | "draft" | "declined";
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function getStatusBadge(status: string) {
-  const config = {
-    accepted: {
-      className: "bg-green-500 hover:bg-green-600 text-white",
-      label: "Accepted",
-    },
-    sent: {
-      className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-      label: "Sent",
-    },
-    draft: {
-      className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-      label: "Draft",
-    },
-    declined: {
-      className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-      label: "Declined",
-    },
-  };
-
-  const statusConfig = config[status as keyof typeof config] || config.draft;
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
 
 export function EstimatesTable({
   estimates,
@@ -144,7 +105,7 @@ export function EstimatesTable({
       align: "right",
       render: (estimate) => (
         <span className="font-semibold tabular-nums">
-          {formatCurrency(estimate.amount)}
+          {formatCurrency(estimate.amount, { decimals: 2 })}
         </span>
       ),
     },
@@ -153,7 +114,7 @@ export function EstimatesTable({
       header: "Status",
       width: "w-28",
       shrink: true,
-      render: (estimate) => getStatusBadge(estimate.status),
+      render: (estimate) => <EstimateStatusBadge status={estimate.status} />,
     },
     {
       key: "actions",

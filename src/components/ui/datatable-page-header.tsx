@@ -48,7 +48,7 @@ export function DataTablePageHeader({
     size === "large" ? "text-3xl font-bold" : "text-2xl font-semibold";
 
   return (
-    <div className={`border-b bg-background ${paddingClass}`}>
+    <div className={`border-b bg-background shadow-sm ${paddingClass}`}>
       <div className="flex items-start justify-between gap-4">
         {/* Hide title/description on mobile to avoid duplication with AppToolbar */}
         <div className="hidden space-y-1 md:block">

@@ -66,5 +66,5 @@ export function ArchiveStats({ stats }: ArchiveStatsProps) {
     },
   ];
 
-  return <StatsCards stats={archiveStats} variant="ticker" />;
+  return <StatsCards compact stats={archiveStats} variant="ticker" />;
 }

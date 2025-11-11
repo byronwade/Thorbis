@@ -24,6 +24,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
+import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 
 export type MaintenancePlan = {
   id: string;
@@ -36,46 +38,26 @@ export type MaintenancePlan = {
   status: "active" | "pending" | "paused" | "cancelled";
 };
 
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function getStatusBadge(status: string) {
-  const config = {
-    active: {
-      className: "bg-green-500 hover:bg-green-600 text-white",
-      label: "Active",
-    },
-    pending: {
-      className:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-      label: "Pending",
-    },
-    paused: {
-      className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-      label: "Paused",
-    },
-    cancelled: {
-      className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-      label: "Cancelled",
-    },
-  };
-
-  const statusConfig = config[status as keyof typeof config] || config.pending;
-
-  return (
-    <Badge
-      className={`font-medium text-xs ${statusConfig.className}`}
-      variant="outline"
-    >
-      {statusConfig.label}
-    </Badge>
-  );
-}
+const MAINTENANCE_PLAN_STATUS_CONFIG = {
+  active: {
+    className: "bg-green-500 hover:bg-green-600 text-white",
+    label: "Active",
+  },
+  pending: {
+    className:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    label: "Pending",
+  },
+  paused: {
+    className:
+      "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+    label: "Paused",
+  },
+  cancelled: {
+    className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+    label: "Cancelled",
+  },
+} as const;
 
 export function MaintenancePlansTable({
   plans,
@@ -154,7 +136,13 @@ export function MaintenancePlansTable({
       header: "Status",
       width: "w-28",
       shrink: true,
-      render: (plan) => getStatusBadge(plan.status),
+      render: (plan) => (
+        <GenericStatusBadge
+          status={plan.status}
+          config={MAINTENANCE_PLAN_STATUS_CONFIG}
+          defaultStatus="pending"
+        />
+      ),
     },
     {
       key: "actions",

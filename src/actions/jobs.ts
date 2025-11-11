@@ -905,7 +905,7 @@ export async function scheduleJob(
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/schedule");
+    revalidatePath("/dashboard/schedule");
     revalidatePath(`/dashboard/work/${jobId}`);
   });
 }
@@ -1367,7 +1367,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/schedule");
+    revalidatePath("/dashboard/schedule");
     revalidatePath("/dashboard/settings/archive");
   });
 }
@@ -1448,7 +1448,7 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
     }
 
     revalidatePath("/dashboard/work");
-    revalidatePath("/dashboard/work/schedule");
+    revalidatePath("/dashboard/schedule");
     revalidatePath("/dashboard/settings/archive");
   });
 }

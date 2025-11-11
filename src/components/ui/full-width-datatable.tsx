@@ -178,7 +178,7 @@ export function FullWidthDataTable<T>({
   return (
     <div className="flex h-full flex-col">
       {/* Sticky Top Toolbar */}
-      <div className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b px-4 py-2">
+      <div className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b bg-background/95 px-4 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
         {enableSelection && (
           <Checkbox
             aria-label="Select all"
@@ -268,7 +268,7 @@ export function FullWidthDataTable<T>({
 
       {/* Table Header */}
       {paginatedData.length > 0 && (
-        <div className="sticky top-[53px] z-20 flex items-center gap-6 border-b bg-muted/40 px-4 py-3 font-medium text-muted-foreground text-sm">
+        <div className="sticky top-[57px] z-20 flex items-center gap-6 border-b bg-muted/60 px-4 py-3 font-medium text-muted-foreground text-sm backdrop-blur supports-[backdrop-filter]:bg-muted/40">
           {/* Spacer for checkbox */}
           {enableSelection && <div className="w-4 shrink-0" />}
 

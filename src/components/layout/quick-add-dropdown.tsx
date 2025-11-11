@@ -101,7 +101,7 @@ const quickAddActions: Record<string, QuickAddAction[]> = {
   Other: [
     {
       label: "Schedule Job",
-      href: "/dashboard/work/schedule/new",
+      href: "/dashboard/schedule/new",
       icon: Calendar,
       description: "Add to schedule",
     },

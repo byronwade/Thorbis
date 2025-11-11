@@ -12,7 +12,8 @@
  * - Matches Customer page design pattern
  */
 
-import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
+import { type StatCard } from "@/components/ui/stats-cards";
+import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
 
 interface JobStatsBarProps {
   metrics: {
@@ -99,5 +100,5 @@ export function JobStatsBar({
     },
   ];
 
-  return <StatsCards compact={compact} stats={jobStats} variant="ticker" />;
+  return <EntityStatsBar compact={compact} stats={jobStats} />;
 }

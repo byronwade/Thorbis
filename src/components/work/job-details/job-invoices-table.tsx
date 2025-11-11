@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,6 +22,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { InvoiceStatusBadge } from "@/components/ui/status-badge";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 type Invoice = {
   id: string;
@@ -40,37 +41,11 @@ type JobInvoicesTableProps = {
   invoices: Invoice[];
 };
 
-const CENTS_PER_DOLLAR = 100;
-
 export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
-  const formatCurrency = useCallback(
-    (cents: number) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(cents / CENTS_PER_DOLLAR),
+  const formatCurrencyCents = useCallback(
+    (cents: number) => formatCurrency(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
     []
   );
-
-  const getStatusBadge = useCallback((status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      paid: "default",
-      pending: "secondary",
-      draft: "outline",
-      overdue: "destructive",
-    };
-
-    return (
-      <Badge className="text-xs" variant={variants[status] || "outline"}>
-        {status}
-      </Badge>
-    );
-  }, []);
 
   const columns: ColumnDef<Invoice>[] = useMemo(
     () => [
@@ -100,7 +75,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         header: "Status",
         width: "w-24",
         shrink: true,
-        render: (invoice) => getStatusBadge(invoice.status),
+        render: (invoice) => <InvoiceStatusBadge status={invoice.status} />,
       },
       {
         key: "total_amount",
@@ -110,7 +85,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         align: "right",
         render: (invoice) => (
           <span className="font-medium">
-            {formatCurrency(invoice.total_amount)}
+            {formatCurrencyCents(invoice.total_amount)}
           </span>
         ),
       },
@@ -126,7 +101,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
             invoice.total_amount - invoice.paid_amount;
           return balance > 0 ? (
             <span className="font-medium text-destructive">
-              {formatCurrency(balance)}
+              {formatCurrencyCents(balance)}
             </span>
           ) : (
             <span className="text-muted-foreground text-sm">Paid</span>
@@ -141,9 +116,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         hideOnMobile: true,
         render: (invoice) => (
           <span className="text-sm">
-            {invoice.due_date
-              ? new Date(invoice.due_date).toLocaleDateString()
-              : "—"}
+            {formatDate(invoice.due_date, "short")}
           </span>
         ),
       },
@@ -192,7 +165,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         },
       },
     ],
-    [formatCurrency, getStatusBadge]
+    [formatCurrencyCents]
   );
 
   return (

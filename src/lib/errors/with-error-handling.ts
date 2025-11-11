@@ -61,11 +61,30 @@ export async function withErrorHandling<T>(
   } catch (error) {
     // Handle ActionError (our custom errors)
     if (error instanceof ActionError) {
-      console.error(
-        `[ActionError ${error.code}]:`,
-        error.message,
-        error.details
-      );
+      // Log authorization errors as warnings since they're expected in some cases
+      // (e.g., user not part of a company, insufficient permissions)
+      const isExpectedAuthError =
+        error.code === ERROR_CODES.AUTH_FORBIDDEN ||
+        error.code === ERROR_CODES.AUTH_UNAUTHORIZED;
+
+      if (isExpectedAuthError) {
+        // Only log in development, or as a warning
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `[ActionError ${error.code}]:`,
+            error.message,
+            error.details
+          );
+        }
+      } else {
+        // Log other errors normally
+        console.error(
+          `[ActionError ${error.code}]:`,
+          error.message,
+          error.details
+        );
+      }
+
       return {
         success: false,
         error: error.message,

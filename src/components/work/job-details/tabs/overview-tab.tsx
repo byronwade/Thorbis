@@ -49,6 +49,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useJobEditorStore } from "@/lib/stores/job-editor-store";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { TeamMemberSelector } from "../team-member-selector";
 
 interface OverviewTabProps {
@@ -85,26 +86,6 @@ export function OverviewTab({
     [localJob, setHasUnsavedChanges, setEditorContent]
   );
 
-  // Format currency
-  const formatCurrency = (cents: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(cents / 100);
-
-  // Format date
-  const formatDate = (date: string | null) => {
-    if (!date) return "Not set";
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(new Date(date));
-  };
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -471,7 +452,7 @@ export function OverviewTab({
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  {formatDate(localJob.scheduled_start)}
+                  {formatDate(localJob.scheduled_start, "datetime", "Not set")}
                 </span>
               </div>
             </div>
@@ -481,7 +462,7 @@ export function OverviewTab({
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  {formatDate(localJob.scheduled_end)}
+                  {formatDate(localJob.scheduled_end, "datetime", "Not set")}
                 </span>
               </div>
             </div>
@@ -497,7 +478,7 @@ export function OverviewTab({
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-green-600" />
                       <span className="text-sm">
-                        {formatDate(localJob.actual_start)}
+                        {formatDate(localJob.actual_start, "datetime", "Not set")}
                       </span>
                     </div>
                   </div>
@@ -509,7 +490,7 @@ export function OverviewTab({
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-green-600" />
                       <span className="text-sm">
-                        {formatDate(localJob.actual_end)}
+                        {formatDate(localJob.actual_end, "datetime", "Not set")}
                       </span>
                     </div>
                   </div>
@@ -535,7 +516,7 @@ export function OverviewTab({
                 Total Amount
               </Label>
               <p className="font-bold text-2xl">
-                {formatCurrency(localJob.total_amount || 0)}
+                {formatCurrency(localJob.total_amount || 0, { decimals: 0 })}
               </p>
             </div>
 
@@ -544,7 +525,7 @@ export function OverviewTab({
                 Paid Amount
               </Label>
               <p className="font-bold text-2xl text-green-600">
-                {formatCurrency(localJob.paid_amount || 0)}
+                {formatCurrency(localJob.paid_amount || 0, { decimals: 0 })}
               </p>
             </div>
 
@@ -554,7 +535,8 @@ export function OverviewTab({
               </Label>
               <p className="font-bold text-2xl text-orange-600">
                 {formatCurrency(
-                  (localJob.total_amount || 0) - (localJob.paid_amount || 0)
+                  (localJob.total_amount || 0) - (localJob.paid_amount || 0),
+                  { decimals: 0 }
                 )}
               </p>
             </div>

@@ -14,6 +14,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { formatCurrency } from "@/lib/utils/format";
 
 type Invoice = {
   subtotal: number;
@@ -30,12 +31,6 @@ interface InvoiceTotalsProps {
 }
 
 export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
-  // Format currency
-  const formatCurrency = (cents: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(cents / 100);
 
   return (
     <Card className="mb-8 ml-auto max-w-md p-6">
@@ -44,7 +39,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Subtotal</span>
           <span className="font-medium">
-            {formatCurrency(invoice.subtotal)}
+            {formatCurrency(invoice.subtotal || 0, { decimals: 2 })}
           </span>
         </div>
 
@@ -53,7 +48,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Tax</span>
             <span className="font-medium">
-              {formatCurrency(invoice.tax_amount)}
+              {formatCurrency(invoice.tax_amount || 0, { decimals: 2 })}
             </span>
           </div>
         )}
@@ -63,7 +58,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Discount</span>
             <span className="font-medium text-green-600">
-              -{formatCurrency(invoice.discount_amount)}
+              -{formatCurrency(invoice.discount_amount || 0, { decimals: 2 })}
             </span>
           </div>
         )}
@@ -74,7 +69,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
         <div className="flex justify-between">
           <span className="font-semibold">Total</span>
           <span className="font-bold text-lg">
-            {formatCurrency(invoice.total_amount)}
+            {formatCurrency(invoice.total_amount || 0, { decimals: 2 })}
           </span>
         </div>
 
@@ -85,7 +80,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Paid</span>
               <span className="font-medium text-green-600">
-                {formatCurrency(invoice.paid_amount)}
+                {formatCurrency(invoice.paid_amount || 0, { decimals: 2 })}
               </span>
             </div>
           </>
@@ -102,7 +97,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
                   : "text-primary"
               }`}
             >
-              {formatCurrency(invoice.balance_amount)}
+              {formatCurrency(invoice.balance_amount || 0, { decimals: 2 })}
             </span>
           </div>
         )}

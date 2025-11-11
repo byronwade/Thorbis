@@ -213,9 +213,13 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
     if (!apiKey) {
+      console.warn("[Travel Time API] Google Maps API key not configured");
       return NextResponse.json(
-        { error: "Google Maps API key not configured" },
-        { status: 500 }
+        {
+          error: "Travel time calculation unavailable",
+          message: "Google Maps API key not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables."
+        },
+        { status: 503 }
       );
     }
 
@@ -254,9 +258,13 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(result.data);
-  } catch {
+  } catch (error) {
+    console.error("[Travel Time API] Error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: "Failed to calculate travel time",
+        message: error instanceof Error ? error.message : "Internal server error"
+      },
       { status: 500 }
     );
   }

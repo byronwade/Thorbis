@@ -234,15 +234,15 @@ export default async function HelpCenterPage() {
                 >
                   <div className="flex items-start gap-3">
                     <div className="rounded-full bg-primary/10 p-2 text-primary">
-                      {category.icon ?? "📘"}
+                      {"📘"}
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg">
-                        {category.title}
+                        {String(category.title)}
                       </h3>
                       {category.description ? (
                         <p className="text-muted-foreground text-sm">
-                          {category.description}
+                          {String(category.description)}
                         </p>
                       ) : null}
                     </div>

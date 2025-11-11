@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/formatters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -205,13 +206,7 @@ export function LaborCalculatorModal({
     };
   }
 
-  function formatCurrency(cents: number): string {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(cents / 100);
-  }
+  // formatCurrency imported from @/lib/formatters
 
   function handleAddLabor() {
     if (onAddLabor) {

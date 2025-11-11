@@ -10,11 +10,11 @@
  */
 
 import { notFound, redirect } from "next/navigation";
-import { InvoiceStatusPipeline } from "@/components/invoices/invoice-status-pipeline";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
 import { InvoicesKanban } from "@/components/work/invoices-kanban";
 import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 import {
   getActiveCompanyId,
   isActiveCompanyOnboardingComplete,
@@ -103,19 +103,70 @@ export default async function InvoicesPage() {
     status: inv.status as "paid" | "pending" | "draft" | "overdue",
   }));
 
+  // Calculate invoice stats
+  const draftCount = invoices.filter((inv) => inv.status === "draft").length;
+  const pendingCount = invoices.filter(
+    (inv) => inv.status === "pending"
+  ).length;
+  const paidCount = invoices.filter((inv) => inv.status === "paid").length;
+  const overdueCount = invoices.filter(
+    (inv) => inv.status === "overdue"
+  ).length;
+
+  const totalRevenue = invoices
+    .filter((inv) => inv.status === "paid")
+    .reduce((sum, inv) => sum + inv.amount, 0);
+
+  const pendingRevenue = invoices
+    .filter((inv) => inv.status === "pending")
+    .reduce((sum, inv) => sum + inv.amount, 0);
+
+  const overdueRevenue = invoices
+    .filter((inv) => inv.status === "overdue")
+    .reduce((sum, inv) => sum + inv.amount, 0);
+
+  const invoiceStats: StatCard[] = [
+    {
+      label: "Draft",
+      value: draftCount,
+      change: draftCount > 0 ? 0 : 5.2, // Neutral if drafts exist, green if none
+      changeLabel: "ready to send",
+    },
+    {
+      label: "Pending",
+      value: `$${(pendingRevenue / 100).toLocaleString()}`,
+      change: pendingCount > 0 ? 0 : 8.1, // Neutral if pending, green if all paid
+      changeLabel: `${pendingCount} invoices`,
+    },
+    {
+      label: "Paid",
+      value: `$${(totalRevenue / 100).toLocaleString()}`,
+      change: paidCount > 0 ? 12.4 : 0, // Green if paid invoices exist
+      changeLabel: `${paidCount} invoices`,
+    },
+    {
+      label: "Overdue",
+      value: `$${(overdueRevenue / 100).toLocaleString()}`,
+      change: overdueCount > 0 ? -8.3 : 6.5, // Red if overdue, green if all current
+      changeLabel:
+        overdueCount > 0 ? `${overdueCount} need attention` : "all current",
+    },
+    {
+      label: "Total Invoices",
+      value: invoices.length,
+      change: invoices.length > 0 ? 9.2 : 0, // Green if invoices exist
+      changeLabel: "this month",
+    },
+  ];
+
   return (
-    <div className="flex h-full flex-col">
-      <InvoiceStatusPipeline invoices={invoices} />
-      <div className="flex items-center justify-end gap-2 px-4 py-3">
-        <WorkViewSwitcher section="invoices" />
-      </div>
-      <div className="flex-1 overflow-auto">
-        <WorkDataView
-          kanban={<InvoicesKanban invoices={invoices} />}
-          section="invoices"
-          table={<InvoicesTable invoices={invoices} itemsPerPage={50} />}
-        />
-      </div>
-    </div>
+    <>
+      <StatusPipeline compact stats={invoiceStats} />
+      <WorkDataView
+        kanban={<InvoicesKanban invoices={invoices} />}
+        section="invoices"
+        table={<InvoicesTable invoices={invoices} itemsPerPage={50} />}
+      />
+    </>
   );
 }

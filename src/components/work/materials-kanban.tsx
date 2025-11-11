@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  KanbanBoard,
-  KanbanCard,
-  KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
+import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Material } from "@/components/work/materials-table";
@@ -40,115 +33,39 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-function createItems(materials: Material[]): MaterialsKanbanItem[] {
-  return materials.map((material) => ({
-    id: material.id,
-    columnId: material.status,
-    material,
-  }));
-}
-
 export function MaterialsKanban({ materials }: { materials: Material[] }) {
-  const columns = useMemo(() => MATERIAL_COLUMNS, []);
-  const [items, setItems] = useState<MaterialsKanbanItem[]>(() =>
-    createItems(materials)
-  );
-
-  useEffect(() => {
-    setItems(createItems(materials));
-  }, [materials]);
-
-  const handleDataChange = (next: MaterialsKanbanItem[]) => {
-    setItems(
-      next.map((item) => ({
-        ...item,
-        material: {
-          ...item.material,
-          status: item.columnId as MaterialStatus,
-        },
-      }))
-    );
-  };
-
-  const columnMeta = useMemo(() => {
-    return columns.reduce<Record<string, { count: number; value: number }>>(
-      (acc, column) => {
-        const columnItems = items.filter(
-          (item) => item.columnId === column.id
-        );
+  return (
+    <EntityKanban<Material, MaterialStatus>
+      columns={MATERIAL_COLUMNS}
+      data={materials}
+      entityName="items"
+      mapToKanbanItem={(material) => ({
+        id: material.id,
+        columnId: material.status,
+        entity: material,
+        material,
+      })}
+      updateEntityStatus={(material, newStatus) => ({
+        ...material,
+        status: newStatus,
+      })}
+      calculateColumnMeta={(columnId, items): ColumnMeta => {
+        const columnItems = items.filter((item) => item.columnId === columnId);
         const totalValue = columnItems.reduce(
-          (sum, item) => sum + item.material.totalValue,
+          (sum, item) => sum + (item.entity as Material).totalValue,
           0
         );
-        acc[column.id] = { count: columnItems.length, value: totalValue };
-        return acc;
-      },
-      {}
-    );
-  }, [columns, items]);
-
-  return (
-    <KanbanProvider<MaterialsKanbanItem>
-      className="pb-4"
-      columns={columns}
-      data={items}
-      onDataChange={handleDataChange}
-      renderDragOverlay={(item) => {
-        return (
-          <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-            <MaterialCard item={item} />
-          </div>
-        );
+        return { count: columnItems.length, value: totalValue };
       }}
-    >
-      {columns.map((column) => {
-        const meta = columnMeta[column.id] ?? { count: 0, value: 0 };
-        return (
-          <KanbanBoard
-            className="min-h-[300px] flex-1"
-            column={column}
-            key={column.id}
-          >
-            <KanbanHeader>
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: column.accentColor }}
-                />
-                <span className="font-semibold text-sm text-foreground">
-                  {column.name}
-                </span>
-                <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
-                  variant="secondary"
-                >
-                  {meta.count} items
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {currencyFormatter.format(meta.value / 100)}
-                </span>
-              </div>
-            </KanbanHeader>
-            <KanbanCards<MaterialsKanbanItem>
-              className="min-h-[200px]"
-              columnId={column.id}
-              emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
-                  No materials in {column.name}
-                </div>
-              }
-            >
-              {(item) => (
-                <KanbanCard itemId={item.id} key={item.id}>
-                  <MaterialCard item={item} />
-                </KanbanCard>
-              )}
-            </KanbanCards>
-          </KanbanBoard>
-        );
-      })}
-    </KanbanProvider>
+      showTotals={true}
+      formatTotal={(value) => currencyFormatter.format(value / 100)}
+      renderCard={(item) => <MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />
+        </div>
+      )}
+    />
   );
 }
 

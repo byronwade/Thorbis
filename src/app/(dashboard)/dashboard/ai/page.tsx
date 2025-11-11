@@ -15,7 +15,7 @@ import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { AIComingSoon } from "@/components/ai/ai-coming-soon";
 import { ChatContainer } from "@/components/chat/chat-container";
-import { chatSelectors, useChatStore } from "@/lib/store/chat-store";
+import { chatSelectors, useChatStore } from "@/lib/stores/chat-store";
 
 export default function AIPage() {
   // Show coming soon page in production

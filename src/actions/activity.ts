@@ -9,9 +9,9 @@
  */
 
 import { revalidatePath } from "next/cache";
-import type { Activity } from "@/lib/db/schema";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  Activity,
   ActivityFilters,
   CreateActivityData,
   EntityType,

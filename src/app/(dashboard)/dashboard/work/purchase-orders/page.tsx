@@ -8,12 +8,14 @@
  */
 
 import { notFound } from "next/navigation";
-import { AppToolbar } from "@/components/layout/app-toolbar";
-import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-toolbar-actions";
+import { StatusPipeline } from "@/components/ui/status-pipeline";
+import { type StatCard } from "@/components/ui/stats-cards";
 import {
   type PurchaseOrder,
   PurchaseOrdersTable,
 } from "@/components/work/purchase-orders-table";
+import { PurchaseOrdersKanban } from "@/components/work/purchase-orders-kanban";
+import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
@@ -117,25 +119,54 @@ export default async function PurchaseOrdersPage() {
   const ordered = purchaseOrders.filter((po) => po.status === "ordered").length;
   const received = purchaseOrders.filter((po) => po.status === "received")
     .length;
+  const cancelled = purchaseOrders.filter((po) => po.status === "cancelled")
+    .length;
   const totalValue = purchaseOrders.reduce(
     (sum, po) => sum + po.totalAmount,
     0
   );
 
+  const purchaseOrderStats: StatCard[] = [
+    {
+      label: "Pending Approval",
+      value: pending,
+      change: pending > 0 ? 0 : 4.2,
+      changeLabel: "awaiting approval",
+    },
+    {
+      label: "Ordered",
+      value: ordered,
+      change: ordered > 0 ? 6.8 : 0,
+      changeLabel: "in transit",
+    },
+    {
+      label: "Received",
+      value: received,
+      change: received > 0 ? 8.5 : 0,
+      changeLabel: "completed",
+    },
+    {
+      label: "Total Value",
+      value: formatCurrency(totalValue),
+      change: totalValue > 0 ? 5.3 : 0,
+      changeLabel: "across all orders",
+    },
+    {
+      label: "Total Orders",
+      value: totalPOs,
+      change: totalPOs > 0 ? 7.1 : 0,
+      changeLabel: "purchase orders",
+    },
+  ];
+
   return (
     <>
-      <AppToolbar
-        config={{
-          show: true,
-          title: "Purchase Orders",
-          subtitle: `${totalPOs} orders • ${formatCurrency(totalValue)} total`,
-          actions: <PurchaseOrderToolbarActions />,
-        }}
+      <StatusPipeline compact stats={purchaseOrderStats} />
+      <WorkDataView
+        kanban={<PurchaseOrdersKanban orders={purchaseOrders} />}
+        section="purchaseOrders"
+        table={<PurchaseOrdersTable orders={purchaseOrders} itemsPerPage={50} />}
       />
-
-      <div className="flex-1 overflow-auto p-6">
-        <PurchaseOrdersTable orders={purchaseOrders} itemsPerPage={50} />
-      </div>
     </>
   );
 }

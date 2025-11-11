@@ -14,7 +14,6 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { bulkArchive } from "@/actions/archive";
 import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +27,8 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { EstimateStatusBadge } from "@/components/ui/status-badge";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 type Estimate = {
   id: string;
@@ -43,21 +44,13 @@ type JobEstimatesTableProps = {
   estimates: Estimate[];
 };
 
-const CENTS_PER_DOLLAR = 100;
-
 export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isArchiving, setIsArchiving] = useState(false);
 
-  const formatCurrency = useCallback(
-    (cents: number) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(cents / CENTS_PER_DOLLAR),
+  const formatCurrencyCents = useCallback(
+    (cents: number) => formatCurrency(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
     []
   );
 
@@ -86,23 +79,6 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
     }
   }, [selectedIds]);
 
-  const getStatusBadge = useCallback((status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      approved: "default",
-      pending: "secondary",
-      draft: "outline",
-      rejected: "destructive",
-    };
-
-    return (
-      <Badge className="text-xs" variant={variants[status] || "outline"}>
-        {status}
-      </Badge>
-    );
-  }, []);
 
   const columns: ColumnDef<Estimate>[] = useMemo(
     () => [
@@ -139,7 +115,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         header: "Status",
         width: "w-32",
         shrink: true,
-        render: (estimate) => getStatusBadge(estimate.status),
+        render: (estimate) => <EstimateStatusBadge status={estimate.status} />,
       },
       {
         key: "total_amount",
@@ -149,7 +125,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         align: "right",
         render: (estimate) => (
           <span className="font-semibold text-sm tabular-nums">
-            {formatCurrency(estimate.total_amount)}
+            {formatCurrencyCents(estimate.total_amount)}
           </span>
         ),
       },
@@ -162,7 +138,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         render: (estimate) => (
           <span className="text-muted-foreground text-sm tabular-nums">
             {estimate.valid_until
-              ? new Date(estimate.valid_until).toLocaleDateString()
+              ? formatDate(estimate.valid_until, "short")
               : "—"}
           </span>
         ),
@@ -203,7 +179,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         ),
       },
     ],
-    [formatCurrency, getStatusBadge]
+    [formatCurrencyCents]
   );
 
   const bulkActions: BulkAction[] = useMemo(

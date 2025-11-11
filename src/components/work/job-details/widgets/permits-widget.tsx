@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
+import { formatDate } from "@/lib/formatters";
 
 interface PermitsWidgetProps {
   job: Job;
@@ -143,15 +144,6 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
   const approvedPermits = permits.filter((p) => p.status === "approved").length;
   const progressPercentage =
     totalPermits > 0 ? (approvedPermits / totalPermits) * 100 : 0;
-
-  function formatDate(date?: Date): string {
-    if (!date) return "N/A";
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(date);
-  }
 
   function getDaysUntilExpiry(date?: Date): number | null {
     if (!date) return null;

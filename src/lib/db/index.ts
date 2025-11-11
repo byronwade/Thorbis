@@ -1,36 +1,23 @@
-import { drizzle as drizzlePostgres } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import * as schema from "./schema";
-
-const isProduction = process.env.NODE_ENV === "production";
+import { createClient } from "@/lib/supabase/server";
 
 /**
- * Database client - uses PostgreSQL/Supabase in production
- *
- * Note: SQLite support removed - this project uses Supabase (PostgreSQL) only
+ * Get Supabase client for database operations
+ * This uses Supabase directly instead of Drizzle ORM
  */
-export const db = (() => {
-  if (!process.env.DATABASE_URL) {
+export async function getSupabaseClient() {
+  const supabase = await createClient();
+  if (!supabase) {
     throw new Error(
-      "DATABASE_URL environment variable is required. Use Supabase connection string."
+      "Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables."
     );
   }
-  const client = postgres(process.env.DATABASE_URL);
-  return drizzlePostgres(client, { schema });
-})();
-
-/**
- * Export the schema for use in queries
- */
-export { schema };
-
-/**
- * Helper to check which database is being used
- */
-export const getDatabaseType = () => "postgresql";
+  return supabase;
+}
 
 /**
  * Re-export types from schema
+ * Note: Schema types are kept for TypeScript compatibility
+ * but database operations should use Supabase client directly
  */
 export type {
   NewPost,

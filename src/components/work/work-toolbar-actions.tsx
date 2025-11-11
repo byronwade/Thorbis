@@ -4,31 +4,31 @@
  * WorkToolbarActions Component - Client Component
  *
  * Toolbar actions for the work/jobs page
+ * - View switcher
  * - Filter button
  * - New Job button
+ * - Import/Export
  */
 
-import { Filter, Plus } from "lucide-react";
-import Link from "next/link";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { Filter } from "lucide-react";
+import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { Button } from "@/components/ui/button";
-import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 
 export function WorkToolbarActions() {
   return (
-    <div className="flex items-center gap-2">
-      <WorkViewSwitcher section="jobs" />
-      <Button size="sm" variant="ghost">
-        <Filter className="mr-2 size-4" />
-        Filter
-      </Button>
-      <Button asChild size="sm" variant="default">
-        <Link href="/dashboard/work/new">
-          <Plus className="mr-2 size-4" />
-          New Job
-        </Link>
-      </Button>
-      <ImportExportDropdown dataType="jobs" />
-    </div>
+    <BaseToolbarActions
+      viewSwitcherSection="jobs"
+      beforePrimaryAction={
+        <Button size="default" variant="ghost">
+          <Filter className="mr-2 size-4" />
+          Filter
+        </Button>
+      }
+      primaryAction={{
+        href: "/dashboard/work/new",
+        label: "New Job",
+      }}
+      importExportDataType="jobs"
+    />
   );
 }

@@ -32,6 +32,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { formatCurrency } from "@/lib/formatters";
 import {
   Sheet,
   SheetContent,
@@ -77,16 +78,6 @@ type PropertiesTableProps = {
   itemsPerPage?: number;
   customerId?: string;
 };
-
-function formatCurrency(cents: number | undefined): string {
-  if (!cents) return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(cents / 100);
-}
 
 function getPropertyIcon(type?: string) {
   switch (type) {

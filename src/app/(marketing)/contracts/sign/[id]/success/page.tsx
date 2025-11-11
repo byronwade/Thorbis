@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
+// import { getSupabaseClient } from "@/lib/db";
 
 /**
  * Contract Signing Success Page - Server Component
@@ -26,7 +27,12 @@ export default async function ContractSignSuccessPage({
   const { id } = await params;
 
   // TODO: Fetch contract details to show in confirmation
-  // const contract = await db.select().from(contracts).where(eq(contracts.id, id)).limit(1);
+  // const supabase = await getSupabaseClient();
+  // const { data: contract, error } = await supabase
+  //   .from("contracts")
+  //   .select("*")
+  //   .eq("id", id)
+  //   .single();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
