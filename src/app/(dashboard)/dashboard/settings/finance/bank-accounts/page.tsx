@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Building2,
   CheckCircle,
+  CreditCard,
   Edit,
   HelpCircle,
   Loader2,
@@ -24,8 +25,10 @@ import {
   createBankAccount,
   deleteBankAccount,
   getBankAccounts,
+  getUserCompanyId,
   updateBankAccount,
 } from "@/actions/settings";
+import { PlaidLinkButton } from "@/components/finance/plaid-link-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,7 +72,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+
+type PaymentProcessor = {
+  id: string;
+  processor_type: string;
+  status: string;
+};
 
 type BankAccount = {
   id: string;
@@ -84,13 +93,14 @@ type BankAccount = {
   is_primary: boolean;
   last_synced_at?: string;
   created_at: string;
+  payment_processors?: PaymentProcessor[];
 };
 
 export default function BankAccountsSettingsPage() {
-  const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
+  const [companyId, setCompanyId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<BankAccount | null>(
@@ -111,13 +121,19 @@ export default function BankAccountsSettingsPage() {
     isPrimary: false,
   });
 
-  // Load accounts from database
+  // Load accounts and company ID from database
   useEffect(() => {
-    async function loadAccounts() {
+    async function loadData() {
       setIsLoading(true);
       try {
-        const result = await getBankAccounts();
+        // Fetch company ID
+        const companyResult = await getUserCompanyId();
+        if (companyResult.success && companyResult.data) {
+          setCompanyId(companyResult.data);
+        }
 
+        // Fetch bank accounts
+        const result = await getBankAccounts();
         if (result.success && result.data) {
           setAccounts(result.data);
         }
@@ -128,8 +144,8 @@ export default function BankAccountsSettingsPage() {
       }
     }
 
-    loadAccounts();
-  }, [toast]);
+    loadData();
+  }, []);
 
   const resetForm = () => {
     setFormData({
@@ -190,9 +206,7 @@ export default function BankAccountsSettingsPage() {
       }
 
       if (result.success) {
-        toast.success(
-          `Bank account ${editingAccount ? "updated" : "created"} successfully`
-        );
+        toast.success(`Bank account ${editingAccount ? "updated" : "created"} successfully`);
         setDialogOpen(false);
         resetForm();
         // Reload accounts
@@ -201,10 +215,7 @@ export default function BankAccountsSettingsPage() {
           setAccounts(accountsResult.data);
         }
       } else {
-        toast.error(
-          result.error ||
-            `Failed to ${editingAccount ? "update" : "create"} bank account`
-        );
+        toast.error(result.error || `Failed to ${editingAccount ? "update" : "create"} bank account`);
       }
     });
   };
@@ -274,11 +285,29 @@ export default function BankAccountsSettingsPage() {
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div />
+          <div className="flex gap-2">
+            {companyId && (
+              <PlaidLinkButton
+                companyId={companyId}
+                onSuccess={async () => {
+                  toast.success("Bank account linked successfully!");
+                  // Reload accounts
+                  const accountsResult = await getBankAccounts();
+                  if (accountsResult.success && accountsResult.data) {
+                    setAccounts(accountsResult.data);
+                  }
+                }}
+                variant="default"
+              >
+                <Building2 className="mr-2 size-4" />
+                Connect via Plaid
+              </PlaidLinkButton>
+            )}
           <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()}>
+                <Button onClick={() => handleOpenDialog()} variant="outline">
                 <Plus className="mr-2 size-4" />
-                Add Account
+                  Add Manually
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
@@ -473,6 +502,7 @@ export default function BankAccountsSettingsPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {accounts.length === 0 ? (
@@ -506,7 +536,7 @@ export default function BankAccountsSettingsPage() {
                         <Building2 className="size-5 text-primary" />
                         {account.account_name}
                         {account.is_primary && (
-                          <span className="rounded-full bg-blue-500/10 px-2 py-0.5 font-medium text-blue-700 text-xs dark:text-blue-400">
+                          <span className="rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs dark:text-primary">
                             Primary
                           </span>
                         )}
@@ -566,12 +596,12 @@ export default function BankAccountsSettingsPage() {
                   <div className="flex items-center gap-2 text-sm">
                     {account.is_active ? (
                       <>
-                        <CheckCircle className="size-4 text-green-500" />
+                        <CheckCircle className="size-4 text-success" />
                         <span className="text-muted-foreground">Active</span>
                       </>
                     ) : (
                       <>
-                        <AlertCircle className="size-4 text-amber-500" />
+                        <AlertCircle className="size-4 text-warning" />
                         <span className="text-muted-foreground">Inactive</span>
                       </>
                     )}
@@ -597,23 +627,76 @@ export default function BankAccountsSettingsPage() {
                       {new Date(account.last_synced_at).toLocaleString()}
                     </p>
                   )}
+
+                  {account.payment_processors &&
+                    account.payment_processors.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <Separator />
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="size-4 text-muted-foreground" />
+                          <p className="text-muted-foreground text-xs font-medium">
+                            Payment Processors:
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {account.payment_processors.map((processor) => (
+                            <span
+                              key={processor.id}
+                              className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 font-medium text-primary text-xs dark:text-primary"
+                            >
+                              {processor.processor_type === "adyen" && "Adyen"}
+                              {processor.processor_type === "plaid" && "Plaid"}
+                              {processor.processor_type === "profitstars" &&
+                                "ProfitStars"}
+                              {processor.processor_type === "stripe" &&
+                                "Stripe"}
+                              {processor.status === "active" && (
+                                <CheckCircle className="size-3" />
+                              )}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
 
-        <Card className="border-blue-500/50 bg-blue-500/5">
+        <Card className="border-primary/50 bg-primary/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+            <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <div className="space-y-1">
-              <p className="font-medium text-blue-700 text-sm dark:text-blue-400">
+              <p className="font-medium text-primary text-sm dark:text-primary">
                 Bank Account Integration
               </p>
               <p className="text-muted-foreground text-sm">
                 Connect your accounts using Plaid for automatic transaction
                 imports, real-time balance updates, and seamless reconciliation.
                 Your credentials are encrypted and secure.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-blue-500/50 bg-blue-500/5">
+          <CardContent className="flex items-start gap-3 pt-6">
+            <CreditCard className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+            <div className="space-y-2">
+              <p className="font-medium text-blue-600 text-sm dark:text-blue-400">
+                Payment Processor Integration
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Bank accounts can be linked to payment processors (Adyen, Plaid,
+                ProfitStars, Stripe) to automatically route collected payments to
+                the correct account. When configuring a payment processor, you can
+                select which bank account should receive deposits. If no account is
+                selected, payments will be deposited to your primary bank account.
+              </p>
+              <p className="text-muted-foreground text-xs">
+                Payment processors linked to each account are shown on the account
+                cards above.
               </p>
             </div>
           </CardContent>

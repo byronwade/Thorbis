@@ -3,6 +3,7 @@
  *
  * Performance optimizations:
  * - Server Component by default (no "use client")
+ * - Fetches real data from Supabase
  * - Uses established DataTablePageHeader pattern
  * - Follows consistent design system with other pages
  * - ISR revalidation every 5 minutes for invoice updates
@@ -14,69 +15,85 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
 import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
+import { createClient } from "@/lib/supabase/server";
 
-export const revalidate = 300; // Revalidate every 5 minutes
+export const revalidate = 0; // Disable caching - always fetch fresh data
+export const dynamic = 'force-dynamic'; // Force dynamic rendering
 
-// Mock data - replace with real data from database
-const mockInvoices: Invoice[] = [
-  {
-    id: "1",
-    invoiceNumber: "INV-2025-001",
-    customer: "ABC Corporation",
-    date: "Jan 15, 2025",
-    dueDate: "Feb 14, 2025",
-    amount: 450_000,
-    status: "paid",
-  },
-  {
-    id: "2",
-    invoiceNumber: "INV-2025-002",
-    customer: "XYZ Industries",
-    date: "Jan 18, 2025",
-    dueDate: "Feb 17, 2025",
-    amount: 320_000,
-    status: "pending",
-  },
-  {
-    id: "3",
-    invoiceNumber: "INV-2025-003",
-    customer: "TechStart Inc",
-    date: "Jan 20, 2025",
-    dueDate: "Feb 19, 2025",
-    amount: 200_000,
-    status: "overdue",
-  },
-  {
-    id: "4",
-    invoiceNumber: "INV-2025-004",
-    customer: "Global Systems",
-    date: "Jan 22, 2025",
-    dueDate: "Feb 21, 2025",
-    amount: 680_000,
-    status: "paid",
-  },
-  {
-    id: "5",
-    invoiceNumber: "INV-2025-005",
-    customer: "123 Manufacturing",
-    date: "Jan 10, 2025",
-    dueDate: "Feb 9, 2025",
-    amount: 180_000,
-    status: "pending",
-  },
-];
+// Helper to format date
+function formatDate(dateString: string | null) {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
 
-export default function InvoicesPage() {
-  // Calculate stats from data
-  const totalInvoices = mockInvoices.length;
-  const totalAmount = mockInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-  const paidAmount = mockInvoices
+// Map database status to component status
+function mapStatus(dbStatus: string): Invoice["status"] {
+  const statusMap: Record<string, Invoice["status"]> = {
+    paid: "paid",
+    partial: "pending",
+    sent: "pending",
+    draft: "draft",
+    overdue: "overdue",
+  };
+  return statusMap[dbStatus] || "draft";
+}
+
+export default async function InvoicesPage() {
+  // Fetch real invoices from Supabase
+  const supabase = await createClient();
+  
+  if (!supabase) {
+    return <div>Error: Could not connect to database</div>;
+  }
+
+  const { data: invoicesData, error } = await supabase
+    .from("invoices")
+    .select(`
+      id,
+      invoice_number,
+      status,
+      total_amount,
+      paid_amount,
+      created_at,
+      due_date,
+      customers:customer_id (
+        company_name
+      )
+    `)
+    .order("created_at", { ascending: false })
+    .limit(10000); // Fetch all invoices (increase if you have more)
+
+  if (error) {
+    console.error("Error fetching invoices:", error);
+    return <div>Error loading invoices</div>;
+  }
+
+  // Debug logging
+  console.log("📊 Fetched invoices count:", invoicesData?.length || 0);
+  console.log("📊 First 3 invoice numbers:", invoicesData?.slice(0, 3).map((i: any) => i.invoice_number));
+
+  // Transform database data to component format
+  const invoices: Invoice[] = (invoicesData || []).map((inv: any) => ({
+    id: inv.id,
+    invoiceNumber: inv.invoice_number || "N/A",
+    customer: inv.customers?.company_name || "Unknown Customer",
+    date: formatDate(inv.created_at),
+    dueDate: formatDate(inv.due_date),
+    amount: inv.total_amount || 0,
+    status: mapStatus(inv.status),
+  }));
+
+  // Calculate stats from real data
+  const totalInvoices = invoices.length;
+  const totalAmount = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const paidAmount = invoices
     .filter((inv) => inv.status === "paid")
     .reduce((sum, inv) => sum + inv.amount, 0);
-  const pendingAmount = mockInvoices
+  const pendingAmount = invoices
     .filter((inv) => inv.status === "pending")
     .reduce((sum, inv) => sum + inv.amount, 0);
-  const overdueAmount = mockInvoices
+  const overdueAmount = invoices
     .filter((inv) => inv.status === "overdue")
     .reduce((sum, inv) => sum + inv.amount, 0);
 
@@ -131,11 +148,11 @@ export default function InvoicesPage() {
                 <CardTitle className="font-medium text-sm">Paid</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl text-green-600">
+                <div className="font-bold text-2xl text-success">
                   ${(paidAmount / 100).toFixed(2)}
                 </div>
                 <p className="text-muted-foreground text-xs">
-                  {mockInvoices.filter((inv) => inv.status === "paid").length}{" "}
+                  {invoices.filter((inv) => inv.status === "paid").length}{" "}
                   invoices
                 </p>
               </CardContent>
@@ -145,12 +162,12 @@ export default function InvoicesPage() {
                 <CardTitle className="font-medium text-sm">Pending</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl text-yellow-600">
+                <div className="font-bold text-2xl text-warning">
                   ${(pendingAmount / 100).toFixed(2)}
                 </div>
                 <p className="text-muted-foreground text-xs">
                   {
-                    mockInvoices.filter((inv) => inv.status === "pending")
+                    invoices.filter((inv) => inv.status === "pending")
                       .length
                   }{" "}
                   invoices
@@ -162,12 +179,12 @@ export default function InvoicesPage() {
                 <CardTitle className="font-medium text-sm">Overdue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl text-red-600">
+                <div className="font-bold text-2xl text-destructive">
                   ${(overdueAmount / 100).toFixed(2)}
                 </div>
                 <p className="text-muted-foreground text-xs">
                   {
-                    mockInvoices.filter((inv) => inv.status === "overdue")
+                    invoices.filter((inv) => inv.status === "overdue")
                       .length
                   }{" "}
                   invoices
@@ -180,7 +197,7 @@ export default function InvoicesPage() {
       />
 
       <div className="flex-1 overflow-auto">
-        <InvoicesTable invoices={mockInvoices} itemsPerPage={50} />
+        <InvoicesTable invoices={invoices} itemsPerPage={50} enableVirtualization={true} />
       </div>
     </div>
   );
