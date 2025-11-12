@@ -578,3 +578,43 @@ export async function updatePurchaseOrderLineItems(
   });
 }
 
+/**
+ * Archive a purchase order (soft delete)
+ */
+export async function archivePurchaseOrder(
+  poId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Database connection not available" };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const { error } = await supabase
+      .from("purchase_orders")
+      .update({
+        deleted_at: new Date().toISOString(),
+      })
+      .eq("id", poId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    revalidatePath("/dashboard/work/purchase-orders");
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+

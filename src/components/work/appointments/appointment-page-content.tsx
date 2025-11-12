@@ -8,21 +8,32 @@
 "use client";
 
 import {
+  Archive,
+  Bell,
   Calendar,
   Clock,
-  MapPin,
   Mail,
+  MapPin,
   Phone,
-  User,
-  Users,
-  Wrench,
   Repeat,
-  Bell,
+  User,
+  Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { archiveAppointment } from "@/actions/appointments";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -32,11 +43,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import {
   UnifiedAccordionContent,
-  UnifiedAccordionSection,
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
 
 export type AppointmentData = {
@@ -58,6 +67,8 @@ export function AppointmentPageContent({
   entityData,
 }: AppointmentPageContentProps) {
   const [mounted, setMounted] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const {
     appointment,
@@ -74,12 +85,42 @@ export function AppointmentPageContent({
     setMounted(true);
   }, []);
 
+  const handleArchiveAppointment = async () => {
+    setIsArchiving(true);
+    try {
+      const result = await archiveAppointment(appointment.id);
+      if (result.success) {
+        toast.success("Appointment archived successfully");
+        setIsArchiveDialogOpen(false);
+        // Redirect to appointments list
+        window.location.href = "/dashboard/work/appointments";
+      } else {
+        toast.error(result.error || "Failed to archive appointment");
+      }
+    } catch (error) {
+      toast.error("Failed to archive appointment");
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
   // Compute values used in hooks - must be before hooks
-  const appointmentStart = appointment.start_time ? new Date(appointment.start_time) : null;
-  const appointmentEnd = appointment.end_time ? new Date(appointment.end_time) : null;
-  const durationMinutes = appointmentStart && appointmentEnd
-    ? Math.max(0, Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60)))
-    : 0;
+  const appointmentStart = appointment.start_time
+    ? new Date(appointment.start_time)
+    : null;
+  const appointmentEnd = appointment.end_time
+    ? new Date(appointment.end_time)
+    : null;
+  const durationMinutes =
+    appointmentStart && appointmentEnd
+      ? Math.max(
+          0,
+          Math.floor(
+            (appointmentEnd.getTime() - appointmentStart.getTime()) /
+              (1000 * 60)
+          )
+        )
+      : 0;
 
   // All hooks must be called before any conditional returns
   const customSections = useMemo<UnifiedAccordionSection[]>(() => {
@@ -95,22 +136,30 @@ export function AppointmentPageContent({
               <div>
                 <Label>Start Time</Label>
                 <Input
-                  type="datetime-local"
-                  value={appointmentStart ? appointmentStart.toISOString().slice(0, 16) : ""}
                   readOnly
+                  type="datetime-local"
+                  value={
+                    appointmentStart
+                      ? appointmentStart.toISOString().slice(0, 16)
+                      : ""
+                  }
                 />
               </div>
               <div>
                 <Label>End Time</Label>
                 <Input
-                  type="datetime-local"
-                  value={appointmentEnd ? appointmentEnd.toISOString().slice(0, 16) : ""}
                   readOnly
+                  type="datetime-local"
+                  value={
+                    appointmentEnd
+                      ? appointmentEnd.toISOString().slice(0, 16)
+                      : ""
+                  }
                 />
               </div>
               <div>
                 <Label>Status</Label>
-                <Select value={appointment.status || "scheduled"} disabled>
+                <Select disabled value={appointment.status || "scheduled"}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -126,18 +175,20 @@ export function AppointmentPageContent({
               </div>
               <div>
                 <Label>Duration</Label>
-                <Input value={`${durationMinutes} minutes`} readOnly />
+                <Input readOnly value={`${durationMinutes} minutes`} />
               </div>
               {appointment.location && (
                 <div className="md:col-span-2">
                   <Label>Location</Label>
-                  <Input value={appointment.location} readOnly />
+                  <Input readOnly value={appointment.location} />
                 </div>
               )}
               {appointment.access_instructions && (
                 <div className="md:col-span-2">
                   <Label>Access Instructions</Label>
-                  <p className="text-sm whitespace-pre-wrap">{appointment.access_instructions}</p>
+                  <p className="whitespace-pre-wrap text-sm">
+                    {appointment.access_instructions}
+                  </p>
                 </div>
               )}
             </div>
@@ -157,14 +208,18 @@ export function AppointmentPageContent({
               <div>
                 <Label>Recurrence Pattern</Label>
                 <p className="text-sm">
-                  {appointment.recurrence_rule ? JSON.stringify(appointment.recurrence_rule) : "Not configured"}
+                  {appointment.recurrence_rule
+                    ? JSON.stringify(appointment.recurrence_rule)
+                    : "Not configured"}
                 </p>
               </div>
               {appointment.recurrence_end_date && (
                 <div>
                   <Label>Recurrence End Date</Label>
                   <p className="text-sm">
-                    {new Date(appointment.recurrence_end_date).toLocaleDateString()}
+                    {new Date(
+                      appointment.recurrence_end_date
+                    ).toLocaleDateString()}
                   </p>
                 </div>
               )}
@@ -174,7 +229,10 @@ export function AppointmentPageContent({
       });
     }
 
-    if (appointment.reminder_hours_before !== null && appointment.reminder_hours_before !== undefined) {
+    if (
+      appointment.reminder_hours_before !== null &&
+      appointment.reminder_hours_before !== undefined
+    ) {
       sections.push({
         id: "reminders",
         title: "Reminders",
@@ -216,7 +274,9 @@ export function AppointmentPageContent({
                 <div>
                   <Label>Name</Label>
                   <p className="text-sm">
-                    {customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown"}
+                    {customer.display_name ||
+                      `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+                      "Unknown"}
                   </p>
                 </div>
                 <div>
@@ -233,7 +293,9 @@ export function AppointmentPageContent({
                 </div>
               </div>
               <Button asChild size="sm" variant="ghost">
-                <Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+                <Link href={`/dashboard/customers/${customer.id}`}>
+                  View Full Profile
+                </Link>
               </Button>
             </div>
           </UnifiedAccordionContent>
@@ -255,17 +317,17 @@ export function AppointmentPageContent({
                   {property.address}
                   {property.address2 && `, ${property.address2}`}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {property.city}, {property.state} {property.zip_code}
                 </p>
               </div>
-              <Button asChild variant="outline" size="sm">
+              <Button asChild size="sm" variant="outline">
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                     `${property.address}, ${property.city}, ${property.state}`
                   )}`}
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   <MapPin className="mr-2 size-4" />
                   Open in Google Maps
@@ -288,7 +350,9 @@ export function AppointmentPageContent({
               <div className="grid flex-1 gap-4 md:grid-cols-2">
                 <div>
                   <Label>Job Number</Label>
-                  <p className="text-sm">#{job.job_number || job.id.slice(0, 8)}</p>
+                  <p className="text-sm">
+                    #{job.job_number || job.id.slice(0, 8)}
+                  </p>
                 </div>
                 <div>
                   <Label>Title</Label>
@@ -313,7 +377,15 @@ export function AppointmentPageContent({
     }
 
     return sections;
-  }, [appointment, customer, property, job, durationMinutes, appointmentStart, appointmentEnd]);
+  }, [
+    appointment,
+    customer,
+    property,
+    job,
+    durationMinutes,
+    appointmentStart,
+    appointmentEnd,
+  ]);
 
   const relatedItems = useMemo(() => {
     const items: any[] = [];
@@ -322,7 +394,10 @@ export function AppointmentPageContent({
       items.push({
         id: `customer-${customer.id}`,
         type: "customer",
-        title: customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer",
+        title:
+          customer.display_name ||
+          `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+          "Unknown Customer",
         subtitle: customer.email || customer.phone || undefined,
         href: `/dashboard/customers/${customer.id}`,
       });
@@ -333,8 +408,9 @@ export function AppointmentPageContent({
         id: `property-${property.id}`,
         type: "property",
         title: property.address || property.name || "Property",
-        subtitle: `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
-        href: `/dashboard/properties/${property.id}`,
+        subtitle:
+          `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
+        href: `/dashboard/work/properties/${property.id}`,
       });
     }
 
@@ -378,7 +454,7 @@ export function AppointmentPageContent({
   ].filter(Boolean);
 
   const customHeader = (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="py-6">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -389,18 +465,17 @@ export function AppointmentPageContent({
                 ))}
               </div>
               <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold sm:text-3xl">
+                <h1 className="font-semibold text-2xl sm:text-3xl">
                   {appointment.title || "Appointment"}
                 </h1>
                 {appointmentStart && (
-                  <p className="text-sm text-muted-foreground sm:text-base">
+                  <p className="text-muted-foreground text-sm sm:text-base">
                     {appointmentStart.toLocaleDateString("en-US", {
                       weekday: "long",
                       year: "numeric",
                       month: "long",
                       day: "numeric",
-                    })}
-                    {" "}
+                    })}{" "}
                     {appointmentStart.toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
@@ -419,16 +494,18 @@ export function AppointmentPageContent({
           {customer && (
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                 href={`/dashboard/customers/${customer.id}`}
               >
                 <User className="size-4" />
-                {customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer"}
+                {customer.display_name ||
+                  `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+                  "Unknown Customer"}
               </Link>
 
               {customer.email && (
                 <a
-                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                   href={`mailto:${customer.email}`}
                 >
                   <Mail className="size-4" />
@@ -436,9 +513,20 @@ export function AppointmentPageContent({
                 </a>
               )}
 
+              {/* Archive Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                className="ml-auto"
+              >
+                <Archive className="mr-2 size-4" />
+                Archive
+              </Button>
+
               {customer.phone && (
                 <a
-                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                   href={`tel:${customer.phone}`}
                 >
                   <Phone className="size-4" />
@@ -459,7 +547,9 @@ export function AppointmentPageContent({
             {assigned_user && (
               <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
                 <User className="size-4 text-muted-foreground" />
-                <span className="font-medium">{assigned_user.name || "Unassigned"}</span>
+                <span className="font-medium">
+                  {assigned_user.name || "Unassigned"}
+                </span>
               </div>
             )}
 
@@ -469,7 +559,9 @@ export function AppointmentPageContent({
                 href={`/dashboard/work/${job.id}`}
               >
                 <Wrench className="size-4 text-muted-foreground" />
-                <span className="font-medium">Job #{job.job_number || job.id.slice(0, 8)}</span>
+                <span className="font-medium">
+                  Job #{job.job_number || job.id.slice(0, 8)}
+                </span>
               </Link>
             )}
           </div>
@@ -479,24 +571,51 @@ export function AppointmentPageContent({
   );
 
   return (
-    <DetailPageContentLayout
-      customHeader={customHeader}
-      customSections={customSections}
-      activities={activities}
-      notes={notes}
-      attachments={attachments}
-      relatedItems={relatedItems}
-      showStandardSections={{
-        activities: true,
-        notes: true,
-        attachments: true,
-        relatedItems: true,
-      }}
-      defaultOpenSection="schedule-details"
-    />
+    <>
+      <DetailPageContentLayout
+        activities={activities}
+        attachments={attachments}
+        customHeader={customHeader}
+        customSections={customSections}
+        defaultOpenSection="schedule-details"
+        notes={notes}
+        relatedItems={relatedItems}
+        showStandardSections={{
+          activities: true,
+          notes: true,
+          attachments: true,
+          relatedItems: true,
+        }}
+      />
+
+      {/* Archive Dialog */}
+      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Appointment?</DialogTitle>
+            <DialogDescription>
+              This will archive the appointment "{appointment.title}". You can
+              restore it from the archive within 90 days.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsArchiveDialogOpen(false)}
+              disabled={isArchiving}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleArchiveAppointment}
+              disabled={isArchiving}
+            >
+              {isArchiving ? "Archiving..." : "Archive Appointment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
-
-
-

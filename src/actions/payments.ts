@@ -438,6 +438,7 @@ export async function deletePayment(
     }
 
     revalidatePath("/dashboard/finance/payments");
+    revalidatePath("/dashboard/work/payments");
     return { success: true };
   } catch (error) {
     console.error("Delete payment error:", error);
@@ -446,4 +447,13 @@ export async function deletePayment(
     }
     return { success: false, error: "Failed to delete payment" };
   }
+}
+
+/**
+ * Archive payment (alias for deletePayment - uses soft delete)
+ */
+export async function archivePayment(
+  paymentId: string
+): Promise<{ success: boolean; error?: string }> {
+  return deletePayment(paymentId);
 }

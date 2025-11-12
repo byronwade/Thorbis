@@ -8,24 +8,36 @@
 "use client";
 
 import {
-  Wrench,
+  Archive,
   Calendar,
-  DollarSign,
-  Repeat,
-  User,
-  Package,
   CheckCircle2,
+  DollarSign,
+  FileText,
+  Package,
+  Receipt,
+  User,
+  Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { archiveMaintenancePlan } from "@/actions/maintenance-plans";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import {
   UnifiedAccordionContent,
-  UnifiedAccordionSection,
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
 
 export type MaintenancePlanData = {
@@ -33,6 +45,9 @@ export type MaintenancePlanData = {
   customer?: any;
   property?: any;
   equipment?: any[];
+  generatedJobs?: any[]; // NEW
+  scheduledAppointments?: any[]; // NEW
+  generatedInvoices?: any[]; // NEW
   notes?: any[];
   activities?: any[];
   attachments?: any[];
@@ -55,33 +70,34 @@ function formatCurrency(cents: number | null | undefined): string {
 function getStatusBadge(status: string) {
   const variants: Record<string, { className: string; label: string }> = {
     draft: {
-      className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+      className:
+        "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
       label: "Draft",
     },
     active: {
-      className: "bg-green-500 text-white",
+      className: "bg-success text-white",
       label: "Active",
     },
     paused: {
-      className: "bg-yellow-500 text-white",
+      className: "bg-warning text-white",
       label: "Paused",
     },
     cancelled: {
-      className: "bg-red-500 text-white",
+      className: "bg-destructive text-white",
       label: "Cancelled",
     },
     expired: {
-      className: "bg-orange-500 text-white",
+      className: "bg-warning text-white",
       label: "Expired",
     },
     completed: {
-      className: "bg-blue-500 text-white",
+      className: "bg-primary text-white",
       label: "Completed",
     },
   };
 
   const config = variants[status] || {
-    className: "bg-gray-100 text-gray-800",
+    className: "bg-muted text-foreground",
     label: status,
   };
 
@@ -96,12 +112,17 @@ export function MaintenancePlanPageContent({
   entityData,
 }: MaintenancePlanPageContentProps) {
   const [mounted, setMounted] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const {
     plan,
     customer,
     property,
     equipment = [],
+    generatedJobs = [], // NEW
+    scheduledAppointments = [], // NEW
+    generatedInvoices = [], // NEW
     notes = [],
     activities = [],
     attachments = [],
@@ -110,6 +131,24 @@ export function MaintenancePlanPageContent({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleArchiveMaintenancePlan = async () => {
+    setIsArchiving(true);
+    try {
+      const result = await archiveMaintenancePlan(plan.id);
+      if (result.success) {
+        toast.success("Maintenance plan archived successfully");
+        setIsArchiveDialogOpen(false);
+        window.location.href = "/dashboard/work/maintenance-plans";
+      } else {
+        toast.error(result.error || "Failed to archive maintenance plan");
+      }
+    } catch (error) {
+      toast.error("Failed to archive maintenance plan");
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
   if (!mounted) {
     return <div className="flex-1 p-6">Loading...</div>;
@@ -131,7 +170,7 @@ export function MaintenancePlanPageContent({
   ];
 
   const customHeader = (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="w-full">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -142,10 +181,11 @@ export function MaintenancePlanPageContent({
                 ))}
               </div>
               <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold sm:text-3xl">
-                  {plan.name || `Plan ${plan.plan_number || plan.id.slice(0, 8)}`}
+                <h1 className="font-semibold text-2xl sm:text-3xl">
+                  {plan.name ||
+                    `Plan ${plan.plan_number || plan.id.slice(0, 8)}`}
                 </h1>
-                <p className="text-sm text-muted-foreground sm:text-base">
+                <p className="text-muted-foreground text-sm sm:text-base">
                   {formatCurrency(plan.price)}
                 </p>
               </div>
@@ -155,12 +195,24 @@ export function MaintenancePlanPageContent({
           {customer && (
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                 href={`/dashboard/customers/${customer.id}`}
               >
                 <User className="size-4" />
-                {customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer"}
+                {customer.display_name ||
+                  `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+                  "Unknown Customer"}
               </Link>
+              {/* Archive Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                className="ml-auto"
+              >
+                <Archive className="mr-2 size-4" />
+                Archive
+              </Button>
             </div>
           )}
         </div>
@@ -180,25 +232,29 @@ export function MaintenancePlanPageContent({
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <Label>Frequency</Label>
-                <Input value={plan.frequency || "annually"} readOnly />
+                <Input readOnly value={plan.frequency || "annually"} />
               </div>
               <div>
                 <Label>Visits Per Term</Label>
-                <Input value={plan.visits_per_term || 1} readOnly />
+                <Input readOnly value={plan.visits_per_term || 1} />
               </div>
               <div>
                 <Label>Start Date</Label>
                 <Input
-                  value={plan.start_date ? new Date(plan.start_date).toLocaleDateString() : "N/A"}
                   readOnly
+                  value={
+                    plan.start_date
+                      ? new Date(plan.start_date).toLocaleDateString()
+                      : "N/A"
+                  }
                 />
               </div>
               {plan.end_date && (
                 <div>
                   <Label>End Date</Label>
                   <Input
-                    value={new Date(plan.end_date).toLocaleDateString()}
                     readOnly
+                    value={new Date(plan.end_date).toLocaleDateString()}
                   />
                 </div>
               )}
@@ -206,8 +262,8 @@ export function MaintenancePlanPageContent({
                 <div>
                   <Label>Next Service Due</Label>
                   <Input
-                    value={new Date(plan.next_service_due).toLocaleDateString()}
                     readOnly
+                    value={new Date(plan.next_service_due).toLocaleDateString()}
                   />
                 </div>
               )}
@@ -215,8 +271,10 @@ export function MaintenancePlanPageContent({
                 <div>
                   <Label>Last Service</Label>
                   <Input
-                    value={new Date(plan.last_service_date).toLocaleDateString()}
                     readOnly
+                    value={new Date(
+                      plan.last_service_date
+                    ).toLocaleDateString()}
                   />
                 </div>
               )}
@@ -236,9 +294,14 @@ export function MaintenancePlanPageContent({
           <UnifiedAccordionContent>
             <div className="space-y-2">
               {includedServices.map((service: any, index: number) => (
-                <div key={index} className="flex items-center gap-2 rounded-lg border p-3">
-                  <CheckCircle2 className="size-4 text-green-600" />
-                  <span className="text-sm">{service.name || service.description || service}</span>
+                <div
+                  className="flex items-center gap-2 rounded-lg border p-3"
+                  key={index}
+                >
+                  <CheckCircle2 className="size-4 text-success" />
+                  <span className="text-sm">
+                    {service.name || service.description || service}
+                  </span>
                 </div>
               ))}
             </div>
@@ -257,15 +320,22 @@ export function MaintenancePlanPageContent({
           <UnifiedAccordionContent>
             <div className="space-y-2">
               {equipment.map((eq: any) => (
-                <div key={eq.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div
+                  className="flex items-center justify-between rounded-lg border p-3"
+                  key={eq.id}
+                >
                   <div>
-                    <p className="font-medium text-sm">{eq.name || eq.equipment_number}</p>
+                    <p className="font-medium text-sm">
+                      {eq.name || eq.equipment_number}
+                    </p>
                     <p className="text-muted-foreground text-xs">
                       {eq.manufacturer} {eq.model}
                     </p>
                   </div>
                   <Button asChild size="sm" variant="ghost">
-                    <Link href={`/dashboard/work/equipment/${eq.id}`}>View</Link>
+                    <Link href={`/dashboard/work/equipment/${eq.id}`}>
+                      View
+                    </Link>
                   </Button>
                 </div>
               ))}
@@ -284,20 +354,20 @@ export function MaintenancePlanPageContent({
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <Label>Price</Label>
-              <Input value={formatCurrency(plan.price)} readOnly />
+              <Input readOnly value={formatCurrency(plan.price)} />
             </div>
             <div>
               <Label>Billing Frequency</Label>
-              <Input value={plan.billing_frequency || "annually"} readOnly />
+              <Input readOnly value={plan.billing_frequency || "annually"} />
             </div>
             <div>
               <Label>Taxable</Label>
-              <Input value={plan.taxable ? "Yes" : "No"} readOnly />
+              <Input readOnly value={plan.taxable ? "Yes" : "No"} />
             </div>
             {plan.renewal_type && (
               <div>
                 <Label>Renewal Type</Label>
-                <Input value={plan.renewal_type} readOnly />
+                <Input readOnly value={plan.renewal_type} />
               </div>
             )}
           </div>
@@ -317,7 +387,9 @@ export function MaintenancePlanPageContent({
                 <div>
                   <Label>Name</Label>
                   <p className="text-sm">
-                    {customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown"}
+                    {customer.display_name ||
+                      `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+                      "Unknown"}
                   </p>
                 </div>
                 <div>
@@ -326,7 +398,9 @@ export function MaintenancePlanPageContent({
                 </div>
               </div>
               <Button asChild size="sm" variant="ghost">
-                <Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+                <Link href={`/dashboard/customers/${customer.id}`}>
+                  View Full Profile
+                </Link>
               </Button>
             </div>
           </UnifiedAccordionContent>
@@ -334,8 +408,171 @@ export function MaintenancePlanPageContent({
       });
     }
 
+    // NEW: Generated Jobs Section
+    if (generatedJobs.length > 0) {
+      sections.push({
+        id: "generated-jobs",
+        title: "Generated Jobs",
+        icon: <Wrench className="size-4" />,
+        count: generatedJobs.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Jobs created from this maintenance plan.
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Job #</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Title</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Property</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Completed</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {generatedJobs.map((job: any) => (
+                    <tr key={job.id} className="border-b hover:bg-muted/30">
+                      <td className="px-6 py-4 text-sm">#{job.job_number}</td>
+                      <td className="px-6 py-4 text-sm font-medium">{job.title}</td>
+                      <td className="px-6 py-4 text-sm">{job.property?.name || job.property?.address || "-"}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <Badge variant="outline">{job.status}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {job.completed_at ? new Date(job.completed_at).toLocaleDateString() : "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <Link href={`/dashboard/work/${job.id}`} className="text-primary hover:underline">
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
+    // NEW: Scheduled Appointments Section
+    if (scheduledAppointments.length > 0) {
+      sections.push({
+        id: "scheduled-appointments",
+        title: "Upcoming Appointments",
+        icon: <Calendar className="size-4" />,
+        count: scheduledAppointments.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Scheduled maintenance appointments for equipment covered by this plan.
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Date & Time</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Job</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Property</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scheduledAppointments.map((appointment: any) => (
+                    <tr key={appointment.id} className="border-b hover:bg-muted/30">
+                      <td className="px-6 py-4 text-sm">
+                        {new Date(appointment.scheduled_start).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {appointment.job ? `#${appointment.job.job_number}` : "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {appointment.property?.name || appointment.property?.address || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <Badge variant="outline">{appointment.status}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <Link href={`/dashboard/appointments/${appointment.id}`} className="text-primary hover:underline">
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
+    // NEW: Generated Invoices Section
+    if (generatedInvoices.length > 0) {
+      sections.push({
+        id: "generated-invoices",
+        title: "Generated Invoices",
+        icon: <Receipt className="size-4" />,
+        count: generatedInvoices.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Invoices created from maintenance work under this plan.
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Invoice #</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Date</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Total</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {generatedInvoices.map((invoice: any) => (
+                    <tr key={invoice.id} className="border-b hover:bg-muted/30">
+                      <td className="px-6 py-4 text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</td>
+                      <td className="px-6 py-4 text-sm">
+                        {new Date(invoice.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium">
+                        {formatCurrency(invoice.total_amount)}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <Badge variant={invoice.status === "paid" ? "default" : "outline"}>
+                          {invoice.status}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <Link href={`/dashboard/work/invoices/${invoice.id}`} className="text-primary hover:underline">
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
     return sections;
-  }, [plan, customer, equipment, includedServices]);
+  }, [plan, customer, equipment, generatedJobs, scheduledAppointments, generatedInvoices, includedServices]);
 
   const relatedItems = useMemo(() => {
     const items: any[] = [];
@@ -344,7 +581,10 @@ export function MaintenancePlanPageContent({
       items.push({
         id: `customer-${customer.id}`,
         type: "customer",
-        title: customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer",
+        title:
+          customer.display_name ||
+          `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+          "Unknown Customer",
         subtitle: customer.email || customer.phone || undefined,
         href: `/dashboard/customers/${customer.id}`,
       });
@@ -355,8 +595,9 @@ export function MaintenancePlanPageContent({
         id: `property-${property.id}`,
         type: "property",
         title: property.address || property.name || "Property",
-        subtitle: `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
-        href: `/dashboard/properties/${property.id}`,
+        subtitle:
+          `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
+        href: `/dashboard/work/properties/${property.id}`,
       });
     }
 
@@ -365,7 +606,8 @@ export function MaintenancePlanPageContent({
         id: `equipment-${eq.id}`,
         type: "equipment",
         title: eq.name || eq.equipment_number,
-        subtitle: `${eq.manufacturer || ""} ${eq.model || ""}`.trim() || undefined,
+        subtitle:
+          `${eq.manufacturer || ""} ${eq.model || ""}`.trim() || undefined,
         href: `/dashboard/work/equipment/${eq.id}`,
       });
     });
@@ -374,25 +616,50 @@ export function MaintenancePlanPageContent({
   }, [customer, property, equipment]);
 
   return (
-    <DetailPageContentLayout
-      customHeader={customHeader}
-      customSections={customSections}
-      activities={activities}
-      notes={notes}
-      attachments={attachments}
-      relatedItems={relatedItems}
-      showStandardSections={{
-        activities: true,
-        notes: true,
-        attachments: true,
-        relatedItems: true,
-      }}
-      defaultOpenSection="service-schedule"
-    />
+    <>
+      <DetailPageContentLayout
+        activities={activities}
+        attachments={attachments}
+        customHeader={customHeader}
+        customSections={customSections}
+        defaultOpenSection="service-schedule"
+        notes={notes}
+        relatedItems={relatedItems}
+        showStandardSections={{
+          activities: true,
+          notes: true,
+          attachments: true,
+          relatedItems: true,
+        }}
+      />
+
+      {/* Archive Dialog */}
+      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Maintenance Plan?</DialogTitle>
+            <DialogDescription>
+              This will archive the maintenance plan. You can restore it from the archive within 90 days.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsArchiveDialogOpen(false)}
+              disabled={isArchiving}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleArchiveMaintenancePlan}
+              disabled={isArchiving}
+            >
+              {isArchiving ? "Archiving..." : "Archive Maintenance Plan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
-
-
-
-

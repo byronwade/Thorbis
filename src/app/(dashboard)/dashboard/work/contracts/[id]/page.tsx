@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  Building2,
   Calendar,
   Download,
   Edit,
@@ -7,6 +8,7 @@ import {
   MoreVertical,
   Send,
   Trash2,
+  TrendingUp,
   User,
 } from "lucide-react";
 import Link from "next/link";
@@ -22,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { WorkflowTimeline } from "@/components/ui/workflow-timeline";
 import { ContractActions } from "@/components/work/contract-actions";
 import { createClient } from "@/lib/supabase/server";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
@@ -42,26 +45,26 @@ function getStatusBadge(status: string) {
     },
     sent: {
       className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        "bg-primary/10 text-primary",
       label: "Sent",
     },
     viewed: {
       className:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+        "bg-accent/10 text-accent-foreground",
       label: "Viewed",
     },
     draft: {
       className:
-        "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+        "bg-muted text-foreground",
       label: "Draft",
     },
     rejected: {
-      className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+      className: "bg-destructive/10 text-destructive",
       label: "Rejected",
     },
     expired: {
       className:
-        "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+        "bg-warning/10 text-warning",
       label: "Expired",
     },
   };
@@ -95,6 +98,16 @@ function formatDateTime(dateString: string | Date | null) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function formatCurrency(cents: number | null | undefined): string {
+  if (cents === null || cents === undefined) {
+    return "$0.00";
+  }
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(cents / 100);
 }
 
 export default async function ContractDetailPage({
@@ -185,6 +198,37 @@ export default async function ContractDetailPage({
     : null;
 
   const customerId = estimate?.customer_id || invoice?.customer_id || job?.customer_id;
+
+  // NEW: Fetch property (via job) and appointments for contract context
+  const [{ data: property }, { data: appointments }] = await Promise.all([
+    // Fetch property via job
+    job?.id
+      ? supabase
+          .from("jobs")
+          .select("property_id, property:properties!property_id(*)")
+          .eq("id", job.id)
+          .single()
+          .then((result) => ({
+            data: result.data?.property
+              ? Array.isArray(result.data.property)
+                ? result.data.property[0]
+                : result.data.property
+              : null,
+            error: result.error,
+          }))
+      : Promise.resolve({ data: null, error: null }),
+
+    // Fetch appointments related to the job
+    job?.id
+      ? supabase
+          .from("schedules")
+          .select("id, scheduled_start, scheduled_end, status, type")
+          .eq("job_id", job.id)
+          .is("deleted_at", null)
+          .order("scheduled_start", { ascending: false })
+          .limit(5)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
 
   // Transform contract data
   const contract = {
@@ -277,6 +321,45 @@ export default async function ContractDetailPage({
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Main Content */}
             <div className="space-y-6 lg:col-span-2">
+              {/* NEW: Sales Workflow Timeline */}
+              {(estimate || invoice) && (
+                <WorkflowTimeline
+                  stages={[
+                    {
+                      id: "estimate",
+                      label: "Estimate Created",
+                      status: estimate ? "completed" : "pending",
+                      date: estimate?.created_at,
+                      href: estimate?.id ? `/dashboard/work/estimates/${estimate.id}` : undefined,
+                      description: estimate?.estimate_number ? `#${estimate.estimate_number}` : undefined,
+                    },
+                    {
+                      id: "contract",
+                      label: "Contract Generated",
+                      status: "completed",
+                      date: contractRaw.created_at,
+                      href: `/dashboard/work/contracts/${contractRaw.id}`,
+                      description: contract.status === "signed" ? "Signed" : "Pending signature",
+                    },
+                    {
+                      id: "invoice",
+                      label: "Invoice Created",
+                      status: invoice ? "completed" : "pending",
+                      date: invoice?.created_at,
+                      href: invoice?.id ? `/dashboard/work/invoices/${invoice.id}` : undefined,
+                      description: invoice?.invoice_number ? `#${invoice.invoice_number}` : undefined,
+                    },
+                    {
+                      id: "payment",
+                      label: "Payment Received",
+                      status: invoice?.status === "paid" ? "completed" : invoice ? "current" : "pending",
+                      date: invoice?.paid_at,
+                      description: invoice?.paid_at ? "Completed" : invoice ? `Balance: ${formatCurrency(invoice.balance_amount)}` : undefined,
+                    },
+                  ]}
+                />
+              )}
+
               {/* Contract Body */}
               <Card>
                 <CardHeader>
@@ -407,6 +490,69 @@ export default async function ContractDetailPage({
                 </CardContent>
               </Card>
 
+              {/* NEW: Property Information */}
+              {property && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Property</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild className="w-full" variant="outline">
+                      <Link href={`/dashboard/work/properties/${property.id}`}>
+                        <Building2 className="mr-2 size-4" />
+                        {property.name || property.address}
+                      </Link>
+                    </Button>
+                    {property.city && property.state && (
+                      <p className="mt-2 text-center text-muted-foreground text-sm">
+                        {property.city}, {property.state}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* NEW: Related Appointments */}
+              {appointments && appointments.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Related Appointments</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {appointments.map((appt: any) => (
+                        <Link
+                          key={appt.id}
+                          href={`/dashboard/appointments/${appt.id}`}
+                          className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="font-medium text-sm">
+                                {new Date(appt.scheduled_start).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })}
+                              </p>
+                              <p className="text-muted-foreground text-xs">
+                                {new Date(appt.scheduled_start).toLocaleTimeString("en-US", {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {appt.status}
+                            </Badge>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Signer Information */}
               {contract.signerName && (
                 <Card>
@@ -451,8 +597,8 @@ export default async function ContractDetailPage({
                   <div className="space-y-4">
                     {contract.signedAt && (
                       <div className="flex gap-3">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-                          <FileSignature className="size-4 text-green-600 dark:text-green-400" />
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-success/10 text-success">
+                          <FileSignature className="size-4 text-success dark:text-green-400" />
                         </div>
                         <div className="space-y-1">
                           <p className="font-medium text-sm">Signed</p>
@@ -465,8 +611,8 @@ export default async function ContractDetailPage({
 
                     {contract.viewedAt && (
                       <div className="flex gap-3">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/20">
-                          <FileSignature className="size-4 text-purple-600 dark:text-purple-400" />
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent-foreground">
+                          <FileSignature className="size-4 text-accent-foreground dark:text-purple-400" />
                         </div>
                         <div className="space-y-1">
                           <p className="font-medium text-sm">Viewed</p>
@@ -479,8 +625,8 @@ export default async function ContractDetailPage({
 
                     {contract.sentAt && (
                       <div className="flex gap-3">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
-                          <Send className="size-4 text-blue-600 dark:text-blue-400" />
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <Send className="size-4 text-primary dark:text-blue-400" />
                         </div>
                         <div className="space-y-1">
                           <p className="font-medium text-sm">Sent</p>
@@ -492,8 +638,8 @@ export default async function ContractDetailPage({
                     )}
 
                     <div className="flex gap-3">
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-900/20">
-                        <Calendar className="size-4 text-gray-600 dark:text-gray-400" />
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
+                        <Calendar className="size-4 text-muted-foreground" />
                       </div>
                       <div className="space-y-1">
                         <p className="font-medium text-sm">Created</p>
@@ -525,7 +671,11 @@ export default async function ContractDetailPage({
       </div>
 
       {/* Client Component for Interactive Actions */}
-      <ContractActions contractId={id} status={contract.status} />
+      <ContractActions
+        contractId={id}
+        contractNumber={contract.contractNumber || id.slice(0, 8)}
+        status={contract.status}
+      />
     </div>
   );
 }

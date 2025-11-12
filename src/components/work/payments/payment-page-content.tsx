@@ -8,40 +8,45 @@
 "use client";
 
 import {
-  CreditCard,
-  DollarSign,
-  Receipt,
-  RefreshCw,
-  FileText,
-  User,
+  Archive,
   Building2,
   Calendar,
+  CreditCard,
+  DollarSign,
+  FileText,
+  Receipt,
+  RefreshCw,
+  User,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archivePayment } from "@/actions/payments";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import {
   UnifiedAccordionContent,
-  UnifiedAccordionSection,
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export type PaymentData = {
   payment: any;
   customer?: any;
   invoice?: any;
   job?: any;
+  paymentPlanSchedule?: any; // NEW
+  financingProvider?: any; // NEW
   notes?: any[];
   activities?: any[];
   attachments?: any[];
@@ -79,37 +84,37 @@ function getPaymentMethodLabel(method: string): string {
 function getStatusBadge(status: string) {
   const variants: Record<string, { className: string; label: string }> = {
     pending: {
-      className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+      className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
       label: "Pending",
     },
     processing: {
-      className: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+      className: "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
       label: "Processing",
     },
     completed: {
-      className: "bg-green-500 text-white",
+      className: "bg-success text-white",
       label: "Completed",
     },
     failed: {
-      className: "bg-red-500 text-white",
+      className: "bg-destructive text-white",
       label: "Failed",
     },
     refunded: {
-      className: "bg-orange-500 text-white",
+      className: "bg-warning text-white",
       label: "Refunded",
     },
     partially_refunded: {
-      className: "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+      className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
       label: "Partially Refunded",
     },
     cancelled: {
-      className: "bg-gray-500 text-white",
+      className: "bg-secondary0 text-white",
       label: "Cancelled",
     },
   };
 
   const config = variants[status] || {
-    className: "bg-gray-100 text-gray-800",
+    className: "bg-muted text-foreground",
     label: status,
   };
 
@@ -120,16 +125,18 @@ function getStatusBadge(status: string) {
   );
 }
 
-export function PaymentPageContent({
-  entityData,
-}: PaymentPageContentProps) {
+export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
   const [mounted, setMounted] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const {
     payment,
     customer,
     invoice,
     job,
+    paymentPlanSchedule, // NEW
+    financingProvider, // NEW
     notes = [],
     activities = [],
     attachments = [],
@@ -139,9 +146,27 @@ export function PaymentPageContent({
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
+  const handleArchivePayment = async () => {
+    setIsArchiving(true);
+    try {
+      const result = await archivePayment(payment.id);
+      if (result.success) {
+        toast.success("Payment archived successfully");
+        setIsArchiveDialogOpen(false);
+        // Redirect to payments list
+        window.location.href = "/dashboard/work/payments";
+      } else {
+        toast.error(result.error || "Failed to archive payment");
+      }
+    } catch {
+      toast.error("Failed to archive payment");
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
+  // Removed early return to fix React Hooks order issue
+  // Now conditionally render at the end instead
 
   const headerBadges = [
     <Badge key="status" variant="outline">
@@ -153,7 +178,7 @@ export function PaymentPageContent({
   ];
 
   const customHeader = (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="w-full">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -164,10 +189,10 @@ export function PaymentPageContent({
                 ))}
               </div>
               <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold sm:text-3xl">
+                <h1 className="font-semibold text-2xl sm:text-3xl">
                   Payment {payment.payment_number || payment.id.slice(0, 8)}
                 </h1>
-                <p className="text-sm text-muted-foreground sm:text-base">
+                <p className="text-muted-foreground text-sm sm:text-base">
                   {formatCurrency(payment.amount)}
                 </p>
               </div>
@@ -177,12 +202,25 @@ export function PaymentPageContent({
           {customer && (
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                 href={`/dashboard/customers/${customer.id}`}
               >
                 <User className="size-4" />
-                {customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer"}
+                {customer.display_name ||
+                  `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+                  "Unknown Customer"}
               </Link>
+
+              {/* Archive Button */}
+              <Button
+                className="ml-auto"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
+              >
+                <Archive className="mr-2 size-4" />
+                Archive
+              </Button>
             </div>
           )}
         </div>
@@ -202,15 +240,23 @@ export function PaymentPageContent({
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <Label>Payment Number</Label>
-                <Input value={payment.payment_number || payment.id.slice(0, 8)} readOnly />
+                <Input
+                  readOnly
+                  value={payment.payment_number || payment.id.slice(0, 8)}
+                />
               </div>
               <div>
                 <Label>Amount</Label>
-                <Input value={formatCurrency(payment.amount)} readOnly />
+                <Input readOnly value={formatCurrency(payment.amount)} />
               </div>
               <div>
                 <Label>Payment Method</Label>
-                <Input value={getPaymentMethodLabel(payment.payment_method || "other")} readOnly />
+                <Input
+                  readOnly
+                  value={getPaymentMethodLabel(
+                    payment.payment_method || "other"
+                  )}
+                />
               </div>
               <div>
                 <Label>Status</Label>
@@ -220,8 +266,8 @@ export function PaymentPageContent({
                 <div>
                   <Label>Processed At</Label>
                   <Input
-                    value={new Date(payment.processed_at).toLocaleString()}
                     readOnly
+                    value={new Date(payment.processed_at).toLocaleString()}
                   />
                 </div>
               )}
@@ -229,29 +275,29 @@ export function PaymentPageContent({
                 <div>
                   <Label>Completed At</Label>
                   <Input
-                    value={new Date(payment.completed_at).toLocaleString()}
                     readOnly
+                    value={new Date(payment.completed_at).toLocaleString()}
                   />
                 </div>
               )}
               {payment.reference_number && (
                 <div>
                   <Label>Reference Number</Label>
-                  <Input value={payment.reference_number} readOnly />
+                  <Input readOnly value={payment.reference_number} />
                 </div>
               )}
               {payment.check_number && (
                 <div>
                   <Label>Check Number</Label>
-                  <Input value={payment.check_number} readOnly />
+                  <Input readOnly value={payment.check_number} />
                 </div>
               )}
               {payment.card_last4 && (
                 <div>
                   <Label>Card</Label>
                   <Input
-                    value={`${payment.card_brand || "Card"} •••• ${payment.card_last4}`}
                     readOnly
+                    value={`${payment.card_brand || "Card"} •••• ${payment.card_last4}`}
                   />
                 </div>
               )}
@@ -272,27 +318,35 @@ export function PaymentPageContent({
               {payment.processor_name && (
                 <div>
                   <Label>Processor</Label>
-                  <Input value={payment.processor_name} readOnly />
+                  <Input readOnly value={payment.processor_name} />
                 </div>
               )}
               {payment.processor_transaction_id && (
                 <div>
                   <Label>Transaction ID</Label>
-                  <Input value={payment.processor_transaction_id} readOnly />
+                  <Input readOnly value={payment.processor_transaction_id} />
                 </div>
               )}
-              {payment.processor_fee !== null && payment.processor_fee !== undefined && (
-                <div>
-                  <Label>Processor Fee</Label>
-                  <Input value={formatCurrency(payment.processor_fee)} readOnly />
-                </div>
-              )}
-              {payment.net_amount !== null && payment.net_amount !== undefined && (
-                <div>
-                  <Label>Net Amount</Label>
-                  <Input value={formatCurrency(payment.net_amount)} readOnly />
-                </div>
-              )}
+              {payment.processor_fee !== null &&
+                payment.processor_fee !== undefined && (
+                  <div>
+                    <Label>Processor Fee</Label>
+                    <Input
+                      readOnly
+                      value={formatCurrency(payment.processor_fee)}
+                    />
+                  </div>
+                )}
+              {payment.net_amount !== null &&
+                payment.net_amount !== undefined && (
+                  <div>
+                    <Label>Net Amount</Label>
+                    <Input
+                      readOnly
+                      value={formatCurrency(payment.net_amount)}
+                    />
+                  </div>
+                )}
             </div>
           </UnifiedAccordionContent>
         ),
@@ -309,7 +363,9 @@ export function PaymentPageContent({
             <div className="space-y-3">
               <div>
                 <Label>Refunded Amount</Label>
-                <p className="text-sm font-semibold">{formatCurrency(payment.refunded_amount)}</p>
+                <p className="font-semibold text-sm">
+                  {formatCurrency(payment.refunded_amount)}
+                </p>
               </div>
               {payment.refund_reason && (
                 <div>
@@ -343,7 +399,9 @@ export function PaymentPageContent({
                 <div>
                   <Label>Name</Label>
                   <p className="text-sm">
-                    {customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown"}
+                    {customer.display_name ||
+                      `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+                      "Unknown"}
                   </p>
                 </div>
                 <div>
@@ -356,7 +414,9 @@ export function PaymentPageContent({
                 </div>
               </div>
               <Button asChild size="sm" variant="ghost">
-                <Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+                <Link href={`/dashboard/customers/${customer.id}`}>
+                  View Full Profile
+                </Link>
               </Button>
             </div>
           </UnifiedAccordionContent>
@@ -375,11 +435,15 @@ export function PaymentPageContent({
               <div className="grid flex-1 gap-4 md:grid-cols-2">
                 <div>
                   <Label>Invoice Number</Label>
-                  <p className="text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</p>
+                  <p className="text-sm">
+                    #{invoice.invoice_number || invoice.id.slice(0, 8)}
+                  </p>
                 </div>
                 <div>
                   <Label>Invoice Amount</Label>
-                  <p className="text-sm">{formatCurrency(invoice.total_amount)}</p>
+                  <p className="text-sm">
+                    {formatCurrency(invoice.total_amount)}
+                  </p>
                 </div>
                 <div>
                   <Label>Status</Label>
@@ -387,7 +451,9 @@ export function PaymentPageContent({
                 </div>
               </div>
               <Button asChild size="sm" variant="ghost">
-                <Link href={`/dashboard/work/invoices/${invoice.id}`}>View Invoice</Link>
+                <Link href={`/dashboard/work/invoices/${invoice.id}`}>
+                  View Invoice
+                </Link>
               </Button>
             </div>
           </UnifiedAccordionContent>
@@ -406,7 +472,9 @@ export function PaymentPageContent({
               <div className="grid flex-1 gap-4 md:grid-cols-2">
                 <div>
                   <Label>Job Number</Label>
-                  <p className="text-sm">#{job.job_number || job.id.slice(0, 8)}</p>
+                  <p className="text-sm">
+                    #{job.job_number || job.id.slice(0, 8)}
+                  </p>
                 </div>
                 <div>
                   <Label>Title</Label>
@@ -422,8 +490,135 @@ export function PaymentPageContent({
       });
     }
 
+    // NEW: Payment Plan Schedule Section
+    if (paymentPlanSchedule) {
+      const plan = Array.isArray(paymentPlanSchedule.payment_plan)
+        ? paymentPlanSchedule.payment_plan[0]
+        : paymentPlanSchedule.payment_plan;
+
+      sections.push({
+        id: "payment-plan",
+        title: "Payment Plan",
+        icon: <Calendar className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="space-y-4">
+              <div className="rounded-lg border bg-card p-4">
+                <Label className="mb-2 block text-xs">Plan Details</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
+                      Plan Name:
+                    </span>
+                    <span className="font-medium text-sm">
+                      {plan?.name || "Payment Plan"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
+                      Total Amount:
+                    </span>
+                    <span className="font-medium text-sm">
+                      {formatCurrency(plan?.total_amount)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
+                      Total Payments:
+                    </span>
+                    <span className="font-medium text-sm">
+                      {plan?.number_of_payments || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
+                      This Payment:
+                    </span>
+                    <span className="font-medium text-sm">
+                      #{paymentPlanSchedule.installment_number} of{" "}
+                      {plan?.number_of_payments}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
+                      Due Date:
+                    </span>
+                    <span className="font-medium text-sm">
+                      {paymentPlanSchedule.due_date
+                        ? new Date(
+                            paymentPlanSchedule.due_date
+                          ).toLocaleDateString()
+                        : "-"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {plan?.invoice && (
+                <Button asChild className="w-full" variant="outline">
+                  <Link href={`/dashboard/work/invoices/${plan.invoice.id}`}>
+                    View Related Invoice #{plan.invoice.invoice_number}
+                  </Link>
+                </Button>
+              )}
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
+    // NEW: Financing Provider Section
+    if (financingProvider) {
+      sections.push({
+        id: "financing",
+        title: "Financing Provider",
+        icon: <DollarSign className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="rounded-lg border bg-card p-4">
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs">Provider Name</Label>
+                  <p className="font-medium text-sm">
+                    {financingProvider.name}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-xs">Type</Label>
+                  <Badge className="capitalize" variant="outline">
+                    {financingProvider.provider_type}
+                  </Badge>
+                </div>
+                {financingProvider.contact_email && (
+                  <div>
+                    <Label className="text-xs">Contact Email</Label>
+                    <a
+                      className="block text-primary text-sm hover:underline"
+                      href={`mailto:${financingProvider.contact_email}`}
+                    >
+                      {financingProvider.contact_email}
+                    </a>
+                  </div>
+                )}
+                {financingProvider.contact_phone && (
+                  <div>
+                    <Label className="text-xs">Contact Phone</Label>
+                    <a
+                      className="block text-primary text-sm hover:underline"
+                      href={`tel:${financingProvider.contact_phone}`}
+                    >
+                      {financingProvider.contact_phone}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
     return sections;
-  }, [payment, customer, invoice, job]);
+  }, [payment, customer, invoice, job, paymentPlanSchedule, financingProvider]);
 
   const relatedItems = useMemo(() => {
     const items: any[] = [];
@@ -432,7 +627,10 @@ export function PaymentPageContent({
       items.push({
         id: `customer-${customer.id}`,
         type: "customer",
-        title: customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer",
+        title:
+          customer.display_name ||
+          `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+          "Unknown Customer",
         subtitle: customer.email || customer.phone || undefined,
         href: `/dashboard/customers/${customer.id}`,
       });
@@ -467,26 +665,58 @@ export function PaymentPageContent({
     return items;
   }, [customer, invoice, job]);
 
+  // Conditional render after all hooks
+  if (!mounted) {
+    return <div className="flex-1 p-6">Loading...</div>;
+  }
+
   return (
-    <DetailPageContentLayout
-      customHeader={customHeader}
-      customSections={customSections}
-      activities={activities}
-      notes={notes}
-      attachments={attachments}
-      relatedItems={relatedItems}
-      showStandardSections={{
-        activities: true,
-        notes: true,
-        attachments: true,
-        relatedItems: true,
-      }}
-      defaultOpenSection="payment-details"
-    />
+    <>
+      <DetailPageContentLayout
+        activities={activities}
+        attachments={attachments}
+        customHeader={customHeader}
+        customSections={customSections}
+        defaultOpenSection="payment-details"
+        notes={notes}
+        relatedItems={relatedItems}
+        showStandardSections={{
+          activities: true,
+          notes: true,
+          attachments: true,
+          relatedItems: true,
+        }}
+      />
+
+      {/* Archive Dialog */}
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Payment?</DialogTitle>
+            <DialogDescription>
+              This will archive payment #
+              {payment.payment_number || payment.id.slice(0, 8)}. You can
+              restore it from the archive within 90 days.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isArchiving}
+              onClick={handleArchivePayment}
+              variant="destructive"
+            >
+              {isArchiving ? "Archiving..." : "Archive Payment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
-
-
-
-

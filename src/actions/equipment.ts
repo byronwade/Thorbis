@@ -184,7 +184,7 @@ export async function createEquipment(formData: FormData) {
 
   revalidatePath("/dashboard/work/equipment");
   revalidatePath(`/dashboard/customers/${customerId}`);
-  revalidatePath(`/dashboard/properties/${propertyId}`);
+  revalidatePath(`/dashboard/work/properties/${propertyId}`);
 
   return { success: true, data };
 }
@@ -284,6 +284,44 @@ export async function updateJobEquipment(
   }
 
   return { success: true, data };
+}
+
+/**
+ * Archive equipment (soft delete)
+ */
+export async function archiveEquipment(
+  equipmentId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Database connection not available" };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const { error } = await supabase
+      .from("equipment")
+      .update({
+        deleted_at: new Date().toISOString(),
+      })
+      .eq("id", equipmentId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    revalidatePath("/dashboard/work/equipment");
+    return { success: true };
+  } catch (error) {
+    console.error("Archive equipment error:", error);
+    return { success: false, error: "Failed to archive equipment" };
+  }
 }
 
 // ============================================================================
