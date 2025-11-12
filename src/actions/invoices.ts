@@ -18,6 +18,7 @@ import {
   type ActionResult,
   assertAuthenticated,
   assertExists,
+  assertSupabase,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
@@ -1250,6 +1251,7 @@ export async function unlinkInvoiceFromJob(
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
+    assertSupabase(supabase);
 
     // Get current invoice to verify exists and get job_id for revalidation
     const { data: invoice, error: fetchError } = await supabase
@@ -1275,7 +1277,7 @@ export async function unlinkInvoiceFromJob(
 
     if (unlinkError) {
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("unlink invoice from job"),
+        "Failed to unlink invoice from job",
         ERROR_CODES.DB_QUERY_ERROR
       );
     }
@@ -1287,4 +1289,21 @@ export async function unlinkInvoiceFromJob(
     }
     revalidatePath("/dashboard/work/invoices");
   });
+}
+
+/**
+ * Unlink job from invoice (convenience wrapper)
+ *
+ * This is a convenience function that calls unlinkInvoiceFromJob.
+ * Provided for clearer naming when calling from the invoice detail page.
+ * The implementation is the same - it removes the job_id from the invoice.
+ *
+ * @param invoiceId - ID of the invoice to unlink from its job
+ * @returns Promise<ActionResult<void>>
+ */
+export async function unlinkJobFromInvoice(
+  invoiceId: string
+): Promise<ActionResult<void>> {
+  // Just call the main function - same implementation
+  return unlinkInvoiceFromJob(invoiceId);
 }

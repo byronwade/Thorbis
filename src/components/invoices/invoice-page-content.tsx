@@ -28,6 +28,7 @@ import {
   DollarSign,
   FileCheck,
   FileText,
+  LinkOff,
   Receipt,
   TrendingUp,
   User,
@@ -35,8 +36,19 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveInvoice, unlinkJobFromInvoice } from "@/actions/invoices";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   UnifiedAccordionContent,
   type UnifiedAccordionSection,
@@ -51,17 +63,6 @@ import { InvoicePayments } from "./invoice-payments";
 import { InvoiceProgressPayments } from "./invoice-progress-payments";
 import { InvoiceTerms } from "./invoice-terms";
 import { InvoiceTotals } from "./invoice-totals";
-import { archiveInvoice } from "@/actions/invoices";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 export type InvoiceData = {
   invoice: any;
@@ -100,6 +101,8 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
   const [invoice, setInvoice] = useState(entityData.invoice);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [unlinkJobId, setUnlinkJobId] = useState<string | null>(null);
+  const [isUnlinking, setIsUnlinking] = useState(false);
 
   const {
     invoice: initialInvoice,
@@ -154,6 +157,28 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
       toast.error("Failed to archive invoice");
     } finally {
       setIsArchiving(false);
+    }
+  };
+
+  const handleUnlinkJob = async () => {
+    if (!unlinkJobId) return;
+
+    setIsUnlinking(true);
+    try {
+      const result = await unlinkJobFromInvoice(invoice.id);
+
+      if (result.success) {
+        toast.success("Job unlinked from invoice");
+        setUnlinkJobId(null);
+        // Refresh to show updated data
+        window.location.reload();
+      } else {
+        toast.error(result.error || "Failed to unlink job");
+      }
+    } catch (error) {
+      toast.error("Failed to unlink job");
+    } finally {
+      setIsUnlinking(false);
     }
   };
 
@@ -227,11 +252,11 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 
               {/* Archive Button */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                disabled={invoice.status === "paid"}
                 className="ml-auto"
+                disabled={invoice.status === "paid"}
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
               >
                 <Archive className="mr-2 size-4" />
                 Archive
@@ -300,16 +325,27 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
           label: "Estimate Created",
           status: estimate ? ("completed" as const) : ("pending" as const),
           date: estimate?.created_at,
-          href: estimate?.id ? `/dashboard/work/estimates/${estimate.id}` : undefined,
-          description: estimate?.estimate_number ? `#${estimate.estimate_number}` : undefined,
+          href: estimate?.id
+            ? `/dashboard/work/estimates/${estimate.id}`
+            : undefined,
+          description: estimate?.estimate_number
+            ? `#${estimate.estimate_number}`
+            : undefined,
         },
         {
           id: "contract",
           label: "Contract Generated",
           status: contract ? ("completed" as const) : ("pending" as const),
           date: contract?.created_at,
-          href: contract?.id ? `/dashboard/work/contracts/${contract.id}` : undefined,
-          description: contract?.status === "signed" ? "Signed" : contract ? "Pending signature" : undefined,
+          href: contract?.id
+            ? `/dashboard/work/contracts/${contract.id}`
+            : undefined,
+          description:
+            contract?.status === "signed"
+              ? "Signed"
+              : contract
+                ? "Pending signature"
+                : undefined,
         },
         {
           id: "invoice",
@@ -322,9 +358,19 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
         {
           id: "payment",
           label: "Payment Received",
-          status: invoice.status === "paid" ? ("completed" as const) : invoice.paid_amount > 0 ? ("current" as const) : ("pending" as const),
+          status:
+            invoice.status === "paid"
+              ? ("completed" as const)
+              : invoice.paid_amount > 0
+                ? ("current" as const)
+                : ("pending" as const),
           date: invoice.paid_at,
-          description: invoice.status === "paid" ? "Paid in full" : invoice.paid_amount > 0 ? `Paid: ${formatCurrency(invoice.paid_amount)}` : `Balance: ${formatCurrency(invoice.balance_amount)}`,
+          description:
+            invoice.status === "paid"
+              ? "Paid in full"
+              : invoice.paid_amount > 0
+                ? `Paid: ${formatCurrency(invoice.paid_amount)}`
+                : `Balance: ${formatCurrency(invoice.balance_amount)}`,
         },
       ];
 
@@ -346,7 +392,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
       id: "invoice-info",
       title: "Invoice Information",
       icon: <FileText className="size-4" />,
-      defaultOpen: !estimate && !contract, // Only default open if workflow not shown
+      defaultOpen: !(estimate || contract), // Only default open if workflow not shown
       content: (
         <UnifiedAccordionContent>
           <InvoiceHeader invoice={invoice} job={job} onUpdate={updateField} />
@@ -509,6 +555,16 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
         badge: job.status
           ? { label: job.status, variant: "outline" as const }
           : undefined,
+        actions: (
+          <Button
+            onClick={() => setUnlinkJobId(job.id)}
+            size="sm"
+            variant="outline"
+          >
+            <LinkOff className="mr-2 size-4" />
+            Unlink
+          </Button>
+        ),
       });
     }
 
@@ -552,17 +608,18 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
       />
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Invoice?</DialogTitle>
             <DialogDescription>
-              This will archive invoice #{invoice.invoice_number}. You can restore
-              it from the archive within 90 days.
+              This will archive invoice #{invoice.invoice_number}. You can
+              restore it from the archive within 90 days.
               {invoice.status === "paid" && (
                 <div className="mt-2 rounded-md bg-yellow-50 p-3 dark:bg-yellow-900/20">
-                  <p className="text-yellow-800 text-sm dark:text-yellow-200">
-                    Note: Paid invoices cannot be archived for compliance reasons.
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    Note: Paid invoices cannot be archived for compliance
+                    reasons.
                   </p>
                 </div>
               )}
@@ -570,18 +627,51 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveInvoice}
               disabled={isArchiving || invoice.status === "paid"}
+              onClick={handleArchiveInvoice}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Invoice"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Unlink Job Confirmation Dialog */}
+      <Dialog
+        onOpenChange={(open) => !open && setUnlinkJobId(null)}
+        open={unlinkJobId !== null}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unlink Job from Invoice?</DialogTitle>
+            <DialogDescription>
+              This will remove the job association from this invoice. The
+              invoice will remain in the system but will no longer appear on the
+              job's page.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              disabled={isUnlinking}
+              onClick={() => setUnlinkJobId(null)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isUnlinking}
+              onClick={handleUnlinkJob}
+              variant="destructive"
+            >
+              {isUnlinking ? "Unlinking..." : "Unlink Job"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -7,9 +7,20 @@
 
 "use client";
 
-import { Archive, Calendar, FileCheck, FileText, Receipt, TrendingUp, User } from "lucide-react";
+import {
+  Archive,
+  Calendar,
+  FileCheck,
+  FileText,
+  Link2Off,
+  Receipt,
+  TrendingUp,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveEstimate, unlinkJobFromEstimate } from "@/actions/estimates";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,8 +32,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { archiveEstimate } from "@/actions/estimates";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import {
   Table,
@@ -72,8 +81,7 @@ function getStatusBadge(status: string) {
       label: "Draft",
     },
     sent: {
-      className:
-        "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
+      className: "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
       label: "Sent",
     },
     viewed: {
@@ -111,6 +119,8 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
   const [mounted, setMounted] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [unlinkJobId, setUnlinkJobId] = useState<string | null>(null);
+  const [isUnlinking, setIsUnlinking] = useState(false);
 
   const {
     estimate,
@@ -143,6 +153,28 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
       toast.error("Failed to archive estimate");
     } finally {
       setIsArchiving(false);
+    }
+  };
+
+  const handleUnlinkJob = async () => {
+    if (!unlinkJobId) return;
+
+    setIsUnlinking(true);
+    try {
+      const result = await unlinkJobFromEstimate(estimate.id);
+
+      if (result.success) {
+        toast.success("Job unlinked from estimate");
+        setUnlinkJobId(null);
+        // Refresh to show updated data
+        window.location.reload();
+      } else {
+        toast.error(result.error || "Failed to unlink job");
+      }
+    } catch (error) {
+      toast.error("Failed to unlink job");
+    } finally {
+      setIsUnlinking(false);
     }
   };
 
@@ -199,10 +231,10 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 
               {/* Archive Button */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsArchiveDialogOpen(true)}
                 className="ml-auto"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
               >
                 <Archive className="mr-2 size-4" />
                 Archive
@@ -248,15 +280,23 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
           status: "completed" as const,
           date: estimate.created_at,
           href: `/dashboard/work/estimates/${estimate.id}`,
-          description: estimate.status === "accepted" ? "Accepted by customer" : undefined,
+          description:
+            estimate.status === "accepted" ? "Accepted by customer" : undefined,
         },
         {
           id: "contract",
           label: "Contract Generated",
           status: contract ? ("completed" as const) : ("pending" as const),
           date: contract?.created_at,
-          href: contract ? `/dashboard/work/contracts/${contract.id}` : undefined,
-          description: contract?.status === "signed" ? "Signed" : contract ? "Pending signature" : undefined,
+          href: contract
+            ? `/dashboard/work/contracts/${contract.id}`
+            : undefined,
+          description:
+            contract?.status === "signed"
+              ? "Signed"
+              : contract
+                ? "Pending signature"
+                : undefined,
         },
         {
           id: "invoice",
@@ -264,14 +304,28 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
           status: invoice ? ("completed" as const) : ("pending" as const),
           date: invoice?.created_at,
           href: invoice ? `/dashboard/work/invoices/${invoice.id}` : undefined,
-          description: invoice?.status === "paid" ? "Paid in full" : invoice ? `Status: ${invoice.status}` : undefined,
+          description:
+            invoice?.status === "paid"
+              ? "Paid in full"
+              : invoice
+                ? `Status: ${invoice.status}`
+                : undefined,
         },
         {
           id: "payment",
           label: "Payment Received",
-          status: invoice?.status === "paid" ? ("completed" as const) : invoice ? ("current" as const) : ("pending" as const),
+          status:
+            invoice?.status === "paid"
+              ? ("completed" as const)
+              : invoice
+                ? ("current" as const)
+                : ("pending" as const),
           date: invoice?.paid_at,
-          description: invoice?.paid_at ? "Completed" : invoice ? `Balance: ${formatCurrency(invoice.balance_amount)}` : undefined,
+          description: invoice?.paid_at
+            ? "Completed"
+            : invoice
+              ? `Balance: ${formatCurrency(invoice.balance_amount)}`
+              : undefined,
         },
       ];
 
@@ -290,107 +344,104 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 
     // Line Items Section
     sections.push({
-        id: "line-items",
-        title: "Line Items",
-        icon: <FileText className="size-4" />,
-        count: lineItems.length,
-        defaultOpen: !contract && !invoice, // Only default open if workflow not shown
-        content: (
-          <UnifiedAccordionContent>
-            {lineItems.length > 0 ? (
-              <div className="-mx-4 overflow-x-auto sm:mx-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Description</TableHead>
-                      <TableHead className="text-right">Quantity</TableHead>
-                      <TableHead className="text-right">Unit Price</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lineItems.map((item: any, index: number) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">
-                          {item.description || item.name || "Item"}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {item.quantity || 1}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrency(
-                            item.unit_price || item.unitPrice || item.price || 0
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          {formatCurrency(
-                            (item.quantity || 1) *
-                              (item.unit_price ||
-                                item.unitPrice ||
-                                item.price ||
-                                0)
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    <TableRow className="border-t-2 bg-muted/50">
-                      <TableCell
-                        className="text-right font-semibold"
-                        colSpan={3}
-                      >
-                        Subtotal
+      id: "line-items",
+      title: "Line Items",
+      icon: <FileText className="size-4" />,
+      count: lineItems.length,
+      defaultOpen: !(contract || invoice), // Only default open if workflow not shown
+      content: (
+        <UnifiedAccordionContent>
+          {lineItems.length > 0 ? (
+            <div className="-mx-4 overflow-x-auto sm:mx-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Quantity</TableHead>
+                    <TableHead className="text-right">Unit Price</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lineItems.map((item: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">
+                        {item.description || item.name || "Item"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.quantity || 1}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(
+                          item.unit_price || item.unitPrice || item.price || 0
+                        )}
                       </TableCell>
                       <TableCell className="text-right font-semibold">
-                        {formatCurrency(estimate.subtotal || 0)}
+                        {formatCurrency(
+                          (item.quantity || 1) *
+                            (item.unit_price ||
+                              item.unitPrice ||
+                              item.price ||
+                              0)
+                        )}
                       </TableCell>
                     </TableRow>
-                    {estimate.tax_amount > 0 && (
-                      <TableRow>
-                        <TableCell className="text-right" colSpan={3}>
-                          Tax ({estimate.tax_rate || 0}%)
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrency(estimate.tax_amount || 0)}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                    {estimate.discount_amount > 0 && (
-                      <TableRow>
-                        <TableCell className="text-right" colSpan={3}>
-                          Discount
-                        </TableCell>
-                        <TableCell className="text-right">
-                          -{formatCurrency(estimate.discount_amount || 0)}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                    <TableRow className="border-t-2 bg-muted/50">
-                      <TableCell
-                        className="text-right font-bold text-lg"
-                        colSpan={3}
-                      >
-                        Total
+                  ))}
+                  <TableRow className="border-t-2 bg-muted/50">
+                    <TableCell className="text-right font-semibold" colSpan={3}>
+                      Subtotal
+                    </TableCell>
+                    <TableCell className="text-right font-semibold">
+                      {formatCurrency(estimate.subtotal || 0)}
+                    </TableCell>
+                  </TableRow>
+                  {estimate.tax_amount > 0 && (
+                    <TableRow>
+                      <TableCell className="text-right" colSpan={3}>
+                        Tax ({estimate.tax_rate || 0}%)
                       </TableCell>
-                      <TableCell className="text-right font-bold text-lg">
-                        {formatCurrency(estimate.total_amount || 0)}
+                      <TableCell className="text-right">
+                        {formatCurrency(estimate.tax_amount || 0)}
                       </TableCell>
                     </TableRow>
-                  </TableBody>
-                </Table>
+                  )}
+                  {estimate.discount_amount > 0 && (
+                    <TableRow>
+                      <TableCell className="text-right" colSpan={3}>
+                        Discount
+                      </TableCell>
+                      <TableCell className="text-right">
+                        -{formatCurrency(estimate.discount_amount || 0)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  <TableRow className="border-t-2 bg-muted/50">
+                    <TableCell
+                      className="text-right font-bold text-lg"
+                      colSpan={3}
+                    >
+                      Total
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-lg">
+                      {formatCurrency(estimate.total_amount || 0)}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-center">
+                <FileText className="mx-auto size-12 text-muted-foreground/50" />
+                <p className="mt-4 text-muted-foreground text-sm">
+                  No line items yet
+                </p>
               </div>
-            ) : (
-              <div className="flex h-64 items-center justify-center">
-                <div className="text-center">
-                  <FileText className="mx-auto size-12 text-muted-foreground/50" />
-                  <p className="mt-4 text-muted-foreground text-sm">
-                    No line items yet
-                  </p>
-                </div>
-              </div>
-            )}
-          </UnifiedAccordionContent>
-        ),
-      });
+            </div>
+          )}
+        </UnifiedAccordionContent>
+      ),
+    });
 
     if (estimate.terms) {
       sections.push({
@@ -506,9 +557,19 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
                   <p className="text-sm">{job.title || "N/A"}</p>
                 </div>
               </div>
-              <Button asChild size="sm" variant="ghost">
-                <Link href={`/dashboard/work/${job.id}`}>View Job</Link>
-              </Button>
+              <div className="flex gap-2">
+                <Button asChild size="sm" variant="ghost">
+                  <Link href={`/dashboard/work/${job.id}`}>View Job</Link>
+                </Button>
+                <Button
+                  onClick={() => setUnlinkJobId(job.id)}
+                  size="sm"
+                  variant="outline"
+                >
+                  <Link2Off className="mr-2 size-4" />
+                  Unlink
+                </Button>
+              </div>
             </div>
           </UnifiedAccordionContent>
         ),
@@ -615,7 +676,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
       />
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Estimate?</DialogTitle>
@@ -627,18 +688,51 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveEstimate}
               disabled={isArchiving}
+              onClick={handleArchiveEstimate}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Estimate"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Unlink Job Confirmation Dialog */}
+      <Dialog
+        onOpenChange={(open) => !open && setUnlinkJobId(null)}
+        open={unlinkJobId !== null}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unlink Job from Estimate?</DialogTitle>
+            <DialogDescription>
+              This will remove the job association from this estimate. The
+              estimate will remain in the system but will no longer appear on
+              the job's page.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              disabled={isUnlinking}
+              onClick={() => setUnlinkJobId(null)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isUnlinking}
+              onClick={handleUnlinkJob}
+              variant="destructive"
+            >
+              {isUnlinking ? "Unlinking..." : "Unlink Job"}
             </Button>
           </DialogFooter>
         </DialogContent>

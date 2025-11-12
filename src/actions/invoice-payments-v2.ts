@@ -126,6 +126,21 @@ export async function processInvoicePayment({
       );
     }
 
+    // Check if company has a bank account configured (required for payments)
+    const { data: bankAccounts } = await supabase
+      .from("finance_bank_accounts")
+      .select("id")
+      .eq("company_id", invoice.company_id)
+      .eq("is_active", true)
+      .limit(1);
+
+    if (!bankAccounts || bankAccounts.length === 0) {
+      throw new ActionError(
+        "Bank account required. Please set up a bank account in Settings → Finance → Bank Accounts before collecting payments.",
+        ERROR_CODES.OPERATION_NOT_ALLOWED
+      );
+    }
+
     // Check trust score and payment limits
     const trustCheck = await calculatePaymentTrustScore(
       invoice.company_id,
@@ -400,4 +415,147 @@ export async function getInvoicePaymentProcessorStatus(
       maxAmount: processor?.max_payment_amount,
     };
   });
+}
+
+/**
+ * Remove payment from invoice
+ *
+ * Removes the association between a payment and an invoice via the invoice_payments junction table.
+ * This is critical for correcting payment applications to invoices.
+ *
+ * IMPORTANT: After removing payment, this recalculates invoice balance:
+ * 1. Sums remaining payments for this invoice
+ * 2. Updates invoice.paid_amount to the new total
+ * 3. Updates invoice.balance_amount = total_amount - paid_amount
+ * 4. Updates invoice.status based on balance (paid/partial/sent)
+ *
+ * Pattern: DELETE from junction table → Recalculate balance → Revalidate paths
+ *
+ * @param invoicePaymentId - ID of the invoice_payments junction table record
+ * @returns Promise<{ success: boolean; error?: string }>
+ */
+export async function removePaymentFromInvoice(
+  invoicePaymentId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Database connection failed" };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    // 1. Get junction record to find invoice_id and payment_id for revalidation
+    const { data: junctionRecord, error: fetchError } = await supabase
+      .from("invoice_payments")
+      .select("id, invoice_id, payment_id, amount_applied")
+      .eq("id", invoicePaymentId)
+      .single();
+
+    if (fetchError || !junctionRecord) {
+      return { success: false, error: "Payment application record not found" };
+    }
+
+    const { invoice_id, payment_id, amount_applied } = junctionRecord;
+
+    // Get invoice details for balance recalculation
+    const { data: invoice, error: invoiceError } = await supabase
+      .from("invoices")
+      .select("id, total_amount, paid_amount, balance_amount, status")
+      .eq("id", invoice_id)
+      .single();
+
+    if (invoiceError || !invoice) {
+      return { success: false, error: "Invoice not found" };
+    }
+
+    // 2. DELETE the junction table row
+    const { error: deleteError } = await supabase
+      .from("invoice_payments")
+      .delete()
+      .eq("id", invoicePaymentId);
+
+    if (deleteError) {
+      return {
+        success: false,
+        error: `Failed to remove payment: ${deleteError.message}`,
+      };
+    }
+
+    // 3. Recalculate invoice balance (CRITICAL)
+    // Sum remaining payments for this invoice
+    const { data: remainingPayments, error: sumError } = await supabase
+      .from("invoice_payments")
+      .select("amount_applied")
+      .eq("invoice_id", invoice_id);
+
+    if (sumError) {
+      console.error("Error calculating remaining payments:", sumError);
+      // Continue anyway - we'll use the current amount minus removed amount
+    }
+
+    // Calculate new paid amount
+    const newPaidAmount = remainingPayments
+      ? remainingPayments.reduce(
+          (sum, payment) => sum + payment.amount_applied,
+          0
+        )
+      : Math.max(0, invoice.paid_amount - amount_applied);
+
+    // Calculate new balance
+    const newBalanceAmount = invoice.total_amount - newPaidAmount;
+
+    // Determine new status based on balance
+    let newStatus = invoice.status;
+    if (newBalanceAmount === 0) {
+      newStatus = "paid";
+    } else if (newPaidAmount > 0 && newBalanceAmount > 0) {
+      newStatus = "partial";
+    } else if (newPaidAmount === 0 && newBalanceAmount > 0) {
+      // No payments remaining - revert to sent or viewed
+      newStatus = invoice.status === "paid" ? "sent" : invoice.status;
+    }
+
+    // 4. Update invoice with recalculated amounts
+    const { error: updateError } = await supabase
+      .from("invoices")
+      .update({
+        paid_amount: newPaidAmount,
+        balance_amount: newBalanceAmount,
+        status: newStatus,
+        paid_at: newBalanceAmount === 0 ? new Date().toISOString() : null,
+      })
+      .eq("id", invoice_id);
+
+    if (updateError) {
+      console.error("Error updating invoice balance:", updateError);
+      return {
+        success: false,
+        error: `Payment removed but failed to update invoice balance: ${updateError.message}`,
+      };
+    }
+
+    // 5. Revalidate BOTH sides (invoice + payment pages)
+    revalidatePath(`/dashboard/work/invoices/${invoice_id}`);
+    revalidatePath(`/dashboard/work/payments/${payment_id}`);
+    revalidatePath("/dashboard/work/invoices");
+    revalidatePath("/dashboard/work/payments");
+    revalidatePath("/dashboard/finance");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing payment from invoice:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to remove payment from invoice",
+    };
+  }
 }

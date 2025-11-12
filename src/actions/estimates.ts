@@ -18,6 +18,7 @@ import {
   type ActionResult,
   assertAuthenticated,
   assertExists,
+  assertSupabase,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
@@ -901,6 +902,7 @@ export async function unlinkEstimateFromJob(
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
+    assertSupabase(supabase);
 
     // Get current estimate to verify it exists and get job_id for revalidation
     const { data: estimate, error: fetchError } = await supabase
@@ -926,7 +928,7 @@ export async function unlinkEstimateFromJob(
 
     if (unlinkError) {
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("unlink estimate from job"),
+        "Failed to unlink estimate from job",
         ERROR_CODES.DB_QUERY_ERROR
       );
     }
@@ -938,6 +940,23 @@ export async function unlinkEstimateFromJob(
     }
     revalidatePath("/dashboard/work/estimates");
   });
+}
+
+/**
+ * Unlink job from estimate (convenience wrapper)
+ *
+ * This is a convenience function that calls unlinkEstimateFromJob.
+ * Provided for clearer naming when calling from the estimate detail page.
+ * The implementation is the same - it removes the job_id from the estimate.
+ *
+ * @param estimateId - ID of the estimate to unlink from its job
+ * @returns Promise<ActionResult<void>>
+ */
+export async function unlinkJobFromEstimate(
+  estimateId: string
+): Promise<ActionResult<void>> {
+  // Just call the main function - same implementation
+  return unlinkEstimateFromJob(estimateId);
 }
 
 /**
