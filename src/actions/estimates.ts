@@ -892,6 +892,55 @@ export async function restoreEstimate(
 }
 
 /**
+ * Unlink estimate from job
+ * Removes the job association from the estimate (sets job_id to NULL)
+ * This is a bidirectional operation - estimate no longer shows on job, job no longer shows on estimate
+ */
+export async function unlinkEstimateFromJob(
+  estimateId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+
+    // Get current estimate to verify it exists and get job_id for revalidation
+    const { data: estimate, error: fetchError } = await supabase
+      .from("estimates")
+      .select("id, job_id")
+      .eq("id", estimateId)
+      .single();
+
+    if (fetchError || !estimate) {
+      throw new ActionError(
+        "Estimate not found",
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    const previousJobId = estimate.job_id;
+
+    // Unlink estimate from job (set job_id to NULL)
+    const { error: unlinkError } = await supabase
+      .from("estimates")
+      .update({ job_id: null })
+      .eq("id", estimateId);
+
+    if (unlinkError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("unlink estimate from job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Revalidate both the estimate and the job pages
+    revalidatePath(`/dashboard/work/estimates/${estimateId}`);
+    if (previousJobId) {
+      revalidatePath(`/dashboard/work/${previousJobId}`);
+    }
+    revalidatePath("/dashboard/work/estimates");
+  });
+}
+
+/**
  * Delete estimate (legacy - deprecated)
  * @deprecated Use archiveEstimate() instead
  */

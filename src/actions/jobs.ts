@@ -1452,3 +1452,89 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
     revalidatePath("/dashboard/settings/archive");
   });
 }
+
+/**
+ * Remove team assignment from job
+ * Deletes the job_team_assignments junction table record
+ * Updates both team member and job views
+ *
+ * Note: If your schema uses a simple assigned_to field instead of a junction table,
+ * use updateJob() to set assigned_to to NULL instead.
+ */
+export async function removeTeamAssignment(
+  assignmentId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    // Get user's company
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Get the junction record to find job_id for revalidation
+    const { data: record, error: fetchError } = await supabase
+      .from("job_team_assignments")
+      .select("id, job_id, company_id")
+      .eq("id", assignmentId)
+      .single();
+
+    if (fetchError || !record) {
+      throw new ActionError(
+        "Team assignment not found",
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    if (record.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("team assignment"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const jobId = record.job_id;
+
+    // Delete junction table row
+    const { error: deleteError } = await supabase
+      .from("job_team_assignments")
+      .delete()
+      .eq("id", assignmentId);
+
+    if (deleteError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("remove team assignment from job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Revalidate job page and schedule
+    if (jobId) {
+      revalidatePath(`/dashboard/work/${jobId}`);
+    }
+    revalidatePath("/dashboard/schedule");
+    revalidatePath("/dashboard/work");
+  });
+}

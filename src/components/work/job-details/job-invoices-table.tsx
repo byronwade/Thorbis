@@ -5,12 +5,23 @@ import {
   Download,
   Eye,
   FileText,
+  LinkOff,
   MoreHorizontal,
   Send,
 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { unlinkInvoiceFromJob } from "@/actions/invoices";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,10 +53,39 @@ type JobInvoicesTableProps = {
 };
 
 export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
+  const [unlinkInvoiceId, setUnlinkInvoiceId] = useState<string | null>(null);
+  const [isUnlinking, setIsUnlinking] = useState(false);
+
   const formatCurrencyCents = useCallback(
-    (cents: number) => formatCurrency(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+    (cents: number) =>
+      formatCurrency(cents, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
     []
   );
+
+  const handleUnlinkInvoice = useCallback(async () => {
+    if (!unlinkInvoiceId) return;
+
+    setIsUnlinking(true);
+    try {
+      const result = await unlinkInvoiceFromJob(unlinkInvoiceId);
+
+      if (result.success) {
+        toast.success("Invoice unlinked from job");
+        setUnlinkInvoiceId(null);
+        // Refresh to show updated list
+        window.location.reload();
+      } else {
+        toast.error(result.error || "Failed to unlink invoice");
+      }
+    } catch (error) {
+      toast.error("Failed to unlink invoice");
+    } finally {
+      setIsUnlinking(false);
+    }
+  }, [unlinkInvoiceId]);
 
   const columns: ColumnDef<Invoice>[] = useMemo(
     () => [
@@ -56,8 +96,9 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         shrink: true,
         render: (invoice) => (
           <Link
-            className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+            className="font-medium text-foreground text-sm leading-tight hover:underline"
             href={`/dashboard/work/invoices/${invoice.id}`}
+            onClick={(e) => e.stopPropagation()}
           >
             {invoice.invoice_number}
           </Link>
@@ -67,7 +108,13 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
         key: "title",
         header: "Title",
         render: (invoice) => (
-          <span className="text-sm">{invoice.title || "—"}</span>
+          <Link
+            className="font-medium text-foreground text-sm leading-tight hover:underline"
+            href={`/dashboard/work/invoices/${invoice.id}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {invoice.title || "—"}
+          </Link>
         ),
       },
       {
@@ -159,6 +206,14 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
                     Record Payment
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                  onClick={() => setUnlinkInvoiceId(invoice.id)}
+                >
+                  <LinkOff className="mr-2 size-4" />
+                  Unlink from Job
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );
@@ -169,22 +224,57 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
   );
 
   return (
-    <FullWidthDataTable
-      columns={columns}
-      data={invoices}
-      emptyIcon={<FileText className="size-12 text-muted-foreground/50" />}
-      emptyMessage="No invoices found for this job"
-      getItemId={(invoice) => invoice.id}
-      searchFilter={(invoice, query) => {
-        const searchLower = query.toLowerCase();
-        return (
-          invoice.invoice_number?.toLowerCase().includes(searchLower) ||
-          invoice.title?.toLowerCase().includes(searchLower) ||
-          invoice.status?.toLowerCase().includes(searchLower)
-        );
-      }}
-      searchPlaceholder="Search invoices..."
-      showPagination={true}
-    />
+    <>
+      <FullWidthDataTable
+        columns={columns}
+        data={invoices}
+        emptyIcon={<FileText className="size-12 text-muted-foreground/50" />}
+        emptyMessage="No invoices found for this job"
+        getItemId={(invoice) => invoice.id}
+        searchFilter={(invoice, query) => {
+          const searchLower = query.toLowerCase();
+          return (
+            invoice.invoice_number?.toLowerCase().includes(searchLower) ||
+            invoice.title?.toLowerCase().includes(searchLower) ||
+            invoice.status?.toLowerCase().includes(searchLower)
+          );
+        }}
+        searchPlaceholder="Search invoices..."
+        showPagination={true}
+      />
+
+      {/* Unlink Confirmation Dialog */}
+      <Dialog
+        onOpenChange={(open) => !open && setUnlinkInvoiceId(null)}
+        open={unlinkInvoiceId !== null}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unlink Invoice from Job?</DialogTitle>
+            <DialogDescription>
+              This will remove the job association from this invoice. The
+              invoice will remain in the system but will no longer appear on
+              this job's page.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              disabled={isUnlinking}
+              onClick={() => setUnlinkInvoiceId(null)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isUnlinking}
+              onClick={handleUnlinkInvoice}
+              variant="destructive"
+            >
+              {isUnlinking ? "Unlinking..." : "Unlink Invoice"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

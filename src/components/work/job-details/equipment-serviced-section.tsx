@@ -1,9 +1,17 @@
 "use client";
 
-import { AlertCircle, Camera, CheckCircle, Plus, Wrench } from "lucide-react";
+import {
+  AlertCircle,
+  Camera,
+  CheckCircle,
+  Plus,
+  Wrench,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { addEquipmentToJob } from "@/actions/equipment";
+import { toast } from "sonner";
+import { addEquipmentToJob, removeEquipmentFromJob } from "@/actions/equipment";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +19,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,7 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 
 interface EquipmentServicedSectionProps {
   jobId: string;
@@ -38,9 +46,12 @@ export function EquipmentServicedSection({
   customerEquipment,
 }: EquipmentServicedSectionProps) {
   const router = useRouter();
-  const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [removeEquipmentId, setRemoveEquipmentId] = useState<string | null>(
+    null
+  );
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const handleAddEquipment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,17 +71,39 @@ export function EquipmentServicedSection({
     setIsLoading(false);
   };
 
+  const handleRemoveEquipment = async () => {
+    if (!removeEquipmentId) return;
+
+    setIsRemoving(true);
+    try {
+      const result = await removeEquipmentFromJob(removeEquipmentId);
+
+      if (result.success) {
+        toast.success("Equipment removed from job");
+        setRemoveEquipmentId(null);
+        // Refresh to show updated list
+        router.refresh();
+      } else {
+        toast.error(result.error || "Failed to remove equipment");
+      }
+    } catch (error) {
+      toast.error("Failed to remove equipment");
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
   const getConditionBadge = (condition: string) => {
     switch (condition?.toLowerCase()) {
       case "excellent":
         return (
-          <Badge className="bg-green-600" variant="default">
+          <Badge className="bg-success" variant="default">
             Excellent
           </Badge>
         );
       case "good":
         return (
-          <Badge className="bg-blue-600" variant="default">
+          <Badge className="bg-primary" variant="default">
             Good
           </Badge>
         );
@@ -87,15 +120,15 @@ export function EquipmentServicedSection({
 
   const getServiceTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      installation: "bg-purple-600",
-      repair: "bg-orange-600",
-      maintenance: "bg-blue-600",
-      inspection: "bg-green-600",
-      replacement: "bg-red-600",
+      installation: "bg-accent",
+      repair: "bg-warning",
+      maintenance: "bg-primary",
+      inspection: "bg-success",
+      replacement: "bg-destructive",
     };
 
     return (
-      <Badge className={colors[type] || "bg-gray-600"} variant="default">
+      <Badge className={colors[type] || "bg-accent"} variant="default">
         {type?.charAt(0).toUpperCase() + type?.slice(1)}
       </Badge>
     );
@@ -266,6 +299,15 @@ export function EquipmentServicedSection({
                       </p>
                     </div>
                   </div>
+                  <Button
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                    onClick={() => setRemoveEquipmentId(je.id)}
+                    size="sm"
+                    title="Remove equipment from job"
+                    variant="ghost"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
 
                 {je.work_performed && (
@@ -337,6 +379,38 @@ export function EquipmentServicedSection({
           </div>
         )}
       </CardContent>
+
+      {/* Remove Confirmation Dialog */}
+      <Dialog
+        onOpenChange={(open) => !open && setRemoveEquipmentId(null)}
+        open={removeEquipmentId !== null}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove Equipment from Job?</DialogTitle>
+            <DialogDescription>
+              This will remove this equipment from the job's equipment list. The
+              equipment record itself will remain in the system.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              disabled={isRemoving}
+              onClick={() => setRemoveEquipmentId(null)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isRemoving}
+              onClick={handleRemoveEquipment}
+              variant="destructive"
+            >
+              {isRemoving ? "Removing..." : "Remove Equipment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

@@ -408,3 +408,112 @@ export async function addMaterialToJob(formData: FormData) {
 
   return { success: true, data };
 }
+
+/**
+ * Remove equipment from job
+ * Deletes the job_equipment junction table record
+ * Bidirectional operation - updates both equipment and job views
+ */
+export async function removeEquipmentFromJob(
+  jobEquipmentId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Supabase client not initialized" };
+    }
+
+    // Get the junction record to find job_id for revalidation
+    const { data: record, error: fetchError } = await supabase
+      .from("job_equipment")
+      .select("id, job_id")
+      .eq("id", jobEquipmentId)
+      .single();
+
+    if (fetchError || !record) {
+      return { success: false, error: "Record not found" };
+    }
+
+    const jobId = record.job_id;
+
+    // Delete junction table row
+    const { error: deleteError } = await supabase
+      .from("job_equipment")
+      .delete()
+      .eq("id", jobEquipmentId);
+
+    if (deleteError) {
+      return { success: false, error: deleteError.message };
+    }
+
+    // Revalidate job page and equipment list
+    if (jobId) {
+      revalidatePath(`/dashboard/work/${jobId}`);
+    }
+    revalidatePath("/dashboard/work/equipment");
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to remove equipment from job",
+    };
+  }
+}
+
+/**
+ * Remove material from job
+ * Deletes the job_materials junction table record
+ * Updates job page view
+ */
+export async function removeJobMaterial(
+  jobMaterialId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Supabase client not initialized" };
+    }
+
+    // Get the junction record to find job_id for revalidation
+    const { data: record, error: fetchError } = await supabase
+      .from("job_materials")
+      .select("id, job_id")
+      .eq("id", jobMaterialId)
+      .single();
+
+    if (fetchError || !record) {
+      return { success: false, error: "Record not found" };
+    }
+
+    const jobId = record.job_id;
+
+    // Delete junction table row
+    const { error: deleteError } = await supabase
+      .from("job_materials")
+      .delete()
+      .eq("id", jobMaterialId);
+
+    if (deleteError) {
+      return { success: false, error: deleteError.message };
+    }
+
+    // Revalidate job page
+    if (jobId) {
+      revalidatePath(`/dashboard/work/${jobId}`);
+    }
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to remove material from job",
+    };
+  }
+}

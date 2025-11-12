@@ -8,6 +8,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
   ActionError,
   ERROR_CODES,
@@ -19,14 +20,8 @@ import {
   assertExists,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import {
-  purchaseOrderInsertSchema,
-  purchaseOrderUpdateSchema,
-  type PurchaseOrderInsert,
-  type PurchaseOrderUpdate,
-} from "@/lib/validations/database-schemas";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
+import { purchaseOrderInsertSchema } from "@/lib/validations/database-schemas";
 
 /**
  * Generate unique PO number
@@ -618,3 +613,80 @@ export async function archivePurchaseOrder(
   }
 }
 
+/**
+ * Unlink purchase order from job
+ * Removes the job association (sets job_id to NULL)
+ * Bidirectional operation - updates both PO and job views
+ */
+export async function unlinkPurchaseOrderFromJob(
+  poId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const activeCompanyId = await getActiveCompanyId();
+
+    if (!activeCompanyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Get current PO to verify exists and get job_id for revalidation
+    const { data: po, error: fetchError } = await supabase
+      .from("purchase_orders")
+      .select("id, job_id, company_id")
+      .eq("id", poId)
+      .single();
+
+    if (fetchError || !po) {
+      throw new ActionError(
+        "Purchase order not found",
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    if (po.company_id !== activeCompanyId) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("purchase order"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const previousJobId = po.job_id;
+
+    // Unlink purchase order from job (set job_id to NULL)
+    const { error: unlinkError } = await supabase
+      .from("purchase_orders")
+      .update({ job_id: null })
+      .eq("id", poId);
+
+    if (unlinkError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("unlink purchase order from job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Revalidate both pages
+    revalidatePath(`/dashboard/work/purchase-orders/${poId}`);
+    if (previousJobId) {
+      revalidatePath(`/dashboard/work/${previousJobId}`);
+    }
+    revalidatePath("/dashboard/work/purchase-orders");
+  });
+}

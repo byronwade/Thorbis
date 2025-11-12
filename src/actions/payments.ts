@@ -457,3 +457,60 @@ export async function archivePayment(
 ): Promise<{ success: boolean; error?: string }> {
   return deletePayment(paymentId);
 }
+
+/**
+ * Unlink payment from job
+ * Removes the job association (sets job_id to NULL)
+ * Bidirectional operation - updates both payment and job views
+ */
+export async function unlinkPaymentFromJob(
+  paymentId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+
+    if (!supabase) {
+      return { success: false, error: "Database connection not available" };
+    }
+
+    // Get current payment to verify exists and get job_id for revalidation
+    const { data: payment, error: fetchError } = await supabase
+      .from("payments")
+      .select("id, job_id")
+      .eq("id", paymentId)
+      .is("deleted_at", null)
+      .single();
+
+    if (fetchError || !payment) {
+      return { success: false, error: "Payment not found" };
+    }
+
+    const previousJobId = payment.job_id;
+
+    // Unlink payment from job (set job_id to NULL)
+    const { error: unlinkError } = await supabase
+      .from("payments")
+      .update({ job_id: null })
+      .eq("id", paymentId);
+
+    if (unlinkError) {
+      console.error("Supabase error:", unlinkError);
+      return { success: false, error: unlinkError.message };
+    }
+
+    // Revalidate both pages
+    revalidatePath(`/dashboard/work/payments/${paymentId}`);
+    if (previousJobId) {
+      revalidatePath(`/dashboard/work/${previousJobId}`);
+    }
+    revalidatePath("/dashboard/work/payments");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unlink payment from job error:", error);
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Failed to unlink payment from job" };
+  }
+}

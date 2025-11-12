@@ -5,6 +5,7 @@ import {
   CheckCircle,
   Download,
   Eye,
+  LinkOff,
   MoreHorizontal,
   Receipt,
   Send,
@@ -13,8 +14,17 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { bulkArchive } from "@/actions/archive";
+import { unlinkEstimateFromJob } from "@/actions/estimates";
 import { ArchiveConfirmDialog } from "@/components/ui/archive-confirm-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,9 +58,15 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isArchiving, setIsArchiving] = useState(false);
+  const [unlinkEstimateId, setUnlinkEstimateId] = useState<string | null>(null);
+  const [isUnlinking, setIsUnlinking] = useState(false);
 
   const formatCurrencyCents = useCallback(
-    (cents: number) => formatCurrency(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+    (cents: number) =>
+      formatCurrency(cents, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
     []
   );
 
@@ -79,6 +95,27 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
     }
   }, [selectedIds]);
 
+  const handleUnlinkEstimate = useCallback(async () => {
+    if (!unlinkEstimateId) return;
+
+    setIsUnlinking(true);
+    try {
+      const result = await unlinkEstimateFromJob(unlinkEstimateId);
+
+      if (result.success) {
+        toast.success("Estimate unlinked from job");
+        setUnlinkEstimateId(null);
+        // Refresh to show updated list
+        window.location.reload();
+      } else {
+        toast.error(result.error || "Failed to unlink estimate");
+      }
+    } catch (error) {
+      toast.error("Failed to unlink estimate");
+    } finally {
+      setIsUnlinking(false);
+    }
+  }, [unlinkEstimateId]);
 
   const columns: ColumnDef<Estimate>[] = useMemo(
     () => [
@@ -102,12 +139,16 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         header: "Title",
         width: "flex-1",
         render: (estimate) => (
-          <span
-            className="block truncate text-foreground text-sm"
+          <Link
+            className="block min-w-0"
+            href={`/dashboard/work/estimates/${estimate.id}`}
+            onClick={(e) => e.stopPropagation()}
             title={estimate.title || undefined}
           >
-            {estimate.title || "—"}
-          </span>
+            <span className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+              {estimate.title || "—"}
+            </span>
+          </Link>
         ),
       },
       {
@@ -149,7 +190,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         width: "w-12",
         shrink: true,
         align: "right",
-        render: (_estimate) => (
+        render: (estimate) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="size-8 p-0" size="sm" variant="ghost">
@@ -157,9 +198,11 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem className="cursor-pointer">
-                <Eye className="mr-2 size-4" />
-                View Details
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href={`/dashboard/work/estimates/${estimate.id}`}>
+                  <Eye className="mr-2 size-4" />
+                  View Details
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 <Download className="mr-2 size-4" />
@@ -174,6 +217,14 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
                 <CheckCircle className="mr-2 size-4" />
                 Convert to Invoice
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer text-destructive focus:text-destructive"
+                onClick={() => setUnlinkEstimateId(estimate.id)}
+              >
+                <LinkOff className="mr-2 size-4" />
+                Unlink from Job
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ),
@@ -187,11 +238,11 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
       {
         label: "Archive Selected",
         icon: <Archive className="h-4 w-4" />,
+        variant: "destructive",
         onClick: (selectedIds: Set<string>) => {
           setSelectedIds(selectedIds);
           setShowArchiveDialog(true);
         },
-        variant: "default",
       },
     ],
     []
@@ -227,6 +278,38 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
         onOpenChange={setShowArchiveDialog}
         open={showArchiveDialog}
       />
+
+      {/* Unlink Confirmation Dialog */}
+      <Dialog
+        open={unlinkEstimateId !== null}
+        onOpenChange={(open) => !open && setUnlinkEstimateId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unlink Estimate from Job?</DialogTitle>
+            <DialogDescription>
+              This will remove the job association from this estimate. The estimate will
+              remain in the system but will no longer appear on this job's page.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setUnlinkEstimateId(null)}
+              disabled={isUnlinking}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleUnlinkEstimate}
+              disabled={isUnlinking}
+            >
+              {isUnlinking ? "Unlinking..." : "Unlink Estimate"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

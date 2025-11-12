@@ -1047,6 +1047,111 @@ export async function updateInvoiceContent(
 }
 
 /**
+ * Get Invoice Payments
+ *
+ * Fetches all payments applied to an invoice via the invoice_payments junction table
+ */
+export async function getInvoicePayments(
+  invoiceId: string
+): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify invoice belongs to company
+    const { data: invoice } = await supabase
+      .from("invoices")
+      .select("company_id")
+      .eq("id", invoiceId)
+      .single();
+
+    assertExists(invoice, "Invoice");
+
+    if (invoice.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("invoice"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Fetch payments via junction table
+    const { data: invoicePayments, error: paymentsError } = await supabase
+      .from("invoice_payments")
+      .select(
+        `
+        id,
+        amount_applied,
+        applied_at,
+        notes,
+        payment:payments!payment_id (
+          id,
+          payment_number,
+          amount,
+          payment_method,
+          payment_type,
+          status,
+          card_brand,
+          card_last4,
+          check_number,
+          reference_number,
+          processor_name,
+          receipt_url,
+          receipt_number,
+          refunded_amount,
+          refund_reason,
+          processed_at,
+          completed_at,
+          notes,
+          customer:customers!customer_id (
+            id,
+            display_name,
+            first_name,
+            last_name,
+            email
+          )
+        )
+      `
+      )
+      .eq("invoice_id", invoiceId)
+      .order("applied_at", { ascending: false });
+
+    if (paymentsError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch invoice payments"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return invoicePayments || [];
+  });
+}
+
+/**
  * Generate Invoice PDF
  *
  * Generates a PDF from the invoice TipTap content
@@ -1132,5 +1237,54 @@ export async function generateInvoicePDF(
       pdfUrl: `/api/invoices/${invoiceId}/pdf`,
       invoice,
     };
+  });
+}
+
+/**
+ * Unlink invoice from job
+ * Removes the job association (sets job_id to NULL)
+ * Bidirectional operation - updates both invoice and job views
+ */
+export async function unlinkInvoiceFromJob(
+  invoiceId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+
+    // Get current invoice to verify exists and get job_id for revalidation
+    const { data: invoice, error: fetchError } = await supabase
+      .from("invoices")
+      .select("id, job_id")
+      .eq("id", invoiceId)
+      .single();
+
+    if (fetchError || !invoice) {
+      throw new ActionError(
+        "Invoice not found",
+        ERROR_CODES.DB_RECORD_NOT_FOUND
+      );
+    }
+
+    const previousJobId = invoice.job_id;
+
+    // Unlink invoice from job (set job_id to NULL)
+    const { error: unlinkError } = await supabase
+      .from("invoices")
+      .update({ job_id: null })
+      .eq("id", invoiceId);
+
+    if (unlinkError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("unlink invoice from job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    // Revalidate both pages
+    revalidatePath(`/dashboard/work/invoices/${invoiceId}`);
+    if (previousJobId) {
+      revalidatePath(`/dashboard/work/${previousJobId}`);
+    }
+    revalidatePath("/dashboard/work/invoices");
   });
 }
