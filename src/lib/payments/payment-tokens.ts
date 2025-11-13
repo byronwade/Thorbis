@@ -42,6 +42,11 @@ export async function generatePaymentToken(
 ): Promise<PaymentToken | null> {
   try {
     const supabase = await createClient();
+    
+    if (!supabase) {
+      console.error("Unable to connect to database");
+      return null;
+    }
 
     // Call database function to generate token
     const { data, error } = await supabase.rpc("generate_invoice_payment_token", {
@@ -70,10 +75,10 @@ export async function generatePaymentToken(
 }
 
 /**
- * Validate a payment token
+ * Check a payment token (does NOT increment use count)
+ * Use this for viewing the payment page
  *
- * @param token - The payment token to validate
- * @param ipAddress - Optional IP address for security tracking
+ * @param token - The payment token to check
  * @returns Validation result with invoice ID if valid
  */
 export async function validatePaymentToken(
@@ -83,10 +88,16 @@ export async function validatePaymentToken(
   try {
     const supabase = await createClient();
 
-    // Call database function to validate token
-    const { data, error } = await supabase.rpc("validate_payment_token", {
+    if (!supabase) {
+      return {
+        isValid: false,
+        invoiceId: null,
+        message: "Unable to connect to database",
+      };
+    }
+
+    const { data, error } = await supabase.rpc("check_payment_token", {
       p_token: token,
-      p_ip_address: ipAddress || null,
     });
 
     if (error || !data || data.length === 0) {
@@ -117,18 +128,40 @@ export async function validatePaymentToken(
 
 /**
  * Mark a payment token as used (called after successful payment)
+ * This deactivates the token so it cannot be used again
  *
  * @param token - The payment token to mark as used
+ * @param ipAddress - Optional IP address for security tracking
  */
-export async function markTokenAsUsed(token: string): Promise<boolean> {
+export async function markTokenAsUsed(token: string, ipAddress?: string): Promise<boolean> {
   try {
     const supabase = await createClient();
+
+    if (!supabase) {
+      console.error("Unable to connect to database");
+      return false;
+    }
+
+    const { data: existingTokens, error: fetchError } = await supabase
+      .from("invoice_payment_tokens")
+      .select("use_count")
+      .eq("token", token)
+      .limit(1);
+
+    if (fetchError || !existingTokens || existingTokens.length === 0) {
+      console.error("Unable to fetch token before marking as used:", fetchError);
+      return false;
+    }
+
+    const currentUseCount = existingTokens[0]?.use_count ?? 0;
 
     const { error } = await supabase
       .from("invoice_payment_tokens")
       .update({
         is_active: false,
         used_at: new Date().toISOString(),
+        used_by_ip: ipAddress || null,
+        use_count: currentUseCount + 1,
       })
       .eq("token", token);
 
@@ -157,6 +190,11 @@ export async function getInvoicePaymentTokens(
 ): Promise<PaymentToken[]> {
   try {
     const supabase = await createClient();
+    
+    if (!supabase) {
+      console.error("Unable to connect to database");
+      return [];
+    }
 
     const { data, error } = await supabase
       .from("invoice_payment_tokens")

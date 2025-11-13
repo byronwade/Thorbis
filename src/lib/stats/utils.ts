@@ -415,6 +415,63 @@ export function generateAppointmentStats(metrics: {
 }
 
 /**
+ * Generate material stats from metrics
+ */
+export function generateMaterialStats(metrics: {
+  quantityOnHand: number;
+  quantityReserved: number;
+  quantityAvailable: number;
+  minimumQuantity: number;
+  reorderPoint?: number | null;
+  totalValue: number; // in cents
+  status: string;
+}): StatCard[] {
+  const availabilityChange =
+    metrics.minimumQuantity > 0
+      ? Math.round(
+          ((metrics.quantityAvailable - metrics.minimumQuantity) /
+            metrics.minimumQuantity) *
+            100
+        )
+      : undefined;
+
+  const reservedPercent =
+    metrics.quantityOnHand > 0 && metrics.quantityReserved > 0
+      ? Math.round(
+          (-metrics.quantityReserved / metrics.quantityOnHand) * 100
+        )
+      : undefined;
+
+  return [
+    {
+      label: "On Hand",
+      value: metrics.quantityOnHand,
+      changeLabel: "total units",
+    },
+    {
+      label: "Available",
+      value: metrics.quantityAvailable,
+      change: availabilityChange,
+      changeLabel:
+        metrics.minimumQuantity > 0
+          ? `vs min ${metrics.minimumQuantity}`
+          : "available units",
+    },
+    {
+      label: "Reserved",
+      value: metrics.quantityReserved,
+      change: reservedPercent,
+      changeLabel: "allocated",
+    },
+    {
+      label: "Inventory Value",
+      value: formatCurrency(metrics.totalValue),
+      changeLabel: "at cost",
+    },
+  ];
+}
+
+/**
  * Generate purchase order stats from metrics
  */
 export function generatePurchaseOrderStats(metrics: {
@@ -550,6 +607,66 @@ export function generateContractStats(metrics: {
           },
         ]
       : []),
+  ];
+}
+
+/**
+ * Generate payment stats from metrics
+ */
+export function generatePaymentStats(metrics: {
+  amount: number; // in cents
+  status: string;
+  paymentMethod: string;
+  paymentType: string;
+  createdAt: string;
+  processedAt?: string | null;
+  refundedAmount?: number; // in cents
+}): StatCard[] {
+  const now = new Date();
+  const createdAt = new Date(metrics.createdAt);
+  const processedAt = metrics.processedAt ? new Date(metrics.processedAt) : null;
+
+  // Calculate processing time if processed
+  const processingTime = processedAt
+    ? Math.floor((processedAt.getTime() - createdAt.getTime()) / (1000 * 60)) // minutes
+    : null;
+
+  const isRefunded = (metrics.refundedAmount || 0) > 0;
+  const netAmount = metrics.amount - (metrics.refundedAmount || 0);
+
+  return [
+    {
+      label: "Payment Amount",
+      value: formatCurrency(metrics.amount),
+      change: isRefunded ? -1 : metrics.amount > 0 ? 100 : undefined,
+      changeLabel: isRefunded
+        ? `${formatCurrency(metrics.refundedAmount || 0)} refunded`
+        : "received",
+    },
+    {
+      label: "Net Amount",
+      value: formatCurrency(netAmount),
+      change: isRefunded ? -1 : undefined,
+      changeLabel: isRefunded ? "after refund" : "processed",
+    },
+    {
+      label: "Status",
+      value: metrics.status,
+      change: metrics.status === "completed" ? 100 : undefined,
+      changeLabel: metrics.status === "completed" ? "successful" : "pending",
+    },
+    {
+      label: "Processing Time",
+      value: processingTime !== null
+        ? processingTime < 60
+          ? `${processingTime}m`
+          : `${Math.floor(processingTime / 60)}h ${processingTime % 60}m`
+        : "Not processed",
+      change: processingTime !== null && processingTime < 30 ? 100 : undefined,
+      changeLabel: processingTime !== null
+        ? `from ${createdAt.toLocaleDateString()}`
+        : "awaiting processing",
+    },
   ];
 }
 

@@ -122,7 +122,6 @@ export function JobPageContent({
 
   const router = useRouter();
   const { toast } = useToast();
-  const [mounted, setMounted] = useState(false);
   const [localJob, setLocalJob] = useState(() => {
     if (!jobData?.job) {
       return { priority: "medium" };
@@ -139,11 +138,6 @@ export function JobPageContent({
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
   const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
-
-  // Prevent hydration mismatch by only rendering Radix components after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const {
     customer: initialCustomer,
@@ -1142,10 +1136,6 @@ export function JobPageContent({
     }
   };
 
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   const headerBadges = [
     <Badge className="font-mono text-xs" key="job-number" variant="secondary">
       #{job.job_number}
@@ -1334,74 +1324,56 @@ export function JobPageContent({
               <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
                 Status
               </Label>
-              {mounted ? (
-                <Select
-                  onValueChange={(value) => handleFieldChange("status", value)}
-                  value={localJob.status || undefined}
-                >
-                  <SelectTrigger className="h-10 w-full justify-between rounded-lg border border-border/40 bg-background px-3 font-medium text-sm shadow-sm">
-                    <SelectValue placeholder="Set status">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="capitalize">
-                          {localJob.status?.replace(/_/g, " ") || "Set status"}
-                        </span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="quoted">Quoted</SelectItem>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="on_hold">On Hold</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="flex h-10 items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 font-medium text-sm">
-                  <CheckCircle className="h-4 w-4" />
-                  <span className="capitalize">
-                    {localJob.status?.replace(/_/g, " ") || "—"}
-                  </span>
-                </div>
-              )}
+              <Select
+                onValueChange={(value) => handleFieldChange("status", value)}
+                value={localJob.status || undefined}
+              >
+                <SelectTrigger className="h-10 w-full justify-between rounded-lg border border-border/40 bg-background px-3 font-medium text-sm shadow-sm">
+                  <SelectValue placeholder="Set status">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      <span className="capitalize">
+                        {localJob.status?.replace(/_/g, " ") || "Set status"}
+                      </span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="quoted">Quoted</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="on_hold">On Hold</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
                 Priority
               </Label>
-              {mounted ? (
-                <Select
-                  onValueChange={(value) =>
-                    handleFieldChange("priority", value)
-                  }
-                  value={localJob.priority || undefined}
-                >
-                  <SelectTrigger className="h-10 w-full justify-between rounded-lg border border-border/40 bg-background px-3 font-medium text-sm shadow-sm">
-                    <SelectValue placeholder="Set priority">
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4" />
-                        <span className="capitalize">
-                          {localJob.priority || "Set priority"}
-                        </span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="flex h-10 items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 font-medium text-sm">
-                  <AlertCircle className="h-4 w-4" />
-                  <span className="capitalize">{localJob.priority || "—"}</span>
-                </div>
-              )}
+              <Select
+                onValueChange={(value) => handleFieldChange("priority", value)}
+                value={localJob.priority || undefined}
+              >
+                <SelectTrigger className="h-10 w-full justify-between rounded-lg border border-border/40 bg-background px-3 font-medium text-sm shadow-sm">
+                  <SelectValue placeholder="Set priority">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      <span className="capitalize">
+                        {localJob.priority || "Set priority"}
+                      </span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="urgent">Urgent</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

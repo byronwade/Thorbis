@@ -192,7 +192,7 @@ export default function ProfitLossCalculator() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="equipment">Equipment & Tools ($)</Label>
+                <Label htmlFor="equipment">Equipment & Fleet ($)</Label>
                 <Input
                   id="equipment"
                   onChange={(e) => setEquipmentCosts(e.target.value)}

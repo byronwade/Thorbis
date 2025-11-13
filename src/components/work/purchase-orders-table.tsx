@@ -9,7 +9,6 @@ import {
   Package,
   PackageCheck,
   PackageX,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -125,8 +124,12 @@ export function PurchaseOrdersTable({
   // Filter orders based on archive status
   const filteredOrders = orders.filter((order) => {
     const isArchived = Boolean(order.archived_at || order.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -160,6 +163,7 @@ export function PurchaseOrdersTable({
       width: "w-36",
       shrink: true,
       sortable: true,
+      hideable: false, // CRITICAL: Vendor essential for quick identification
       render: (po) => (
         <span className="text-foreground text-sm">{po.vendor}</span>
       ),
@@ -193,6 +197,7 @@ export function PurchaseOrdersTable({
       shrink: true,
       hideOnMobile: true,
       sortable: true,
+      hideable: true,
       render: (po) => (
         <span
           className={`font-medium text-sm ${priorityConfig[po.priority].className}`}
@@ -208,6 +213,7 @@ export function PurchaseOrdersTable({
       shrink: true,
       align: "right",
       sortable: true,
+      hideable: false, // CRITICAL: Financial data essential
       render: (po) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(po.totalAmount)}
@@ -221,6 +227,7 @@ export function PurchaseOrdersTable({
       sortable: true,
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (po) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {po.expectedDelivery || "—"}
@@ -233,6 +240,7 @@ export function PurchaseOrdersTable({
       width: "w-40",
       shrink: true,
       sortable: true,
+      hideable: false, // CRITICAL: Status key for action items
       render: (po) => {
         const config = statusConfig[po.status];
         return (
@@ -298,9 +306,9 @@ export function PurchaseOrdersTable({
                 Download PDF
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Cancel PO
+              <DropdownMenuItem>
+                <Archive className="mr-2 size-4" />
+                Archive PO
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -313,24 +321,24 @@ export function PurchaseOrdersTable({
     {
       label: "Approve",
       icon: <CheckCircle2 className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Approve:", selectedIds),
+      onClick: () => {
+        /* TODO: implement approve bulk action */
+      },
     },
     {
       label: "Export",
       icon: <Download className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Export:", selectedIds),
+      onClick: () => {
+        /* TODO: implement export bulk action */
+      },
     },
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
       variant: "destructive",
-      onClick: (selectedIds) => console.log("Archive:", selectedIds),
-    },
-    {
-      label: "Cancel",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Cancel:", selectedIds),
-      variant: "destructive",
+      onClick: () => {
+        /* TODO: implement archive bulk action */
+      },
     },
   ];
 
@@ -361,10 +369,12 @@ export function PurchaseOrdersTable({
       isArchived={(po) => Boolean(po.archived_at || po.deleted_at)}
       isHighlighted={(po) => po.status === "pending_approval"}
       itemsPerPage={itemsPerPage}
-      onRefresh={() => window.location.reload()}
-      onRowClick={(po) =>
-        (window.location.href = `/dashboard/work/purchase-orders/${po.id}`)
-      }
+      onRefresh={() => {
+        window.location.reload();
+      }}
+      onRowClick={(po) => {
+        window.location.href = `/dashboard/work/purchase-orders/${po.id}`;
+      }}
       searchFilter={searchFilter}
       searchPlaceholder="Search by PO number, vendor, title, job, or status..."
       showArchived={archiveFilter !== "active"}

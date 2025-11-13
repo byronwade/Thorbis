@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Contract Toolbar Actions - Client Component
+ * Contract Toolbar Actions
  *
  * Toolbar actions for the contracts page
  * - Advanced filters dropdown
@@ -14,13 +12,18 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { ContractsFilterDropdown } from "@/components/work/contracts-filter-dropdown";
 
-// Define hideable columns for contracts
-const CONTRACTS_COLUMNS = [
+// Critical columns (always visible - shown for reference)
+const CONTRACTS_CRITICAL_COLUMNS = [
   { key: "customer", label: "Customer" },
-  { key: "start_date", label: "Start Date" },
-  { key: "end_date", label: "End Date" },
-  { key: "value", label: "Value" },
   { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const CONTRACTS_OPTIONAL_COLUMNS = [
+  { key: "contractType", label: "Type" },
+  { key: "signerName", label: "Signer" },
+  { key: "date", label: "Created" },
+  { key: "validUntil", label: "Valid Until" },
 ];
 
 interface ContractToolbarActionsProps {
@@ -44,7 +47,8 @@ export function ContractToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={CONTRACTS_COLUMNS}
+            columns={CONTRACTS_OPTIONAL_COLUMNS}
+            criticalColumns={CONTRACTS_CRITICAL_COLUMNS}
             entity="contracts"
           />
         </div>

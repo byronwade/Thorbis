@@ -30,6 +30,7 @@ import { CustomerDetailToolbar } from "@/components/customers/customer-detail-to
 import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
 import { EquipmentToolbarActions } from "@/components/inventory/equipment-toolbar-actions";
 import { MaterialsToolbarActions } from "@/components/inventory/materials-toolbar-actions";
+import { MaterialDetailToolbarActions } from "@/components/work/materials/material-detail-toolbar-actions";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
@@ -91,6 +92,8 @@ export const ROUTE_PATTERNS = {
   WORK_APPOINTMENTS_DETAIL: /^\/dashboard\/work\/appointments\/[^/]+$/,
   WORK_PAYMENTS_LIST: /^\/dashboard\/work\/payments$/,
   WORK_PAYMENTS_DETAIL: /^\/dashboard\/work\/payments\/[^/]+$/,
+  WORK_MATERIALS_LIST: /^\/dashboard\/work\/materials$/,
+  WORK_MATERIALS_DETAIL: /^\/dashboard\/work\/materials\/[^/]+$/,
   WORK_PROPERTIES_LIST: /^\/dashboard\/work\/properties$/,
   WORK_PROPERTIES_DETAIL: /^\/dashboard\/work\/properties\/[^/]+$/,
   WORK_ESTIMATES_DETAIL: /^\/dashboard\/work\/estimates\/[^/]+$/,
@@ -1230,7 +1233,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 
   // Materials list page
   {
-    pattern: /^\/dashboard\/work\/materials$/,
+    pattern: ROUTE_PATTERNS.WORK_MATERIALS_LIST,
     config: {
       structure: FULL_WIDTH_STRUCTURE,
       header: DEFAULT_HEADER,
@@ -1246,6 +1249,31 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     description: "Materials list page with view switcher in toolbar",
   },
 
+  // Materials detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_MATERIALS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/materials"
+            label="Materials"
+          />
+        ),
+        actions: <MaterialDetailToolbarActions />,
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description:
+      "Material detail page - full width with toolbar and back button",
+  },
+
   // Equipment list page
   {
     pattern: /^\/dashboard\/work\/equipment$/,
@@ -1254,7 +1282,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Equipment & Tools",
+        title: "Equipment & Fleet",
         subtitle: "Track company equipment, tools, and vehicles",
         actions: <EquipmentToolbarActions />,
       },
@@ -1548,6 +1576,12 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   },
 ];
 
+const SORTED_LAYOUT_RULES = [...UNIFIED_LAYOUT_RULES].sort(
+  (a, b) => b.priority - a.priority
+);
+
+const LAYOUT_CONFIG_CACHE = new Map<string, UnifiedLayoutConfig>();
+
 // ============================================================================
 // CONFIGURATION GETTER FUNCTION
 // ============================================================================
@@ -1560,25 +1594,28 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
  * @returns Complete unified layout configuration
  */
 export function getUnifiedLayoutConfig(pathname: string): UnifiedLayoutConfig {
-  // Sort rules by priority (highest first)
-  const sortedRules = [...UNIFIED_LAYOUT_RULES].sort(
-    (a, b) => b.priority - a.priority
-  );
+  const cached = LAYOUT_CONFIG_CACHE.get(pathname);
+  if (cached) {
+    return cached;
+  }
 
   // Find first matching rule
-  for (const rule of sortedRules) {
+  for (const rule of SORTED_LAYOUT_RULES) {
     if (rule.pattern.test(pathname)) {
+      LAYOUT_CONFIG_CACHE.set(pathname, rule.config);
       return rule.config;
     }
   }
 
   // Should never reach here due to catch-all rule, but TypeScript needs this
-  return {
+  const fallback: UnifiedLayoutConfig = {
     structure: DEFAULT_STRUCTURE,
     header: DEFAULT_HEADER,
     toolbar: DEFAULT_TOOLBAR,
     sidebar: DEFAULT_SIDEBAR,
   };
+  LAYOUT_CONFIG_CACHE.set(pathname, fallback);
+  return fallback;
 }
 
 // ============================================================================

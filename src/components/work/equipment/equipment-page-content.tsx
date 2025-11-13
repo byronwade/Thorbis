@@ -8,29 +8,23 @@
 "use client";
 
 import {
-  Archive,
+  AlertTriangle,
   Calendar,
+  Fuel,
+  Gauge,
   MapPin,
   Package,
   ShieldCheck,
+  Truck,
   User,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { archiveEquipment } from "@/actions/equipment";
+import type { ReactNode } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -66,7 +60,7 @@ function formatCurrency(cents: number | null | undefined): string {
   }).format(cents / 100);
 }
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, key?: string) {
   const variants: Record<string, { className: string; label: string }> = {
     active: {
       className: "bg-success text-white",
@@ -92,13 +86,13 @@ function getStatusBadge(status: string) {
   };
 
   return (
-    <Badge className={config.className} variant="outline">
+    <Badge className={config.className} key={key} variant="outline">
       {config.label}
     </Badge>
   );
 }
 
-function getConditionBadge(condition: string) {
+function getConditionBadge(condition: string, key?: string) {
   const variants: Record<string, { className: string; label: string }> = {
     excellent: {
       className: "bg-success text-white",
@@ -128,19 +122,60 @@ function getConditionBadge(condition: string) {
   };
 
   return (
-    <Badge className={config.className} variant="outline">
+    <Badge className={config.className} key={key} variant="outline">
       {config.label}
     </Badge>
   );
 }
 
+const classificationLabelMap = {
+  equipment: "Equipment",
+  tool: "Tool",
+  vehicle: "Vehicle",
+} as const;
+
+function formatLabel(value?: string | null): string {
+  if (!value) return "N/A";
+  return value
+    .toString()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatDate(value?: string | null): string {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "N/A";
+  }
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function formatNumber(value?: number | null, unit?: string): string {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return "N/A";
+  }
+  const formatted = value.toLocaleString("en-US");
+  return unit ? `${formatted} ${unit}` : formatted;
+}
+
+function getDaysUntil(value?: string | null): number | null {
+  if (!value) return null;
+  const target = new Date(value);
+  if (Number.isNaN(target.getTime())) return null;
+  const diffMs = target.getTime() - Date.now();
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
+
 export function EquipmentPageContent({
   entityData,
 }: EquipmentPageContentProps) {
-  const [mounted, setMounted] = useState(false);
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [isArchiving, setIsArchiving] = useState(false);
-
   const {
     equipment,
     customer,
@@ -155,60 +190,270 @@ export function EquipmentPageContent({
     attachments = [],
   } = entityData;
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const handleArchiveEquipment = async () => {
-    setIsArchiving(true);
-    try {
-      const result = await archiveEquipment(equipment.id);
-      if (result.success) {
-        toast.success("Equipment archived successfully");
-        setIsArchiveDialogOpen(false);
-        window.location.href = "/dashboard/work/equipment";
-      } else {
-        toast.error(result.error || "Failed to archive equipment");
-      }
-    } catch (error) {
-      toast.error("Failed to archive equipment");
-    } finally {
-      setIsArchiving(false);
-    }
-  };
 
   if (!mounted) {
     return <div className="flex-1 p-6">Loading...</div>;
   }
 
+  const rawClassification =
+    (equipment.classification as keyof typeof classificationLabelMap | undefined) ??
+    "equipment";
+  const classificationKey: keyof typeof classificationLabelMap =
+    classificationLabelMap[rawClassification] ? rawClassification : "equipment";
+  const classificationLabel =
+    classificationLabelMap[classificationKey] || formatLabel(equipment.classification);
+  const typeLabel = formatLabel(equipment.type);
+  const assetCategoryLabel = equipment.asset_category
+    ? formatLabel(equipment.asset_category)
+    : null;
+  const assetSubcategoryLabel = equipment.asset_subcategory
+    ? formatLabel(equipment.asset_subcategory)
+    : null;
+  const isVehicle = classificationKey === "vehicle";
+  const isTool = classificationKey === "tool";
+
+  const toneStyles = {
+    positive: "border-success/30 bg-success/10",
+    warning: "border-warning/40 bg-warning/10",
+    critical: "border-destructive/40 bg-destructive/10",
+    info: "border-primary/30 bg-primary/10",
+  } as const;
+
   const headerBadges = [
-    <Badge key="status" variant="outline">
-      {getStatusBadge(equipment.status || "active")}
-    </Badge>,
-    <Badge key="condition" variant="outline">
-      {getConditionBadge(equipment.condition || "good")}
+    getStatusBadge(equipment.status || "active", "status"),
+    getConditionBadge(equipment.condition || "good", "condition"),
+    <Badge className="bg-primary/10 text-primary" key="classification" variant="outline">
+      {classificationLabel}
     </Badge>,
   ];
 
+  const smartInsights = useMemo(
+    () => {
+      const insights: Array<{
+        tone: "positive" | "warning" | "critical" | "info";
+        title: string;
+        description: string;
+        icon?: ReactNode;
+      }> = [];
+
+      if (isVehicle) {
+        if (
+          typeof equipment.vehicle_odometer === "number" &&
+          typeof equipment.vehicle_next_service_mileage === "number"
+        ) {
+          const milesRemaining =
+            equipment.vehicle_next_service_mileage - equipment.vehicle_odometer;
+          if (Number.isFinite(milesRemaining)) {
+            const tone =
+              milesRemaining < 0
+                ? "critical"
+                : milesRemaining <= 500
+                  ? "warning"
+                  : "info";
+            insights.push({
+              tone,
+              title:
+                milesRemaining < 0
+                  ? `Service overdue by ${formatNumber(Math.abs(milesRemaining), "mi")}`
+                  : `Service due in ${formatNumber(milesRemaining, "mi")}`,
+              description: `Next service at ${formatNumber(
+                equipment.vehicle_next_service_mileage,
+                "mi"
+              )}${equipment.next_service_due ? ` • ${formatDate(equipment.next_service_due)}` : ""}`,
+              icon: <Gauge className="size-4" />,
+            });
+          }
+        }
+
+        const inspectionDays = getDaysUntil(equipment.vehicle_inspection_due);
+        if (inspectionDays !== null) {
+          const tone =
+            inspectionDays < 0
+              ? "critical"
+              : inspectionDays <= 14
+                ? "warning"
+                : "info";
+          insights.push({
+            tone,
+            title:
+              inspectionDays < 0
+                ? `Inspection overdue by ${Math.abs(inspectionDays)} days`
+                : `Inspection due in ${inspectionDays} days`,
+            description: `Due ${formatDate(equipment.vehicle_inspection_due)}`,
+            icon: <AlertTriangle className="size-4" />,
+          });
+        }
+
+        const registrationDays = getDaysUntil(
+          equipment.vehicle_registration_expiration
+        );
+        if (registrationDays !== null) {
+          const tone =
+            registrationDays < 0
+              ? "critical"
+              : registrationDays <= 30
+                ? "warning"
+                : "info";
+          insights.push({
+            tone,
+            title:
+              registrationDays < 0
+                ? `Registration expired ${Math.abs(registrationDays)} days ago`
+                : `Registration expires in ${registrationDays} days`,
+            description: `Renew by ${formatDate(
+              equipment.vehicle_registration_expiration
+            )}`,
+            icon: <Truck className="size-4" />,
+          });
+        }
+
+        if (equipment.vehicle_fuel_type) {
+          insights.push({
+            tone: "info",
+            title: `${formatLabel(equipment.vehicle_fuel_type)} fuel`,
+            description: "Fuel type captured for compliance and routing.",
+            icon: <Fuel className="size-4" />,
+          });
+        }
+      } else if (isTool) {
+        const calibrationDays = getDaysUntil(equipment.tool_calibration_due);
+        if (calibrationDays !== null) {
+          const tone =
+            calibrationDays < 0
+              ? "critical"
+              : calibrationDays <= 14
+                ? "warning"
+                : "info";
+          insights.push({
+            tone,
+            title:
+              calibrationDays < 0
+                ? `Calibration overdue by ${Math.abs(calibrationDays)} days`
+                : `Calibration due in ${calibrationDays} days`,
+            description: `Scheduled for ${formatDate(
+              equipment.tool_calibration_due
+            )}`,
+            icon: <Gauge className="size-4" />,
+          });
+        }
+
+        if (equipment.condition) {
+          const tone =
+            equipment.condition === "needs_replacement" ||
+            equipment.condition === "poor"
+              ? "warning"
+              : "info";
+          insights.push({
+            tone,
+            title: `Condition: ${formatLabel(equipment.condition)}`,
+            description:
+              equipment.condition === "needs_replacement"
+                ? "Plan replacement to avoid downtime."
+                : "Equipment ready for deployment.",
+            icon: <Wrench className="size-4" />,
+          });
+        }
+
+        if (equipment.tool_serial) {
+          insights.push({
+            tone: "info",
+            title: `Serial ${equipment.tool_serial}`,
+            description: "Tracked for warranty and service history.",
+          });
+        }
+      } else {
+        const serviceDays = getDaysUntil(equipment.next_service_due);
+        if (serviceDays !== null) {
+          const tone =
+            serviceDays < 0
+              ? "critical"
+              : serviceDays <= 30
+                ? "warning"
+                : "info";
+          insights.push({
+            tone,
+            title:
+              serviceDays < 0
+                ? `Service overdue by ${Math.abs(serviceDays)} days`
+                : `Service due in ${serviceDays} days`,
+            description: `Next scheduled for ${formatDate(equipment.next_service_due)}`,
+            icon: <Gauge className="size-4" />,
+          });
+        }
+
+        if (equipment.is_under_warranty && equipment.warranty_expiration) {
+          const warrantyDays = getDaysUntil(equipment.warranty_expiration);
+          if (warrantyDays !== null) {
+            const tone =
+              warrantyDays < 0
+                ? "warning"
+                : warrantyDays <= 60
+                  ? "warning"
+                  : "positive";
+            insights.push({
+              tone,
+              title:
+                warrantyDays < 0
+                  ? "Warranty expired"
+                  : `Warranty active (${warrantyDays} days remaining)`,
+              description: `Covers until ${formatDate(equipment.warranty_expiration)}`,
+              icon: <ShieldCheck className="size-4" />,
+            });
+          }
+        }
+      }
+
+      return insights;
+    },
+    [
+      equipment.condition,
+      equipment.is_under_warranty,
+      equipment.next_service_due,
+      equipment.tool_calibration_due,
+      equipment.tool_serial,
+      equipment.vehicle_fuel_type,
+      equipment.vehicle_inspection_due,
+      equipment.vehicle_last_service_mileage,
+      equipment.vehicle_next_service_mileage,
+      equipment.vehicle_odometer,
+      equipment.vehicle_registration_expiration,
+      classificationKey,
+      isTool,
+      isVehicle,
+      equipment.warranty_expiration,
+    ]
+  );
+
   const customHeader = (
-    <div className="w-full">
+    <div className="w-full px-2 sm:px-0">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">
                   {equipment.name ||
                     `Equipment ${equipment.equipment_number || equipment.id.slice(0, 8)}`}
                 </h1>
-                <p className="text-muted-foreground text-sm sm:text-base">
-                  {equipment.manufacturer} {equipment.model}
-                </p>
+                <div className="flex flex-col gap-1 text-muted-foreground text-sm sm:text-base">
+                  <span>
+                    {classificationLabel}
+                    {typeLabel !== "N/A" && typeLabel !== "NA" && ` • ${typeLabel}`}
+                  </span>
+                  {(equipment.manufacturer || equipment.model) && (
+                    <span className="text-muted-foreground/80 text-xs sm:text-sm">
+                      {[equipment.manufacturer, equipment.model].filter(Boolean).join(" ")}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -224,16 +469,29 @@ export function EquipmentPageContent({
                   `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
                   "Unknown Customer"}
               </Link>
-              {/* Archive Button */}
-              <Button
-                className="ml-auto"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="mr-2 size-4" />
-                Archive
-              </Button>
+            </div>
+          )}
+
+          {smartInsights.length > 0 && (
+            <div className="grid gap-3 pt-2 sm:grid-cols-2 lg:grid-cols-3">
+              {smartInsights.map((insight) => (
+                <div
+                  className={`rounded-md border p-3 text-sm ${toneStyles[insight.tone]}`}
+                  key={`${insight.title}-${insight.description}`}
+                >
+                  <div className="flex items-start gap-3">
+                    {insight.icon && (
+                      <div className="mt-0.5 text-muted-foreground">{insight.icon}</div>
+                    )}
+                    <div className="space-y-1">
+                      <p className="font-medium text-foreground">{insight.title}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {insight.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -259,8 +517,12 @@ export function EquipmentPageContent({
                 />
               </div>
               <div>
+                <Label>Classification</Label>
+                <Input readOnly value={classificationLabel} />
+              </div>
+              <div>
                 <Label>Type</Label>
-                <Input readOnly value={equipment.type || "N/A"} />
+                <Input readOnly value={typeLabel !== "N/A" ? typeLabel : "Unspecified"} />
               </div>
               <div>
                 <Label>Manufacturer</Label>
@@ -288,6 +550,18 @@ export function EquipmentPageContent({
                   <Input readOnly value={equipment.location} />
                 </div>
               )}
+              {assetCategoryLabel && (
+                <div>
+                  <Label>Asset Category</Label>
+                  <Input readOnly value={assetCategoryLabel} />
+                </div>
+              )}
+              {assetSubcategoryLabel && (
+                <div>
+                  <Label>Asset Subcategory</Label>
+                  <Input readOnly value={assetSubcategoryLabel} />
+                </div>
+              )}
               {equipment.capacity && (
                 <div>
                   <Label>Capacity</Label>
@@ -311,6 +585,185 @@ export function EquipmentPageContent({
         ),
       },
     ];
+
+    if (isVehicle) {
+      const milesRemaining =
+        typeof equipment.vehicle_next_service_mileage === "number" &&
+        typeof equipment.vehicle_odometer === "number"
+          ? equipment.vehicle_next_service_mileage - equipment.vehicle_odometer
+          : null;
+
+      sections.push({
+        id: "fleet-profile",
+        title: "Fleet Profile",
+        icon: <Truck className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Make</Label>
+                <Input readOnly value={equipment.vehicle_make || "N/A"} />
+              </div>
+              <div>
+                <Label>Model</Label>
+                <Input readOnly value={equipment.vehicle_model || "N/A"} />
+              </div>
+              <div>
+                <Label>Year</Label>
+                <Input
+                  readOnly
+                  value={
+                    equipment.vehicle_year
+                      ? equipment.vehicle_year.toString()
+                      : "N/A"
+                  }
+                />
+              </div>
+              <div>
+                <Label>VIN</Label>
+                <Input readOnly value={equipment.vehicle_vin || "N/A"} />
+              </div>
+              <div>
+                <Label>License / Unit</Label>
+                <Input readOnly value={equipment.vehicle_license_plate || "N/A"} />
+              </div>
+              <div>
+                <Label>Fuel Type</Label>
+                <Input
+                  readOnly
+                  value={
+                    equipment.vehicle_fuel_type
+                      ? formatLabel(equipment.vehicle_fuel_type)
+                      : "N/A"
+                  }
+                />
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+
+      sections.push({
+        id: "fleet-service",
+        title: "Service Metrics",
+        icon: <Gauge className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Odometer</Label>
+                <Input
+                  readOnly
+                  value={formatNumber(equipment.vehicle_odometer, "mi")}
+                />
+              </div>
+              <div>
+                <Label>Last Service Mileage</Label>
+                <Input
+                  readOnly
+                  value={formatNumber(equipment.vehicle_last_service_mileage, "mi")}
+                />
+              </div>
+              <div>
+                <Label>Next Service Mileage</Label>
+                <Input
+                  readOnly
+                  value={formatNumber(equipment.vehicle_next_service_mileage, "mi")}
+                />
+              </div>
+              <div>
+                <Label>Remaining Until Service</Label>
+                <Input
+                  readOnly
+                  value={
+                    milesRemaining === null
+                      ? "N/A"
+                      : milesRemaining < 0
+                        ? `Past due by ${formatNumber(Math.abs(milesRemaining), "mi")}`
+                        : formatNumber(milesRemaining, "mi")
+                  }
+                />
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+
+      sections.push({
+        id: "fleet-compliance",
+        title: "Compliance & Renewals",
+        icon: <AlertTriangle className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Registration Expires</Label>
+                <Input
+                  readOnly
+                  value={formatDate(equipment.vehicle_registration_expiration)}
+                />
+              </div>
+              <div>
+                <Label>Inspection Due</Label>
+                <Input
+                  readOnly
+                  value={formatDate(equipment.vehicle_inspection_due)}
+                />
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
+
+    if (isTool) {
+      sections.push({
+        id: "tool-profile",
+        title: "Tool Profile",
+        icon: <Wrench className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Tool Serial</Label>
+                <Input readOnly value={equipment.tool_serial || "N/A"} />
+              </div>
+              <div>
+                <Label>Primary Use</Label>
+                <Input
+                  readOnly
+                  value={assetSubcategoryLabel || assetCategoryLabel || "N/A"}
+                />
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+
+      sections.push({
+        id: "tool-calibration",
+        title: "Calibration & Warranty",
+        icon: <Gauge className="size-4" />,
+        content: (
+          <UnifiedAccordionContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Calibration Due</Label>
+                <Input readOnly value={formatDate(equipment.tool_calibration_due)} />
+              </div>
+              <div>
+                <Label>Warranty Expires</Label>
+                <Input readOnly value={formatDate(equipment.warranty_expiration)} />
+              </div>
+              <div>
+                <Label>Condition</Label>
+                <Input readOnly value={formatLabel(equipment.condition)} />
+              </div>
+            </div>
+          </UnifiedAccordionContent>
+        ),
+      });
+    }
 
     // NEW: Enhanced Installation Section with full job data
     if (equipment.install_date || equipment.installed_by || installJob) {
@@ -684,6 +1137,9 @@ export function EquipmentPageContent({
 
     return sections;
   }, [
+    assetCategoryLabel,
+    assetSubcategoryLabel,
+    classificationLabel,
     equipment,
     customer,
     property,
@@ -691,6 +1147,8 @@ export function EquipmentPageContent({
     lastServiceJob,
     upcomingMaintenance,
     serviceHistory,
+    isTool,
+    isVehicle,
   ]);
 
   const relatedItems = useMemo(() => {
@@ -756,34 +1214,6 @@ export function EquipmentPageContent({
         }}
       />
 
-      {/* Archive Dialog */}
-      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Equipment?</DialogTitle>
-            <DialogDescription>
-              This will archive the equipment. You can restore it from the
-              archive within 90 days.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              disabled={isArchiving}
-              onClick={() => setIsArchiveDialogOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={isArchiving}
-              onClick={handleArchiveEquipment}
-              variant="destructive"
-            >
-              {isArchiving ? "Archiving..." : "Archive Equipment"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

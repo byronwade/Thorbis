@@ -162,11 +162,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
 
           {badges && badges.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
-              {badges.map((badge, index) => (
-                <span className="inline-flex" key={index}>
-                  {badge}
-                </span>
-              ))}
+              {badges}
             </div>
           ) : null}
         </div>

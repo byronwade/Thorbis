@@ -31,7 +31,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,6 @@ export type AppointmentPageContentProps = {
 export function AppointmentPageContent({
   entityData,
 }: AppointmentPageContentProps) {
-  const [mounted, setMounted] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -82,14 +81,6 @@ export function AppointmentPageContent({
     notes = [],
     activities = [],
   } = entityData;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
 
   const appointmentStart = new Date(appointment.start_time);
   const appointmentEnd = new Date(appointment.end_time);
@@ -122,15 +113,13 @@ export function AppointmentPageContent({
   ].filter(Boolean);
 
   const customHeader = (
-    <div className="py-6">
+    <div className="px-2 sm:px-0">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">

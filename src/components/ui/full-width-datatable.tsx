@@ -23,7 +23,9 @@
 import {
   closestCenter,
   DndContext,
+  DragOverlay,
   type DragEndEvent,
+  type DragStartEvent,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -108,7 +110,10 @@ function SortableColumnHeader<T>({
   colIndex: number;
   totalColumns: number;
 }) {
-  const [wasDragged, setWasDragged] = useState(false);
+  const [mouseDownPos, setMouseDownPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   const {
     attributes,
@@ -118,18 +123,6 @@ function SortableColumnHeader<T>({
     transition,
     isDragging,
   } = useSortable({ id: column.key });
-
-  // Track if column was actually dragged
-  useEffect(() => {
-    if (isDragging) {
-      setWasDragged(true);
-    }
-  }, [isDragging]);
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   const widthClass = column.width || "flex-1";
   const shrinkClass = column.shrink ? "shrink-0" : "";
@@ -143,19 +136,37 @@ function SortableColumnHeader<T>({
   const cellBorder =
     colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
 
-  // Handle click for sorting - only if column is sortable and wasn't dragged
-  const handleClick = () => {
-    if (column.sortable && !wasDragged) {
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  // Track mouse down position
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setMouseDownPos({ x: e.clientX, y: e.clientY });
+  };
+
+  // Handle click for sorting - only if it was a click (not a drag)
+  const handleClick = (e: React.MouseEvent) => {
+    if (!(column.sortable && mouseDownPos)) return;
+
+    // Calculate movement since mouse down
+    const deltaX = Math.abs(e.clientX - mouseDownPos.x);
+    const deltaY = Math.abs(e.clientY - mouseDownPos.y);
+
+    // If movement was less than 5px, treat it as a click (not a drag)
+    if (deltaX < 5 && deltaY < 5) {
       onSort(column.key);
     }
-    // Reset drag flag
-    setWasDragged(false);
+
+    setMouseDownPos(null);
   };
 
   return (
     <div
-      className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} ${cellBorder} group/header relative flex min-w-0 cursor-grab items-center gap-1.5 overflow-hidden px-2 transition-all active:cursor-grabbing ${isDragging ? "z-50 scale-105 bg-primary/10 opacity-50 shadow-lg" : ""}`}
+      className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} ${cellBorder} group/header relative flex min-w-0 cursor-grab items-center gap-1.5 overflow-hidden px-2 ${isDragging ? "opacity-40" : "transition-all active:cursor-grabbing"}`}
       onClick={handleClick}
+      onMouseDown={handleMouseDown}
       ref={setNodeRef}
       style={style}
       {...attributes}
@@ -287,6 +298,16 @@ export function FullWidthDataTable<T>({
     (state) => state.initializeEntity
   );
 
+  // Subscribe to column visibility state to trigger re-renders when columns are toggled
+  const columnVisibilityState = useDataTableColumnsStore((state) =>
+    entity ? state.entities[entity] : null
+  );
+
+  // Subscribe to column order state to trigger re-renders when columns are reordered
+  const columnOrderState = useDataTableColumnsStore((state) =>
+    entity ? state.columnOrder[entity] : null
+  );
+
   // Set client flag after mount to prevent hydration issues
   useEffect(() => {
     setIsClient(true);
@@ -353,7 +374,7 @@ export function FullWidthDataTable<T>({
     // Always use default order on server or when entity is not provided
     if (!(isClient && entity)) return allColumns;
 
-    const storedOrder = getColumnOrder(entity);
+    const storedOrder = columnOrderState || getColumnOrder(entity);
     if (!storedOrder || storedOrder.length === 0) return allColumns;
 
     // Create a map of columns by key for quick lookup
@@ -380,15 +401,43 @@ export function FullWidthDataTable<T>({
     }
 
     return ordered;
-  }, [isClient, allColumns, entity, getColumnOrder]);
+  }, [isClient, allColumns, entity, columnOrderState]);
 
   // Filter columns based on visibility (only if entity is provided)
   const visibleColumns = useMemo(() => {
     if (!entity) return orderedColumns;
-    return orderedColumns.filter(
-      (col) => !col.hideable || isColumnVisible(entity, col.key)
+
+    // Read visibility directly from the state object for better reactivity
+    const filtered = orderedColumns.filter((col) => {
+      if (!col.hideable) return true;
+      const visible = columnVisibilityState?.[col.key] ?? true;
+      return visible;
+    });
+
+    // Ensure at least one column has flex-1 for intelligent spacing
+    // If no columns have flex-1, assign it to the first column without a specific width
+    const hasFlexColumn = filtered.some(
+      (col) => col.width === "flex-1" || !col.width
     );
-  }, [orderedColumns, entity, isColumnVisible]);
+
+    if (!hasFlexColumn && filtered.length > 0) {
+      // Find the first column that doesn't have a fixed width or is the longest content column
+      const flexibleColumnIndex = filtered.findIndex(
+        (col) =>
+          !col.width || col.width === "flex-1" || !col.width.startsWith("w-")
+      );
+
+      if (flexibleColumnIndex !== -1) {
+        // Clone the column and set flex-1
+        filtered[flexibleColumnIndex] = {
+          ...filtered[flexibleColumnIndex],
+          width: "flex-1",
+        };
+      }
+    }
+
+    return filtered;
+  }, [orderedColumns, entity, columnVisibilityState]);
 
   // Filter data based on search query and archived status
   const filteredData = useMemo(() => {
@@ -569,28 +618,86 @@ export function FullWidthDataTable<T>({
     useSensor(KeyboardSensor)
   );
 
+  // Track active drag column for overlay
+  const [activeColumn, setActiveColumn] = useState<{
+    column: ColumnDef<T>;
+    width: number;
+    align: "left" | "center" | "right";
+  } | null>(null);
+
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    console.log('🚀 Drag started:', event.active.id);
+    const column = orderedColumns.find((col) => col.key === event.active.id);
+    if (column) {
+      // Get the actual width of the column being dragged
+      // Try to get the element from the active item
+      let width = 150; // Default fallback
+      try {
+        const element = event.active.rect?.current?.initial;
+        if (element && element.width) {
+          width = element.width;
+        }
+      } catch (error) {
+        console.warn('Could not get drag element width, using default');
+      }
+      
+      const align = column.align || "left";
+      setActiveColumn({ column, width, align });
+    } else {
+      setActiveColumn(null);
+    }
+  };
+
   // Handle drag end for column reordering
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (!(entity && over) || active.id === over.id) return;
+    console.log('🔄 Drag ended:', {
+      activeId: active.id,
+      overId: over?.id,
+      entity,
+      hasOver: !!over,
+      sameId: active.id === over?.id
+    });
+
+    if (!(entity && over) || active.id === over.id) {
+      console.log('❌ Drag cancelled or no valid drop target');
+      setActiveColumn(null);
+      return;
+    }
 
     // Get current order from store
     const currentOrder = getColumnOrder(entity);
-    if (!currentOrder) return;
+    console.log('📋 Current order:', currentOrder);
+    
+    if (!currentOrder) {
+      console.log('❌ No current order found');
+      setActiveColumn(null);
+      return;
+    }
 
     const oldIndex = currentOrder.indexOf(active.id as string);
     const newIndex = currentOrder.indexOf(over.id as string);
 
-    if (oldIndex === -1 || newIndex === -1) return;
+    console.log('📍 Indices:', { oldIndex, newIndex });
+
+    if (oldIndex === -1 || newIndex === -1) {
+      console.log('❌ Invalid indices');
+      setActiveColumn(null);
+      return;
+    }
 
     // Create new order by moving the column
     const newOrder = [...currentOrder];
     const [removed] = newOrder.splice(oldIndex, 1);
     newOrder.splice(newIndex, 0, removed);
 
-    // Save to store - this will trigger a re-render
+    console.log('✅ New order:', newOrder);
+
+    // Save to store - this will trigger a re-render via columnOrderState subscription
     setColumnOrder(entity, newOrder);
+    setActiveColumn(null);
   };
 
   return (
@@ -721,6 +828,7 @@ export function FullWidthDataTable<T>({
             {isClient && entity ? (
               <DndContext
                 collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 sensors={sensors}
               >
@@ -753,6 +861,25 @@ export function FullWidthDataTable<T>({
                     })}
                   </SortableContext>
                 </div>
+                <DragOverlay dropAnimation={null}>
+                  {activeColumn ? (
+                    <div 
+                      className={`flex cursor-grabbing items-center gap-1.5 overflow-hidden border border-primary/40 bg-background/95 px-2 py-2 font-medium text-foreground text-xs shadow-2xl ring-2 ring-primary/30 backdrop-blur-sm ${
+                        activeColumn.align === "right"
+                          ? "justify-end text-right"
+                          : activeColumn.align === "center"
+                            ? "justify-center text-center"
+                            : "justify-start text-left"
+                      }`}
+                      style={{ width: `${activeColumn.width}px` }}
+                    >
+                      <span className="truncate">{activeColumn.column.header}</span>
+                      {activeColumn.column.sortable && (
+                        <ArrowUpDown className="size-3 shrink-0 opacity-50" />
+                      )}
+                    </div>
+                  ) : null}
+                </DragOverlay>
               </DndContext>
             ) : (
               <div

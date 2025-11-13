@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Service Agreement Toolbar Actions - Client Component
+ * Service Agreement Toolbar Actions
  *
  * Toolbar actions for the service agreements page
  * - Advanced filters dropdown
@@ -14,13 +12,16 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { ServiceAgreementsFilterDropdown } from "@/components/work/service-agreements-filter-dropdown";
 
-// Define hideable columns for service agreements
-const SERVICE_AGREEMENTS_COLUMNS = [
-  { key: "customer", label: "Customer" },
-  { key: "start_date", label: "Start Date" },
-  { key: "end_date", label: "End Date" },
-  { key: "value", label: "Value" },
+// Critical columns (always visible - shown for reference)
+const SERVICE_AGREEMENTS_CRITICAL_COLUMNS = [
   { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const SERVICE_AGREEMENTS_OPTIONAL_COLUMNS = [
+  { key: "startDate", label: "Start Date" },
+  { key: "endDate", label: "End Date" },
+  { key: "value", label: "Value" },
 ];
 
 interface ServiceAgreementToolbarActionsProps {
@@ -44,7 +45,8 @@ export function ServiceAgreementToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={SERVICE_AGREEMENTS_COLUMNS}
+            columns={SERVICE_AGREEMENTS_OPTIONAL_COLUMNS}
+            criticalColumns={SERVICE_AGREEMENTS_CRITICAL_COLUMNS}
             entity="service_agreements"
           />
         </div>

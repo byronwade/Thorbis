@@ -92,7 +92,15 @@ function EquipmentCard({ item }: { item: EquipmentKanbanItem }) {
             {columnLabel.get(columnId as EquipmentStatus) ?? columnId}
           </Badge>
           <Badge className="text-xs" variant="outline">
-            {equipment.type}
+            {equipment.classificationLabel}
+            {equipment.typeLabel &&
+              equipment.typeLabel.toLowerCase() !==
+                equipment.classificationLabel.toLowerCase() && (
+                <span className="text-muted-foreground/80">
+                  {" "}
+                  • {equipment.typeLabel}
+                </span>
+              )}
           </Badge>
         </div>
       </div>

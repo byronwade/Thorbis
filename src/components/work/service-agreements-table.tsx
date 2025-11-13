@@ -128,6 +128,7 @@ export function ServiceAgreementsTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (agreement) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {agreement.startDate}
@@ -140,6 +141,7 @@ export function ServiceAgreementsTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (agreement) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {agreement.endDate}
@@ -152,6 +154,7 @@ export function ServiceAgreementsTable({
       width: "w-32",
       shrink: true,
       align: "right",
+      hideable: true,
       render: (agreement) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(agreement.value)}
@@ -163,6 +166,7 @@ export function ServiceAgreementsTable({
       header: "Status",
       width: "w-28",
       shrink: true,
+      hideable: false, // CRITICAL: Status key for action items
       render: (agreement) => (
         <GenericStatusBadge
           config={SERVICE_AGREEMENT_STATUS_CONFIG}

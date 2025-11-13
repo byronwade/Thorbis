@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Service Ticket Toolbar Actions - Client Component
+ * Service Ticket Toolbar Actions
  *
  * Toolbar actions for the service tickets page
  * - Advanced filters dropdown

@@ -47,12 +47,26 @@ export async function GET(
 
     // Fetch related data in parallel
     const [
+      { data: customer },
+      { data: property },
       { data: timeEntries },
       { data: teamAssignments },
       { data: invoices },
       { data: payments },
       { data: jobMaterials },
     ] = await Promise.all([
+      // Fetch customer
+      supabase
+        .from("customers")
+        .select("id, first_name, last_name, display_name, tags, credit_limit, outstanding_balance")
+        .eq("id", job.customer_id)
+        .single(),
+      // Fetch property with metadata (includes tags)
+      supabase
+        .from("properties")
+        .select("id, name, address, city, state, zip_code, property_type, square_footage, year_built, lat, lon, metadata")
+        .eq("id", job.property_id)
+        .single(),
       supabase
         .from("time_entries")
         .select(
@@ -127,6 +141,8 @@ export async function GET(
 
     return NextResponse.json({
       job,
+      customer: customer || null,
+      property: property || null,
       metrics,
       timeEntries: timeEntries || [],
       teamAssignments: teamAssignments || [],

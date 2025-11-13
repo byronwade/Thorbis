@@ -32,7 +32,7 @@ import {
   Ruler,
   Settings,
   ShieldCheck,
-  User
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,18 +40,21 @@ import { useEffect, useState } from "react";
 import { updateProperty } from "@/actions/properties";
 import {
   DetailPageContentLayout,
-  type DetailPageHeaderConfig
+  type DetailPageHeaderConfig,
 } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   UnifiedAccordionContent,
-  type UnifiedAccordionSection
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
+import { TravelTime } from "@/components/work/job-details/travel-time";
 import { PropertyLocationVisual } from "@/components/work/job-details/widgets/property-location-visual";
 import { useToast } from "@/hooks/use-toast";
 import { PropertyEquipmentTable } from "./property-equipment-table";
 import { PropertyJobsTable } from "./property-jobs-table";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
+import { updateEntityTags } from "@/actions/entity-tags";
 
 type PropertyPageContentProps = {
   entityData: {
@@ -80,7 +83,7 @@ type PropertyPageContentProps = {
 
 export function PropertyPageContent({
   entityData,
-  metrics
+  metrics,
 }: PropertyPageContentProps) {
   const propertyData = entityData;
   const router = useRouter();
@@ -103,7 +106,7 @@ export function PropertyPageContent({
     communications = [],
     activities = [],
     notes = [],
-    attachments = []
+    attachments = [],
   } = propertyData;
 
   // Get initials for avatar
@@ -120,7 +123,7 @@ export function PropertyPageContent({
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(cents / 100);
 
   // Save handlers for inline editing
@@ -175,7 +178,7 @@ export function PropertyPageContent({
       value: property.best_access_time || "Anytime",
       helperText: property.requires_appointment
         ? "Appointment required"
-        : undefined
+        : undefined,
     },
     {
       label: "Owner",
@@ -183,7 +186,8 @@ export function PropertyPageContent({
       value: customer
         ? `${customer.first_name} ${customer.last_name}`
         : "Not assigned",
-      helperText: customer?.email},
+      helperText: customer?.email,
+    },
     {
       label: "GPS Coordinates",
       icon: <MapPin className="h-3.5 w-3.5" />,
@@ -194,17 +198,20 @@ export function PropertyPageContent({
       helperText:
         property.lat && property.lon
           ? "Geocoded"
-          : "Click Location section to geocode"},
+          : "Click Location section to geocode",
+    },
     {
       label: "Total Jobs",
       icon: <Briefcase className="h-3.5 w-3.5" />,
       value: metrics.totalJobs.toString(),
-      helperText: `${metrics.activeJobs} active`},
+      helperText: `${metrics.activeJobs} active`,
+    },
     {
       label: "Total Revenue",
       icon: <DollarSign className="h-3.5 w-3.5" />,
       value: formatCurrency(metrics.totalRevenue),
-      helperText: `from ${metrics.totalJobs} job${metrics.totalJobs !== 1 ? "s" : ""}`},
+      helperText: `from ${metrics.totalJobs} job${metrics.totalJobs !== 1 ? "s" : ""}`,
+    },
     {
       label: "Equipment",
       icon: <Settings className="h-3.5 w-3.5" />,
@@ -212,7 +219,8 @@ export function PropertyPageContent({
       helperText:
         metrics.equipmentCount > 0
           ? `${metrics.equipmentCount} unit${metrics.equipmentCount !== 1 ? "s" : ""} installed`
-          : "No equipment"},
+          : "No equipment",
+    },
     {
       label: "Last Service",
       icon: <Clock className="h-3.5 w-3.5" />,
@@ -227,7 +235,8 @@ export function PropertyPageContent({
             );
             return diffDays === 0 ? "Today" : `${diffDays} days ago`;
           })()
-        : undefined},
+        : undefined,
+    },
   ];
 
   const headerConfig: DetailPageHeaderConfig = {
@@ -238,7 +247,7 @@ export function PropertyPageContent({
       <div className="flex size-16 items-center justify-center rounded-lg bg-primary/10 ring-2 ring-border">
         <Building2 className="size-8 text-primary" />
       </div>
-    )
+    ),
   };
 
   const sections: UnifiedAccordionSection[] = [
@@ -299,7 +308,7 @@ export function PropertyPageContent({
             )}
           </div>
         </UnifiedAccordionContent>
-      )
+      ),
     },
     {
       id: "jobs",
@@ -333,7 +342,7 @@ export function PropertyPageContent({
           <UnifiedAccordionContent className="p-0">
             <PropertyJobsTable jobs={jobs} />
           </UnifiedAccordionContent>
-        )
+        ),
     },
     {
       id: "equipment",
@@ -371,7 +380,7 @@ export function PropertyPageContent({
           <UnifiedAccordionContent className="p-0">
             <PropertyEquipmentTable equipment={equipment} />
           </UnifiedAccordionContent>
-        )
+        ),
     },
     // NEW: Estimates Section
     {
@@ -452,7 +461,7 @@ export function PropertyPageContent({
             </div>
           )}
         </UnifiedAccordionContent>
-      )
+      ),
     },
     // NEW: Invoices Section
     {
@@ -542,7 +551,7 @@ export function PropertyPageContent({
             </div>
           )}
         </UnifiedAccordionContent>
-      )
+      ),
     },
     // NEW: Maintenance Plans Section
     {
@@ -620,7 +629,7 @@ export function PropertyPageContent({
             </div>
           )}
         </UnifiedAccordionContent>
-      )
+      ),
     },
     {
       id: "notes",
@@ -662,7 +671,7 @@ export function PropertyPageContent({
             )}
           </div>
         </UnifiedAccordionContent>
-      )
+      ),
     },
     {
       id: "attachments",
@@ -709,24 +718,111 @@ export function PropertyPageContent({
             )}
           </div>
         </UnifiedAccordionContent>
-      )
+      ),
     },
   ];
+
+  // Custom Header with Travel Time
+  const propertyTags =
+    (property?.metadata?.tags &&
+      Array.isArray(property.metadata.tags) &&
+      property.metadata.tags) ||
+    [];
+
+  const customHeader = (
+    <div className="w-full px-2 sm:px-0">
+      <div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
+        <div className="flex flex-col gap-4 p-4 sm:p-6">
+          {/* Property Name and Location */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex size-16 items-center justify-center rounded-lg bg-primary/10 ring-2 ring-border">
+                  <Building2 className="size-8 text-primary" />
+                </div>
+                <div>
+                  <h1 className="font-semibold text-2xl">
+                    {property.name || property.address}
+                  </h1>
+                  <p className="text-muted-foreground text-sm">
+                    {property.city}, {property.state} {property.zip_code}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2">
+            <Badge className="gap-1.5" variant="secondary">
+              <Building2 className="size-3.5" />
+              {property.property_type || "Residential"}
+            </Badge>
+            {property.square_footage && (
+              <Badge className="gap-1.5" variant="secondary">
+                <Ruler className="size-3.5" />
+                {property.square_footage.toLocaleString()} sq ft
+              </Badge>
+            )}
+            {metrics.equipmentCount > 0 && (
+              <Badge className="gap-1.5" variant="secondary">
+                <Settings className="size-3.5" />
+                {metrics.equipmentCount} Equipment
+              </Badge>
+            )}
+            {metrics.activeJobs > 0 && (
+              <Badge className="gap-1.5" variant="secondary">
+                <Briefcase className="size-3.5" />
+                {metrics.activeJobs} Active Jobs
+              </Badge>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-muted-foreground text-xs font-medium">
+              Tags:
+            </span>
+            <EntityTags
+              entityId={property.id}
+              entityType="property"
+              onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
+              tags={propertyTags}
+            />
+          </div>
+
+          {/* Travel Time */}
+          {property && (
+            <TravelTime
+              property={{
+                address: property.address ?? undefined,
+                city: property.city ?? undefined,
+                state: property.state ?? undefined,
+                zip_code: property.zip_code ?? undefined,
+                lat: property.lat ?? undefined,
+                lon: property.lon ?? undefined,
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <DetailPageContentLayout
       activities={activities}
       attachments={[]}
+      customHeader={customHeader}
       customSections={sections}
       defaultOpenSection="location"
       enableReordering={true}
-      header={headerConfig}
       notes={[]}
       showStandardSections={{
         activities: true,
         notes: false,
         attachments: false,
-        relatedItems: false
+        relatedItems: false,
       }}
       storageKey="property-details"
     />

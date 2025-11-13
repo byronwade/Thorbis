@@ -8,7 +8,6 @@
 "use client";
 
 import {
-  Archive,
   Bell,
   Calendar,
   Clock,
@@ -20,20 +19,10 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { archiveAppointment } from "@/actions/appointments";
+import { useMemo } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -66,10 +55,6 @@ export type AppointmentPageContentProps = {
 export function AppointmentPageContent({
   entityData,
 }: AppointmentPageContentProps) {
-  const [mounted, setMounted] = useState(false);
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [isArchiving, setIsArchiving] = useState(false);
-
   const {
     appointment,
     customer,
@@ -80,29 +65,6 @@ export function AppointmentPageContent({
     activities = [],
     attachments = [],
   } = entityData;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleArchiveAppointment = async () => {
-    setIsArchiving(true);
-    try {
-      const result = await archiveAppointment(appointment.id);
-      if (result.success) {
-        toast.success("Appointment archived successfully");
-        setIsArchiveDialogOpen(false);
-        // Redirect to appointments list
-        window.location.href = "/dashboard/work/appointments";
-      } else {
-        toast.error(result.error || "Failed to archive appointment");
-      }
-    } catch (error) {
-      toast.error("Failed to archive appointment");
-    } finally {
-      setIsArchiving(false);
-    }
-  };
 
   // Compute values used in hooks - must be before hooks
   const appointmentStart = appointment.start_time
@@ -430,11 +392,6 @@ export function AppointmentPageContent({
     return items;
   }, [customer, property, job]);
 
-  // Now we can do conditional return after all hooks
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   const statusBadgeVariant =
     appointment.status === "confirmed"
       ? "default"
@@ -454,15 +411,13 @@ export function AppointmentPageContent({
   ].filter(Boolean);
 
   const customHeader = (
-    <div className="py-6">
+    <div className="px-2 sm:px-0">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">
@@ -512,17 +467,6 @@ export function AppointmentPageContent({
                   {customer.email}
                 </a>
               )}
-
-              {/* Archive Button */}
-              <Button
-                className="ml-auto"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="mr-2 size-4" />
-                Archive
-              </Button>
 
               {customer.phone && (
                 <a
@@ -588,34 +532,6 @@ export function AppointmentPageContent({
         }}
       />
 
-      {/* Archive Dialog */}
-      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Appointment?</DialogTitle>
-            <DialogDescription>
-              This will archive the appointment "{appointment.title}". You can
-              restore it from the archive within 90 days.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              disabled={isArchiving}
-              onClick={() => setIsArchiveDialogOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={isArchiving}
-              onClick={handleArchiveAppointment}
-              variant="destructive"
-            >
-              {isArchiving ? "Archiving..." : "Archive Appointment"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

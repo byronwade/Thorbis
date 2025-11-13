@@ -8,7 +8,6 @@
 "use client";
 
 import {
-  Archive,
   Calendar,
   FileCheck,
   FileText,
@@ -18,9 +17,9 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { archiveEstimate, unlinkJobFromEstimate } from "@/actions/estimates";
+import { unlinkJobFromEstimate } from "@/actions/estimates";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,7 +72,7 @@ function formatCurrency(cents: number | null | undefined): string {
   }).format(cents / 100);
 }
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, key?: string) {
   const variants: Record<string, { className: string; label: string }> = {
     draft: {
       className:
@@ -109,16 +108,13 @@ function getStatusBadge(status: string) {
   };
 
   return (
-    <Badge className={config.className} variant="outline">
+    <Badge className={config.className} key={key} variant="outline">
       {config.label}
     </Badge>
   );
 }
 
 export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
-  const [mounted, setMounted] = useState(false);
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [isArchiving, setIsArchiving] = useState(false);
   const [unlinkJobId, setUnlinkJobId] = useState<string | null>(null);
   const [isUnlinking, setIsUnlinking] = useState(false);
 
@@ -132,29 +128,6 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
     activities = [],
     attachments = [],
   } = entityData;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleArchiveEstimate = async () => {
-    setIsArchiving(true);
-    try {
-      const result = await archiveEstimate(estimate.id);
-      if (result.success) {
-        toast.success("Estimate archived successfully");
-        setIsArchiveDialogOpen(false);
-        // Redirect to estimates list
-        window.location.href = "/dashboard/work/estimates";
-      } else {
-        toast.error(result.error || "Failed to archive estimate");
-      }
-    } catch (error) {
-      toast.error("Failed to archive estimate");
-    } finally {
-      setIsArchiving(false);
-    }
-  };
 
   const handleUnlinkJob = async () => {
     if (!unlinkJobId) return;
@@ -178,32 +151,23 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
     }
   };
 
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
+  // Move computations before early return to comply with Rules of Hooks
   const lineItems = estimate.line_items
     ? typeof estimate.line_items === "string"
       ? JSON.parse(estimate.line_items)
       : estimate.line_items
     : [];
 
-  const headerBadges = [
-    <Badge key="status" variant="outline">
-      {getStatusBadge(estimate.status || "draft")}
-    </Badge>,
-  ];
+  const headerBadges = [getStatusBadge(estimate.status || "draft", "status")];
 
   const customHeader = (
-    <div className="w-full">
+    <div className="w-full px-2 sm:px-0">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">
@@ -228,17 +192,6 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
                   `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
                   "Unknown Customer"}
               </Link>
-
-              {/* Archive Button */}
-              <Button
-                className="ml-auto"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="mr-2 size-4" />
-                Archive
-              </Button>
             </div>
           )}
 
@@ -676,35 +629,6 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
       />
 
       {/* Archive Dialog */}
-      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Estimate?</DialogTitle>
-            <DialogDescription>
-              This will archive estimate #
-              {estimate.estimate_number || estimate.id.slice(0, 8)}. You can
-              restore it from the archive within 90 days.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              disabled={isArchiving}
-              onClick={() => setIsArchiveDialogOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={isArchiving}
-              onClick={handleArchiveEstimate}
-              variant="destructive"
-            >
-              {isArchiving ? "Archiving..." : "Archive Estimate"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Unlink Job Confirmation Dialog */}
       <Dialog
         onOpenChange={(open) => !open && setUnlinkJobId(null)}

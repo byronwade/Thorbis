@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Purchase Order Toolbar Actions - Client Component
+ * Purchase Order Toolbar Actions
  *
  * Toolbar actions for the purchase orders page
  * - Advanced filters dropdown
@@ -14,13 +12,17 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { PurchaseOrdersFilterDropdown } from "@/components/work/purchase-orders-filter-dropdown";
 
-// Define hideable columns for purchase orders
-const PURCHASE_ORDERS_COLUMNS = [
+// Critical columns (always visible - shown for reference)
+const PURCHASE_ORDERS_CRITICAL_COLUMNS = [
   { key: "vendor", label: "Vendor" },
-  { key: "order_date", label: "Order Date" },
-  { key: "delivery_date", label: "Delivery Date" },
-  { key: "total", label: "Total" },
+  { key: "totalAmount", label: "Amount" },
   { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const PURCHASE_ORDERS_OPTIONAL_COLUMNS = [
+  { key: "priority", label: "Priority" },
+  { key: "expectedDelivery", label: "Expected Delivery" },
 ];
 
 interface PurchaseOrderToolbarActionsProps {
@@ -44,7 +46,8 @@ export function PurchaseOrderToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={PURCHASE_ORDERS_COLUMNS}
+            columns={PURCHASE_ORDERS_OPTIONAL_COLUMNS}
+            criticalColumns={PURCHASE_ORDERS_CRITICAL_COLUMNS}
             entity="purchase_orders"
           />
         </div>

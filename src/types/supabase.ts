@@ -38,7 +38,7 @@ export type Database = {
           is_important: boolean
           is_system_generated: boolean
           is_visible: boolean
-          metadata: Json | null
+          metadata: Json
           new_value: string | null
           occurred_at: string
           old_value: string | null
@@ -68,7 +68,7 @@ export type Database = {
           is_important?: boolean
           is_system_generated?: boolean
           is_visible?: boolean
-          metadata?: Json | null
+          metadata?: Json
           new_value?: string | null
           occurred_at?: string
           old_value?: string | null
@@ -98,7 +98,7 @@ export type Database = {
           is_important?: boolean
           is_system_generated?: boolean
           is_visible?: boolean
-          metadata?: Json | null
+          metadata?: Json
           new_value?: string | null
           occurred_at?: string
           old_value?: string | null
@@ -4102,9 +4102,12 @@ export type Database = {
       equipment: {
         Row: {
           archived_at: string | null
+          asset_category: string | null
+          asset_subcategory: string | null
           average_service_cost: number | null
           capacity: string | null
           category: string | null
+          classification: Database["public"]["Enums"]["equipment_classification"]
           company_id: string
           condition: string
           created_at: string
@@ -4142,17 +4145,33 @@ export type Database = {
           status: string
           total_service_cost: number | null
           total_service_count: number | null
+          tool_calibration_due: string | null
+          tool_serial: string | null
           type: string
           updated_at: string
+          vehicle_fuel_type: string | null
+          vehicle_inspection_due: string | null
+          vehicle_last_service_mileage: number | null
+          vehicle_license_plate: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_next_service_mileage: number | null
+          vehicle_odometer: number | null
+          vehicle_registration_expiration: string | null
+          vehicle_vin: string | null
+          vehicle_year: number | null
           warranty_expiration: string | null
           warranty_notes: string | null
           warranty_provider: string | null
         }
         Insert: {
           archived_at?: string | null
+          asset_category?: string | null
+          asset_subcategory?: string | null
           average_service_cost?: number | null
           capacity?: string | null
           category?: string | null
+          classification?: Database["public"]["Enums"]["equipment_classification"]
           company_id: string
           condition?: string
           created_at?: string
@@ -4190,17 +4209,33 @@ export type Database = {
           status?: string
           total_service_cost?: number | null
           total_service_count?: number | null
+          tool_calibration_due?: string | null
+          tool_serial?: string | null
           type: string
           updated_at?: string
+          vehicle_fuel_type?: string | null
+          vehicle_inspection_due?: string | null
+          vehicle_last_service_mileage?: number | null
+          vehicle_license_plate?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_next_service_mileage?: number | null
+          vehicle_odometer?: number | null
+          vehicle_registration_expiration?: string | null
+          vehicle_vin?: string | null
+          vehicle_year?: number | null
           warranty_expiration?: string | null
           warranty_notes?: string | null
           warranty_provider?: string | null
         }
         Update: {
           archived_at?: string | null
+          asset_category?: string | null
+          asset_subcategory?: string | null
           average_service_cost?: number | null
           capacity?: string | null
           category?: string | null
+          classification?: Database["public"]["Enums"]["equipment_classification"]
           company_id?: string
           condition?: string
           created_at?: string
@@ -4238,8 +4273,21 @@ export type Database = {
           status?: string
           total_service_cost?: number | null
           total_service_count?: number | null
+          tool_calibration_due?: string | null
+          tool_serial?: string | null
           type?: string
           updated_at?: string
+          vehicle_fuel_type?: string | null
+          vehicle_inspection_due?: string | null
+          vehicle_last_service_mileage?: number | null
+          vehicle_license_plate?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_next_service_mileage?: number | null
+          vehicle_odometer?: number | null
+          vehicle_registration_expiration?: string | null
+          vehicle_vin?: string | null
+          vehicle_year?: number | null
           warranty_expiration?: string | null
           warranty_notes?: string | null
           warranty_provider?: string | null
@@ -4826,6 +4874,7 @@ export type Database = {
           id: string
           job_id: string | null
           line_items: Json
+          metadata: Json
           notes: string | null
           permanent_delete_scheduled_at: string | null
           property_id: string | null
@@ -4860,6 +4909,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           line_items: Json
+          metadata?: Json
           notes?: string | null
           permanent_delete_scheduled_at?: string | null
           property_id?: string | null
@@ -4894,6 +4944,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           line_items?: Json
+          metadata?: Json
           notes?: string | null
           permanent_delete_scheduled_at?: string | null
           property_id?: string | null
@@ -6568,6 +6619,7 @@ export type Database = {
           is_recurring: boolean | null
           job_id: string | null
           line_items: Json
+          metadata: Json
           next_invoice_date: string | null
           notes: string | null
           page_content: Json | null
@@ -6607,6 +6659,7 @@ export type Database = {
           is_recurring?: boolean | null
           job_id?: string | null
           line_items: Json
+          metadata?: Json
           next_invoice_date?: string | null
           notes?: string | null
           page_content?: Json | null
@@ -6646,6 +6699,7 @@ export type Database = {
           is_recurring?: boolean | null
           job_id?: string | null
           line_items?: Json
+          metadata?: Json
           next_invoice_date?: string | null
           notes?: string | null
           page_content?: Json | null
@@ -7844,7 +7898,7 @@ export type Database = {
           job_service_agreement_id: string | null
           job_type: string | null
           job_warranty_info: Json | null
-          metadata: Json | null
+          metadata: Json
           next_job_id: string | null
           notes: string | null
           paid_amount: number | null
@@ -7927,7 +7981,7 @@ export type Database = {
           job_service_agreement_id?: string | null
           job_type?: string | null
           job_warranty_info?: Json | null
-          metadata?: Json | null
+          metadata?: Json
           next_job_id?: string | null
           notes?: string | null
           paid_amount?: number | null
@@ -8010,7 +8064,7 @@ export type Database = {
           job_service_agreement_id?: string | null
           job_type?: string | null
           job_warranty_info?: Json | null
-          metadata?: Json | null
+          metadata?: Json
           next_job_id?: string | null
           notes?: string | null
           paid_amount?: number | null
@@ -10775,7 +10829,7 @@ export type Database = {
           id: string
           lat: number | null
           lon: number | null
-          metadata: Json | null
+          metadata: Json
           name: string
           notes: string | null
           parking_instructions: string | null
@@ -10807,7 +10861,7 @@ export type Database = {
           id?: string
           lat?: number | null
           lon?: number | null
-          metadata?: Json | null
+          metadata?: Json
           name: string
           notes?: string | null
           parking_instructions?: string | null
@@ -10839,7 +10893,7 @@ export type Database = {
           id?: string
           lat?: number | null
           lon?: number | null
-          metadata?: Json | null
+          metadata?: Json
           name?: string
           notes?: string | null
           parking_instructions?: string | null
@@ -14331,6 +14385,7 @@ export type Database = {
     }
     Enums: {
       content_status: "draft" | "scheduled" | "published" | "archived"
+      equipment_classification: "equipment" | "tool" | "vehicle"
       resource_type:
         | "case_study"
         | "webinar"
@@ -14480,6 +14535,7 @@ export const Constants = {
   public: {
     Enums: {
       content_status: ["draft", "scheduled", "published", "archived"],
+      equipment_classification: ["equipment", "tool", "vehicle"],
       resource_type: [
         "case_study",
         "webinar",

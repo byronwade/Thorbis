@@ -209,6 +209,7 @@ export function TeamsTable({
       key: "role",
       header: "Role",
       sortable: true,
+      hideable: false, // CRITICAL: Role essential for team management
       render: (member) => (
         <Badge
           style={{
@@ -226,6 +227,7 @@ export function TeamsTable({
       key: "department",
       header: "Department",
       sortable: true,
+      hideable: true,
       render: (member) => {
         if (!member.departmentName)
           return <span className="text-muted-foreground">—</span>;
@@ -247,6 +249,7 @@ export function TeamsTable({
       key: "jobTitle",
       header: "Job Title",
       sortable: true,
+      hideable: true,
       render: (member) =>
         member.jobTitle || <span className="text-muted-foreground">—</span>,
       width: "w-40",
@@ -256,6 +259,7 @@ export function TeamsTable({
       key: "status",
       header: "Status",
       sortable: true,
+      hideable: false, // CRITICAL: Status essential for team management
       render: (member) => {
         const isArchived = isItemArchived(member.archived_at);
 
@@ -286,6 +290,7 @@ export function TeamsTable({
     {
       key: "lastActive",
       header: "Last Active",
+      hideable: true,
       render: (member) => (
         <span className="text-muted-foreground text-sm">
           {member.lastActive}
@@ -511,14 +516,6 @@ export function TeamsTable({
       <FullWidthDataTable
         bulkActions={bulkActions}
         columns={columns}
-        toolbarActions={
-          <ArchiveFilterSelect
-            activeCount={activeCount}
-            archivedCount={archivedCount}
-            entity="team_members"
-            totalCount={teamMembers.length}
-          />
-        }
         data={filteredTeamMembers}
         emptyAction={
           <Button onClick={handleInviteMember} size="sm">
@@ -546,9 +543,7 @@ export function TeamsTable({
           const roleMatch =
             member.roleName?.toLowerCase().includes(searchLower) ?? false;
           const departmentMatch =
-            member.departmentName
-              ?.toLowerCase()
-              .includes(searchLower) ?? false;
+            member.departmentName?.toLowerCase().includes(searchLower) ?? false;
           const jobTitleMatch =
             member.jobTitle?.toLowerCase().includes(searchLower) ?? false;
 
@@ -561,6 +556,14 @@ export function TeamsTable({
           );
         }}
         searchPlaceholder="Search by name or email..."
+        toolbarActions={
+          <ArchiveFilterSelect
+            activeCount={activeCount}
+            archivedCount={archivedCount}
+            entity="team_members"
+            totalCount={teamMembers.length}
+          />
+        }
       />
 
       {/* Suspend Single Member Dialog */}

@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Team Toolbar Actions - Client Component
+ * Team Toolbar Actions
  *
  * Toolbar actions for the team members page
  * - Advanced filters dropdown
@@ -14,13 +12,17 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { TeamFilterDropdown } from "@/components/work/team-filter-dropdown";
 
-// Define hideable columns for team members
-const TEAM_MEMBERS_COLUMNS = [
+// Critical columns (always visible - shown for reference)
+const TEAM_CRITICAL_COLUMNS = [
   { key: "role", label: "Role" },
-  { key: "department", label: "Department" },
-  { key: "email", label: "Email" },
-  { key: "phone", label: "Phone" },
   { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const TEAM_OPTIONAL_COLUMNS = [
+  { key: "department", label: "Department" },
+  { key: "jobTitle", label: "Job Title" },
+  { key: "lastActive", label: "Last Active" },
 ];
 
 interface TeamToolbarActionsProps {
@@ -44,7 +46,8 @@ export function TeamToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={TEAM_MEMBERS_COLUMNS}
+            columns={TEAM_OPTIONAL_COLUMNS}
+            criticalColumns={TEAM_CRITICAL_COLUMNS}
             entity="team_members"
           />
         </div>

@@ -12,7 +12,7 @@
  * - Items are displayed in main content area (cards/table), not in tree
  */
 
-import { ChevronRight, Folder } from "lucide-react";
+import { ArrowLeft, ChevronRight, Folder } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -191,9 +191,29 @@ export function PriceBookTreeSidebar(props: PriceBookTreeSidebarProps) {
     router.push("/dashboard/work/pricebook");
   };
 
+  const handleBackClick = () => {
+    router.push("/dashboard/work");
+  };
+
   return (
     <Sidebar collapsible="offcanvas" variant="inset" {...props}>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleBackClick}
+                  tooltip="Return to Work"
+                  type="button"
+                >
+                  <ArrowLeft className="size-4 shrink-0" />
+                  Back to Work
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Categories</SidebarGroupLabel>
           <SidebarGroupContent>

@@ -5,6 +5,7 @@ import { JobsKanban } from "@/components/work/jobs-kanban";
 import { JobsTable } from "@/components/work/jobs-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { createClient } from "@/lib/supabase/server";
+import type { Job } from "@/lib/db/schema";
 
 /**
  * Work Page - Server Component
@@ -23,7 +24,86 @@ import { createClient } from "@/lib/supabase/server";
  */
 
 // Configuration constants
-const MAX_JOBS_PER_PAGE = 100;
+const JOBS_PAGE_SIZE = 50;
+
+const JOB_SELECT = `
+  id,
+  company_id,
+  property_id,
+  customer_id,
+  assigned_to,
+  job_number,
+  title,
+  description,
+  status,
+  priority,
+  job_type,
+  ai_categories,
+  ai_equipment,
+  ai_service_type,
+  ai_priority_score,
+  ai_tags,
+  ai_processed_at,
+  scheduled_start,
+  scheduled_end,
+  actual_start,
+  actual_end,
+  total_amount,
+  paid_amount,
+  notes,
+  metadata,
+  created_at,
+  updated_at,
+  customers:customers!customer_id (
+    first_name,
+    last_name,
+    email,
+    phone
+  ),
+  properties:properties!property_id (
+    address,
+    city,
+    state,
+    zip_code
+  )
+`;
+
+type RelatedCustomer = {
+  display_name?: string | null;
+  company_name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+};
+
+type RelatedProperty = {
+  display_name?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip_code?: string | null;
+};
+
+type ExtendedJob = Job & {
+  id: string;
+  companyId?: string | null;
+  propertyId?: string | null;
+  customerId?: string | null;
+  assignedTo?: string | null;
+  metadata?: Record<string, unknown> | null;
+  customers?: RelatedCustomer | null;
+  properties?: RelatedProperty | null;
+  aiProcessedAt?: Date | string | null;
+  scheduledStart?: Date | string | null;
+  scheduledEnd?: Date | string | null;
+  actualStart?: Date | string | null;
+  actualEnd?: Date | string | null;
+  totalAmount?: number | null;
+  paidAmount?: number | null;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
+};
 
 export default async function JobsPage() {
   const supabase = await createClient();
@@ -37,17 +117,12 @@ export default async function JobsPage() {
   }
 
   // Fetch jobs from Supabase with customer and property details
-  // Note: Use the foreign key column name with ! to specify the exact relationship
   const { data: jobsRaw, error } = await supabase
     .from("jobs")
-    .select(`
-      *,
-      customers!customer_id(first_name, last_name, email, phone),
-      properties!property_id(address, city, state, zip_code)
-    `)
+    .select(JOB_SELECT)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
-    .limit(MAX_JOBS_PER_PAGE);
+    .limit(JOBS_PAGE_SIZE);
 
   if (error) {
     // Supabase PostgREST errors may not have standard structure
@@ -60,38 +135,76 @@ export default async function JobsPage() {
   }
 
   // Transform snake_case to camelCase for the component
-  const jobs = (jobsRaw || []).map((job: any) => ({
-    id: job.id,
-    companyId: job.company_id,
-    propertyId: job.property_id,
-    customerId: job.customer_id,
-    assignedTo: job.assigned_to,
-    jobNumber: job.job_number,
-    title: job.title,
-    description: job.description,
-    status: job.status,
-    priority: job.priority,
-    jobType: job.job_type,
-    aiCategories: job.ai_categories,
-    aiEquipment: job.ai_equipment,
-    aiServiceType: job.ai_service_type,
-    aiPriorityScore: job.ai_priority_score,
-    aiTags: job.ai_tags,
-    aiProcessedAt: job.ai_processed_at ? new Date(job.ai_processed_at) : null,
-    scheduledStart: job.scheduled_start ? new Date(job.scheduled_start) : null,
-    scheduledEnd: job.scheduled_end ? new Date(job.scheduled_end) : null,
-    actualStart: job.actual_start ? new Date(job.actual_start) : null,
-    actualEnd: job.actual_end ? new Date(job.actual_end) : null,
-    totalAmount: job.total_amount ?? 0,
-    paidAmount: job.paid_amount ?? 0,
-    notes: job.notes,
-    metadata: job.metadata,
-    createdAt: new Date(job.created_at),
-    updatedAt: new Date(job.updated_at),
-    // Include related data
-    customers: job.customers,
-    properties: job.properties,
-  }));
+  const toDate = (value: string | null) => (value ? new Date(value) : null);
+
+  const resolveRelation = <T,>(relation: T | T[] | null | undefined): T | null => {
+    if (!relation) {
+      return null;
+    }
+    return Array.isArray(relation) ? relation[0] ?? null : relation;
+  };
+
+  const jobs: ExtendedJob[] = (jobsRaw ?? []).map((job) => {
+    const customer = resolveRelation<RelatedCustomer>(
+      job.customers as RelatedCustomer | RelatedCustomer[] | null
+    );
+    const property = resolveRelation<RelatedProperty>(
+      job.properties as RelatedProperty | RelatedProperty[] | null
+    );
+
+    const customerData: RelatedCustomer | null = customer
+      ? {
+          display_name: customer.display_name ?? null,
+          company_name: customer.company_name ?? null,
+          first_name: customer.first_name ?? null,
+          last_name: customer.last_name ?? null,
+          email: customer.email ?? null,
+          phone: customer.phone ?? null,
+        }
+      : null;
+
+    const propertyData: RelatedProperty | null = property
+      ? {
+          display_name: property.display_name ?? null,
+          address: property.address ?? null,
+          city: property.city ?? null,
+          state: property.state ?? null,
+          zip_code: property.zip_code ?? null,
+        }
+      : null;
+
+    return {
+      id: job.id,
+      companyId: job.company_id,
+      propertyId: job.property_id,
+      customerId: job.customer_id,
+      assignedTo: job.assigned_to,
+      jobNumber: job.job_number,
+      title: job.title,
+      description: job.description,
+      status: job.status,
+      priority: job.priority,
+      jobType: job.job_type,
+      aiCategories: job.ai_categories,
+      aiEquipment: job.ai_equipment,
+      aiServiceType: job.ai_service_type,
+      aiPriorityScore: job.ai_priority_score,
+      aiTags: job.ai_tags,
+      aiProcessedAt: toDate(job.ai_processed_at),
+      scheduledStart: toDate(job.scheduled_start),
+      scheduledEnd: toDate(job.scheduled_end),
+      actualStart: toDate(job.actual_start),
+      actualEnd: toDate(job.actual_end),
+      totalAmount: job.total_amount ?? 0,
+      paidAmount: job.paid_amount ?? 0,
+      notes: job.notes,
+      metadata: job.metadata,
+      createdAt: new Date(job.created_at),
+      updatedAt: new Date(job.updated_at),
+      customers: customerData,
+      properties: propertyData,
+    } satisfies ExtendedJob;
+  });
 
   // Calculate job stats
   const jobStats: StatCard[] = [

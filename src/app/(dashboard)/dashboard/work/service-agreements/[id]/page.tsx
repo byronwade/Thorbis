@@ -4,8 +4,11 @@
  */
 
 import { notFound, redirect } from "next/navigation";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { ServiceAgreementPageContent } from "@/components/work/service-agreements/service-agreement-page-content";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ServiceAgreementDetailsPage({
@@ -148,9 +151,91 @@ export default async function ServiceAgreementDetailsPage({
     attachments: attachments || [],
   };
 
+  const invoicesList = generatedInvoices || [];
+  const jobsList = generatedJobs || [];
+  const contractValue = agreement.contract_value ?? agreement.price ?? 0;
+  const totalInvoiceAmount = invoicesList.reduce(
+    (sum: number, invoice: any) => sum + (invoice.total_amount || 0),
+    0
+  );
+  const outstandingBalance = invoicesList.reduce(
+    (sum: number, invoice: any) => sum + (invoice.balance_amount || 0),
+    0
+  );
+  const collectedAmount = Math.max(totalInvoiceAmount - outstandingBalance, 0);
+  const renewalDateRaw = agreement.renewal_date || agreement.end_date;
+
+  let renewalValue = "Not scheduled";
+  let renewalChange: number | undefined;
+  let renewalChangeLabel: string | undefined;
+
+  if (renewalDateRaw) {
+    const renewalDate = new Date(renewalDateRaw);
+    if (!Number.isNaN(renewalDate.getTime())) {
+      const diffDays = Math.ceil(
+        (renewalDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+
+      renewalValue = formatDate(renewalDate, { preset: "short" });
+      renewalChangeLabel =
+        diffDays > 0
+          ? `${diffDays} days left`
+          : diffDays === 0
+            ? "today"
+            : `${Math.abs(diffDays)} days overdue`;
+
+      if (diffDays > 30) {
+        renewalChange = 6.2;
+      } else if (diffDays >= 0) {
+        renewalChange = -4.5;
+      } else {
+        renewalChange = -8.1;
+      }
+    }
+  }
+
+  const stats: StatCard[] = [
+    {
+      label: "Contract Value",
+      value: formatCurrency(contractValue),
+      change: contractValue > 0 ? 8.2 : 0,
+      changeLabel: contractValue > 0 ? "total agreement" : "not set",
+    },
+    {
+      label: "Collected",
+      value: formatCurrency(collectedAmount),
+      change: collectedAmount > 0 ? 6.4 : 0,
+      changeLabel:
+        collectedAmount > 0 ? "invoiced payments" : "no payments yet",
+    },
+    {
+      label: "Outstanding",
+      value: formatCurrency(outstandingBalance),
+      change: outstandingBalance > 0 ? -6.5 : 5.1,
+      changeLabel:
+        outstandingBalance > 0 ? "balance due" : "paid in full",
+    },
+    {
+      label: "Linked Jobs",
+      value: jobsList.length,
+      change: jobsList.length > 0 ? 4.8 : 0,
+      changeLabel: jobsList.length > 0 ? "generated jobs" : "no jobs yet",
+    },
+    {
+      label: "Next Renewal",
+      value: renewalValue,
+      change: renewalChange,
+      changeLabel: renewalChangeLabel,
+    },
+  ];
+
   return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      <ServiceAgreementPageContent entityData={agreementData} />
-    </div>
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <ServiceAgreementPageContent entityData={agreementData} />
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

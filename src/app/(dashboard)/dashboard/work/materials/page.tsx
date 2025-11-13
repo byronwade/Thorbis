@@ -9,6 +9,7 @@
  * - Matches jobs/invoices page structure: stats pipeline + table/kanban views
  */
 
+import { notFound } from "next/navigation";
 import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
 import { MaterialsKanban } from "@/components/work/materials-kanban";
@@ -17,15 +18,150 @@ import {
   MaterialsTable,
 } from "@/components/work/materials-table";
 import { WorkDataView } from "@/components/work/work-data-view";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
 
-export default function MaterialsPage() {
-  // Materials table doesn't exist yet - show empty state
-  const mockMaterials: Material[] = [];
-  const totalItems = 0;
-  const inStock = 0;
-  const lowStock = 0;
-  const outOfStock = 0;
-  const totalValue = 0;
+type PriceBookItemRow = {
+  id: string;
+  name: string | null;
+  description: string | null;
+  sku: string | null;
+  category: string | null;
+  subcategory: string | null;
+  unit: string | null;
+  archived_at: string | null;
+};
+
+type InventoryRow = {
+  id: string;
+  quantity_on_hand: number | null;
+  quantity_reserved: number | null;
+  quantity_available: number | null;
+  minimum_quantity: number | null;
+  cost_per_unit: number | null;
+  total_cost_value: number | null;
+  status: string | null;
+  warehouse_location: string | null;
+  primary_location: string | null;
+  is_low_stock: boolean | null;
+  low_stock_alert_sent: boolean | null;
+  notes: string | null;
+  deleted_at: string | null;
+  price_book_item: PriceBookItemRow | PriceBookItemRow[] | null;
+};
+
+export default async function MaterialsPage() {
+  const supabase = await createClient();
+
+  if (!supabase) {
+    return notFound();
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return notFound();
+  }
+
+  const activeCompanyId = await getActiveCompanyId();
+
+  if (!activeCompanyId) {
+    return notFound();
+  }
+
+  const { data: materialsRaw, error } = await supabase
+    .from("inventory")
+    .select(
+      `
+      id,
+      price_book_item_id,
+      quantity_on_hand,
+      quantity_reserved,
+      quantity_available,
+      minimum_quantity,
+      cost_per_unit,
+      total_cost_value,
+      status,
+      warehouse_location,
+      primary_location,
+      is_low_stock,
+      low_stock_alert_sent,
+      notes,
+      deleted_at,
+      price_book_item:price_book_items!inventory_price_book_item_id_price_book_items_id_fk (
+        id,
+        company_id,
+        name,
+        description,
+        sku,
+        category,
+        subcategory,
+        unit,
+        archived_at
+      )
+    `
+    )
+    .eq("company_id", activeCompanyId)
+    .is("deleted_at", null)
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching materials:", error);
+  }
+
+  const inventoryRows = (materialsRaw ?? []) as InventoryRow[];
+
+  const materials = inventoryRows.reduce<Material[]>((accumulator, row) => {
+    const item = Array.isArray(row.price_book_item)
+      ? row.price_book_item[0] ?? null
+      : row.price_book_item;
+
+    if (!item) {
+      return accumulator;
+    }
+
+    const quantityAvailable = Number(
+      row.quantity_available ?? row.quantity_on_hand ?? 0
+    );
+    const unitCost = Number(row.cost_per_unit ?? 0);
+    const totalValue =
+      Number(row.total_cost_value ?? 0) ||
+      unitCost * Number(row.quantity_on_hand ?? quantityAvailable ?? 0);
+
+    const categoryLabel = [item.category, item.subcategory]
+      .filter(Boolean)
+      .join(" • ");
+
+    const material: Material = {
+      id: row.id,
+      itemCode: item.sku || item.name || "Uncoded Item",
+      description: item.description || item.name || "Unnamed Material",
+      category: categoryLabel || "Uncategorized",
+      quantity: quantityAvailable,
+      unit: item.unit || "each",
+      unitCost,
+      totalValue,
+      status: (row.status as Material["status"]) || "in-stock",
+      archived_at: item.archived_at ?? null,
+      deleted_at: row.deleted_at ?? null,
+    };
+
+    accumulator.push(material);
+    return accumulator;
+  }, []);
+
+  const totalItems = materials.length;
+  const inStock = materials.filter((m) => m.status === "in-stock").length;
+  const lowStock = materials.filter((m) => m.status === "low-stock").length;
+  const outOfStock = materials.filter(
+    (m) => m.status === "out-of-stock"
+  ).length;
+  const totalValue = materials.reduce(
+    (sum, material) => sum + (material.totalValue || 0),
+    0
+  );
 
   const materialStats: StatCard[] = [
     {
@@ -64,9 +200,9 @@ export default function MaterialsPage() {
     <>
       <StatusPipeline compact stats={materialStats} />
       <WorkDataView
-        kanban={<MaterialsKanban materials={mockMaterials} />}
+        kanban={<MaterialsKanban materials={materials} />}
         section="materials"
-        table={<MaterialsTable itemsPerPage={50} materials={mockMaterials} />}
+        table={<MaterialsTable itemsPerPage={50} materials={materials} />}
       />
     </>
   );

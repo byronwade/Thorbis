@@ -6,8 +6,9 @@
 import { notFound, redirect } from "next/navigation";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
-import { JobPageModern } from "@/components/work/job-details/job-page-modern";
+import { JobPageContentUnified } from "@/components/work/job-details/job-page-content-unified";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import { getUserRole } from "@/lib/auth/permissions";
 import { generateJobStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -68,14 +69,18 @@ export default async function JobDetailsPage({
 
   console.log("[Job Details] Active company:", activeCompanyId);
 
-  // Verify user has access to the active company
+  // Verify user has access to the active company and get their role
   const { data: teamMember, error: teamMemberError } = await supabase
     .from("team_members")
-    .select("company_id")
+    .select("company_id, role")
     .eq("user_id", user.id)
     .eq("company_id", activeCompanyId)
     .eq("status", "active")
     .maybeSingle();
+
+  // Get user's role for role-based UI
+  const userRole = await getUserRole(supabase, user.id, activeCompanyId);
+  console.log("[Job Details] User role:", userRole);
 
   // Check for real errors (not "no rows found")
   const hasRealError =
@@ -287,7 +292,7 @@ export default async function JobDetailsPage({
       .order("first_name", { ascending: true }),
     supabase
       .from("properties")
-      .select("id, name, address, city, state, customer_id")
+      .select("id, name, address, city, state, customer_id, metadata")
       .eq("company_id", activeCompanyId)
       .is("deleted_at", null)
       .order("address", { ascending: true }),
@@ -297,18 +302,48 @@ export default async function JobDetailsPage({
   const totalLaborHours =
     timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
 
-  // Calculate materials cost from invoice line items
-  const materialsCost = (invoices || []).reduce((total, invoice) => {
-    const items = invoice.line_items || [];
-    const invoiceTotal = items.reduce(
-      (sum: number, item: any) =>
-        sum + item.quantity * (item.unit_price || item.price || 0),
-      0
-    );
-    return total + invoiceTotal;
+  // Calculate labor costs (hours * rate)
+  const laborCosts = (timeEntries || []).reduce((total, entry) => {
+    const hours = entry.total_hours || 0;
+    const rate = entry.hourly_rate || 0;
+    return total + hours * rate;
   }, 0);
 
-  const estimatedProfit = (job.total_amount || 0) - materialsCost;
+  // Calculate materials cost from job_materials
+  const materialsCost = (jobMaterials || []).reduce((total, material) => {
+    const quantity = material.quantity || 0;
+    const cost = material.unit_cost || 0;
+    return total + quantity * cost;
+  }, 0);
+
+  // Calculate totals from invoices and estimates
+  const totalInvoiced = (invoices || []).reduce(
+    (sum, inv) => sum + (inv.total_amount || 0),
+    0
+  );
+  const totalPaid = (invoices || []).reduce(
+    (sum, inv) => sum + ((inv.total_amount || 0) - (inv.balance_amount || 0)),
+    0
+  );
+  const totalEstimated = (estimates || []).reduce(
+    (sum, est) => sum + (est.total_amount || 0),
+    0
+  );
+
+  // Get progress payments (payments with milestone/progress type)
+  const progressPayments =
+    (payments || [])
+      .filter(
+        (p) => p.payment_type === "progress" || p.payment_type === "milestone"
+      )
+      .map((p) => ({
+        id: p.id,
+        amount: p.amount || 0,
+        status: p.status || "pending",
+        date: p.payment_date || p.created_at,
+      })) || [];
+
+  const estimatedProfit = (job.total_amount || 0) - (laborCosts + materialsCost);
   const profitMargin =
     job.total_amount > 0 ? (estimatedProfit / job.total_amount) * 100 : 0;
 
@@ -322,15 +357,59 @@ export default async function JobDetailsPage({
   };
   const completionPercentage = statusCompletionMap[job.status as string] || 0;
 
+  // Find next appointment
+  const nextAppointment = (schedules || [])
+    .filter(
+      (s) =>
+        new Date(s.scheduled_start) >= new Date() && s.status !== "cancelled"
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.scheduled_start).getTime() -
+        new Date(b.scheduled_start).getTime()
+    )[0];
+
+  // Find last communication/contact
+  const lastContact =
+    (communications || []).length > 0
+      ? (communications || []).sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )[0]?.created_at
+      : null;
+
   const metrics = {
+    // Basic metrics (all roles)
     totalAmount: job.total_amount || 0,
     paidAmount: job.paid_amount || 0,
     totalLaborHours,
     estimatedLaborHours: job.estimated_labor_hours || 0,
-    materialsCost,
-    profitMargin,
     completionPercentage,
     status: job.status as string,
+
+    // Manager/Owner metrics
+    totalInvoiced,
+    totalPaid,
+    totalCosts: laborCosts + materialsCost,
+    laborCosts,
+    materialsCost,
+    profitMargin,
+    estimatedProfit,
+    estimatesTotal: totalEstimated,
+    estimateCount: (estimates || []).length,
+    progressPayments,
+
+    // CSR metrics
+    nextAppointment: nextAppointment?.scheduled_start || null,
+    appointmentStatus: nextAppointment?.status || null,
+    lastContact,
+
+    // Tech metrics (counts for badges)
+    documentsCount: (documents || []).length,
+    photosCount: (photos || []).length,
+    notesCount: (jobNotes || []).length,
+    equipmentCount: (equipment || []).length,
+    materialsCount: (jobMaterials || []).length,
   };
 
   // Enrichment is now loaded client-side for optimistic rendering
@@ -372,6 +451,7 @@ export default async function JobDetailsPage({
     allProperties: allProperties || [], // All properties for selection
     companyPhones, // Company phone numbers from Telnyx
     enrichmentData: null, // Loaded client-side for optimistic rendering
+    userRole: userRole || "technician", // User's role for role-based UI
   };
 
   // Generate stats for toolbar
@@ -381,7 +461,7 @@ export default async function JobDetailsPage({
     <ToolbarStatsProvider stats={stats}>
       <div className="flex h-full w-full flex-col overflow-auto">
         <div className="mx-auto w-full max-w-7xl">
-          <JobPageModern entityData={jobData} metrics={metrics} />
+          <JobPageContentUnified entityData={jobData} metrics={metrics} />
         </div>
       </div>
     </ToolbarStatsProvider>

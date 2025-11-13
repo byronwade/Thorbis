@@ -30,7 +30,6 @@ import {
   Image,
   MoreHorizontal,
   Package,
-  Trash2,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
@@ -344,12 +343,9 @@ export function PriceBookTable({
                 <Archive className="mr-2 h-4 w-4" />
                 {item.isActive ? "Deactivate" : "Activate"}
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-destructive dark:text-destructive"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                <Archive className="mr-2 h-4 w-4" />
+                Archive
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -362,29 +358,29 @@ export function PriceBookTable({
     {
       label: "Mass Price Update",
       icon: <TrendingUp className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Mass price update:", selectedIds);
+      onClick: () => {
+        /* TODO: implement mass price update */
       },
     },
     {
       label: "Change Category",
       icon: <Package className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Change category:", selectedIds);
+      onClick: () => {
+        /* TODO: implement change category */
       },
     },
     {
       label: "Bulk Export",
       icon: <DollarSign className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Bulk export:", selectedIds);
+      onClick: () => {
+        /* TODO: implement bulk export */
       },
     },
     {
-      label: "Delete Selected",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Delete items:", selectedIds);
+      label: "Archive Selected",
+      icon: <Archive className="h-4 w-4" />,
+      onClick: () => {
+        /* TODO: implement archive selected */
       },
       variant: "destructive",
     },

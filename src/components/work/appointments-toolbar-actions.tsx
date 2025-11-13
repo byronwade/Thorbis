@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * AppointmentsToolbarActions Component - Client Component
+ * AppointmentsToolbarActions Component
  *
  * Toolbar actions for the appointments page
  * - Advanced filters dropdown
@@ -14,11 +12,15 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { AppointmentsFilterDropdown } from "@/components/work/appointments-filter-dropdown";
 
-// Define hideable columns for appointments
-const APPOINTMENTS_COLUMNS = [
-  { key: "customer", label: "Customer" },
+// Critical columns (always visible - shown for reference)
+const APPOINTMENTS_CRITICAL_COLUMNS = [
   { key: "start_time", label: "Date & Time" },
   { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const APPOINTMENTS_OPTIONAL_COLUMNS = [
+  { key: "customer", label: "Customer" },
   { key: "assigned_user", label: "Assigned To" },
 ];
 
@@ -43,7 +45,8 @@ export function AppointmentsToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={APPOINTMENTS_COLUMNS}
+            columns={APPOINTMENTS_OPTIONAL_COLUMNS}
+            criticalColumns={APPOINTMENTS_CRITICAL_COLUMNS}
             entity="appointments"
           />
         </div>

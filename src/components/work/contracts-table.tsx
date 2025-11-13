@@ -8,7 +8,6 @@ import {
   MoreHorizontal,
   Plus,
   Send,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -108,7 +107,7 @@ export function ContractsTable({
       width: "w-48",
       shrink: true,
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Customer essential for quick identification
       render: (contract) => (
         <div className="min-w-0">
           <div className="truncate font-medium leading-tight">
@@ -195,7 +194,7 @@ export function ContractsTable({
       width: "w-28",
       shrink: true,
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Status key for action items
       render: (contract) => <ContractStatusBadge status={contract.status} />,
     },
     {

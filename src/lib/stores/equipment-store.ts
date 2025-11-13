@@ -23,6 +23,8 @@ export type EquipmentType =
   | "plumbing"
   | "electrical"
   | "appliance"
+  | "vehicle"
+  | "tool"
   | "other";
 export type EquipmentStatus =
   | "all"

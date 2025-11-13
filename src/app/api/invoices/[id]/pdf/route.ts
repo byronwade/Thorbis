@@ -1,17 +1,16 @@
 /**
  * Invoice PDF Generation API Route
  *
- * Generates a PDF from an invoice's TipTap content
- * Returns the PDF as a downloadable file
+ * Generates and serves invoice PDFs
  *
- * Security:
- * - Validates user has access to invoice
- * - Uses RLS policies
- * - Company-scoped
+ * Usage: GET /api/invoices/[id]/pdf
+ * Returns: PDF file
  */
 
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
+import { InvoicePDFDocument } from "@/lib/pdf/invoice-pdf-generator";
 
 export async function GET(
   request: NextRequest,
@@ -20,47 +19,29 @@ export async function GET(
   try {
     const { id: invoiceId } = await params;
 
-    // Get Supabase client
+    // Fetch invoice with customer and company details
     const supabase = await createClient();
+    
     if (!supabase) {
       return NextResponse.json(
-        { error: "Database connection failed" },
+        { error: "Unable to connect to database" },
         { status: 500 }
       );
     }
-
-    // Get current user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .single();
-
-    if (!teamMember?.company_id) {
-      return NextResponse.json({ error: "No company found" }, { status: 403 });
-    }
-
-    // Get invoice with full data
-    const { data: invoice } = await supabase
+    
+    const { data: invoice, error } = await supabase
       .from("invoices")
-      .select(`
+      .select(
+        `
         *,
         customer:customers!customer_id(
           id,
           first_name,
           last_name,
+          display_name,
           email,
           phone,
+          company_name,
           billing_address,
           billing_city,
           billing_state,
@@ -71,63 +52,45 @@ export async function GET(
           name,
           email,
           phone,
-          website,
-          tax_id
+          address_line1,
+          address_line2,
+          city,
+          state,
+          postal_code
         )
-      `)
+      `
+      )
       .eq("id", invoiceId)
       .single();
 
-    if (!invoice) {
-      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+    if (error || !invoice) {
+      return NextResponse.json(
+        { error: "Invoice not found" },
+        { status: 404 }
+      );
     }
 
-    // Verify invoice belongs to user's company (RLS should handle this but double-check)
-    if (invoice.company_id !== teamMember.company_id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    // Normalize customer and company data
+    const customer = Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer;
+    const company = Array.isArray(invoice.company) ? invoice.company[0] : invoice.company;
+
+    if (!customer || !company) {
+      return NextResponse.json(
+        { error: "Invoice data incomplete" },
+        { status: 400 }
+      );
     }
 
-    // Get customization settings (TODO: Load from user preferences or invoice settings)
-    const customization = {
-      colors: {
-        primary: "#3b82f6",
-        text: "#000000",
-        mutedText: "#666666",
-        heading: "#1f2937",
-        border: "#e5e7eb",
-        tableHeader: "#f3f4f6",
-        notesBg: "#f9fafb",
-      },
-      typography: {
-        bodyFont: "Helvetica",
-        headingFont: "Helvetica-Bold",
-        bodySize: 10,
-        headingSize: 24,
-      },
-      spacing: {
-        pagePadding: 48,
-      },
-    };
+    // Generate PDF
+    const pdfDocument = InvoicePDFDocument({ invoice, customer, company });
+    const pdfBuffer = await renderToBuffer(pdfDocument);
 
-    // Generate PDF content from page_content or create default
-    const content = invoice.page_content || {
-      type: "doc",
-      content: [
-        // Generate default structure from invoice data
-      ],
-    };
-
-    // Generate PDF using service function
-    const { generateInvoicePDFBuffer } = await import(
-      "@/lib/pdf/generate-invoice-pdf"
-    );
-    const pdfBuffer = await generateInvoicePDFBuffer(content, customization);
-
-    // Return PDF with proper headers
-    return new NextResponse(pdfBuffer as any, {
+    // Return PDF
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="Invoice-${invoice.invoice_number}.pdf"`,
+        "Content-Disposition": `attachment; filename="invoice-${invoice.invoice_number}.pdf"`,
       },
     });
   } catch (error) {

@@ -47,35 +47,59 @@ export default async function EstimateDetailsPage({
     redirect("/dashboard/welcome");
   }
 
-  // Fetch estimate with all related data
+  // First fetch the estimate without joins to check basic access
   const { data: estimate, error: estimateError } = await supabase
     .from("estimates")
-    .select(`
-      *,
-      customer:customers!customer_id(*),
-      job:jobs!job_id(*),
-      invoice:invoices!estimate_id(*)
-    `)
+    .select("*")
     .eq("id", estimateId)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
-  if (estimateError || !estimate) {
+  if (estimateError) {
+    console.error("Estimate fetch error:", estimateError);
+    return notFound();
+  }
+
+  if (!estimate) {
+    console.error("Estimate not found:", estimateId);
     return notFound();
   }
 
   if (estimate.company_id !== activeCompanyId) {
+    console.error("Company access denied for estimate:", estimateId, "company:", estimate.company_id, "active:", activeCompanyId);
     return notFound();
   }
 
-  // Get related data
-  const customer = Array.isArray(estimate.customer)
-    ? estimate.customer[0]
-    : estimate.customer;
-  const job = Array.isArray(estimate.job) ? estimate.job[0] : estimate.job;
-  const invoice = Array.isArray(estimate.invoice)
-    ? estimate.invoice[0]
-    : estimate.invoice;
+  // Now fetch related data separately to avoid join issues
+  const [
+    { data: customer },
+    { data: job },
+    { data: invoice },
+  ] = await Promise.all([
+    // Fetch customer
+    estimate.customer_id
+      ? supabase
+          .from("customers")
+          .select("*")
+          .eq("id", estimate.customer_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    // Fetch job
+    estimate.job_id
+      ? supabase
+          .from("jobs")
+          .select("*")
+          .eq("id", estimate.job_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    // Fetch invoice (if this estimate was converted)
+    supabase
+      .from("invoices")
+      .select("*")
+      .eq("converted_from_estimate_id", estimateId)
+      .is("deleted_at", null)
+      .maybeSingle(),
+  ]);
 
   // Fetch all related data (including contract for workflow timeline)
   const [

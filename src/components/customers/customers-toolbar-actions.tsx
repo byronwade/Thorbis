@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * CustomersToolbarActions Component - Client Component
+ * CustomersToolbarActions Component
  *
  * Toolbar actions for the customers page
  * - Comprehensive filter dropdown (archive + type + status + name + email + phone)
@@ -15,14 +13,16 @@ import { CustomersFilterDropdown } from "@/components/work/customers-filter-drop
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 
-// Define hideable columns for customers
-const CUSTOMERS_COLUMNS = [
-  { key: "email", label: "Email" },
-  { key: "phone", label: "Phone" },
+// Critical columns (always visible - shown for reference)
+const CUSTOMERS_CRITICAL_COLUMNS = [
+  { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const CUSTOMERS_OPTIONAL_COLUMNS = [
+  { key: "contact", label: "Contact" },
   { key: "address", label: "Address" },
-  { key: "city", label: "City" },
-  { key: "state", label: "State" },
-  { key: "total_jobs", label: "Total Jobs" },
+  { key: "service", label: "Service" },
 ];
 
 type CustomersToolbarActionsProps = {
@@ -46,7 +46,8 @@ export function CustomersToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={CUSTOMERS_COLUMNS}
+            columns={CUSTOMERS_OPTIONAL_COLUMNS}
+            criticalColumns={CUSTOMERS_CRITICAL_COLUMNS}
             entity="customers"
           />
         </div>

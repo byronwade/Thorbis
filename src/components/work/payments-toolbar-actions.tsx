@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * PaymentsToolbarActions Component - Client Component
+ * PaymentsToolbarActions Component
  *
  * Toolbar actions for the payments page
  * - Comprehensive filter dropdown (archive + status + method + amount + customer + reference#)
@@ -14,14 +12,17 @@ import { PaymentsFilterDropdown } from "@/components/work/payments-filter-dropdo
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 
-// Define hideable columns for payments
-const PAYMENTS_COLUMNS = [
+// Critical columns (always visible - shown for reference)
+const PAYMENTS_CRITICAL_COLUMNS = [
   { key: "customer", label: "Customer" },
-  { key: "invoice", label: "Invoice" },
   { key: "amount", label: "Amount" },
-  { key: "payment_method", label: "Payment Method" },
   { key: "status", label: "Status" },
-  { key: "processed_at", label: "Processed At" },
+];
+
+// Optional columns (can be hidden)
+const PAYMENTS_OPTIONAL_COLUMNS = [
+  { key: "payment_method", label: "Method" },
+  { key: "processed_at", label: "Date" },
 ];
 
 type PaymentsToolbarActionsProps = {
@@ -45,7 +46,8 @@ export function PaymentsToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={PAYMENTS_COLUMNS}
+            columns={PAYMENTS_OPTIONAL_COLUMNS}
+            criticalColumns={PAYMENTS_CRITICAL_COLUMNS}
             entity="payments"
           />
         </div>

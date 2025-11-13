@@ -205,7 +205,7 @@ export function EstimatesTable({
       width: "w-48",
       shrink: true,
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Always show customer for quick identification
       sortFn: (a, b) => a.customer.localeCompare(b.customer),
       render: (estimate) => (
         <span className="font-medium text-foreground text-sm">
@@ -269,7 +269,7 @@ export function EstimatesTable({
       shrink: true,
       align: "right",
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Financial data essential
       sortFn: (a, b) => a.amount - b.amount,
       render: (estimate) => (
         <span className="font-semibold tabular-nums">
@@ -283,7 +283,7 @@ export function EstimatesTable({
       width: "w-28",
       shrink: true,
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Status key for action items
       sortFn: (a, b) => a.status.localeCompare(b.status),
       render: (estimate) => <EstimateStatusBadge status={estimate.status} />,
     },
@@ -507,38 +507,61 @@ export function EstimatesTable({
               onClick={async () => {
                 setIsBulkSendDialogOpen(false);
                 setIsBulkSending(true);
-                
+
+                // Import sync store
+                const { useSyncStore } = await import("@/lib/stores/sync-store");
+                const { startOperation, completeOperation } =
+                  useSyncStore.getState();
+
                 const { toast } = await import("sonner");
-                const loadingToast = toast.loading(
-                  `Sending ${pendingSendIds.size} estimate${pendingSendIds.size !== 1 ? "s" : ""}...`
-                );
+                const estimateIds = Array.from(pendingSendIds);
+                const count = estimateIds.length;
+
+                // Start sync operation
+                const operationId = startOperation({
+                  type: "bulk_send_estimates",
+                  title: `Sending ${count} estimate${count !== 1 ? "s" : ""}`,
+                  description: "Preparing emails...",
+                  total: count,
+                  current: 0,
+                });
 
                 try {
                   const { bulkSendEstimates } = await import(
                     "@/actions/bulk-communications"
                   );
 
-                  const result = await bulkSendEstimates(
-                    Array.from(pendingSendIds),
-                    {
-                      batchSize: 10,
-                      batchDelay: 1000,
-                    }
-                  );
+                  // Send estimates
+                  const result = await bulkSendEstimates(estimateIds, {
+                    batchSize: 10,
+                    batchDelay: 1000,
+                  });
 
-                  toast.dismiss(loadingToast);
-
+                  // Complete operation
                   if (result.success || (result.results?.successful ?? 0) > 0) {
+                    completeOperation(operationId, true);
                     toast.success(result.message);
                   } else {
+                    completeOperation(
+                      operationId,
+                      false,
+                      result.error || "Failed to send estimates"
+                    );
                     toast.error(result.error || "Failed to send estimates");
                   }
 
+                  // Reload if any succeeded
                   if ((result.results?.successful ?? 0) > 0) {
                     window.location.reload();
                   }
                 } catch (error) {
-                  toast.dismiss(loadingToast);
+                  completeOperation(
+                    operationId,
+                    false,
+                    error instanceof Error
+                      ? error.message
+                      : "Failed to send estimates"
+                  );
                   toast.error(
                     error instanceof Error
                       ? error.message

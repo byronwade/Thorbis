@@ -91,6 +91,11 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 
   // Fetch invoice details
   const supabase = await createClient();
+  
+  if (!supabase) {
+    return notFound();
+  }
+  
   const { data: invoice, error } = await supabase
     .from("invoices")
     .select(

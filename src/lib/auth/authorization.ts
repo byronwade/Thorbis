@@ -60,6 +60,8 @@ export type CompanyMembership = {
  * Returns the user's active company membership with permissions.
  * Throws AuthorizationError if not authenticated or not a member.
  *
+ * IMPORTANT: Checks if team member IS the company owner and grants full access if so.
+ *
  * @returns CompanyMembership object with company_id, permissions, etc.
  * @throws AuthorizationError if user is not authenticated or not a company member
  */
@@ -79,7 +81,7 @@ export async function requireCompanyMembership(): Promise<CompanyMembership> {
     throw new AuthorizationError("Database connection failed", "DB_ERROR", 500);
   }
 
-  // Get active company membership with role and permissions
+  // Get team membership
   const { data: membership, error } = await supabase
     .from("team_members")
     .select(
@@ -107,14 +109,23 @@ export async function requireCompanyMembership(): Promise<CompanyMembership> {
     );
   }
 
+  // Check if this team member IS the company owner
+  const { data: company } = await supabase
+    .from("companies")
+    .select("owner_id")
+    .eq("id", membership.company_id)
+    .single();
+
+  const isOwner = company?.owner_id === user.id;
+
   return {
     companyId: membership.company_id,
     userId: membership.user_id,
     roleId: membership.role_id,
-    roleName: (membership.custom_roles as any)?.name || null,
+    roleName: isOwner ? "Owner" : (membership.custom_roles as any)?.name || null,
     departmentId: membership.department_id,
     status: membership.status,
-    permissions: (membership.custom_roles as any)?.permissions || [],
+    permissions: isOwner ? [] : (membership.custom_roles as any)?.permissions || [],
   };
 }
 
@@ -204,6 +215,8 @@ export async function requireResourceAccess(
  * Check Permission
  *
  * Verifies user has a specific permission.
+ * 
+ * IMPORTANT: Company owners automatically have all permissions.
  *
  * @param permission - The permission to check (e.g., "customers.edit")
  * @returns CompanyMembership object
@@ -220,6 +233,11 @@ export async function requirePermission(
 ): Promise<CompanyMembership> {
   const membership = await requireCompanyMembership();
 
+  // Owners have all permissions
+  if (membership.roleName === "Owner") {
+    return membership;
+  }
+
   if (!membership.permissions.includes(permission)) {
     throw new AuthorizationError(
       "You don't have permission to perform this action",
@@ -233,6 +251,8 @@ export async function requirePermission(
 
 /**
  * Check Multiple Permissions (require all)
+ * 
+ * IMPORTANT: Company owners automatically have all permissions.
  *
  * @param permissions - Array of permissions to check
  * @returns CompanyMembership object
@@ -250,6 +270,11 @@ export async function requireAllPermissions(
   permissions: string[]
 ): Promise<CompanyMembership> {
   const membership = await requireCompanyMembership();
+
+  // Owners have all permissions
+  if (membership.roleName === "Owner") {
+    return membership;
+  }
 
   const hasAllPermissions = permissions.every((permission) =>
     membership.permissions.includes(permission)
@@ -271,6 +296,8 @@ export async function requireAllPermissions(
 
 /**
  * Check Multiple Permissions (require any)
+ * 
+ * IMPORTANT: Company owners automatically have all permissions.
  *
  * @param permissions - Array of permissions to check
  * @returns CompanyMembership object
@@ -289,6 +316,11 @@ export async function requireAnyPermission(
   permissions: string[]
 ): Promise<CompanyMembership> {
   const membership = await requireCompanyMembership();
+
+  // Owners have all permissions
+  if (membership.roleName === "Owner") {
+    return membership;
+  }
 
   const hasAnyPermission = permissions.some((permission) =>
     membership.permissions.includes(permission)

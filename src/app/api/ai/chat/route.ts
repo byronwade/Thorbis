@@ -6,8 +6,6 @@
 import { streamText } from "ai";
 import { createAIProvider } from "@/lib/ai";
 
-export const runtime = "edge";
-
 export async function POST(req: Request) {
   try {
     const { messages, model: requestedModel } = await req.json();

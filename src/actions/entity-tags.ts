@@ -1,0 +1,142 @@
+/**
+ * Entity Tags Actions - Server Actions
+ * Generic tag management for any entity type
+ */
+
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { withErrorHandling } from "@/lib/errors/with-error-handling";
+import { createClient } from "@/lib/supabase/server";
+
+export type TagWithColor = {
+  label: string;
+  color?: string;
+};
+
+export type EntityTag = string | TagWithColor;
+
+type EntityType =
+  | "customer"
+  | "job"
+  | "property"
+  | "invoice"
+  | "estimate"
+  | "equipment"
+  | "appointment"
+  | "material";
+
+const ENTITY_TAG_FIELD_MAP: Record<
+  EntityType,
+  { table: string; field: string; useMetadata: boolean }
+> = {
+  customer: { table: "customers", field: "tags", useMetadata: false },
+  job: { table: "jobs", field: "metadata", useMetadata: true },
+  property: { table: "properties", field: "metadata", useMetadata: true },
+  invoice: { table: "invoices", field: "metadata", useMetadata: true },
+  estimate: { table: "estimates", field: "metadata", useMetadata: true },
+  equipment: { table: "equipment", field: "metadata", useMetadata: true },
+  appointment: { table: "appointments", field: "metadata", useMetadata: true },
+  material: { table: "job_materials", field: "metadata", useMetadata: true },
+};
+
+/**
+ * Update tags for any entity type
+ */
+export async function updateEntityTags(
+  entityType: EntityType,
+  entityId: string,
+  tags: EntityTag[]
+) {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new Error("Database connection not available");
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error("Not authenticated");
+    }
+
+    const config = ENTITY_TAG_FIELD_MAP[entityType];
+    if (!config) {
+      throw new Error(`Unsupported entity type: ${entityType}`);
+    }
+
+    let updateData: Record<string, unknown>;
+    if (config.useMetadata) {
+      const { data: existingRecord, error: fetchError } = await supabase
+        .from(config.table)
+        .select("metadata")
+        .eq("id", entityId)
+        .single();
+
+      if (fetchError) {
+        throw new Error(
+          `Failed to load ${entityType} metadata: ${fetchError.message}`
+        );
+      }
+
+      const existingMetadata =
+        existingRecord &&
+        typeof existingRecord.metadata === "object" &&
+        existingRecord.metadata !== null
+          ? (existingRecord.metadata as Record<string, unknown>)
+          : {};
+
+      updateData = {
+        metadata: {
+          ...existingMetadata,
+          tags,
+        },
+        updated_at: new Date().toISOString(),
+      };
+    } else {
+      // For entities that have a direct tags field (like customers)
+      updateData = {
+        tags,
+        updated_at: new Date().toISOString(),
+      };
+    }
+
+    const { error } = await supabase
+      .from(config.table)
+      .update(updateData)
+      .eq("id", entityId);
+
+    if (error) {
+      throw new Error(`Failed to update ${entityType} tags: ${error.message}`);
+    }
+
+    const basePath = getPathForEntity(entityType);
+    if (basePath) {
+      revalidatePath(`/dashboard/${basePath}/${entityId}`);
+      revalidatePath(`/dashboard/${basePath}`);
+    }
+
+    revalidatePath("/dashboard");
+
+    return { entityId, entityType, tags };
+  });
+}
+
+/**
+ * Get the base path for an entity type
+ */
+function getPathForEntity(entityType: EntityType): string | null {
+  const pathMap: Record<EntityType, string | null> = {
+    customer: "customers",
+    job: "work",
+    property: "work/properties",
+    invoice: "work/invoices",
+    estimate: "work/estimates",
+    equipment: "work/equipment",
+    appointment: "schedule",
+    material: null,
+  };
+  return pathMap[entityType] ?? null;
+}
+

@@ -41,16 +41,14 @@ export default async function MaintenancePlansPage() {
     return notFound();
   }
 
-  // Fetch service plans (maintenance plans) from database
-  // Fetch all plans including archived (filter in UI)
+  // Fetch maintenance plans from database (include archived; filter in UI)
   const { data: plansRaw, error } = await supabase
-    .from("service_plans")
+    .from("maintenance_plans")
     .select(`
       *,
       customer:customers!customer_id(display_name, first_name, last_name)
     `)
     .eq("company_id", activeCompanyId)
-    .in("type", ["preventive", "warranty", "subscription"])
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -62,30 +60,31 @@ export default async function MaintenancePlansPage() {
     const customer = Array.isArray(plan.customer)
       ? plan.customer[0]
       : plan.customer;
+    const amountCents = plan.amount ? Math.round(Number(plan.amount) * 100) : 0;
 
     return {
       id: plan.id,
       planNumber: plan.plan_number,
       name: plan.name,
       planName: plan.name || plan.plan_name,
-      serviceType: plan.service_type || plan.type || "Maintenance",
+      serviceType: plan.frequency || "Maintenance",
       customer:
         customer?.display_name ||
         `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
         "Unknown Customer",
       status: plan.status,
       frequency: plan.frequency,
-      price: plan.price || 0,
-      monthlyFee: plan.monthly_fee || plan.price || 0,
-      nextServiceDue: plan.next_service_due
-        ? new Date(plan.next_service_due).toLocaleDateString("en-US", {
+      price: amountCents,
+      monthlyFee: amountCents,
+      nextServiceDue: plan.next_service_date
+        ? new Date(plan.next_service_date).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
           })
         : "",
-      nextVisit: plan.next_service_due
-        ? new Date(plan.next_service_due).toLocaleDateString("en-US", {
+      nextVisit: plan.next_service_date
+        ? new Date(plan.next_service_date).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
@@ -99,18 +98,20 @@ export default async function MaintenancePlansPage() {
           })
         : "",
       archived_at: plan.archived_at,
-      deleted_at: plan.deleted_at,
+      deleted_at: null,
     };
   });
 
   // Filter to active plans for stats calculations
-  const activePlans = plans.filter((p) => !p.archived_at && !p.deleted_at);
+  const activePlans = plans.filter((p) => !(p.archived_at || p.deleted_at));
 
   // Calculate maintenance plan stats (from active plans only)
   const totalPlans = activePlans.length;
   const activeCount = activePlans.filter((p) => p.status === "active").length;
   const pendingCount = activePlans.filter((p) => p.status === "pending").length;
-  const suspendedCount = activePlans.filter((p) => p.status === "suspended").length;
+  const suspendedCount = activePlans.filter(
+    (p) => p.status === "suspended"
+  ).length;
   const uniqueCustomers = new Set(activePlans.map((p) => p.customer)).size;
   const monthlyRevenue = activePlans
     .filter((p) => p.status === "active")

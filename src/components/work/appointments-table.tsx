@@ -223,6 +223,7 @@ export function AppointmentsTable({
       width: "w-48",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (appointment) => (
         <span className="text-muted-foreground text-sm">
           {getCustomerName(appointment)}
@@ -234,6 +235,7 @@ export function AppointmentsTable({
       header: "Date & Time",
       width: "w-40",
       shrink: true,
+      hideable: false, // CRITICAL: Date/time essential for scheduling
       render: (appointment) => (
         <div className="text-muted-foreground text-xs tabular-nums">
           <div className="leading-tight">
@@ -251,6 +253,7 @@ export function AppointmentsTable({
       header: "Status",
       width: "w-32",
       shrink: true,
+      hideable: false, // CRITICAL: Status key for action items
       render: (appointment) => getStatusBadge(appointment.status),
     },
     {
@@ -259,6 +262,7 @@ export function AppointmentsTable({
       width: "w-36",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (appointment) => (
         <span className="text-muted-foreground text-sm">
           {appointment.assigned_user?.name || "Unassigned"}

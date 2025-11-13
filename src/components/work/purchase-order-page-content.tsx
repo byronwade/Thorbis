@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast as sonnerToast } from "sonner";
 import {
   archivePurchaseOrder,
@@ -102,7 +102,6 @@ export function PurchaseOrderPageContent({
 }: PurchaseOrderPageContentProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [mounted, setMounted] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
@@ -135,11 +134,6 @@ export function PurchaseOrderPageContent({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>("line-items");
 
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const handleArchivePurchaseOrder = async () => {
     setIsArchiving(true);
     try {
@@ -157,10 +151,6 @@ export function PurchaseOrderPageContent({
       setIsArchiving(false);
     }
   };
-
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
 
   // Prepare unified accordion sections
   const accordionSections: any[] = [

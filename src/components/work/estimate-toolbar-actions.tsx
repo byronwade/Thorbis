@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Estimate Toolbar Actions - Client Component
+ * Estimate Toolbar Actions
  *
  * Toolbar actions for the estimates page
  * - Comprehensive filter dropdown (archive + status + amount + customer + estimate#)
@@ -14,14 +12,17 @@ import { EstimatesFilterDropdown } from "@/components/work/estimates-filter-drop
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 
-// Define hideable columns for estimates
-const ESTIMATES_COLUMNS = [
+// Critical columns (always visible - shown for reference)
+const ESTIMATES_CRITICAL_COLUMNS = [
   { key: "customer", label: "Customer" },
-  { key: "date", label: "Date" },
-  { key: "valid_until", label: "Valid Until" },
   { key: "amount", label: "Amount" },
   { key: "status", label: "Status" },
-  { key: "project", label: "Project" },
+];
+
+// Optional columns (can be hidden)
+const ESTIMATES_OPTIONAL_COLUMNS = [
+  { key: "date", label: "Date" },
+  { key: "validUntil", label: "Valid Until" },
 ];
 
 type EstimateToolbarActionsProps = {
@@ -45,7 +46,8 @@ export function EstimateToolbarActions({
             totalCount={totalCount}
           />
           <ColumnVisibilityMenu
-            columns={ESTIMATES_COLUMNS}
+            columns={ESTIMATES_OPTIONAL_COLUMNS}
+            criticalColumns={ESTIMATES_CRITICAL_COLUMNS}
             entity="estimates"
           />
         </div>

@@ -6,7 +6,6 @@ import {
   MoreHorizontal,
   Package,
   ShoppingCart,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -200,9 +199,9 @@ export function MaterialsTable({
                 Adjust Stock
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete
+              <DropdownMenuItem>
+                <Archive className="mr-2 size-4" />
+                Archive
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -227,12 +226,6 @@ export function MaterialsTable({
       icon: <Archive className="h-4 w-4" />,
       variant: "destructive",
       onClick: (selectedIds) => console.log("Archive:", selectedIds),
-    },
-    {
-      label: "Delete",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Delete:", selectedIds),
-      variant: "destructive",
     },
   ];
 

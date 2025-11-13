@@ -57,20 +57,76 @@ export default async function EquipmentPage() {
     console.error("Error fetching equipment:", error);
   }
 
+  const classificationLabelMap: Record<string, string> = {
+    equipment: "Equipment",
+    tool: "Tool",
+    vehicle: "Vehicle",
+  };
+
+  const typeLabelMap: Record<string, string> = {
+    hvac: "HVAC System",
+    plumbing: "Plumbing",
+    electrical: "Electrical",
+    appliance: "Appliance",
+    water_heater: "Water Heater",
+    furnace: "Furnace",
+    ac_unit: "A/C Unit",
+    vehicle: "Vehicle",
+    tool: "Tool",
+    other: "Other",
+  };
+
+  const formatLabel = (value?: string | null) => {
+    if (!value) return "";
+    return value
+      .replace(/[_-]+/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+      .trim();
+  };
+
+  const inferClassification = (type?: string | null) => {
+    if (!type) return "equipment";
+    if (["vehicle", "fleet_vehicle", "truck", "van"].includes(type)) {
+      return "vehicle";
+    }
+    if (
+      [
+        "tool",
+        "hand_tool",
+        "power_tool",
+        "equipment_tool",
+        "pipe_tool",
+        "jetter",
+      ].includes(type)
+    ) {
+      return "tool";
+    }
+    return "equipment";
+  };
+
   // Transform data for table component
   const equipment = (equipmentRaw || []).map((eq: any) => {
     const customer = Array.isArray(eq.customer) ? eq.customer[0] : eq.customer;
     const property = Array.isArray(eq.property) ? eq.property[0] : eq.property;
 
+    const classification =
+      eq.classification || inferClassification(eq.type || undefined);
+    const classificationLabel =
+      classificationLabelMap[classification] || formatLabel(classification);
+    const typeLabel = typeLabelMap[eq.type] || formatLabel(eq.type);
+
     return {
       id: eq.id,
       equipmentNumber: eq.equipment_number,
       name: eq.name,
-      type: eq.type,
+      classification,
+      classificationLabel,
+      type: eq.type || "other",
+      typeLabel,
       manufacturer: eq.manufacturer || "",
       model: eq.model || "",
       assetId: eq.asset_id || eq.id,
-      assignedTo: eq.assigned_to || "",
+      assignedTo: eq.assigned_to || "Unassigned",
       customer:
         customer?.display_name ||
         `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||

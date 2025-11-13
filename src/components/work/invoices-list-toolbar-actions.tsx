@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * Invoices List Toolbar Actions - Client Component
+ * Invoices List Toolbar Actions
  *
  * Toolbar actions for the invoices list page
  * - Comprehensive filter dropdown (archive + status + amount + customer + invoice#)
@@ -15,13 +13,17 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { InvoicesFilterDropdown } from "@/components/work/invoices-filter-dropdown";
 
-// Define hideable columns for invoices
-const INVOICES_COLUMNS = [
+// Critical columns (always visible - shown for reference)
+const INVOICES_CRITICAL_COLUMNS = [
   { key: "customer", label: "Customer" },
-  { key: "date", label: "Date" },
-  { key: "dueDate", label: "Due Date" },
   { key: "amount", label: "Amount" },
+  { key: "dueDate", label: "Due Date" },
   { key: "status", label: "Status" },
+];
+
+// Optional columns (can be hidden)
+const INVOICES_OPTIONAL_COLUMNS = [
+  { key: "date", label: "Date" }, // Created date - optional, less critical than due date
 ];
 
 type InvoicesListToolbarActionsProps = {
@@ -44,7 +46,11 @@ export function InvoicesListToolbarActions({
             archivedCount={archivedCount}
             totalCount={totalCount}
           />
-          <ColumnVisibilityMenu columns={INVOICES_COLUMNS} entity="invoices" />
+          <ColumnVisibilityMenu
+            columns={INVOICES_OPTIONAL_COLUMNS}
+            criticalColumns={INVOICES_CRITICAL_COLUMNS}
+            entity="invoices"
+          />
         </div>
       }
       importExportDataType="invoices"

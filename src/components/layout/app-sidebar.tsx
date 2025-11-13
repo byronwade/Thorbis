@@ -278,7 +278,7 @@ const navigationSections = {
           icon: Box,
         },
         {
-          title: "Equipment & Tools",
+          title: "Equipment & Fleet",
           url: "/dashboard/work/equipment",
           icon: Package,
         },

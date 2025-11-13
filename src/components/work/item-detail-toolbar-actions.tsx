@@ -6,19 +6,12 @@
  * Provides quick actions for price book item detail pages:
  * - Back to Price Book button
  * - Edit item button
- * - Actions dropdown (Duplicate, Archive, Delete)
+ * - Actions dropdown (Duplicate, Archive)
  *
  * Follows existing AppToolbar pattern - no custom headers!
  */
 
-import {
-  Archive,
-  ArrowLeft,
-  Copy,
-  Edit,
-  MoreVertical,
-  Trash2,
-} from "lucide-react";
+import { Archive, ArrowLeft, Copy, Edit, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
@@ -87,34 +80,20 @@ export function ItemDetailToolbarActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => {
-              // TODO: Implement duplicate
-              console.log("Duplicate item:", itemId);
-            }}
-          >
+          <DropdownMenuItem onClick={() => {
+            /* TODO: implement duplicate */
+          }}>
             <Copy className="mr-2 size-4" />
             Duplicate Item
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
-              // TODO: Implement archive/activate toggle
-              console.log(isActive ? "Archive" : "Activate", itemId);
+              /* TODO: implement archive/activate toggle */
             }}
           >
             <Archive className="mr-2 size-4" />
             {isActive ? "Archive" : "Activate"}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-destructive"
-            onClick={() => {
-              // TODO: Implement delete with confirmation
-              console.log("Delete item:", itemId);
-            }}
-          >
-            <Trash2 className="mr-2 size-4" />
-            Delete Item
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -222,6 +222,7 @@ export function PaymentsTable({
       width: "w-48",
       shrink: true,
       sortable: true,
+      hideable: false, // CRITICAL: Always show customer for quick identification
       render: (payment) => (
         <span className="text-muted-foreground text-sm">
           {getCustomerName(payment)}
@@ -235,6 +236,7 @@ export function PaymentsTable({
       shrink: true,
       align: "right",
       sortable: true,
+      hideable: false, // CRITICAL: Financial data essential
       render: (payment) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(payment.amount)}
@@ -248,6 +250,7 @@ export function PaymentsTable({
       shrink: true,
       hideOnMobile: true,
       sortable: true,
+      hideable: true,
       render: (payment) => (
         <span className="text-muted-foreground text-sm">
           {getPaymentMethodLabel(payment.payment_method)}
@@ -260,6 +263,7 @@ export function PaymentsTable({
       width: "w-32",
       shrink: true,
       sortable: true,
+      hideable: false, // CRITICAL: Status key for action items
       render: (payment) => getStatusBadge(payment.status),
     },
     {
@@ -269,6 +273,7 @@ export function PaymentsTable({
       shrink: true,
       sortable: true,
       hideOnMobile: true,
+      hideable: true,
       render: (payment) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {formatDate(payment.processed_at)}

@@ -62,16 +62,16 @@ The same fix needs to be applied to **every table** that has a ColumnVisibilityM
 ### Tables That Need Fixing:
 
 1. **✅ Invoices** - FIXED
-2. **Estimates** - Needs `hideable: true` on columns
-3. **Payments** - Needs `hideable: true` on columns  
-4. **Customers** - Needs `hideable: true` on columns
-5. **Jobs** - Needs `hideable: true` on columns
-6. **Team Members** - Needs `hideable: true` on columns
-7. **Appointments** - Needs `hideable: true` on columns
-8. **Contracts** - Needs `hideable: true` on columns
-9. **Service Agreements** - Needs `hideable: true` on columns
-10. **Purchase Orders** - Needs `hideable: true` on columns
-11. **Service Tickets** - Needs `hideable: true` on columns
+2. **✅ Estimates** - FIXED
+3. **✅ Payments** - FIXED
+4. **✅ Customers** - FIXED
+5. **✅ Jobs** - FIXED
+6. **✅ Team Members** - FIXED
+7. **✅ Appointments** - FIXED
+8. **✅ Contracts** - FIXED
+9. **✅ Service Agreements** - FIXED
+10. **✅ Purchase Orders** - FIXED
+11. **Service Tickets** - Not found (may use different naming)
 
 ## 📝 Implementation Pattern
 
@@ -164,8 +164,8 @@ After applying the fix to a table:
 
 ## 📊 Status
 
-- ✅ **Fixed**: Invoices
-- ⏳ **Pending**: Estimates, Payments, Customers, Jobs, Team, Appointments, Contracts, Service Agreements, Purchase Orders, Service Tickets
+- ✅ **Fixed**: Invoices, Estimates, Payments, Customers, Jobs, Team Members, Appointments, Contracts, Service Agreements, Purchase Orders
+- ❓ **Not Found**: Service Tickets (may use different naming or not exist)
 
-**Next Step**: Apply the same fix to all remaining tables.
+**Result**: All existing tables have been updated with `hideable: true` on appropriate columns!
 

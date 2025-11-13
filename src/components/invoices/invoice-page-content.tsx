@@ -35,7 +35,7 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { archiveInvoice, unlinkJobFromInvoice } from "@/actions/invoices";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -95,7 +95,6 @@ function formatCurrency(cents: number | null | undefined): string {
 }
 
 export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
-  const [mounted, setMounted] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showQuickPayment, setShowQuickPayment] = useState(false);
   const [invoice, setInvoice] = useState(entityData.invoice);
@@ -118,10 +117,6 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
     activities = [],
     attachments = [],
   } = entityData;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Update invoice field
   const updateField = useCallback((field: string, value: any) => {
@@ -201,15 +196,13 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
   ];
 
   const customHeader = (
-    <div className="w-full px-4 py-6 sm:px-6">
+    <div className="w-full px-2 sm:px-0">
       <div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">
@@ -572,10 +565,6 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
   }, [customer, job]);
 
   // Early return check after all hooks
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   return (
     <>
       <DetailPageContentLayout
@@ -583,7 +572,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
         attachments={attachments}
         beforeContent={
           invoice.balance_amount > 0 && invoice.due_date ? (
-            <div className="w-full px-4 sm:px-6">
+            <div className="w-full px-2 sm:px-0">
               <div className="mx-auto max-w-7xl">
                 <InvoiceOverdueBanner
                   balanceAmount={invoice.balance_amount}

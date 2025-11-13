@@ -1,7 +1,5 @@
-"use client";
-
 /**
- * WorkToolbarActions Component - Client Component
+ * WorkToolbarActions Component
  *
  * Toolbar actions for the work/jobs page
  * - Advanced filters dropdown
@@ -14,15 +12,16 @@ import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { JobsFilterDropdown } from "@/components/work/jobs-filter-dropdown";
 
-// Define hideable columns for jobs
-const JOBS_COLUMNS = [
-  { key: "customer", label: "Customer" },
-  { key: "category", label: "Category" },
-  { key: "equipment", label: "Equipment" },
+// Critical columns (always visible - shown for reference)
+const JOBS_CRITICAL_COLUMNS = [
   { key: "status", label: "Status" },
+  { key: "totalAmount", label: "Amount" },
+];
+
+// Optional columns (can be hidden)
+const JOBS_OPTIONAL_COLUMNS = [
   { key: "priority", label: "Priority" },
-  { key: "assigned_user", label: "Assigned To" },
-  { key: "scheduled_date", label: "Scheduled" },
+  { key: "scheduledStart", label: "Scheduled" },
 ];
 
 interface WorkToolbarActionsProps {
@@ -45,7 +44,11 @@ export function WorkToolbarActions({
             archivedCount={archivedCount}
             totalCount={totalCount}
           />
-          <ColumnVisibilityMenu columns={JOBS_COLUMNS} entity="jobs" />
+          <ColumnVisibilityMenu
+            columns={JOBS_OPTIONAL_COLUMNS}
+            criticalColumns={JOBS_CRITICAL_COLUMNS}
+            entity="jobs"
+          />
         </div>
       }
       importExportDataType="jobs"

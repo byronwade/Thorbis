@@ -20,6 +20,7 @@ import {
   Printer,
   Receipt,
   Share2,
+  Tags,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -50,9 +51,12 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
+import { TagManagerDialog } from "./tags/tag-manager-dialog";
+import { Badge } from "@/components/ui/badge";
 
 type JobDetailToolbarProps = {
   job?: any;
+  customer?: any;
   metrics?: any;
   timeEntries?: any[];
   teamAssignments?: any[];
@@ -63,6 +67,7 @@ type JobDetailToolbarProps = {
 
 export function JobDetailToolbar({
   job,
+  customer,
   metrics,
   timeEntries = [],
   teamAssignments = [],
@@ -77,6 +82,12 @@ export function JobDetailToolbar({
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
   const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
+  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+
+  // Calculate tag count
+  const customerTags = (customer?.tags as string[]) || [];
+  const jobTags = ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
+  const tagCount = customerTags.length + jobTags.length;
 
   const handleArchive = async () => {
     if (!jobId) {
@@ -150,7 +161,55 @@ export function JobDetailToolbar({
           </Tooltip>
         </TooltipProvider>
 
-        {/* Ellipsis Menu - Includes Statistics + Archive */}
+        {/* Separator before Tags */}
+        <Separator className="h-8" orientation="vertical" />
+
+        {/* Tag Management */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="h-8 gap-1.5"
+                onClick={() => setIsTagDialogOpen(true)}
+                size="sm"
+                variant="outline"
+              >
+                <Tags className="size-3.5" />
+                <span className="hidden lg:inline">Tags</span>
+                {tagCount > 0 && (
+                  <Badge className="ml-1 h-5 px-1.5" variant="secondary">
+                    {tagCount}
+                  </Badge>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Manage tags</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Archive Button - Red/Destructive */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
+              >
+                <Archive className="size-3.5" />
+                <span className="hidden lg:inline">Archive</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Archive this job</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Ellipsis Menu - Includes Statistics + Export/Print/Share */}
         <Separator className="h-8" orientation="vertical" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -191,14 +250,6 @@ export function JobDetailToolbar({
             </DropdownMenuItem>
 
             {/* Destructive Actions */}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => setIsArchiveDialogOpen(true)}
-            >
-              <Archive className="mr-2 size-3.5" />
-              Archive Job
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -247,6 +298,19 @@ export function JobDetailToolbar({
           timeEntries={timeEntries}
         />
       )}
+
+      {/* Tag Manager Dialog */}
+      <TagManagerDialog
+        customerId={customer?.id}
+        customerTags={customerTags}
+        jobId={job?.id}
+        jobTags={jobTags}
+        onOpenChange={setIsTagDialogOpen}
+        onUpdate={() => {
+          router.refresh();
+        }}
+        open={isTagDialogOpen}
+      />
     </>
   );
 }

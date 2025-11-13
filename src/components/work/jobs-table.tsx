@@ -119,6 +119,7 @@ export function JobsTable({
       header: "Status",
       width: "w-32",
       shrink: true,
+      hideable: false, // CRITICAL: Status essential for workflow management
       render: (job) => (
         <JobStatusBadge status={(job.status ?? "quoted") as string} />
       ),
@@ -129,6 +130,7 @@ export function JobsTable({
       width: "w-28",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (job) => (
         <PriorityBadge priority={(job.priority ?? "medium") as string} />
       ),
@@ -139,6 +141,7 @@ export function JobsTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (job) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {formatDate(job.scheduledStart ?? null, "short")}
@@ -151,6 +154,7 @@ export function JobsTable({
       width: "w-32",
       shrink: true,
       align: "right",
+      hideable: false, // CRITICAL: Financial data essential
       render: (job) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(job.totalAmount || 0, { decimals: 2 })}

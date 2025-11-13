@@ -812,6 +812,72 @@ export async function useReservedStock(
   });
 }
 
+/**
+ * Archive an inventory item (soft delete)
+ */
+export async function archiveInventoryItem(
+  inventoryId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .single();
+
+    assertExists(teamMember, "Team member");
+
+    const { data: inventory } = await supabase
+      .from("inventory")
+      .select("company_id, deleted_at")
+      .eq("id", inventoryId)
+      .maybeSingle();
+
+    assertExists(inventory, "Inventory");
+
+    if (inventory.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("inventory item"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    if (!inventory.deleted_at) {
+      const { error: archiveError } = await supabase
+        .from("inventory")
+        .update({
+          deleted_at: new Date().toISOString(),
+        })
+        .eq("id", inventoryId);
+
+      if (archiveError) {
+        throw new ActionError(
+          ERROR_MESSAGES.operationFailed("archive inventory item"),
+          ERROR_CODES.DB_QUERY_ERROR
+        );
+      }
+    }
+
+    revalidatePath("/dashboard/work/materials");
+    revalidatePath(`/dashboard/work/materials/${inventoryId}`);
+    revalidatePath("/dashboard/settings/archive");
+  });
+}
+
 // ============================================================================
 // REPORTING & ALERTS
 // ============================================================================

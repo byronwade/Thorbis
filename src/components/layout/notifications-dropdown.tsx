@@ -15,14 +15,17 @@ import {
   Bell,
   Check,
   CheckCheck,
+  CheckCircle2,
   Clock,
   DollarSign,
+  Loader2,
   MessageSquare,
   Settings,
   Trash2,
   UserPlus,
   Wrench,
   X,
+  XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -34,6 +37,7 @@ import {
 } from "@/actions/notifications";
 import type { NotificationType } from "@/lib/stores/notifications-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import { useSyncStore } from "@/lib/stores/sync-store";
 import { createClient } from "@/lib/supabase/client";
 
 // Time constants in milliseconds
@@ -139,6 +143,24 @@ export function NotificationsDropdown() {
   );
   const subscribe = useNotificationsStore((state) => state.subscribe);
   const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
+
+  // Get sync operations from sync store
+  const operations = useSyncStore((state) => state.operations ?? []);
+  const offlineQueue = useSyncStore((state) => state.offlineQueue ?? []);
+  const clearCompleted = useSyncStore((state) => state.clearCompleted);
+
+  // Filter for active operations
+  const activeOperations = operations.filter(
+    (op) => op.status === "in_progress"
+  );
+  const recentOperations = operations.filter(
+    (op) => op.status === "completed" || op.status === "failed"
+  );
+
+  const hasSyncActivity =
+    activeOperations.length > 0 || offlineQueue.length > 0;
+  const syncBadgeCount = activeOperations.length + offlineQueue.length;
+  const totalBadgeCount = unreadCount + syncBadgeCount;
 
   // Load notifications and set up realtime subscription on mount
   useEffect(() => {
@@ -250,13 +272,21 @@ export function NotificationsDropdown() {
       <button
         className="hover-gradient relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
         onClick={() => setIsOpen(!isOpen)}
-        title="Notifications"
+        title={
+          hasSyncActivity ? "Notifications & Sync Status" : "Notifications"
+        }
         type="button"
       >
-        <Bell className="size-4" />
-        <NotificationBadge count={unreadCount} />
+        <div className="relative">
+          <Bell className="size-4" />
+          {hasSyncActivity && (
+            <Loader2 className="-right-1 -top-1 absolute size-2.5 animate-spin text-primary" />
+          )}
+        </div>
+        <NotificationBadge count={totalBadgeCount} />
         <span className="sr-only">
           Notifications {unreadCount > 0 && `(${unreadCount} unread)`}
+          {hasSyncActivity && ` • ${syncBadgeCount} syncing`}
         </span>
       </button>
 
@@ -265,10 +295,14 @@ export function NotificationsDropdown() {
           {/* Header */}
           <div className="flex items-center justify-between border-b px-4 py-2.5">
             <div>
-              <h3 className="font-semibold text-sm">Notifications</h3>
-              {unreadCount > 0 && (
+              <h3 className="font-semibold text-sm">
+                {hasSyncActivity ? "Sync & Notifications" : "Notifications"}
+              </h3>
+              {(unreadCount > 0 || hasSyncActivity) && (
                 <p className="text-muted-foreground text-xs">
-                  {unreadCount} unread
+                  {hasSyncActivity && `${syncBadgeCount} syncing`}
+                  {hasSyncActivity && unreadCount > 0 && " • "}
+                  {unreadCount > 0 && `${unreadCount} unread`}
                 </p>
               )}
             </div>
@@ -292,6 +326,125 @@ export function NotificationsDropdown() {
               </button>
             </div>
           </div>
+
+          {/* Sync Operations */}
+          {(activeOperations.length > 0 ||
+            offlineQueue.length > 0 ||
+            recentOperations.length > 0) && (
+            <div className="border-b">
+              {/* Active Operations */}
+              {activeOperations.length > 0 && (
+                <div className="space-y-1 px-4 py-3">
+                  <p className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+                    Active
+                  </p>
+                  {activeOperations.map((op) => (
+                    <div
+                      className="flex items-start gap-2 rounded-md bg-primary/5 p-2"
+                      key={op.id}
+                    >
+                      <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin text-primary" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm leading-tight">
+                          {op.title}
+                        </p>
+                        {op.description && (
+                          <p className="text-muted-foreground text-xs">
+                            {op.description}
+                          </p>
+                        )}
+                        {op.total && op.total > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            <div className="h-1 overflow-hidden rounded-full bg-muted">
+                              <div
+                                className="h-full bg-primary transition-all"
+                                style={{
+                                  width: `${((op.current ?? 0) / op.total) * 100}%`,
+                                }}
+                              />
+                            </div>
+                            <p className="text-[0.625rem] text-muted-foreground">
+                              {op.current ?? 0} / {op.total}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Offline Queue */}
+              {offlineQueue.length > 0 && (
+                <div className="space-y-1 px-4 py-3">
+                  <p className="mb-2 flex items-center gap-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+                    <span className="size-1.5 animate-pulse rounded-full bg-orange-500" />
+                    Queued (Offline)
+                  </p>
+                  {offlineQueue.map((op) => (
+                    <div
+                      className="flex items-start gap-2 rounded-md bg-orange-50 p-2 dark:bg-orange-950/20"
+                      key={op.id}
+                    >
+                      <Clock className="mt-0.5 size-3.5 shrink-0 text-orange-500" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm leading-tight">
+                          {op.action}
+                        </p>
+                        <p className="mt-0.5 text-[0.625rem] text-orange-600 dark:text-orange-400">
+                          Will sync when online
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Recent Operations */}
+              {recentOperations.length > 0 && (
+                <div className="space-y-1 px-4 py-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+                      Recent
+                    </p>
+                    <button
+                      className="text-muted-foreground text-xs hover:text-foreground"
+                      onClick={clearCompleted}
+                      type="button"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  {recentOperations.map((op) => (
+                    <div
+                      className={`flex items-start gap-2 rounded-md p-2 ${
+                        op.status === "completed"
+                          ? "bg-green-50 dark:bg-green-950/20"
+                          : "bg-red-50 dark:bg-red-950/20"
+                      }`}
+                      key={op.id}
+                    >
+                      {op.status === "completed" ? (
+                        <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-green-600 dark:text-green-400" />
+                      ) : (
+                        <XCircle className="mt-0.5 size-3.5 shrink-0 text-red-600 dark:text-red-400" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm leading-tight">
+                          {op.title}
+                        </p>
+                        {op.error && (
+                          <p className="text-red-600 text-xs dark:text-red-400">
+                            {op.error}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Notifications List */}
           <div className="max-h-[450px] overflow-y-auto">

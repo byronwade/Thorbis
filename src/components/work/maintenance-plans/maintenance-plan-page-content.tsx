@@ -8,7 +8,6 @@
 "use client";
 
 import {
-  Archive,
   Calendar,
   CheckCircle2,
   DollarSign,
@@ -18,20 +17,10 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { archiveMaintenancePlan } from "@/actions/maintenance-plans";
+import { useMemo } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -66,7 +55,7 @@ function formatCurrency(cents: number | null | undefined): string {
   }).format(cents / 100);
 }
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, key?: string) {
   const variants: Record<string, { className: string; label: string }> = {
     draft: {
       className:
@@ -101,7 +90,7 @@ function getStatusBadge(status: string) {
   };
 
   return (
-    <Badge className={config.className} variant="outline">
+    <Badge className={config.className} key={key} variant="outline">
       {config.label}
     </Badge>
   );
@@ -110,10 +99,6 @@ function getStatusBadge(status: string) {
 export function MaintenancePlanPageContent({
   entityData,
 }: MaintenancePlanPageContentProps) {
-  const [mounted, setMounted] = useState(false);
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [isArchiving, setIsArchiving] = useState(false);
-
   const {
     plan,
     customer,
@@ -127,32 +112,6 @@ export function MaintenancePlanPageContent({
     attachments = [],
   } = entityData;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleArchiveMaintenancePlan = async () => {
-    setIsArchiving(true);
-    try {
-      const result = await archiveMaintenancePlan(plan.id);
-      if (result.success) {
-        toast.success("Maintenance plan archived successfully");
-        setIsArchiveDialogOpen(false);
-        window.location.href = "/dashboard/work/maintenance-plans";
-      } else {
-        toast.error(result.error || "Failed to archive maintenance plan");
-      }
-    } catch (error) {
-      toast.error("Failed to archive maintenance plan");
-    } finally {
-      setIsArchiving(false);
-    }
-  };
-
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   const includedServices = plan.included_services
     ? typeof plan.included_services === "string"
       ? JSON.parse(plan.included_services)
@@ -160,24 +119,20 @@ export function MaintenancePlanPageContent({
     : [];
 
   const headerBadges = [
-    <Badge key="status" variant="outline">
-      {getStatusBadge(plan.status || "draft")}
-    </Badge>,
+    getStatusBadge(plan.status || "draft", "status"),
     <Badge key="type" variant="outline">
       {plan.type || "preventive"}
     </Badge>,
   ];
 
   const customHeader = (
-    <div className="w-full">
+    <div className="w-full px-2 sm:px-0">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">
@@ -202,16 +157,6 @@ export function MaintenancePlanPageContent({
                   `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
                   "Unknown Customer"}
               </Link>
-              {/* Archive Button */}
-              <Button
-                className="ml-auto"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="mr-2 size-4" />
-                Archive
-              </Button>
             </div>
           )}
         </div>
@@ -704,34 +649,6 @@ export function MaintenancePlanPageContent({
         }}
       />
 
-      {/* Archive Dialog */}
-      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Maintenance Plan?</DialogTitle>
-            <DialogDescription>
-              This will archive the maintenance plan. You can restore it from
-              the archive within 90 days.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              disabled={isArchiving}
-              onClick={() => setIsArchiveDialogOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={isArchiving}
-              onClick={handleArchiveMaintenancePlan}
-              variant="destructive"
-            >
-              {isArchiving ? "Archiving..." : "Archive Maintenance Plan"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

@@ -8,7 +8,6 @@
 "use client";
 
 import {
-  Archive,
   Building2,
   Calendar,
   CreditCard,
@@ -19,20 +18,10 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { archivePayment } from "@/actions/payments";
+import { useMemo } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -81,7 +70,7 @@ function getPaymentMethodLabel(method: string): string {
   return labels[method] || method;
 }
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, key?: string) {
   const variants: Record<string, { className: string; label: string }> = {
     pending: {
       className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
@@ -119,17 +108,13 @@ function getStatusBadge(status: string) {
   };
 
   return (
-    <Badge className={config.className} variant="outline">
+    <Badge className={config.className} key={key} variant="outline">
       {config.label}
     </Badge>
   );
 }
 
 export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
-  const [mounted, setMounted] = useState(false);
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [isArchiving, setIsArchiving] = useState(false);
-
   const {
     payment,
     customer,
@@ -142,51 +127,21 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
     attachments = [],
   } = entityData;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleArchivePayment = async () => {
-    setIsArchiving(true);
-    try {
-      const result = await archivePayment(payment.id);
-      if (result.success) {
-        toast.success("Payment archived successfully");
-        setIsArchiveDialogOpen(false);
-        // Redirect to payments list
-        window.location.href = "/dashboard/work/payments";
-      } else {
-        toast.error(result.error || "Failed to archive payment");
-      }
-    } catch {
-      toast.error("Failed to archive payment");
-    } finally {
-      setIsArchiving(false);
-    }
-  };
-
-  // Removed early return to fix React Hooks order issue
-  // Now conditionally render at the end instead
-
   const headerBadges = [
-    <Badge key="status" variant="outline">
-      {getStatusBadge(payment.status || "pending")}
-    </Badge>,
+    getStatusBadge(payment.status || "pending", "status"),
     <Badge key="method" variant="outline">
       {getPaymentMethodLabel(payment.payment_method || "other")}
     </Badge>,
   ];
 
   const customHeader = (
-    <div className="w-full">
+    <div className="w-full px-2 sm:px-0">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                {headerBadges.map((badge, index) => (
-                  <span key={index}>{badge}</span>
-                ))}
+                {headerBadges}
               </div>
               <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-2xl sm:text-3xl">
@@ -210,17 +165,6 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
                   `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
                   "Unknown Customer"}
               </Link>
-
-              {/* Archive Button */}
-              <Button
-                className="ml-auto"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="mr-2 size-4" />
-                Archive
-              </Button>
             </div>
           )}
         </div>
@@ -665,11 +609,6 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
     return items;
   }, [customer, invoice, job]);
 
-  // Conditional render after all hooks
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   return (
     <>
       <DetailPageContentLayout
@@ -687,36 +626,6 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
           relatedItems: true,
         }}
       />
-
-      {/* Archive Dialog */}
-      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Payment?</DialogTitle>
-            <DialogDescription>
-              This will archive payment #
-              {payment.payment_number || payment.id.slice(0, 8)}. You can
-              restore it from the archive within 90 days.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              disabled={isArchiving}
-              onClick={() => setIsArchiveDialogOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={isArchiving}
-              onClick={handleArchivePayment}
-              variant="destructive"
-            >
-              {isArchiving ? "Archiving..." : "Archive Payment"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

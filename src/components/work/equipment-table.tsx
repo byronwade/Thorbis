@@ -6,7 +6,6 @@ import {
   MoreHorizontal,
   Plus,
   Settings,
-  Trash2,
   Truck,
   Wrench,
 } from "lucide-react";
@@ -32,11 +31,14 @@ export type Equipment = {
   id: string;
   assetId: string;
   name: string;
-  type: "Vehicle" | "Tool" | "Equipment";
+  classification: "equipment" | "tool" | "vehicle";
+  classificationLabel: string;
+  type: string;
+  typeLabel: string;
   assignedTo: string;
   lastService: string;
   nextService: string;
-  status: "available" | "in-use" | "maintenance" | "retired";
+  status: string;
   archived_at?: string | null;
   deleted_at?: string | null;
 };
@@ -58,6 +60,26 @@ const EQUIPMENT_STATUS_CONFIG = {
     className:
       "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
     label: "Retired",
+  },
+  active: {
+    className: "bg-primary/15 text-primary",
+    label: "Active",
+  },
+  inactive: {
+    className: "bg-muted text-muted-foreground",
+    label: "Inactive",
+  },
+  replaced: {
+    className: "bg-muted text-muted-foreground",
+    label: "Replaced",
+  },
+  "out-of-service": {
+    className: "bg-warning text-warning",
+    label: "Out of Service",
+  },
+  "in-service": {
+    className: "bg-primary/15 text-primary",
+    label: "In Service",
   },
 } as const;
 
@@ -111,7 +133,15 @@ export function EquipmentTable({
             {item.name}
           </div>
           <div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
-            {item.type}
+            {item.classificationLabel}
+            {item.typeLabel &&
+              item.typeLabel.toLowerCase() !==
+                item.classificationLabel.toLowerCase() && (
+                <span className="text-muted-foreground/80">
+                  {" "}
+                  • {item.typeLabel}
+                </span>
+              )}
           </div>
         </Link>
       ),
@@ -192,9 +222,9 @@ export function EquipmentTable({
                 Update Status
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete
+              <DropdownMenuItem>
+                <Archive className="mr-2 size-4" />
+                Archive
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -220,12 +250,6 @@ export function EquipmentTable({
       variant: "destructive",
       onClick: (selectedIds) => console.log("Archive:", selectedIds),
     },
-    {
-      label: "Delete",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Delete:", selectedIds),
-      variant: "destructive",
-    },
   ];
 
   const searchFilter = (item: Equipment, query: string) => {
@@ -234,6 +258,9 @@ export function EquipmentTable({
       item.assetId.toLowerCase().includes(searchStr) ||
       item.name.toLowerCase().includes(searchStr) ||
       item.type.toLowerCase().includes(searchStr) ||
+      item.typeLabel.toLowerCase().includes(searchStr) ||
+      item.classification.toLowerCase().includes(searchStr) ||
+      item.classificationLabel.toLowerCase().includes(searchStr) ||
       item.assignedTo.toLowerCase().includes(searchStr) ||
       item.status.toLowerCase().includes(searchStr)
     );

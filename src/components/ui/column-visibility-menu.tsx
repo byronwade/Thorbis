@@ -41,6 +41,8 @@ type ColumnVisibilityMenuProps = {
   entity: string;
   /** List of columns that can be toggled */
   columns: ColumnVisibilityItem[];
+  /** List of critical columns (always visible, shown for reference) */
+  criticalColumns?: ColumnVisibilityItem[];
   /** Optional custom trigger button */
   trigger?: React.ReactNode;
 };
@@ -48,6 +50,7 @@ type ColumnVisibilityMenuProps = {
 export function ColumnVisibilityMenu({
   entity,
   columns,
+  criticalColumns = [],
   trigger,
 }: ColumnVisibilityMenuProps) {
   // Mounted state to prevent hydration mismatch
@@ -71,6 +74,12 @@ export function ColumnVisibilityMenu({
   const hideAllColumns = useDataTableColumnsStore(
     (state) => state.hideAllColumns
   );
+  const resetEntity = useDataTableColumnsStore((state) => state.resetEntity);
+  
+  // Subscribe to column visibility state to trigger re-renders when columns are toggled
+  const columnVisibilityState = useDataTableColumnsStore(
+    (state) => entity ? state.entities[entity] : null
+  );
 
   // Custom columns store - get all columns and memoize
   const allCustomColumns = useCustomColumnsStore((state) => state.columns);
@@ -82,10 +91,11 @@ export function ColumnVisibilityMenu({
     [allCustomColumns, entity]
   );
 
-  // Count visible columns
-  const visibleCount = columns.filter((col) =>
-    isColumnVisible(entity, col.key)
-  ).length;
+  // Count visible columns (recompute when visibility state changes)
+  const visibleCount = useMemo(() => 
+    columns.filter((col) => isColumnVisible(entity, col.key)).length,
+    [columns, entity, isColumnVisible, columnVisibilityState]
+  );
   const allVisible = visibleCount === columns.length;
   const noneVisible = visibleCount === 0;
 
@@ -105,14 +115,19 @@ export function ColumnVisibilityMenu({
             </Button>
           )}
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel className="flex items-center justify-between">
-            <span>Column Visibility</span>
-            {mounted && (
-              <span className="font-normal text-muted-foreground text-xs">
-                {visibleCount}/{columns.length}
-              </span>
-            )}
+        <DropdownMenuContent align="end" className="w-64">
+          <DropdownMenuLabel>
+            <div className="flex items-center justify-between">
+              <span>Optional Columns</span>
+              {mounted && columns.length > 0 && (
+                <span className="font-normal text-muted-foreground text-xs">
+                  {visibleCount}/{columns.length}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 font-normal text-muted-foreground text-xs leading-tight">
+              Critical columns are always visible
+            </p>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
@@ -132,81 +147,178 @@ export function ColumnVisibilityMenu({
           <DropdownMenuSeparator />
 
         {/* Quick Actions */}
-        <div className="flex gap-1 px-2 py-1">
-          <Button
-            className="flex-1 h-7 text-xs"
-            disabled={allVisible}
-            onClick={() => showAllColumns(entity, columns.map((c) => c.key))}
-            size="sm"
-            variant="ghost"
-          >
-            <Eye className="mr-1.5 h-3 w-3" />
-            Show All
-          </Button>
-          <Button
-            className="flex-1 h-7 text-xs"
-            disabled={noneVisible}
-            onClick={() => hideAllColumns(entity, columns.map((c) => c.key))}
-            size="sm"
-            variant="ghost"
-          >
-            <EyeOff className="mr-1.5 h-3 w-3" />
-            Hide All
-          </Button>
-        </div>
-
-        <DropdownMenuSeparator />
-
-        {/* Column List */}
-        <div className="max-h-[300px] overflow-y-auto">
-          {columns.map((column) => {
-            const visible = isColumnVisible(entity, column.key);
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.key}
-                checked={visible}
-                onCheckedChange={() => toggleColumn(entity, column.key)}
+        {columns.length > 0 && (
+          <>
+            <div className="grid grid-cols-2 gap-1 px-2 py-1">
+              <Button
+                className="h-7 text-xs"
+                disabled={allVisible}
+                onClick={() => showAllColumns(entity, columns.map((c) => c.key))}
+                size="sm"
+                variant="ghost"
               >
-                {column.label}
-              </DropdownMenuCheckboxItem>
-            );
-          })}
+                <Eye className="mr-1.5 h-3 w-3" />
+                Show All
+              </Button>
+              <Button
+                className="h-7 text-xs"
+                disabled={noneVisible}
+                onClick={() => hideAllColumns(entity, columns.map((c) => c.key))}
+                size="sm"
+                variant="ghost"
+              >
+                <EyeOff className="mr-1.5 h-3 w-3" />
+                Hide All
+              </Button>
+            </div>
+            <div className="px-2 pb-1">
+              <Button
+                className="h-7 w-full text-xs"
+                onClick={() => {
+                  resetEntity(entity);
+                  // Re-initialize with all columns visible (default state)
+                  showAllColumns(entity, columns.map((c) => c.key));
+                }}
+                size="sm"
+                variant="ghost"
+              >
+                Reset to Default
+              </Button>
+            </div>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
-          {/* Custom Columns Section */}
-          {customColumns && customColumns.length > 0 && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-xs text-muted-foreground">
-                Custom Columns
-              </DropdownMenuLabel>
-              {customColumns.map((column) => {
-                const visible = isColumnVisible(entity, column.id);
-                return (
-                  <div key={column.id} className="relative group">
-                    <DropdownMenuCheckboxItem
-                      checked={visible}
-                      onCheckedChange={() => toggleColumn(entity, column.id)}
-                      className="pr-8"
+        {/* Critical Columns Section (Always Visible) */}
+        {criticalColumns.length > 0 && (
+          <>
+            <div className="px-2 py-2">
+              <div className="mb-2 text-muted-foreground text-xs font-medium">
+                Always Visible (Critical)
+              </div>
+              {criticalColumns.map((column) => (
+                <div
+                  key={column.key}
+                  className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm"
+                >
+                  <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary bg-primary">
+                    <svg
+                      className="h-3 w-3 text-primary-foreground"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
                     >
-                      {column.label}
-                    </DropdownMenuCheckboxItem>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 opacity-0 group-hover:opacity-100"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeColumn(entity, column.id);
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3 text-destructive" />
-                    </Button>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
                   </div>
-                );
-              })}
-            </>
-          )}
-        </div>
+                  <span className="text-sm font-medium">{column.label}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    Always
+                  </span>
+                </div>
+              ))}
+            </div>
+            <DropdownMenuSeparator />
+          </>
+        )}
+
+        {columns.length === 0 && criticalColumns.length === 0 && (
+          <>
+            <div className="px-2 py-3 text-center text-muted-foreground text-xs">
+              No columns available to customize.
+            </div>
+            <DropdownMenuSeparator />
+          </>
+        )}
+
+        {/* Optional Columns Section */}
+        {columns.length > 0 && (
+          <>
+            {criticalColumns.length > 0 && (
+              <div className="px-2 pt-1 pb-2 text-muted-foreground text-xs font-medium">
+                Optional Columns
+              </div>
+            )}
+            <div className="max-h-[300px] overflow-y-auto">
+              {mounted &&
+                columns.map((column) => {
+                  // Get fresh visibility state for each render
+                  const visible = columnVisibilityState?.[column.key] ?? true;
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={`${column.key}-${visible}`}
+                      checked={visible}
+                      onCheckedChange={() => toggleColumn(entity, column.key)}
+                      className="cursor-pointer"
+                    >
+                      <span
+                        className={
+                          visible ? "font-medium" : "text-muted-foreground"
+                        }
+                      >
+                        {column.label}
+                      </span>
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+
+              {/* Custom Columns Section */}
+              {customColumns && customColumns.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">
+                    Custom Columns
+                  </DropdownMenuLabel>
+                  {mounted &&
+                    customColumns.map((column) => {
+                      // Get fresh visibility state for each render
+                      const visible = columnVisibilityState?.[column.id] ?? true;
+                      return (
+                        <div
+                          key={`${column.id}-${visible}`}
+                          className="relative group"
+                        >
+                          <DropdownMenuCheckboxItem
+                            checked={visible}
+                            onCheckedChange={() =>
+                              toggleColumn(entity, column.id)
+                            }
+                            className="pr-8 cursor-pointer"
+                          >
+                            <span
+                              className={
+                                visible
+                                  ? "font-medium"
+                                  : "text-muted-foreground"
+                              }
+                            >
+                              {column.label}
+                            </span>
+                          </DropdownMenuCheckboxItem>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeColumn(entity, column.id);
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3 text-destructive" />
+                          </Button>
+                        </div>
+                      );
+                    })}
+                </>
+              )}
+            </div>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
 

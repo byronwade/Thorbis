@@ -40,6 +40,8 @@ import {
   DetailPageContentLayout,
   type DetailPageHeaderConfig,
 } from "@/components/layout/detail-page-content-layout";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
+import { updateEntityTags } from "@/actions/entity-tags";
 import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -83,16 +85,10 @@ export function CustomerPageContent({
   const router = useRouter();
   const { toast } = useToast();
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
   const [localCustomer, setLocalCustomer] = useState(customerData.customer);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const setToolbarActions = useToolbarActionsStore((state) => state.setActions);
-
-  // Prevent hydration mismatch by only rendering Radix components after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Extract data before hooks (Customer 360° view - all related entities)
   const {
@@ -1629,16 +1625,29 @@ export function CustomerPageContent({
     return items;
   }, [jobs, primaryProperty]);
 
-  // Conditional render AFTER all hooks
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
+  // Custom header with tags
+  const customHeader = (
+    <div className="w-full px-2 sm:px-0">
+      <div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
+        <div className="flex flex-col gap-3 p-4 sm:p-6">
+          <span className="text-muted-foreground text-xs font-medium">Tags:</span>
+          <EntityTags
+            entityId={customer.id}
+            entityType="customer"
+            onUpdateTags={(id, tags) => updateEntityTags("customer", id, tags)}
+            tags={customer.tags || []}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <DetailPageContentLayout
       activities={activities}
       attachments={attachments}
       beforeContent={overviewSurface}
+      customHeader={customHeader}
       customSections={customSections}
       defaultOpenSection="customer-info"
       enableReordering={true}

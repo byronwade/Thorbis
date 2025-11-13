@@ -112,6 +112,7 @@ export function CustomersTable({
       shrink: true,
       sortable: true,
       hideOnMobile: true,
+      hideable: true,
       render: (customer) => (
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 text-foreground text-sm">
@@ -131,6 +132,7 @@ export function CustomersTable({
       width: "w-56",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (customer) => {
         if (!(customer.address || customer.city || customer.state)) {
           return (
@@ -163,6 +165,7 @@ export function CustomersTable({
       width: "w-28",
       shrink: true,
       sortable: true,
+      hideable: false, // CRITICAL: Status essential for customer management
       render: (customer) => <CustomerStatusBadge status={customer.status} />,
     },
     {
@@ -172,6 +175,7 @@ export function CustomersTable({
       width: "w-48",
       shrink: true,
       hideOnMobile: true,
+      hideable: true,
       render: (customer) => (
         <div className="space-y-1">
           <div className="text-foreground text-sm">

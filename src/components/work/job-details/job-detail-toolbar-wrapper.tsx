@@ -37,6 +37,7 @@ export function JobDetailToolbarWrapper() {
 
   return (
     <JobDetailToolbar
+      customer={jobData?.customer}
       invoices={jobData?.invoices || []}
       job={jobData?.job}
       jobMaterials={jobData?.jobMaterials || []}

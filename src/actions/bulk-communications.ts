@@ -15,6 +15,9 @@ import type {
 import { sendBulkEmails } from "@/lib/email/bulk-email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import { createClient } from "@/lib/supabase/server";
+import { generatePaymentToken } from "@/lib/payments/payment-tokens";
+import { loadInvoiceEmailTemplate } from "@/actions/settings/invoice-email-template";
+import { format } from "date-fns";
 
 type CustomerRecord = {
   id: string;
@@ -157,37 +160,96 @@ export async function bulkSendInvoices(
       };
     }
 
-    // Import email template
-    const { InvoiceEmail } = await import("@/lib/email/templates");
+    // Load custom email template
+    const templateResult = await loadInvoiceEmailTemplate();
+    const emailTemplate = templateResult.success && templateResult.data
+      ? templateResult.data
+      : {
+          subject: "Invoice {{invoice_number}} from {{company_name}}",
+          body: `Hi {{customer_name}},\n\nPlease find attached your invoice {{invoice_number}} for {{invoice_amount}}.\n\nPayment is due by {{due_date}}.\n\nYou can securely pay your invoice online:\n{{payment_link}}\n\nThank you!`,
+          footer: "",
+        };
+
+    // Get company details for email variables
+    const { data: company } = await supabase
+      .from("companies")
+      .select("name, email, phone")
+      .eq("id", teamMember.company_id)
+      .single();
 
     // Prepare emails for bulk sending
-    const emails = validInvoices.map((invoice) => {
-      const customer = invoice.customer;
-      const customerName =
-        customer?.company_name ||
-        `${customer?.first_name ?? ""} ${customer?.last_name ?? ""}`.trim() ||
-        "Valued Customer";
-      return {
-        to: customer!.email!,
-        subject: `Invoice ${invoice.invoice_number}`,
-        template: InvoiceEmail({
-          invoiceNumber: invoice.invoice_number,
-          customerName,
-          invoiceDate:
-            invoice.created_at ?? new Date().toISOString(),
-          dueDate: invoice.due_date ?? undefined,
-          totalAmount: invoice.total_amount ?? 0,
-          notes: invoice.notes ?? undefined,
-          invoiceUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/work/invoices/${invoice.id}`,
-        }),
-        templateType: EmailTemplate.INVOICE,
-        itemId: invoice.id,
-        tags: [
-          { name: "invoice_id", value: invoice.id },
-          { name: "invoice_number", value: invoice.invoice_number },
-        ],
-      };
-    });
+    const emails = await Promise.all(
+      validInvoices.map(async (invoice) => {
+        const customer = invoice.customer;
+        const customerName =
+          customer?.company_name ||
+          `${customer?.first_name ?? ""} ${customer?.last_name ?? ""}`.trim() ||
+          "Valued Customer";
+
+        // Generate secure payment token and link (10 year expiry like ServiceTitan)
+        const paymentToken = await generatePaymentToken(invoice.id, 87600, 999999);
+        const paymentLink = paymentToken?.paymentLink || `${process.env.NEXT_PUBLIC_APP_URL}/pay/${invoice.id}`;
+
+        // Format amounts and dates
+        const invoiceAmount = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format((invoice.total_amount ?? 0) / 100);
+
+        const dueDate = invoice.due_date
+          ? format(new Date(invoice.due_date), "MMMM dd, yyyy")
+          : "Upon receipt";
+
+        // Replace template variables
+        const replacements = {
+          "{{customer_name}}": customerName,
+          "{{invoice_number}}": invoice.invoice_number,
+          "{{invoice_amount}}": invoiceAmount,
+          "{{due_date}}": dueDate,
+          "{{payment_link}}": paymentLink,
+          "{{company_name}}": company?.name || "Company",
+          "{{company_email}}": company?.email || "",
+          "{{company_phone}}": company?.phone || "",
+        };
+
+        let subject = emailTemplate.subject;
+        let body = emailTemplate.body;
+        let footer = emailTemplate.footer;
+
+        Object.entries(replacements).forEach(([key, value]) => {
+          subject = subject.replace(new RegExp(key, "g"), value);
+          body = body.replace(new RegExp(key, "g"), value);
+          footer = footer.replace(new RegExp(key, "g"), value);
+        });
+
+        // Import email template component
+        const { InvoiceEmail } = await import("@/lib/email/templates");
+
+        return {
+          to: customer!.email!,
+          subject,
+          template: InvoiceEmail({
+            invoiceNumber: invoice.invoice_number,
+            customerName,
+            invoiceDate: invoice.created_at ?? new Date().toISOString(),
+            dueDate: invoice.due_date ?? undefined,
+            totalAmount: invoice.total_amount ?? 0,
+            notes: invoice.notes ?? undefined,
+            invoiceUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/work/invoices/${invoice.id}`,
+            paymentLink,
+            customBody: body,
+            customFooter: footer,
+          }),
+          templateType: EmailTemplate.INVOICE,
+          itemId: invoice.id,
+          tags: [
+            { name: "invoice_id", value: invoice.id },
+            { name: "invoice_number", value: invoice.invoice_number },
+            { name: "has_payment_link", value: "true" },
+          ],
+        };
+      })
+    );
 
     // Send emails in bulk with rate limiting
     const results = await sendBulkEmails(emails, config);

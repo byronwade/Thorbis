@@ -143,7 +143,7 @@ export function InvoicesTable({
       header: "Customer",
       width: "flex-1",
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Always show customer for quick identification
       render: (invoice) => (
         <Link
           className="block"
@@ -177,7 +177,7 @@ export function InvoicesTable({
       shrink: true,
       hideOnMobile: true,
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Due dates are essential for AR management
       render: (invoice) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {invoice.dueDate}
@@ -191,7 +191,7 @@ export function InvoicesTable({
       shrink: true,
       align: "right",
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Financial data essential for decision-making
       render: (invoice) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(invoice.amount, { decimals: 2 })}
@@ -204,7 +204,7 @@ export function InvoicesTable({
       width: "w-28",
       shrink: true,
       sortable: true,
-      hideable: true,
+      hideable: false, // CRITICAL: Status is key for action items
       render: (invoice) => <InvoiceStatusBadge status={invoice.status} />,
     },
     {
@@ -498,36 +498,60 @@ export function InvoicesTable({
               onClick={async () => {
                 setIsBulkSendDialogOpen(false);
                 setIsBulkSending(true);
-                const loadingToast = toast.loading(
-                  `Sending ${pendingSendIds.size} invoice${pendingSendIds.size !== 1 ? "s" : ""}...`
-                );
+
+                // Import sync store
+                const { useSyncStore } = await import("@/lib/stores/sync-store");
+                const { startOperation, updateOperation, completeOperation } =
+                  useSyncStore.getState();
+
+                const invoiceIds = Array.from(pendingSendIds);
+                const count = invoiceIds.length;
+
+                // Start sync operation
+                const operationId = startOperation({
+                  type: "bulk_send_invoices",
+                  title: `Sending ${count} invoice${count !== 1 ? "s" : ""}`,
+                  description: "Preparing emails with payment links...",
+                  total: count,
+                  current: 0,
+                });
 
                 try {
                   const { bulkSendInvoices } = await import(
                     "@/actions/bulk-communications"
                   );
 
-                  const result = await bulkSendInvoices(
-                    Array.from(pendingSendIds),
-                    {
-                      batchSize: 10,
-                      batchDelay: 1000,
-                    }
-                  );
+                  // Send invoices
+                  const result = await bulkSendInvoices(invoiceIds, {
+                    batchSize: 10,
+                    batchDelay: 1000,
+                  });
 
-                  toast.dismiss(loadingToast);
-
+                  // Complete operation
                   if (result.success || (result.results?.successful ?? 0) > 0) {
+                    completeOperation(operationId, true);
                     toast.success(result.message);
                   } else {
+                    completeOperation(
+                      operationId,
+                      false,
+                      result.error || "Failed to send invoices"
+                    );
                     toast.error(result.error || "Failed to send invoices");
                   }
 
+                  // Reload if any succeeded
                   if ((result.results?.successful ?? 0) > 0) {
                     window.location.reload();
                   }
                 } catch (error) {
-                  toast.dismiss(loadingToast);
+                  completeOperation(
+                    operationId,
+                    false,
+                    error instanceof Error
+                      ? error.message
+                      : "Failed to send invoices"
+                  );
                   toast.error(
                     error instanceof Error
                       ? error.message

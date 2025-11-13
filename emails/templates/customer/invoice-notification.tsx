@@ -6,12 +6,12 @@
  */
 
 import { Text } from "@react-email/components";
+import type { InvoiceNotificationProps } from "../../../src/lib/email/email-types";
 import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
 import { EMAIL_COLORS } from "../../theme";
-import type { InvoiceNotificationProps } from "../../../src/lib/email/email-types";
 
 export default function InvoiceNotificationEmail({
   customerName,
@@ -22,6 +22,9 @@ export default function InvoiceNotificationEmail({
   items,
   notes,
   invoiceUrl,
+  paymentLink,
+  customBody,
+  customFooter,
   currency = "USD",
   previewText = `Invoice ${invoiceNumber} from Thorbis`,
 }: InvoiceNotificationProps) {
@@ -29,14 +32,26 @@ export default function InvoiceNotificationEmail({
 
   return (
     <BaseLayout previewText={previewText}>
-      <Heading level={1}>Your Invoice is Ready</Heading>
+      <Heading level={1}>Invoice {invoiceNumber}</Heading>
 
-      <Text style={paragraph}>Hi {customerName},</Text>
+      {customBody ? (
+        <div>
+          {customBody.split("\n").map((line, index) => (
+            <Text key={index} style={paragraph}>
+              {line}
+            </Text>
+          ))}
+        </div>
+      ) : (
+        <>
+          <Text style={paragraph}>Hi {customerName},</Text>
 
-      <Text style={paragraph}>
-        We've prepared invoice <strong>#{invoiceNumber}</strong> for you. Please
-        review the details below and click the button to view or pay online.
-      </Text>
+          <Text style={paragraph}>
+            We've prepared invoice <strong>#{invoiceNumber}</strong> for you. Please
+            review the details below and click the button to view or pay online.
+          </Text>
+        </>
+      )}
 
       <Card style={summaryCard}>
         <div style={summaryRow}>
@@ -88,16 +103,26 @@ export default function InvoiceNotificationEmail({
       ) : null}
 
       <div style={buttonContainer}>
-        <Button href={invoiceUrl}>View Invoice</Button>
+        {paymentLink ? (
+          <Button href={paymentLink}>Pay Invoice Online</Button>
+        ) : (
+          <Button href={invoiceUrl}>View Invoice</Button>
+        )}
       </div>
 
-      <Card style={footerCard}>
-        <Heading level={3}>Need Assistance?</Heading>
-        <Text style={footerText}>
-          If you have any questions about this invoice, reply to this email or
-          contact our support team. We're happy to help!
-        </Text>
-      </Card>
+      {customFooter ? (
+        <Card style={footerCard}>
+          <Text style={footerText}>{customFooter}</Text>
+        </Card>
+      ) : (
+        <Card style={footerCard}>
+          <Heading level={3}>Need Assistance?</Heading>
+          <Text style={footerText}>
+            If you have any questions about this invoice, reply to this email or
+            contact our support team. We're happy to help!
+          </Text>
+        </Card>
+      )}
     </BaseLayout>
   );
 }

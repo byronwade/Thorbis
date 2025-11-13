@@ -120,6 +120,9 @@ export interface InvoiceNotificationProps extends BaseEmailProps {
     amount: number; // in cents
   }>;
   notes?: string;
+  paymentLink?: string; // Secure payment portal link
+  customBody?: string; // Custom email body from template
+  customFooter?: string; // Custom email footer from template
 }
 
 export interface EstimateNotificationProps extends BaseEmailProps {

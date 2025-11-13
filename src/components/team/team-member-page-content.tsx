@@ -90,17 +90,12 @@ export function TeamMemberPageContent({
   const router = useRouter();
   const { toast } = useToast();
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
   const [localMember, setLocalMember] = useState(entityData.teamMember);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const setToolbarActions = useToolbarActionsStore((state) => state.setActions);
 
   // Prevent hydration mismatch by only rendering Radix components after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Extract data before hooks
   const {
     teamMember,
@@ -1034,11 +1029,6 @@ export function TeamMemberPageContent({
 
     return items;
   }, [assignedJobs, teamMember.id, user?.email]);
-
-  // Conditional render AFTER all hooks
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
 
   return (
     <DetailPageContentLayout
