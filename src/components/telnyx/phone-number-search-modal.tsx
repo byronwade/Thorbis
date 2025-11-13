@@ -38,12 +38,14 @@ interface PhoneNumberSearchModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (phoneNumber: string) => void;
+  companyId: string;
 }
 
 export function PhoneNumberSearchModal({
   open,
   onOpenChange,
   onSuccess,
+  companyId,
 }: PhoneNumberSearchModalProps) {
   const [areaCode, setAreaCode] = useState("831");
   const [numberType, setNumberType] = useState<"local" | "toll-free">("local");
@@ -76,9 +78,6 @@ export function PhoneNumberSearchModal({
 
   const handlePurchase = async (phoneNumber: string) => {
     setPurchasing(phoneNumber);
-
-    // TODO: Get actual company ID from session
-    const companyId = "temp-company-id";
 
     await purchasePhoneNumber({
       phoneNumber,

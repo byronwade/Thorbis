@@ -20,7 +20,6 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,69 +37,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Mock data - will be replaced with real data from server actions
-const mockPhoneNumbers = [
-  {
-    id: "1",
-    phoneNumber: "+1 (831) 430-6011",
-    formattedNumber: "(831) 430-6011",
-    countryCode: "US",
-    areaCode: "831",
-    numberType: "local",
-    status: "active",
-    features: ["voice", "sms", "mms"],
-    incomingCallsCount: 147,
-    outgoingCallsCount: 203,
-    smsSentCount: 89,
-    smsReceivedCount: 124,
-    monthlyCost: 1.0,
-    routingRule: "Business Hours Routing",
-    voicemailEnabled: true,
-    createdAt: "2025-01-15T10:30:00Z",
-  },
-  {
-    id: "2",
-    phoneNumber: "+1 (650) 555-0123",
-    formattedNumber: "(650) 555-0123",
-    countryCode: "US",
-    areaCode: "650",
-    numberType: "local",
-    status: "active",
-    features: ["voice", "sms"],
-    incomingCallsCount: 89,
-    outgoingCallsCount: 156,
-    smsSentCount: 234,
-    smsReceivedCount: 198,
-    monthlyCost: 1.0,
-    routingRule: "Direct to Support Team",
-    voicemailEnabled: true,
-    createdAt: "2025-01-20T14:22:00Z",
-  },
-  {
-    id: "3",
-    phoneNumber: "+1 (855) 000-1234",
-    formattedNumber: "(855) 000-1234",
-    countryCode: "US",
-    areaCode: "855",
-    numberType: "toll-free",
-    status: "porting",
-    features: ["voice"],
-    incomingCallsCount: 0,
-    outgoingCallsCount: 0,
-    smsSentCount: 0,
-    smsReceivedCount: 0,
-    monthlyCost: 2.0,
-    routingRule: "Not configured",
-    voicemailEnabled: false,
-    createdAt: "2025-01-28T09:15:00Z",
-    portingStatus: "In Progress",
-    portingEta: "February 4, 2025",
-  },
-];
+export type PhoneNumberRecord = {
+  id: string;
+  phoneNumber: string;
+  formattedNumber: string;
+  areaCode: string | null;
+  numberType: string | null;
+  status: string | null;
+  features: string[];
+  incomingCallsCount: number;
+  outgoingCallsCount: number;
+  smsSentCount: number;
+  smsReceivedCount: number;
+  monthlyCost: number | null;
+  routingRule?: string | null;
+  voicemailEnabled?: boolean | null;
+  createdAt: string;
+  portingStatus?: string | null;
+  portingEta?: string | null;
+  metadata?: Record<string, unknown> | null;
+};
 
-export function PhoneNumbersList() {
-  const [numbers] = useState(mockPhoneNumbers);
+interface PhoneNumbersListProps {
+  numbers: PhoneNumberRecord[];
+}
 
+export function PhoneNumbersList({ numbers }: PhoneNumbersListProps) {
   return (
     <div className="space-y-4 p-6">
       {numbers.length === 0 ? (
@@ -114,7 +76,7 @@ export function PhoneNumbersList() {
   );
 }
 
-function PhoneNumberCard({ number }: { number: (typeof mockPhoneNumbers)[0] }) {
+function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -132,9 +94,16 @@ function PhoneNumberCard({ number }: { number: (typeof mockPhoneNumbers)[0] }) {
               )}
             </div>
             <CardDescription>
-              {number.routingRule}{" "}
+              {number.routingRule ?? "Routing not configured"}{" "}
               {number.voicemailEnabled && "• Voicemail enabled"}
             </CardDescription>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              {number.metadata?.ten_dlc_campaign_id ? (
+                <Badge variant="secondary">10DLC Linked</Badge>
+              ) : (
+                <Badge variant="outline">10DLC Pending</Badge>
+              )}
+            </div>
           </div>
 
           <DropdownMenu>
@@ -206,7 +175,7 @@ function PhoneNumberCard({ number }: { number: (typeof mockPhoneNumbers)[0] }) {
             color="text-warning dark:text-warning"
             icon={DollarSign}
             label="Monthly Cost"
-            value={`$${number.monthlyCost.toFixed(2)}`}
+            value={`$${(number.monthlyCost ?? 0).toFixed(2)}`}
           />
         </div>
 

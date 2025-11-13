@@ -11,6 +11,8 @@ const { createClient } = require("@supabase/supabase-js");
 const fs = require("fs");
 const path = require("path");
 
+const projectRoot = path.resolve(__dirname, "../../..");
+
 // Load environment variables
 require("dotenv").config({ path: ".env.local" });
 
@@ -29,7 +31,7 @@ async function applyMigration() {
   console.log("🚀 Applying Owner Permissions Fix Migration...\n");
 
   const migrationPath = path.join(
-    __dirname,
+    projectRoot,
     "supabase/migrations/20250213000000_fix_owner_permissions.sql"
   );
 

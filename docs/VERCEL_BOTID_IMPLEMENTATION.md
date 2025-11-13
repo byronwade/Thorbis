@@ -1,6 +1,6 @@
 # Vercel BotID Implementation - Complete Guide
 
-> ⚠️ **2025-11-13 Update:** BotID was removed from production (and the codebase) after causing repeated `/login` failures in Vercel deployments. This document is retained solely for historical reference—do **not** re-enable BotID unless you also address the production-breaking issues called out during the rollback.
+> ✅ **2025-11-13 Update:** BotID has been re-enabled with the instrumentation-based client hook and server-side verification on all auth actions. Earlier production issues have been addressed by ensuring the client script loads via `instrumentation.client.ts`.
 
 **Date**: 2025-10-31
 **Status**: ✅ IMPLEMENTED & DEPLOYED

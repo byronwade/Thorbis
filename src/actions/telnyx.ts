@@ -12,7 +12,9 @@
 
 "use server";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { ensureMessagingCampaign } from "@/actions/messaging-branding";
 import { createClient } from "@/lib/supabase/server";
 import {
   answerCall,
@@ -31,6 +33,72 @@ import {
   releaseNumber,
   searchAvailableNumbers,
 } from "@/lib/telnyx/numbers";
+import type { Database } from "@/types/supabase";
+
+type TypedSupabaseClient = SupabaseClient<Database>;
+
+function normalizePhoneNumber(phoneNumber: string): string {
+  return formatPhoneNumber(phoneNumber);
+}
+
+function extractAreaCode(phoneNumber: string): string | null {
+  const digits = phoneNumber.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return digits.slice(1, 4);
+  }
+  if (digits.length === 10) {
+    return digits.slice(0, 3);
+  }
+  return null;
+}
+
+function formatDisplayPhoneNumber(phoneNumber: string): string {
+  const digits = phoneNumber.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  return phoneNumber;
+}
+
+async function getPhoneNumberId(
+  supabase: TypedSupabaseClient,
+  phoneNumber: string
+): Promise<string | null> {
+  const normalized = normalizePhoneNumber(phoneNumber);
+  const { data } = await supabase
+    .from("phone_numbers")
+    .select("id")
+    .eq("phone_number", normalized)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  return data?.id ?? null;
+}
+
+async function mergeProviderMetadata(
+  supabase: TypedSupabaseClient,
+  communicationId: string,
+  patch: Record<string, unknown>
+): Promise<void> {
+  const { data } = await supabase
+    .from("communications")
+    .select("provider_metadata")
+    .eq("id", communicationId)
+    .maybeSingle();
+
+  const currentMetadata =
+    (data?.provider_metadata as Record<string, unknown>) ?? {};
+
+  await supabase
+    .from("communications")
+    .update({
+      provider_metadata: { ...currentMetadata, ...patch },
+    })
+    .eq("id", communicationId);
+}
 
 // =====================================================================================
 // PHONE NUMBER MANAGEMENT ACTIONS
@@ -81,9 +149,13 @@ export async function purchasePhoneNumber(params: {
       return { success: false, error: "Service unavailable" };
     }
 
+    const normalizedPhoneNumber = normalizePhoneNumber(params.phoneNumber);
+    const formattedNumber = formatDisplayPhoneNumber(normalizedPhoneNumber);
+    const areaCode = extractAreaCode(normalizedPhoneNumber);
+
     // Purchase number from Telnyx
     const result = await purchaseNumber({
-      phoneNumber: params.phoneNumber,
+      phoneNumber: normalizedPhoneNumber,
       connectionId: TELNYX_CONFIG.connectionId,
       billingGroupId: params.billingGroupId,
       customerReference: `company_${params.companyId}`,
@@ -100,9 +172,10 @@ export async function purchasePhoneNumber(params: {
         company_id: params.companyId,
         telnyx_phone_number_id: result.orderId,
         telnyx_connection_id: TELNYX_CONFIG.connectionId,
-        phone_number: params.phoneNumber,
-        formatted_number: formatPhoneNumber(params.phoneNumber),
+        phone_number: normalizedPhoneNumber,
+        formatted_number: formattedNumber,
         country_code: "US",
+        area_code: areaCode,
         number_type: "local",
         features: ["voice", "sms"],
         status: "pending",
@@ -111,6 +184,18 @@ export async function purchasePhoneNumber(params: {
       .single();
 
     if (error) throw error;
+
+    const complianceResult = await ensureMessagingCampaign(params.companyId, {
+      id: data.id,
+      e164: normalizedPhoneNumber,
+    });
+
+    if (!complianceResult.success) {
+      console.error(
+        "Failed to ensure messaging compliance:",
+        complianceResult.error
+      );
+    }
 
     revalidatePath("/dashboard/settings/communications/phone-numbers");
 
@@ -280,10 +365,13 @@ export async function makeCall(params: {
       return { success: false, error: "Service unavailable" };
     }
 
+    const fromAddress = normalizePhoneNumber(params.from);
+    const toAddress = normalizePhoneNumber(params.to);
+
     // Initiate call via Telnyx
     const result = await initiateCall({
-      to: formatPhoneNumber(params.to),
-      from: formatPhoneNumber(params.from),
+      to: toAddress,
+      from: fromAddress,
       connectionId: TELNYX_CONFIG.connectionId,
       webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
       answeringMachineDetection: "premium",
@@ -294,16 +382,25 @@ export async function makeCall(params: {
     }
 
     // Create communication record
+    const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
     const { data, error } = await supabase
       .from("communications")
       .insert({
         company_id: params.companyId,
         customer_id: params.customerId,
         type: "phone",
+        channel: "telnyx",
         direction: "outbound",
-        from_phone: params.from,
-        to_phone: params.to,
+        from_address: fromAddress,
+        to_address: toAddress,
+        body: "",
         status: "queued",
+        priority: "normal",
+        phone_number_id: phoneNumberId,
+        is_archived: false,
+        is_automated: false,
+        is_internal: false,
+        is_thread_starter: true,
         telnyx_call_control_id: result.callControlId,
         telnyx_call_session_id: result.callSessionId,
       })
@@ -498,15 +595,10 @@ export async function transcribeCallRecording(params: {
     }
 
     // Store transcription job ID in database
-    await supabase
-      .from("communications")
-      .update({
-        metadata: {
+    await mergeProviderMetadata(supabase, params.communicationId, {
           assemblyai_transcription_id: result.data.id,
           assemblyai_status: result.data.status,
-        },
-      })
-      .eq("id", params.communicationId);
+    });
 
     console.log(
       `✅ Transcription job submitted: ${result.data.id}, status: ${result.data.status}`
@@ -549,10 +641,13 @@ export async function sendTextMessage(params: {
       return { success: false, error: "Service unavailable" };
     }
 
+    const fromAddress = normalizePhoneNumber(params.from);
+    const toAddress = normalizePhoneNumber(params.to);
+
     // Send SMS via Telnyx
     const result = await sendSMS({
-      to: formatPhoneNumber(params.to),
-      from: formatPhoneNumber(params.from),
+      to: toAddress,
+      from: fromAddress,
       text: params.text,
       webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
     });
@@ -562,17 +657,25 @@ export async function sendTextMessage(params: {
     }
 
     // Create communication record
+    const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
     const { data, error } = await supabase
       .from("communications")
       .insert({
         company_id: params.companyId,
         customer_id: params.customerId,
         type: "sms",
+        channel: "telnyx",
         direction: "outbound",
-        from_phone: params.from,
-        to_phone: params.to,
+        from_address: fromAddress,
+        to_address: toAddress,
         body: params.text,
         status: "queued",
+        priority: "normal",
+        phone_number_id: phoneNumberId,
+        is_archived: false,
+        is_automated: false,
+        is_internal: false,
+        is_thread_starter: true,
         telnyx_message_id: result.messageId,
       })
       .select()
@@ -613,10 +716,13 @@ export async function sendMMSMessage(params: {
       return { success: false, error: "Service unavailable" };
     }
 
+    const fromAddress = normalizePhoneNumber(params.from);
+    const toAddress = normalizePhoneNumber(params.to);
+
     // Send MMS via Telnyx
     const result = await sendMMS({
-      to: formatPhoneNumber(params.to),
-      from: formatPhoneNumber(params.from),
+      to: toAddress,
+      from: fromAddress,
       text: params.text,
       mediaUrls: params.mediaUrls,
       webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
@@ -627,19 +733,27 @@ export async function sendMMSMessage(params: {
     }
 
     // Create communication record
+    const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
     const { data, error } = await supabase
       .from("communications")
       .insert({
         company_id: params.companyId,
         customer_id: params.customerId,
         type: "sms",
+        channel: "telnyx",
         direction: "outbound",
-        from_phone: params.from,
-        to_phone: params.to,
+        from_address: fromAddress,
+        to_address: toAddress,
         body: params.text || "",
         attachments: params.mediaUrls.map((url) => ({ url, type: "image" })),
         attachment_count: params.mediaUrls.length,
         status: "queued",
+        priority: "normal",
+        phone_number_id: phoneNumberId,
+        is_archived: false,
+        is_automated: false,
+        is_internal: false,
+        is_thread_starter: true,
         telnyx_message_id: result.messageId,
       })
       .select()
@@ -1153,9 +1267,9 @@ export async function getPhoneNumberUsageStats(
     // Get call statistics
     const { data: callStats, error: callError } = await supabase
       .from("communications")
-      .select("type, direction, status, duration, created_at")
+      .select("type, direction, status, call_duration, created_at")
       .eq("type", "phone")
-      .or(`from_phone_id.eq.${phoneNumberId},to_phone_id.eq.${phoneNumberId}`)
+      .eq("phone_number_id", phoneNumberId)
       .gte("created_at", startDate.toISOString());
 
     if (callError) throw callError;
@@ -1165,7 +1279,7 @@ export async function getPhoneNumberUsageStats(
       .from("communications")
       .select("type, direction, status, created_at")
       .eq("type", "sms")
-      .or(`from_phone_id.eq.${phoneNumberId},to_phone_id.eq.${phoneNumberId}`)
+      .eq("phone_number_id", phoneNumberId)
       .gte("created_at", startDate.toISOString());
 
     if (smsError) throw smsError;
@@ -1179,7 +1293,7 @@ export async function getPhoneNumberUsageStats(
       (c) => c.direction === "outbound"
     ).length;
     const totalCallDuration = calls.reduce(
-      (sum, c) => sum + (c.duration || 0),
+      (sum, c) => sum + (c.call_duration || 0),
       0
     );
     const incomingSms = sms.filter((s) => s.direction === "inbound").length;
@@ -1226,7 +1340,7 @@ export async function getCompanyUsageStats(companyId: string, days = 30) {
     // Get all communications for the company
     const { data: communications, error } = await supabase
       .from("communications")
-      .select("type, direction, status, duration, created_at")
+      .select("type, direction, status, call_duration, created_at")
       .eq("company_id", companyId)
       .in("type", ["phone", "sms"])
       .gte("created_at", startDate.toISOString());
@@ -1242,7 +1356,7 @@ export async function getCompanyUsageStats(companyId: string, days = 30) {
       (c) => c.direction === "outbound"
     ).length;
     const totalCallDuration = calls.reduce(
-      (sum, c) => sum + (c.duration || 0),
+      (sum, c) => sum + (c.call_duration || 0),
       0
     );
     const incomingSms = sms.filter((s) => s.direction === "inbound").length;
@@ -1279,7 +1393,7 @@ export async function getCompanyUsageStats(companyId: string, days = 30) {
  * Helper function to aggregate daily statistics
  */
 function aggregateDailyStats(
-  items: Array<{ created_at: string; type: string; duration?: number }>,
+  items: Array<{ created_at: string; type: string; call_duration?: number }>,
   days: number
 ) {
   const dailyStats: Record<
@@ -1301,7 +1415,7 @@ function aggregateDailyStats(
     if (dailyStats[dateStr]) {
       if (item.type === "phone") {
         dailyStats[dateStr].calls += 1;
-        dailyStats[dateStr].duration += item.duration || 0;
+        dailyStats[dateStr].duration += item.call_duration || 0;
       } else if (item.type === "sms") {
         dailyStats[dateStr].sms += 1;
       }

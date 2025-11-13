@@ -123,9 +123,27 @@ const COMPANY_SIZES = [
 // Form Schema
 const formSchema = z.object({
   orgName: z.string().min(2, "Company name must be at least 2 characters"),
+  orgLegalName: z.string().min(2, "Legal name must be at least 2 characters"),
+  orgDoingBusinessAs: z.string().optional(),
   orgIndustry: z.string().min(1, "Please select an industry"),
   orgSize: z.string().min(1, "Please select company size"),
   orgPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  orgSupportEmail: z
+    .string()
+    .email("Please enter a valid email")
+    .optional()
+    .or(z.literal("")),
+  orgSupportPhone: z
+    .string()
+    .min(10, "Support phone must be at least 10 digits"),
+  orgBrandColor: z
+    .string()
+    .regex(/^#([0-9A-Fa-f]{6})$/, "Use a valid hex color (e.g. #3366FF)")
+    .optional()
+    .or(z.literal("")),
+  orgEIN: z
+    .string()
+    .regex(/^\d{2}-?\d{7}$/, "Enter EIN in 00-0000000 format"),
   orgAddress: z.string().min(5, "Address must be at least 5 characters"),
   orgCity: z.string().min(2, "City must be at least 2 characters"),
   orgState: z.string().min(2, "State must be at least 2 characters"),
@@ -207,9 +225,15 @@ export function WelcomePageClientAdvanced({
     resolver: zodResolver(formSchema),
     defaultValues: {
       orgName: incompleteCompany?.name || "",
+      orgLegalName: incompleteCompany?.legal_name || incompleteCompany?.name || "",
+      orgDoingBusinessAs: incompleteCompany?.doing_business_as || incompleteCompany?.name || "",
       orgIndustry: incompleteCompany?.industry || "",
       orgSize: incompleteCompany?.size || "",
       orgPhone: incompleteCompany?.phone || "",
+      orgSupportEmail: incompleteCompany?.support_email || incompleteCompany?.email || "",
+      orgSupportPhone: incompleteCompany?.support_phone || incompleteCompany?.phone || "",
+      orgBrandColor: incompleteCompany?.brand_color || "",
+      orgEIN: incompleteCompany?.ein || incompleteCompany?.taxId || "",
       orgAddress: incompleteCompany?.address || "",
       orgCity: incompleteCompany?.city || "",
       orgState: incompleteCompany?.state || "",
@@ -299,12 +323,18 @@ export function WelcomePageClientAdvanced({
             industry: values.orgIndustry,
             size: values.orgSize,
             phone: values.orgPhone,
+            supportEmail: values.orgSupportEmail,
+            supportPhone: values.orgSupportPhone,
             address: values.orgAddress,
             city: values.orgCity,
             state: values.orgState,
             zipCode: values.orgZip,
             website: values.orgWebsite,
             taxId: values.orgTaxId,
+            legalName: values.orgLegalName,
+            doingBusinessAs: values.orgDoingBusinessAs || values.orgName,
+            brandColor: values.orgBrandColor,
+            ein: values.orgEIN,
           }),
         });
 
@@ -562,6 +592,57 @@ export function WelcomePageClientAdvanced({
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="orgLegalName"
+                      render={({ field }) => (
+                        <FormItem className="sm:col-span-2">
+                          <FormLabel className="text-base">Legal Entity Name *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Legal name on EIN / IRS documents"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="orgDoingBusinessAs"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Doing Business As</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Brand name customers know"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="orgEIN"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">EIN *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="87-1234567"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <FormField
                       control={form.control}
@@ -587,6 +668,40 @@ export function WelcomePageClientAdvanced({
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="orgSupportEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Support Email *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="support@yourcompany.com"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="orgSupportPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Support Phone *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="(831) 555-1234"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <FormField
                       control={form.control}
@@ -608,6 +723,32 @@ export function WelcomePageClientAdvanced({
                               ))}
                             </SelectContent>
                           </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="orgBrandColor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Brand Color</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-3">
+                              <Input
+                                type="color"
+                                value={field.value || "#3b82f6"}
+                                className="h-12 w-20 cursor-pointer rounded-md border"
+                                onChange={(event) => field.onChange(event.target.value)}
+                              />
+                              <Input
+                                placeholder="#3B82F6"
+                                className="h-12 flex-1 text-base"
+                                value={field.value || ""}
+                                onChange={(event) => field.onChange(event.target.value)}
+                              />
+                            </div>
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1120,6 +1261,7 @@ export function WelcomePageClientAdvanced({
       {companyId && (
         <>
           <PhoneNumberSearchModal
+            companyId={companyId}
             open={purchaseModalOpen}
             onOpenChange={setPurchaseModalOpen}
             onSuccess={(phoneNumber) => {

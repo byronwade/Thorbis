@@ -1,4 +1,6 @@
 "use server";
+
+import { checkBotId } from "botid/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -98,6 +100,15 @@ type AuthActionResult = {
  */
 export async function signUp(formData: FormData): Promise<AuthActionResult> {
   try {
+    // Bot protection check (Vercel BotID)
+    const botCheck = await checkBotId();
+    if (botCheck.isBot) {
+      return {
+        success: false,
+        error: "Unable to process request. Please try again later.",
+      };
+    }
+
     // Parse and validate form data
     const rawData = {
       name: formData.get("name") as string,
@@ -248,6 +259,15 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
  */
 export async function signIn(formData: FormData): Promise<AuthActionResult> {
   try {
+    // Bot protection check (Vercel BotID)
+    const botCheck = await checkBotId();
+    if (botCheck.isBot) {
+      return {
+        success: false,
+        error: "Unable to process request. Please try again later.",
+      };
+    }
+
     // Parse and validate form data
     const rawData = {
       email: formData.get("email") as string,
@@ -449,6 +469,15 @@ export async function forgotPassword(
   formData: FormData
 ): Promise<AuthActionResult> {
   try {
+    // Bot protection check (Vercel BotID)
+    const botCheck = await checkBotId();
+    if (botCheck.isBot) {
+      return {
+        success: false,
+        error: "Unable to process request. Please try again later.",
+      };
+    }
+
     const rawData = {
       email: formData.get("email") as string,
     };
@@ -546,6 +575,15 @@ export async function resetPassword(
   formData: FormData
 ): Promise<AuthActionResult> {
   try {
+    // Bot protection check (Vercel BotID)
+    const botCheck = await checkBotId();
+    if (botCheck.isBot) {
+      return {
+        success: false,
+        error: "Unable to process request. Please try again later.",
+      };
+    }
+
     const rawData = {
       password: formData.get("password") as string,
       confirmPassword: formData.get("confirmPassword") as string,

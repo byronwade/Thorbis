@@ -28,7 +28,7 @@
 ```typescript
 // Before: Always wrapped, even when not needed
 const withBundleAnalyzer = require("@next/bundle-analyzer")({...});
-export default withPWA(withBundleAnalyzer(nextConfig));
+export default withBotId(withPWA(withBundleAnalyzer(nextConfig)));
 
 // After: Only loads when ANALYZE=true
 const withBundleAnalyzer =

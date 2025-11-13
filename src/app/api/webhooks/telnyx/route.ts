@@ -14,7 +14,9 @@
 
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { formatPhoneNumber } from "@/lib/telnyx/messaging";
 import {
   type CallAnsweredPayload,
   type CallHangupPayload,
@@ -29,6 +31,9 @@ import {
   verifyWebhookSignature,
   type WebhookPayload,
 } from "@/lib/telnyx/webhooks";
+import type { Database } from "@/types/supabase";
+
+type TypedSupabaseClient = SupabaseClient<Database>;
 
 /**
  * POST /api/webhooks/telnyx
@@ -141,22 +146,55 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
       console.log(`📞 Incoming call from ${callData.from} to ${callData.to}`);
       console.log(`📱 Call Control ID: ${callData.call_control_id}`);
 
-      // Create or update communication record for this call
-      const companyId = await getCompanyIdFromPhoneNumber(callData.to);
-      console.log(
-        `🏢 Company ID: ${companyId || "NOT FOUND - Check phone_numbers table"}`
-      );
+      const phoneContext = await getPhoneNumberContext(supabase, callData.to);
 
-      await supabase.from("communications").upsert({
-        company_id: companyId,
+      if (!phoneContext) {
+        console.warn(
+          `⚠️  Could not find phone number ${callData.to} in phone_numbers table`
+        );
+        break;
+      }
+
+      const fromAddress = normalizePhoneNumber(callData.from);
+      const toAddress = normalizePhoneNumber(callData.to);
+
+      const customerId =
+        callData.direction === "incoming"
+          ? await findCustomerIdByPhone(
+              supabase,
+              phoneContext.companyId,
+              fromAddress
+            )
+          : undefined;
+
+      const communicationPayload: Record<string, unknown> = {
+        company_id: phoneContext.companyId,
         type: "phone",
-        direction: callData.direction === "incoming" ? "inbound" : "outbound",
-        from_phone: callData.from,
-        to_phone: callData.to,
+        channel: "telnyx",
+        direction:
+          callData.direction === "incoming" ? "inbound" : "outbound",
+        from_address: fromAddress,
+        to_address: toAddress,
+        body: "",
         status: "queued",
+        priority: "normal",
+        phone_number_id: phoneContext.phoneNumberId,
+        is_archived: false,
+        is_internal: false,
+        is_automated: false,
+        is_thread_starter: true,
         telnyx_call_control_id: callData.call_control_id,
         telnyx_call_session_id: callData.call_session_id,
-        metadata: { start_time: callData.start_time, state: callData.state },
+      };
+
+      if (customerId) {
+        communicationPayload.customer_id = customerId;
+      }
+
+      await supabase
+        .from("communications")
+        .upsert(communicationPayload, {
+          onConflict: "telnyx_call_control_id",
       });
 
       console.log("✅ Call saved to database");
@@ -173,7 +211,6 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         .update({
           status: "delivered",
           call_answered_at: new Date().toISOString(),
-          metadata: { start_time: callData.start_time, state: callData.state },
         })
         .eq("telnyx_call_control_id", callData.call_control_id);
 
@@ -199,12 +236,6 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
           call_duration: duration,
           hangup_cause: callData.hangup_cause,
           hangup_source: callData.hangup_source,
-          metadata: {
-            start_time: callData.start_time,
-            end_time: callData.end_time,
-            state: callData.state,
-            sip_hangup_cause: callData.sip_hangup_cause,
-          },
         })
         .eq("telnyx_call_control_id", callData.call_control_id);
 
@@ -224,11 +255,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         .from("communications")
         .update({
           call_recording_url: recordingUrl,
-          metadata: {
-            recording_id: recordingData.recording_id,
-            channels: recordingData.channels,
-            duration: recordingData.duration,
-          },
+          recording_channels: recordingData.channels,
         })
         .eq("telnyx_call_control_id", recordingData.call_control_id)
         .select("id")
@@ -270,10 +297,6 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         .from("communications")
         .update({
           answering_machine_detected: machineData.result !== "human",
-          metadata: {
-            machine_detection_result: machineData.result,
-            machine_detection_confidence: machineData.confidence,
-          },
         })
         .eq("telnyx_call_control_id", machineData.call_control_id);
 
@@ -302,20 +325,45 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
       const event = payload as MessageReceivedPayload;
       const messageData = event.data.payload;
 
-      // Create communication record for received message
+      const destinationNumber = messageData.to[0]?.phone_number;
+      const phoneContext = destinationNumber
+        ? await getPhoneNumberContext(supabase, destinationNumber)
+        : null;
+
+      if (!phoneContext) {
+        console.warn(
+          `⚠️  Could not associate inbound SMS ${messageData.id} to a company`
+        );
+        break;
+      }
+
+      const fromAddress = normalizePhoneNumber(messageData.from.phone_number);
+      const toAddress = normalizePhoneNumber(destinationNumber);
+      const customerId = await findCustomerIdByPhone(
+        supabase,
+        phoneContext.companyId,
+        fromAddress
+      );
+
       await supabase.from("communications").insert({
-        company_id: await getCompanyIdFromPhoneNumber(
-          messageData.to[0].phone_number
-        ),
+        company_id: phoneContext.companyId,
+        customer_id: customerId,
         type: "sms",
+        channel: "telnyx",
         direction: "inbound",
-        from_phone: messageData.from.phone_number,
-        to_phone: messageData.to[0].phone_number,
-        body: messageData.text,
+        from_address: fromAddress,
+        to_address: toAddress,
+        body: messageData.text || "",
         status: "delivered",
+        priority: "normal",
+        phone_number_id: phoneContext.phoneNumberId,
+        is_archived: false,
+        is_internal: false,
+        is_automated: false,
+        is_thread_starter: true,
         telnyx_message_id: messageData.id,
         received_at: messageData.received_at,
-        metadata: {
+        provider_metadata: {
           carrier: messageData.from.carrier,
           line_type: messageData.from.line_type,
           media: messageData.media,
@@ -381,23 +429,57 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
   }
 }
 
-/**
- * Helper function to get company_id from phone number
- * Looks up the company that owns this phone number
- */
-async function getCompanyIdFromPhoneNumber(
+function normalizePhoneNumber(phoneNumber: string): string {
+  return formatPhoneNumber(phoneNumber);
+}
+
+function extractComparableDigits(phoneNumber: string): string {
+  const digits = phoneNumber.replace(/\D/g, "");
+  if (digits.length > 10) {
+    return digits.slice(-10);
+  }
+  return digits;
+}
+
+async function getPhoneNumberContext(
+  supabase: TypedSupabaseClient,
+  phoneNumber: string
+): Promise<{ companyId: string; phoneNumberId: string } | null> {
+  const normalized = normalizePhoneNumber(phoneNumber);
+
+  const { data } = await supabase
+    .from("phone_numbers")
+    .select("id, company_id")
+    .eq("phone_number", normalized)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    companyId: data.company_id,
+    phoneNumberId: data.id,
+  };
+}
+
+async function findCustomerIdByPhone(
+  supabase: TypedSupabaseClient,
+  companyId: string,
   phoneNumber: string
 ): Promise<string | null> {
-  const supabase = await createClient();
-  if (!supabase) {
+  const digits = extractComparableDigits(phoneNumber);
+  if (!digits) {
     return null;
   }
 
   const { data } = await supabase
-    .from("phone_numbers")
-    .select("company_id")
-    .eq("phone_number", phoneNumber)
-    .single();
+    .from("customers")
+    .select("id")
+    .eq("company_id", companyId)
+    .ilike("phone", `%${digits}%`)
+    .maybeSingle();
 
-  return data?.company_id || null;
+  return data?.id ?? null;
 }

@@ -11,25 +11,12 @@
  * - Media attachments
  */
 
-import { SMSThreadView } from "./sms-thread-view";
-
-type SMSMessage = {
-  id: string;
-  from: string;
-  fromPhone?: string;
-  preview: string;
-  timestamp: Date;
-  status: "unread" | "read" | "replied" | "archived";
-  priority: "low" | "normal" | "high" | "urgent";
-  tags?: string[];
-  unreadCount?: number;
-};
+import { SMSThreadView, type ConversationThread } from "./sms-thread-view";
 
 type SMSViewProps = {
-  messages: SMSMessage[];
+  threads: ConversationThread[];
 };
 
-export function SMSView({ messages }: SMSViewProps) {
-  // Use the new threaded view instead of the old list view
-  return <SMSThreadView />;
+export function SMSView({ threads }: SMSViewProps) {
+  return <SMSThreadView threads={threads} />;
 }

@@ -14,9 +14,15 @@ export const dynamic = "force-dynamic";
 interface SaveCompanyRequest {
   id?: string | null;
   name: string;
+  legalName?: string | null;
+  doingBusinessAs?: string | null;
   industry: string;
   size: string;
   phone: string;
+  supportEmail?: string | null;
+  supportPhone?: string | null;
+  brandColor?: string | null;
+  ein?: string | null;
   address: string;
   city: string;
   state: string;
@@ -71,9 +77,15 @@ export async function POST(request: NextRequest) {
       // Update existing company
       const updatePayload = {
         name: data.name,
+      legal_name: data.legalName || data.name,
+      doing_business_as: data.doingBusinessAs || data.name,
         industry: data.industry,
         company_size: data.size,
         phone: data.phone,
+      support_email: data.supportEmail || data.email || null,
+      support_phone: data.supportPhone || data.phone || null,
+      brand_color: data.brandColor || null,
+      ein: data.ein || null,
         address: fullAddress,
         city: data.city,
         state: data.state,
@@ -118,9 +130,15 @@ export async function POST(request: NextRequest) {
               completedAt: new Date().toISOString(),
               data: {
                 name: data.name,
+                legalName: data.legalName,
+                doingBusinessAs: data.doingBusinessAs,
                 industry: data.industry,
                 size: data.size,
                 phone: data.phone,
+                supportEmail: data.supportEmail,
+                supportPhone: data.supportPhone,
+                brandColor: data.brandColor,
+                ein: data.ein,
                 address: data.address,
                 city: data.city,
                 state: data.state,
@@ -166,6 +184,12 @@ export async function POST(request: NextRequest) {
         .insert({
           name: data.name,
           slug,
+          legal_name: data.legalName || data.name,
+          doing_business_as: data.doingBusinessAs || data.name,
+          support_email: data.supportEmail || data.email || null,
+          support_phone: data.supportPhone || data.phone || null,
+          brand_color: data.brandColor || null,
+          ein: data.ein || null,
           industry: data.industry,
           company_size: data.size,
           phone: data.phone,
@@ -186,9 +210,15 @@ export async function POST(request: NextRequest) {
               completedAt: new Date().toISOString(),
               data: {
                 name: data.name,
+                legalName: data.legalName,
+                doingBusinessAs: data.doingBusinessAs,
                 industry: data.industry,
                 size: data.size,
                 phone: data.phone,
+                supportEmail: data.supportEmail,
+                supportPhone: data.supportPhone,
+                brandColor: data.brandColor,
+                ein: data.ein,
                 address: data.address,
                 city: data.city,
                 state: data.state,

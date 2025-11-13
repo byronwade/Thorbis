@@ -12,7 +12,7 @@
 ### Step 3: Run Fix Script
 ```powershell
 cd C:\dev\Stratos
-.\fix-install-complete.ps1
+.\scripts\maintenance\fix-install-complete.ps1
 ```
 
 That's it! The script will:

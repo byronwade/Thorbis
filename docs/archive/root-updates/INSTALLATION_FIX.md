@@ -22,7 +22,7 @@ This PowerShell script handles everything automatically:
 3. **Run the automated fix**:
    ```powershell
    cd C:\dev\Stratos
-   .\fix-install-complete.ps1
+   .\scripts\maintenance\fix-install-complete.ps1
    ```
 
 **What it does:**

@@ -2,6 +2,8 @@ const { createClient } = require("@supabase/supabase-js");
 const fs = require("fs");
 const path = require("path");
 
+const projectRoot = path.resolve(__dirname, "../../..");
+
 const supabaseUrl = "https://togejqdwggezkxahomeh.supabase.co";
 const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvZ2VqcWR3Z2dlemt4YWhvbWVoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTcyMDI5NSwiZXhwIjoyMDc3Mjk2Mjk1fQ.AYOqqzsx3hqzfVa9knQtW6fVnH1K7z-YlmYyBKLCO7E";
@@ -69,7 +71,7 @@ async function main() {
   ];
 
   for (const migration of migrations) {
-    const fullPath = path.join(__dirname, migration);
+    const fullPath = path.join(projectRoot, migration);
     if (fs.existsSync(fullPath)) {
       console.log(`\n📄 Migration file: ${migration}`);
       console.log(`   Location: ${fullPath}`);
@@ -93,7 +95,9 @@ async function main() {
     "4. Copy the contents of: supabase/migrations/20250211000001_owner_protections.sql"
   );
   console.log('5. Paste into SQL Editor and click "Run"');
-  console.log("6. Run: node test-migration.js to verify\n");
+  console.log(
+    "6. Run: node scripts/database/manual/test-migration.js to verify\n"
+  );
 }
 
 main().catch((error) => {

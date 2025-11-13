@@ -25,7 +25,11 @@ import {
 import { NumberPortingWizard } from "./number-porting-wizard";
 import { PhoneNumberSearchModal } from "./phone-number-search-modal";
 
-export function PhoneNumbersToolbar() {
+interface PhoneNumbersToolbarProps {
+  companyId: string;
+}
+
+export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [portingOpen, setPortingOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -101,7 +105,11 @@ export function PhoneNumbersToolbar() {
       </div>
 
       {/* Modals */}
-      <PhoneNumberSearchModal onOpenChange={setSearchOpen} open={searchOpen} />
+      <PhoneNumberSearchModal
+        companyId={companyId}
+        onOpenChange={setSearchOpen}
+        open={searchOpen}
+      />
 
       <NumberPortingWizard onOpenChange={setPortingOpen} open={portingOpen} />
     </>

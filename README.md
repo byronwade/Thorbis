@@ -53,9 +53,18 @@ stratos/
 │   ├── migrations/       # Database migrations
 │   └── seeds/            # Seed data
 ├── docs/                 # Project documentation
+│   └── archive/root-updates/  # Historical reports previously stored in the repo root
 ├── scripts/              # Build and utility scripts
+│   ├── database/manual/       # One-off migration helpers (apply-owner-fix, test-migration, etc.)
+│   └── maintenance/           # Local environment tooling (PowerShell/Bash fix scripts)
 └── public/               # Static assets
 ```
+
+## 🧹 Root Housekeeping
+
+- All legacy Markdown/TXT status reports now live under `docs/archive/root-updates` to keep `/` focused on source.
+- Manual Supabase helpers (`apply-migrations.js`, `apply-owner-fix.js`, `test-migration.js`) moved to `scripts/database/manual`.
+- The Windows installation helpers (`fix-install*.ps1/.bat`) are consolidated under `scripts/maintenance/`.
 
 ## 📦 Key Features
 

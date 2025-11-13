@@ -39,12 +39,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// Message types
-type MessageStatus = "sending" | "sent" | "delivered" | "read" | "failed";
-type MessageDirection = "sent" | "received";
+export type MessageStatus = "sending" | "sent" | "delivered" | "read" | "failed";
+export type MessageDirection = "sent" | "received";
 type MediaType = "image" | "video" | "file";
 
-type Message = {
+export type ThreadMessage = {
   id: string;
   conversationId: string;
   direction: MessageDirection;
@@ -61,7 +60,7 @@ type Message = {
   isTyping?: boolean;
 };
 
-type Conversation = {
+export type ConversationThread = {
   id: string;
   contactName: string;
   contactNumber: string;
@@ -69,124 +68,49 @@ type Conversation = {
   lastMessage?: string;
   lastMessageTime?: string;
   unreadCount: number;
-  isPinned?: boolean;
+  messages: ThreadMessage[];
 };
 
-// Mock data
-const mockConversations: Conversation[] = [
-  {
-    id: "conv-1",
-    contactName: "Sarah Johnson",
-    contactNumber: "+18314306011",
-    contactInitials: "SJ",
-    lastMessage: "Thanks for the quick response!",
-    lastMessageTime: "2025-01-31T10:30:00Z",
-    unreadCount: 2,
-    isPinned: true,
-  },
-  {
-    id: "conv-2",
-    contactName: "John Smith",
-    contactNumber: "+14155551234",
-    contactInitials: "JS",
-    lastMessage: "What time works for you tomorrow?",
-    lastMessageTime: "2025-01-31T09:15:00Z",
-    unreadCount: 0,
-  },
-  {
-    id: "conv-3",
-    contactName: "Mike Davis",
-    contactNumber: "+12125555678",
-    contactInitials: "MD",
-    lastMessage: "Perfect, see you then!",
-    lastMessageTime: "2025-01-30T16:45:00Z",
-    unreadCount: 0,
-  },
-];
+interface SMSThreadViewProps {
+  threads: ConversationThread[];
+}
 
-const mockMessages: Message[] = [
-  {
-    id: "msg-1",
-    conversationId: "conv-1",
-    direction: "received",
-    content: "Hi, I'm interested in scheduling an AC maintenance appointment.",
-    timestamp: "2025-01-31T10:00:00Z",
-    status: "read",
-  },
-  {
-    id: "msg-2",
-    conversationId: "conv-1",
-    direction: "sent",
-    content: "Hello Sarah! We'd be happy to help. What day works best for you?",
-    timestamp: "2025-01-31T10:05:00Z",
-    status: "read",
-  },
-  {
-    id: "msg-3",
-    conversationId: "conv-1",
-    direction: "received",
-    content: "Would next Tuesday work? Around 2 PM?",
-    timestamp: "2025-01-31T10:10:00Z",
-    status: "read",
-  },
-  {
-    id: "msg-4",
-    conversationId: "conv-1",
-    direction: "sent",
-    content:
-      "Tuesday at 2 PM works great! I've scheduled you with our technician.",
-    timestamp: "2025-01-31T10:15:00Z",
-    status: "read",
-  },
-  {
-    id: "msg-5",
-    conversationId: "conv-1",
-    direction: "sent",
-    content: "Here's a photo of what we'll be checking:",
-    timestamp: "2025-01-31T10:16:00Z",
-    status: "delivered",
-    media: [
-      {
-        type: "image",
-        url: "/demo/ac-unit.jpg",
-        thumbnail: "/demo/ac-unit-thumb.jpg",
-      },
-    ],
-  },
-  {
-    id: "msg-6",
-    conversationId: "conv-1",
-    direction: "received",
-    content: "Thanks for the quick response!",
-    timestamp: "2025-01-31T10:30:00Z",
-    status: "read",
-  },
-];
-
-export function SMSThreadView() {
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(mockConversations[0]);
+export function SMSThreadView({ threads }: SMSThreadViewProps) {
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(
+    threads[0]?.id ?? null
+  );
   const [messageText, setMessageText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const selectedConversation = threads.find(
+    (thread) => thread.id === selectedConversationId
+  ) ?? threads[0];
+
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [selectedConversation]);
+  }, [selectedConversation, threads]);
+
+  useEffect(() => {
+    if (!selectedConversation && threads.length > 0) {
+      setSelectedConversationId(threads[0].id);
+    }
+  }, [threads, selectedConversation]);
 
   const handleSendMessage = () => {
     if (!(messageText.trim() && selectedConversation)) return;
 
     // Here you would send the message via server action
-    console.log("Sending message:", messageText);
+    console.log("Sending message:", {
+      to: selectedConversation.contactNumber,
+      body: messageText,
+    });
 
     setMessageText("");
   };
 
-  const messages = selectedConversation
-    ? mockMessages.filter((m) => m.conversationId === selectedConversation.id)
-    : [];
+  const messages = selectedConversation?.messages ?? [];
 
   return (
     <div className="flex h-full">
@@ -202,14 +126,19 @@ export function SMSThreadView() {
 
         {/* Conversation List */}
         <div className="divide-y overflow-auto">
-          {mockConversations.map((conv) => (
+          {threads.length === 0 ? (
+            <div className="p-6 text-center text-muted-foreground text-sm">
+              No text conversations yet.
+            </div>
+          ) : (
+            threads.map((conv) => (
             <button
               className={cn(
                 "flex w-full items-start gap-3 p-3 text-left transition-colors hover:bg-muted/50",
                 selectedConversation?.id === conv.id && "bg-muted"
               )}
               key={conv.id}
-              onClick={() => setSelectedConversation(conv)}
+                onClick={() => setSelectedConversationId(conv.id)}
             >
               <Avatar className="mt-1">
                 <AvatarFallback>{conv.contactInitials}</AvatarFallback>
@@ -237,7 +166,8 @@ export function SMSThreadView() {
                 </div>
               </div>
             </button>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
@@ -371,7 +301,7 @@ function MessageBubble({
   showAvatar,
   contactInitials,
 }: {
-  message: Message;
+  message: ThreadMessage;
   showAvatar: boolean;
   contactInitials: string;
 }) {
@@ -440,7 +370,7 @@ function MessageBubble({
 function MediaAttachment({
   media,
 }: {
-  media: NonNullable<Message["media"]>[0];
+  media: NonNullable<ThreadMessage["media"]>[0];
 }) {
   if (media.type === "image") {
     return (

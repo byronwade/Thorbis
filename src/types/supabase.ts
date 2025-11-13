@@ -1558,7 +1558,9 @@ export type Database = {
       }
       communication_phone_settings: {
         Row: {
+          branding_payload: Json | null
           business_hours_only: boolean | null
+          caller_id_label: string | null
           company_id: string
           created_at: string | null
           fallback_number: string | null
@@ -1569,6 +1571,8 @@ export type Database = {
           recording_consent_required: boolean | null
           recording_enabled: boolean | null
           routing_strategy: string | null
+          sms_sender_name: string | null
+          sms_signature: string | null
           updated_at: string | null
           voicemail_email_notifications: boolean | null
           voicemail_enabled: boolean | null
@@ -1576,7 +1580,9 @@ export type Database = {
           voicemail_transcription_enabled: boolean | null
         }
         Insert: {
+          branding_payload?: Json | null
           business_hours_only?: boolean | null
+          caller_id_label?: string | null
           company_id: string
           created_at?: string | null
           fallback_number?: string | null
@@ -1587,6 +1593,8 @@ export type Database = {
           recording_consent_required?: boolean | null
           recording_enabled?: boolean | null
           routing_strategy?: string | null
+          sms_sender_name?: string | null
+          sms_signature?: string | null
           updated_at?: string | null
           voicemail_email_notifications?: boolean | null
           voicemail_enabled?: boolean | null
@@ -1594,7 +1602,9 @@ export type Database = {
           voicemail_transcription_enabled?: boolean | null
         }
         Update: {
+          branding_payload?: Json | null
           business_hours_only?: boolean | null
+          caller_id_label?: string | null
           company_id?: string
           created_at?: string | null
           fallback_number?: string | null
@@ -1605,6 +1615,8 @@ export type Database = {
           recording_consent_required?: boolean | null
           recording_enabled?: boolean | null
           routing_strategy?: string | null
+          sms_sender_name?: string | null
+          sms_signature?: string | null
           updated_at?: string | null
           voicemail_email_notifications?: boolean | null
           voicemail_enabled?: boolean | null
@@ -2050,6 +2062,8 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          doing_business_as: string | null
+          ein: string | null
           email: string | null
           email_settings: Json | null
           id: string
@@ -2077,6 +2091,8 @@ export type Database = {
           subscription_cancel_at_period_end: boolean | null
           subscription_current_period_end: string | null
           subscription_current_period_start: string | null
+          support_email: string | null
+          support_phone: string | null
           tax_id: string | null
           trial_ends_at: string | null
           updated_at: string
@@ -2094,6 +2110,8 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          doing_business_as?: string | null
+          ein?: string | null
           email?: string | null
           email_settings?: Json | null
           id?: string
@@ -2121,6 +2139,8 @@ export type Database = {
           subscription_cancel_at_period_end?: boolean | null
           subscription_current_period_end?: string | null
           subscription_current_period_start?: string | null
+          support_email?: string | null
+          support_phone?: string | null
           tax_id?: string | null
           trial_ends_at?: string | null
           updated_at?: string
@@ -2138,6 +2158,8 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          doing_business_as?: string | null
+          ein?: string | null
           email?: string | null
           email_settings?: Json | null
           id?: string
@@ -2165,6 +2187,8 @@ export type Database = {
           subscription_cancel_at_period_end?: boolean | null
           subscription_current_period_end?: string | null
           subscription_current_period_start?: string | null
+          support_email?: string | null
+          support_phone?: string | null
           tax_id?: string | null
           trial_ends_at?: string | null
           updated_at?: string
@@ -8692,6 +8716,194 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messaging_brands: {
+        Row: {
+          address_line1: string
+          address_line2: string | null
+          brand_color: string | null
+          company_id: string
+          country: string
+          created_at: string
+          doing_business_as: string | null
+          ein: string
+          id: string
+          legal_name: string
+          metadata: Json | null
+          postal_code: string
+          city: string
+          state: string
+          status: string
+          support_email: string | null
+          support_phone: string | null
+          telnyx_brand_id: string | null
+          updated_at: string
+          vertical: string
+          website: string | null
+        }
+        Insert: {
+          address_line1: string
+          address_line2?: string | null
+          brand_color?: string | null
+          company_id: string
+          country?: string
+          created_at?: string
+          doing_business_as?: string | null
+          ein: string
+          id?: string
+          legal_name: string
+          metadata?: Json | null
+          postal_code: string
+          city: string
+          state: string
+          status?: string
+          support_email?: string | null
+          support_phone?: string | null
+          telnyx_brand_id?: string | null
+          updated_at?: string
+          vertical: string
+          website?: string | null
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string | null
+          brand_color?: string | null
+          company_id?: string
+          country?: string
+          created_at?: string
+          doing_business_as?: string | null
+          ein?: string
+          id?: string
+          legal_name?: string
+          metadata?: Json | null
+          postal_code?: string
+          city?: string
+          state?: string
+          status?: string
+          support_email?: string | null
+          support_phone?: string | null
+          telnyx_brand_id?: string | null
+          updated_at?: string
+          vertical?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messaging_brands_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messaging_brands_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "company_owners"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      messaging_campaign_phone_numbers: {
+        Row: {
+          created_at: string
+          id: string
+          messaging_campaign_id: string
+          phone_number_id: string
+          status: string
+          telnyx_relationship_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          messaging_campaign_id: string
+          phone_number_id: string
+          status?: string
+          telnyx_relationship_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          messaging_campaign_id?: string
+          phone_number_id?: string
+          status?: string
+          telnyx_relationship_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messaging_campaign_phone_numbers_campaign_id_fkey"
+            columns: ["messaging_campaign_id"]
+            isOneToOne: false
+            referencedRelation: "messaging_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messaging_campaign_phone_numbers_phone_number_id_fkey"
+            columns: ["phone_number_id"]
+            isOneToOne: false
+            referencedRelation: "phone_numbers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messaging_campaigns: {
+        Row: {
+          created_at: string
+          description: string | null
+          help_message: string | null
+          id: string
+          messaging_brand_id: string
+          messaging_profile_id: string | null
+          metadata: Json | null
+          sample_messages: string[] | null
+          status: string
+          telnyx_campaign_id: string | null
+          terms_and_conditions_url: string | null
+          updated_at: string
+          usecase: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          help_message?: string | null
+          id?: string
+          messaging_brand_id: string
+          messaging_profile_id?: string | null
+          metadata?: Json | null
+          sample_messages?: string[] | null
+          status?: string
+          telnyx_campaign_id?: string | null
+          terms_and_conditions_url?: string | null
+          updated_at?: string
+          usecase: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          help_message?: string | null
+          id?: string
+          messaging_brand_id?: string
+          messaging_profile_id?: string | null
+          metadata?: Json | null
+          sample_messages?: string[] | null
+          status?: string
+          telnyx_campaign_id?: string | null
+          terms_and_conditions_url?: string | null
+          updated_at?: string
+          usecase?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messaging_campaigns_messaging_brand_id_fkey"
+            columns: ["messaging_brand_id"]
+            isOneToOne: false
+            referencedRelation: "messaging_brands"
             referencedColumns: ["id"]
           },
         ]
