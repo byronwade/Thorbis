@@ -14,7 +14,6 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
-import { ensureMessagingCampaign } from "@/actions/messaging-branding";
 import { createClient } from "@/lib/supabase/server";
 import {
   answerCall,
@@ -184,18 +183,6 @@ export async function purchasePhoneNumber(params: {
       .single();
 
     if (error) throw error;
-
-    const complianceResult = await ensureMessagingCampaign(params.companyId, {
-      id: data.id,
-      e164: normalizedPhoneNumber,
-    });
-
-    if (!complianceResult.success) {
-      console.error(
-        "Failed to ensure messaging compliance:",
-        complianceResult.error
-      );
-    }
 
     revalidatePath("/dashboard/settings/communications/phone-numbers");
 
@@ -596,8 +583,8 @@ export async function transcribeCallRecording(params: {
 
     // Store transcription job ID in database
     await mergeProviderMetadata(supabase, params.communicationId, {
-          assemblyai_transcription_id: result.data.id,
-          assemblyai_status: result.data.status,
+      assemblyai_transcription_id: result.data.id,
+      assemblyai_status: result.data.status,
     });
 
     console.log(
