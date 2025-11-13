@@ -1,5 +1,7 @@
 # Vercel BotID Implementation - Complete Guide
 
+> ⚠️ **2025-11-13 Update:** BotID was removed from production (and the codebase) after causing repeated `/login` failures in Vercel deployments. This document is retained solely for historical reference—do **not** re-enable BotID unless you also address the production-breaking issues called out during the rollback.
+
 **Date**: 2025-10-31
 **Status**: ✅ IMPLEMENTED & DEPLOYED
 **Protection**: Invisible bot detection on login, signup, and password reset

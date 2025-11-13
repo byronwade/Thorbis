@@ -1,4 +1,3 @@
-import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
 // Only load bundle analyzer when ANALYZE=true to avoid build overhead
@@ -186,5 +185,4 @@ config = withBundleAnalyzer(config);
 // Apply PWA (already optimized to skip in dev)
 config = withPWA(config);
 
-// Wrap with BotID protection (outermost wrapper for security)
-export default withBotId(config);
+export default config;
