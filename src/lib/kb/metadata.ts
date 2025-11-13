@@ -73,7 +73,7 @@ export function generateArticleStructuredData(
       : undefined;
   const toISOString = (value?: string | Date | null) => {
     if (!value) {
-      return undefined;
+      return;
     }
     const date =
       value instanceof Date ? value : new Date(value as string | number);

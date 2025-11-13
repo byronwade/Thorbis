@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { type ReactNode, useEffect, useMemo, useState } from "react";
+import React, { type ReactNode, useMemo, useState } from "react";
 import { archiveJob, updateJob } from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";

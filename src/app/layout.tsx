@@ -113,11 +113,17 @@ export const metadata: Metadata = {
  * - Payment/checkout (future)
  */
 const protectedRoutes = [
-  // Auth routes
+  // Auth API routes (server actions fallback)
   { path: "/api/auth/signup", method: "POST" as const },
   { path: "/api/auth/signin", method: "POST" as const },
   { path: "/api/auth/forgot-password", method: "POST" as const },
   { path: "/api/auth/reset-password", method: "POST" as const },
+
+  // Auth page routes (server actions invoked from these pages)
+  { path: "/login", method: "POST" as const },
+  { path: "/register", method: "POST" as const },
+  { path: "/forgot-password", method: "POST" as const },
+  { path: "/reset-password", method: "POST" as const },
 
   // Future protected routes
   // { path: "/api/contact", method: "POST" as const },

@@ -30,7 +30,6 @@ import { CustomerDetailToolbar } from "@/components/customers/customer-detail-to
 import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
 import { EquipmentToolbarActions } from "@/components/inventory/equipment-toolbar-actions";
 import { MaterialsToolbarActions } from "@/components/inventory/materials-toolbar-actions";
-import { MaterialDetailToolbarActions } from "@/components/work/materials/material-detail-toolbar-actions";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
@@ -51,6 +50,7 @@ import { ItemDetailToolbarWrapper } from "@/components/work/item-detail-toolbar-
 import { JobDetailToolbarWrapper } from "@/components/work/job-details/job-detail-toolbar-wrapper";
 import { MaintenancePlanToolbarActions } from "@/components/work/maintenance-plan-toolbar-actions";
 import { MaintenancePlanDetailToolbarActions } from "@/components/work/maintenance-plans/maintenance-plan-detail-toolbar-actions";
+import { MaterialDetailToolbarActions } from "@/components/work/materials/material-detail-toolbar-actions";
 import { PaymentDetailToolbarActions } from "@/components/work/payments/payment-detail-toolbar-actions";
 import { PaymentsToolbarActions } from "@/components/work/payments-toolbar-actions";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";

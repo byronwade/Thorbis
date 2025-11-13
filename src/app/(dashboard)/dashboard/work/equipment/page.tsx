@@ -170,12 +170,18 @@ export default async function EquipmentPage() {
   });
 
   // Filter to active equipment for stats calculations
-  const activeEquipment = equipment.filter((e) => !e.archived_at && !e.deleted_at);
+  const activeEquipment = equipment.filter(
+    (e) => !(e.archived_at || e.deleted_at)
+  );
 
   // Calculate equipment stats (from active equipment only)
   const totalEquipment = activeEquipment.length;
-  const activeCount = activeEquipment.filter((e) => e.status === "active").length;
-  const inactiveCount = activeEquipment.filter((e) => e.status === "inactive").length;
+  const activeCount = activeEquipment.filter(
+    (e) => e.status === "active"
+  ).length;
+  const inactiveCount = activeEquipment.filter(
+    (e) => e.status === "inactive"
+  ).length;
   const maintenanceCount = activeEquipment.filter(
     (e) => e.condition === "poor" || e.condition === "needs_replacement"
   ).length;

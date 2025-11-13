@@ -22,7 +22,11 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import {
+  DetailPageContentLayout,
+  type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-content-layout";
+import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -196,10 +200,6 @@ export function EquipmentPageContent({
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <div className="flex-1 p-6">Loading...</div>;
-  }
-
   const rawClassification =
     (equipment.classification as keyof typeof classificationLabelMap | undefined) ??
     "equipment";
@@ -231,6 +231,126 @@ export function EquipmentPageContent({
       {classificationLabel}
     </Badge>,
   ];
+
+  const equipmentIdentifier =
+    equipment.equipment_number ||
+    equipment.asset_id ||
+    equipment.id?.slice(0, 8).toUpperCase();
+
+  const equipmentName =
+    equipment.name || `Equipment ${equipmentIdentifier ?? ""}`.trim();
+
+  const subtitleSegments = [
+    classificationLabel,
+    typeLabel !== "N/A" && typeLabel !== "NA" ? typeLabel : null,
+    equipment.manufacturer || null,
+    equipment.model || null,
+  ].filter(Boolean);
+
+  const headerSubtitle =
+    subtitleSegments.length > 0 ? subtitleSegments.join(" • ") : undefined;
+
+  const metadataItems =
+    [] as NonNullable<DetailPageHeaderConfig["metadata"]>;
+
+  metadataItems.push({
+    label: "Equipment #",
+    icon: <Package className="h-3.5 w-3.5 text-muted-foreground" />,
+    value: equipmentIdentifier ?? "Not assigned",
+    helperText: classificationLabel,
+  });
+
+  metadataItems.push({
+    label: "Status",
+    icon: <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />,
+    value: formatLabel(equipment.status) || "Active",
+    helperText: formatLabel(equipment.condition),
+  });
+
+  metadataItems.push({
+    label: "Installed",
+    icon: <Calendar className="h-3.5 w-3.5 text-muted-foreground" />,
+    value: formatDate(equipment.install_date),
+    helperText: equipment.installed_by ? `By ${equipment.installed_by}` : undefined,
+  });
+
+  if (equipment.serial_number) {
+    metadataItems.push({
+      label: "Serial Number",
+      icon: <Wrench className="h-3.5 w-3.5 text-muted-foreground" />,
+      value: equipment.serial_number,
+    });
+  }
+
+  if (customer) {
+    metadataItems.push({
+      label: "Customer",
+      icon: <User className="h-3.5 w-3.5 text-muted-foreground" />,
+      value: (
+        <Link
+          className="font-medium text-foreground text-sm hover:underline"
+          href={`/dashboard/customers/${customer.id}`}
+        >
+          {customer.display_name ||
+            `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+            "Unknown Customer"}
+        </Link>
+      ),
+      helperText: customer.email || customer.phone || undefined,
+    });
+  }
+
+  if (property) {
+    metadataItems.push({
+      label: "Location",
+      icon: <MapPin className="h-3.5 w-3.5 text-muted-foreground" />,
+      value: property.address || property.name || "Not assigned",
+      helperText: `${property.city || ""}, ${property.state || ""} ${property.zip_code || ""}`.trim(),
+    });
+  }
+
+  if (servicePlan) {
+    metadataItems.push({
+      label: "Service Plan",
+      icon: <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />,
+      value: (
+        <Link
+          className="font-medium text-foreground text-sm hover:underline"
+          href={`/dashboard/work/maintenance-plans/${servicePlan.id}`}
+        >
+          {servicePlan.name ||
+            `Plan ${servicePlan.plan_number || servicePlan.id.slice(0, 8)}`}
+        </Link>
+      ),
+      helperText: servicePlan.status || undefined,
+    });
+  }
+
+  const secondaryActions: ReactNode[] = [];
+
+  if (customer) {
+    secondaryActions.push(
+      <Button asChild size="sm" variant="outline" key="view-customer">
+        <Link href={`/dashboard/customers/${customer.id}`}>View Customer</Link>
+      </Button>
+    );
+  }
+
+  if (property) {
+    secondaryActions.push(
+      <Button asChild size="sm" variant="outline" key="view-property">
+        <Link href={`/dashboard/work/properties/${property.id}`}>View Property</Link>
+      </Button>
+    );
+  }
+
+  const headerConfig: DetailPageHeaderConfig = {
+    title: equipmentName,
+    subtitle: headerSubtitle,
+    badges: headerBadges,
+    metadata: metadataItems,
+    secondaryActions: secondaryActions.length > 0 ? secondaryActions : undefined,
+  };
 
   const smartInsights = useMemo(
     () => {
@@ -429,75 +549,117 @@ export function EquipmentPageContent({
     ]
   );
 
-  const customHeader = (
-    <div className="w-full px-2 sm:px-0">
-      <div className="rounded-md bg-muted/50 shadow-sm">
-        <div className="flex flex-col gap-4 p-4 sm:p-6">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {headerBadges}
-              </div>
-              <div className="flex flex-col gap-2">
-                <h1 className="font-semibold text-2xl sm:text-3xl">
-                  {equipment.name ||
-                    `Equipment ${equipment.equipment_number || equipment.id.slice(0, 8)}`}
-                </h1>
-                <div className="flex flex-col gap-1 text-muted-foreground text-sm sm:text-base">
-                  <span>
-                    {classificationLabel}
-                    {typeLabel !== "N/A" && typeLabel !== "NA" && ` • ${typeLabel}`}
-                  </span>
-                  {(equipment.manufacturer || equipment.model) && (
-                    <span className="text-muted-foreground/80 text-xs sm:text-sm">
-                      {[equipment.manufacturer, equipment.model].filter(Boolean).join(" ")}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+  const nextServiceDays = getDaysUntil(equipment.next_service_due);
+  const warrantyDays = getDaysUntil(equipment.warranty_expiration);
 
-          {customer && (
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
-                href={`/dashboard/customers/${customer.id}`}
+  const lifecycleTiles = [
+    {
+      key: "install",
+      label: "Install Date",
+      value: formatDate(equipment.install_date),
+      helperText: equipment.installed_by ? `Installed by ${equipment.installed_by}` : undefined,
+      icon: <Calendar className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      key: "last-service",
+      label: "Last Service",
+      value: formatDate(equipment.last_service_date),
+      helperText: equipment.last_service_job_id ? "Linked job on record" : undefined,
+      icon: <Wrench className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      key: "next-service",
+      label: "Next Service Due",
+      value: formatDate(equipment.next_service_due),
+      helperText:
+        nextServiceDays !== null
+          ? nextServiceDays < 0
+            ? `${Math.abs(nextServiceDays)} days overdue`
+            : `Due in ${nextServiceDays} days`
+          : undefined,
+      icon: <Gauge className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      key: "warranty",
+      label: "Warranty",
+      value: equipment.is_under_warranty ? "Active" : "Expired",
+      helperText:
+        equipment.warranty_expiration && warrantyDays !== null
+          ? warrantyDays < 0
+            ? `Expired ${Math.abs(warrantyDays)} days ago`
+            : `Expires in ${warrantyDays} days`
+          : equipment.warranty_expiration
+            ? `Expires ${formatDate(equipment.warranty_expiration)}`
+            : undefined,
+      icon: <ShieldCheck className="h-4 w-4 text-muted-foreground" />,
+    },
+  ];
+
+  const summarySurface =
+    lifecycleTiles.length > 0 ? (
+      <DetailPageSurface className="w-full" padding="lg" variant="muted">
+        <div className="flex flex-col gap-4">
+          <h3 className="font-semibold text-base text-foreground">Lifecycle Overview</h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {lifecycleTiles.map(({ key, label, value, helperText, icon }) => (
+              <div
+                className="rounded-lg border border-border/40 bg-background px-3 py-3"
+                key={key}
               >
-                <User className="size-4" />
-                {customer.display_name ||
-                  `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
-                  "Unknown Customer"}
-              </Link>
-            </div>
-          )}
-
-          {smartInsights.length > 0 && (
-            <div className="grid gap-3 pt-2 sm:grid-cols-2 lg:grid-cols-3">
-              {smartInsights.map((insight) => (
-                <div
-                  className={`rounded-md border p-3 text-sm ${toneStyles[insight.tone]}`}
-                  key={`${insight.title}-${insight.description}`}
-                >
-                  <div className="flex items-start gap-3">
-                    {insight.icon && (
-                      <div className="mt-0.5 text-muted-foreground">{insight.icon}</div>
-                    )}
-                    <div className="space-y-1">
-                      <p className="font-medium text-foreground">{insight.title}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {insight.description}
-                      </p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  {icon}
+                  <div className="flex flex-col">
+                    <span className="font-medium text-muted-foreground text-xs uppercase">
+                      {label}
+                    </span>
+                    <span className="font-semibold text-sm">{value}</span>
+                    {helperText ? (
+                      <span className="text-muted-foreground text-xs">{helperText}</span>
+                    ) : null}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
+      </DetailPageSurface>
+    ) : null;
+
+  const smartInsightsSurface =
+    smartInsights.length > 0 ? (
+      <DetailPageSurface className="w-full" padding="lg" variant="muted">
+        <div className="flex flex-col gap-3">
+          <h3 className="font-semibold text-base text-foreground">Smart Insights</h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {smartInsights.map((insight) => (
+              <div
+                className={`rounded-md border p-3 text-sm ${toneStyles[insight.tone]}`}
+                key={`${insight.title}-${insight.description}`}
+              >
+                <div className="flex items-start gap-3">
+                  {insight.icon && (
+                    <div className="mt-0.5 text-muted-foreground">{insight.icon}</div>
+                  )}
+                  <div className="space-y-1">
+                    <p className="font-medium text-foreground">{insight.title}</p>
+                    <p className="text-muted-foreground text-xs">{insight.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DetailPageSurface>
+    ) : null;
+
+  const beforeContent =
+    smartInsightsSurface || summarySurface ? (
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
+        {smartInsightsSurface}
+        {summarySurface}
       </div>
-    </div>
-  );
+    ) : null;
+
 
   const customSections = useMemo<UnifiedAccordionSection[]>(() => {
     const sections: UnifiedAccordionSection[] = [
@@ -1196,14 +1358,20 @@ export function EquipmentPageContent({
     return items;
   }, [customer, property, servicePlan]);
 
+  if (!mounted) {
+    return <div className="flex-1 p-6">Loading...</div>;
+  }
+
   return (
     <>
       <DetailPageContentLayout
         activities={activities}
         attachments={attachments}
-        customHeader={customHeader}
+        beforeContent={beforeContent}
+        className="mx-auto w-full max-w-7xl"
         customSections={customSections}
         defaultOpenSection="equipment-details"
+        header={headerConfig}
         notes={notes}
         relatedItems={relatedItems}
         showStandardSections={{
@@ -1212,6 +1380,7 @@ export function EquipmentPageContent({
           attachments: true,
           relatedItems: true,
         }}
+        storageKey="equipment-details"
       />
 
     </>

@@ -23,17 +23,19 @@ import { createClient } from "@/lib/supabase/server";
 
 type PriceBookItemRow = {
   id: string;
+  company_id: string;
   name: string | null;
   description: string | null;
   sku: string | null;
   category: string | null;
   subcategory: string | null;
   unit: string | null;
-  archived_at: string | null;
+  is_active: boolean | null;
 };
 
 type InventoryRow = {
   id: string;
+  updated_at: string | null;
   quantity_on_hand: number | null;
   quantity_reserved: number | null;
   quantity_available: number | null;
@@ -83,6 +85,7 @@ export default async function MaterialsPage() {
       minimum_quantity,
       cost_per_unit,
       total_cost_value,
+      updated_at,
       status,
       warehouse_location,
       primary_location,
@@ -99,7 +102,7 @@ export default async function MaterialsPage() {
         category,
         subcategory,
         unit,
-        archived_at
+        is_active
       )
     `
     )
@@ -108,7 +111,11 @@ export default async function MaterialsPage() {
     .order("updated_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching materials:", error);
+    const errorMessage =
+      typeof error === "object" && error && "message" in error
+        ? String(error.message)
+        : "Unknown error";
+    throw new Error(`Failed to fetch materials: ${errorMessage}`);
   }
 
   const inventoryRows = (materialsRaw ?? []) as InventoryRow[];
@@ -130,6 +137,11 @@ export default async function MaterialsPage() {
       Number(row.total_cost_value ?? 0) ||
       unitCost * Number(row.quantity_on_hand ?? quantityAvailable ?? 0);
 
+    const isActive = item.is_active !== false;
+    const archivedAt = isActive
+      ? null
+      : row.deleted_at ?? row.updated_at ?? null;
+
     const categoryLabel = [item.category, item.subcategory]
       .filter(Boolean)
       .join(" • ");
@@ -144,7 +156,7 @@ export default async function MaterialsPage() {
       unitCost,
       totalValue,
       status: (row.status as Material["status"]) || "in-stock",
-      archived_at: item.archived_at ?? null,
+      archived_at: archivedAt,
       deleted_at: row.deleted_at ?? null,
     };
 

@@ -46,32 +46,49 @@ export default async function MaintenancePlanDetailsPage({
   }
 
   // Fetch maintenance plan with all related data
-  const { data: plan, error: planError } = await supabase
-    .from("service_plans")
+  const { data: planRecord, error: planError } = await supabase
+    .from("maintenance_plans")
     .select(`
       *,
       customer:customers!customer_id(*),
       property:properties!property_id(*)
     `)
     .eq("id", planId)
-    .is("deleted_at", null)
-    .single();
+    .eq("company_id", activeCompanyId)
+    .maybeSingle();
 
-  if (planError || !plan) {
+  if (planError || !planRecord) {
     return notFound();
   }
 
-  if (plan.company_id !== activeCompanyId) {
-    return notFound();
-  }
+  const normalizedPlan = {
+    ...planRecord,
+    price:
+      planRecord.price ??
+      (planRecord.amount !== null && planRecord.amount !== undefined
+        ? Math.round(Number(planRecord.amount) * 100)
+        : 0),
+    included_services:
+      planRecord.included_services ??
+      planRecord.services_included ??
+      [],
+    next_service_due:
+      planRecord.next_service_due ?? planRecord.next_service_date ?? null,
+    visits_per_term:
+      planRecord.visits_per_term ??
+      planRecord.total_services_scheduled ??
+      1,
+    type: planRecord.type ?? "maintenance",
+    taxable: planRecord.taxable ?? false,
+  };
 
   // Get related data
-  const customer = Array.isArray(plan.customer)
-    ? plan.customer[0]
-    : plan.customer;
-  const property = Array.isArray(plan.property)
-    ? plan.property[0]
-    : plan.property;
+  const customer = Array.isArray(normalizedPlan.customer)
+    ? normalizedPlan.customer[0]
+    : normalizedPlan.customer;
+  const property = Array.isArray(normalizedPlan.property)
+    ? normalizedPlan.property[0]
+    : normalizedPlan.property;
 
   // Fetch equipment linked to this plan
   const { data: equipment } = await supabase
@@ -98,7 +115,9 @@ export default async function MaintenancePlanDetailsPage({
       )
       .eq("company_id", activeCompanyId)
       .is("deleted_at", null)
-      .or(`metadata->>'service_plan_id'.eq.${planId}`)
+      .or(
+        `metadata->>'service_plan_id'.eq.${planId},metadata->>'maintenance_plan_id'.eq.${planId}`
+      )
       .order("created_at", { ascending: false })
       .limit(10),
 
@@ -153,7 +172,9 @@ export default async function MaintenancePlanDetailsPage({
       .from("invoices")
       .select("id, invoice_number, total_amount, status, created_at")
       .eq("company_id", activeCompanyId)
-      .or(`metadata->>'service_plan_id'.eq.${planId}`)
+      .or(
+        `metadata->>'service_plan_id'.eq.${planId},metadata->>'maintenance_plan_id'.eq.${planId}`
+      )
       .order("created_at", { ascending: false })
       .limit(10),
 
@@ -180,7 +201,7 @@ export default async function MaintenancePlanDetailsPage({
   ]);
 
   const planData = {
-    plan,
+    plan: normalizedPlan,
     customer,
     property,
     equipment: equipment || [],
@@ -194,7 +215,9 @@ export default async function MaintenancePlanDetailsPage({
 
   return (
     <div className="flex h-full w-full flex-col overflow-auto">
-      <MaintenancePlanPageContent entityData={planData} />
+      <div className="mx-auto w-full max-w-7xl">
+        <MaintenancePlanPageContent entityData={planData} />
+      </div>
     </div>
   );
 }

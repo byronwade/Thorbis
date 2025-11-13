@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { updateEntityTags } from "@/actions/entity-tags";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PaymentMethodCard } from "@/components/customers/payment-method-card";
 import { PropertiesTable } from "@/components/customers/properties-table";
@@ -40,9 +41,8 @@ import {
   DetailPageContentLayout,
   type DetailPageHeaderConfig,
 } from "@/components/layout/detail-page-content-layout";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 import { DetailPageSurface } from "@/components/layout/detail-page-shell";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1630,7 +1630,9 @@ export function CustomerPageContent({
     <div className="w-full px-2 sm:px-0">
       <div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-3 p-4 sm:p-6">
-          <span className="text-muted-foreground text-xs font-medium">Tags:</span>
+          <span className="font-medium text-muted-foreground text-xs">
+            Tags:
+          </span>
           <EntityTags
             entityId={customer.id}
             entityType="customer"

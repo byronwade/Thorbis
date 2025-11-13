@@ -40,26 +40,18 @@ import {
   Plus,
   Receipt,
   UserPlus,
-  UserX,
-  X,
   Users,
+  UserX,
   Wrench,
+  X,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { updateEntityTags } from "@/actions/entity-tags";
 import { archiveJob, updateJob } from "@/actions/jobs";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,6 +62,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -77,29 +80,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import {
   UnifiedAccordionContent,
   type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
+import { CustomerSearchCombobox } from "@/components/work/job-creation/customer-search-combobox";
+import { InlineCustomerForm } from "@/components/work/job-creation/inline-customer-form";
+import { InlinePropertyForm } from "@/components/work/job-creation/inline-property-form";
 import {
   CustomerInfoHoverCard,
   PropertyInfoHoverCard,
   TechnicianInfoHoverCard,
 } from "./info-hover-cards";
+import { JobEnrichmentInline } from "./job-enrichment-inline";
 import {
-  ManagerJobMetrics,
   CSRJobInfo,
+  ManagerJobMetrics,
   TechJobInfo,
 } from "./role-based-headers";
-import { JobEnrichmentInline } from "./job-enrichment-inline";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
-import { CompanyCreditBadge } from "./smart-badges/company-credit-badge";
-import { LinkedDataAlerts } from "./smart-badges/linked-data-alerts";
-import { CustomerSearchCombobox } from "@/components/work/job-creation/customer-search-combobox";
-import { InlineCustomerForm } from "@/components/work/job-creation/inline-customer-form";
-import { InlinePropertyForm } from "@/components/work/job-creation/inline-property-form";
 import { JobCustomer } from "./sections/job-customer";
 import { JobDocuments } from "./sections/job-documents";
 import { JobEquipment } from "./sections/job-equipment";
@@ -113,6 +111,8 @@ import { JobProperty } from "./sections/job-property";
 import { JobSchedules } from "./sections/job-schedules";
 import { JobTeam } from "./sections/job-team";
 import { JobTimeTracking } from "./sections/job-time-tracking";
+import { CompanyCreditBadge } from "./smart-badges/company-credit-badge";
+import { LinkedDataAlerts } from "./smart-badges/linked-data-alerts";
 
 export type JobData = {
   job: any;
@@ -174,15 +174,21 @@ export function JobPageContentUnified({
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
   const [isCustomerManagerOpen, setIsCustomerManagerOpen] = useState(false);
-  const [selectedCustomerForDialog, setSelectedCustomerForDialog] = useState<any | null>(null);
+  const [selectedCustomerForDialog, setSelectedCustomerForDialog] = useState<
+    any | null
+  >(null);
   const [showCustomerCreateForm, setShowCustomerCreateForm] = useState(false);
   const [isUpdatingCustomer, setIsUpdatingCustomer] = useState(false);
-  const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] = useState(false);
+  const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] =
+    useState(false);
   const [isPropertyManagerOpen, setIsPropertyManagerOpen] = useState(false);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
+    null
+  );
   const [showPropertyCreateForm, setShowPropertyCreateForm] = useState(false);
   const [isUpdatingProperty, setIsUpdatingProperty] = useState(false);
-  const [isRemovePropertyDialogOpen, setIsRemovePropertyDialogOpen] = useState(false);
+  const [isRemovePropertyDialogOpen, setIsRemovePropertyDialogOpen] =
+    useState(false);
 
   const {
     customer,
@@ -282,7 +288,7 @@ export function JobPageContentUnified({
     : [];
 
   const filteredProperties = useMemo(() => {
-    if (!customer?.id || !Array.isArray(allProperties)) {
+    if (!(customer?.id && Array.isArray(allProperties))) {
       return [];
     }
 
@@ -296,7 +302,9 @@ export function JobPageContentUnified({
       !matches.some((prop: any) => prop.id === property.id) &&
       Array.isArray(allProperties)
     ) {
-      const currentProp = allProperties.find((prop: any) => prop.id === property.id);
+      const currentProp = allProperties.find(
+        (prop: any) => prop.id === property.id
+      );
       if (currentProp) {
         return [currentProp, ...matches];
       }
@@ -443,7 +451,9 @@ export function JobPageContentUnified({
                   <EntityTags
                     entityId={job.id}
                     entityType="job"
-                    onUpdateTags={(id, tags) => updateEntityTags("job", id, tags)}
+                    onUpdateTags={(id, tags) =>
+                      updateEntityTags("job", id, tags)
+                    }
                     tags={jobTags}
                   />
                 </div>
@@ -508,10 +518,13 @@ export function JobPageContentUnified({
                 {job.scheduled_end &&
                   new Date(job.scheduled_start).toDateString() !==
                     new Date(job.scheduled_end).toDateString() &&
-                  ` - ${new Date(job.scheduled_end).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}`}
+                  ` - ${new Date(job.scheduled_end).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                    }
+                  )}`}
               </div>
             )}
 
@@ -584,7 +597,10 @@ export function JobPageContentUnified({
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
                 <Clock className="size-4" />
                 {timeEntries
-                  .reduce((sum: number, t: any) => sum + (t.total_hours || 0), 0)
+                  .reduce(
+                    (sum: number, t: any) => sum + (t.total_hours || 0),
+                    0
+                  )
                   .toFixed(1)}
                 h
                 {job.estimated_labor_hours &&
@@ -627,21 +643,21 @@ export function JobPageContentUnified({
                 <>
                   <ManagerJobMetrics metrics={metrics || {}} />
                   <CSRJobInfo
-                    customer={customer}
-                    schedules={schedules}
+                    appointmentStatus={metrics?.appointmentStatus}
                     communications={communications}
+                    customer={customer}
                     lastContact={metrics?.lastContact}
                     nextAppointment={metrics?.nextAppointment}
-                    appointmentStatus={metrics?.appointmentStatus}
+                    schedules={schedules}
                   />
                   <TechJobInfo
-                    property={property}
+                    documents={documents}
                     equipment={equipment}
                     jobEquipment={jobEquipment}
-                    documents={documents}
-                    photos={photos}
-                    notes={jobNotes}
                     materials={jobMaterials}
+                    notes={jobNotes}
+                    photos={photos}
+                    property={property}
                   />
                 </>
               )}
@@ -654,25 +670,25 @@ export function JobPageContentUnified({
               {/* CSRs and Dispatchers see customer and scheduling info */}
               {(userRole === "csr" || userRole === "dispatcher") && (
                 <CSRJobInfo
-                  customer={customer}
-                  schedules={schedules}
+                  appointmentStatus={metrics?.appointmentStatus}
                   communications={communications}
+                  customer={customer}
                   lastContact={metrics?.lastContact}
                   nextAppointment={metrics?.nextAppointment}
-                  appointmentStatus={metrics?.appointmentStatus}
+                  schedules={schedules}
                 />
               )}
 
               {/* Technicians see field work info */}
               {userRole === "technician" && (
                 <TechJobInfo
-                  property={property}
+                  documents={documents}
                   equipment={equipment}
                   jobEquipment={jobEquipment}
-                  documents={documents}
-                  photos={photos}
-                  notes={jobNotes}
                   materials={jobMaterials}
+                  notes={jobNotes}
+                  photos={photos}
+                  property={property}
                 />
               )}
             </div>
@@ -682,11 +698,15 @@ export function JobPageContentUnified({
               {/* Customer Tags */}
               {customer?.id && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-muted-foreground text-xs font-medium">Customer:</span>
+                  <span className="font-medium text-muted-foreground text-xs">
+                    Customer:
+                  </span>
                   <EntityTags
                     entityId={customer.id}
                     entityType="customer"
-                    onUpdateTags={(id, tags) => updateEntityTags("customer", id, tags)}
+                    onUpdateTags={(id, tags) =>
+                      updateEntityTags("customer", id, tags)
+                    }
                     tags={customer.tags || []}
                   />
                 </div>
@@ -706,6 +726,8 @@ export function JobPageContentUnified({
 
                 {/* Smart Alerts */}
                 <LinkedDataAlerts
+                  estimates={estimates}
+                  invoices={invoices}
                   job={{
                     id: job.id,
                     deposit_amount: job.deposit_amount,
@@ -713,8 +735,6 @@ export function JobPageContentUnified({
                     scheduled_end: job.scheduled_end,
                     status: job.status,
                   }}
-                  invoices={invoices}
-                  estimates={estimates}
                 />
               </div>
             </div>
@@ -793,7 +813,7 @@ export function JobPageContentUnified({
           {customer ? (
             <JobCustomer customer={customer} />
           ) : (
-            <div className="rounded-md border border-dashed border-primary/40 bg-primary/5 p-6 text-sm text-muted-foreground">
+            <div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
               No customer assigned. Use the actions above to link or create a
               customer for this job.
             </div>
@@ -842,7 +862,7 @@ export function JobPageContentUnified({
           {property ? (
             <JobProperty property={property} />
           ) : (
-            <div className="rounded-md border border-dashed border-primary/40 bg-primary/5 p-6 text-sm text-muted-foreground">
+            <div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
               {customer?.id
                 ? "No service location assigned. Use the actions above to link or create one."
                 : "Assign a customer before adding a service location."}
@@ -1104,7 +1124,10 @@ export function JobPageContentUnified({
       />
 
       {/* Customer Manager */}
-      <Dialog onOpenChange={setIsCustomerManagerOpen} open={isCustomerManagerOpen}>
+      <Dialog
+        onOpenChange={setIsCustomerManagerOpen}
+        open={isCustomerManagerOpen}
+      >
         <DialogContent className="max-w-2xl space-y-4">
           <DialogHeader>
             <DialogTitle>
@@ -1138,7 +1161,7 @@ export function JobPageContentUnified({
                 selectedCustomerForDialog?.id &&
                 (property.customer_id ?? property.customerId) !==
                   selectedCustomerForDialog.id && (
-                  <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
+                  <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-700 text-xs dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
                     Changing the customer will clear the currently assigned
                     property.
                   </div>
@@ -1180,7 +1203,10 @@ export function JobPageContentUnified({
       </Dialog>
 
       {/* Property Manager */}
-      <Dialog onOpenChange={setIsPropertyManagerOpen} open={isPropertyManagerOpen}>
+      <Dialog
+        onOpenChange={setIsPropertyManagerOpen}
+        open={isPropertyManagerOpen}
+      >
         <DialogContent className="max-w-xl space-y-4">
           <DialogHeader>
             <DialogTitle>
@@ -1215,7 +1241,9 @@ export function JobPageContentUnified({
                 <div className="space-y-2">
                   <Label htmlFor="property-select">Select Property</Label>
                   <Select
-                    onValueChange={(value) => setSelectedPropertyId(value || null)}
+                    onValueChange={(value) =>
+                      setSelectedPropertyId(value || null)
+                    }
                     value={selectedPropertyId ?? undefined}
                   >
                     <SelectTrigger id="property-select">
@@ -1270,7 +1298,7 @@ export function JobPageContentUnified({
               </div>
             )
           ) : (
-            <div className="rounded-md border border-dashed border-primary/40 bg-primary/5 p-6 text-sm text-muted-foreground">
+            <div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
               Assign a customer before selecting a service location.
             </div>
           )}
@@ -1286,8 +1314,8 @@ export function JobPageContentUnified({
           <AlertDialogHeader>
             <AlertDialogTitle>Remove customer from job?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will clear the customer and any linked property from this job.
-              You can reassign them later.
+              This will clear the customer and any linked property from this
+              job. You can reassign them later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
