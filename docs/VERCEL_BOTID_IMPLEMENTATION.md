@@ -50,36 +50,41 @@ export default withBotId(withPWA(withBundleAnalyzer(nextConfig)));
 
 ### 3. Client-Side Protection ✅
 
-**File**: `/src/app/layout.tsx`
+> **Updated 2025-11-13:** Migrated to the new Next.js 15.3+ instrumentation hook so the BotID client initializes before any React code runs. The previous `<BotIdClient />` approach caused BotID headers to be missing in production, which is what triggered the `/login` errors.
+
+**Files**:
+- `/src/instrumentation.client.ts` – initializes BotID early on every page load
+- `/src/lib/security/botid-routes.ts` – single source of truth for protected paths
 
 ```typescript
-import { BotIdClient } from "botid/client";
+// src/instrumentation.client.ts
+import { initBotId } from "botid/client/core";
+import { botIdProtectedRoutes } from "@/lib/security/botid-routes";
 
-const protectedRoutes = [
-  // Auth routes (Server Actions - not API routes)
-  { path: "/api/auth/signup", method: "POST" as const },
-  { path: "/api/auth/signin", method: "POST" as const },
-  { path: "/api/auth/forgot-password", method: "POST" as const },
-  { path: "/api/auth/reset-password", method: "POST" as const },
+initBotId({
+  protect: botIdProtectedRoutes,
+});
+```
+
+```typescript
+// src/lib/security/botid-routes.ts
+export const botIdProtectedRoutes = [
+  { path: "/api/auth/signup", method: "POST" },
+  { path: "/api/auth/signin", method: "POST" },
+  { path: "/api/auth/forgot-password", method: "POST" },
+  { path: "/api/auth/reset-password", method: "POST" },
+  { path: "/login", method: "POST" },
+  { path: "/register", method: "POST" },
+  { path: "/forgot-password", method: "POST" },
+  { path: "/reset-password", method: "POST" },
 ];
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <BotIdClient protect={protectedRoutes} />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
-}
 ```
 
 **What This Does**:
-- Loads BotID client script in `<head>`
-- Protects specified routes automatically
+- Loads BotID client library as soon as the browser boots
+- Protects specified routes automatically (supports wildcards)
 - Adds invisible bot detection to all protected endpoints
-- No visual changes for users
+- Keeps `<head>` lightweight (no inline scripts needed)
 
 ### 4. Server-Side Verification ✅
 
@@ -391,9 +396,13 @@ export async function signUp(formData: FormData) {
 - Wrapped config: `export default withBotId(...)`
 
 ### 2. `/src/app/layout.tsx`
-- Added `import { BotIdClient } from "botid/client"`
-- Added `protectedRoutes` array
-- Added `<BotIdClient protect={protectedRoutes} />` to `<head>`
+- **Updated (2025-11-13):** Removed `<BotIdClient>` because instrumentation now handles client bootstrapping automatically.
+
+### 3. `/src/instrumentation.client.ts`
+- Added `initBotId` initialization with shared protected routes.
+
+### 4. `/src/lib/security/botid-routes.ts`
+- Added reusable configuration for all BotID-protected paths.
 
 ### 3. `/src/actions/auth.ts`
 - Added `import { checkBotId } from "botid/server"`
