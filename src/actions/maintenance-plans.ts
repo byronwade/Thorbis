@@ -10,11 +10,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import {
-  ActionError,
-  ERROR_CODES,
-  ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES } from "@/lib/errors/action-error";
 import {
   type ActionResult,
   assertAuthenticated,
@@ -55,7 +51,9 @@ const createMaintenancePlanSchema = z.object({
 const updateMaintenancePlanSchema = z.object({
   name: z.string().min(1, "Plan name is required").optional(),
   description: z.string().optional(),
-  status: z.enum(["draft", "active", "paused", "expired", "cancelled"]).optional(),
+  status: z
+    .enum(["draft", "active", "paused", "expired", "cancelled"])
+    .optional(),
   frequency: z
     .enum([
       "weekly",
@@ -175,7 +173,10 @@ async function calculateNextServiceDate(
 /**
  * Validate maintenance plan dates
  */
-function validateMaintenancePlanDates(startDate: string, endDate?: string): void {
+function validateMaintenancePlanDates(
+  startDate: string,
+  endDate?: string
+): void {
   const start = new Date(startDate);
   const now = new Date();
   now.setHours(0, 0, 0, 0);
@@ -250,7 +251,8 @@ export async function createMaintenancePlan(
         ? Number.parseFloat(formData.get("amount") as string)
         : undefined,
       currency: (formData.get("currency") as string) || "USD",
-      billingFrequency: (formData.get("billingFrequency") as string) || undefined,
+      billingFrequency:
+        (formData.get("billingFrequency") as string) || undefined,
       autoRenew: formData.get("autoRenew") === "true",
       servicesIncluded,
       terms: (formData.get("terms") as string) || undefined,

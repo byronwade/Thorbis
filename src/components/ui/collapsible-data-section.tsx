@@ -243,15 +243,17 @@ export function CollapsibleDataSection({
     <AccordionItem
       className={cn(
         "rounded-lg bg-card shadow-sm",
-        fullWidthContent ? "border-0 overflow-hidden" : "border",
+        fullWidthContent ? "overflow-hidden border-0" : "border",
         className
       )}
       value={value}
     >
-      <div className={cn(
-        "flex items-center justify-between gap-4 py-3.5",
-        fullWidthContent ? "px-6 border-b" : "px-6"
-      )}>
+      <div
+        className={cn(
+          "flex items-center justify-between gap-4 py-3.5",
+          fullWidthContent ? "border-b px-6" : "px-6"
+        )}
+      >
         <AccordionTrigger className="flex-1 hover:no-underline">
           <div className="flex items-center gap-3">
             {icon && (
@@ -280,11 +282,7 @@ export function CollapsibleDataSection({
           </div>
         )}
       </div>
-      <AccordionContent
-        className={cn(
-          fullWidthContent ? "p-0" : "px-6 pb-6"
-        )}
-      >
+      <AccordionContent className={cn(fullWidthContent ? "p-0" : "px-6 pb-6")}>
         {renderContent()}
       </AccordionContent>
     </AccordionItem>

@@ -84,10 +84,10 @@ export default function TrainingDashboardPage() {
               Core Training Features
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <Building2 className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <Building2 className="size-6 text-primary dark:text-primary" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">System Training</h3>
@@ -97,10 +97,10 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-success/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
-                    <TrendingUp className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-success/10">
+                    <TrendingUp className="size-6 text-success dark:text-success" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Sales Training</h3>
@@ -110,10 +110,10 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <Star className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Star className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Nextstar</h3>
@@ -123,10 +123,10 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
-                    <Wrench className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Wrench className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Trade Certs</h3>
@@ -182,10 +182,10 @@ export default function TrainingDashboardPage() {
               Professional Certifications
             </h2>
             <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-orange-500/10">
-                    <Wrench className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <Wrench className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -201,25 +201,25 @@ export default function TrainingDashboardPage() {
                   journeyman certification
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 text-xs">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-1 text-xs">
                     <CheckCircle2 className="size-3" />
                     HVAC
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 text-xs">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-1 text-xs">
                     <CheckCircle2 className="size-3" />
                     Plumbing
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 text-xs">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-1 text-xs">
                     <CheckCircle2 className="size-3" />
                     Electrical
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-yellow-500/10">
-                    <Shield className="size-6 text-yellow-600 dark:text-yellow-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <Shield className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -235,13 +235,13 @@ export default function TrainingDashboardPage() {
                   industry-certified credentials
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-yellow-500/10 px-2 py-1 text-xs">
+                  <span className="rounded-full bg-warning/10 px-2 py-1 text-xs">
                     Advanced Training
                   </span>
-                  <span className="rounded-full bg-yellow-500/10 px-2 py-1 text-xs">
+                  <span className="rounded-full bg-warning/10 px-2 py-1 text-xs">
                     Leadership
                   </span>
-                  <span className="rounded-full bg-yellow-500/10 px-2 py-1 text-xs">
+                  <span className="rounded-full bg-warning/10 px-2 py-1 text-xs">
                     Industry Certified
                   </span>
                 </div>
@@ -295,7 +295,7 @@ export default function TrainingDashboardPage() {
             <h2 className="mb-4 font-semibold text-2xl">What to Expect</h2>
             <div className="mx-auto max-w-3xl space-y-3 text-left text-muted-foreground">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Thorbis System Training:
@@ -305,7 +305,7 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Sales & Customer Service:
@@ -315,7 +315,7 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Nextstar Partnership:
@@ -325,7 +325,7 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Trade Certifications:
@@ -335,7 +335,7 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Company Training:
@@ -345,7 +345,7 @@ export default function TrainingDashboardPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Progress & Analytics:

@@ -4,36 +4,56 @@
  * AppointmentsToolbarActions Component - Client Component
  *
  * Toolbar actions for the appointments page
- * - View switcher
- * - Filter button
+ * - Advanced filters dropdown
+ * - Column visibility toggle
  * - New Appointment button
  * - Import/Export
  */
 
-import { Filter } from "lucide-react";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
-import { Button } from "@/components/ui/button";
+import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
+import { AppointmentsFilterDropdown } from "@/components/work/appointments-filter-dropdown";
 
-export function AppointmentsToolbarActions() {
+// Define hideable columns for appointments
+const APPOINTMENTS_COLUMNS = [
+  { key: "customer", label: "Customer" },
+  { key: "start_time", label: "Date & Time" },
+  { key: "status", label: "Status" },
+  { key: "assigned_user", label: "Assigned To" },
+];
+
+interface AppointmentsToolbarActionsProps {
+  totalCount?: number;
+  activeCount?: number;
+  archivedCount?: number;
+}
+
+export function AppointmentsToolbarActions({
+  totalCount = 0,
+  activeCount,
+  archivedCount,
+}: AppointmentsToolbarActionsProps) {
   return (
     <BaseToolbarActions
-      viewSwitcherSection="appointments"
       beforePrimaryAction={
-        <Button size="sm" variant="ghost">
-          <Filter className="mr-2 size-4" />
-          Filter
-        </Button>
+        <div className="flex items-center gap-2">
+          <AppointmentsFilterDropdown
+            activeCount={activeCount}
+            archivedCount={archivedCount}
+            totalCount={totalCount}
+          />
+          <ColumnVisibilityMenu
+            columns={APPOINTMENTS_COLUMNS}
+            entity="appointments"
+          />
+        </div>
       }
+      importExportDataType="appointments"
       primaryAction={{
         href: "/dashboard/work/appointments/new",
         label: "New Appointment",
       }}
-      importExportDataType="appointments"
+      viewSwitcherSection={undefined} // Kanban disabled
     />
   );
 }
-
-
-
-
-

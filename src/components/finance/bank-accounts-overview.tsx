@@ -81,7 +81,7 @@ export function BankAccountsOverview() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Wallet className="h-5 w-5 text-blue-500" />
+                <Wallet className="h-5 w-5 text-primary" />
                 Checking
               </CardTitle>
               <CardDescription>Business operating accounts</CardDescription>
@@ -95,7 +95,7 @@ export function BankAccountsOverview() {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Total Checking */}
-          <div className="rounded-lg border-2 border-blue-500/20 bg-blue-500/5 p-4">
+          <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4">
             <p className="text-muted-foreground text-sm">Total Checking</p>
             <p className="font-bold text-3xl">
               ${totalChecking.toLocaleString()}
@@ -134,7 +134,7 @@ export function BankAccountsOverview() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Wallet className="h-5 w-5 text-green-500" />
+                <Wallet className="h-5 w-5 text-success" />
                 Savings
               </CardTitle>
               <CardDescription>Business savings accounts</CardDescription>
@@ -148,7 +148,7 @@ export function BankAccountsOverview() {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Total Savings */}
-          <div className="rounded-lg border-2 border-green-500/20 bg-green-500/5 p-4">
+          <div className="rounded-lg border-2 border-success/20 bg-success/5 p-4">
             <p className="text-muted-foreground text-sm">Total Savings</p>
             <p className="font-bold text-3xl">
               ${totalSavings.toLocaleString()}

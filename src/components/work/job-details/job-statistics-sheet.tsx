@@ -216,7 +216,7 @@ export function JobStatisticsSheet({
               <Card>
                 <CardContent className="p-6">
                   <p className="text-muted-foreground text-sm">Paid</p>
-                  <p className="mt-2 font-bold text-2xl text-green-600 tabular-nums dark:text-green-500">
+                  <p className="mt-2 font-bold text-2xl text-success tabular-nums dark:text-success">
                     {formatCurrency(metrics.paidAmount)}
                   </p>
                   <p className="mt-1 text-muted-foreground text-xs">
@@ -229,7 +229,7 @@ export function JobStatisticsSheet({
               <Card>
                 <CardContent className="p-6">
                   <p className="text-muted-foreground text-sm">Outstanding</p>
-                  <p className="mt-2 font-bold text-2xl text-orange-600 tabular-nums dark:text-orange-500">
+                  <p className="mt-2 font-bold text-2xl text-warning tabular-nums dark:text-warning">
                     {formatCurrency(metrics.totalAmount - metrics.paidAmount)}
                   </p>
                   <p className="mt-1 text-muted-foreground text-xs">
@@ -251,17 +251,17 @@ export function JobStatisticsSheet({
                   <p
                     className={`mt-2 font-bold text-2xl tabular-nums ${
                       detailedMetrics.profit >= 0
-                        ? "text-green-600 dark:text-green-500"
-                        : "text-red-600 dark:text-red-500"
+                        ? "text-success dark:text-success"
+                        : "text-destructive dark:text-destructive"
                     }`}
                   >
                     {formatCurrency(detailedMetrics.profit)}
                   </p>
                   <div className="mt-1 flex items-center gap-1">
                     {detailedMetrics.profitMargin >= 0 ? (
-                      <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-500" />
+                      <TrendingUp className="h-3 w-3 text-success dark:text-success" />
                     ) : (
-                      <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-500" />
+                      <TrendingDown className="h-3 w-3 text-destructive dark:text-destructive" />
                     )}
                     <p className="text-muted-foreground text-xs">
                       {detailedMetrics.profitMargin.toFixed(1)}% margin
@@ -307,17 +307,17 @@ export function JobStatisticsSheet({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {detailedMetrics.profit >= 0 ? (
-                      <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-500" />
+                      <TrendingUp className="h-4 w-4 text-success dark:text-success" />
                     ) : (
-                      <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-500" />
+                      <TrendingDown className="h-4 w-4 text-destructive dark:text-destructive" />
                     )}
                     <span className="font-semibold">Net Profit</span>
                   </div>
                   <span
                     className={`font-bold text-lg tabular-nums ${
                       detailedMetrics.profit >= 0
-                        ? "text-green-600 dark:text-green-500"
-                        : "text-red-600 dark:text-red-500"
+                        ? "text-success dark:text-success"
+                        : "text-destructive dark:text-destructive"
                     }`}
                   >
                     {formatCurrency(detailedMetrics.profit)}
@@ -380,9 +380,9 @@ export function JobStatisticsSheet({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {detailedMetrics.laborVariance >= 0 ? (
-                        <TrendingUp className="h-4 w-4 text-orange-600 dark:text-orange-500" />
+                        <TrendingUp className="h-4 w-4 text-warning dark:text-warning" />
                       ) : (
-                        <TrendingDown className="h-4 w-4 text-green-600 dark:text-green-500" />
+                        <TrendingDown className="h-4 w-4 text-success dark:text-success" />
                       )}
                       <span className="font-medium">Labor Variance</span>
                     </div>
@@ -390,8 +390,8 @@ export function JobStatisticsSheet({
                       <span
                         className={`font-bold text-lg tabular-nums ${
                           detailedMetrics.laborVariance >= 0
-                            ? "text-orange-600 dark:text-orange-500"
-                            : "text-green-600 dark:text-green-500"
+                            ? "text-warning dark:text-warning"
+                            : "text-success dark:text-success"
                         }`}
                       >
                         {detailedMetrics.laborVariance >= 0 ? "+" : ""}

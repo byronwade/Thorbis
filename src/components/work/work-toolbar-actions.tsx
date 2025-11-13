@@ -4,31 +4,56 @@
  * WorkToolbarActions Component - Client Component
  *
  * Toolbar actions for the work/jobs page
- * - View switcher
- * - Filter button
+ * - Advanced filters dropdown
+ * - Column visibility toggle
  * - New Job button
  * - Import/Export
  */
 
-import { Filter } from "lucide-react";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
-import { Button } from "@/components/ui/button";
+import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
+import { JobsFilterDropdown } from "@/components/work/jobs-filter-dropdown";
 
-export function WorkToolbarActions() {
+// Define hideable columns for jobs
+const JOBS_COLUMNS = [
+  { key: "customer", label: "Customer" },
+  { key: "category", label: "Category" },
+  { key: "equipment", label: "Equipment" },
+  { key: "status", label: "Status" },
+  { key: "priority", label: "Priority" },
+  { key: "assigned_user", label: "Assigned To" },
+  { key: "scheduled_date", label: "Scheduled" },
+];
+
+interface WorkToolbarActionsProps {
+  totalCount?: number;
+  activeCount?: number;
+  archivedCount?: number;
+}
+
+export function WorkToolbarActions({
+  totalCount = 0,
+  activeCount,
+  archivedCount,
+}: WorkToolbarActionsProps) {
   return (
     <BaseToolbarActions
-      viewSwitcherSection="jobs"
       beforePrimaryAction={
-        <Button size="default" variant="ghost">
-          <Filter className="mr-2 size-4" />
-          Filter
-        </Button>
+        <div className="flex items-center gap-2">
+          <JobsFilterDropdown
+            activeCount={activeCount}
+            archivedCount={archivedCount}
+            totalCount={totalCount}
+          />
+          <ColumnVisibilityMenu columns={JOBS_COLUMNS} entity="jobs" />
+        </div>
       }
+      importExportDataType="jobs"
       primaryAction={{
         href: "/dashboard/work/new",
         label: "New Job",
       }}
-      importExportDataType="jobs"
+      viewSwitcherSection={undefined} // Kanban disabled
     />
   );
 }

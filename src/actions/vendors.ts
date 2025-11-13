@@ -18,13 +18,12 @@ import {
   assertExists,
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
+import { createClient } from "@/lib/supabase/server";
 import {
+  type VendorUpdate,
   vendorInsertSchema,
   vendorUpdateSchema,
-  type VendorInsert,
-  type VendorUpdate,
 } from "@/lib/validations/database-schemas";
-import { createClient } from "@/lib/supabase/server";
 
 /**
  * Generate unique vendor number
@@ -258,36 +257,37 @@ export async function updateVendor(
     if (formData.has("vendor_number"))
       updateData.vendor_number = formData.get("vendor_number") as string;
     if (formData.has("email"))
-      updateData.email = formData.get("email") as string || undefined;
+      updateData.email = (formData.get("email") as string) || undefined;
     if (formData.has("phone"))
-      updateData.phone = formData.get("phone") as string || undefined;
+      updateData.phone = (formData.get("phone") as string) || undefined;
     if (formData.has("secondary_phone"))
       updateData.secondary_phone =
-        formData.get("secondary_phone") as string || undefined;
+        (formData.get("secondary_phone") as string) || undefined;
     if (formData.has("website"))
-      updateData.website = formData.get("website") as string || undefined;
+      updateData.website = (formData.get("website") as string) || undefined;
     if (formData.has("address"))
-      updateData.address = formData.get("address") as string || undefined;
+      updateData.address = (formData.get("address") as string) || undefined;
     if (formData.has("address2"))
-      updateData.address2 = formData.get("address2") as string || undefined;
+      updateData.address2 = (formData.get("address2") as string) || undefined;
     if (formData.has("city"))
-      updateData.city = formData.get("city") as string || undefined;
+      updateData.city = (formData.get("city") as string) || undefined;
     if (formData.has("state"))
-      updateData.state = formData.get("state") as string || undefined;
+      updateData.state = (formData.get("state") as string) || undefined;
     if (formData.has("zip_code"))
-      updateData.zip_code = formData.get("zip_code") as string || undefined;
+      updateData.zip_code = (formData.get("zip_code") as string) || undefined;
     if (formData.has("country"))
       updateData.country = formData.get("country") as string;
     if (formData.has("tax_id"))
-      updateData.tax_id = formData.get("tax_id") as string || undefined;
+      updateData.tax_id = (formData.get("tax_id") as string) || undefined;
     if (formData.has("payment_terms"))
       updateData.payment_terms = formData.get("payment_terms") as any;
     if (formData.has("credit_limit"))
       updateData.credit_limit =
         Number.parseInt(formData.get("credit_limit") as string) * 100;
     if (formData.has("preferred_payment_method"))
-      updateData.preferred_payment_method =
-        formData.get("preferred_payment_method") as any;
+      updateData.preferred_payment_method = formData.get(
+        "preferred_payment_method"
+      ) as any;
     if (formData.has("category"))
       updateData.category = formData.get("category") as any;
     if (formData.has("tags"))
@@ -295,10 +295,10 @@ export async function updateVendor(
     if (formData.has("status"))
       updateData.status = formData.get("status") as "active" | "inactive";
     if (formData.has("notes"))
-      updateData.notes = formData.get("notes") as string || undefined;
+      updateData.notes = (formData.get("notes") as string) || undefined;
     if (formData.has("internal_notes"))
       updateData.internal_notes =
-        formData.get("internal_notes") as string || undefined;
+        (formData.get("internal_notes") as string) || undefined;
     if (formData.has("custom_fields"))
       updateData.custom_fields = JSON.parse(
         formData.get("custom_fields") as string
@@ -425,9 +425,7 @@ export async function deleteVendor(
 /**
  * Get a single vendor by ID
  */
-export async function getVendor(
-  vendorId: string
-): Promise<ActionResult<any>> {
+export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -482,13 +480,11 @@ export async function getVendor(
 /**
  * List all vendors for the company
  */
-export async function listVendors(
-  options?: {
-    status?: "active" | "inactive";
-    category?: string;
-    search?: string;
-  }
-): Promise<ActionResult<any[]>> {
+export async function listVendors(options?: {
+  status?: "active" | "inactive";
+  category?: string;
+  search?: string;
+}): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -610,4 +606,3 @@ export async function searchVendors(
     return vendors || [];
   });
 }
-

@@ -78,9 +78,7 @@ export const urlSchema = z.string().url("Invalid URL format");
  */
 export const slugSchema = z
   .string()
-  .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens");
-
-
-
-
-
+  .regex(
+    /^[a-z0-9-]+$/,
+    "Slug must contain only lowercase letters, numbers, and hyphens"
+  );

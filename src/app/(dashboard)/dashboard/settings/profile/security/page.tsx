@@ -263,7 +263,7 @@ export default function SecurityPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     {feature.status === "enabled" ? (
-                      <Badge className="bg-green-600" variant="default">
+                      <Badge className="bg-success" variant="default">
                         <CheckCircle2 className="mr-1 h-3 w-3" />
                         Enabled
                       </Badge>
@@ -330,7 +330,7 @@ export default function SecurityPage() {
                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-sm">{device.name}</p>
                           {device.current && (
-                            <Badge className="bg-green-600" variant="default">
+                            <Badge className="bg-success" variant="default">
                               Current
                             </Badge>
                           )}
@@ -388,14 +388,14 @@ export default function SecurityPage() {
                   <div
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
                       activity.status === "success"
-                        ? "bg-green-100 dark:bg-green-900/30"
-                        : "bg-red-100 dark:bg-red-900/30"
+                        ? "bg-success dark:bg-success/30"
+                        : "bg-destructive dark:bg-destructive/30"
                     }`}
                   >
                     {activity.status === "success" ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-500" />
+                      <CheckCircle2 className="h-4 w-4 text-success dark:text-success" />
                     ) : (
-                      <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-500" />
+                      <AlertCircle className="h-4 w-4 text-destructive dark:text-destructive" />
                     )}
                   </div>
                   <div className="flex-1 space-y-1">
@@ -558,11 +558,11 @@ export default function SecurityPage() {
         </div>
 
         {/* Danger Zone */}
-        <div className="rounded-xl border-2 border-red-200 bg-red-50/50 p-8 shadow-sm dark:border-red-900/50 dark:bg-red-950/20">
+        <div className="rounded-xl border-2 border-destructive bg-destructive/50 p-8 shadow-sm dark:border-destructive/50 dark:bg-destructive/20">
           <div className="mb-6 space-y-2">
             <div className="flex items-center gap-2">
-              <UserX className="h-5 w-5 text-red-600 dark:text-red-500" />
-              <h2 className="font-semibold text-red-900 text-xl dark:text-red-100">
+              <UserX className="h-5 w-5 text-destructive dark:text-destructive" />
+              <h2 className="font-semibold text-destructive text-xl dark:text-destructive">
                 Danger Zone
               </h2>
               <Tooltip>
@@ -571,7 +571,7 @@ export default function SecurityPage() {
                     className="flex items-center justify-center"
                     type="button"
                   >
-                    <HelpCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-500" />
+                    <HelpCircle className="h-3.5 w-3.5 text-destructive dark:text-destructive" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
@@ -582,15 +582,15 @@ export default function SecurityPage() {
                 </TooltipContent>
               </Tooltip>
             </div>
-            <p className="text-red-800 text-sm dark:text-red-200">
+            <p className="text-destructive text-sm dark:text-destructive">
               Irreversible and destructive actions
             </p>
           </div>
 
-          <div className="flex items-center justify-between gap-6 rounded-lg border-2 border-red-300 bg-card p-4 dark:border-red-800">
+          <div className="flex items-center justify-between gap-6 rounded-lg border-2 border-destructive bg-card p-4 dark:border-destructive">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-red-100 dark:bg-red-900/30">
-                <UserX className="h-5 w-5 text-red-600 dark:text-red-500" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-destructive dark:bg-destructive/30">
+                <UserX className="h-5 w-5 text-destructive dark:text-destructive" />
               </div>
               <div>
                 <p className="font-semibold text-sm">Delete Account</p>

@@ -128,7 +128,7 @@ export function TeamScheduleTab({
                   <div className="flex gap-4 text-muted-foreground text-sm">
                     {assignedUser.email && (
                       <a
-                        className="flex items-center gap-1 hover:text-blue-600"
+                        className="flex items-center gap-1 hover:text-primary"
                         href={`mailto:${assignedUser.email}`}
                       >
                         <Mail className="h-3 w-3" />
@@ -137,7 +137,7 @@ export function TeamScheduleTab({
                     )}
                     {assignedUser.phone && (
                       <a
-                        className="flex items-center gap-1 hover:text-blue-600"
+                        className="flex items-center gap-1 hover:text-primary"
                         href={`tel:${assignedUser.phone}`}
                       >
                         <Phone className="h-3 w-3" />
@@ -174,13 +174,13 @@ export function TeamScheduleTab({
         <CardContent className="space-y-4">
           {activeEntry ? (
             <>
-              <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+              <div className="rounded-lg border border-success bg-success p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-green-900 text-sm">
+                    <p className="font-medium text-sm text-success">
                       Currently Working
                     </p>
-                    <p className="text-green-700 text-xs">
+                    <p className="text-success text-xs">
                       Clocked in at {formatDateTime(activeEntry.clock_in)}
                     </p>
                   </div>
@@ -232,8 +232,8 @@ export function TeamScheduleTab({
                 className={cn(
                   "font-bold text-2xl",
                   totalHours > (job.estimated_labor_hours || 0)
-                    ? "text-orange-600"
-                    : "text-green-600"
+                    ? "text-warning"
+                    : "text-success"
                 )}
               >
                 {job.estimated_labor_hours
@@ -392,7 +392,7 @@ export function TeamScheduleTab({
                             {entry.entry_type}
                           </Badge>
                           {entry.gps_verified && (
-                            <MapPin className="h-3 w-3 text-green-600" />
+                            <MapPin className="h-3 w-3 text-success" />
                           )}
                         </div>
                       </TableCell>

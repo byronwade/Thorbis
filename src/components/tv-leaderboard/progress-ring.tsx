@@ -1,7 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import {
+  LazyMotionPath as motion_circle,
+  LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
 import { cn } from "@/lib/utils";
+
+// Alias for backward compatibility
+const motion = {
+  div: motion_div,
+  circle: motion_circle,
+};
 
 type ProgressRingProps = {
   progress: number;

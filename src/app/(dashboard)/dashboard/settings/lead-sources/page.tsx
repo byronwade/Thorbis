@@ -466,10 +466,10 @@ export default function LeadSourcesPage() {
         </div>
 
         {/* Top Performer */}
-        <Card className="border-green-500/50 bg-green-500/5">
+        <Card className="border-success/50 bg-success/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Star className="h-4 w-4 text-green-500" />
+              <Star className="h-4 w-4 text-success" />
               Top Performing Source
             </CardTitle>
           </CardHeader>
@@ -483,7 +483,7 @@ export default function LeadSourcesPage() {
                 </p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-2xl text-green-600">
+                <p className="font-bold text-2xl text-success">
                   ${topSource.revenue.toLocaleString()}
                 </p>
                 <p className="text-muted-foreground text-sm">Revenue</p>
@@ -1024,9 +1024,9 @@ export default function LeadSourcesPage() {
               </div>
             )}
 
-            <div className="rounded-lg border border-blue-500/50 bg-blue-500/10 p-4">
+            <div className="rounded-lg border border-primary/50 bg-primary/10 p-4">
               <div className="flex items-start gap-3">
-                <TrendingUp className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+                <TrendingUp className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                 <div className="flex-1 space-y-1">
                   <p className="font-medium text-sm">
                     Double Your Marketing ROI
@@ -1126,7 +1126,7 @@ export default function LeadSourcesPage() {
                           <div>
                             <p className="text-muted-foreground">ROI</p>
                             <p
-                              className={`font-medium ${source.roi > 200 ? "text-green-600" : source.roi > 0 ? "text-blue-600" : "text-muted-foreground"}`}
+                              className={`font-medium ${source.roi > 200 ? "text-success" : source.roi > 0 ? "text-primary" : "text-muted-foreground"}`}
                             >
                               {source.cost > 0 ? `${source.roi}%` : "Free"}
                             </p>

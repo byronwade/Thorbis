@@ -97,43 +97,43 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
     draft: {
       label: "Draft",
       icon: FileText,
-      color: "text-gray-600",
-      bgColor: "bg-gray-100 dark:bg-gray-950",
+      color: "text-muted-foreground",
+      bgColor: "bg-muted dark:bg-foreground",
       variant: "outline" as const,
     },
     sent: {
       label: "Sent",
       icon: FileText,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950",
+      color: "text-primary",
+      bgColor: "bg-primary dark:bg-primary",
       variant: "secondary" as const,
     },
     confirmed: {
       label: "Confirmed",
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default" as const,
     },
     shipped: {
       label: "Shipped",
       icon: Truck,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100 dark:bg-purple-950",
+      color: "text-accent-foreground",
+      bgColor: "bg-accent dark:bg-accent",
       variant: "secondary" as const,
     },
     delivered: {
       label: "Delivered",
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default" as const,
     },
     cancelled: {
       label: "Cancelled",
       icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-100 dark:bg-red-950",
+      color: "text-destructive",
+      bgColor: "bg-destructive dark:bg-destructive",
       variant: "destructive" as const,
     },
   };
@@ -257,7 +257,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span
-                        className={`font-medium ${isOverdue ? "text-red-600" : ""}`}
+                        className={`font-medium ${isOverdue ? "text-destructive" : ""}`}
                       >
                         {formatDate(po.expectedDelivery)}
                       </span>
@@ -276,7 +276,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
                 {po.actualDelivery && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Delivered:</span>
-                    <span className="font-medium text-green-600">
+                    <span className="font-medium text-success">
                       {formatDate(po.actualDelivery)}
                     </span>
                   </div>
@@ -314,8 +314,8 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 
                 {/* Notes */}
                 {po.notes && (
-                  <div className="mt-2 rounded border-yellow-500 border-l-2 bg-yellow-50 p-2 dark:bg-yellow-950/30">
-                    <p className="text-xs text-yellow-900 dark:text-yellow-100">
+                  <div className="mt-2 rounded border-warning border-l-2 bg-warning p-2 dark:bg-warning/30">
+                    <p className="text-warning text-xs dark:text-warning">
                       {po.notes}
                     </p>
                   </div>
@@ -323,9 +323,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 
                 {/* Overdue Warning */}
                 {isOverdue && (
-                  <div className="mt-2 flex items-start gap-1.5 rounded border-red-500 border-l-2 bg-red-50 p-2 dark:bg-red-950/30">
-                    <AlertCircle className="mt-0.5 size-3 shrink-0 text-red-600" />
-                    <p className="text-red-900 text-xs dark:text-red-100">
+                  <div className="mt-2 flex items-start gap-1.5 rounded border-destructive border-l-2 bg-destructive p-2 dark:bg-destructive/30">
+                    <AlertCircle className="mt-0.5 size-3 shrink-0 text-destructive" />
+                    <p className="text-destructive text-xs dark:text-destructive">
                       Delivery overdue. Contact vendor for status update.
                     </p>
                   </div>
@@ -345,13 +345,13 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
       ) && (
         <>
           <Separator />
-          <div className="flex items-start gap-2 rounded-lg border-red-500 border-l-4 bg-red-50 p-3 dark:bg-red-950/30">
-            <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-600" />
+          <div className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30">
+            <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
             <div>
-              <p className="font-medium text-red-900 text-sm dark:text-red-100">
+              <p className="font-medium text-destructive text-sm dark:text-destructive">
                 Overdue Orders
               </p>
-              <p className="text-red-800 text-xs dark:text-red-200">
+              <p className="text-destructive text-xs dark:text-destructive">
                 Some purchase orders are overdue. Follow up with vendors to
                 avoid job delays.
               </p>

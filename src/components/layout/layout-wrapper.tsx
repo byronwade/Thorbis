@@ -17,20 +17,23 @@
  */
 
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 import { InvoiceOptionsSidebar } from "@/components/invoices/invoice-options-sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppToolbar } from "@/components/layout/app-toolbar";
 import { PriceBookSidebar } from "@/components/pricebook/pricebook-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
+  getBackgroundClass,
   getGapClass,
+  getInsetPaddingClass,
   getMaxWidthClass,
   getPaddingClass,
-  getBackgroundClass,
-  getInsetPaddingClass,
   getUnifiedLayoutConfig,
 } from "@/lib/layout/unified-layout-config";
 import { useSidebarStateStore } from "@/lib/stores/sidebar-state-store";
+import { useToolbarActionsStore } from "@/lib/stores/toolbar-actions-store";
+import { useToolbarStatsStore } from "@/lib/stores/toolbar-stats-store";
 import { cn } from "@/lib/utils";
 
 interface LayoutWrapperProps {
@@ -50,8 +53,34 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   // Get unified configuration for this route
   const config = getUnifiedLayoutConfig(pathname);
 
-  // Extract configuration sections
-  const { structure, header, toolbar, sidebar, rightSidebar } = config;
+  // Get dynamic stats from store - subscribe to changes by accessing the pathname key directly
+  const dynamicStats = useToolbarStatsStore((state) => state.stats[pathname]);
+
+  // Get dynamic actions from store
+  const dynamicActions = useToolbarActionsStore(
+    (state) => state.actions[pathname]
+  );
+
+  // Extract configuration sections and merge dynamic stats and actions
+  const {
+    structure,
+    header,
+    toolbar: baseToolbar,
+    sidebar,
+    rightSidebar,
+  } = config;
+
+  // Merge dynamic stats and actions into toolbar config
+  const toolbar = useMemo(() => {
+    let merged = { ...baseToolbar };
+    if (dynamicStats) {
+      merged = { ...merged, stats: dynamicStats };
+    }
+    if (dynamicActions) {
+      merged = { ...merged, actions: dynamicActions };
+    }
+    return merged;
+  }, [baseToolbar, dynamicStats, dynamicActions]);
 
   // Left sidebar state (per-route)
   const sidebarOpen = useSidebarStateStore((state) =>
@@ -66,6 +95,9 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   );
   const setRightSidebarState = useSidebarStateStore(
     (state) => state.setRightSidebarState
+  );
+  const toggleRightSidebarState = useSidebarStateStore(
+    (state) => state.toggleRightSidebarState
   );
 
   // Routes with no layout chrome
@@ -167,7 +199,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
                 isRightSidebarOpen={isRightSidebarOpen}
                 onToggleRightSidebar={
                   rightSidebar?.show
-                    ? () => setRightSidebarState(pathname, !isRightSidebarOpen)
+                    ? () => toggleRightSidebarState(pathname)
                     : undefined
                 }
                 showLeftSidebar={sidebar.show}

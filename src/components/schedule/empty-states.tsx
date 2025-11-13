@@ -4,7 +4,7 @@
  * Empty State Components for Schedule Views
  */
 
-import { Calendar, CalendarX, Users, AlertCircle } from "lucide-react";
+import { AlertCircle, Calendar, CalendarX, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type EmptyStateProps = {
@@ -25,11 +25,11 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center p-8">
-      <div className="text-muted-foreground mb-4">
+      <div className="mb-4 text-muted-foreground">
         {icon || <Calendar className="size-12" />}
       </div>
       <h3 className="mb-2 font-semibold text-lg">{title}</h3>
-      <p className="text-muted-foreground mb-6 max-w-md text-center text-sm">
+      <p className="mb-6 max-w-md text-center text-muted-foreground text-sm">
         {description}
       </p>
       {action && (
@@ -48,9 +48,6 @@ export function NoTechniciansEmptyState({
 }) {
   return (
     <EmptyState
-      icon={<Users className="size-12" />}
-      title="No Technicians"
-      description="Add technicians to your team to start scheduling jobs."
       action={
         onAddTechnician
           ? {
@@ -59,6 +56,9 @@ export function NoTechniciansEmptyState({
             }
           : undefined
       }
+      description="Add technicians to your team to start scheduling jobs."
+      icon={<Users className="size-12" />}
+      title="No Technicians"
     />
   );
 }
@@ -79,9 +79,6 @@ export function NoJobsEmptyState({
 
   return (
     <EmptyState
-      icon={<CalendarX className="size-12" />}
-      title="No Jobs Scheduled"
-      description={`No jobs are scheduled for ${formattedDate}. Create a new job to get started.`}
       action={
         onNewJob
           ? {
@@ -90,6 +87,9 @@ export function NoJobsEmptyState({
             }
           : undefined
       }
+      description={`No jobs are scheduled for ${formattedDate}. Create a new job to get started.`}
+      icon={<CalendarX className="size-12" />}
+      title="No Jobs Scheduled"
     />
   );
 }
@@ -103,13 +103,13 @@ export function ErrorState({
 }) {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center p-8">
-      <div className="text-destructive mb-4">
+      <div className="mb-4 text-destructive">
         <AlertCircle className="size-12" />
       </div>
-      <h3 className="mb-2 font-semibold text-lg text-destructive">
+      <h3 className="mb-2 font-semibold text-destructive text-lg">
         Something went wrong
       </h3>
-      <p className="text-muted-foreground mb-6 max-w-md text-center text-sm">
+      <p className="mb-6 max-w-md text-center text-muted-foreground text-sm">
         {error}
       </p>
       {onRetry && (
@@ -120,4 +120,3 @@ export function ErrorState({
     </div>
   );
 }
-

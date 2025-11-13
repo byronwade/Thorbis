@@ -9,9 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -23,11 +23,7 @@ export const metadata = generateSEOMetadata({
     "Access Thorbis press resources, brand assets, executive bios, and latest announcements. Contact our communications team.",
   path: "/press",
   section: "Company",
-  keywords: [
-    "thorbis press",
-    "thorbis newsroom",
-    "thorbis brand assets",
-  ],
+  keywords: ["thorbis press", "thorbis newsroom", "thorbis brand assets"],
 });
 
 const NEWS = [
@@ -72,8 +68,6 @@ export default function PressPage() {
   return (
     <>
       <Script
-        id="press-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -82,38 +76,40 @@ export default function PressPage() {
             ])
           ),
         }}
+        id="press-breadcrumb-ld"
+        type="application/ld+json"
       />
       <Script
-        id="press-news-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(NEWS_LD),
         }}
+        id="press-news-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <section className="max-w-3xl space-y-6">
-          <Badge variant="secondary" className="uppercase tracking-wide">
+          <Badge className="uppercase tracking-wide" variant="secondary">
             Thorbis Newsroom
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             The latest on Thorbis, our customers, and our product
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Journalists, analysts, and partners can access press releases, brand assets,
-            and executive spokespeople. Reach out—we respond quickly.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Journalists, analysts, and partners can access press releases, brand
+            assets, and executive spokespeople. Reach out—we respond quickly.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
               <a href="mailto:press@thorbis.com">Contact communications</a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button asChild variant="outline">
               <a href="/press#brand-assets">Download press kit</a>
             </Button>
           </div>
         </section>
 
         <section className="mt-16 space-y-6">
-          <h2 className="text-2xl font-semibold">News & announcements</h2>
+          <h2 className="font-semibold text-2xl">News & announcements</h2>
           <div className="grid gap-6 md:grid-cols-3">
             {NEWS.map((item) => (
               <Card key={item.title}>
@@ -122,10 +118,10 @@ export default function PressPage() {
                   <CardDescription>{item.date}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {item.description}
                   </p>
-                  <Button variant="link" className="px-0" asChild>
+                  <Button asChild className="px-0" variant="link">
                     <a href={item.link}>Read release</a>
                   </Button>
                 </CardContent>
@@ -134,37 +130,37 @@ export default function PressPage() {
           </div>
         </section>
 
-        <section id="brand-assets" className="mt-16 space-y-4">
-          <h2 className="text-2xl font-semibold">Brand & media assets</h2>
+        <section className="mt-16 space-y-4" id="brand-assets">
+          <h2 className="font-semibold text-2xl">Brand & media assets</h2>
           <p className="text-muted-foreground text-sm">
-            Download logos, product screenshots, and executive headshots. For custom assets,
-            email press@thorbis.com.
+            Download logos, product screenshots, and executive headshots. For
+            custom assets, email press@thorbis.com.
           </p>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-xl border bg-muted/20 p-4">
               <h3 className="font-semibold">Logos</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 PNG, SVG, and monochrome variations.
               </p>
-              <Button className="mt-3" variant="outline" size="sm">
+              <Button className="mt-3" size="sm" variant="outline">
                 Download
               </Button>
             </div>
             <div className="rounded-xl border bg-muted/20 p-4">
               <h3 className="font-semibold">Product screenshots</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 High-resolution UI shots for web and print.
               </p>
-              <Button className="mt-3" variant="outline" size="sm">
+              <Button className="mt-3" size="sm" variant="outline">
                 Download
               </Button>
             </div>
             <div className="rounded-xl border bg-muted/20 p-4">
               <h3 className="font-semibold">Executive bios</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Headshots and biographies for spokespeople.
               </p>
-              <Button className="mt-3" variant="outline" size="sm">
+              <Button className="mt-3" size="sm" variant="outline">
                 Download
               </Button>
             </div>
@@ -172,12 +168,13 @@ export default function PressPage() {
         </section>
 
         <section className="mt-16 space-y-3">
-          <h2 className="text-2xl font-semibold">Media contacts</h2>
+          <h2 className="font-semibold text-2xl">Media contacts</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            For interviews, speaking opportunities, or data requests, reach out to
+            For interviews, speaking opportunities, or data requests, reach out
+            to
             <a
-              href="mailto:press@thorbis.com"
               className="text-primary underline-offset-4 hover:underline"
+              href="mailto:press@thorbis.com"
             >
               {" "}
               press@thorbis.com
@@ -189,4 +186,3 @@ export default function PressPage() {
     </>
   );
 }
-

@@ -3,8 +3,8 @@
  */
 
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VendorForm } from "@/components/inventory/vendor-form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 0; // No caching for create page
@@ -45,4 +45,3 @@ export default async function NewVendorPage() {
     </div>
   );
 }
-

@@ -92,14 +92,14 @@ export function TranscriptPanel() {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-zinc-700 border-b bg-zinc-800/50 p-4">
+      <div className="flex items-center justify-between border-border border-b bg-foreground/50 p-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-blue-400" />
+          <Sparkles className="size-4 text-primary" />
           <h3 className="font-semibold text-sm text-white">Live Transcript</h3>
           {isRecording && (
             <div className="flex items-center gap-1.5">
-              <div className="size-2 animate-pulse rounded-full bg-red-500" />
-              <span className="text-xs text-zinc-400">Recording</span>
+              <div className="size-2 animate-pulse rounded-full bg-destructive" />
+              <span className="text-muted-foreground text-xs">Recording</span>
             </div>
           )}
         </div>
@@ -124,11 +124,11 @@ export function TranscriptPanel() {
       </div>
 
       {/* Search */}
-      <div className="border-zinc-700 border-b p-3">
+      <div className="border-border border-b p-3">
         <div className="relative">
-          <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-zinc-500" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
-            className="h-9 bg-zinc-900 pl-9 text-sm"
+            className="h-9 bg-foreground pl-9 text-sm"
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search transcript..."
             type="text"
@@ -145,61 +145,61 @@ export function TranscriptPanel() {
       >
         {entries.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="rounded-full bg-zinc-800 p-4">
-              <Sparkles className="size-8 text-zinc-600" />
+            <div className="rounded-full bg-foreground p-4">
+              <Sparkles className="size-8 text-muted-foreground" />
             </div>
-            <p className="mt-4 font-medium text-sm text-zinc-500">
+            <p className="mt-4 font-medium text-muted-foreground text-sm">
               No transcript yet
             </p>
-            <p className="mt-1 text-xs text-zinc-600">
+            <p className="mt-1 text-muted-foreground text-xs">
               Transcript will appear here during the call
             </p>
           </div>
         ) : (
           entries.map((entry) => (
             <div
-              className={`rounded-lg p-3 ${entry.speaker === "csr" ? "border border-blue-700/30 bg-blue-900/20" : "border border-zinc-700/50 bg-zinc-800/50"}`}
+              className={`rounded-lg p-3 ${entry.speaker === "csr" ? "border border-primary/30 bg-primary/20" : "border border-border/50 bg-foreground/50"}`}
               key={entry.id}
             >
               {/* Entry header */}
               <div className="mb-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`font-semibold text-xs ${entry.speaker === "csr" ? "text-blue-400" : "text-zinc-400"}`}
+                    className={`font-semibold text-xs ${entry.speaker === "csr" ? "text-primary" : "text-muted-foreground"}`}
                   >
                     {entry.speaker === "csr" ? "CSR" : "Customer"}
                   </span>
                   {entry.isAnalyzing && (
                     <div className="flex items-center gap-1">
-                      <div className="size-1 animate-pulse rounded-full bg-amber-500" />
-                      <span className="text-[10px] text-amber-500">
+                      <div className="size-1 animate-pulse rounded-full bg-warning" />
+                      <span className="text-[10px] text-warning">
                         AI Analyzing...
                       </span>
                     </div>
                   )}
                 </div>
-                <span className="font-mono text-[10px] text-zinc-600">
+                <span className="font-mono text-[10px] text-muted-foreground">
                   {formatTime(entry.timestamp)}
                 </span>
               </div>
 
               {/* Entry text */}
-              <p className="text-sm text-zinc-300 leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 {entry.text}
               </p>
 
               {/* AI extracted data */}
               {entry.aiExtracted && (
-                <div className="mt-2 space-y-1 border-zinc-700 border-t pt-2">
+                <div className="mt-2 space-y-1 border-border border-t pt-2">
                   {entry.aiExtracted.customerInfo && (
                     <div className="flex flex-wrap gap-1">
                       {entry.aiExtracted.customerInfo.name && (
-                        <span className="rounded bg-green-900/30 px-2 py-0.5 text-[10px] text-green-400">
+                        <span className="rounded bg-success/30 px-2 py-0.5 text-[10px] text-success">
                           Name: {entry.aiExtracted.customerInfo.name}
                         </span>
                       )}
                       {entry.aiExtracted.customerInfo.email && (
-                        <span className="rounded bg-green-900/30 px-2 py-0.5 text-[10px] text-green-400">
+                        <span className="rounded bg-success/30 px-2 py-0.5 text-[10px] text-success">
                           Email: {entry.aiExtracted.customerInfo.email}
                         </span>
                       )}
@@ -210,7 +210,7 @@ export function TranscriptPanel() {
                       <div className="flex flex-wrap gap-1">
                         {entry.aiExtracted.issueCategories.map((category) => (
                           <span
-                            className="rounded bg-amber-900/30 px-2 py-0.5 text-[10px] text-amber-400"
+                            className="rounded bg-warning/30 px-2 py-0.5 text-[10px] text-warning"
                             key={category}
                           >
                             {category}
@@ -221,12 +221,12 @@ export function TranscriptPanel() {
                   {entry.aiExtracted.sentiment && (
                     <div className="flex items-center gap-1">
                       <span
-                        className={`rounded px-2 py-0.5 text-[10px] ${entry.aiExtracted.sentiment === "positive" ? "bg-green-900/30 text-green-400" : entry.aiExtracted.sentiment === "negative" ? "bg-red-900/30 text-red-400" : "bg-zinc-700/30 text-zinc-400"}`}
+                        className={`rounded px-2 py-0.5 text-[10px] ${entry.aiExtracted.sentiment === "positive" ? "bg-success/30 text-success" : entry.aiExtracted.sentiment === "negative" ? "bg-destructive/30 text-destructive" : "bg-foreground/30 text-muted-foreground"}`}
                       >
                         Sentiment: {entry.aiExtracted.sentiment}
                       </span>
                       {entry.aiExtracted.confidence !== undefined && (
-                        <span className="font-mono text-[10px] text-zinc-600">
+                        <span className="font-mono text-[10px] text-muted-foreground">
                           {Math.round(entry.aiExtracted.confidence)}%
                         </span>
                       )}
@@ -241,9 +241,9 @@ export function TranscriptPanel() {
 
       {/* Auto-scroll indicator */}
       {!autoScroll && entries.length > 0 && (
-        <div className="border-zinc-700 border-t bg-zinc-900 p-2 text-center">
+        <div className="border-border border-t bg-foreground p-2 text-center">
           <button
-            className="text-blue-400 text-xs hover:text-blue-300"
+            className="text-primary text-xs hover:text-primary"
             onClick={() => setAutoScroll(true)}
             type="button"
           >

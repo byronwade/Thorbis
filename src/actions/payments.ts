@@ -25,12 +25,29 @@ import {
 // CREATE
 // ============================================================================
 
+type CreatePaymentResult = {
+  success: boolean;
+  error?: string;
+  paymentId?: string;
+};
+
 export async function createPayment(
-  data: PaymentInsert
-): Promise<{ success: boolean; error?: string; paymentId?: string }> {
+  input: PaymentInsert | FormData
+): Promise<CreatePaymentResult> {
+  if (input instanceof FormData) {
+    return createPaymentFromForm(input);
+  }
+
+  return createPaymentWithData(input);
+}
+
+async function createPaymentWithData(
+  data: PaymentInsert,
+  existingSupabase?: Awaited<ReturnType<typeof createClient>> | null
+): Promise<CreatePaymentResult> {
   try {
     const validated = paymentInsertSchema.parse(data);
-    const supabase = await createClient();
+    const supabase = existingSupabase ?? (await createClient());
 
     if (!supabase) {
       return { success: false, error: "Database connection not available" };
@@ -81,6 +98,81 @@ export async function createPayment(
     return { success: true, paymentId: payment.id };
   } catch (error) {
     console.error("Create payment error:", error);
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Failed to create payment" };
+  }
+}
+
+async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentResult> {
+  try {
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Database connection not available" };
+    }
+
+    const invoiceId = formData.get("invoiceId")?.toString();
+    if (!invoiceId) {
+      return { success: false, error: "Invoice is required" };
+    }
+
+    const rawAmount = formData.get("amount");
+    const amountNumber = Number.parseFloat(rawAmount as string);
+    if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+      return { success: false, error: "Payment amount must be greater than 0" };
+    }
+    const amount = Math.round(amountNumber * 100);
+
+    const { data: invoice, error: invoiceError } = await supabase
+      .from("invoices")
+      .select(
+        "id, company_id, customer_id, job_id, invoice_number, currency"
+      )
+      .eq("id", invoiceId)
+      .single();
+
+    if (invoiceError || !invoice) {
+      return { success: false, error: "Invoice not found" };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const paymentMethod =
+      (formData.get("paymentMethod") as PaymentInsert["payment_method"]) ||
+      "cash";
+    const paymentDateValue = formData.get("paymentDate")?.toString();
+    const checkNumber = formData.get("checkNumber")?.toString() || null;
+    const notes = formData.get("notes")?.toString() || null;
+
+    const paymentNumber = `PAY-${Date.now()}`;
+
+    const paymentData: PaymentInsert = {
+      company_id: invoice.company_id,
+      customer_id: invoice.customer_id,
+      invoice_id: invoice.id,
+      job_id: invoice.job_id ?? null,
+      payment_number: paymentNumber,
+      amount,
+      currency: (invoice.currency || "USD") as PaymentInsert["currency"],
+      payment_method: paymentMethod,
+      payment_type: "payment",
+      status: "completed",
+      check_number: checkNumber,
+      notes,
+      net_amount: amount,
+      processor_fee: 0,
+      refunded_amount: 0,
+      is_reconciled: false,
+      processed_at: paymentDateValue ? new Date(paymentDateValue) : new Date(),
+      processed_by: user?.id ?? null,
+    };
+
+    return createPaymentWithData(paymentData, supabase);
+  } catch (error) {
+    console.error("Create payment (form) error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }

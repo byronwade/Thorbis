@@ -67,16 +67,49 @@ export default async function PaymentDetailsPage({
   }
 
   // Get related data
-  const customer = Array.isArray(payment.customer) ? payment.customer[0] : payment.customer;
-  const invoice = Array.isArray(payment.invoice) ? payment.invoice[0] : payment.invoice;
+  const customer = Array.isArray(payment.customer)
+    ? payment.customer[0]
+    : payment.customer;
+  const invoice = Array.isArray(payment.invoice)
+    ? payment.invoice[0]
+    : payment.invoice;
   const job = Array.isArray(payment.job) ? payment.job[0] : payment.job;
 
-  // Fetch all related data
+  // Fetch all related data (including payment plan and financing provider)
   const [
+    { data: paymentPlanSchedule },
+    { data: financingProvider },
     { data: activities },
     { data: notes },
     { data: attachments },
   ] = await Promise.all([
+    // NEW: Fetch payment plan schedule if this is a plan payment
+    payment.payment_plan_schedule_id
+      ? supabase
+          .from("payment_plan_schedules")
+          .select(`
+            *,
+            payment_plan:payment_plans!payment_plan_id(
+              id,
+              name,
+              total_amount,
+              number_of_payments,
+              invoice:invoices!invoice_id(id, invoice_number)
+            )
+          `)
+          .eq("id", payment.payment_plan_schedule_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
+    // NEW: Fetch financing provider if using financing
+    payment.financing_provider_id
+      ? supabase
+          .from("financing_providers")
+          .select("id, name, provider_type, contact_email, contact_phone")
+          .eq("id", payment.financing_provider_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
     supabase
       .from("activity_log")
       .select("*, user:users!user_id(*)")
@@ -104,6 +137,8 @@ export default async function PaymentDetailsPage({
     customer,
     invoice,
     job,
+    paymentPlanSchedule, // NEW
+    financingProvider, // NEW
     activities: activities || [],
     notes: notes || [],
     attachments: attachments || [],
@@ -115,8 +150,3 @@ export default async function PaymentDetailsPage({
     </div>
   );
 }
-
-
-
-
-

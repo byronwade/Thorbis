@@ -130,13 +130,13 @@ export default function PasswordPage() {
 
   const getPasswordStrength = (password: string) => {
     if (password.length === 0) {
-      return { score: 0, label: "Enter password", color: "bg-gray-200" };
+      return { score: 0, label: "Enter password", color: "bg-muted" };
     }
     if (password.length < VERY_WEAK_PASSWORD_LENGTH) {
-      return { score: 20, label: "Very Weak", color: "bg-red-500" };
+      return { score: 20, label: "Very Weak", color: "bg-destructive" };
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
-      return { score: 40, label: "Weak", color: "bg-red-400" };
+      return { score: 40, label: "Weak", color: "bg-destructive" };
     }
 
     const POINTS_PER_REQUIREMENT = 20;
@@ -145,12 +145,12 @@ export default function PasswordPage() {
       passwordRequirements.filter((req) => req.met).length *
       POINTS_PER_REQUIREMENT;
     if (score < FAIR_THRESHOLD) {
-      return { score, label: "Fair", color: "bg-yellow-500" };
+      return { score, label: "Fair", color: "bg-warning" };
     }
     if (score < GOOD_THRESHOLD) {
-      return { score, label: "Good", color: "bg-blue-500" };
+      return { score, label: "Good", color: "bg-primary" };
     }
-    return { score, label: "Strong", color: "bg-green-500" };
+    return { score, label: "Strong", color: "bg-success" };
   };
 
   const strength = getPasswordStrength(newPassword);
@@ -281,10 +281,10 @@ export default function PasswordPage() {
                           <span
                             className={`font-medium text-sm ${
                               strength.score < FAIR_THRESHOLD
-                                ? "text-red-500"
+                                ? "text-destructive"
                                 : strength.score < GOOD_THRESHOLD
-                                  ? "text-yellow-500"
-                                  : "text-green-500"
+                                  ? "text-warning"
+                                  : "text-success"
                             }`}
                           >
                             {strength.label}
@@ -347,15 +347,15 @@ export default function PasswordPage() {
                         key={`req-${index}`}
                       >
                         {requirement.met ? (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-4 w-4 text-success" />
                         ) : (
-                          <XCircle className="h-4 w-4 text-gray-300" />
+                          <XCircle className="h-4 w-4 text-muted-foreground" />
                         )}
                         <span
                           className={`text-sm ${
                             requirement.met
-                              ? "text-green-700 dark:text-green-300"
-                              : "text-gray-500"
+                              ? "text-success dark:text-success"
+                              : "text-muted-foreground"
                           }`}
                         >
                           {requirement.text}
@@ -385,7 +385,7 @@ export default function PasswordPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              <AlertTriangle className="h-5 w-5 text-warning" />
               Security Tips
             </CardTitle>
             <CardDescription>
@@ -395,44 +395,44 @@ export default function PasswordPage() {
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 h-4 w-4 text-green-500" />
+                <CheckCircle className="mt-0.5 h-4 w-4 text-success" />
                 <div className="text-sm">
                   Use a unique password for this account
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 h-4 w-4 text-green-500" />
+                <CheckCircle className="mt-0.5 h-4 w-4 text-success" />
                 <div className="text-sm">
                   Combine letters, numbers, and symbols
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <XCircle className="mt-0.5 h-4 w-4 text-red-500" />
+                <XCircle className="mt-0.5 h-4 w-4 text-destructive" />
                 <div className="text-sm">Avoid common words or patterns</div>
               </div>
 
               <div className="flex items-start gap-3">
-                <XCircle className="mt-0.5 h-4 w-4 text-red-500" />
+                <XCircle className="mt-0.5 h-4 w-4 text-destructive" />
                 <div className="text-sm">
                   Don't reuse passwords from other sites
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 h-4 w-4 text-green-500" />
+                <CheckCircle className="mt-0.5 h-4 w-4 text-success" />
                 <div className="text-sm">Consider using a password manager</div>
               </div>
             </div>
 
             <Separator />
 
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20">
-              <div className="font-medium text-blue-800 text-sm dark:text-blue-200">
+            <div className="rounded-lg border border-primary bg-primary p-3 dark:border-primary dark:bg-primary/20">
+              <div className="font-medium text-primary text-sm dark:text-primary">
                 Last changed 30 days ago
               </div>
-              <div className="text-blue-600 text-sm dark:text-blue-300">
+              <div className="text-primary text-sm dark:text-primary">
                 Password age is within recommended range
               </div>
             </div>

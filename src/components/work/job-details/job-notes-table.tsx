@@ -15,6 +15,16 @@ import { formatDistance } from "date-fns";
 import { Archive, FileText, Lock, Pin, User } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { createJobNote, deleteJobNote, getJobNotes } from "@/actions/job-notes";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +63,8 @@ export function JobNotesTable({ jobId, triggerAdd }: JobNotesTableProps) {
   const [newNoteType, setNewNoteType] = useState<"customer" | "internal">(
     "internal"
   );
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
   const pageSize = 20;
 
@@ -102,13 +114,6 @@ export function JobNotesTable({ jobId, triggerAdd }: JobNotesTableProps) {
   };
 
   const handleArchiveNote = async (noteId: string) => {
-    if (
-      !confirm(
-        "Archive this note? It can be restored within 90 days from the archive page."
-      )
-    )
-      return;
-
     const result = await deleteJobNote(noteId);
     if (result.success) {
       loadNotes();
@@ -273,7 +278,10 @@ export function JobNotesTable({ jobId, triggerAdd }: JobNotesTableProps) {
                   <TableCell>
                     <Button
                       className="size-8 p-0"
-                      onClick={() => handleArchiveNote(note.id)}
+                      onClick={() => {
+                        setItemToArchive(note.id);
+                        setIsArchiveDialogOpen(true);
+                      }}
                       size="sm"
                       title="Archive note"
                       variant="ghost"
@@ -315,6 +323,35 @@ export function JobNotesTable({ jobId, triggerAdd }: JobNotesTableProps) {
           </div>
         </div>
       )}
+
+      {/* Archive Note Dialog */}
+      <AlertDialog
+        onOpenChange={setIsArchiveDialogOpen}
+        open={isArchiveDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Note?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This note will be archived and can be restored within 90 days from
+              the archive page.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (itemToArchive) {
+                  await handleArchiveNote(itemToArchive);
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

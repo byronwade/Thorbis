@@ -95,7 +95,7 @@ export function ColumnMapper({
                   value={getMapping(column.id)?.toString()}
                 >
                   <SelectTrigger
-                    className={isMapped(column.id) ? "border-green-500" : ""}
+                    className={isMapped(column.id) ? "border-success" : ""}
                   >
                     <SelectValue placeholder="Select column..." />
                   </SelectTrigger>
@@ -116,7 +116,7 @@ export function ColumnMapper({
 
               {/* Status Indicator */}
               {isMapped(column.id) && (
-                <div className="flex size-6 items-center justify-center rounded-full bg-green-500">
+                <div className="flex size-6 items-center justify-center rounded-full bg-success">
                   <Check className="size-4 text-white" />
                 </div>
               )}
@@ -126,7 +126,7 @@ export function ColumnMapper({
       </div>
 
       {/* Mapping Summary */}
-      <div className="flex items-center justify-between rounded-lg border border-blue-500/50 bg-blue-500/5 p-4">
+      <div className="flex items-center justify-between rounded-lg border border-primary/50 bg-primary/5 p-4">
         <div>
           <p className="font-medium text-sm">Mapping Progress</p>
           <p className="text-muted-foreground text-xs">
@@ -134,7 +134,7 @@ export function ColumnMapper({
             mapped
           </p>
         </div>
-        <Badge className="bg-blue-500">
+        <Badge className="bg-primary">
           {Math.round(
             (Object.keys(mapping).length / systemColumns.length) * 100
           )}

@@ -51,16 +51,16 @@ export function RoleSwitcher() {
                     <Badge
                       className={`${
                         config.color === "purple"
-                          ? "bg-purple-500"
+                          ? "bg-accent"
                           : config.color === "blue"
-                            ? "bg-blue-500"
+                            ? "bg-primary"
                             : config.color === "green"
-                              ? "bg-green-500"
+                              ? "bg-success"
                               : config.color === "orange"
-                                ? "bg-orange-500"
+                                ? "bg-warning"
                                 : config.color === "pink"
-                                  ? "bg-pink-500"
-                                  : "bg-red-500"
+                                  ? "bg-accent"
+                                  : "bg-destructive"
                       } ${isActive ? "" : "bg-transparent"}`}
                       variant={isActive ? "default" : "outline"}
                     >
@@ -107,9 +107,9 @@ export function RoleSwitcher() {
         })}
       </div>
 
-      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
+      <div className="rounded-lg border border-warning bg-warning p-4 dark:border-warning dark:bg-warning">
         <div className="flex gap-3">
-          <div className="text-yellow-600 dark:text-yellow-400">
+          <div className="text-warning dark:text-warning">
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 clipRule="evenodd"
@@ -119,10 +119,10 @@ export function RoleSwitcher() {
             </svg>
           </div>
           <div className="flex-1 space-y-1">
-            <p className="font-medium text-sm text-yellow-800 dark:text-yellow-200">
+            <p className="font-medium text-sm text-warning dark:text-warning">
               Development Mode Only
             </p>
-            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+            <p className="text-sm text-warning dark:text-warning">
               This role switcher is for development testing only. In production,
               user roles will be determined by authentication and database
               permissions.

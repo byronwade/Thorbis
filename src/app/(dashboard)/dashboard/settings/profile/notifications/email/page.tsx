@@ -117,7 +117,7 @@ export default function EmailPreferencesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-blue-500" />
+              <Mail className="h-4 w-4 text-primary" />
               <span className="font-medium text-sm">Total Emails</span>
             </div>
             <div className="font-bold text-2xl">247</div>
@@ -128,7 +128,7 @@ export default function EmailPreferencesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2">
-              <Archive className="h-4 w-4 text-green-500" />
+              <Archive className="h-4 w-4 text-success" />
               <span className="font-medium text-sm">Read Rate</span>
             </div>
             <div className="font-bold text-2xl">68%</div>
@@ -139,7 +139,7 @@ export default function EmailPreferencesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-yellow-500" />
+              <Clock className="h-4 w-4 text-warning" />
               <span className="font-medium text-sm">Unsubscribe Rate</span>
             </div>
             <div className="font-bold text-2xl">2.1%</div>
@@ -212,7 +212,7 @@ export default function EmailPreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
+              <Calendar className="h-5 w-5 text-primary" />
               Job & Schedule Emails
             </CardTitle>
             <CardDescription>
@@ -223,8 +223,8 @@ export default function EmailPreferencesPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
-                    <Calendar className="h-5 w-5 text-blue-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary dark:bg-primary/20">
+                    <Calendar className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <div className="font-medium">New Job Assignments</div>
@@ -241,8 +241,8 @@ export default function EmailPreferencesPage() {
 
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-                    <Clock className="h-5 w-5 text-green-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success dark:bg-success/20">
+                    <Clock className="h-5 w-5 text-success" />
                   </div>
                   <div>
                     <div className="font-medium">Schedule Changes</div>
@@ -259,8 +259,8 @@ export default function EmailPreferencesPage() {
 
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/20">
-                    <Users className="h-5 w-5 text-purple-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent dark:bg-accent/20">
+                    <Users className="h-5 w-5 text-accent-foreground" />
                   </div>
                   <div>
                     <div className="font-medium">Job Updates</div>
@@ -281,7 +281,7 @@ export default function EmailPreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-green-500" />
+              <Users className="h-5 w-5 text-success" />
               Customer Communication
             </CardTitle>
             <CardDescription>
@@ -292,8 +292,8 @@ export default function EmailPreferencesPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-                    <MessageSquare className="h-5 w-5 text-green-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success dark:bg-success/20">
+                    <MessageSquare className="h-5 w-5 text-success" />
                   </div>
                   <div>
                     <div className="font-medium">Customer Messages</div>
@@ -310,8 +310,8 @@ export default function EmailPreferencesPage() {
 
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
-                    <CreditCard className="h-5 w-5 text-yellow-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning dark:bg-warning/20">
+                    <CreditCard className="h-5 w-5 text-warning" />
                   </div>
                   <div>
                     <div className="font-medium">Payment Notifications</div>
@@ -332,7 +332,7 @@ export default function EmailPreferencesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-red-500" />
+              <Shield className="h-5 w-5 text-destructive" />
               Security & System
             </CardTitle>
             <CardDescription>
@@ -343,8 +343,8 @@ export default function EmailPreferencesPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
-                    <Shield className="h-5 w-5 text-red-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive dark:bg-destructive/20">
+                    <Shield className="h-5 w-5 text-destructive" />
                   </div>
                   <div>
                     <div className="font-medium">Security Alerts</div>
@@ -361,8 +361,8 @@ export default function EmailPreferencesPage() {
 
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/20">
-                    <Mail className="h-5 w-5 text-orange-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning dark:bg-warning/20">
+                    <Mail className="h-5 w-5 text-warning" />
                   </div>
                   <div>
                     <div className="font-medium">Account Changes</div>
@@ -460,9 +460,9 @@ export default function EmailPreferencesPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="rounded-lg border bg-gray-50 p-4 dark:bg-gray-900/50">
+            <div className="rounded-lg border bg-secondary p-4 dark:bg-foreground/50">
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 font-medium text-white text-xs">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-medium text-white text-xs">
                   S
                 </div>
                 <div className="min-w-0 flex-1">

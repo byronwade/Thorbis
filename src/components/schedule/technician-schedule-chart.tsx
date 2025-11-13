@@ -356,26 +356,25 @@ const mockTechnicians: Technician[] = [
 ];
 
 const statusColors = {
-  scheduled: "bg-blue-500/20 border-blue-500 text-blue-700 dark:text-blue-300",
-  "in-progress":
-    "bg-yellow-500/20 border-yellow-500 text-yellow-700 dark:text-yellow-300",
-  completed:
-    "bg-green-500/20 border-green-500 text-green-700 dark:text-green-300",
-  cancelled: "bg-red-500/20 border-red-500 text-red-700 dark:text-red-300",
+  scheduled: "bg-primary/20 border-primary text-primary dark:text-primary",
+  "in-progress": "bg-warning/20 border-warning text-warning dark:text-warning",
+  completed: "bg-success/20 border-success text-success dark:text-success",
+  cancelled:
+    "bg-destructive/20 border-destructive text-destructive dark:text-destructive",
 };
 
 const priorityColors = {
-  low: "bg-gray-500",
-  medium: "bg-blue-500",
-  high: "bg-orange-500",
-  urgent: "bg-red-500",
+  low: "bg-secondary0",
+  medium: "bg-primary",
+  high: "bg-warning",
+  urgent: "bg-destructive",
 };
 
 const technicianStatusColors = {
-  available: "bg-green-500",
-  "on-job": "bg-yellow-500",
-  "on-break": "bg-orange-500",
-  offline: "bg-gray-500",
+  available: "bg-success",
+  "on-job": "bg-warning",
+  "on-break": "bg-warning",
+  offline: "bg-secondary0",
 };
 
 function timeToPosition(time: string): number {
@@ -544,8 +543,8 @@ export function TechnicianScheduleChart() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-6 border-r pr-6">
               <div className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-md bg-blue-500/10">
-                  <span className="font-semibold text-blue-600 text-sm dark:text-blue-400">
+                <div className="flex size-8 items-center justify-center rounded-md bg-primary/10">
+                  <span className="font-semibold text-primary text-sm dark:text-primary">
                     {mockTechnicians.reduce(
                       (acc, tech) =>
                         acc +
@@ -563,8 +562,8 @@ export function TechnicianScheduleChart() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-md bg-yellow-500/10">
-                  <span className="font-semibold text-sm text-yellow-600 dark:text-yellow-400">
+                <div className="flex size-8 items-center justify-center rounded-md bg-warning/10">
+                  <span className="font-semibold text-sm text-warning dark:text-warning">
                     {mockTechnicians.reduce(
                       (acc, tech) =>
                         acc +
@@ -582,8 +581,8 @@ export function TechnicianScheduleChart() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-md bg-green-500/10">
-                  <span className="font-semibold text-green-600 text-sm dark:text-green-400">
+                <div className="flex size-8 items-center justify-center rounded-md bg-success/10">
+                  <span className="font-semibold text-sm text-success dark:text-success">
                     {mockTechnicians.reduce(
                       (acc, tech) =>
                         acc +
@@ -603,7 +602,7 @@ export function TechnicianScheduleChart() {
             {/* Technician Status */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-green-500" />
+                <div className="size-2 rounded-full bg-success" />
                 <span className="text-xs">
                   {
                     mockTechnicians.filter((t) => t.status === "available")
@@ -613,14 +612,14 @@ export function TechnicianScheduleChart() {
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-yellow-500" />
+                <div className="size-2 rounded-full bg-warning" />
                 <span className="text-xs">
                   {mockTechnicians.filter((t) => t.status === "on-job").length}{" "}
                   On Job
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-orange-500" />
+                <div className="size-2 rounded-full bg-warning" />
                 <span className="text-xs">
                   {
                     mockTechnicians.filter((t) => t.status === "on-break")
@@ -639,19 +638,19 @@ export function TechnicianScheduleChart() {
             </span>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-gray-500" />
+                <div className="size-2 rounded-full bg-secondary0" />
                 <span>Low</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-blue-500" />
+                <div className="size-2 rounded-full bg-primary" />
                 <span>Med</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-orange-500" />
+                <div className="size-2 rounded-full bg-warning" />
                 <span>High</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-red-500" />
+                <div className="size-2 rounded-full bg-destructive" />
                 <span>Urgent</span>
               </div>
             </div>

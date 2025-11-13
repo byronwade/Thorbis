@@ -21,11 +21,12 @@ import {
   Text,
 } from "@react-email/components";
 import type { ReactNode } from "react";
+import { EMAIL_COLORS } from "../theme";
 
-interface BaseLayoutProps {
+type BaseLayoutProps = {
   children: ReactNode;
   previewText?: string;
-}
+};
 
 export function BaseLayout({ children, previewText }: BaseLayoutProps) {
   return (
@@ -83,29 +84,29 @@ export function BaseLayout({ children, previewText }: BaseLayoutProps) {
 
 // Styles matching dashboard design system
 const main = {
-  backgroundColor: "#f5f5f7", // Light background
+  backgroundColor: EMAIL_COLORS.background, // Light background
   fontFamily:
     'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   padding: "40px 20px",
 };
 
 const container = {
-  backgroundColor: "#ffffff",
+  backgroundColor: EMAIL_COLORS.surface,
   maxWidth: "600px",
   margin: "0 auto",
   borderRadius: "12px",
   overflow: "hidden" as const,
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+  boxShadow: "0 2px 8px rgba(17, 24, 39, 0.08)",
 };
 
 const header = {
-  backgroundColor: "hsl(217 91% 60%)", // Thorbis Electric Blue
+  backgroundColor: EMAIL_COLORS.primary,
   padding: "32px 40px",
   textAlign: "center" as const,
 };
 
 const logo = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "28px",
   fontWeight: "700",
   margin: "0",
@@ -117,30 +118,30 @@ const content = {
 };
 
 const divider = {
-  borderColor: "#e5e5e7",
+  borderColor: EMAIL_COLORS.border,
   margin: "0",
 };
 
 const footer = {
   padding: "32px 40px",
   textAlign: "center" as const,
-  backgroundColor: "#fafafa",
+  backgroundColor: EMAIL_COLORS.surfaceStrong,
 };
 
 const footerText = {
-  color: "#6b7280",
+  color: EMAIL_COLORS.muted,
   fontSize: "14px",
   lineHeight: "24px",
   margin: "8px 0",
 };
 
 const footerLink = {
-  color: "hsl(217 91% 60%)",
+  color: EMAIL_COLORS.primary,
   textDecoration: "none",
 };
 
 const footerCopyright = {
-  color: "#9ca3af",
+  color: EMAIL_COLORS.muted,
   fontSize: "12px",
   margin: "16px 0 0 0",
 };

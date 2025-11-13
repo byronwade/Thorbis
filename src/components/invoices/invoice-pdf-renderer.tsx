@@ -27,6 +27,17 @@ interface InvoicePDFProps {
   customization?: any; // From Zustand store
 }
 
+const DEFAULT_COLORS = {
+  background: "#fafafa",
+  text: "#171717",
+  heading: "#171717",
+  primary: "#3c6ff5",
+  border: "#e6e6e6",
+  mutedText: "#737373",
+  tableHeader: "#f2f2f2",
+  notesBackground: "#f7f7f7",
+};
+
 // Register fonts (optional - use system fonts by default)
 // Font.register({
 //   family: "Inter",
@@ -44,17 +55,17 @@ const createStyles = (customization?: any) => {
   return StyleSheet.create({
     page: {
       padding: 48, // ~0.67 inches
-      backgroundColor: "#ffffff",
+      backgroundColor: colors.background || DEFAULT_COLORS.background,
       fontFamily: typography.bodyFont || "Helvetica",
       fontSize: typography.bodySize || 10,
-      color: colors.text || "#000000",
+      color: colors.text || DEFAULT_COLORS.text,
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       marginBottom: 24,
       paddingBottom: 12,
-      borderBottom: `2px solid ${colors.primary || "#000000"}`,
+      borderBottom: `2px solid ${colors.primary || DEFAULT_COLORS.primary}`,
     },
     companyInfo: {
       flex: 1,
@@ -63,7 +74,7 @@ const createStyles = (customization?: any) => {
       fontSize: typography.headingSize || 24,
       fontWeight: "bold",
       marginBottom: 8,
-      color: colors.heading || colors.text || "#000000",
+      color: colors.heading || colors.text || DEFAULT_COLORS.heading,
     },
     invoiceTitle: {
       fontSize: 32,
@@ -78,7 +89,7 @@ const createStyles = (customization?: any) => {
     },
     label: {
       fontSize: 8,
-      color: colors.mutedText || "#666666",
+      color: colors.mutedText || DEFAULT_COLORS.mutedText,
       textTransform: "uppercase",
       marginBottom: 4,
     },
@@ -87,12 +98,12 @@ const createStyles = (customization?: any) => {
       gap: 24,
       marginBottom: 24,
       paddingBottom: 12,
-      borderBottom: `1px solid ${colors.border || "#e5e7eb"}`,
+      borderBottom: `1px solid ${colors.border || DEFAULT_COLORS.border}`,
     },
     billToBox: {
       flex: 1,
       padding: 12,
-      border: `1px solid ${colors.border || "#e5e7eb"}`,
+      border: `1px solid ${colors.border || DEFAULT_COLORS.border}`,
       borderRadius: 4,
     },
     sectionTitle: {
@@ -100,25 +111,25 @@ const createStyles = (customization?: any) => {
       fontWeight: "bold",
       textTransform: "uppercase",
       marginBottom: 8,
-      color: colors.heading || "#000000",
+      color: colors.heading || DEFAULT_COLORS.heading,
     },
     table: {
       marginBottom: 24,
     },
     tableHeader: {
       flexDirection: "row",
-      backgroundColor: colors.tableHeader || "#f3f4f6",
+      backgroundColor: colors.tableHeader || DEFAULT_COLORS.tableHeader,
       padding: 8,
       fontSize: 9,
       fontWeight: "bold",
       textTransform: "uppercase",
-      borderBottom: `2px solid ${colors.primary || "#000000"}`,
+      borderBottom: `2px solid ${colors.primary || DEFAULT_COLORS.primary}`,
     },
     tableRow: {
       flexDirection: "row",
       paddingVertical: 8,
       paddingHorizontal: 8,
-      borderBottom: `1px solid ${colors.border || "#e5e7eb"}`,
+      borderBottom: `1px solid ${colors.border || DEFAULT_COLORS.border}`,
       fontSize: 10,
     },
     tableCell: {
@@ -147,22 +158,25 @@ const createStyles = (customization?: any) => {
       justifyContent: "space-between",
       paddingVertical: 8,
       paddingTop: 12,
-      borderTop: `2px solid ${colors.primary || "#000000"}`,
+      borderTop: `2px solid ${colors.primary || DEFAULT_COLORS.primary}`,
       fontSize: 14,
       fontWeight: "bold",
     },
     notesSection: {
       marginBottom: 24,
       padding: 12,
-      backgroundColor: colors.notesBg || "#f9fafb",
+      backgroundColor:
+        colors.notesBg ||
+        colors.notesBackground ||
+        DEFAULT_COLORS.notesBackground,
       borderRadius: 4,
     },
     footer: {
       marginTop: "auto",
       paddingTop: 24,
-      borderTop: `1px solid ${colors.border || "#e5e7eb"}`,
+      borderTop: `1px solid ${colors.border || DEFAULT_COLORS.border}`,
       fontSize: 8,
-      color: colors.mutedText || "#666666",
+      color: colors.mutedText || DEFAULT_COLORS.mutedText,
       textAlign: "center",
     },
     pageNumber: {
@@ -170,7 +184,7 @@ const createStyles = (customization?: any) => {
       bottom: 30,
       right: 48,
       fontSize: 8,
-      color: colors.mutedText || "#666666",
+      color: colors.mutedText || DEFAULT_COLORS.mutedText,
     },
   });
 };

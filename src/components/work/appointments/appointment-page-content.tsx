@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveAppointment } from "@/actions/appointments";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,8 +34,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { archiveAppointment } from "@/actions/appointments";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -515,10 +515,10 @@ export function AppointmentPageContent({
 
               {/* Archive Button */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsArchiveDialogOpen(true)}
                 className="ml-auto"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
               >
                 <Archive className="mr-2 size-4" />
                 Archive
@@ -589,7 +589,7 @@ export function AppointmentPageContent({
       />
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Appointment?</DialogTitle>
@@ -600,16 +600,16 @@ export function AppointmentPageContent({
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveAppointment}
               disabled={isArchiving}
+              onClick={handleArchiveAppointment}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Appointment"}
             </Button>

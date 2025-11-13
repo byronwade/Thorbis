@@ -424,8 +424,8 @@ export function PaymentPlanCreator({
           </div>
 
           {autoPayEnabled && (
-            <div className="rounded-lg bg-blue-50 p-3 text-sm dark:bg-blue-950/30">
-              <p className="text-blue-900 dark:text-blue-100">
+            <div className="rounded-lg bg-primary p-3 text-sm dark:bg-primary/30">
+              <p className="text-primary dark:text-primary">
                 Customer will need to set up their payment method in the
                 customer portal. Automatic charges will occur on scheduled due
                 dates.
@@ -498,7 +498,7 @@ export function PaymentPlanCreator({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white/50 p-3 text-sm dark:bg-black/20">
+          <div className="rounded-lg bg-card/50 p-3 text-sm dark:bg-black/20">
             <p className="font-medium">
               {numberOfPayments} {paymentFrequency.replace("_", " ")} payments
               of ${paymentAmount.toLocaleString()}

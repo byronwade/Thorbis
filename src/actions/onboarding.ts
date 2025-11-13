@@ -154,6 +154,26 @@ async function ensureActiveMembership(
   companyId: string,
   userId: string
 ): Promise<void> {
+  // First verify the table exists by checking if we can query it
+  const { error: testError } = await serviceSupabase
+    .from("team_members")
+    .select("id")
+    .limit(1);
+
+  if (testError) {
+    console.error("Team members table access error:", testError);
+    // If table doesn't exist, this is a critical error
+    if (
+      testError.message?.includes("does not exist") ||
+      testError.code === "42P01"
+    ) {
+      throw new Error(
+        "Database schema error: team_members table not found. Please contact support."
+      );
+    }
+    throw new Error(`Database error: ${testError.message}`);
+  }
+
   const { data: membership, error } = await serviceSupabase
     .from("team_members")
     .select("id, status")
@@ -173,9 +193,12 @@ async function ensureActiveMembership(
         company_id: companyId,
         user_id: userId,
         status: "active",
+        role: "owner", // Set as owner since they're creating the company
+        joined_at: new Date().toISOString(),
       });
 
     if (insertError) {
+      console.error("Failed to insert team member:", insertError);
       throw new Error(
         `Failed to add you to the organization: ${insertError.message}`
       );

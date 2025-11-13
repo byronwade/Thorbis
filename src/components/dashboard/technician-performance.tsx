@@ -76,9 +76,9 @@ const _chartConfig = {
 } satisfies ChartConfig;
 
 const statusColors: Record<TechnicianStatus, string> = {
-  "on-job": "bg-blue-500",
-  traveling: "bg-yellow-500",
-  available: "bg-green-500",
+  "on-job": "bg-primary",
+  traveling: "bg-warning",
+  available: "bg-success",
 };
 
 const statusLabels: Record<TechnicianStatus, string> = {

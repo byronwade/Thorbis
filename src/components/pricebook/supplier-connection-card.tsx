@@ -48,29 +48,29 @@ const statusConfig = {
     icon: CheckCircle2,
     badge: "Connected",
     badgeClassName:
-      "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400",
-    iconClassName: "text-green-600 dark:text-green-400",
+      "border-success/50 bg-success/10 text-success dark:text-success",
+    iconClassName: "text-success dark:text-success",
   },
   syncing: {
     icon: RefreshCw,
     badge: "Syncing...",
     badgeClassName:
-      "border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-400",
-    iconClassName: "text-blue-600 dark:text-blue-400 animate-spin",
+      "border-primary/50 bg-primary/10 text-primary dark:text-primary",
+    iconClassName: "text-primary dark:text-primary animate-spin",
   },
   error: {
     icon: XCircle,
     badge: "Error",
     badgeClassName:
-      "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-400",
-    iconClassName: "text-red-600 dark:text-red-400",
+      "border-destructive/50 bg-destructive/10 text-destructive dark:text-destructive",
+    iconClassName: "text-destructive dark:text-destructive",
   },
   warning: {
     icon: AlertCircle,
     badge: "Warning",
     badgeClassName:
-      "border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-    iconClassName: "text-yellow-600 dark:text-yellow-400",
+      "border-warning/50 bg-warning/10 text-warning dark:text-warning",
+    iconClassName: "text-warning dark:text-warning",
   },
   disconnected: {
     icon: XCircle,
@@ -132,8 +132,8 @@ export function SupplierConnectionCard({
             <div
               className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-lg bg-muted",
-                supplier.status === "connected" && "bg-green-500/10",
-                supplier.status === "error" && "bg-red-500/10"
+                supplier.status === "connected" && "bg-success/10",
+                supplier.status === "error" && "bg-destructive/10"
               )}
             >
               <StatusIcon className={cn("h-5 w-5", config.iconClassName)} />
@@ -183,7 +183,7 @@ export function SupplierConnectionCard({
                 )}
                 {supplier.status === "connected" && (
                   <DropdownMenuItem
-                    className="text-red-600"
+                    className="text-destructive"
                     onClick={handleDisconnect}
                   >
                     <XCircle className="mr-2 h-4 w-4" />
@@ -204,8 +204,8 @@ export function SupplierConnectionCard({
       <CardContent className="space-y-3">
         {/* Error Message */}
         {supplier.errorMessage && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-950/30">
-            <p className="text-red-800 text-sm dark:text-red-300">
+          <div className="rounded-md border border-destructive bg-destructive p-3 dark:border-destructive/50 dark:bg-destructive/30">
+            <p className="text-destructive text-sm dark:text-destructive">
               {supplier.errorMessage}
             </p>
           </div>

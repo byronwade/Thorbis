@@ -5,9 +5,9 @@
  */
 
 import { notFound } from "next/navigation";
-import { DetailPageLayout } from "@/components/layout/detail-page-layout";
-import { TeamMemberStatsBar } from "@/components/team/team-member-stats-bar";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { TeamMemberPageContent } from "@/components/team/team-member-page-content";
+import { generateTeamMemberStatsSimple } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function TeamMemberDetailsPage({
@@ -108,7 +108,11 @@ export default async function TeamMemberDetailsPage({
       .select("*")
       .eq("team_member_id", teamMemberId)
       .is("deleted_at", null)
-      .then((result) => (result.error ? { data: [], error: null } : { data: result.data || [], error: null })),
+      .then((result) =>
+        result.error
+          ? { data: [], error: null }
+          : { data: result.data || [], error: null }
+      ),
 
     // Get activity log
     supabase
@@ -116,7 +120,7 @@ export default async function TeamMemberDetailsPage({
       .select("*, user:users(*)")
       .eq("entity_type", "team_member")
       .eq("entity_id", teamMemberId)
-      .order("created_at", { ascending: false})
+      .order("created_at", { ascending: false })
       .limit(20),
   ]);
 
@@ -155,14 +159,19 @@ export default async function TeamMemberDetailsPage({
     activities: activities || [],
   };
 
+  // Generate stats for toolbar
+  const stats = generateTeamMemberStatsSimple(metrics);
+
   return (
-    <DetailPageLayout
-      entityId={teamMemberId}
-      entityType="team-member"
-      entityData={teamMemberData}
-      metrics={metrics}
-      StatsBarComponent={TeamMemberStatsBar}
-      ContentComponent={TeamMemberPageContent}
-    />
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <TeamMemberPageContent
+            entityData={teamMemberData}
+            metrics={metrics}
+          />
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

@@ -1,18 +1,15 @@
 "use client";
 
+import { ArrowUpRight, CreditCard, User } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
-import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { EntityKanban } from "@/components/ui/entity-kanban";
+import type {
+  KanbanItemBase,
+  KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowUpRight,
-  CreditCard,
-  User,
-} from "lucide-react";
 
 type PaymentStatus =
   | "pending"
@@ -39,9 +36,7 @@ type Payment = {
   job_id?: string | null;
 };
 
-type PaymentsKanbanItem = KanbanItemBase & {
-  payment: Payment;
-};
+type PaymentsKanbanItem = KanbanItemBase & { entity: Payment };
 
 type PaymentsKanbanProps = {
   payments: Payment[];
@@ -57,11 +52,17 @@ const PAYMENT_STATUS_COLUMNS: Array<{
   { id: "completed", name: "Completed", accentColor: "#22C55E" },
   { id: "failed", name: "Failed", accentColor: "#EF4444" },
   { id: "refunded", name: "Refunded", accentColor: "#F97316" },
-  { id: "partially_refunded", name: "Partially Refunded", accentColor: "#F59E0B" },
+  {
+    id: "partially_refunded",
+    name: "Partially Refunded",
+    accentColor: "#F59E0B",
+  },
   { id: "cancelled", name: "Cancelled", accentColor: "#6B7280" },
 ];
 
-const COLUMN_LABEL = new Map(PAYMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+  PAYMENT_STATUS_COLUMNS.map((column) => [column.id, column.name])
+);
 const DEFAULT_STATUS: PaymentStatus = "pending";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -118,25 +119,26 @@ function getCustomerName(payment: Payment): string {
 }
 
 function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
-  const { payment, columnId } = item;
+  const payment = item.entity;
+  const columnId = item.columnId as PaymentStatus | undefined;
 
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <Link
-            className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-primary"
+            className="block font-semibold text-muted-foreground text-xs uppercase tracking-wide hover:text-primary"
             href={`/dashboard/work/payments/${payment.id}`}
           >
             {payment.payment_number}
           </Link>
-          <h3 className="text-sm font-semibold leading-snug text-foreground">
+          <h3 className="font-semibold text-foreground text-sm leading-snug">
             {formatCurrency(payment.amount)}
           </h3>
         </div>
       </div>
 
-      <div className="space-y-2 text-xs text-muted-foreground">
+      <div className="space-y-2 text-muted-foreground text-xs">
         <div className="flex items-center gap-2">
           <User className="size-4 text-primary" />
           <span className="font-medium text-foreground">
@@ -156,21 +158,22 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-2 text-[11px] tracking-wide text-muted-foreground">
+      <div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
         <span>
-          {payment.processed_at && fullDateFormatter.format(new Date(payment.processed_at))}
+          {payment.processed_at &&
+            fullDateFormatter.format(new Date(payment.processed_at))}
         </span>
         <span className="uppercase">
-          {COLUMN_LABEL.get(columnId as PaymentStatus) ?? columnId}
+          {columnId ? COLUMN_LABEL.get(columnId) ?? columnId : "—"}
         </span>
       </div>
 
       <div className="flex items-center justify-end pt-1">
         <Button
           asChild
+          className="gap-1 text-primary text-xs"
           size="sm"
           variant="ghost"
-          className="gap-1 text-xs text-primary"
         >
           <Link href={`/dashboard/work/payments/${payment.id}`}>
             View
@@ -190,7 +193,7 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
     item,
     fromColumnId,
     toColumnId,
-  }: KanbanMoveEvent<PaymentsKanbanItem>) => {
+  }: KanbanMoveEvent<KanbanItemBase & { entity: Payment }>) => {
     if (fromColumnId === toColumnId) {
       return;
     }
@@ -199,7 +202,7 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
       void (async () => {
         // TODO: Implement updatePaymentStatus action
         // const { updatePaymentStatus } = await import("@/actions/payments");
-        // const result = await updatePaymentStatus(item.payment.id, toColumnId);
+        // const result = await updatePaymentStatus(item.entity.id, toColumnId);
 
         // if (!result.success) {
         //   toast.error("Unable to move payment", {
@@ -209,9 +212,7 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
         // }
 
         toast.success(
-          `Payment moved to ${COLUMN_LABEL.get(
-            toColumnId as PaymentStatus
-          )}`
+          `Payment moved to ${COLUMN_LABEL.get(toColumnId as PaymentStatus)}`
         );
       })();
     });
@@ -219,41 +220,37 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 
   return (
     <EntityKanban<Payment, PaymentStatus>
-      columns={PAYMENT_STATUS_COLUMNS}
-      data={payments}
-      entityName="payments"
-      mapToKanbanItem={(payment) => ({
-        id: payment.id,
-        columnId: resolveStatus(payment.status),
-        entity: payment,
-        payment,
-      })}
-      updateEntityStatus={(payment, newStatus) => ({
-        ...payment,
-        status: newStatus,
-      })}
       calculateColumnMeta={(columnId, items) => {
         const columnItems = items.filter((item) => item.columnId === columnId);
         const total = columnItems.reduce(
-          (sum, item) => sum + ((item.entity as Payment).amount ?? 0),
+          (sum, item) => sum + (item.entity.amount ?? 0),
           0
         );
         return { count: columnItems.length, total };
       }}
-      showTotals={true}
+      columns={PAYMENT_STATUS_COLUMNS}
+      data={payments}
+      entityName="payments"
       formatTotal={(total) => formatCurrency(total)}
+      mapToKanbanItem={(payment) => ({
+        id: payment.id,
+        columnId: resolveStatus(payment.status),
+        entity: payment,
+      })}
       onItemMove={handleItemMove}
-      renderCard={(item) => <PaymentCardContent item={{ ...item, payment: item.entity } as PaymentsKanbanItem} />}
+      renderCard={(item) => (
+        <PaymentCardContent item={item as PaymentsKanbanItem} />
+      )}
       renderDragOverlay={(item) => (
         <div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
-          <PaymentCardContent item={{ ...item, payment: item.entity } as PaymentsKanbanItem} />
+          <PaymentCardContent item={item as PaymentsKanbanItem} />
         </div>
       )}
+      showTotals={true}
+      updateEntityStatus={(payment, newStatus) => ({
+        ...payment,
+        status: newStatus,
+      })}
     />
   );
 }
-
-
-
-
-

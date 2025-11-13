@@ -19,8 +19,8 @@ const automationSections = [
     description: "Create automated workflows for common tasks",
     icon: Workflow,
     href: "/dashboard/settings/automation/workflows",
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
     badge: "Beta",
   },
   {
@@ -28,8 +28,8 @@ const automationSections = [
     description: "Set up event-based automation rules",
     icon: Zap,
     href: "/dashboard/settings/automation/triggers",
-    color: "text-yellow-500",
-    bgColor: "bg-yellow-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
     badge: "Beta",
   },
   {
@@ -37,8 +37,8 @@ const automationSections = [
     description: "Smart automation powered by AI",
     icon: Bot,
     href: "/dashboard/settings/automation/ai",
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent/10",
     badge: "Beta",
   },
   {
@@ -46,8 +46,8 @@ const automationSections = [
     description: "Build complex automation with conditions",
     icon: GitBranch,
     href: "/dashboard/settings/automation/logic",
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
+    color: "text-success",
+    bgColor: "bg-success/10",
     badge: "Beta",
   },
   {
@@ -55,8 +55,8 @@ const automationSections = [
     description: "Filter and route data automatically",
     icon: Filter,
     href: "/dashboard/settings/automation/filters",
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
     badge: "Beta",
   },
 ];
@@ -76,11 +76,11 @@ export default function AutomationSettingsPage() {
         </p>
       </div>
 
-      <Card className="border-blue-500/50 bg-blue-500/5">
+      <Card className="border-primary/50 bg-primary/5">
         <CardContent className="flex items-start gap-3 pt-6">
-          <Zap className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+          <Zap className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
           <div className="space-y-1">
-            <p className="font-medium text-blue-700 text-sm dark:text-blue-400">
+            <p className="font-medium text-primary text-sm dark:text-primary">
               Automation Beta Program
             </p>
             <p className="text-muted-foreground text-sm">

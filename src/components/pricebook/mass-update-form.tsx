@@ -405,8 +405,8 @@ export function MassUpdateForm() {
                         <Badge
                           className={
                             item.change > 0
-                              ? "bg-green-500/10 text-green-700 dark:text-green-400"
-                              : "bg-red-500/10 text-red-700 dark:text-red-400"
+                              ? "bg-success/10 text-success dark:text-success"
+                              : "bg-destructive/10 text-destructive dark:text-destructive"
                           }
                           variant="outline"
                         >
@@ -429,13 +429,13 @@ export function MassUpdateForm() {
 
                 {/* Apply Button */}
                 <div className="space-y-3 pt-4">
-                  <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/30">
-                    <AlertCircle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <div className="flex items-start gap-2 rounded-lg border border-warning bg-warning p-3 dark:border-warning/50 dark:bg-warning/30">
+                    <AlertCircle className="mt-0.5 h-4 w-4 text-warning dark:text-warning" />
                     <div className="flex-1">
-                      <p className="font-medium text-amber-800 text-sm dark:text-amber-300">
+                      <p className="font-medium text-sm text-warning dark:text-warning">
                         Warning
                       </p>
-                      <p className="text-amber-700 text-xs dark:text-amber-400">
+                      <p className="text-warning text-xs dark:text-warning">
                         This action will update {previewItems.length} items.
                         This cannot be undone.
                       </p>

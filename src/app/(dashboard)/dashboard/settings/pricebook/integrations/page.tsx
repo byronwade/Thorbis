@@ -178,7 +178,7 @@ export default async function SupplierIntegrationsPage() {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <span className="font-bold">1</span>
               </div>
               <h3 className="font-medium">Connect Your Account</h3>
@@ -189,7 +189,7 @@ export default async function SupplierIntegrationsPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <span className="font-bold">2</span>
               </div>
               <h3 className="font-medium">Automatic Sync</h3>
@@ -199,7 +199,7 @@ export default async function SupplierIntegrationsPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <span className="font-bold">3</span>
               </div>
               <h3 className="font-medium">Stay Up-to-Date</h3>

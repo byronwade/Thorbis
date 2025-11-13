@@ -419,7 +419,7 @@ function FileUploadItem({ file, onRemove, onRetry }: FileUploadItemProps) {
       case "uploading":
         return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
       case "success":
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-success" />;
       case "error":
         return <AlertCircle className="h-4 w-4 text-destructive" />;
       default:
@@ -451,7 +451,7 @@ function FileUploadItem({ file, onRemove, onRetry }: FileUploadItemProps) {
 
         {/* Warnings */}
         {file.warnings && file.warnings.length > 0 && (
-          <p className="mt-1 text-xs text-yellow-600">
+          <p className="mt-1 text-warning text-xs">
             {file.warnings.join("; ")}
           </p>
         )}

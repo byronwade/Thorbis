@@ -10,12 +10,13 @@
 
 import { Section, Text } from "@react-email/components";
 import type { ReactNode } from "react";
+import { EMAIL_COLORS } from "../theme";
 
-interface CardProps {
+type CardProps = {
   children: ReactNode;
   title?: string;
   style?: React.CSSProperties;
-}
+};
 
 export function Card({ children, title, style }: CardProps) {
   return (
@@ -32,8 +33,8 @@ export function Card({ children, title, style }: CardProps) {
 }
 
 const cardStyle = {
-  backgroundColor: "#ffffff",
-  border: "1px solid #e5e5e7",
+  backgroundColor: EMAIL_COLORS.surface,
+  border: `1px solid ${EMAIL_COLORS.border}`,
   borderRadius: "8px",
   padding: "24px",
   margin: "16px 0",
@@ -42,6 +43,6 @@ const cardStyle = {
 const titleStyle = {
   fontSize: "18px",
   fontWeight: "600",
-  color: "#1f2937",
+  color: EMAIL_COLORS.heading,
   margin: "0 0 16px 0",
 };

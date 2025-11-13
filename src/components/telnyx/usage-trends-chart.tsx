@@ -12,16 +12,16 @@
 import { useEffect, useState } from "react";
 import {
   Bar,
-  BarChart,
   CartesianGrid,
+  LazyBarChart,
+  LazyLineChart,
   Legend,
   Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from "@/components/lazy/chart";
 import {
   Card,
   CardContent,
@@ -193,7 +193,7 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
 
           <TabsContent value="volume">
             <ResponsiveContainer height={400} width="100%">
-              <LineChart data={data}>
+              <LazyLineChart data={data}>
                 <CartesianGrid className="stroke-muted" strokeDasharray="3 3" />
                 <XAxis className="text-xs" dataKey="date" />
                 <YAxis className="text-xs" />
@@ -226,13 +226,13 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
                   strokeWidth={2}
                   type="monotone"
                 />
-              </LineChart>
+              </LazyLineChart>
             </ResponsiveContainer>
           </TabsContent>
 
           <TabsContent value="cost">
             <ResponsiveContainer height={400} width="100%">
-              <BarChart data={data}>
+              <LazyBarChart data={data}>
                 <CartesianGrid className="stroke-muted" strokeDasharray="3 3" />
                 <XAxis className="text-xs" dataKey="date" />
                 <YAxis className="text-xs" />
@@ -246,7 +246,7 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
                 />
                 <Legend />
                 <Bar dataKey="cost" fill="#10b981" name="Daily Cost" />
-              </BarChart>
+              </LazyBarChart>
             </ResponsiveContainer>
           </TabsContent>
         </Tabs>

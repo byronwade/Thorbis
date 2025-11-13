@@ -92,10 +92,10 @@ export function AIComingSoon() {
               Ask Anything, Get It Done
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <MessageSquare className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <MessageSquare className="size-6 text-primary dark:text-primary" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -107,10 +107,10 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-success/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
-                    <DollarSign className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-success/10">
+                    <DollarSign className="size-6 text-success dark:text-success" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -122,10 +122,10 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <FileText className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <FileText className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -136,10 +136,10 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
-                    <Calendar className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Calendar className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -150,10 +150,10 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-pink-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-pink-500/10">
-                    <Users className="size-6 text-pink-600 dark:text-pink-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Users className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -179,10 +179,10 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-indigo-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-indigo-500/20 hover:shadow-indigo-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-indigo-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-border/20 hover:shadow-indigo-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-indigo-500/10">
-                    <Phone className="size-6 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Phone className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -193,10 +193,10 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-yellow-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-yellow-500/10">
-                    <BarChart3 className="size-6 text-yellow-600 dark:text-yellow-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <BarChart3 className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -303,10 +303,10 @@ export function AIComingSoon() {
               24/7 Intelligent Monitoring
             </h2>
             <div className="grid gap-5 sm:grid-cols-2">
-              <div className="rounded-xl border border-red-500/20 bg-gradient-to-br from-red-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-destructive/20 bg-gradient-to-br from-red-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-red-500/10">
-                    <AlertCircle className="size-6 text-red-600 dark:text-red-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-destructive/10">
+                    <AlertCircle className="size-6 text-destructive dark:text-destructive" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Price Changes</h3>
@@ -319,16 +319,16 @@ export function AIComingSoon() {
                   &quot;Technician changed $1,250 HVAC repair to $800. This is
                   30% below price book. Would you like to review?&quot;
                 </p>
-                <div className="flex items-center gap-1 text-red-600 text-xs dark:text-red-400">
+                <div className="flex items-center gap-1 text-destructive text-xs dark:text-destructive">
                   <Bell className="size-3" />
                   <span>Alerts you instantly</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-orange-500/10">
-                    <Shield className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <Shield className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Missing Photos</h3>
@@ -341,16 +341,16 @@ export function AIComingSoon() {
                   &quot;Job #1247 completed but no before/after photos uploaded.
                   Sending reminder to technician.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <Zap className="size-3" />
                   <span>Automatic reminders</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-yellow-500/10">
-                    <Clock className="size-6 text-yellow-600 dark:text-yellow-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <Clock className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Late Jobs</h3>
@@ -363,16 +363,16 @@ export function AIComingSoon() {
                   &quot;Tech #3 is 45 minutes over scheduled time on current
                   job. Next appointment may be affected.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <TrendingUp className="size-3" />
                   <span>Proactive scheduling</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <FileText className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <FileText className="size-6 text-primary dark:text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Inconsistencies</h3>
@@ -385,16 +385,16 @@ export function AIComingSoon() {
                   &quot;Invoice total doesn&apos;t match work order. Line items
                   add to $1,450 but total shows $1,350.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
+                <div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
                   <CheckCircle2 className="size-3" />
                   <span>Prevents errors</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-purple-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-purple-500/10">
-                    <Wrench className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <Wrench className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Low Inventory</h3>
@@ -408,16 +408,16 @@ export function AIComingSoon() {
                   threshold). Warehouse stock also low at 8 units. Auto-ordering
                   50 units from supplier.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Zap className="size-3" />
                   <span>Never run out</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-success/20 bg-gradient-to-br from-green-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-green-500/10">
-                    <DollarSign className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-success/10">
+                    <DollarSign className="size-6 text-success dark:text-success" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Smart Savings</h3>
@@ -431,7 +431,7 @@ export function AIComingSoon() {
                   checking account. We noticed you had this to spare after
                   reviewing bills and existing totals.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
+                <div className="flex items-center gap-1 text-success text-xs dark:text-success">
                   <TrendingUp className="size-3" />
                   <span>Intelligent finance</span>
                 </div>
@@ -460,10 +460,10 @@ export function AIComingSoon() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-pink-500/20 bg-gradient-to-br from-pink-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-pink-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-pink-500/10">
-                    <Calendar className="size-6 text-pink-600 dark:text-pink-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <Calendar className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Warranty Expiring</h3>
@@ -477,16 +477,16 @@ export function AIComingSoon() {
                   days. Extended warranty conversion rate is 67%. Should we
                   reach out?&quot;
                 </p>
-                <div className="flex items-center gap-1 text-pink-600 text-xs dark:text-pink-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <TrendingUp className="size-3" />
                   <span>Upsell opportunities</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-indigo-500/10">
-                    <CreditCard className="size-6 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <CreditCard className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Payment Failures</h3>
@@ -500,7 +500,7 @@ export function AIComingSoon() {
                   plan ($89). Customer&apos;s card may have expired. Sending
                   update request.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-indigo-600 text-xs dark:text-indigo-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Bell className="size-3" />
                   <span>Auto recovery</span>
                 </div>
@@ -552,10 +552,10 @@ export function AIComingSoon() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-amber-500/10 to-transparent p-5 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-amber-500/10">
-                    <Database className="size-6 text-amber-600 dark:text-amber-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <Database className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Duplicate Records</h3>
@@ -569,7 +569,7 @@ export function AIComingSoon() {
                   (555-0123). Names: John Smith, J. Smith, Jonathan Smith.
                   Should we merge?&quot;
                 </p>
-                <div className="flex items-center gap-1 text-amber-600 text-xs dark:text-amber-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <CheckCircle2 className="size-3" />
                   <span>Clean database</span>
                 </div>
@@ -624,10 +624,10 @@ export function AIComingSoon() {
               AI-Initiated Outbound Calling
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
+              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <PhoneOutgoing className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <PhoneOutgoing className="size-6 text-primary dark:text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -643,16 +643,16 @@ export function AIComingSoon() {
                   ago, asks about their decision, answers questions, and
                   schedules appointments - all without human intervention.
                 </p>
-                <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
+                <div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
                   <CheckCircle2 className="size-3" />
                   <span>Never miss follow-up timing</span>
                 </div>
               </div>
 
-              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-purple-500/10">
-                    <Calendar className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <Calendar className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -668,16 +668,16 @@ export function AIComingSoon() {
                   confirm, reschedule if needed, and provide technician details.
                   Natural conversation that feels personal.
                 </p>
-                <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Clock className="size-3" />
                   <span>Perfectly timed calls</span>
                 </div>
               </div>
 
-              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
+              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-success/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-green-500/10">
-                    <UserCheck className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-success/10">
+                    <UserCheck className="size-6 text-success dark:text-success" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -693,7 +693,7 @@ export function AIComingSoon() {
                   payment, offers payment plan options, and processes payments
                   over the phone - recovering revenue automatically.
                 </p>
-                <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
+                <div className="flex items-center gap-1 text-success text-xs dark:text-success">
                   <DollarSign className="size-3" />
                   <span>Increase cash flow</span>
                 </div>
@@ -730,10 +730,10 @@ export function AIComingSoon() {
                 </div>
               </div>
 
-              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-orange-500/10">
-                    <PhoneForwarded className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <PhoneForwarded className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -750,16 +750,16 @@ export function AIComingSoon() {
                   intervention is needed and transfers seamlessly with full
                   context.
                 </p>
-                <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <PhoneForwarded className="size-3" />
                   <span>Context-aware transfers</span>
                 </div>
               </div>
 
-              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
+              <div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-pink-500/10">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-pink-500/10">
-                    <HeadphonesIcon className="size-6 text-pink-600 dark:text-pink-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <HeadphonesIcon className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -775,7 +775,7 @@ export function AIComingSoon() {
                   explains warranty terms, and accesses customer history to give
                   personalized responses - just like talking to your best CSR.
                 </p>
-                <div className="flex items-center gap-1 text-pink-600 text-xs dark:text-pink-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Brain className="size-3" />
                   <span>Context-aware responses</span>
                 </div>
@@ -789,10 +789,10 @@ export function AIComingSoon() {
               Advanced Calling Intelligence
             </h2>
             <div className="grid gap-5 sm:grid-cols-2">
-              <div className="rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-indigo-500/10">
-                    <PhoneCall className="size-6 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <PhoneCall className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Campaign Calling</h3>
@@ -806,7 +806,7 @@ export function AIComingSoon() {
                   warranty renewals, or maintenance reminders. Personalizes each
                   conversation based on customer history and preferences.
                 </p>
-                <div className="flex items-center gap-1 text-indigo-600 text-xs dark:text-indigo-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <TrendingUp className="size-3" />
                   <span>Drive revenue growth</span>
                 </div>
@@ -862,10 +862,10 @@ export function AIComingSoon() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-amber-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-amber-500/10">
-                    <BarChart3 className="size-6 text-amber-600 dark:text-amber-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <BarChart3 className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Call Analytics</h3>
@@ -879,7 +879,7 @@ export function AIComingSoon() {
                   identifies common objections, measures customer sentiment, and
                   provides insights to improve your sales process.
                 </p>
-                <div className="flex items-center gap-1 text-amber-600 text-xs dark:text-amber-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <TrendingUp className="size-3" />
                   <span>Continuous improvement</span>
                 </div>
@@ -931,13 +931,13 @@ export function AIComingSoon() {
           <div>
             <h2 className="mb-5 font-semibold text-xl">Real Business Impact</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-5 text-center">
+              <div className="rounded-xl border border-success/20 bg-gradient-to-br from-green-500/10 to-transparent p-5 text-center">
                 <div className="mb-2 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
-                    <TrendingUp className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-success/10">
+                    <TrendingUp className="size-6 text-success dark:text-success" />
                   </div>
                 </div>
-                <div className="mb-1 font-bold text-2xl text-green-600 dark:text-green-400">
+                <div className="mb-1 font-bold text-2xl text-success dark:text-success">
                   35%
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -945,25 +945,25 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-center">
+              <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-center">
                 <div className="mb-2 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <Clock className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <Clock className="size-6 text-primary dark:text-primary" />
                   </div>
                 </div>
-                <div className="mb-1 font-bold text-2xl text-blue-600 dark:text-blue-400">
+                <div className="mb-1 font-bold text-2xl text-primary dark:text-primary">
                   80%
                 </div>
                 <p className="text-muted-foreground text-sm">Fewer no-shows</p>
               </div>
 
-              <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-5 text-center">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-purple-500/10 to-transparent p-5 text-center">
                 <div className="mb-2 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <DollarSign className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <DollarSign className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
-                <div className="mb-1 font-bold text-2xl text-purple-600 dark:text-purple-400">
+                <div className="mb-1 font-bold text-2xl text-accent-foreground dark:text-accent-foreground">
                   $15K
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -971,13 +971,13 @@ export function AIComingSoon() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-5 text-center">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-5 text-center">
                 <div className="mb-2 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
-                    <Phone className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Phone className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
-                <div className="mb-1 font-bold text-2xl text-orange-600 dark:text-orange-400">
+                <div className="mb-1 font-bold text-2xl text-warning dark:text-warning">
                   24/7
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -1047,7 +1047,7 @@ export function AIComingSoon() {
             </h2>
             <div className="mx-auto max-w-3xl space-y-3 text-left text-muted-foreground">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Natural Language Commands:
@@ -1057,7 +1057,7 @@ export function AIComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Complete Business Context:
@@ -1067,7 +1067,7 @@ export function AIComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Both Assistant AND Monitor:
@@ -1077,7 +1077,7 @@ export function AIComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Catches Expensive Mistakes:
@@ -1087,7 +1087,7 @@ export function AIComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Works Like a Team Member:

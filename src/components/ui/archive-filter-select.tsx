@@ -23,7 +23,10 @@ import {
   type ArchivableEntity,
   useArchiveStore,
 } from "@/lib/stores/archive-store";
-import { ARCHIVE_FILTER_OPTIONS, type ArchiveFilter } from "@/lib/utils/archive";
+import {
+  ARCHIVE_FILTER_OPTIONS,
+  type ArchiveFilter,
+} from "@/lib/utils/archive";
 
 interface ArchiveFilterSelectProps {
   entity: ArchivableEntity;
@@ -45,7 +48,9 @@ export function ArchiveFilterSelect({
     setFilter(entity, newFilter);
   };
 
-  const getCountForFilter = (filterValue: ArchiveFilter): number | undefined => {
+  const getCountForFilter = (
+    filterValue: ArchiveFilter
+  ): number | undefined => {
     switch (filterValue) {
       case "active":
         return activeCount;
@@ -54,11 +59,13 @@ export function ArchiveFilterSelect({
       case "all":
         return totalCount;
       default:
-        return undefined;
+        return;
     }
   };
 
-  const currentLabel = ARCHIVE_FILTER_OPTIONS.find((opt) => opt.value === filter)?.label || "Active Only";
+  const currentLabel =
+    ARCHIVE_FILTER_OPTIONS.find((opt) => opt.value === filter)?.label ||
+    "Active Only";
 
   return (
     <DropdownMenu>
@@ -77,9 +84,9 @@ export function ArchiveFilterSelect({
 
           return (
             <DropdownMenuItem
+              className="flex items-center justify-between"
               key={option.value}
               onClick={() => handleFilterChange(option.value)}
-              className="flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
                 {isSelected && <Check className="size-4" />}
@@ -88,9 +95,7 @@ export function ArchiveFilterSelect({
                 </span>
               </div>
               {count !== undefined && (
-                <span className="text-muted-foreground text-xs">
-                  {count}
-                </span>
+                <span className="text-muted-foreground text-xs">{count}</span>
               )}
             </DropdownMenuItem>
           );

@@ -314,13 +314,13 @@ export default function ChecklistsPage() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      hvac: "bg-blue-500",
-      plumbing: "bg-green-500",
-      electrical: "bg-yellow-500",
-      general: "bg-gray-500",
-      inspection: "bg-purple-500",
+      hvac: "bg-primary",
+      plumbing: "bg-success",
+      electrical: "bg-warning",
+      general: "bg-secondary0",
+      inspection: "bg-accent",
     };
-    return colors[category] || "bg-gray-500";
+    return colors[category] || "bg-secondary0";
   };
 
   const totalChecklists = checklists.length;
@@ -875,9 +875,9 @@ export default function ChecklistsPage() {
               </>
             )}
 
-            <div className="rounded-lg border border-blue-500/50 bg-blue-500/10 p-4">
+            <div className="rounded-lg border border-primary/50 bg-primary/10 p-4">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                 <div className="flex-1 space-y-1">
                   <p className="font-medium text-sm">Checklists Build Trust</p>
                   <p className="text-muted-foreground text-xs">

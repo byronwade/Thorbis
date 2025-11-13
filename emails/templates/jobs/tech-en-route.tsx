@@ -14,6 +14,7 @@ import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export default function TechEnRouteEmail({
   customerName,
@@ -93,14 +94,14 @@ const notificationIcon = {
 };
 
 const notificationText = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "20px",
   fontWeight: "600",
   margin: "0 0 8px 0",
 };
 
 const etaText = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "24px",
   fontWeight: "700",
   margin: "0",

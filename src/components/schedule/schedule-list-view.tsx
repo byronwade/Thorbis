@@ -83,20 +83,19 @@ const mockJobs: Job[] = [
 ];
 
 const statusColors = {
-  scheduled:
-    "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-300",
+  scheduled: "bg-primary/10 text-primary border-primary/20 dark:text-primary",
   "in-progress":
-    "bg-yellow-500/10 text-yellow-700 border-yellow-500/20 dark:text-yellow-300",
-  completed:
-    "bg-green-500/10 text-green-700 border-green-500/20 dark:text-green-300",
-  cancelled: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-300",
+    "bg-warning/10 text-warning border-warning/20 dark:text-warning",
+  completed: "bg-success/10 text-success border-success/20 dark:text-success",
+  cancelled:
+    "bg-destructive/10 text-destructive border-destructive/20 dark:text-destructive",
 };
 
 const priorityColors = {
-  low: "bg-gray-500",
-  medium: "bg-blue-500",
-  high: "bg-orange-500",
-  urgent: "bg-red-500",
+  low: "bg-secondary0",
+  medium: "bg-primary",
+  high: "bg-warning",
+  urgent: "bg-destructive",
 };
 
 export function ScheduleListView() {

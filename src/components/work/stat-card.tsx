@@ -8,9 +8,9 @@ type StatCardProps = {
 export function StatCard({ label, value, subtext, trend }: StatCardProps) {
   const trendColor =
     trend === "up"
-      ? "text-green-600 dark:text-green-500"
+      ? "text-success dark:text-success"
       : trend === "down"
-        ? "text-red-600 dark:text-red-500"
+        ? "text-destructive dark:text-destructive"
         : "text-muted-foreground";
 
   return (

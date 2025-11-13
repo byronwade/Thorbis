@@ -218,15 +218,15 @@ export default function ServiceHistoryPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           service.status === "Completed"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success text-success"
                             : service.status === "In Progress"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-gray-100 text-gray-800"
+                              ? "bg-primary text-primary"
+                              : "bg-muted text-foreground"
                         }`}
                       >
                         {service.status}
                       </span>
-                      <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 font-medium text-xs text-yellow-800">
+                      <span className="inline-flex items-center rounded-full bg-warning px-2 py-1 font-medium text-warning text-xs">
                         ⭐ {service.rating}
                       </span>
                     </div>

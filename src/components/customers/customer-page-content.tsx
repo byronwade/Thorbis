@@ -5,89 +5,107 @@
 
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import {
-  Activity,
-  AlertCircle,
+  Archive,
   Building2,
   Calendar,
-  Camera,
-  ChevronRight,
   CreditCard,
+  Download,
   FileText,
-  Globe,
   Mail,
   MapPin,
-  MessageSquare,
+  MoreVertical,
   Package,
   Phone,
   Plus,
+  Printer,
   Receipt,
+  Save,
+  Share2,
   ShieldCheck,
   Sparkles,
   TrendingUp,
   User,
+  UserCog,
   Wrench,
-  Edit2,
-  Save,
-  Hash,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
+import { PaymentMethodCard } from "@/components/customers/payment-method-card";
+import { PropertiesTable } from "@/components/customers/properties-table";
+import {
+  DetailPageContentLayout,
+  type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-content-layout";
+import { DetailPageSurface } from "@/components/layout/detail-page-shell";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { CustomerStatusBadge, JobStatusBadge, InvoiceStatusBadge } from "@/components/ui/status-badge";
-import { JobsTable } from "@/components/work/jobs-table";
-import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
-import { PropertiesTable } from "@/components/customers/properties-table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+  CustomerStatusBadge,
+  InvoiceStatusBadge,
+  JobStatusBadge,
+} from "@/components/ui/status-badge";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { formatCurrency, formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
-import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import {
   UnifiedAccordionContent,
-  UnifiedAccordionSection,
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
+import { JobsTable } from "@/components/work/jobs-table";
+import { useToast } from "@/hooks/use-toast";
+import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
+import { useToolbarActionsStore } from "@/lib/stores/toolbar-actions-store";
+import { cn } from "@/lib/utils";
 
 type CustomerPageContentProps = {
   customerData: any;
   metrics: any;
 };
 
-export function CustomerPageContent({ customerData, metrics }: CustomerPageContentProps) {
+export function CustomerPageContent({
+  customerData,
+  metrics,
+}: CustomerPageContentProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [localCustomer, setLocalCustomer] = useState(customerData.customer);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const setToolbarActions = useToolbarActionsStore((state) => state.setActions);
 
   // Prevent hydration mismatch by only rendering Radix components after mount
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Extract data before hooks
+  // Extract data before hooks (Customer 360° view - all related entities)
   const {
     customer,
     properties = [],
     jobs = [],
     invoices = [],
+    estimates = [], // NEW
+    appointments = [], // NEW
+    contracts = [], // NEW
+    payments = [], // NEW
+    maintenancePlans = [], // NEW
+    serviceAgreements = [], // NEW
     activities = [],
     equipment = [],
     attachments = [],
@@ -104,8 +122,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     setHasChanges(true);
   };
 
-  const customerStatus =
-    (localCustomer?.status || customer?.status || "active")?.toLowerCase();
+  const customerStatus = (
+    localCustomer?.status ||
+    customer?.status ||
+    "active"
+  )?.toLowerCase();
 
   const displayName = useMemo(() => {
     const explicitName =
@@ -242,16 +263,18 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
   };
 
   // Helper to determine badge type based on status
-  const getStatusBadge = (status: string, entityType: "job" | "invoice" = "job") => {
+  const getStatusBadge = (
+    status: string,
+    entityType: "job" | "invoice" = "job"
+  ) => {
     if (entityType === "invoice") {
       return <InvoiceStatusBadge status={status} />;
     }
     return <JobStatusBadge status={status} />;
   };
 
-
   const headerBadges = [
-    <Badge key="identifier" className="font-mono" variant="outline">
+    <Badge className="font-mono" key="identifier" variant="outline">
       {customerIdentifier}
     </Badge>,
     <CustomerStatusBadge status={customerStatus || "active"} />,
@@ -261,11 +284,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       </Badge>
     ) : null,
     portalEnabled ? (
-      <Badge
-        key="portal"
-        variant="outline"
-        className="gap-1 text-xs"
-      >
+      <Badge className="gap-1 text-xs" key="portal" variant="outline">
         <Sparkles className="h-3.5 w-3.5" /> Portal Enabled
       </Badge>
     ) : null,
@@ -276,7 +295,8 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       key: "new-job",
       label: "New Job",
       icon: Plus,
-      onClick: () => router.push(`/dashboard/work/new?customerId=${customer.id}`),
+      onClick: () =>
+        router.push(`/dashboard/work/new?customerId=${customer.id}`),
     },
     {
       key: "new-invoice",
@@ -292,41 +312,108 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       icon: Building2,
       variant: "outline" as const,
       onClick: () =>
-        router.push(`/dashboard/properties/new?customerId=${customer.id}`),
+        router.push(`/dashboard/work/properties/new?customerId=${customer.id}`),
     },
   ] as const;
 
   const renderQuickActions = () =>
-    quickActionConfigs.map(({ key, label, icon: Icon, variant, onClick }) => (
-      <Button
-        key={key}
-        onClick={onClick}
-        size="sm"
-        variant={variant ?? "default"}
-      >
-        <Icon className="mr-2 h-4 w-4" />
-        {label}
-      </Button>
-    ));
-
-  const primaryHeaderActions = hasChanges
-    ? [
+    quickActionConfigs.map((config) => {
+      const { key, label, icon: Icon, onClick } = config;
+      const variant = "variant" in config ? config.variant : undefined;
+      return (
         <Button
-          key="save"
-          onClick={handleSave}
+          key={key}
+          onClick={onClick}
           size="sm"
-          disabled={isSaving}
+          variant={variant ?? "default"}
         >
-          <Save className="mr-2 h-4 w-4" />
-          {isSaving ? "Saving..." : "Save Changes"}
-        </Button>,
-        <Button key="cancel" onClick={handleCancel} size="sm" variant="outline">
-          Cancel
-        </Button>,
-      ]
-    : renderQuickActions();
+          <Icon className="mr-2 h-4 w-4" />
+          {label}
+        </Button>
+      );
+    });
 
-  const secondaryHeaderActions = hasChanges ? renderQuickActions() : undefined;
+  const getToolbarActions = () => {
+    if (hasChanges) {
+      return (
+        <div className="flex items-center gap-1.5">
+          <Button disabled={isSaving} onClick={handleSave} size="sm">
+            <Save className="mr-2 h-4 w-4" />
+            {isSaving ? "Saving..." : "Save Changes"}
+          </Button>
+          <Button onClick={handleCancel} size="sm" variant="outline">
+            Cancel
+          </Button>
+        </div>
+      );
+    }
+    return (
+      <div className="flex items-center gap-1.5">
+        {renderQuickActions()}
+        <Separator className="h-6" orientation="vertical" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="h-8 w-8" size="icon" variant="outline">
+              <MoreVertical className="size-4" />
+              <span className="sr-only">More actions</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+              Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(`/dashboard/customers/${customer.id}/edit`)
+              }
+            >
+              <UserCog className="mr-2 size-3.5" />
+              Edit Full Profile
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem onClick={() => console.log("Export")}>
+              <Download className="mr-2 size-3.5" />
+              Export Customer Data
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log("Print")}>
+              <Printer className="mr-2 size-3.5" />
+              Print Customer Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log("Share")}>
+              <Share2 className="mr-2 size-3.5" />
+              Share Customer Link
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem onClick={() => console.log("Merge")}>
+              <User className="mr-2 size-3.5" />
+              Merge with Another Customer
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => console.log("Archive")}
+            >
+              <Archive className="mr-2 size-3.5" />
+              Archive Customer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
+
+  // Update toolbar actions when hasChanges or isSaving changes
+  useEffect(() => {
+    setToolbarActions(pathname, getToolbarActions());
+  }, [hasChanges, isSaving, pathname, setToolbarActions]);
 
   const metadataItems: DetailPageHeaderConfig["metadata"] = [
     {
@@ -338,7 +425,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     {
       label: "Lifetime Revenue",
       icon: <TrendingUp className="h-3.5 w-3.5" />,
-      value: formatCurrencyFromDollars(metrics?.totalRevenue ?? 0, { decimals: 0 }),
+      value: formatCurrencyFromDollars(metrics?.totalRevenue ?? 0, {
+        decimals: 0,
+      }),
     },
     {
       label: "Jobs",
@@ -366,7 +455,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
           <span aria-hidden="true">•</span>
           <Link
             className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
-            href={`/dashboard/properties/${primaryProperty.id}`}
+            href={`/dashboard/work/properties/${primaryProperty.id}`}
           >
             <MapPin className="h-4 w-4" />
             {primaryProperty.name || primaryProperty.address}
@@ -388,8 +477,6 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     title: displayName,
     subtitle: subtitleContent,
     badges: headerBadges,
-    actions: primaryHeaderActions,
-    secondaryActions: secondaryHeaderActions,
     metadata: metadataItems,
     leadingVisual: (
       <Avatar className="h-12 w-12">
@@ -465,7 +552,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
       key: "lifetime-revenue",
       icon: Receipt,
       label: "Lifetime Revenue",
-      value: formatCurrencyFromDollars(metrics?.totalRevenue ?? 0, { decimals: 0 }),
+      value: formatCurrencyFromDollars(metrics?.totalRevenue ?? 0, {
+        decimals: 0,
+      }),
     },
   ];
 
@@ -473,18 +562,18 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     <DetailPageSurface padding="lg" variant="muted">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
-          <Label className="text-xs font-medium uppercase text-muted-foreground">
+          <Label className="font-medium text-muted-foreground text-xs uppercase">
             Display Name
           </Label>
           <Input
             className={cn(
-              "h-12 rounded-lg border border-border/40 bg-background px-4 text-xl font-semibold shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl"
+              "h-12 rounded-lg border border-border/40 bg-background px-4 font-semibold text-xl shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl"
             )}
             onChange={(e) => handlePrimaryNameChange(e.target.value)}
             placeholder="Enter customer name..."
             value={displayName}
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Update how this customer appears across Stratos. Changes are saved
             when you select Save changes.
           </p>
@@ -493,21 +582,24 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         <div className="grid gap-3 sm:grid-cols-2">
           {contactTileData.map(({ key, icon: Icon, label, value, href }) => (
             <div
-              key={key}
               className="rounded-lg border border-border/40 bg-background px-3 py-3"
+              key={key}
             >
               <div className="flex items-center gap-3">
                 <Icon className="h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col">
-                  <span className="text-xs font-medium uppercase text-muted-foreground">
+                  <span className="font-medium text-muted-foreground text-xs uppercase">
                     {label}
                   </span>
                   {href ? (
-                    <a className="text-sm font-semibold hover:underline" href={href}>
+                    <a
+                      className="font-semibold text-sm hover:underline"
+                      href={href}
+                    >
                       {value}
                     </a>
                   ) : (
-                    <span className="text-sm font-semibold">{value}</span>
+                    <span className="font-semibold text-sm">{value}</span>
                   )}
                 </div>
               </div>
@@ -518,16 +610,16 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {metricTileData.map(({ key, icon: Icon, label, value }) => (
             <div
-              key={key}
               className="rounded-lg border border-border/40 bg-background px-3 py-3"
+              key={key}
             >
               <div className="flex items-center gap-3">
                 <Icon className="h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col">
-                  <span className="text-xs font-medium uppercase text-muted-foreground">
+                  <span className="font-medium text-muted-foreground text-xs uppercase">
                     {label}
                   </span>
-                  <span className="text-sm font-semibold">{value}</span>
+                  <span className="font-semibold text-sm">{value}</span>
                 </div>
               </div>
             </div>
@@ -549,43 +641,51 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
             <div className="space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="first_name">First Name</Label>
                     <Input
                       id="first_name"
+                      onChange={(e) =>
+                        handleFieldChange("first_name", e.target.value)
+                      }
                       value={localCustomer.first_name || ""}
-                      onChange={(e) => handleFieldChange("first_name", e.target.value)}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="last_name">Last Name</Label>
                     <Input
                       id="last_name"
+                      onChange={(e) =>
+                        handleFieldChange("last_name", e.target.value)
+                      }
                       value={localCustomer.last_name || ""}
-                      onChange={(e) => handleFieldChange("last_name", e.target.value)}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="company_name">Company Name</Label>
                     <Input
                       id="company_name"
+                      onChange={(e) =>
+                        handleFieldChange("company_name", e.target.value)
+                      }
                       value={localCustomer.company_name || ""}
-                      onChange={(e) => handleFieldChange("company_name", e.target.value)}
                     />
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="flex gap-2">
                       <Input
                         id="email"
+                        onChange={(e) =>
+                          handleFieldChange("email", e.target.value)
+                        }
                         type="email"
                         value={localCustomer.email || ""}
-                        onChange={(e) => handleFieldChange("email", e.target.value)}
                       />
                       {customer.email && (
-                        <Button variant="outline" size="icon" asChild>
+                        <Button asChild size="icon" variant="outline">
                           <a href={`mailto:${customer.email}`}>
                             <Mail className="size-4" />
                           </a>
@@ -593,17 +693,19 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                       )}
                     </div>
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
                     <div className="flex gap-2">
                       <Input
                         id="phone"
+                        onChange={(e) =>
+                          handleFieldChange("phone", e.target.value)
+                        }
                         type="tel"
                         value={localCustomer.phone || ""}
-                        onChange={(e) => handleFieldChange("phone", e.target.value)}
                       />
                       {customer.phone && (
-                        <Button variant="outline" size="icon" asChild>
+                        <Button asChild size="icon" variant="outline">
                           <a href={`tel:${customer.phone}`}>
                             <Phone className="size-4" />
                           </a>
@@ -611,17 +713,19 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
                       )}
                     </div>
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="mobile_phone">Mobile Phone</Label>
                     <div className="flex gap-2">
                       <Input
                         id="mobile_phone"
+                        onChange={(e) =>
+                          handleFieldChange("mobile_phone", e.target.value)
+                        }
                         type="tel"
                         value={localCustomer.mobile_phone || ""}
-                        onChange={(e) => handleFieldChange("mobile_phone", e.target.value)}
                       />
                       {customer.mobile_phone && (
-                        <Button variant="outline" size="icon" asChild>
+                        <Button asChild size="icon" variant="outline">
                           <a href={`tel:${customer.mobile_phone}`}>
                             <Phone className="size-4" />
                           </a>
@@ -634,74 +738,86 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="address">Address</Label>
                     <Textarea
                       id="address"
+                      onChange={(e) =>
+                        handleFieldChange("address", e.target.value)
+                      }
                       rows={3}
                       value={localCustomer.address || ""}
-                      onChange={(e) => handleFieldChange("address", e.target.value)}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="city">City</Label>
                       <Input
                         id="city"
+                        onChange={(e) =>
+                          handleFieldChange("city", e.target.value)
+                        }
                         value={localCustomer.city || ""}
-                        onChange={(e) => handleFieldChange("city", e.target.value)}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="state">State</Label>
                       <Input
                         id="state"
+                        onChange={(e) =>
+                          handleFieldChange("state", e.target.value)
+                        }
                         value={localCustomer.state || ""}
-                        onChange={(e) => handleFieldChange("state", e.target.value)}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="postal_code">Postal Code</Label>
                       <Input
                         id="postal_code"
+                        onChange={(e) =>
+                          handleFieldChange("postal_code", e.target.value)
+                        }
                         value={localCustomer.postal_code || ""}
-                        onChange={(e) => handleFieldChange("postal_code", e.target.value)}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="country">Country</Label>
                       <Input
                         id="country"
+                        onChange={(e) =>
+                          handleFieldChange("country", e.target.value)
+                        }
                         value={localCustomer.country || ""}
-                        onChange={(e) => handleFieldChange("country", e.target.value)}
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="tags">Tags</Label>
                     <Input
                       id="tags"
-                      placeholder="Comma separated tags"
-                      value={(localCustomer.tags || []).join(", ")}
                       onChange={(e) =>
                         handleFieldChange(
                           "tags",
                           e.target.value.split(",").map((tag) => tag.trim())
                         )
                       }
+                      placeholder="Comma separated tags"
+                      value={(localCustomer.tags || []).join(", ")}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="notes">Notes</Label>
                     <Textarea
                       id="notes"
-                      rows={4}
+                      onChange={(e) =>
+                        handleFieldChange("notes", e.target.value)
+                      }
                       placeholder="Internal notes about this customer"
+                      rows={4}
                       value={localCustomer.notes || ""}
-                      onChange={(e) => handleFieldChange("notes", e.target.value)}
                     />
                   </div>
                 </div>
@@ -715,19 +831,23 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         title: "Properties",
         icon: <Building2 className="size-4" />,
         count: properties.length,
+        actions: (
+          <Button
+            onClick={() =>
+              router.push(
+                `/dashboard/work/properties/new?customerId=${customer.id}`
+              )
+            }
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Property
+          </Button>
+        ),
         content: (
-          <UnifiedAccordionContent>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Manage service locations for this customer.
-              </p>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => router.push(`/dashboard/properties/new?customerId=${customer.id}`)}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Property
-              </Button>
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Manage service locations for this customer.
             </div>
             <PropertiesTable
               customerId={customer.id}
@@ -742,20 +862,23 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         title: "Jobs",
         icon: <Wrench className="size-4" />,
         count: jobs.length,
+        actions: (
+          <Button
+            onClick={() =>
+              router.push(`/dashboard/work/new?customerId=${customer.id}`)
+            }
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> New Job
+          </Button>
+        ),
         content: (
-          <UnifiedAccordionContent>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Recent jobs associated with this customer.
-              </p>
-              <Button
-                size="sm"
-                onClick={() => router.push(`/dashboard/work/new?customerId=${customer.id}`)}
-              >
-                <Plus className="mr-2 h-4 w-4" /> New Job
-              </Button>
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Recent jobs associated with this customer.
             </div>
-            <JobsTable jobs={jobs} itemsPerPage={10} />
+            <JobsTable itemsPerPage={10} jobs={jobs} />
           </UnifiedAccordionContent>
         ),
       },
@@ -763,21 +886,23 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         id: "invoices",
         title: "Invoices",
         icon: <Receipt className="size-4" />,
+        actions: (
+          <Button
+            onClick={() =>
+              router.push(
+                `/dashboard/work/invoices/new?customerId=${customer.id}`
+              )
+            }
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> New Invoice
+          </Button>
+        ),
         content: (
-          <UnifiedAccordionContent>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Billing history and outstanding invoices.
-              </p>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() =>
-                  router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`)
-                }
-              >
-                <FileText className="mr-2 h-4 w-4" /> New Invoice
-              </Button>
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Billing history and outstanding invoices.
             </div>
             <CustomerInvoicesTable
               invoices={invoices || []}
@@ -790,19 +915,28 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         id: "equipment",
         title: "Equipment",
         icon: <Package className="size-4" />,
+        actions: (
+          <Button
+            onClick={() => console.log("Add equipment")}
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Equipment
+          </Button>
+        ),
         content: (
           <UnifiedAccordionContent>
             {equipment.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2">
                 {equipment.map((item: any) => (
-                  <div key={item.id} className="rounded-lg border p-4">
+                  <div className="rounded-lg border p-4" key={item.id}>
                     <div className="flex items-center gap-3">
                       <div className="rounded-md bg-primary/10 p-2">
                         <Wrench className="h-4 w-4 text-primary" />
                       </div>
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           {item.type || item.category || "Equipment"}
                         </p>
                       </div>
@@ -832,7 +966,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
             ) : (
               <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
                 <Package className="h-6 w-6 text-muted-foreground" />
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-muted-foreground text-sm">
                   No equipment on record for this customer yet.
                 </p>
               </div>
@@ -844,30 +978,599 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         id: "payment-methods",
         title: "Payment Methods",
         icon: <CreditCard className="size-4" />,
+        count: paymentMethods.length,
+        actions: (
+          <Button
+            onClick={() => console.log("Add payment method")}
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Payment Method
+          </Button>
+        ),
         content: (
           <UnifiedAccordionContent>
             {paymentMethods.length > 0 ? (
-              <div className="space-y-3">
-                {paymentMethods.map((method: any) => (
-                  <div key={method.id} className="flex items-start justify-between rounded-lg border p-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-medium">
-                        {method.brand?.toUpperCase() || method.type} ending in {method.last4 || method.card_last_four}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        Expires {method.exp_month}/{method.exp_year}
-                      </span>
-                    </div>
-                    {method.is_default && (
-                      <Badge variant="secondary">Default</Badge>
-                    )}
-                  </div>
-                ))}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {paymentMethods.map((method: any) => {
+                  // Determine payment method type
+                  const type =
+                    method.type === "ach" || method.type === "bank"
+                      ? method.type
+                      : "card";
+
+                  return (
+                    <PaymentMethodCard
+                      account_type={method.account_type}
+                      bank_name={method.bank_name}
+                      card_brand={method.brand || method.card_brand}
+                      card_exp_month={method.exp_month || method.card_exp_month}
+                      card_exp_year={method.exp_year || method.card_exp_year}
+                      card_last4={
+                        method.last4 ||
+                        method.card_last_four ||
+                        method.card_last4
+                      }
+                      cardholder_name={method.cardholder_name || method.name}
+                      id={method.id}
+                      is_default={method.is_default}
+                      is_verified={method.is_verified}
+                      key={method.id}
+                      nickname={method.nickname}
+                      onRemove={() =>
+                        console.log("Remove payment method", method.id)
+                      }
+                      onSetDefault={() => console.log("Set default", method.id)}
+                      type={type}
+                    />
+                  );
+                })}
               </div>
             ) : (
-              <p className="text-center text-muted-foreground text-sm">
-                No payment methods on file.
-              </p>
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-12 text-center">
+                <CreditCard className="mb-3 size-12 text-muted-foreground/50" />
+                <p className="font-medium text-muted-foreground text-sm">
+                  No payment methods on file
+                </p>
+                <p className="mt-1 text-muted-foreground text-xs">
+                  Add a card or bank account for quick invoicing
+                </p>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      // NEW: Estimates Section
+      {
+        id: "estimates",
+        title: "Estimates",
+        icon: <FileText className="size-4" />,
+        count: estimates.length,
+        actions: (
+          <Button
+            onClick={() =>
+              router.push(
+                `/dashboard/work/estimates/new?customerId=${customer.id}`
+              )
+            }
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> New Estimate
+          </Button>
+        ),
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Estimates and quotes provided to this customer.
+            </div>
+            {estimates.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Estimate #
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Total
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {estimates.map((estimate: any) => (
+                      <tr
+                        className="border-b hover:bg-muted/30"
+                        key={estimate.id}
+                      >
+                        <td className="px-6 py-4 text-sm">
+                          #{estimate.estimate_number || estimate.id.slice(0, 8)}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {formatDate(estimate.created_at, "short")}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-sm">
+                          {formatCurrencyFromDollars(
+                            estimate.total_amount / 100
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge variant="outline">
+                            {estimate.status || "draft"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            className="text-primary hover:underline"
+                            href={`/dashboard/work/estimates/${estimate.id}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <FileText className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground text-sm">
+                  No estimates for this customer yet.
+                </p>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      // NEW: Appointments Section
+      {
+        id: "appointments",
+        title: "Appointments",
+        icon: <Calendar className="size-4" />,
+        count: appointments.length,
+        actions: (
+          <Button
+            onClick={() =>
+              router.push(`/dashboard/schedule?customerId=${customer.id}`)
+            }
+            size="sm"
+            variant="outline"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Schedule Appointment
+          </Button>
+        ),
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Scheduled appointments and service visits for this customer.
+            </div>
+            {appointments.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Date & Time
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Property
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Job
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {appointments.map((appointment: any) => (
+                      <tr
+                        className="border-b hover:bg-muted/30"
+                        key={appointment.id}
+                      >
+                        <td className="px-6 py-4 text-sm">
+                          {new Date(
+                            appointment.scheduled_start
+                          ).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {appointment.type || "Service"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {appointment.property?.name ||
+                            appointment.property?.address ||
+                            "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {appointment.job?.job_number
+                            ? `#${appointment.job.job_number}`
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge variant="outline">
+                            {appointment.status || "scheduled"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            className="text-primary hover:underline"
+                            href={`/dashboard/appointments/${appointment.id}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <Calendar className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground text-sm">
+                  No appointments scheduled for this customer.
+                </p>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      // NEW: Contracts Section
+      {
+        id: "contracts",
+        title: "Contracts",
+        icon: <FileText className="size-4" />,
+        count: contracts.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Service contracts and agreements signed by this customer.
+            </div>
+            {contracts.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Contract #
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Related To
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contracts.map((contract: any) => (
+                      <tr
+                        className="border-b hover:bg-muted/30"
+                        key={contract.id}
+                      >
+                        <td className="px-6 py-4 text-sm">
+                          #{contract.contract_number || contract.id.slice(0, 8)}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {formatDate(contract.created_at, "short")}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {contract.job
+                            ? `Job #${contract.job.job_number}`
+                            : contract.estimate
+                              ? `Est #${contract.estimate.estimate_number}`
+                              : contract.invoice
+                                ? `Inv #${contract.invoice.invoice_number}`
+                                : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge variant="outline">
+                            {contract.status || "draft"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            className="text-primary hover:underline"
+                            href={`/dashboard/work/contracts/${contract.id}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <FileText className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground text-sm">
+                  No contracts for this customer.
+                </p>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      // NEW: Payments Section
+      {
+        id: "payments",
+        title: "Payments",
+        icon: <CreditCard className="size-4" />,
+        count: payments.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Payment history and transactions from this customer.
+            </div>
+            {payments.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Payment #
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Amount
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Method
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Invoice
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((payment: any) => (
+                      <tr
+                        className="border-b hover:bg-muted/30"
+                        key={payment.id}
+                      >
+                        <td className="px-6 py-4 text-sm">
+                          #{payment.payment_number || payment.id.slice(0, 8)}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {formatDate(payment.created_at, "short")}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-sm">
+                          {formatCurrencyFromDollars(payment.amount / 100)}
+                        </td>
+                        <td className="px-6 py-4 text-sm capitalize">
+                          {payment.payment_method?.replace("_", " ") || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {payment.invoice
+                            ? `#${payment.invoice.invoice_number}`
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge
+                            variant={
+                              payment.status === "completed"
+                                ? "default"
+                                : "outline"
+                            }
+                          >
+                            {payment.status}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            className="text-primary hover:underline"
+                            href={`/dashboard/work/payments/${payment.id}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <CreditCard className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground text-sm">
+                  No payment history for this customer.
+                </p>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      // NEW: Maintenance Plans Section
+      {
+        id: "maintenance-plans",
+        title: "Maintenance Plans",
+        icon: <ShieldCheck className="size-4" />,
+        count: maintenancePlans.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Recurring maintenance plans for this customer's equipment.
+            </div>
+            {maintenancePlans.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Plan Name
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Property
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Frequency
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {maintenancePlans.map((plan: any) => (
+                      <tr className="border-b hover:bg-muted/30" key={plan.id}>
+                        <td className="px-6 py-4 font-medium text-sm">
+                          {plan.name || `Plan ${plan.id.slice(0, 8)}`}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {plan.property?.name || plan.property?.address || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm capitalize">
+                          {plan.frequency || "Monthly"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge variant="outline">
+                            {plan.status || "active"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            className="text-primary hover:underline"
+                            href={`/dashboard/work/maintenance-plans/${plan.id}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <ShieldCheck className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground text-sm">
+                  No maintenance plans for this customer.
+                </p>
+              </div>
+            )}
+          </UnifiedAccordionContent>
+        ),
+      },
+      // NEW: Service Agreements Section
+      {
+        id: "service-agreements",
+        title: "Service Agreements",
+        icon: <FileText className="size-4" />,
+        count: serviceAgreements.length,
+        content: (
+          <UnifiedAccordionContent className="p-0">
+            <div className="border-b px-6 py-4 text-muted-foreground text-sm">
+              Long-term service agreements and ongoing contracts.
+            </div>
+            {serviceAgreements.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Agreement #
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Property
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Start Date
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        End Date
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left font-medium text-sm">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {serviceAgreements.map((agreement: any) => (
+                      <tr
+                        className="border-b hover:bg-muted/30"
+                        key={agreement.id}
+                      >
+                        <td className="px-6 py-4 text-sm">
+                          #{agreement.id.slice(0, 8)}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {agreement.property?.name ||
+                            agreement.property?.address ||
+                            "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {agreement.start_date
+                            ? formatDate(agreement.start_date, "short")
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {agreement.end_date
+                            ? formatDate(agreement.end_date, "short")
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge variant="outline">
+                            {agreement.status || "active"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Link
+                            className="text-primary hover:underline"
+                            href={`/dashboard/work/service-agreements/${agreement.id}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <FileText className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground text-sm">
+                  No service agreements for this customer.
+                </p>
+              </div>
             )}
           </UnifiedAccordionContent>
         ),
@@ -881,6 +1584,12 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
     customer.mobile_phone,
     customer.phone,
     equipment,
+    estimates, // NEW
+    appointments, // NEW
+    contracts, // NEW
+    payments, // NEW
+    maintenancePlans, // NEW
+    serviceAgreements, // NEW
     formatDate,
     handleFieldChange,
     jobs,
@@ -899,7 +1608,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
         type: "property",
         title: primaryProperty.name || primaryProperty.address,
         subtitle: `${primaryProperty.city || ""}, ${primaryProperty.state || ""}`,
-        href: `/dashboard/properties/${primaryProperty.id}`,
+        href: `/dashboard/work/properties/${primaryProperty.id}`,
       });
     }
 
@@ -927,18 +1636,19 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
   return (
     <DetailPageContentLayout
-      header={headerConfig}
+      activities={activities}
+      attachments={attachments}
       beforeContent={overviewSurface}
       customSections={customSections}
-      activities={activities}
+      defaultOpenSection="customer-info"
+      enableReordering={true}
+      header={headerConfig}
       notes={[]}
-      attachments={attachments}
       relatedItems={relatedItems}
       showStandardSections={{
         notes: false,
       }}
-      defaultOpenSection="customer-info"
+      storageKey="customer-details"
     />
   );
 }
-

@@ -152,11 +152,11 @@ export default function InviteMemberPage() {
       </div>
 
       {/* Info Card */}
-      <Card className="border-blue-500/50 bg-blue-500/5">
+      <Card className="border-primary/50 bg-primary/5">
         <CardHeader>
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
-              <Mail className="h-5 w-5 text-blue-500" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <Mail className="h-5 w-5 text-primary" />
             </div>
             <div>
               <CardTitle className="text-base">How invitations work</CardTitle>

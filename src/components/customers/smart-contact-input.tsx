@@ -261,7 +261,7 @@ export function SmartContactInput({
             value={contact.email}
           />
           {contact.email && validationState.email && (
-            <Check className="absolute top-3 right-3 size-4 text-green-600" />
+            <Check className="absolute top-3 right-3 size-4 text-success" />
           )}
         </div>
       </div>
@@ -283,7 +283,7 @@ export function SmartContactInput({
             value={contact.phone}
           />
           {contact.phone && validationState.phone && (
-            <Check className="absolute top-3 right-3 size-4 text-green-600" />
+            <Check className="absolute top-3 right-3 size-4 text-success" />
           )}
         </div>
       </div>

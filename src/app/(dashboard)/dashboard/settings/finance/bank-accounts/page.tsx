@@ -21,6 +21,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 import {
   createBankAccount,
   deleteBankAccount,
@@ -72,7 +73,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "sonner";
 
 type PaymentProcessor = {
   id: string;
@@ -206,7 +206,9 @@ export default function BankAccountsSettingsPage() {
       }
 
       if (result.success) {
-        toast.success(`Bank account ${editingAccount ? "updated" : "created"} successfully`);
+        toast.success(
+          `Bank account ${editingAccount ? "updated" : "created"} successfully`
+        );
         setDialogOpen(false);
         resetForm();
         // Reload accounts
@@ -215,7 +217,10 @@ export default function BankAccountsSettingsPage() {
           setAccounts(accountsResult.data);
         }
       } else {
-        toast.error(result.error || `Failed to ${editingAccount ? "update" : "create"} bank account`);
+        toast.error(
+          result.error ||
+            `Failed to ${editingAccount ? "update" : "create"} bank account`
+        );
       }
     });
   };
@@ -303,205 +308,209 @@ export default function BankAccountsSettingsPage() {
                 Connect via Plaid
               </PlaidLinkButton>
             )}
-          <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
-            <DialogTrigger asChild>
+            <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
+              <DialogTrigger asChild>
                 <Button onClick={() => handleOpenDialog()} variant="outline">
-                <Plus className="mr-2 size-4" />
+                  <Plus className="mr-2 size-4" />
                   Add Manually
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingAccount ? "Edit Bank Account" : "Add Bank Account"}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingAccount
-                    ? "Update the bank account details below"
-                    : "Connect a new bank account to your business"}
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-4 py-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="accountName">Account Name</Label>
-                    <Input
-                      className="mt-2"
-                      id="accountName"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          accountName: e.target.value,
-                        })
-                      }
-                      placeholder="Business Checking"
-                      value={formData.accountName}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bankName">Bank Name</Label>
-                    <Input
-                      className="mt-2"
-                      id="bankName"
-                      onChange={(e) =>
-                        setFormData({ ...formData, bankName: e.target.value })
-                      }
-                      placeholder="Chase Bank"
-                      value={formData.bankName}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="accountType">Account Type</Label>
-                    <Select
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, accountType: value })
-                      }
-                      value={formData.accountType}
-                    >
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="checking">Checking</SelectItem>
-                        <SelectItem value="savings">Savings</SelectItem>
-                        <SelectItem value="business_checking">
-                          Business Checking
-                        </SelectItem>
-                        <SelectItem value="credit_card">Credit Card</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="accountNumberLast4">Last 4 Digits</Label>
-                    <Input
-                      className="mt-2"
-                      id="accountNumberLast4"
-                      maxLength={4}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          accountNumberLast4: e.target.value,
-                        })
-                      }
-                      placeholder="1234"
-                      value={formData.accountNumberLast4}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="currentBalance">Current Balance</Label>
-                    <Input
-                      className="mt-2"
-                      id="currentBalance"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          currentBalance: e.target.value,
-                        })
-                      }
-                      placeholder="0.00"
-                      type="number"
-                      value={formData.currentBalance}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="availableBalance">Available Balance</Label>
-                    <Input
-                      className="mt-2"
-                      id="availableBalance"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          availableBalance: e.target.value,
-                        })
-                      }
-                      placeholder="0.00"
-                      type="number"
-                      value={formData.availableBalance}
-                    />
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label>Auto Import Transactions</Label>
-                    <p className="text-muted-foreground text-xs">
-                      Automatically sync transactions via Plaid
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.autoImportTransactions}
-                    onCheckedChange={(checked) =>
-                      setFormData({
-                        ...formData,
-                        autoImportTransactions: checked,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label>Primary Account</Label>
-                    <p className="text-muted-foreground text-xs">
-                      Use as default for payments
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.isPrimary}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, isPrimary: checked })
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label>Active</Label>
-                    <p className="text-muted-foreground text-xs">
-                      Show in reports and dashboard
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.isActive}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, isActive: checked })
-                    }
-                  />
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button
-                  onClick={() => {
-                    setDialogOpen(false);
-                    resetForm();
-                  }}
-                  variant="outline"
-                >
-                  Cancel
                 </Button>
-                <Button disabled={isPending} onClick={handleSave}>
-                  {isPending ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Account"
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingAccount ? "Edit Bank Account" : "Add Bank Account"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editingAccount
+                      ? "Update the bank account details below"
+                      : "Connect a new bank account to your business"}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4 py-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="accountName">Account Name</Label>
+                      <Input
+                        className="mt-2"
+                        id="accountName"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            accountName: e.target.value,
+                          })
+                        }
+                        placeholder="Business Checking"
+                        value={formData.accountName}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="bankName">Bank Name</Label>
+                      <Input
+                        className="mt-2"
+                        id="bankName"
+                        onChange={(e) =>
+                          setFormData({ ...formData, bankName: e.target.value })
+                        }
+                        placeholder="Chase Bank"
+                        value={formData.bankName}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="accountType">Account Type</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, accountType: value })
+                        }
+                        value={formData.accountType}
+                      >
+                        <SelectTrigger className="mt-2">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="checking">Checking</SelectItem>
+                          <SelectItem value="savings">Savings</SelectItem>
+                          <SelectItem value="business_checking">
+                            Business Checking
+                          </SelectItem>
+                          <SelectItem value="credit_card">
+                            Credit Card
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="accountNumberLast4">Last 4 Digits</Label>
+                      <Input
+                        className="mt-2"
+                        id="accountNumberLast4"
+                        maxLength={4}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            accountNumberLast4: e.target.value,
+                          })
+                        }
+                        placeholder="1234"
+                        value={formData.accountNumberLast4}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="currentBalance">Current Balance</Label>
+                      <Input
+                        className="mt-2"
+                        id="currentBalance"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            currentBalance: e.target.value,
+                          })
+                        }
+                        placeholder="0.00"
+                        type="number"
+                        value={formData.currentBalance}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="availableBalance">
+                        Available Balance
+                      </Label>
+                      <Input
+                        className="mt-2"
+                        id="availableBalance"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            availableBalance: e.target.value,
+                          })
+                        }
+                        placeholder="0.00"
+                        type="number"
+                        value={formData.availableBalance}
+                      />
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Auto Import Transactions</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Automatically sync transactions via Plaid
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.autoImportTransactions}
+                      onCheckedChange={(checked) =>
+                        setFormData({
+                          ...formData,
+                          autoImportTransactions: checked,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Primary Account</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Use as default for payments
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.isPrimary}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, isPrimary: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Active</Label>
+                      <p className="text-muted-foreground text-xs">
+                        Show in reports and dashboard
+                      </p>
+                    </div>
+                    <Switch
+                      checked={formData.isActive}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, isActive: checked })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    onClick={() => {
+                      setDialogOpen(false);
+                      resetForm();
+                    }}
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button disabled={isPending} onClick={handleSave}>
+                    {isPending ? (
+                      <>
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Account"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -634,15 +643,15 @@ export default function BankAccountsSettingsPage() {
                         <Separator />
                         <div className="flex items-center gap-2">
                           <CreditCard className="size-4 text-muted-foreground" />
-                          <p className="text-muted-foreground text-xs font-medium">
+                          <p className="font-medium text-muted-foreground text-xs">
                             Payment Processors:
                           </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {account.payment_processors.map((processor) => (
                             <span
-                              key={processor.id}
                               className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 font-medium text-primary text-xs dark:text-primary"
+                              key={processor.id}
                             >
                               {processor.processor_type === "adyen" && "Adyen"}
                               {processor.processor_type === "plaid" && "Plaid"}
@@ -657,7 +666,7 @@ export default function BankAccountsSettingsPage() {
                           ))}
                         </div>
                       </div>
-                  )}
+                    )}
                 </CardContent>
               </Card>
             ))}
@@ -689,14 +698,15 @@ export default function BankAccountsSettingsPage() {
               </p>
               <p className="text-muted-foreground text-sm">
                 Bank accounts can be linked to payment processors (Adyen, Plaid,
-                ProfitStars, Stripe) to automatically route collected payments to
-                the correct account. When configuring a payment processor, you can
-                select which bank account should receive deposits. If no account is
-                selected, payments will be deposited to your primary bank account.
+                ProfitStars, Stripe) to automatically route collected payments
+                to the correct account. When configuring a payment processor,
+                you can select which bank account should receive deposits. If no
+                account is selected, payments will be deposited to your primary
+                bank account.
               </p>
               <p className="text-muted-foreground text-xs">
-                Payment processors linked to each account are shown on the account
-                cards above.
+                Payment processors linked to each account are shown on the
+                account cards above.
               </p>
             </div>
           </CardContent>

@@ -15,9 +15,8 @@
 
 "use client";
 
-import { Clock, Route, Users, DollarSign } from "lucide-react";
-import type { StatCard } from "@/components/ui/stats-cards";
 import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
+import type { StatCard } from "@/components/ui/stats-cards";
 
 export type AppointmentMetrics = {
   duration: number; // minutes

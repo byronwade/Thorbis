@@ -37,9 +37,9 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
               <Link href="/contact">Talk to migrations</Link>
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Thorbis pricing stays simple: $100/month base subscription with pay-as-you-go
-            usage. Unlimited users, no multi-year contracts.
+          <p className="text-muted-foreground text-sm">
+            Thorbis pricing stays simple: $100/month base subscription with
+            pay-as-you-go usage. Unlimited users, no multi-year contracts.
           </p>
         </div>
       </section>

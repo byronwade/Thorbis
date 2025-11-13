@@ -57,7 +57,7 @@ export function AddressPropertiesAdaptiveBlockComponent({
 
   const handleAddProperty = () => {
     // Navigate to add property page with customer pre-selected
-    window.location.href = `/dashboard/properties/new?customerId=${customerId}`;
+    window.location.href = `/dashboard/work/properties/new?customerId=${customerId}`;
   };
 
   // CASE 1: Single Address (0-1 properties)
@@ -204,10 +204,10 @@ export function AddressPropertiesAdaptiveBlockComponent({
         value="customer-properties"
       >
         {/* Full-width datatable with search/sort/pagination and hover maps */}
-        <PropertiesTable 
+        <PropertiesTable
           customerId={customerId}
-          itemsPerPage={10} 
-          properties={properties} 
+          itemsPerPage={10}
+          properties={properties}
         />
       </CollapsibleDataSection>
     </NodeViewWrapper>

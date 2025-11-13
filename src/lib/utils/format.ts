@@ -19,11 +19,7 @@ export function formatCurrency(
     currency?: string;
   }
 ): string {
-  const {
-    decimals = 2,
-    showSymbol = true,
-    currency = "USD",
-  } = options ?? {};
+  const { decimals = 2, showSymbol = true, currency = "USD" } = options ?? {};
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: showSymbol ? "currency" : "decimal",
@@ -53,11 +49,7 @@ export function formatCurrencyFromDollars(
     return "$0";
   }
 
-  const {
-    decimals = 2,
-    showSymbol = true,
-    currency = "USD",
-  } = options ?? {};
+  const { decimals = 2, showSymbol = true, currency = "USD" } = options ?? {};
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: showSymbol ? "currency" : "decimal",
@@ -115,7 +107,7 @@ export function formatCurrencyCompact(
 export function formatDate(
   date: string | Date | null | undefined,
   format: "short" | "long" | "datetime" | "time" | "iso" = "short",
-  fallback: string = "—"
+  fallback = "—"
 ): string {
   if (!date) return fallback;
 
@@ -184,7 +176,7 @@ export function formatDate(
  */
 export function formatDateTime(
   date: string | Date | null | undefined,
-  fallback: string = "—"
+  fallback = "—"
 ): string {
   return formatDate(date, "datetime", fallback);
 }
@@ -197,7 +189,7 @@ export function formatDateTime(
  */
 export function formatTime(
   date: string | Date | null | undefined,
-  fallback: string = "—"
+  fallback = "—"
 ): string {
   return formatDate(date, "time", fallback);
 }
@@ -287,10 +279,7 @@ export function formatNumber(
  * @param decimals - Number of decimal places (default: 1)
  * @returns Formatted percentage string (e.g., "45.5%")
  */
-export function formatPercentage(
-  value: number,
-  decimals: number = 1
-): string {
+export function formatPercentage(value: number, decimals = 1): string {
   return `${value.toFixed(decimals)}%`;
 }
 
@@ -309,8 +298,3 @@ export function formatPercentageCompact(
   }
   return `${value.toFixed(1)}%`;
 }
-
-
-
-
-

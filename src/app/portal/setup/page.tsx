@@ -87,8 +87,8 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green-100">
-              <CheckCircle2 className="size-8 text-green-600" />
+            <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-success">
+              <CheckCircle2 className="size-8 text-success" />
             </div>
             <CardTitle className="text-2xl">Account Already Set Up</CardTitle>
             <CardDescription>

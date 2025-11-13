@@ -17,8 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
+import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
 
 type Invoice = {
   id: string;
@@ -50,7 +50,6 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
     const date = new Date(dateString);
     return date.toISOString().split("T")[0];
   };
-
 
   return (
     <Card
@@ -117,7 +116,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
               )}
             </Label>
             <Input
-              className={`mt-1 ${isOverdue ? "border-2 border-red-500" : ""}`}
+              className={`mt-1 ${isOverdue ? "border-2 border-destructive" : ""}`}
               id="due_date"
               onChange={(e) => onUpdate("due_date", e.target.value)}
               type="date"

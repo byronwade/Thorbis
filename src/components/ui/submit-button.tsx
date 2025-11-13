@@ -102,7 +102,7 @@ export function SubmitButton({
     <Button
       className={cn(
         "transition-all duration-200",
-        showSuccess && "bg-green-600 hover:bg-green-600",
+        showSuccess && "bg-success hover:bg-success",
         showError && "animate-shake bg-destructive",
         className
       )}

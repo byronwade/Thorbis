@@ -236,7 +236,7 @@ export function CustomerEnrichmentPanel({
                 target="_blank"
               >
                 <div className="flex items-center gap-3">
-                  <Linkedin className="h-5 w-5 text-blue-600" />
+                  <Linkedin className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">LinkedIn</p>
                     {socialData.profiles.linkedin.headline && (
@@ -279,7 +279,7 @@ export function CustomerEnrichmentPanel({
                 target="_blank"
               >
                 <div className="flex items-center gap-3">
-                  <Facebook className="h-5 w-5 text-blue-700" />
+                  <Facebook className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Facebook</p>
                     {socialData.profiles.facebook.name && (
@@ -308,7 +308,7 @@ export function CustomerEnrichmentPanel({
           <CardContent className="space-y-3">
             {businessData.rating && (
               <div className="flex items-center gap-3">
-                <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                <Star className="h-4 w-4 fill-yellow-500 text-warning" />
                 <span className="font-medium">{businessData.rating}/5</span>
                 {businessData.reviewCount && (
                   <span className="text-muted-foreground text-sm">
@@ -327,7 +327,7 @@ export function CustomerEnrichmentPanel({
               <div className="flex items-center gap-3">
                 <ExternalLink className="h-4 w-4 text-muted-foreground" />
                 <a
-                  className="text-blue-600 text-sm hover:underline"
+                  className="text-primary text-sm hover:underline"
                   href={businessData.website}
                   rel="noopener noreferrer"
                   target="_blank"

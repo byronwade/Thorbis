@@ -3,26 +3,27 @@
 /**
  * Payment Method Card Component
  *
- * Displays a saved payment method as a card with:
- * - Card brand icon
- * - Last 4 digits
- * - Expiration date
- * - Default badge
- * - Delete button
+ * Beautiful interactive payment method displays with:
+ * - Visual credit card with brand-specific styling
+ * - ACH/Bank account visualization
+ * - Action buttons for set default and remove
+ * - Hover effects and transitions
  */
 
-import { Check, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { CreditCardVisual } from "@/components/ui/credit-card-visual";
 
 interface PaymentMethodCardProps {
   id: string;
-  card_brand: string;
+  type?: "card" | "ach" | "bank";
+  card_brand?: string;
   card_last4: string;
-  card_exp_month: number;
-  card_exp_year: number;
+  card_exp_month?: number;
+  card_exp_year?: number;
+  cardholder_name?: string;
+  bank_name?: string;
+  account_type?: "checking" | "savings";
   is_default?: boolean;
   nickname?: string;
   is_verified?: boolean;
@@ -31,22 +32,16 @@ interface PaymentMethodCardProps {
   disabled?: boolean;
 }
 
-const CARD_BRAND_ICONS: Record<string, string> = {
-  visa: "💳",
-  mastercard: "💳",
-  amex: "💳",
-  discover: "💳",
-  diners: "💳",
-  jcb: "💳",
-  unionpay: "💳",
-};
-
 export function PaymentMethodCard({
   id,
+  type = "card",
   card_brand,
   card_last4,
   card_exp_month,
   card_exp_year,
+  cardholder_name,
+  bank_name,
+  account_type,
   is_default,
   nickname,
   is_verified,
@@ -54,78 +49,62 @@ export function PaymentMethodCard({
   onRemove,
   disabled = false,
 }: PaymentMethodCardProps) {
-  const brandIcon = CARD_BRAND_ICONS[card_brand?.toLowerCase()] || "💳";
-
   return (
-    <Card
-      className={cn(
-        "transition-all hover:shadow-md",
-        is_default && "border-primary ring-2 ring-primary/20"
-      )}
-    >
-      <CardContent className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-muted text-2xl">
-            {brandIcon}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="font-semibold text-sm">
-                {card_brand?.toUpperCase()} •••• {card_last4}
-              </p>
-              {is_default && (
-                <Badge className="gap-1 text-xs" variant="default">
-                  <Check className="size-3" />
-                  Default
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground text-xs">
-              <span>
-                Expires {String(card_exp_month).padStart(2, "0")}/
-                {card_exp_year}
-              </span>
-              {nickname && (
-                <>
-                  <span>•</span>
-                  <span>{nickname}</span>
-                </>
-              )}
-              {is_verified && (
-                <>
-                  <span>•</span>
-                  <span className="text-success">Verified</span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+    <div className="group relative">
+      {/* Visual Card/Bank Display */}
+      <CreditCardVisual
+        accountType={account_type}
+        bankName={bank_name}
+        brand={card_brand}
+        cardholderName={cardholder_name}
+        expMonth={card_exp_month}
+        expYear={card_exp_year}
+        isDefault={is_default}
+        isVerified={is_verified}
+        last4={card_last4}
+        nickname={nickname}
+        type={type}
+      />
 
-        <div className="flex items-center gap-2">
+      {/* Action Buttons - Show on Hover */}
+      <div className="mt-3 flex items-center justify-between gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="flex gap-2">
           {!is_default && onSetDefault && (
             <Button
-              className="text-xs"
+              className="h-8 text-xs"
               disabled={disabled}
-              onClick={onSetDefault}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSetDefault();
+              }}
               size="sm"
-              variant="ghost"
+              variant="outline"
             >
-              Set Default
-            </Button>
-          )}
-          {onRemove && (
-            <Button
-              className="text-destructive hover:bg-destructive/10"
-              disabled={disabled}
-              onClick={onRemove}
-              size="sm"
-              variant="ghost"
-            >
-              <Trash2 className="size-4" />
+              Set as Default
             </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+
+        {onRemove && (
+          <Button
+            className="h-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            disabled={disabled}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (
+                confirm(`Remove this ${type === "card" ? "card" : "account"}?`)
+              ) {
+                onRemove();
+              }
+            }}
+            size="sm"
+            variant="outline"
+          >
+            <Trash2 className="mr-1.5 size-3.5" />
+            Remove
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }

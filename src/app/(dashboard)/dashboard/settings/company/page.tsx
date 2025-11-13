@@ -335,7 +335,7 @@ export default function CompanyProfilePage() {
               </Tooltip>
             </div>
             {hasChanges && (
-              <Badge className="bg-amber-600" variant="default">
+              <Badge className="bg-warning" variant="default">
                 Unsaved Changes
               </Badge>
             )}
@@ -858,16 +858,16 @@ export default function CompanyProfilePage() {
                     <div className="flex items-center justify-center gap-4">
                       <div className="text-center">
                         <div className="relative mx-auto h-32 w-32">
-                          <div className="absolute inset-0 animate-pulse rounded-full border-4 border-blue-500 opacity-30" />
+                          <div className="absolute inset-0 animate-pulse rounded-full border-4 border-primary opacity-30" />
                           <div
-                            className="absolute inset-0 rounded-full border-2 border-blue-500 border-dashed opacity-50"
+                            className="absolute inset-0 rounded-full border-2 border-primary border-dashed opacity-50"
                             style={{
                               animation:
                                 "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
                             }}
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <MapPin className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                            <MapPin className="h-8 w-8 text-primary dark:text-primary" />
                           </div>
                         </div>
                         <p className="mt-4 font-semibold">Your Location</p>
@@ -946,7 +946,7 @@ export default function CompanyProfilePage() {
                     <div className="aspect-video w-full overflow-hidden rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-950">
                       {serviceAreas.length > 0 ? (
                         <div className="flex h-full flex-col items-center justify-center gap-4 p-6">
-                          <MapPin className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+                          <MapPin className="h-12 w-12 text-primary dark:text-primary" />
                           <div className="text-center">
                             <p className="font-semibold text-lg">
                               {serviceAreas.length} Service{" "}
@@ -961,10 +961,10 @@ export default function CompanyProfilePage() {
                               .slice(0, MAX_PREVIEW_AREAS)
                               .map((area) => (
                                 <div
-                                  className="flex items-center gap-2 rounded-md bg-white/50 px-3 py-2 text-sm dark:bg-black/20"
+                                  className="flex items-center gap-2 rounded-md bg-card/50 px-3 py-2 text-sm dark:bg-black/20"
                                   key={`map-area-${area}`}
                                 >
-                                  <div className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                                  <div className="h-2 w-2 rounded-full bg-primary dark:bg-primary" />
                                   {area}
                                 </div>
                               ))}
@@ -1393,8 +1393,8 @@ export default function CompanyProfilePage() {
                 <div className="flex items-center gap-3">
                   {hasChanges ? (
                     <>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                        <div className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/30">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">Unsaved Changes</p>
@@ -1405,8 +1405,8 @@ export default function CompanyProfilePage() {
                     </>
                   ) : (
                     <>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                        <Check className="h-4 w-4 text-green-600 dark:text-green-500" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
+                        <Check className="h-4 w-4 text-success dark:text-success" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">All Changes Saved</p>

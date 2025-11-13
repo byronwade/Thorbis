@@ -1,12 +1,12 @@
 "use client";
 
+import { formatDistance } from "date-fns";
 import { FileText, Plus } from "lucide-react";
 import { useState } from "react";
-import { formatDistance } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 
 interface NotesSectionProps {
@@ -54,32 +54,18 @@ export function NotesSection({
     <UnifiedAccordionContent>
       <div className="space-y-4">
         {/* Add Note Button/Form */}
-        {onAddNote && (
-          !isAdding ? (
-            <Button
-              onClick={() => setIsAdding(true)}
-              variant="outline"
-              size="sm"
-              className="w-full"
-            >
-              <Plus className="size-4 mr-2" />
-              Add Note
-            </Button>
-          ) : (
+        {onAddNote &&
+          (isAdding ? (
             <div className="space-y-2">
               <Textarea
-                value={newNote}
+                autoFocus
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Enter your note..."
                 rows={3}
-                autoFocus
+                value={newNote}
               />
               <div className="flex gap-2">
-                <Button
-                  onClick={handleSaveNote}
-                  disabled={isSaving}
-                  size="sm"
-                >
+                <Button disabled={isSaving} onClick={handleSaveNote} size="sm">
                   {isSaving ? "Saving..." : "Save Note"}
                 </Button>
                 <Button
@@ -87,23 +73,32 @@ export function NotesSection({
                     setIsAdding(false);
                     setNewNote("");
                   }}
-                  variant="outline"
                   size="sm"
+                  variant="outline"
                 >
                   Cancel
                 </Button>
               </div>
             </div>
-          )
-        )}
+          ) : (
+            <Button
+              className="w-full"
+              onClick={() => setIsAdding(true)}
+              size="sm"
+              variant="outline"
+            >
+              <Plus className="mr-2 size-4" />
+              Add Note
+            </Button>
+          ))}
 
         {/* Notes List */}
         {notes && notes.length > 0 ? (
           <div className="space-y-3">
             {notes.map((note: any) => (
               <div
+                className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
                 key={note.id}
-                className="rounded-lg border p-3 hover:bg-muted/50 transition-colors"
               >
                 <div className="flex gap-3">
                   <Avatar className="size-8 flex-shrink-0">
@@ -112,16 +107,16 @@ export function NotesSection({
                       {note.user?.name?.charAt(0) || "?"}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs font-medium">{note.user?.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-medium text-xs">{note.user?.name}</p>
+                      <p className="text-muted-foreground text-xs">
                         {formatDistance(new Date(note.created_at), new Date(), {
                           addSuffix: true,
                         })}
                       </p>
                     </div>
-                    <p className="mt-1 text-sm whitespace-pre-wrap break-words">
+                    <p className="mt-1 whitespace-pre-wrap break-words text-sm">
                       {note.content || note.note}
                     </p>
                   </div>
@@ -133,7 +128,7 @@ export function NotesSection({
           <div className="flex h-32 items-center justify-center">
             <div className="text-center">
               <FileText className="mx-auto size-8 text-muted-foreground/50" />
-              <p className="mt-2 text-sm text-muted-foreground">No notes yet</p>
+              <p className="mt-2 text-muted-foreground text-sm">No notes yet</p>
             </div>
           </div>
         )}
@@ -141,4 +136,3 @@ export function NotesSection({
     </UnifiedAccordionContent>
   );
 }
-

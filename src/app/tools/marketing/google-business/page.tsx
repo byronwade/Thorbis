@@ -39,7 +39,7 @@ export default function GoogleBusinessProfilePage() {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/15 to-blue-500/5">
-            <Search className="size-6 text-blue-600 dark:text-blue-400" />
+            <Search className="size-6 text-primary dark:text-primary" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export default function GoogleBusinessProfilePage() {
       </div>
 
       {/* Why It Matters */}
-      <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent">
+      <Card className="border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="size-5" />
@@ -71,7 +71,7 @@ export default function GoogleBusinessProfilePage() {
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">
                   Show up in "near me" searches
@@ -82,7 +82,7 @@ export default function GoogleBusinessProfilePage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">Appear on Google Maps</p>
                 <p className="text-muted-foreground text-xs">
@@ -91,7 +91,7 @@ export default function GoogleBusinessProfilePage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">
                   Build trust with reviews
@@ -102,7 +102,7 @@ export default function GoogleBusinessProfilePage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">100% Free</p>
                 <p className="text-muted-foreground text-xs">
@@ -376,7 +376,7 @@ export default function GoogleBusinessProfilePage() {
       </div>
 
       {/* Pro Tips */}
-      <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+      <Card className="border-warning/20 bg-gradient-to-br from-amber-500/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="size-5" />

@@ -1,12 +1,12 @@
 /**
  * Welcome Page - Onboarding Entry Point
- * 
+ *
  * Server Component - Handles authentication and data fetching
- * 
+ *
  * Access Control:
  * - New users (no company/incomplete payment): ONLY page they can access
  * - Existing users (with active company): Can access anytime without restrictions
- * 
+ *
  * Features:
  * - Beautiful, modern onboarding flow
  * - Step-by-step company setup
@@ -16,7 +16,7 @@
  */
 
 import { redirect } from "next/navigation";
-import { WelcomePageClient } from "@/components/onboarding/welcome-page-client";
+import { WelcomePageClientAdvanced } from "@/components/onboarding/welcome-page-client-advanced";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -58,7 +58,9 @@ export default async function WelcomePage() {
     .is("companies.deleted_at", null);
 
   const hasActiveCompany = teamMembers?.some((tm: any) => {
-    const companies = Array.isArray(tm.companies) ? tm.companies[0] : tm.companies;
+    const companies = Array.isArray(tm.companies)
+      ? tm.companies[0]
+      : tm.companies;
     const status = companies?.stripe_subscription_status;
     return status === "active" || status === "trialing";
   });
@@ -84,6 +86,8 @@ export default async function WelcomePage() {
         const addressParts =
           company.address?.split(",").map((s: string) => s.trim()) || [];
 
+        const onboardingProgress = (company.onboarding_progress as any) || {};
+
         incompleteCompany = {
           id: company.id,
           name: company.name,
@@ -97,7 +101,9 @@ export default async function WelcomePage() {
           website: company.website || "",
           taxId: company.tax_id || "",
           logo: company.logo || null,
-          onboardingProgress: (company.onboarding_progress as any) || {},
+          onboardingProgress,
+          // Determine which step to resume from based on completed steps
+          currentStep: onboardingProgress.currentStep || 1,
         };
       }
     }
@@ -111,14 +117,14 @@ export default async function WelcomePage() {
     .maybeSingle();
 
   return (
-    <WelcomePageClient
+    <WelcomePageClientAdvanced
+      hasActiveCompany={hasActiveCompany ?? false}
+      incompleteCompany={incompleteCompany}
       user={{
         id: user.id,
         email: user.email || userData?.email || "",
         name: user.user_metadata?.full_name || userData?.name || "",
       }}
-      incompleteCompany={incompleteCompany}
-      hasActiveCompany={hasActiveCompany || false}
     />
   );
 }

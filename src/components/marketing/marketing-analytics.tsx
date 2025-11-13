@@ -108,11 +108,11 @@ const formatROI = (roi: number): string => {
 const getTrendIcon = (trend: "up" | "down" | "stable") => {
   switch (trend) {
     case "up":
-      return <TrendingUp className="h-4 w-4 text-green-600" />;
+      return <TrendingUp className="h-4 w-4 text-success" />;
     case "down":
-      return <TrendingDown className="h-4 w-4 text-red-600" />;
+      return <TrendingDown className="h-4 w-4 text-destructive" />;
     case "stable":
-      return <BarChart3 className="h-4 w-4 text-blue-600" />;
+      return <BarChart3 className="h-4 w-4 text-primary" />;
   }
 };
 
@@ -278,7 +278,7 @@ export function MarketingAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border bg-blue-50 p-4 dark:bg-blue-950/20">
+              <div className="flex items-center justify-between rounded-lg border bg-primary p-4 dark:bg-primary/20">
                 <div>
                   <div className="font-medium text-sm">Leads Captured</div>
                   <div className="font-bold text-2xl">{totalLeads}</div>
@@ -286,7 +286,7 @@ export function MarketingAnalytics() {
                 <div className="text-muted-foreground text-sm">100%</div>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg border bg-green-50 p-4 dark:bg-green-950/20">
+              <div className="flex items-center justify-between rounded-lg border bg-success p-4 dark:bg-success/20">
                 <div>
                   <div className="font-medium text-sm">Contacted</div>
                   <div className="font-bold text-2xl">
@@ -296,7 +296,7 @@ export function MarketingAnalytics() {
                 <div className="text-muted-foreground text-sm">80%</div>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg border bg-yellow-50 p-4 dark:bg-yellow-950/20">
+              <div className="flex items-center justify-between rounded-lg border bg-warning p-4 dark:bg-warning/20">
                 <div>
                   <div className="font-medium text-sm">Qualified</div>
                   <div className="font-bold text-2xl">
@@ -306,7 +306,7 @@ export function MarketingAnalytics() {
                 <div className="text-muted-foreground text-sm">50%</div>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg border bg-purple-50 p-4 dark:bg-purple-950/20">
+              <div className="flex items-center justify-between rounded-lg border bg-accent p-4 dark:bg-accent/20">
                 <div>
                   <div className="font-medium text-sm">
                     Converted to Customer

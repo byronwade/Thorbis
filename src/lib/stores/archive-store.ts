@@ -20,13 +20,16 @@ export type ArchivableEntity =
   | "customers"
   | "jobs"
   | "equipment"
+  | "materials"
+  | "payments"
   | "invoices"
   | "estimates"
   | "contracts"
   | "purchase_orders"
   | "service_agreements"
   | "maintenance_plans"
-  | "appointments";
+  | "appointments"
+  | "properties";
 
 // State type
 type ArchiveStore = {
@@ -46,6 +49,8 @@ const defaultFilters: Record<ArchivableEntity, ArchiveFilter> = {
   customers: "active",
   jobs: "active",
   equipment: "active",
+  materials: "active",
+  payments: "active",
   invoices: "active",
   estimates: "active",
   contracts: "active",
@@ -53,6 +58,7 @@ const defaultFilters: Record<ArchivableEntity, ArchiveFilter> = {
   service_agreements: "active",
   maintenance_plans: "active",
   appointments: "active",
+  properties: "active",
 };
 
 // Create store

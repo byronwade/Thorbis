@@ -9,12 +9,13 @@
  */
 
 import { Button as EmailButton } from "@react-email/components";
+import { EMAIL_COLORS } from "../theme";
 
-interface ButtonProps {
+type ButtonProps = {
   href: string;
   children: React.ReactNode;
   variant?: "primary" | "outline";
-}
+};
 
 export function Button({ href, children, variant = "primary" }: ButtonProps) {
   const baseStyle = {
@@ -30,14 +31,14 @@ export function Button({ href, children, variant = "primary" }: ButtonProps) {
 
   const variantStyles = {
     primary: {
-      backgroundColor: "hsl(217 91% 60%)", // Thorbis Electric Blue
-      color: "#ffffff",
+      backgroundColor: EMAIL_COLORS.primary, // Thorbis Electric Blue
+      color: EMAIL_COLORS.primaryText,
       border: "none",
     },
     outline: {
       backgroundColor: "transparent",
-      color: "hsl(217 91% 60%)",
-      border: "2px solid hsl(217 91% 60%)",
+      color: EMAIL_COLORS.primary,
+      border: `2px solid ${EMAIL_COLORS.primary}`,
     },
   };
 

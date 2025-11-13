@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { ContractSigningForm } from "@/components/work/contract-signing-form";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
+
 // import { getSupabaseClient } from "@/lib/db";
 
 /**
@@ -118,15 +119,15 @@ export default async function ContractSignPage({
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <div className="mx-auto max-w-4xl px-4 py-16">
-          <Card className="border-green-200 bg-green-50/50 dark:border-green-900/50 dark:bg-green-950/20">
+          <Card className="border-success bg-success/50 dark:border-success/50 dark:bg-success/20">
             <CardContent className="flex flex-col items-center py-12">
-              <div className="rounded-full bg-green-100 p-4 dark:bg-green-900/30">
-                <CheckCircle2 className="size-12 text-green-600 dark:text-green-400" />
+              <div className="rounded-full bg-success p-4 dark:bg-success/30">
+                <CheckCircle2 className="size-12 text-success dark:text-success" />
               </div>
-              <h1 className="mt-6 font-bold text-2xl text-green-900 dark:text-green-50">
+              <h1 className="mt-6 font-bold text-2xl text-success dark:text-success">
                 Contract Already Signed
               </h1>
-              <p className="mt-2 text-center text-green-700 dark:text-green-300">
+              <p className="mt-2 text-center text-success dark:text-success">
                 This contract has already been signed. Thank you!
               </p>
             </CardContent>
@@ -162,7 +163,7 @@ export default async function ContractSignPage({
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           <Card className="border-muted">
             <CardContent className="flex items-center gap-3 py-4">
-              <Shield className="size-5 text-green-600 dark:text-green-400" />
+              <Shield className="size-5 text-success dark:text-success" />
               <div>
                 <p className="font-medium text-sm">Secure & Encrypted</p>
                 <p className="text-muted-foreground text-xs">SSL protected</p>
@@ -171,7 +172,7 @@ export default async function ContractSignPage({
           </Card>
           <Card className="border-muted">
             <CardContent className="flex items-center gap-3 py-4">
-              <Clock className="size-5 text-blue-600 dark:text-blue-400" />
+              <Clock className="size-5 text-primary dark:text-primary" />
               <div>
                 <p className="font-medium text-sm">Quick Signing</p>
                 <p className="text-muted-foreground text-xs">Takes 2 minutes</p>
@@ -180,7 +181,7 @@ export default async function ContractSignPage({
           </Card>
           <Card className="border-muted">
             <CardContent className="flex items-center gap-3 py-4">
-              <CheckCircle2 className="size-5 text-purple-600 dark:text-purple-400" />
+              <CheckCircle2 className="size-5 text-accent-foreground dark:text-accent-foreground" />
               <div>
                 <p className="font-medium text-sm">Legally Binding</p>
                 <p className="text-muted-foreground text-xs">

@@ -28,7 +28,7 @@ import {
   DollarSign,
   FileCheck,
   FileText,
-  LinkOff,
+  Link2Off,
   Receipt,
   TrendingUp,
   User,
@@ -561,7 +561,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
             size="sm"
             variant="outline"
           >
-            <LinkOff className="mr-2 size-4" />
+            <Link2Off className="mr-2 size-4" />
             Unlink
           </Button>
         ),

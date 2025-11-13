@@ -38,15 +38,15 @@ export default async function ContractSignSuccessPage({
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="mx-auto max-w-2xl px-4 py-16">
         {/* Success Message */}
-        <Card className="border-green-200 bg-green-50/50 dark:border-green-900/50 dark:bg-green-950/20">
+        <Card className="border-success bg-success/50 dark:border-success/50 dark:bg-success/20">
           <CardContent className="flex flex-col items-center py-12">
-            <div className="rounded-full bg-green-100 p-6 dark:bg-green-900/30">
-              <CheckCircle2 className="size-16 text-green-600 dark:text-green-400" />
+            <div className="rounded-full bg-success p-6 dark:bg-success/30">
+              <CheckCircle2 className="size-16 text-success dark:text-success" />
             </div>
-            <h1 className="mt-6 font-bold text-3xl text-green-900 dark:text-green-50">
+            <h1 className="mt-6 font-bold text-3xl text-success dark:text-success">
               Contract Signed Successfully!
             </h1>
-            <p className="mt-3 text-center text-green-700 text-lg dark:text-green-300">
+            <p className="mt-3 text-center text-lg text-success dark:text-success">
               Thank you for signing the contract. You will receive a
               confirmation email shortly.
             </p>
@@ -80,8 +80,8 @@ export default async function ContractSignSuccessPage({
         {/* Email Notification */}
         <Card className="mt-6">
           <CardContent className="flex items-start gap-4 py-6">
-            <div className="rounded-lg bg-blue-100 p-3 dark:bg-blue-900/30">
-              <Mail className="size-6 text-blue-600 dark:text-blue-400" />
+            <div className="rounded-lg bg-primary p-3 dark:bg-primary/30">
+              <Mail className="size-6 text-primary dark:text-primary" />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold">Email Confirmation Sent</h3>

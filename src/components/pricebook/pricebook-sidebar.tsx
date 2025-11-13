@@ -55,19 +55,17 @@ import {
 function SupplierStatusIcon({ status }: { status: SyncStatus }) {
   switch (status) {
     case "connected":
-      return (
-        <CheckCircle2 className="size-4 text-green-600 dark:text-green-500" />
-      );
+      return <CheckCircle2 className="size-4 text-success dark:text-success" />;
     case "syncing":
       return (
-        <Loader2 className="size-4 animate-spin text-blue-600 dark:text-blue-500" />
+        <Loader2 className="size-4 animate-spin text-primary dark:text-primary" />
       );
     case "error":
-      return <AlertCircle className="size-4 text-red-600 dark:text-red-500" />;
-    case "warning":
       return (
-        <AlertCircle className="size-4 text-yellow-600 dark:text-yellow-500" />
+        <AlertCircle className="size-4 text-destructive dark:text-destructive" />
       );
+    case "warning":
+      return <AlertCircle className="size-4 text-warning dark:text-warning" />;
     case "disconnected":
     default:
       return <div className="size-2 rounded-full bg-muted-foreground/30" />;
@@ -128,7 +126,7 @@ function SupplierStatusCard({
             <p className="font-medium text-sm leading-none">{displayName}</p>
             <p className="text-muted-foreground text-xs">{getStatusText()}</p>
             {status === "connected" && itemsImported > 0 && (
-              <p className="text-green-600 text-xs dark:text-green-500">
+              <p className="text-success text-xs dark:text-success">
                 {itemsImported.toLocaleString()} items
               </p>
             )}
@@ -147,8 +145,8 @@ function SupplierStatusCard({
         </Button>
       </div>
       {status === "error" && errorMessage && (
-        <div className="mt-2 rounded-md bg-red-50 p-2 dark:bg-red-950/20">
-          <p className="text-red-600 text-xs dark:text-red-500">
+        <div className="mt-2 rounded-md bg-destructive p-2 dark:bg-destructive/20">
+          <p className="text-destructive text-xs dark:text-destructive">
             {errorMessage}
           </p>
         </div>

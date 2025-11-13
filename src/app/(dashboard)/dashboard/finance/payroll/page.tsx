@@ -184,11 +184,11 @@ export default function PayrollOverviewPage() {
       </div>
 
       {/* Alert */}
-      <Card className="border-yellow-500/50 bg-yellow-500/5">
+      <Card className="border-warning/50 bg-warning/5">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-yellow-500" />
-            <CardTitle className="text-base text-yellow-700 dark:text-yellow-400">
+            <AlertCircle className="h-5 w-5 text-warning" />
+            <CardTitle className="text-base text-warning dark:text-warning">
               Action Required
             </CardTitle>
           </div>

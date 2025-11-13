@@ -107,7 +107,7 @@ export default function CommissionCalculator() {
       </div>
 
       {/* Info Card */}
-      <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+      <Card className="border-primary/20 bg-gradient-to-br from-blue-500/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <AlertCircle className="size-5" />
@@ -361,7 +361,7 @@ export default function CommissionCalculator() {
                       ? "Monthly Pay"
                       : "Total Commission"}
                   </p>
-                  <p className="font-bold text-5xl text-green-600">
+                  <p className="font-bold text-5xl text-success">
                     ${commission.toFixed(2)}
                   </p>
                 </div>
@@ -489,7 +489,7 @@ export default function CommissionCalculator() {
             </Card>
           )}
 
-          <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+          <Card className="border-warning/20 bg-gradient-to-br from-amber-500/5 to-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <AlertCircle className="size-4" />

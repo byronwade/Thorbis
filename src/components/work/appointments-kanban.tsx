@@ -1,19 +1,15 @@
 "use client";
 
+import { ArrowUpRight, CalendarDays, Clock, User } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
-import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { EntityKanban } from "@/components/ui/entity-kanban";
+import type {
+  KanbanItemBase,
+  KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowUpRight,
-  CalendarDays,
-  Clock,
-  User,
-} from "lucide-react";
 
 type AppointmentStatus =
   | "scheduled"
@@ -62,7 +58,9 @@ const APPOINTMENT_STATUS_COLUMNS: Array<{
   { id: "no_show", name: "No Show", accentColor: "#F59E0B" },
 ];
 
-const COLUMN_LABEL = new Map(APPOINTMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+  APPOINTMENT_STATUS_COLUMNS.map((column) => [column.id, column.name])
+);
 const DEFAULT_STATUS: AppointmentStatus = "scheduled";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -118,26 +116,28 @@ function getCustomerName(appointment: Appointment): string {
 
 function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
   const { appointment, columnId } = item;
-  const startTime = appointment.start_time ? new Date(appointment.start_time) : null;
+  const startTime = appointment.start_time
+    ? new Date(appointment.start_time)
+    : null;
   const endTime = appointment.end_time ? new Date(appointment.end_time) : null;
 
   return (
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="text-sm font-semibold leading-snug text-foreground">
+          <h3 className="font-semibold text-foreground text-sm leading-snug">
             {appointment.title}
           </h3>
         </div>
       </div>
 
       {appointment.description && (
-        <p className="line-clamp-2 text-xs text-muted-foreground">
+        <p className="line-clamp-2 text-muted-foreground text-xs">
           {appointment.description}
         </p>
       )}
 
-      <div className="space-y-2 text-xs text-muted-foreground">
+      <div className="space-y-2 text-muted-foreground text-xs">
         <div className="flex items-center gap-2">
           <User className="size-4 text-primary" />
           <span className="font-medium text-foreground">
@@ -169,10 +169,8 @@ function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-2 text-[11px] tracking-wide text-muted-foreground">
-        <span>
-          {startTime && fullDateFormatter.format(startTime)}
-        </span>
+      <div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
+        <span>{startTime && fullDateFormatter.format(startTime)}</span>
         <span className="uppercase">
           {COLUMN_LABEL.get(columnId as AppointmentStatus) ?? columnId}
         </span>
@@ -181,9 +179,9 @@ function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
       <div className="flex items-center justify-end pt-1">
         <Button
           asChild
+          className="gap-1 text-primary text-xs"
           size="sm"
           variant="ghost"
-          className="gap-1 text-xs text-primary"
         >
           <Link href={`/dashboard/work/appointments/${appointment.id}`}>
             View
@@ -232,6 +230,10 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 
   return (
     <EntityKanban<Appointment, AppointmentStatus>
+      calculateColumnMeta={(columnId, items) => {
+        const columnItems = items.filter((item) => item.columnId === columnId);
+        return { count: columnItems.length };
+      }}
       columns={APPOINTMENT_STATUS_COLUMNS}
       data={appointments}
       entityName="appointments"
@@ -241,26 +243,25 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
         entity: appointment,
         appointment,
       })}
+      onItemMove={handleItemMove as any}
+      renderCard={(item) => (
+        <AppointmentCardContent
+          item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem}
+        />
+      )}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
+          <AppointmentCardContent
+            item={
+              { ...item, appointment: item.entity } as AppointmentsKanbanItem
+            }
+          />
+        </div>
+      )}
       updateEntityStatus={(appointment, newStatus) => ({
         ...appointment,
         status: newStatus,
       })}
-      calculateColumnMeta={(columnId, items) => {
-        const columnItems = items.filter((item) => item.columnId === columnId);
-        return { count: columnItems.length };
-      }}
-      onItemMove={handleItemMove}
-      renderCard={(item) => <AppointmentCardContent item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem} />}
-      renderDragOverlay={(item) => (
-        <div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
-          <AppointmentCardContent item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem} />
-        </div>
-      )}
     />
   );
 }
-
-
-
-
-

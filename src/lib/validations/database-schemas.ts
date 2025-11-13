@@ -837,7 +837,13 @@ export const vendorInsertSchema = z.object({
     .optional()
     .nullable(),
   category: z
-    .enum(["supplier", "distributor", "manufacturer", "service_provider", "other"])
+    .enum([
+      "supplier",
+      "distributor",
+      "manufacturer",
+      "service_provider",
+      "other",
+    ])
     .optional()
     .nullable(),
   tags: z.array(z.string()).optional().nullable(),
@@ -897,7 +903,9 @@ export const purchaseOrderInsertSchema = z.object({
     ])
     .default("draft"),
   priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
-  line_items: z.array(purchaseOrderLineItemSchema).min(1, "At least one line item is required"),
+  line_items: z
+    .array(purchaseOrderLineItemSchema)
+    .min(1, "At least one line item is required"),
   subtotal: z.number().int().nonnegative().default(0), // In cents
   tax_amount: z.number().int().nonnegative().default(0), // In cents
   shipping_amount: z.number().int().nonnegative().default(0), // In cents

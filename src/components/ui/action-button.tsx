@@ -193,7 +193,7 @@ export function ActionButton({
       className={cn(
         "transition-all duration-200",
         showSuccess &&
-          "bg-green-600 hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-700",
+          "bg-success hover:bg-success dark:bg-success dark:hover:bg-success",
         showError && "animate-shake bg-destructive",
         className
       )}
@@ -293,7 +293,7 @@ export function ConfirmActionButton({
 
       {/* TODO: Implement confirmation dialog component */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 dark:bg-background/80">
           <div className="max-w-md rounded-lg border bg-background p-6 shadow-lg">
             <h2 className="mb-2 font-semibold text-lg">{confirmTitle}</h2>
             <p className="mb-4 text-muted-foreground">{confirmDescription}</p>

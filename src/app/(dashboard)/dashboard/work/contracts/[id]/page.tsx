@@ -8,7 +8,6 @@ import {
   MoreVertical,
   Send,
   Trash2,
-  TrendingUp,
   User,
 } from "lucide-react";
 import Link from "next/link";
@@ -26,8 +25,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { WorkflowTimeline } from "@/components/ui/workflow-timeline";
 import { ContractActions } from "@/components/work/contract-actions";
-import { createClient } from "@/lib/supabase/server";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Contract Detail Page - Server Component
@@ -44,18 +43,15 @@ function getStatusBadge(status: string) {
       label: "Signed",
     },
     sent: {
-      className:
-        "bg-primary/10 text-primary",
+      className: "bg-primary/10 text-primary",
       label: "Sent",
     },
     viewed: {
-      className:
-        "bg-accent/10 text-accent-foreground",
+      className: "bg-accent/10 text-accent-foreground",
       label: "Viewed",
     },
     draft: {
-      className:
-        "bg-muted text-foreground",
+      className: "bg-muted text-foreground",
       label: "Draft",
     },
     rejected: {
@@ -63,8 +59,7 @@ function getStatusBadge(status: string) {
       label: "Rejected",
     },
     expired: {
-      className:
-        "bg-warning/10 text-warning",
+      className: "bg-warning/10 text-warning",
       label: "Expired",
     },
   };
@@ -80,7 +75,8 @@ function getStatusBadge(status: string) {
 
 function formatDate(dateString: string | Date | null) {
   if (!dateString) return "N/A";
-  const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+  const date =
+    typeof dateString === "string" ? new Date(dateString) : dateString;
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -90,7 +86,8 @@ function formatDate(dateString: string | Date | null) {
 
 function formatDateTime(dateString: string | Date | null) {
   if (!dateString) return "N/A";
-  const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+  const date =
+    typeof dateString === "string" ? new Date(dateString) : dateString;
   return date.toLocaleString("en-US", {
     year: "numeric",
     month: "long",
@@ -185,19 +182,32 @@ export default async function ContractDetailPage({
   }
 
   // Get customer from estimate, invoice, or job
-  const estimate = Array.isArray(contractRaw.estimate) ? contractRaw.estimate[0] : contractRaw.estimate;
-  const invoice = Array.isArray(contractRaw.invoice) ? contractRaw.invoice[0] : contractRaw.invoice;
-  const job = Array.isArray(contractRaw.job) ? contractRaw.job[0] : contractRaw.job;
-  
-  const customer = estimate?.customer 
-    ? (Array.isArray(estimate.customer) ? estimate.customer[0] : estimate.customer)
-    : invoice?.customer
-    ? (Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer)
-    : job?.customer
-    ? (Array.isArray(job.customer) ? job.customer[0] : job.customer)
-    : null;
+  const estimate = Array.isArray(contractRaw.estimate)
+    ? contractRaw.estimate[0]
+    : contractRaw.estimate;
+  const invoice = Array.isArray(contractRaw.invoice)
+    ? contractRaw.invoice[0]
+    : contractRaw.invoice;
+  const job = Array.isArray(contractRaw.job)
+    ? contractRaw.job[0]
+    : contractRaw.job;
 
-  const customerId = estimate?.customer_id || invoice?.customer_id || job?.customer_id;
+  const customer = estimate?.customer
+    ? Array.isArray(estimate.customer)
+      ? estimate.customer[0]
+      : estimate.customer
+    : invoice?.customer
+      ? Array.isArray(invoice.customer)
+        ? invoice.customer[0]
+        : invoice.customer
+      : job?.customer
+        ? Array.isArray(job.customer)
+          ? job.customer[0]
+          : job.customer
+        : null;
+
+  const customerId =
+    estimate?.customer_id || invoice?.customer_id || job?.customer_id;
 
   // NEW: Fetch property (via job) and appointments for contract context
   const [{ data: property }, { data: appointments }] = await Promise.all([
@@ -237,7 +247,9 @@ export default async function ContractDetailPage({
     title: contractRaw.title,
     description: contractRaw.description,
     customer: customer
-      ? (customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer")
+      ? customer.display_name ||
+        `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+        "Unknown Customer"
       : contractRaw.signer_email || "Unknown",
     customerId: customerId || null,
     status: contractRaw.status,
@@ -330,8 +342,12 @@ export default async function ContractDetailPage({
                       label: "Estimate Created",
                       status: estimate ? "completed" : "pending",
                       date: estimate?.created_at,
-                      href: estimate?.id ? `/dashboard/work/estimates/${estimate.id}` : undefined,
-                      description: estimate?.estimate_number ? `#${estimate.estimate_number}` : undefined,
+                      href: estimate?.id
+                        ? `/dashboard/work/estimates/${estimate.id}`
+                        : undefined,
+                      description: estimate?.estimate_number
+                        ? `#${estimate.estimate_number}`
+                        : undefined,
                     },
                     {
                       id: "contract",
@@ -339,22 +355,38 @@ export default async function ContractDetailPage({
                       status: "completed",
                       date: contractRaw.created_at,
                       href: `/dashboard/work/contracts/${contractRaw.id}`,
-                      description: contract.status === "signed" ? "Signed" : "Pending signature",
+                      description:
+                        contract.status === "signed"
+                          ? "Signed"
+                          : "Pending signature",
                     },
                     {
                       id: "invoice",
                       label: "Invoice Created",
                       status: invoice ? "completed" : "pending",
                       date: invoice?.created_at,
-                      href: invoice?.id ? `/dashboard/work/invoices/${invoice.id}` : undefined,
-                      description: invoice?.invoice_number ? `#${invoice.invoice_number}` : undefined,
+                      href: invoice?.id
+                        ? `/dashboard/work/invoices/${invoice.id}`
+                        : undefined,
+                      description: invoice?.invoice_number
+                        ? `#${invoice.invoice_number}`
+                        : undefined,
                     },
                     {
                       id: "payment",
                       label: "Payment Received",
-                      status: invoice?.status === "paid" ? "completed" : invoice ? "current" : "pending",
+                      status:
+                        invoice?.status === "paid"
+                          ? "completed"
+                          : invoice
+                            ? "current"
+                            : "pending",
                       date: invoice?.paid_at,
-                      description: invoice?.paid_at ? "Completed" : invoice ? `Balance: ${formatCurrency(invoice.balance_amount)}` : undefined,
+                      description: invoice?.paid_at
+                        ? "Completed"
+                        : invoice
+                          ? `Balance: ${formatCurrency(invoice.balance_amount)}`
+                          : undefined,
                     },
                   ]}
                 />
@@ -440,7 +472,9 @@ export default async function ContractDetailPage({
 
                   {contract.validFrom && (
                     <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Valid From</p>
+                      <p className="text-muted-foreground text-xs">
+                        Valid From
+                      </p>
                       <p className="font-medium text-sm">
                         {formatDate(contract.validFrom)}
                       </p>
@@ -449,7 +483,9 @@ export default async function ContractDetailPage({
 
                   {contract.validUntil && (
                     <div className="space-y-1">
-                      <p className="text-muted-foreground text-xs">Valid Until</p>
+                      <p className="text-muted-foreground text-xs">
+                        Valid Until
+                      </p>
                       <p className="font-medium text-sm">
                         {formatDate(contract.validUntil)}
                       </p>
@@ -477,7 +513,9 @@ export default async function ContractDetailPage({
                 <CardContent>
                   {contract.customerId ? (
                     <Button asChild className="w-full" variant="outline">
-                      <Link href={`/dashboard/customers/${contract.customerId}`}>
+                      <Link
+                        href={`/dashboard/customers/${contract.customerId}`}
+                      >
                         <User className="mr-2 size-4" />
                         {contract.customer}
                       </Link>
@@ -522,27 +560,31 @@ export default async function ContractDetailPage({
                     <div className="space-y-2">
                       {appointments.map((appt: any) => (
                         <Link
-                          key={appt.id}
-                          href={`/dashboard/appointments/${appt.id}`}
                           className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                          href={`/dashboard/appointments/${appt.id}`}
+                          key={appt.id}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="font-medium text-sm">
-                                {new Date(appt.scheduled_start).toLocaleDateString("en-US", {
+                                {new Date(
+                                  appt.scheduled_start
+                                ).toLocaleDateString("en-US", {
                                   month: "short",
                                   day: "numeric",
                                   year: "numeric",
                                 })}
                               </p>
                               <p className="text-muted-foreground text-xs">
-                                {new Date(appt.scheduled_start).toLocaleTimeString("en-US", {
+                                {new Date(
+                                  appt.scheduled_start
+                                ).toLocaleTimeString("en-US", {
                                   hour: "numeric",
                                   minute: "2-digit",
                                 })}
                               </p>
                             </div>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge className="text-xs" variant="outline">
                               {appt.status}
                             </Badge>
                           </div>

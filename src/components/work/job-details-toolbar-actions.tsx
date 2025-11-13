@@ -124,7 +124,9 @@ export function JobDetailsToolbarActions({
         ) : (
           <Eye className="size-4 text-muted-foreground" />
         )}
-        <span className="text-sm font-medium">{isEditMode ? "Edit" : "View"}</span>
+        <span className="font-medium text-sm">
+          {isEditMode ? "Edit" : "View"}
+        </span>
         <Switch checked={isEditMode} onCheckedChange={setIsEditMode} />
       </div>
 
@@ -138,7 +140,11 @@ export function JobDetailsToolbarActions({
             <Tooltip>
               <TooltipTrigger asChild>
                 <DialogTrigger asChild>
-                  <Button className="gap-2 hover:bg-background" size="sm" variant="ghost">
+                  <Button
+                    className="gap-2 hover:bg-background"
+                    size="sm"
+                    variant="ghost"
+                  >
                     <LayoutGrid className="size-4" />
                     <span className="hidden sm:inline">Presets</span>
                   </Button>
@@ -149,40 +155,40 @@ export function JobDetailsToolbarActions({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Layout Presets</DialogTitle>
-            <DialogDescription>
-              Choose a pre-configured layout for your industry
-            </DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="h-[500px] pr-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              {ALL_PRESETS.map((preset) => (
-                <button
-                  className="group relative overflow-hidden rounded-lg border p-4 text-left transition-all hover:border-primary hover:shadow-md"
-                  key={preset.id}
-                  onClick={() => handleLoadPreset(preset.id)}
-                  type="button"
-                >
-                  {industry === preset.industry && (
-                    <div className="absolute top-2 right-2 rounded-full bg-primary px-2 py-0.5 text-primary-foreground text-xs">
-                      Current
-                    </div>
-                  )}
-                  <h3 className="mb-1 font-semibold">{preset.name}</h3>
-                  <p className="text-muted-foreground text-sm">
-                    {preset.description}
-                  </p>
-                  <p className="mt-2 text-muted-foreground text-xs">
-                    {preset.widgets.length} widgets
-                  </p>
-                </button>
-              ))}
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Layout Presets</DialogTitle>
+              <DialogDescription>
+                Choose a pre-configured layout for your industry
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className="h-[500px] pr-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                {ALL_PRESETS.map((preset) => (
+                  <button
+                    className="group relative overflow-hidden rounded-lg border p-4 text-left transition-all hover:border-primary hover:shadow-md"
+                    key={preset.id}
+                    onClick={() => handleLoadPreset(preset.id)}
+                    type="button"
+                  >
+                    {industry === preset.industry && (
+                      <div className="absolute top-2 right-2 rounded-full bg-primary px-2 py-0.5 text-primary-foreground text-xs">
+                        Current
+                      </div>
+                    )}
+                    <h3 className="mb-1 font-semibold">{preset.name}</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {preset.description}
+                    </p>
+                    <p className="mt-2 text-muted-foreground text-xs">
+                      {preset.widgets.length} widgets
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
 
         {/* Add Widget */}
         <Sheet onOpenChange={setIsAddWidgetOpen} open={isAddWidgetOpen}>
@@ -190,7 +196,11 @@ export function JobDetailsToolbarActions({
             <Tooltip>
               <TooltipTrigger asChild>
                 <SheetTrigger asChild>
-                  <Button className="gap-2 hover:bg-background" size="sm" variant="ghost">
+                  <Button
+                    className="gap-2 hover:bg-background"
+                    size="sm"
+                    variant="ghost"
+                  >
                     <Plus className="size-4" />
                     <span className="hidden sm:inline">Widget</span>
                   </Button>
@@ -201,48 +211,50 @@ export function JobDetailsToolbarActions({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        <SheetContent className="w-full sm:max-w-xl">
-          <SheetHeader>
-            <SheetTitle>Add Widget</SheetTitle>
-            <SheetDescription>
-              Add widgets to customize your view
-            </SheetDescription>
-          </SheetHeader>
-          <ScrollArea className="h-[calc(100vh-120px)] pr-4">
-            <div className="space-y-6 py-4">
-              {Object.entries(widgetsByCategory).map(([category, widgets]) => (
-                <div key={category}>
-                  <h3 className="mb-3 font-semibold text-sm capitalize">
-                    {category}
-                  </h3>
-                  <div className="space-y-2">
-                    {widgets.map(([widgetType, metadata]) => (
-                      <button
-                        className="flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all hover:border-primary"
-                        key={widgetType}
-                        onClick={() =>
-                          handleAddWidget(widgetType as JobWidgetType)
-                        }
-                        type="button"
-                      >
-                        <div className="flex-1">
-                          <div className="font-medium text-sm">
-                            {metadata.title}
-                          </div>
-                          <div className="text-muted-foreground text-xs">
-                            {metadata.description}
-                          </div>
-                        </div>
-                        <Plus className="size-4 text-muted-foreground" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+          <SheetContent className="w-full sm:max-w-xl">
+            <SheetHeader>
+              <SheetTitle>Add Widget</SheetTitle>
+              <SheetDescription>
+                Add widgets to customize your view
+              </SheetDescription>
+            </SheetHeader>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4">
+              <div className="space-y-6 py-4">
+                {Object.entries(widgetsByCategory).map(
+                  ([category, widgets]) => (
+                    <div key={category}>
+                      <h3 className="mb-3 font-semibold text-sm capitalize">
+                        {category}
+                      </h3>
+                      <div className="space-y-2">
+                        {widgets.map(([widgetType, metadata]) => (
+                          <button
+                            className="flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all hover:border-primary"
+                            key={widgetType}
+                            onClick={() =>
+                              handleAddWidget(widgetType as JobWidgetType)
+                            }
+                            type="button"
+                          >
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">
+                                {metadata.title}
+                              </div>
+                              <div className="text-muted-foreground text-xs">
+                                {metadata.description}
+                              </div>
+                            </div>
+                            <Plus className="size-4 text-muted-foreground" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
 
         {/* Reset */}
         <TooltipProvider>
@@ -273,9 +285,13 @@ export function JobDetailsToolbarActions({
           <Tooltip>
             <TooltipTrigger asChild>
               <SheetTrigger asChild>
-                <Button className="gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30" size="sm" variant="outline">
+                <Button
+                  className="gap-2 border-primary/20 bg-primary/5 hover:border-primary/30 hover:bg-primary/10"
+                  size="sm"
+                  variant="outline"
+                >
                   <ClipboardList className="size-4 text-primary" />
-                  <span className="hidden sm:inline font-medium">Activity</span>
+                  <span className="hidden font-medium sm:inline">Activity</span>
                 </Button>
               </SheetTrigger>
             </TooltipTrigger>

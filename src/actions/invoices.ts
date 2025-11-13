@@ -9,6 +9,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
   ActionError,
   ERROR_CODES,
@@ -810,13 +811,10 @@ export async function archiveInvoice(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    // Get active company ID using the helper function
+    const companyId = await getActiveCompanyId();
 
-    if (!teamMember?.company_id) {
+    if (!companyId) {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -833,7 +831,7 @@ export async function archiveInvoice(
 
     assertExists(invoice, "Invoice");
 
-    if (invoice.company_id !== teamMember.company_id) {
+    if (invoice.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -844,7 +842,7 @@ export async function archiveInvoice(
     // Cannot archive paid invoices (business rule)
     if (invoice.status === "paid") {
       throw new ActionError(
-        "Cannot archive paid invoices. Paid invoices must be retained for records.",
+        "This invoice has been paid and cannot be archived. Paid invoices must be kept for tax and legal compliance.",
         ERROR_CODES.OPERATION_NOT_ALLOWED
       );
     }
@@ -862,7 +860,7 @@ export async function archiveInvoice(
         deleted_by: user.id,
         archived_at: now,
         permanent_delete_scheduled_at: scheduledDeletion,
-        status: "archived",
+        // Note: Keep the current status, use archived_at to indicate archived state
       })
       .eq("id", invoiceId);
 
@@ -900,13 +898,10 @@ export async function restoreInvoice(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    // Get active company ID using the helper function
+    const companyId = await getActiveCompanyId();
 
-    if (!teamMember?.company_id) {
+    if (!companyId) {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -923,7 +918,7 @@ export async function restoreInvoice(
 
     assertExists(invoice, "Invoice");
 
-    if (invoice.company_id !== teamMember.company_id) {
+    if (invoice.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("invoice"),
         ERROR_CODES.AUTH_FORBIDDEN,

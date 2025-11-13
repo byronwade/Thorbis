@@ -14,9 +14,8 @@
 
 "use client";
 
-import { Package, ListChecks, Clock, DollarSign } from "lucide-react";
-import type { StatCard } from "@/components/ui/stats-cards";
 import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
+import type { StatCard } from "@/components/ui/stats-cards";
 
 export type PurchaseOrderMetrics = {
   totalAmount: number;
@@ -58,11 +57,12 @@ export function PurchaseOrderStatsBar({
     },
     {
       label: "Delivery",
-      value: metrics.daysUntilDelivery !== undefined
-        ? metrics.daysUntilDelivery > 0
-          ? `${metrics.daysUntilDelivery} days`
-          : "Today"
-        : "Not set",
+      value:
+        metrics.daysUntilDelivery !== undefined
+          ? metrics.daysUntilDelivery > 0
+            ? `${metrics.daysUntilDelivery} days`
+            : "Today"
+          : "Not set",
       change: undefined,
     },
   ];

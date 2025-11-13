@@ -10,11 +10,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import {
-  ActionError,
-  ERROR_CODES,
-  ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES } from "@/lib/errors/action-error";
 import {
   type ActionResult,
   assertAuthenticated,
@@ -35,7 +31,14 @@ const createServiceAgreementSchema = z.object({
   totalValue: z.number().min(0).optional(),
   currency: z.string().default("USD"),
   paymentSchedule: z
-    .enum(["monthly", "quarterly", "semiannual", "annual", "milestone", "one_time"])
+    .enum([
+      "monthly",
+      "quarterly",
+      "semiannual",
+      "annual",
+      "milestone",
+      "one_time",
+    ])
     .optional(),
   monthlyAmount: z.number().min(0).optional(),
   autoRenew: z.boolean().default(false),
@@ -55,13 +58,27 @@ const updateServiceAgreementSchema = z.object({
   title: z.string().min(1, "Agreement title is required").optional(),
   description: z.string().optional(),
   status: z
-    .enum(["draft", "active", "pending_signature", "expired", "terminated", "cancelled"])
+    .enum([
+      "draft",
+      "active",
+      "pending_signature",
+      "expired",
+      "terminated",
+      "cancelled",
+    ])
     .optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   totalValue: z.number().min(0).optional(),
   paymentSchedule: z
-    .enum(["monthly", "quarterly", "semiannual", "annual", "milestone", "one_time"])
+    .enum([
+      "monthly",
+      "quarterly",
+      "semiannual",
+      "annual",
+      "milestone",
+      "one_time",
+    ])
     .optional(),
   monthlyAmount: z.number().min(0).optional(),
   autoRenew: z.boolean().optional(),
@@ -134,7 +151,10 @@ function calculateTermMonths(startDate: string, endDate: string): number {
 /**
  * Validate service agreement dates
  */
-function validateServiceAgreementDates(startDate: string, endDate: string): void {
+function validateServiceAgreementDates(
+  startDate: string,
+  endDate: string
+): void {
   const start = new Date(startDate);
   const end = new Date(endDate);
 

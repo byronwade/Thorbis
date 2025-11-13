@@ -92,14 +92,14 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Paid:</span>
-          <span className="font-semibold text-green-600">
+          <span className="font-semibold text-success">
             {formatCurrency(paidAmount)}
           </span>
         </div>
         <Separator />
         <div className="flex justify-between">
           <span className="font-medium">Remaining:</span>
-          <span className="font-bold text-orange-600">
+          <span className="font-bold text-warning">
             {formatCurrency(remainingAmount)}
           </span>
         </div>
@@ -123,9 +123,9 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
 
             const statusColor =
               milestone.status === "paid"
-                ? "text-green-600"
+                ? "text-success"
                 : milestone.status === "due"
-                  ? "text-orange-600"
+                  ? "text-warning"
                   : "text-muted-foreground";
 
             return (

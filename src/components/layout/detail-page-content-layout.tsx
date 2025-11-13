@@ -1,21 +1,21 @@
 "use client";
 
-import { ReactNode } from "react";
-import { Activity, FileText, Paperclip, Link as LinkIcon } from "lucide-react";
+import { Activity, FileText, Link as LinkIcon, Paperclip } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   UnifiedAccordion,
-  UnifiedAccordionSection,
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
-import { ActivityLogSection } from "./standard-sections/activity-log-section";
-import { NotesSection } from "./standard-sections/notes-section";
-import { AttachmentsSection } from "./standard-sections/attachments-section";
-import { RelatedItemsSection } from "./standard-sections/related-items-section";
 import { cn } from "@/lib/utils";
 import {
+  type DetailPageHeaderConfig,
   DetailPageShell,
   DetailPageSurface,
-  type DetailPageHeaderConfig,
 } from "./detail-page-shell";
+import { ActivityLogSection } from "./standard-sections/activity-log-section";
+import { AttachmentsSection } from "./standard-sections/attachments-section";
+import { NotesSection } from "./standard-sections/notes-section";
+import { RelatedItemsSection } from "./standard-sections/related-items-section";
 
 export type { DetailPageHeaderConfig };
 
@@ -55,6 +55,9 @@ interface DetailPageContentLayoutProps {
   /** Content rendered after main sections */
   afterContent?: ReactNode;
 
+  /** Stats bar component to render inside the container (before header) */
+  statsBar?: ReactNode;
+
   /** Custom gap classes applied to stacked surfaces */
   contentGapClassName?: string;
 
@@ -62,6 +65,12 @@ interface DetailPageContentLayoutProps {
   surfacePadding?: "none" | "sm" | "md" | "lg";
   surfaceVariant?: "default" | "muted" | "subtle" | "ghost";
   surfaceClassName?: string;
+
+  /** Unique key for storing user's section order (e.g., "job-details", "customer-details") */
+  storageKey?: string;
+
+  /** Enable drag-and-drop reordering of sections (default: true) */
+  enableReordering?: boolean;
 }
 
 export function DetailPageContentLayout({
@@ -82,10 +91,13 @@ export function DetailPageContentLayout({
   defaultOpenSection,
   beforeContent,
   afterContent,
+  statsBar,
   contentGapClassName,
   surfacePadding = "none",
   surfaceVariant = "default",
   surfaceClassName,
+  storageKey,
+  enableReordering = true,
 }: DetailPageContentLayoutProps) {
   // Build standard sections based on provided data and visibility settings
   const standardSections: UnifiedAccordionSection[] = [];
@@ -139,12 +151,13 @@ export function DetailPageContentLayout({
 
   return (
     <DetailPageShell
-      className={cn("mx-auto w-full max-w-7xl", className)}
+      afterContent={afterContent}
+      beforeContent={beforeContent}
+      className={cn("w-full", className)}
+      contentGapClassName={contentGapClassName ?? "gap-6"}
       customHeader={customHeader}
       header={header}
-      beforeContent={beforeContent}
-      afterContent={afterContent}
-      contentGapClassName={contentGapClassName ?? "gap-6"}
+      statsBar={statsBar}
     >
       <DetailPageSurface
         className={cn("overflow-hidden", surfaceClassName)}
@@ -152,11 +165,12 @@ export function DetailPageContentLayout({
         variant={surfaceVariant}
       >
         <UnifiedAccordion
-          sections={allSections}
           defaultOpenSection={defaultOpenSection || allSections[0]?.id}
+          enableReordering={enableReordering}
+          sections={allSections}
+          storageKey={storageKey}
         />
       </DetailPageSurface>
     </DetailPageShell>
   );
 }
-

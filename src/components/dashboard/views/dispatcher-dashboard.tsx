@@ -37,11 +37,11 @@ export default function DispatcherDashboard() {
           <h1 className="font-bold text-4xl tracking-tight">
             Dispatch Command Center
           </h1>
-          <Badge className="text-blue-600" variant="outline">
+          <Badge className="text-primary" variant="outline">
             Dispatcher View
           </Badge>
           <div className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-3 py-1">
-            <div className="size-2 animate-pulse rounded-full bg-green-500" />
+            <div className="size-2 animate-pulse rounded-full bg-success" />
             <span className="font-medium text-muted-foreground text-xs">
               Live
             </span>
@@ -51,10 +51,10 @@ export default function DispatcherDashboard() {
       </div>
 
       {/* Emergency Alert Banner */}
-      <Card className="border-red-500 bg-red-50 dark:border-red-900 dark:bg-red-950/30">
+      <Card className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30">
         <CardContent className="flex items-center justify-between pt-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-red-500">
+            <div className="flex size-10 items-center justify-center rounded-full bg-destructive">
               <Zap className="size-5 text-white" />
             </div>
             <div>
@@ -142,8 +142,8 @@ export default function DispatcherDashboard() {
           <Card>
             <CardContent className="space-y-3 pt-6">
               {/* Emergency Job */}
-              <div className="flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/30">
-                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-red-500">
+              <div className="flex items-start gap-3 rounded-lg border-2 border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
+                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-destructive">
                   <Zap className="size-5 text-white" />
                 </div>
                 <div className="flex-1">
@@ -190,8 +190,8 @@ export default function DispatcherDashboard() {
                   className="flex items-start gap-3 rounded-lg border bg-card p-3"
                   key={index}
                 >
-                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10">
-                    <Radio className="size-5 text-blue-600" />
+                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Radio className="size-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -237,17 +237,17 @@ export default function DispatcherDashboard() {
                 },
               ].map((tech, index) => (
                 <div
-                  className="flex items-center gap-3 rounded-lg border border-green-500 bg-green-50 p-3 dark:border-green-900 dark:bg-green-950/30"
+                  className="flex items-center gap-3 rounded-lg border border-success bg-success p-3 dark:border-success dark:bg-success/30"
                   key={index}
                 >
-                  <div className="flex size-10 items-center justify-center rounded-full bg-green-500">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-success">
                     <Users className="size-5 text-white" />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-sm">{tech.name}</p>
                     <div className="flex items-center gap-2">
                       <Badge
-                        className="border-green-600 text-green-600"
+                        className="border-success text-success"
                         variant="outline"
                       >
                         ✓ Available
@@ -288,14 +288,14 @@ export default function DispatcherDashboard() {
                   className="flex items-center gap-3 rounded-lg border bg-card p-3"
                   key={index}
                 >
-                  <div className="flex size-10 items-center justify-center rounded-full bg-blue-500/10">
-                    <Navigation className="size-5 text-blue-600" />
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                    <Navigation className="size-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-sm">{tech.name}</p>
                     <div className="flex items-center gap-2">
                       <Badge
-                        className="border-blue-600 text-blue-600"
+                        className="border-primary text-primary"
                         variant="outline"
                       >
                         On Job
@@ -312,15 +312,15 @@ export default function DispatcherDashboard() {
               ))}
 
               {/* Late Technicians */}
-              <div className="flex items-center gap-3 rounded-lg border border-yellow-500 bg-yellow-50 p-3 dark:border-yellow-900 dark:bg-yellow-950/30">
-                <div className="flex size-10 items-center justify-center rounded-full bg-yellow-500">
+              <div className="flex items-center gap-3 rounded-lg border border-warning bg-warning p-3 dark:border-warning dark:bg-warning/30">
+                <div className="flex size-10 items-center justify-center rounded-full bg-warning">
                   <Clock className="size-5 text-white" />
                 </div>
                 <div className="flex-1">
                   <p className="font-bold text-sm">Chris Martinez</p>
                   <div className="flex items-center gap-2">
                     <Badge
-                      className="border-yellow-600 text-yellow-600"
+                      className="border-warning text-warning"
                       variant="outline"
                     >
                       ⚠ Running Late
@@ -340,11 +340,11 @@ export default function DispatcherDashboard() {
       </div>
 
       {/* Quick Actions Bar */}
-      <Card className="border-blue-500 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30">
+      <Card className="border-primary bg-primary dark:border-primary dark:bg-primary/30">
         <CardContent className="pt-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Radio className="size-6 text-blue-600" />
+              <Radio className="size-6 text-primary" />
               <div>
                 <p className="font-bold text-sm">Quick Actions</p>
                 <p className="text-muted-foreground text-xs">

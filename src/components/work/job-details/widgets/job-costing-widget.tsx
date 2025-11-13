@@ -1,6 +1,5 @@
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
-import { formatCurrency } from "@/lib/formatters";
 
 const mockCosts = {
   labor: 450_000,

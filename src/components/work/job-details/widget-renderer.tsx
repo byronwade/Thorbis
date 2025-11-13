@@ -52,7 +52,7 @@ function userToCustomerData(user: User): CustomerData {
     id: user.id,
     name: user.name,
     email: user.email,
-    phone: user.phone,
+    phone: user.phone ?? null,
     company: undefined, // User type doesn't have company field
     address: undefined, // User type doesn't have address fields
     city: undefined,

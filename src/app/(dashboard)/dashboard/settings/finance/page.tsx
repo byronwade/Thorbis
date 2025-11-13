@@ -39,24 +39,24 @@ const financeSections = [
     description: "Connect and manage business bank accounts",
     icon: Building2,
     href: "/dashboard/settings/finance/bank-accounts",
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
   {
     title: "Virtual Buckets",
     description: "Organize funds with virtual account buckets",
     icon: Layers,
     href: "/dashboard/settings/finance/virtual-buckets",
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent/10",
   },
   {
     title: "Consumer Financing",
     description: "Customer payment plans and financing options",
     icon: DollarSign,
     href: "/dashboard/settings/finance/consumer-financing",
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
+    color: "text-success",
+    bgColor: "bg-success/10",
   },
   {
     title: "Business Financing",
@@ -71,8 +71,8 @@ const financeSections = [
     description: "Transaction categorization and reconciliation",
     icon: Calculator,
     href: "/dashboard/settings/finance/bookkeeping",
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent/10",
   },
   {
     title: "Accounting",
@@ -87,24 +87,24 @@ const financeSections = [
     description: "Issue and manage company debit cards",
     icon: CreditCard,
     href: "/dashboard/settings/finance/debit-cards",
-    color: "text-pink-500",
-    bgColor: "bg-pink-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent/10",
   },
   {
     title: "Gas Cards",
     description: "Fleet gas cards for employee vehicles",
     icon: Fuel,
     href: "/dashboard/settings/finance/gas-cards",
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
   },
   {
     title: "Gift Cards",
     description: "Sell and manage customer gift cards",
     icon: Gift,
     href: "/dashboard/settings/finance/gift-cards",
-    color: "text-red-500",
-    bgColor: "bg-red-500/10",
+    color: "text-destructive",
+    bgColor: "bg-destructive/10",
   },
 ];
 
@@ -120,11 +120,11 @@ export default function FinanceSettingsPage() {
       </div>
 
       {/* Warning Banner */}
-      <Card className="border-amber-500/50 bg-amber-500/5">
+      <Card className="border-warning/50 bg-warning/5">
         <CardContent className="flex items-start gap-3 pt-6">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
           <div className="space-y-1">
-            <p className="font-medium text-amber-700 text-sm dark:text-amber-400">
+            <p className="font-medium text-sm text-warning dark:text-warning">
               Important: Financial Configuration
             </p>
             <p className="text-muted-foreground text-sm">
@@ -206,8 +206,8 @@ export default function FinanceSettingsPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-green-500/10">
-                  <Building2 className="size-5 text-green-500" />
+                <div className="flex size-10 items-center justify-center rounded-lg bg-success/10">
+                  <Building2 className="size-5 text-success" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">Plaid Banking</p>
@@ -216,13 +216,13 @@ export default function FinanceSettingsPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex size-2 rounded-full bg-green-500" />
+              <div className="flex size-2 rounded-full bg-success" />
             </div>
 
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Calculator className="size-5 text-blue-500" />
+                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Calculator className="size-5 text-primary" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">QuickBooks Online</p>
@@ -231,13 +231,13 @@ export default function FinanceSettingsPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex size-2 rounded-full bg-green-500" />
+              <div className="flex size-2 rounded-full bg-success" />
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-dashed p-4 opacity-50">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-gray-500/10">
-                  <Wallet className="size-5 text-gray-500" />
+                <div className="flex size-10 items-center justify-center rounded-lg bg-secondary0/10">
+                  <Wallet className="size-5 text-muted-foreground" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">Stripe</p>
@@ -255,11 +255,11 @@ export default function FinanceSettingsPage() {
       </Card>
 
       {/* Help Section */}
-      <Card className="border-blue-500/50 bg-blue-500/5">
+      <Card className="border-primary/50 bg-primary/5">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-blue-500" />
-            <CardTitle className="text-base text-blue-700 dark:text-blue-400">
+            <Settings className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base text-primary dark:text-primary">
               Need Help Configuring Finance?
             </CardTitle>
           </div>
@@ -271,13 +271,13 @@ export default function FinanceSettingsPage() {
         <CardContent>
           <div className="flex gap-2">
             <Link href="/help/finance-setup">
-              <span className="text-blue-600 text-sm underline hover:text-blue-700">
+              <span className="text-primary text-sm underline hover:text-primary">
                 View Setup Guide
               </span>
             </Link>
             <span className="text-muted-foreground">•</span>
             <Link href="/contact">
-              <span className="text-blue-600 text-sm underline hover:text-blue-700">
+              <span className="text-primary text-sm underline hover:text-primary">
                 Contact Support
               </span>
             </Link>

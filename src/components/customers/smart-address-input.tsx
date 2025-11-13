@@ -216,7 +216,7 @@ export function SmartAddressInput({
             {label} {required && <span className="text-destructive">*</span>}
           </Label>
           {isAutocompleteLoaded && (
-            <div className="flex items-center gap-1 text-green-600 text-xs">
+            <div className="flex items-center gap-1 text-success text-xs">
               <Check className="size-3" />
               <span>Smart autocomplete enabled</span>
             </div>

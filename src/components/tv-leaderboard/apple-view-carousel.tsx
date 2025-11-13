@@ -16,8 +16,20 @@
  * - Memoized calculations
  */
 
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import type { PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  LazyAnimatePresence as AnimatePresence,
+  LazyMotionButton as motion_button,
+  LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
+
+// Alias for backward compatibility
+const motion = {
+  div: motion_div,
+  button: motion_button,
+};
+
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

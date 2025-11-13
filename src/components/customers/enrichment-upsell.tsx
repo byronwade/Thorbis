@@ -108,11 +108,9 @@ export function EnrichmentUpsell({
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     {tier === "enterprise" && (
-                      <Crown className="h-5 w-5 text-yellow-500" />
+                      <Crown className="h-5 w-5 text-warning" />
                     )}
-                    {tier === "pro" && (
-                      <Zap className="h-5 w-5 text-blue-500" />
-                    )}
+                    {tier === "pro" && <Zap className="h-5 w-5 text-primary" />}
                     {features.name}
                   </CardTitle>
                   {isCurrent && <Badge>Current</Badge>}
@@ -127,7 +125,7 @@ export function EnrichmentUpsell({
               <CardContent className="space-y-2">
                 {features.features.map((feature, index) => (
                   <div className="flex items-center gap-2" key={index}>
-                    <Check className="h-4 w-4 text-green-600" />
+                    <Check className="h-4 w-4 text-success" />
                     <span className="text-sm">{feature}</span>
                   </div>
                 ))}

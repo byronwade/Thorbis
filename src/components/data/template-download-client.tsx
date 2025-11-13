@@ -49,7 +49,7 @@ export function TemplateDownloadClient({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileSpreadsheet className="size-5 text-green-600" />
+            <FileSpreadsheet className="size-5 text-success" />
             Excel Import Template
           </CardTitle>
           <CardDescription>
@@ -73,7 +73,7 @@ export function TemplateDownloadClient({
                 <p className="font-medium text-sm">Template Version</p>
                 <p className="text-muted-foreground text-xs">Latest (v1.0)</p>
               </div>
-              <Badge className="bg-green-500">Current</Badge>
+              <Badge className="bg-success">Current</Badge>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border p-3">
@@ -87,26 +87,26 @@ export function TemplateDownloadClient({
             </div>
           </div>
 
-          <div className="rounded-lg border border-blue-500/50 bg-blue-500/5 p-4">
+          <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
             <div className="flex items-start gap-3">
-              <Info className="mt-0.5 size-5 shrink-0 text-blue-500" />
+              <Info className="mt-0.5 size-5 shrink-0 text-primary" />
               <div>
                 <p className="font-medium text-sm">Template Features</p>
                 <ul className="mt-2 space-y-1 text-muted-foreground text-sm">
                   <li className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-blue-500" />
+                    <span className="size-1.5 rounded-full bg-primary" />
                     Pre-formatted column headers
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-blue-500" />
+                    <span className="size-1.5 rounded-full bg-primary" />
                     Data validation rules
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-blue-500" />
+                    <span className="size-1.5 rounded-full bg-primary" />
                     Example rows with sample data
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-blue-500" />
+                    <span className="size-1.5 rounded-full bg-primary" />
                     Instructions sheet
                   </li>
                 </ul>

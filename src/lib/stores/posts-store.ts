@@ -177,9 +177,12 @@ export const usePostsStore = create<PostsStore>()(
         let filtered = [...posts];
 
         if (filters.published !== undefined) {
-          filtered = filtered.filter(
-            (p) => (p.published === "true") === filters.published
-          );
+          filtered = filtered.filter((p) => {
+            const isPublished =
+              String(p.published).toLowerCase() === "true" ||
+              p.published === true;
+            return isPublished === filters.published;
+          });
         }
 
         if (filters.authorId) {
@@ -205,8 +208,14 @@ export const postsSelectors = {
   error: (state: PostsStore) => state.error,
   filters: (state: PostsStore) => state.filters,
   publishedPosts: (state: PostsStore) =>
-    state.posts.filter((p) => p.published === "true"),
+    state.posts.filter(
+      (p) => String(p.published).toLowerCase() === "true" || p.published === true
+    ),
   draftPosts: (state: PostsStore) =>
-    state.posts.filter((p) => p.published === "false"),
+    state.posts.filter(
+      (p) =>
+        !(
+          String(p.published).toLowerCase() === "true" || p.published === true
+        )
+    ),
 };
-

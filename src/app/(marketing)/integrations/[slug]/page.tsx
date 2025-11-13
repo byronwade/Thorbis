@@ -22,7 +22,9 @@ type IntegrationPageProps = {
 };
 
 export async function generateStaticParams() {
-  return getAllIntegrations().map((integration) => ({ slug: integration.slug }));
+  return getAllIntegrations().map((integration) => ({
+    slug: integration.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: IntegrationPageProps) {
@@ -58,7 +60,10 @@ export default async function IntegrationDetailPage({
   const breadcrumbLd = generateBreadcrumbStructuredData([
     { name: "Home", url: siteUrl },
     { name: "Integrations", url: `${siteUrl}/integrations` },
-    { name: integration.name, url: `${siteUrl}/integrations/${integration.slug}` },
+    {
+      name: integration.name,
+      url: `${siteUrl}/integrations/${integration.slug}`,
+    },
   ]);
 
   const serviceLd = generateServiceStructuredData({
@@ -79,19 +84,19 @@ export default async function IntegrationDetailPage({
   return (
     <>
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         id="integration-breadcrumb-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
         id="integration-service-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
         id="integration-faq-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
 
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -100,4 +105,3 @@ export default async function IntegrationDetailPage({
     </>
   );
 }
-

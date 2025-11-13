@@ -48,8 +48,8 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useJobEditorStore } from "@/lib/stores/job-editor-store";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { useJobEditorStore } from "@/lib/stores/job-editor-store";
 import { TeamMemberSelector } from "../team-member-selector";
 
 interface OverviewTabProps {
@@ -74,6 +74,17 @@ export function OverviewTab({
   const { setHasUnsavedChanges, setEditorContent } = useJobEditorStore();
 
   const [localJob, setLocalJob] = useState(job);
+  const formatDateOrFallback = (
+    value: unknown,
+    preset = "datetime",
+    fallback = "—"
+  ) => {
+    const formatted = formatDate(
+      value as Date | number | string | null | undefined,
+      preset
+    );
+    return formatted === "—" ? fallback : formatted;
+  };
 
   // Handle field changes
   const handleFieldChange = useCallback(
@@ -85,7 +96,6 @@ export function OverviewTab({
     },
     [localJob, setHasUnsavedChanges, setEditorContent]
   );
-
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -270,7 +280,7 @@ export function OverviewTab({
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
                     <a
-                      className="text-blue-600 text-sm hover:underline"
+                      className="text-primary text-sm hover:underline"
                       href={`mailto:${customer.email}`}
                     >
                       {customer.email}
@@ -282,7 +292,7 @@ export function OverviewTab({
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <a
-                      className="text-blue-600 text-sm hover:underline"
+                      className="text-primary text-sm hover:underline"
                       href={`tel:${customer.phone}`}
                     >
                       {customer.phone}
@@ -308,8 +318,8 @@ export function OverviewTab({
 
               {/* Multiple Customers Indicator */}
               {customers.length > 1 && (
-                <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                  <p className="text-blue-900 text-sm">
+                <div className="rounded-md border border-primary bg-primary p-3">
+                  <p className="text-primary text-sm">
                     <AlertCircle className="mr-1 inline h-4 w-4" />
                     This job has {customers.length} customers assigned.
                   </p>
@@ -416,8 +426,8 @@ export function OverviewTab({
 
               {/* Multiple Properties Indicator */}
               {properties.length > 1 && (
-                <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                  <p className="text-blue-900 text-sm">
+                <div className="rounded-md border border-primary bg-primary p-3">
+                  <p className="text-primary text-sm">
                     <AlertCircle className="mr-1 inline h-4 w-4" />
                     This job involves {properties.length} properties.
                   </p>
@@ -452,7 +462,11 @@ export function OverviewTab({
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  {formatDate(localJob.scheduled_start, "datetime", "Not set")}
+                  {formatDateOrFallback(
+                    localJob.scheduled_start,
+                    "datetime",
+                    "Not set"
+                  )}
                 </span>
               </div>
             </div>
@@ -462,7 +476,11 @@ export function OverviewTab({
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  {formatDate(localJob.scheduled_end, "datetime", "Not set")}
+                  {formatDateOrFallback(
+                    localJob.scheduled_end,
+                    "datetime",
+                    "Not set"
+                  )}
                 </span>
               </div>
             </div>
@@ -476,9 +494,13 @@ export function OverviewTab({
                   <div>
                     <Label>Actual Start</Label>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-green-600" />
+                      <Clock className="h-4 w-4 text-success" />
                       <span className="text-sm">
-                        {formatDate(localJob.actual_start, "datetime", "Not set")}
+                        {formatDateOrFallback(
+                          localJob.actual_start,
+                          "datetime",
+                          "Not set"
+                        )}
                       </span>
                     </div>
                   </div>
@@ -488,9 +510,13 @@ export function OverviewTab({
                   <div>
                     <Label>Actual End</Label>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-green-600" />
+                      <Clock className="h-4 w-4 text-success" />
                       <span className="text-sm">
-                        {formatDate(localJob.actual_end, "datetime", "Not set")}
+                        {formatDateOrFallback(
+                          localJob.actual_end,
+                          "datetime",
+                          "Not set"
+                        )}
                       </span>
                     </div>
                   </div>
@@ -524,7 +550,7 @@ export function OverviewTab({
               <Label className="text-muted-foreground text-xs">
                 Paid Amount
               </Label>
-              <p className="font-bold text-2xl text-green-600">
+              <p className="font-bold text-2xl text-success">
                 {formatCurrency(localJob.paid_amount || 0, { decimals: 0 })}
               </p>
             </div>
@@ -533,7 +559,7 @@ export function OverviewTab({
               <Label className="text-muted-foreground text-xs">
                 Outstanding
               </Label>
-              <p className="font-bold text-2xl text-orange-600">
+              <p className="font-bold text-2xl text-warning">
                 {formatCurrency(
                   (localJob.total_amount || 0) - (localJob.paid_amount || 0),
                   { decimals: 0 }

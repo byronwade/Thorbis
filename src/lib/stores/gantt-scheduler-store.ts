@@ -70,4 +70,3 @@ export const useGanttSchedulerStore = create<GanttSchedulerStore>()(
     { name: "GanttSchedulerStore" }
   )
 );
-

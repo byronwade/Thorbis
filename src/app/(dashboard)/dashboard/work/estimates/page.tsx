@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
+import { EstimatesKanban } from "@/components/work/estimates-kanban";
 import {
   type Estimate,
   EstimatesTable,
 } from "@/components/work/estimates-table";
-import { EstimatesKanban } from "@/components/work/estimates-kanban";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -45,6 +45,7 @@ export default async function EstimatesPage() {
   }
 
   // Fetch estimates from database
+  // Fetch all estimates including archived (filter in UI)
   const { data: estimatesRaw, error } = await supabase
     .from("estimates")
     .select(
@@ -56,11 +57,12 @@ export default async function EstimatesPage() {
       total_amount,
       created_at,
       valid_until,
+      archived_at,
+      deleted_at,
       customers!customer_id(display_name, first_name, last_name)
     `
     )
     .eq("company_id", activeCompanyId)
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -95,24 +97,29 @@ export default async function EstimatesPage() {
         : "",
       amount: est.total_amount || 0,
       status: est.status as "accepted" | "sent" | "draft" | "declined",
+      archived_at: est.archived_at,
+      deleted_at: est.deleted_at,
     };
   });
 
-  // Calculate estimate stats
-  const draftCount = estimates.filter((est) => est.status === "draft").length;
-  const sentCount = estimates.filter((est) => est.status === "sent").length;
-  const acceptedCount = estimates.filter(
+  // Filter to active estimates for stats calculations
+  const activeEstimates = estimates.filter((est) => !est.archived_at && !est.deleted_at);
+
+  // Calculate estimate stats (from active estimates only)
+  const draftCount = activeEstimates.filter((est) => est.status === "draft").length;
+  const sentCount = activeEstimates.filter((est) => est.status === "sent").length;
+  const acceptedCount = activeEstimates.filter(
     (est) => est.status === "accepted"
   ).length;
-  const declinedCount = estimates.filter(
+  const declinedCount = activeEstimates.filter(
     (est) => est.status === "declined"
   ).length;
 
-  const totalValue = estimates.reduce((sum, est) => sum + est.amount, 0);
-  const acceptedValue = estimates
+  const totalValue = activeEstimates.reduce((sum, est) => sum + est.amount, 0);
+  const acceptedValue = activeEstimates
     .filter((est) => est.status === "accepted")
     .reduce((sum, est) => sum + est.amount, 0);
-  const pendingValue = estimates
+  const pendingValue = activeEstimates
     .filter((est) => est.status === "sent")
     .reduce((sum, est) => sum + est.amount, 0);
 

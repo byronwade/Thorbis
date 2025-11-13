@@ -67,27 +67,97 @@ export default async function EquipmentDetailsPage({
   }
 
   // Get related data
-  const customer = Array.isArray(equipment.customer) ? equipment.customer[0] : equipment.customer;
-  const property = Array.isArray(equipment.property) ? equipment.property[0] : equipment.property;
-  const servicePlan = Array.isArray(equipment.service_plan) ? equipment.service_plan[0] : equipment.service_plan;
+  const customer = Array.isArray(equipment.customer)
+    ? equipment.customer[0]
+    : equipment.customer;
+  const property = Array.isArray(equipment.property)
+    ? equipment.property[0]
+    : equipment.property;
+  const servicePlan = Array.isArray(equipment.service_plan)
+    ? equipment.service_plan[0]
+    : equipment.service_plan;
 
   // Fetch service history from job_equipment junction table
   const { data: serviceHistory } = await supabase
     .from("job_equipment")
     .select(`
       *,
-      job:jobs!job_id(id, job_number, title)
+      job:jobs!job_id(id, job_number, title, status, completed_at)
     `)
     .eq("equipment_id", equipmentId)
     .order("serviced_at", { ascending: false })
     .limit(20);
 
-  // Fetch all related data
+  // Fetch all related data (including install job, last service job, upcoming maintenance)
   const [
+    { data: installJob },
+    { data: lastServiceJob },
+    { data: upcomingMaintenance },
     { data: activities },
     { data: notes },
     { data: attachments },
   ] = await Promise.all([
+    // NEW: Fetch install job (if exists)
+    equipment.install_job_id
+      ? supabase
+          .from("jobs")
+          .select(
+            "id, job_number, title, status, completed_at, customer:customers!customer_id(id, display_name)"
+          )
+          .eq("id", equipment.install_job_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+
+    // NEW: Fetch last service job (if exists)
+    equipment.last_service_job_id
+      ? supabase
+          .from("jobs")
+          .select(
+            "id, job_number, title, status, completed_at, customer:customers!customer_id(id, display_name)"
+          )
+          .eq("id", equipment.last_service_job_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+
+    // NEW: Fetch upcoming maintenance from schedules
+    supabase
+      .from("schedules")
+      .select(`
+        id,
+        scheduled_start,
+        scheduled_end,
+        status,
+        type,
+        job:jobs!job_id(id, job_number, title)
+      `)
+      .eq("company_id", activeCompanyId)
+      .gte("scheduled_start", new Date().toISOString())
+      .is("deleted_at", null)
+      .order("scheduled_start", { ascending: true })
+      .limit(5)
+      .then(async (result) => {
+        // Filter schedules related to this equipment via job_equipment
+        if (!result.data) return result;
+
+        const jobIds = result.data.map((s: any) => s.job_id).filter(Boolean);
+        if (jobIds.length === 0) return { data: [], error: null };
+
+        const { data: relatedJobs } = await supabase
+          .from("job_equipment")
+          .select("job_id")
+          .eq("equipment_id", equipmentId)
+          .in("job_id", jobIds);
+
+        const relatedJobIds = new Set(
+          relatedJobs?.map((j: any) => j.job_id) || []
+        );
+        const filteredSchedules = result.data.filter(
+          (s: any) => s.job_id && relatedJobIds.has(s.job_id)
+        );
+
+        return { data: filteredSchedules, error: null };
+      }),
+
     supabase
       .from("activity_log")
       .select("*, user:users!user_id(*)")
@@ -115,6 +185,9 @@ export default async function EquipmentDetailsPage({
     customer,
     property,
     servicePlan,
+    installJob, // NEW: for lifecycle tracking
+    lastServiceJob, // NEW: for lifecycle tracking
+    upcomingMaintenance: upcomingMaintenance || [], // NEW: for lifecycle tracking
     serviceHistory: serviceHistory || [],
     activities: activities || [],
     notes: notes || [],
@@ -127,8 +200,3 @@ export default async function EquipmentDetailsPage({
     </div>
   );
 }
-
-
-
-
-

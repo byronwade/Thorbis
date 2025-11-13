@@ -228,7 +228,7 @@ export default function CustomerPortalPage() {
             </p>
           </div>
           <Badge
-            className={`text-base ${settings.enableCustomerPortal ? "bg-green-500" : "bg-gray-500"}`}
+            className={`text-base ${settings.enableCustomerPortal ? "bg-success" : "bg-secondary0"}`}
           >
             {settings.enableCustomerPortal
               ? "Portal Active"

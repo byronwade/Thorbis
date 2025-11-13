@@ -5,23 +5,16 @@
 
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import {
-  Archive,
   Activity,
   AlertCircle,
-  BarChart3,
   Building2,
   Calendar,
   Camera,
   CheckCircle,
   ChevronRight,
   Clock,
-  Copy,
-  CreditCard,
   Download,
-  DollarSign,
-  Edit2,
   FileText,
   Globe,
   Mail,
@@ -34,29 +27,36 @@ import {
   Save,
   ShieldCheck,
   Sparkles,
-  TrendingUp,
+  Upload,
   User,
   Wrench,
   X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import React, { type ReactNode, useEffect, useMemo, useState } from "react";
 import { archiveJob, updateJob } from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";
 import { SMSDialog } from "@/components/communication/sms-dialog";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import {
+  type DetailPageHeaderConfig,
+  DetailPageSurface,
+} from "@/components/layout/detail-page-shell";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -65,13 +65,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { GooglePlacesAutocomplete } from "@/components/ui/google-places-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -82,6 +75,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -90,26 +84,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  UnifiedAccordionContent,
+  type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
-import {
-  DetailPageSurface,
-  type DetailPageHeaderConfig,
-} from "@/components/layout/detail-page-shell";
-import {
-  UnifiedAccordionContent,
-  UnifiedAccordionSection,
-} from "@/components/ui/unified-accordion";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
 import { InlinePhotoUploader } from "./InlinePhotoUploader";
 import { JobAppointmentsTable } from "./job-appointments-table";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
@@ -117,22 +99,38 @@ import { JobEstimatesTable } from "./job-estimates-table";
 import { JobInvoicesTable } from "./job-invoices-table";
 import { JobPurchaseOrdersTable } from "./job-purchase-orders-table";
 import { JobQuickActions } from "./job-quick-actions";
+import { JobStatisticsSheet } from "./job-statistics-sheet";
+import { TeamMemberSelector } from "./team-member-selector";
 import { TravelTime } from "./travel-time";
 import { PropertyLocationVisual } from "./widgets/property-location-visual";
-import { JobStatisticsSheet } from "./job-statistics-sheet";
 
 type JobPageContentProps = {
-  jobData: any;
+  entityData?: any;
+  jobData?: any; // Keep for backward compatibility
   metrics: any;
 };
 
-export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
+export function JobPageContent({
+  entityData,
+  jobData: legacyJobData,
+  metrics,
+}: JobPageContentProps) {
+  // Support both entityData (from DetailPageLayout) and jobData (legacy)
+  const jobData = entityData || legacyJobData;
+  const jobRecord = jobData?.job ?? jobData ?? null;
+  const job = jobRecord as any;
+
   const router = useRouter();
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
-  const [localJob, setLocalJob] = useState({
-    ...jobData.job,
-    priority: jobData.job.priority || "medium", // Ensure default priority
+  const [localJob, setLocalJob] = useState(() => {
+    if (!jobData?.job) {
+      return { priority: "medium" };
+    }
+    return {
+      ...jobData.job,
+      priority: jobData.job.priority || "medium", // Ensure default priority
+    };
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -148,7 +146,6 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   }, []);
 
   const {
-    job,
     customer: initialCustomer,
     property: initialProperty,
     assignedUser,
@@ -172,7 +169,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     allCustomers = [],
     allProperties = [],
     companyPhones = [],
-  } = jobData;
+  } = jobData || {};
 
   // Local state for optimistic updates
   const [customer, setCustomer] = useState(initialCustomer);
@@ -204,6 +201,11 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   // Communication dialog states
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [isSMSDialogOpen, setIsSMSDialogOpen] = useState(false);
+  const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] =
+    useState(false);
+
+  // File input ref for direct upload
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Get call management from UI store
   const setIncomingCall = useUIStore((state) => state.setIncomingCall);
@@ -545,6 +547,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
 
   // Save changes
   const handleSave = async () => {
+    // Snapshot current state for rollback
+    const previousState = { ...localJob };
+
     setIsSaving(true);
     try {
       const formData = new FormData();
@@ -589,10 +594,18 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         // Force router refresh to get latest data from server
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to save changes");
+        // ROLLBACK: Restore previous state on save failure
+        setLocalJob(previousState);
+        setHasChanges(false);
+        toast.error(
+          result.error || "Failed to save changes - changes reverted"
+        );
       }
     } catch (_error) {
-      toast.error("Failed to save changes");
+      // ROLLBACK: Restore previous state on exception
+      setLocalJob(previousState);
+      setHasChanges(false);
+      toast.error("Failed to save changes - changes reverted");
     } finally {
       setIsSaving(false);
     }
@@ -822,7 +835,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     positive:
       "border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200",
     warning:
-      "border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200",
+      "border-warning bg-warning text-warning dark:border-warning/20 dark:bg-warning/10 dark:text-warning",
     destructive:
       "border-rose-100 bg-rose-50 text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-200",
     neutral:
@@ -1134,16 +1147,28 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
   }
 
   const headerBadges = [
-    <Badge key="job-number" variant="outline">
+    <Badge className="font-mono text-xs" key="job-number" variant="secondary">
       #{job.job_number}
     </Badge>,
     localJob.status ? (
-      <Badge key="job-status" variant="outline" className="capitalize">
-        {localJob.status}
+      <Badge
+        className="font-medium capitalize"
+        key="job-status"
+        variant={getStatusColor(localJob.status) as any}
+      >
+        {localJob.status.replace(/_/g, " ")}
       </Badge>
     ) : null,
     localJob.priority ? (
-      <Badge key="job-priority" variant="outline" className="capitalize">
+      <Badge
+        className="font-medium capitalize"
+        key="job-priority"
+        variant={
+          localJob.priority === "high" || localJob.priority === "urgent"
+            ? "destructive"
+            : "outline"
+        }
+      >
         {localJob.priority}
       </Badge>
     ) : null,
@@ -1168,134 +1193,47 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     }
   };
 
-  // Build breadcrumbs
-  const breadcrumbs = (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Link
-        className="font-medium text-foreground transition-colors hover:text-primary"
-        href="/dashboard/work"
-      >
-        Jobs
-      </Link>
-      <ChevronRight className="size-3 text-muted-foreground" />
-      <span className="font-semibold text-foreground">#{job.job_number}</span>
-    </div>
-  );
-
   // Build subtitle with customer and property links
   const subtitleContent = (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-3 text-sm">
       {customer && (
         <Link
-          className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
           href={`/dashboard/customers/${customer.id}`}
         >
-          <User className="h-4 w-4" />
-          {customer.first_name} {customer.last_name}
+          <User className="h-3.5 w-3.5" />
+          <span className="font-medium">
+            {customer.first_name} {customer.last_name}
+          </span>
         </Link>
       )}
-      {customer && property && <span aria-hidden="true">•</span>}
+      {customer && property && (
+        <span aria-hidden="true" className="text-muted-foreground/40">
+          •
+        </span>
+      )}
       {property && (
-        <Link
-          className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
-          href={`/dashboard/properties/${property.id}`}
-        >
-          <MapPin className="h-4 w-4" />
-          {property.name || property.address}
-        </Link>
+        <>
+          <Link
+            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            href={`/dashboard/work/properties/${property.id}`}
+          >
+            <MapPin className="h-3.5 w-3.5" />
+            <span className="font-medium">
+              {property.city}, {property.state}{" "}
+              {property.zip_code || property.zipCode || ""}
+            </span>
+          </Link>
+          <TravelTime property={property} />
+        </>
       )}
     </div>
   );
 
-  // Build action buttons
+  // Build action buttons (only save/cancel when editing)
+  // Note: Statistics, Invoice, Estimate, Clone, Archive are in the toolbar
   const primaryActions: ReactNode[] = [];
-  
-  if (metrics) {
-    primaryActions.push(
-      <Tooltip key="statistics" delayDuration={300}>
-        <TooltipTrigger asChild>
-          <Button
-            aria-label="Statistics"
-            onClick={() => setIsStatisticsOpen(true)}
-            size="sm"
-            variant="outline"
-          >
-            <BarChart3 className="size-4" />
-            <span className="hidden sm:inline">Statistics</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" align="end">
-          Review profitability, labor, and material metrics
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-
-  primaryActions.push(
-    <Tooltip key="invoice" delayDuration={300}>
-      <TooltipTrigger asChild>
-        <Button aria-label="Invoice" asChild size="sm" variant="outline">
-          <Link href={`/dashboard/work/invoices/new?jobId=${job.id}`}>
-            <Receipt className="size-4" />
-            <span className="hidden sm:inline">Invoice</span>
-          </Link>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" align="end">
-        Generate a customer invoice
-      </TooltipContent>
-    </Tooltip>,
-    <Tooltip key="estimate" delayDuration={300}>
-      <TooltipTrigger asChild>
-        <Button aria-label="Estimate" asChild size="sm" variant="outline">
-          <Link href={`/dashboard/work/estimates/new?jobId=${job.id}`}>
-            <FileText className="size-4" />
-            <span className="hidden sm:inline">Estimate</span>
-          </Link>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" align="end">
-        Create a follow-up estimate
-      </TooltipContent>
-    </Tooltip>,
-    <Tooltip key="clone" delayDuration={300}>
-      <TooltipTrigger asChild>
-        <Button
-          aria-label="Clone"
-          onClick={() => router.push(`/dashboard/work/new?cloneFrom=${job.id}`)}
-          size="sm"
-          variant="outline"
-        >
-          <Copy className="size-4" />
-          <span className="hidden sm:inline">Clone</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" align="end">
-        Duplicate this job into a new draft
-      </TooltipContent>
-    </Tooltip>
-  );
-
-  const secondaryActions: ReactNode[] = [
-    <Tooltip key="archive" delayDuration={300}>
-      <TooltipTrigger asChild>
-        <Button
-          aria-label="Archive"
-          className="border-destructive/40 text-destructive hover:bg-destructive/10"
-          disabled={isArchiving}
-          onClick={() => setIsArchiveDialogOpen(true)}
-          size="sm"
-          variant="outline"
-        >
-          <Archive className="size-4" />
-          <span className="hidden sm:inline">Archive</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" align="end">
-        Archive this job and remove it from active workflows
-      </TooltipContent>
-    </Tooltip>,
-  ];
+  const secondaryActions: ReactNode[] = [];
 
   // Add save/cancel buttons if there are changes
   if (hasChanges) {
@@ -1314,52 +1252,46 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
       >
         Cancel
       </Button>,
-      <Button
-        key="save"
-        disabled={isSaving}
-        onClick={handleSave}
-        size="sm"
-      >
+      <Button disabled={isSaving} key="save" onClick={handleSave} size="sm">
         <Save className="mr-2 h-4 w-4" />
         {isSaving ? "Saving..." : "Save Changes"}
       </Button>
     );
   }
 
-  // Build metadata items
-  const metadataItems: DetailPageHeaderConfig["metadata"] = [
-    {
-      label: "Total Amount",
-      icon: <DollarSign className="h-3.5 w-3.5" />,
-      value: formatCurrency(metrics.totalAmount),
-    },
-    {
-      label: "Paid Amount",
-      icon: <CreditCard className="h-3.5 w-3.5" />,
-      value: formatCurrency(metrics.paidAmount),
-      helperText: `${formatCurrency(metrics.totalAmount - metrics.paidAmount)} remaining`,
-    },
-    {
-      label: "Labor Hours",
-      icon: <Clock className="h-3.5 w-3.5" />,
-      value: formatHours(metrics.totalLaborHours),
-      helperText: metrics.estimatedLaborHours
-        ? `${formatHours(metrics.estimatedLaborHours)} estimated`
-        : undefined,
-    },
-    {
-      label: "Profit Margin",
-      icon: <TrendingUp className="h-3.5 w-3.5" />,
-      value: `${metrics.profitMargin.toFixed(1)}%`,
-    },
-  ];
+  // Metadata items removed - stats are already shown in the top toolbar
+  // const metadataItems: DetailPageHeaderConfig["metadata"] = [
+  //   {
+  //     label: "Total Amount",
+  //     icon: <DollarSign className="h-3.5 w-3.5" />,
+  //     value: formatCurrency(metrics.totalAmount),
+  //   },
+  //   {
+  //     label: "Paid Amount",
+  //     icon: <CreditCard className="h-3.5 w-3.5" />,
+  //     value: formatCurrency(metrics.paidAmount),
+  //     helperText: `${formatCurrency(metrics.totalAmount - metrics.paidAmount)} remaining`,
+  //   },
+  //   {
+  //     label: "Labor Hours",
+  //     icon: <Clock className="h-3.5 w-3.5" />,
+  //     value: formatHours(metrics.totalLaborHours),
+  //     helperText: metrics.estimatedLaborHours
+  //       ? `${formatHours(metrics.estimatedLaborHours)} estimated`
+  //       : undefined,
+  //   },
+  //   {
+  //     label: "Profit Margin",
+  //     icon: <TrendingUp className="h-3.5 w-3.5" />,
+  //     value: `${metrics.profitMargin.toFixed(1)}%`,
+  //   },
+  // ];
 
   // Build header config
   const headerConfig: DetailPageHeaderConfig = {
-    breadcrumbs,
     title: (
       <Input
-        className="h-auto border-0 p-0 font-bold text-2xl tracking-tight shadow-none focus-visible:ring-0 md:text-3xl"
+        className="h-auto border-0 bg-transparent p-0 font-bold text-2xl tracking-tight shadow-none focus-visible:ring-0 md:text-3xl"
         onChange={(e) => handleFieldChange("title", e.target.value)}
         placeholder="Enter job title..."
         value={localJob.title}
@@ -1368,14 +1300,15 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     subtitle: subtitleContent,
     badges: headerBadges,
     actions: primaryActions,
-    secondaryActions: secondaryActions.length > 0 ? secondaryActions : undefined,
-    metadata: metadataItems,
+    secondaryActions:
+      secondaryActions.length > 0 ? secondaryActions : undefined,
+    // metadata: metadataItems, // Removed - stats already in toolbar
   };
 
   // Content to show before sections (editable fields, enrichment, travel time)
   const beforeContent = (
-    <div className="space-y-6">
-      {/* Job Enrichment */}
+    <div className="space-y-3">
+      {/* Alerts & Warnings */}
       <JobEnrichmentInline
         enrichmentData={jobData.enrichmentData}
         jobId={jobData.job.id}
@@ -1393,113 +1326,149 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         }
       />
 
-      {/* Travel Time */}
-      {property && (
-        <div className="overflow-hidden rounded-xl border border-border/60 shadow-sm">
-          <TravelTime property={property} />
-        </div>
-      )}
+      {/* Consolidated Job Info Card */}
+      <DetailPageSurface padding="lg" variant="default">
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="space-y-2">
+              <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                Status
+              </Label>
+              {mounted ? (
+                <Select
+                  onValueChange={(value) => handleFieldChange("status", value)}
+                  value={localJob.status || undefined}
+                >
+                  <SelectTrigger className="h-10 w-full justify-between rounded-lg border border-border/40 bg-background px-3 font-medium text-sm shadow-sm">
+                    <SelectValue placeholder="Set status">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="capitalize">
+                          {localJob.status?.replace(/_/g, " ") || "Set status"}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="quoted">Quoted</SelectItem>
+                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="on_hold">On Hold</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-10 items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 font-medium text-sm">
+                  <CheckCircle className="h-4 w-4" />
+                  <span className="capitalize">
+                    {localJob.status?.replace(/_/g, " ") || "—"}
+                  </span>
+                </div>
+              )}
+            </div>
 
-      {/* Editable Fields */}
-      <DetailPageSurface padding="md" variant="default">
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-4">
-            {mounted ? (
-              <Select
-                onValueChange={(value) => handleFieldChange("status", value)}
-                value={localJob.status || undefined}
-              >
-                <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
-                  <SelectValue placeholder="Set status...">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" />
-                      <span className="font-medium">
-                        {localJob.status || "Set status..."}
-                      </span>
-                    </div>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="quoted">Quoted</SelectItem>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="on_hold">On Hold</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
-                <CheckCircle className="h-4 w-4" />
-                <span className="font-medium">{localJob.status || "—"}</span>
+            <div className="space-y-2">
+              <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                Priority
+              </Label>
+              {mounted ? (
+                <Select
+                  onValueChange={(value) =>
+                    handleFieldChange("priority", value)
+                  }
+                  value={localJob.priority || undefined}
+                >
+                  <SelectTrigger className="h-10 w-full justify-between rounded-lg border border-border/40 bg-background px-3 font-medium text-sm shadow-sm">
+                    <SelectValue placeholder="Set priority">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4" />
+                        <span className="capitalize">
+                          {localJob.priority || "Set priority"}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-10 items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 font-medium text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="capitalize">{localJob.priority || "—"}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                Assigned Team
+              </Label>
+              <TeamMemberSelector isEditMode={true} jobId={job.id} />
+            </div>
+
+            {property && (
+              <div className="space-y-2">
+                <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                  Travel Time
+                </Label>
+                <TravelTime
+                  className="h-10 w-full items-center rounded-lg border border-border/40 bg-background px-3 text-sm"
+                  property={property}
+                />
               </div>
             )}
+          </div>
 
-            {mounted ? (
-              <Select
-                onValueChange={(value) => handleFieldChange("priority", value)}
-                value={localJob.priority || undefined}
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label
+                className="font-medium text-muted-foreground text-xs uppercase tracking-wide"
+                htmlFor="service-type"
               >
-                <SelectTrigger className="inline-flex h-auto items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus:ring-0 [&>span]:flex [&>span]:items-center [&>span]:gap-2">
-                  <SelectValue placeholder="Set priority...">
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4" />
-                      <span className="font-medium">
-                        {localJob.priority || "Set priority..."}
-                      </span>
-                    </div>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm">
-                <AlertCircle className="h-4 w-4" />
-                <span className="font-medium">{localJob.priority || "—"}</span>
-              </div>
-            )}
-
-            <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
-              <Wrench className="h-4 w-4" />
+                Service Type
+              </Label>
               <Input
-                className="h-auto w-auto min-w-[120px] border-0 bg-transparent p-0 font-medium shadow-none focus-visible:ring-0"
-                onChange={(e) => handleFieldChange("service_type", e.target.value)}
-                placeholder="Enter type..."
+                className="h-11 rounded-lg border border-border/40 bg-background px-3 text-sm shadow-sm focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
+                id="service-type"
+                onChange={(e) =>
+                  handleFieldChange("service_type", e.target.value)
+                }
+                placeholder="e.g. HVAC Maintenance, Plumbing Repair"
                 value={localJob.service_type || localJob.job_type || ""}
               />
             </div>
 
-            {assignedUser && (
-              <div className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground">
-                <User className="h-4 w-4" />
-                <span className="font-medium">{assignedUser.name}</span>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label
+                className="font-medium text-muted-foreground text-xs uppercase tracking-wide"
+                htmlFor="job-description"
+              >
+                Job Description
+              </Label>
+              <Textarea
+                className="min-h-[120px] rounded-lg border border-border/40 bg-background px-3 py-2 text-sm shadow-sm focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
+                id="job-description"
+                onChange={(e) =>
+                  handleFieldChange("description", e.target.value)
+                }
+                placeholder="Add context, expectations, or key notes for the crew."
+                value={localJob.description || ""}
+              />
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <span className="text-muted-foreground text-sm">Description:</span>
-            <Textarea
-              className="min-h-[80px] resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
-              onChange={(e) => handleFieldChange("description", e.target.value)}
-              placeholder="Add a description..."
-              value={localJob.description || ""}
-            />
-          </div>
-
-          <div className="flex justify-end">
+          <div className="flex justify-end border-border/40 border-t pt-4">
             <JobQuickActions currentStatus={job.status} jobId={job.id} />
           </div>
         </div>
       </DetailPageSurface>
     </div>
   );
-
 
   const sections: UnifiedAccordionSection[] = [];
 
@@ -1508,6 +1477,40 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Customer & Property",
     icon: <User className="size-4" />,
     count: customer ? 1 : 0,
+    actions: (
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={() => {
+            // TODO: Implement change customer dialog
+            toast.info("Change customer feature coming soon");
+          }}
+          size="sm"
+          variant="outline"
+        >
+          <User className="mr-1.5 h-3.5 w-3.5" />
+          Change Customer
+        </Button>
+        <Button
+          onClick={() => {
+            // TODO: Implement change property dialog
+            toast.info("Change property feature coming soon");
+          }}
+          size="sm"
+          variant="outline"
+        >
+          <Building2 className="mr-1.5 h-3.5 w-3.5" />
+          Change Property
+        </Button>
+        <Button
+          onClick={() => setIsRemoveCustomerDialogOpen(true)}
+          size="sm"
+          variant="outline"
+        >
+          <X className="mr-1.5 h-3.5 w-3.5" />
+          Remove Customer
+        </Button>
+      </div>
+    ),
     content: (
       <UnifiedAccordionContent className="space-y-6">
         <div className="flex flex-col gap-6 lg:flex-row">
@@ -1534,7 +1537,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                         </span>
                       )}
                       <div className="flex flex-wrap items-center gap-2">
-                        <Badge className="h-6 rounded-full px-2.5 font-medium text-[11px] capitalize" variant="outline">
+                        <Badge
+                          className="h-6 rounded-full px-2.5 font-medium text-[11px] capitalize"
+                          variant="outline"
+                        >
                           {customerStatusLabel}
                         </Badge>
                         <span
@@ -1557,8 +1563,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                     </div>
                   </div>
                   {customerDetailPath && (
-                    <Button asChild className="flex-shrink-0" size="sm" variant="outline">
-                      <Link className="flex items-center gap-1.5" href={customerDetailPath}>
+                    <Button
+                      asChild
+                      className="flex-shrink-0"
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Link
+                        className="flex items-center gap-1.5"
+                        href={customerDetailPath}
+                      >
                         View Profile
                         <ChevronRight className="h-3.5 w-3.5" />
                       </Link>
@@ -1577,7 +1591,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                       {formatCurrency(totalRevenue)}
                     </div>
                     <div className="mt-0.5 text-muted-foreground text-xs">
-                      {totalJobs} job{totalJobs === 1 ? "" : "s"} · {formatCurrency(averageJobValue)} avg
+                      {totalJobs} job{totalJobs === 1 ? "" : "s"} ·{" "}
+                      {formatCurrency(averageJobValue)} avg
                     </div>
                   </div>
                   <div className="px-3 first:pl-0 last:pr-0">
@@ -1587,7 +1602,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                     <div
                       className={cn(
                         "mt-1 font-bold text-lg",
-                        outstandingBalance > 0 ? "text-orange-600" : "text-foreground"
+                        outstandingBalance > 0
+                          ? "text-warning"
+                          : "text-foreground"
                       )}
                     >
                       {formatCurrency(outstandingBalance)}
@@ -1747,14 +1764,18 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                   </div>
                   <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div>
-                      <dt className="text-muted-foreground text-xs">Portal Access</dt>
+                      <dt className="text-muted-foreground text-xs">
+                        Portal Access
+                      </dt>
                       <dd className="mt-1 font-medium text-foreground text-sm">
                         {portalEnabled ? (
                           <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-200">
                             <Globe className="h-3.5 w-3.5" /> Enabled
                           </span>
                         ) : (
-                          <span className="text-muted-foreground">Disabled</span>
+                          <span className="text-muted-foreground">
+                            Disabled
+                          </span>
                         )}
                       </dd>
                       {portalEnabled && lastPortalLogin && (
@@ -1764,7 +1785,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                       )}
                     </div>
                     <div>
-                      <dt className="text-muted-foreground text-xs">Preferred Contact</dt>
+                      <dt className="text-muted-foreground text-xs">
+                        Preferred Contact
+                      </dt>
                       <dd className="mt-1 font-medium text-foreground text-sm capitalize">
                         {normalizedPreferredContact}
                       </dd>
@@ -1785,13 +1808,23 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                       )}
                     </div>
                     <div>
-                      <dt className="text-muted-foreground text-xs">Last Activity</dt>
+                      <dt className="text-muted-foreground text-xs">
+                        Last Activity
+                      </dt>
                       <dd className="mt-1 font-medium text-foreground text-sm">
-                        {lastJobDate ? formatRelativeTime(lastJobDate) : "No activity"}
+                        {lastJobDate
+                          ? formatRelativeTime(lastJobDate)
+                          : "No activity"}
                       </dd>
                       {nextVisit && (
                         <dd className="mt-0.5 text-muted-foreground text-xs">
-                          Next: {formatRelativeTime(nextVisit.start_time ?? nextVisit.startTime ?? nextVisit.start_at ?? nextVisit.startAt)}
+                          Next:{" "}
+                          {formatRelativeTime(
+                            nextVisit.start_time ??
+                              nextVisit.startTime ??
+                              nextVisit.start_at ??
+                              nextVisit.startAt
+                          )}
                         </dd>
                       )}
                     </div>
@@ -1820,7 +1853,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                             >
                               <Avatar className="h-6 w-6 border border-white/10 bg-muted">
                                 {member?.avatar ? (
-                                  <AvatarImage alt={member?.name || "Team Member"} src={member.avatar} />
+                                  <AvatarImage
+                                    alt={member?.name || "Team Member"}
+                                    src={member.avatar}
+                                  />
                                 ) : (
                                   <AvatarFallback className="text-[10px]">
                                     {member?.name
@@ -1847,7 +1883,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                         <div className="flex flex-wrap gap-2">
                           {customerTags.map((tag) => (
                             <span
-                              className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                              className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary text-xs"
                               key={tag}
                             >
                               {tag}
@@ -1861,11 +1897,13 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
               )}
             </div>
           ) : (
-            <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-background p-6 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-border/60 border-dashed bg-background p-6 text-center">
               <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-muted">
                 <User className="size-6 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm">No customer assigned</p>
+              <p className="text-muted-foreground text-sm">
+                No customer assigned
+              </p>
               <p className="mt-1 text-muted-foreground text-xs">
                 Assign a customer to unlock profile insights.
               </p>
@@ -1881,17 +1919,21 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                   ) : (
                     <div className="space-y-4 p-6">
                       <Skeleton className="h-40 w-full rounded-lg" />
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <p>Connect a Google Maps API key or add coordinates to visualize this location.</p>
+                      <div className="space-y-1 text-muted-foreground text-sm">
+                        <p>
+                          Connect a Google Maps API key or add coordinates to
+                          visualize this location.
+                        </p>
                         <p className="text-xs">
-                          Update property details to include latitude and longitude for enhanced routing.
+                          Update property details to include latitude and
+                          longitude for enhanced routing.
                         </p>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm space-y-3">
+                <div className="space-y-3 rounded-xl border border-border/60 bg-card/80 p-6 shadow-sm">
                   <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
                     Property Details
                   </div>
@@ -1907,21 +1949,29 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                     </div>
                     {property.square_footage && (
                       <div>
-                        <dt className="text-muted-foreground text-xs">Square Footage</dt>
-                        <dd className="text-foreground">{property.square_footage}</dd>
+                        <dt className="text-muted-foreground text-xs">
+                          Square Footage
+                        </dt>
+                        <dd className="text-foreground">
+                          {property.square_footage}
+                        </dd>
                       </div>
                     )}
                     {property.year_built && (
                       <div>
-                        <dt className="text-muted-foreground text-xs">Year Built</dt>
-                        <dd className="text-foreground">{property.year_built}</dd>
+                        <dt className="text-muted-foreground text-xs">
+                          Year Built
+                        </dt>
+                        <dd className="text-foreground">
+                          {property.year_built}
+                        </dd>
                       </div>
                     )}
                   </dl>
                 </div>
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-background p-6 text-center text-sm text-muted-foreground">
+              <div className="flex flex-col items-center justify-center rounded-xl border border-border/60 border-dashed bg-background p-6 text-center text-muted-foreground text-sm">
                 No property assigned
               </div>
             )}
@@ -1938,16 +1988,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: schedules.length,
     actions: (
       <Button
+        onClick={() => router.push(`/dashboard/schedule/new?jobId=${job.id}`)}
         size="sm"
         variant="outline"
-        onClick={() => router.push(`/dashboard/schedule/new?jobId=${job.id}`)}
       >
         <Plus className="mr-2 h-4 w-4" /> Add Appointment
       </Button>
     ),
     content: (
       <UnifiedAccordionContent className="p-0">
-        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+        <div className="border-b px-6 py-4 text-muted-foreground text-sm">
           Manage scheduled visits and dispatch activities.
         </div>
         <div className="overflow-x-auto">
@@ -1964,10 +2014,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: tasks.length,
     actions: (
       <div className="flex items-center gap-2">
-        <Button className="h-8 px-3 text-xs" size="sm" variant="secondary">
-          <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Task
+        <Button size="sm" variant="outline">
+          <Plus className="mr-2 h-4 w-4" /> Add Task
         </Button>
-        <Button className="h-8 px-3 text-xs" size="sm" variant="outline">
+        <Button size="sm" variant="outline">
           Load Template
         </Button>
       </div>
@@ -1981,14 +2031,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 <span className="font-medium">Overall Progress</span>
                 <span className="text-muted-foreground">
                   {Math.round(
-                    (tasks.filter((t: any) => t.is_completed).length / tasks.length) * 100
+                    (tasks.filter((t: any) => t.is_completed).length /
+                      tasks.length) *
+                      100
                   )}
                   %
                 </span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full bg-green-500 transition-all"
+                  className="h-full bg-success transition-all"
                   style={{
                     width: `${(tasks.filter((t: any) => t.is_completed).length / tasks.length) * 100}%`,
                   }}
@@ -1998,106 +2050,121 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           )}
 
           {tasks.length > 0 ? (
-            ["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map((category) => {
-              const categoryTasks = tasks.filter((t: any) =>
-                category === null ? !t.category : t.category === category
-              );
+            ["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map(
+              (category) => {
+                const categoryTasks = tasks.filter((t: any) =>
+                  category === null ? !t.category : t.category === category
+                );
 
-              if (categoryTasks.length === 0) {
-                return null;
-              }
+                if (categoryTasks.length === 0) {
+                  return null;
+                }
 
-              return (
-                <div key={category || "uncategorized"}>
-                  <h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase">
-                    {category || "Other Tasks"}
-                  </h4>
-                  <div className="space-y-2">
-                    {categoryTasks.map((task: any) => {
-                      const assignedTaskUser = Array.isArray(task.assigned_user)
-                        ? task.assigned_user[0]
-                        : task.assigned_user;
+                return (
+                  <div key={category || "uncategorized"}>
+                    <h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase">
+                      {category || "Other Tasks"}
+                    </h4>
+                    <div className="space-y-2">
+                      {categoryTasks.map((task: any) => {
+                        const assignedTaskUser = Array.isArray(
+                          task.assigned_user
+                        )
+                          ? task.assigned_user[0]
+                          : task.assigned_user;
 
-                      return (
-                        <div
-                          className={cn(
-                            "flex items-start gap-3 rounded-lg border p-3 transition-colors",
-                            task.is_completed && "bg-gray-50 opacity-75"
-                          )}
-                          key={task.id}
-                        >
-                          <div className="flex items-center pt-0.5">
-                            <input
-                              checked={task.is_completed}
-                              className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500"
-                              onChange={() => {}}
-                              type="checkbox"
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1">
-                                <p
-                                  className={cn(
-                                    "font-medium",
-                                    task.is_completed && "text-muted-foreground line-through"
-                                  )}
-                                >
-                                  {task.title}
-                                  {task.is_required && (
-                                    <Badge className="ml-2 text-xs" variant="destructive">
-                                      Required
-                                    </Badge>
-                                  )}
-                                </p>
-                                {task.description && (
-                                  <p className="mt-1 text-muted-foreground text-sm">
-                                    {task.description}
+                        return (
+                          <div
+                            className={cn(
+                              "flex items-start gap-3 rounded-lg border p-3 transition-colors",
+                              task.is_completed && "bg-secondary opacity-75"
+                            )}
+                            key={task.id}
+                          >
+                            <div className="flex items-center pt-0.5">
+                              <input
+                                checked={task.is_completed}
+                                className="h-5 w-5 rounded border-border text-success focus:ring-2 focus:ring-green-500"
+                                onChange={() => {}}
+                                type="checkbox"
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1">
+                                  <p
+                                    className={cn(
+                                      "font-medium",
+                                      task.is_completed &&
+                                        "text-muted-foreground line-through"
+                                    )}
+                                  >
+                                    {task.title}
+                                    {task.is_required && (
+                                      <Badge
+                                        className="ml-2 text-xs"
+                                        variant="destructive"
+                                      >
+                                        Required
+                                      </Badge>
+                                    )}
                                   </p>
+                                  {task.description && (
+                                    <p className="mt-1 text-muted-foreground text-sm">
+                                      {task.description}
+                                    </p>
+                                  )}
+                                </div>
+                                {assignedTaskUser && (
+                                  <div className="flex items-center gap-1">
+                                    <Avatar className="h-6 w-6">
+                                      <AvatarImage
+                                        src={assignedTaskUser.avatar}
+                                      />
+                                      <AvatarFallback className="text-xs">
+                                        {assignedTaskUser.name
+                                          ?.substring(0, 2)
+                                          .toUpperCase() || "TM"}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </div>
                                 )}
                               </div>
-                              {assignedTaskUser && (
-                                <div className="flex items-center gap-1">
-                                  <Avatar className="h-6 w-6">
-                                    <AvatarImage src={assignedTaskUser.avatar} />
-                                    <AvatarFallback className="text-xs">
-                                      {assignedTaskUser.name?.substring(0, 2).toUpperCase() || "TM"}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                </div>
-                              )}
-                            </div>
-                            <div className="mt-2 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
-                              {task.is_completed && task.completed_at && (
-                                <span className="flex items-center gap-1">
-                                  <CheckCircle className="h-3 w-3 text-green-600" />
-                                  Completed {formatDate(task.completed_at)}
-                                </span>
-                              )}
-                              {!task.is_completed && task.due_date && (
-                                <span className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  Due {formatDate(task.due_date)}
-                                </span>
-                              )}
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+                                {task.is_completed && task.completed_at && (
+                                  <span className="flex items-center gap-1">
+                                    <CheckCircle className="h-3 w-3 text-success" />
+                                    Completed {formatDate(task.completed_at)}
+                                  </span>
+                                )}
+                                {!task.is_completed && task.due_date && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Due {formatDate(task.due_date)}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              }
+            )
           ) : (
             <div className="rounded-lg border border-dashed p-6 text-center">
               <CheckCircle className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-              <p className="mb-1 text-muted-foreground text-sm">No tasks added yet</p>
-              <p className="mb-3 text-muted-foreground text-xs">
-                Create a step-by-step checklist so the field crew knows exactly what to complete on-site.
+              <p className="mb-1 text-muted-foreground text-sm">
+                No tasks added yet
               </p>
-              <Button className="h-8 px-3 text-xs" size="sm" variant="secondary">
-                <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Task
+              <p className="mb-3 text-muted-foreground text-xs">
+                Create a step-by-step checklist so the field crew knows exactly
+                what to complete on-site.
+              </p>
+              <Button size="sm" variant="outline">
+                <Plus className="mr-2 h-4 w-4" /> Add Task
               </Button>
             </div>
           )}
@@ -2113,16 +2180,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: invoices.length,
     actions: (
       <Button
+        onClick={() => console.log("Create invoice")}
         size="sm"
         variant="outline"
-        onClick={() => console.log("Create invoice")}
       >
         <Plus className="mr-2 h-4 w-4" /> Create Invoice
       </Button>
     ),
     content: (
       <UnifiedAccordionContent className="p-0">
-        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+        <div className="border-b px-6 py-4 text-muted-foreground text-sm">
           Billing history and outstanding invoices for this job.
         </div>
         <div className="overflow-x-auto">
@@ -2139,16 +2206,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: estimates.length,
     actions: (
       <Button
+        onClick={() => console.log("Create estimate")}
         size="sm"
         variant="outline"
-        onClick={() => console.log("Create estimate")}
       >
         <Plus className="mr-2 h-4 w-4" /> Create Estimate
       </Button>
     ),
     content: (
       <UnifiedAccordionContent className="p-0">
-        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+        <div className="border-b px-6 py-4 text-muted-foreground text-sm">
           Proposals and estimates created for this job.
         </div>
         <div className="overflow-x-auto">
@@ -2165,16 +2232,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: purchaseOrders.length,
     actions: (
       <Button
+        onClick={() => console.log("Create PO")}
         size="sm"
         variant="outline"
-        onClick={() => console.log("Create PO")}
       >
         <Plus className="mr-2 h-4 w-4" /> Create PO
       </Button>
     ),
     content: (
       <UnifiedAccordionContent className="p-0">
-        <div className="border-b px-6 py-4 text-sm text-muted-foreground">
+        <div className="border-b px-6 py-4 text-muted-foreground text-sm">
           Track materials and purchases tied to this job.
         </div>
         <div className="overflow-x-auto">
@@ -2190,21 +2257,34 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     icon: <Camera className="size-4" />,
     count: photos.length + documents.length,
     actions: (
-      <Button
-        className="h-8 px-3 text-xs"
-        size="sm"
-        variant="secondary"
-        onClick={() => setShowUploader(true)}
-      >
-        <Plus className="mr-1.5 h-3.5 w-3.5" /> Upload
-      </Button>
+      <>
+        <input
+          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+          className="hidden"
+          multiple
+          onChange={(e) => {
+            if (e.target.files && e.target.files.length > 0) {
+              setShowUploader(true);
+            }
+          }}
+          ref={fileInputRef}
+          type="file"
+        />
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          size="sm"
+          variant="outline"
+        >
+          <Plus className="mr-2 h-4 w-4" /> Upload
+        </Button>
+      </>
     ),
     content: (
       <UnifiedAccordionContent className="p-0">
         <div
           className={cn(
-            "transition-colors",
-            isDraggingOver && "bg-primary/5"
+            "relative transition-colors",
+            isDraggingOver && "bg-primary/5 ring-2 ring-primary ring-inset"
           )}
           onDragEnter={(e) => {
             e.preventDefault();
@@ -2214,7 +2294,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           onDragLeave={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            setIsDraggingOver(false);
+            if (e.currentTarget === e.target) {
+              // Only set to false if leaving the container entirely
+              setIsDraggingOver(false);
+            }
           }}
           onDragOver={(e) => {
             e.preventDefault();
@@ -2227,8 +2310,26 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
             setShowUploader(true);
           }}
         >
-          <div className="border-b px-6 py-4 text-sm text-muted-foreground">
-            Drag and drop files to upload photos, documents, and signatures for this job.
+          {isDraggingOver && (
+            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-primary/5 backdrop-blur-sm">
+              <div className="rounded-lg border-2 border-primary border-dashed bg-background p-8 text-center">
+                <Upload className="mx-auto mb-2 h-12 w-12 text-primary" />
+                <p className="font-semibold text-primary">
+                  Drop files to upload
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  Photos, documents, and more
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="border-b bg-muted/30 px-6 py-3">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+              <Upload className="h-4 w-4" />
+              <span>
+                Drag and drop files anywhere in this section to upload
+              </span>
+            </div>
           </div>
           <div className="space-y-6 px-6 py-6">
             {showUploader && (
@@ -2251,30 +2352,47 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
               </div>
               {photos.length > 0 ? (
                 <div className="grid gap-3 md:grid-cols-4">
-                  {["before", "during", "after", "issue", "equipment", "completion", "other"].map(
-                    (category) => {
-                      const count = photos.filter((p: any) => p.category === category).length;
-                      return (
-                        <div className="rounded-lg border p-4 text-center" key={category}>
-                          <p className="font-medium text-muted-foreground text-xs uppercase">
-                            {category}
-                          </p>
-                          <p className="font-bold text-3xl">{count}</p>
-                        </div>
-                      );
-                    }
-                  )}
+                  {[
+                    "before",
+                    "during",
+                    "after",
+                    "issue",
+                    "equipment",
+                    "completion",
+                    "other",
+                  ].map((category) => {
+                    const count = photos.filter(
+                      (p: any) => p.category === category
+                    ).length;
+                    return (
+                      <div
+                        className="rounded-lg border p-4 text-center"
+                        key={category}
+                      >
+                        <p className="font-medium text-muted-foreground text-xs uppercase">
+                          {category}
+                        </p>
+                        <p className="font-bold text-3xl">{count}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                     <Camera className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="mb-2 font-semibold text-lg">No photos uploaded yet</h3>
+                  <h3 className="mb-2 font-semibold text-lg">
+                    No photos uploaded yet
+                  </h3>
                   <p className="mb-4 text-muted-foreground text-sm">
                     Upload photos to document the job progress
                   </p>
-                  <Button onClick={() => setShowUploader(true)} size="sm" variant="secondary">
+                  <Button
+                    onClick={() => setShowUploader(true)}
+                    size="sm"
+                    variant="secondary"
+                  >
                     <Plus className="mr-2 h-4 w-4" /> Upload Photos
                   </Button>
                 </div>
@@ -2284,16 +2402,25 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
             <Separator />
 
             <div>
-              <h4 className="mb-3 font-semibold">Documents ({documents.length})</h4>
+              <h4 className="mb-3 font-semibold">
+                Documents ({documents.length})
+              </h4>
               {documents.length > 0 ? (
                 <div className="space-y-2">
                   {documents.map((doc: any) => (
-                    <div className="flex items-center justify-between rounded-lg border p-3" key={doc.id}>
+                    <div
+                      className="flex items-center justify-between rounded-lg border p-3"
+                      key={doc.id}
+                    >
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">{doc.file_name}</span>
                       </div>
-                      <Button className="h-8 px-2" size="sm" variant="secondary">
+                      <Button
+                        className="h-8 px-2"
+                        size="sm"
+                        variant="secondary"
+                      >
                         <Download className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -2304,11 +2431,18 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                   <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                     <FileText className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="mb-2 font-semibold text-lg">No documents uploaded yet</h3>
+                  <h3 className="mb-2 font-semibold text-lg">
+                    No documents uploaded yet
+                  </h3>
                   <p className="mb-4 text-muted-foreground text-sm">
-                    Upload documents, receipts, or other files related to this job
+                    Upload documents, receipts, or other files related to this
+                    job
                   </p>
-                  <Button onClick={() => setShowUploader(true)} size="sm" variant="secondary">
+                  <Button
+                    onClick={() => setShowUploader(true)}
+                    size="sm"
+                    variant="secondary"
+                  >
                     <Plus className="mr-2 h-4 w-4" /> Upload Document
                   </Button>
                 </div>
@@ -2323,7 +2457,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 <div className="rounded-lg border p-4">
                   <div className="mb-2 flex items-center justify-between">
                     <p className="font-medium text-sm">Customer Signature</p>
-                    {signatures.find((s: any) => s.signature_type === "customer") ? (
+                    {signatures.find(
+                      (s: any) => s.signature_type === "customer"
+                    ) ? (
                       <Badge variant="default">
                         <CheckCircle className="mr-1 h-3 w-3" /> Signed
                       </Badge>
@@ -2331,9 +2467,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                       <Badge variant="secondary">Pending</Badge>
                     )}
                   </div>
-                  {signatures.find((s: any) => s.signature_type === "customer") && (
+                  {signatures.find(
+                    (s: any) => s.signature_type === "customer"
+                  ) && (
                     <p className="text-muted-foreground text-xs">
-                      Signed {formatDate(signatures.find((s: any) => s.signature_type === "customer").signed_at)}
+                      Signed{" "}
+                      {formatDate(
+                        signatures.find(
+                          (s: any) => s.signature_type === "customer"
+                        ).signed_at
+                      )}
                     </p>
                   )}
                 </div>
@@ -2341,7 +2484,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 <div className="rounded-lg border p-4">
                   <div className="mb-2 flex items-center justify-between">
                     <p className="font-medium text-sm">Technician Signature</p>
-                    {signatures.find((s: any) => s.signature_type === "technician") ? (
+                    {signatures.find(
+                      (s: any) => s.signature_type === "technician"
+                    ) ? (
                       <Badge variant="default">
                         <CheckCircle className="mr-1 h-3 w-3" /> Signed
                       </Badge>
@@ -2349,9 +2494,16 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                       <Badge variant="secondary">Pending</Badge>
                     )}
                   </div>
-                  {signatures.find((s: any) => s.signature_type === "technician") && (
+                  {signatures.find(
+                    (s: any) => s.signature_type === "technician"
+                  ) && (
                     <p className="text-muted-foreground text-xs">
-                      Signed {formatDate(signatures.find((s: any) => s.signature_type === "technician").signed_at)}
+                      Signed{" "}
+                      {formatDate(
+                        signatures.find(
+                          (s: any) => s.signature_type === "technician"
+                        ).signed_at
+                      )}
                     </p>
                   )}
                 </div>
@@ -2368,32 +2520,53 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: "Activity & Communications",
     icon: <Activity className="size-4" />,
     count: activities.length + communications.length,
+    actions: (
+      <Button
+        onClick={() => console.log("Add note")}
+        size="sm"
+        variant="outline"
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Note
+      </Button>
+    ),
     content: (
       <UnifiedAccordionContent>
         <div className="space-y-3">
           {activities.length > 0 || communications.length > 0 ? (
             [...activities, ...communications]
               .sort(
-                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                (a, b) =>
+                  new Date(b.created_at).getTime() -
+                  new Date(a.created_at).getTime()
               )
               .slice(0, 20)
               .map((item: any) => {
-                const itemUser = Array.isArray(item.user) ? item.user[0] : item.user;
+                const itemUser = Array.isArray(item.user)
+                  ? item.user[0]
+                  : item.user;
                 const isComm = item.type || item.subject;
                 return (
-                  <div className="flex gap-3 rounded-lg border p-3" key={item.id}>
+                  <div
+                    className="flex gap-3 rounded-lg border p-3"
+                    key={item.id}
+                  >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={itemUser?.avatar} />
                       <AvatarFallback className="text-xs">
-                        {itemUser?.name?.split(" ")
+                        {itemUser?.name
+                          ?.split(" ")
                           .map((n: string) => n[0])
                           .join("") || "?"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
-                        <span className="font-medium text-sm">{itemUser?.name || "System"}</span>
-                        <span className="text-muted-foreground text-xs">{formatDate(item.created_at)}</span>
+                        <span className="font-medium text-sm">
+                          {itemUser?.name || "System"}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {formatDate(item.created_at)}
+                        </span>
                         {isComm && item.type && (
                           <Badge className="text-xs" variant="outline">
                             {item.type.toUpperCase()}
@@ -2401,7 +2574,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                         )}
                       </div>
                       {item.subject && (
-                        <p className="mb-1 font-medium text-sm">{item.subject}</p>
+                        <p className="mb-1 font-medium text-sm">
+                          {item.subject}
+                        </p>
                       )}
                       <p className="text-muted-foreground text-sm">
                         {item.description || item.body || "Activity logged"}
@@ -2415,7 +2590,9 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                 <Activity className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="mb-2 font-semibold text-lg">No activity or communications yet</h3>
+              <h3 className="mb-2 font-semibold text-lg">
+                No activity or communications yet
+              </h3>
               <p className="text-muted-foreground text-sm">
                 Activity logs and communications will appear here
               </p>
@@ -2433,11 +2610,11 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     count: jobEquipment.length,
     actions: (
       <Button
-        size="sm"
-        variant="outline"
         onClick={() => {
           console.log("Add equipment");
         }}
+        size="sm"
+        variant="outline"
       >
         <Plus className="mr-2 h-4 w-4" /> Add Equipment
       </Button>
@@ -2455,7 +2632,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
             <p className="mb-4 text-muted-foreground text-sm">
               Equipment serviced on this job will appear here
             </p>
-            <Button onClick={() => console.log("Add equipment")}
+            <Button
+              onClick={() => console.log("Add equipment")}
               size="sm"
               variant="secondary"
             >
@@ -2465,7 +2643,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         ) : (
           <div className="space-y-4">
             {jobEquipment.map((je: any) => (
-              <div className="space-y-3 rounded-lg border p-4 transition-colors hover:bg-accent/50" key={je.id}>
+              <div
+                className="space-y-3 rounded-lg border p-4 transition-colors hover:bg-accent/50"
+                key={je.id}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="mb-2 flex items-center gap-2">
@@ -2475,7 +2656,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                     <div className="space-y-1 text-muted-foreground text-sm">
                       <p>
                         {je.equipment?.manufacturer} {je.equipment?.model}
-                        {je.equipment?.serial_number && ` • SN: ${je.equipment.serial_number}`}
+                        {je.equipment?.serial_number &&
+                          ` • SN: ${je.equipment.serial_number}`}
                       </p>
                     </div>
                   </div>
@@ -2483,13 +2665,17 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                 {je.work_performed && (
                   <div className="text-sm">
                     <span className="font-medium">Work Performed:</span>
-                    <p className="mt-1 text-muted-foreground">{je.work_performed}</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {je.work_performed}
+                    </p>
                   </div>
                 )}
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   {je.condition_before && (
                     <div>
-                      <span className="mr-2 text-muted-foreground">Before:</span>
+                      <span className="mr-2 text-muted-foreground">
+                        Before:
+                      </span>
                       <Badge variant="outline">{je.condition_before}</Badge>
                     </div>
                   )}
@@ -2535,9 +2721,13 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
                     <TableCell>{item.type}</TableCell>
                     <TableCell>{item.manufacturer || "N/A"}</TableCell>
                     <TableCell>{item.model || "N/A"}</TableCell>
-                    <TableCell className="font-mono text-sm">{item.serial_number || "N/A"}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {item.serial_number || "N/A"}
+                    </TableCell>
                     <TableCell className="text-sm">
-                      {item.last_service_date ? formatDate(item.last_service_date) : "Never"}
+                      {item.last_service_date
+                        ? formatDate(item.last_service_date)
+                        : "Never"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -2555,7 +2745,10 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
     title: string;
     subtitle?: string;
     href: string;
-    badge?: { label: string; variant?: "default" | "secondary" | "destructive" | "outline" };
+    badge?: {
+      label: string;
+      variant?: "default" | "secondary" | "destructive" | "outline";
+    };
   }>;
 
   if (customer) {
@@ -2574,7 +2767,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
       type: "property",
       title: property.name || property.address,
       subtitle: `${property.city || ""}, ${property.state || ""}`,
-      href: `/dashboard/properties/${property.id}`,
+      href: `/dashboard/work/properties/${property.id}`,
     });
   }
 
@@ -2586,17 +2779,19 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
       subtitle: assignedUser.email || assignedUser.phone || undefined,
       href: assignedUser.id
         ? `/dashboard/settings/team/${assignedUser.id}`
-        : `/dashboard/settings/team`,
+        : "/dashboard/settings/team",
     });
   }
 
-  return (
+  return jobRecord ? (
     <>
       <DetailPageContentLayout
-        header={headerConfig}
+        activities={activities}
         beforeContent={beforeContent}
         customSections={sections}
-        activities={activities}
+        defaultOpenSection="customer"
+        enableReordering={true}
+        header={headerConfig}
         notes={jobNotes}
         relatedItems={relatedItems}
         showStandardSections={{
@@ -2604,7 +2799,7 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           notes: false,
           attachments: false,
         }}
-        defaultOpenSection="customer"
+        storageKey="job-details"
       />
 
       <Dialog
@@ -2615,7 +2810,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           <DialogHeader>
             <DialogTitle>Create New Property</DialogTitle>
             <DialogDescription>
-              Add a new property for {customer?.first_name} {customer?.last_name}
+              Add a new property for {customer?.first_name}{" "}
+              {customer?.last_name}
             </DialogDescription>
           </DialogHeader>
 
@@ -2758,7 +2954,8 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
           <DialogHeader>
             <DialogTitle>Archive Job</DialogTitle>
             <DialogDescription>
-              Archiving removes this job from active workflows. You can restore it from the archive within 90 days.
+              Archiving removes this job from active workflows. You can restore
+              it from the archive within 90 days.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -2780,6 +2977,47 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         </DialogContent>
       </Dialog>
 
+      <AlertDialog
+        onOpenChange={setIsRemoveCustomerDialogOpen}
+        open={isRemoveCustomerDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Customer and Property?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will clear the customer and property fields from this job.
+              This action can be undone by reassigning a customer and property.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                try {
+                  const formData = new FormData();
+                  formData.append("customer_id", "");
+                  formData.append("property_id", "");
+
+                  const result = await updateJob(job.id, formData);
+                  if (result.success) {
+                    toast.success("Customer and property removed");
+                    router.refresh();
+                  } else {
+                    toast.error(
+                      result.error || "Failed to remove customer and property"
+                    );
+                  }
+                } catch {
+                  toast.error("Failed to remove customer and property");
+                }
+              }}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {metrics && (
         <JobStatisticsSheet
           invoices={invoices}
@@ -2794,5 +3032,11 @@ export function JobPageContent({ jobData, metrics }: JobPageContentProps) {
         />
       )}
     </>
+  ) : (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="text-center">
+        <p className="text-muted-foreground">Job not found</p>
+      </div>
+    </div>
   );
 }

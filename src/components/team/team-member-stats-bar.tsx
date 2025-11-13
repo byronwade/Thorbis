@@ -11,8 +11,8 @@
  * - Supports compact mode for sticky scrolling
  */
 
-import { type StatCard } from "@/components/ui/stats-cards";
 import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
+import type { StatCard } from "@/components/ui/stats-cards";
 
 interface TeamMemberStatsBarProps {
   metrics: {
@@ -61,7 +61,8 @@ export function TeamMemberStatsBar({
     },
     {
       label: "Rating",
-      value: metrics.customerRating > 0 ? metrics.customerRating.toFixed(1) : "N/A",
+      value:
+        metrics.customerRating > 0 ? metrics.customerRating.toFixed(1) : "N/A",
       change: 0,
       changeLabel: "customer rating",
     },

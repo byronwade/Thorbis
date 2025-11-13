@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  format,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-} from "date-fns";
+import { endOfWeek, format, startOfWeek } from "date-fns";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -30,14 +24,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
+import { useSchedule } from "@/hooks/use-schedule";
 import { useGanttSchedulerStore } from "@/lib/stores/gantt-scheduler-store";
+import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { useViewStore } from "@/lib/stores/view-store";
 import { cn } from "@/lib/utils";
-import { ScheduleViewToggle } from "./schedule-view-toggle";
 import { GanttViewSwitcher } from "./gantt-view-switcher";
+import { ScheduleViewToggle } from "./schedule-view-toggle";
 import { ZoomControls } from "./zoom-controls";
-import { useSchedule } from "@/hooks/use-schedule";
 
 export function ScheduleToolbarActions() {
   const [mounted, setMounted] = useState(false);
@@ -92,7 +86,7 @@ export function ScheduleToolbarActions() {
       {isGanttView && (
         <>
           {/* Gantt View Switcher (Day/Week/Month) */}
-          <GanttViewSwitcher view={ganttView} onViewChange={setGanttView} />
+          <GanttViewSwitcher onViewChange={setGanttView} view={ganttView} />
 
           {/* Date Navigation */}
           <div className="flex items-center gap-2">
@@ -163,10 +157,10 @@ export function ScheduleToolbarActions() {
                       Technician
                     </label>
                     <Select
-                      value={selectedTechnicianId || "all"}
                       onValueChange={(id) =>
                         setSelectedTechnicianId(id === "all" ? "" : id)
                       }
+                      value={selectedTechnicianId || "all"}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
@@ -184,15 +178,17 @@ export function ScheduleToolbarActions() {
                 )}
 
                 <div>
-                  <label className="mb-2 block font-medium text-sm">Status</label>
+                  <label className="mb-2 block font-medium text-sm">
+                    Status
+                  </label>
                   <Select
-                    value={isGanttView ? (statusFilter || "all") : "all"}
                     onValueChange={(status) => {
                       if (isGanttView) {
                         setStatusFilter(status === "all" ? "" : status);
                       }
                       // TODO: Apply status filter to other views
                     }}
+                    value={isGanttView ? statusFilter || "all" : "all"}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue />

@@ -43,7 +43,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
         {/* Header - adapts across stages */}
         <div className="flex items-center gap-2">
           <ResponsiveIcon>
-            <Trophy className="text-yellow-500" />
+            <Trophy className="text-warning" />
           </ResponsiveIcon>
           <ShowAt stage="full">
             <ResponsiveText variant="title">Top Performer</ResponsiveText>
@@ -59,7 +59,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
         <ShowAt stage="full">
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2.5 overflow-hidden text-center">
             {/* Avatar */}
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-full border-3 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-lg text-yellow-600">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-full border-3 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-lg text-warning">
               {data.avatar}
             </div>
 
@@ -132,7 +132,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
           <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 overflow-hidden">
             {/* Avatar + Name */}
             <div className="flex items-center gap-2 overflow-hidden">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-sm text-yellow-600">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-sm text-warning">
                 {data.avatar}
               </div>
               <div className="min-w-0 flex-1 overflow-hidden">
@@ -152,7 +152,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
             <div className="space-y-1 overflow-hidden">
               <div className="flex items-center justify-between gap-2 overflow-hidden">
                 <div className="flex items-center gap-1">
-                  <TrendingUp className="size-3 shrink-0 text-green-500" />
+                  <TrendingUp className="size-3 shrink-0 text-success" />
                   <ResponsiveText className="truncate" variant="caption">
                     Revenue
                   </ResponsiveText>
@@ -163,7 +163,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
               </div>
               <div className="flex items-center justify-between gap-2 overflow-hidden">
                 <div className="flex items-center gap-1">
-                  <Briefcase className="size-3 shrink-0 text-blue-500" />
+                  <Briefcase className="size-3 shrink-0 text-primary" />
                   <ResponsiveText className="truncate" variant="caption">
                     Jobs
                   </ResponsiveText>
@@ -179,11 +179,11 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
         {/* COMPACT Stage: Avatar + Revenue only */}
         <ShowAt stage="compact">
           <div className="flex flex-col items-center justify-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-full border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-xs text-yellow-600">
+            <div className="flex size-8 items-center justify-center rounded-full border-2 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-warning text-xs">
               {data.avatar}
             </div>
             <ResponsiveText
-              className="font-bold text-yellow-500"
+              className="font-bold text-warning"
               variant="display"
             >
               {formatCurrency(data.revenue, "compact")}
@@ -195,7 +195,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
             <ResponsiveText
-              className="font-bold text-yellow-500"
+              className="font-bold text-warning"
               variant="display"
             >
               {formatCurrency(data.revenue, "tiny")}

@@ -1,11 +1,11 @@
 import { getAllCustomers } from "@/actions/customers";
+import { CustomersKanban } from "@/components/customers/customers-kanban";
 import {
   type Customer,
   CustomersTable,
 } from "@/components/customers/customers-table";
-import { CustomersKanban } from "@/components/customers/customers-kanban";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
 import { WorkDataView } from "@/components/work/work-data-view";
 
 /**
@@ -51,15 +51,20 @@ export default async function CustomersPage() {
       ? new Date(c.next_scheduled_job).toLocaleDateString()
       : "TBD",
     totalValue: c.total_revenue || 0,
+    archived_at: c.archived_at,
+    deleted_at: c.deleted_at,
   }));
 
-  // Calculate statistics from real data
-  const totalCustomers = customers.length;
-  const activeCustomers = customers.filter((c) => c.status === "active").length;
-  const prospectCustomers = customers.filter(
+  // Filter to active customers for stats calculations
+  const activeCustomersData = customers.filter((c) => !c.archived_at && !c.deleted_at);
+
+  // Calculate statistics from real data (from active customers only)
+  const totalCustomers = activeCustomersData.length;
+  const activeCustomers = activeCustomersData.filter((c) => c.status === "active").length;
+  const prospectCustomers = activeCustomersData.filter(
     (c) => c.status === "prospect"
   ).length;
-  const totalRevenue = customers.reduce((sum, c) => sum + c.totalValue, 0);
+  const totalRevenue = activeCustomersData.reduce((sum, c) => sum + c.totalValue, 0);
 
   const customerStats: StatCard[] = [
     {

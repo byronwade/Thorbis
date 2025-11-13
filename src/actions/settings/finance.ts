@@ -476,6 +476,29 @@ export async function deleteBankAccount(
   });
 }
 
+/**
+ * Get the current user's company ID
+ */
+export async function getUserCompanyId(): Promise<ActionResult<string>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+    return companyId;
+  });
+}
+
 export async function getBankAccounts(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
@@ -493,10 +516,21 @@ export async function getBankAccounts(): Promise<ActionResult<any[]>> {
 
     const companyId = await getCompanyId(supabase, user.id);
 
+    // Get bank accounts with payment processor connections
     const { data, error } = await supabase
       .from("finance_bank_accounts")
-      .select("*")
+      .select(
+        `
+        *,
+        payment_processors:company_payment_processors!bank_account_id(
+          id,
+          processor_type,
+          status
+        )
+      `
+      )
       .eq("company_id", companyId)
+      .order("is_primary", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -507,6 +541,53 @@ export async function getBankAccounts(): Promise<ActionResult<any[]>> {
     }
 
     return data || [];
+  });
+}
+
+/**
+ * Get the primary bank account for a company
+ */
+export async function getPrimaryBankAccount(): Promise<ActionResult<any>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    // First try to get primary account
+    const { data: primaryAccount } = await supabase
+      .from("finance_bank_accounts")
+      .select("*")
+      .eq("company_id", companyId)
+      .eq("is_primary", true)
+      .eq("is_active", true)
+      .single();
+
+    if (primaryAccount) {
+      return primaryAccount;
+    }
+
+    // If no primary, get first active account
+    const { data: activeAccount } = await supabase
+      .from("finance_bank_accounts")
+      .select("*")
+      .eq("company_id", companyId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    return activeAccount || null;
   });
 }
 

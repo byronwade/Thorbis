@@ -70,10 +70,10 @@ export function ImportPreviewTable({
       <div className="space-y-4">
         {/* Summary */}
         <div className="flex gap-3">
-          <Badge className="bg-green-500">
+          <Badge className="bg-success">
             {rows.filter((r) => r.valid).length} Valid
           </Badge>
-          <Badge className="bg-red-500">
+          <Badge className="bg-destructive">
             {rows.filter((r) => !r.valid).length} Errors
           </Badge>
         </div>
@@ -93,7 +93,9 @@ export function ImportPreviewTable({
             <TableBody>
               {displayRows.map((row) => (
                 <TableRow
-                  className={row.valid ? "" : "bg-red-50 dark:bg-red-950/20"}
+                  className={
+                    row.valid ? "" : "bg-destructive dark:bg-destructive/20"
+                  }
                   key={row.rowNumber}
                 >
                   {/* Row Number */}
@@ -102,11 +104,11 @@ export function ImportPreviewTable({
                   {/* Status Icon */}
                   <TableCell>
                     {row.valid ? (
-                      <CheckCircle className="size-4 text-green-500" />
+                      <CheckCircle className="size-4 text-success" />
                     ) : (
                       <Tooltip>
                         <TooltipTrigger>
-                          <AlertCircle className="size-4 text-red-500" />
+                          <AlertCircle className="size-4 text-destructive" />
                         </TooltipTrigger>
                         <TooltipContent>
                           <div className="space-y-1">
@@ -132,7 +134,7 @@ export function ImportPreviewTable({
                       <TableCell
                         className={
                           cellError
-                            ? "border-2 border-red-500 bg-red-50 dark:bg-red-950/20"
+                            ? "border-2 border-destructive bg-destructive dark:bg-destructive/20"
                             : ""
                         }
                         key={header}

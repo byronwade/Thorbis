@@ -34,7 +34,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
         {/* Header - adapts across stages */}
         <div className="flex items-center gap-2">
           <ResponsiveIcon>
-            <Calendar className="text-green-500" />
+            <Calendar className="text-success" />
           </ResponsiveIcon>
           <ShowAt stage="full">
             <ResponsiveText variant="title">Today's Performance</ResponsiveText>
@@ -101,7 +101,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
             {/* Revenue */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <DollarSign className="size-3.5 text-green-500" />
+                <DollarSign className="size-3.5 text-success" />
                 <ResponsiveText variant="caption">Revenue</ResponsiveText>
               </div>
               <ResponsiveText className="font-bold" variant="body">
@@ -112,7 +112,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
             {/* Jobs */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Briefcase className="size-3.5 text-blue-500" />
+                <Briefcase className="size-3.5 text-primary" />
                 <ResponsiveText variant="caption">Jobs</ResponsiveText>
               </div>
               <ResponsiveText className="font-bold" variant="body">
@@ -129,7 +129,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
               Revenue
             </ResponsiveText>
             <ResponsiveText
-              className="font-bold text-green-500"
+              className="font-bold text-success"
               variant="display"
             >
               {formatCurrency(data.revenue, "compact")}
@@ -141,7 +141,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
             <ResponsiveText
-              className="font-bold text-green-500"
+              className="font-bold text-success"
               variant="display"
             >
               {formatCurrency(data.revenue, "tiny")}

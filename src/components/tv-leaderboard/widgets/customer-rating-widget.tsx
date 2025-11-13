@@ -38,7 +38,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
           <div className="flex items-center justify-between">
             <ResponsiveText variant="title">Customer Rating</ResponsiveText>
             <ResponsiveIcon>
-              <Star className="fill-yellow-500 text-yellow-500" />
+              <Star className="fill-yellow-500 text-warning" />
             </ResponsiveIcon>
           </div>
         </ShowAt>
@@ -53,7 +53,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
               Rating
             </ResponsiveText>
             <ResponsiveIcon>
-              <Star className="fill-yellow-500 text-yellow-500" />
+              <Star className="fill-yellow-500 text-warning" />
             </ResponsiveIcon>
           </ResponsiveFlex>
         </ShowAt>
@@ -62,7 +62,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
         <ShowAt stage="compact">
           <div className="flex justify-center">
             <ResponsiveIcon>
-              <Star className="fill-yellow-500 text-yellow-500" />
+              <Star className="fill-yellow-500 text-warning" />
             </ResponsiveIcon>
           </div>
         </ShowAt>
@@ -78,7 +78,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
             <div className="mt-1 flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star
-                  className={`size-3 ${i < Math.floor(data.rating) ? "fill-yellow-500 text-yellow-500" : "text-gray-300"}`}
+                  className={`size-3 ${i < Math.floor(data.rating) ? "fill-yellow-500 text-warning" : "text-muted-foreground"}`}
                   key={i}
                 />
               ))}

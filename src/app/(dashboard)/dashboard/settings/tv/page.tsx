@@ -210,7 +210,7 @@ export default function TVLeaderboardSettingsPage() {
                 type="button"
               >
                 <div
-                  className={`absolute top-1 size-6 rounded-full bg-white shadow-lg transition-transform ${autoScrollEnabled ? "translate-x-7" : "translate-x-1"}`}
+                  className={`absolute top-1 size-6 rounded-full bg-card shadow-lg transition-transform ${autoScrollEnabled ? "translate-x-7" : "translate-x-1"}`}
                 />
               </button>
             </div>
@@ -304,7 +304,7 @@ export default function TVLeaderboardSettingsPage() {
                 type="button"
               >
                 <div
-                  className={`absolute top-1 size-6 rounded-full bg-white shadow-lg transition-transform ${showCompanyGoals ? "translate-x-7" : "translate-x-1"}`}
+                  className={`absolute top-1 size-6 rounded-full bg-card shadow-lg transition-transform ${showCompanyGoals ? "translate-x-7" : "translate-x-1"}`}
                 />
               </button>
             </div>
@@ -323,7 +323,7 @@ export default function TVLeaderboardSettingsPage() {
                 type="button"
               >
                 <div
-                  className={`absolute top-1 size-6 rounded-full bg-white shadow-lg transition-transform ${showTrendIndicators ? "translate-x-7" : "translate-x-1"}`}
+                  className={`absolute top-1 size-6 rounded-full bg-card shadow-lg transition-transform ${showTrendIndicators ? "translate-x-7" : "translate-x-1"}`}
                 />
               </button>
             </div>
@@ -342,7 +342,7 @@ export default function TVLeaderboardSettingsPage() {
                 type="button"
               >
                 <div
-                  className={`absolute top-1 size-6 rounded-full bg-white shadow-lg transition-transform ${highlightTopThree ? "translate-x-7" : "translate-x-1"}`}
+                  className={`absolute top-1 size-6 rounded-full bg-card shadow-lg transition-transform ${highlightTopThree ? "translate-x-7" : "translate-x-1"}`}
                 />
               </button>
             </div>

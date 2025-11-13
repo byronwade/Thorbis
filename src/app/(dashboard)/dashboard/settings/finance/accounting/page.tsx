@@ -257,7 +257,7 @@ export default function AccountingSettingsPage() {
             </Tooltip>
           </div>
           {hasChanges && (
-            <Badge className="bg-amber-600 hover:bg-amber-700">
+            <Badge className="bg-warning hover:bg-warning">
               Unsaved Changes
             </Badge>
           )}
@@ -307,7 +307,7 @@ export default function AccountingSettingsPage() {
               <div className="flex items-end">
                 <div className="flex items-center gap-2">
                   {connectionStatus === "connected" && (
-                    <div className="flex items-center gap-2 text-green-600 text-sm">
+                    <div className="flex items-center gap-2 text-sm text-success">
                       <CheckCircle className="size-4" />
                       <span>Connected</span>
                     </div>
@@ -601,11 +601,11 @@ export default function AccountingSettingsPage() {
           </>
         )}
 
-        <Card className="border-blue-500/50 bg-blue-500/5">
+        <Card className="border-primary/50 bg-primary/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+            <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <div className="space-y-1">
-              <p className="font-medium text-blue-700 text-sm dark:text-blue-400">
+              <p className="font-medium text-primary text-sm dark:text-primary">
                 Accounting Integration Benefits
               </p>
               <p className="text-muted-foreground text-sm">
@@ -625,8 +625,8 @@ export default function AccountingSettingsPage() {
           <div className="flex items-center gap-3">
             {hasChanges ? (
               <>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/30">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">Unsaved Changes</p>
@@ -637,8 +637,8 @@ export default function AccountingSettingsPage() {
               </>
             ) : (
               <>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                  <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
+                  <Check className="h-4 w-4 text-success dark:text-success" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">All Changes Saved</p>

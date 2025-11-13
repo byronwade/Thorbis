@@ -5,20 +5,19 @@
  * Renders a calendar month view with days as columns
  */
 
-import { useMemo } from "react";
 import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
   addDays,
-  isSameMonth,
+  endOfMonth,
+  format,
   isSameDay,
-  getDaysInMonth,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
 } from "date-fns";
+import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 import { GanttJobBlock } from "./gantt-job-block";
 import type { Job } from "./schedule-types";
-import { cn } from "@/lib/utils";
 
 type MonthTimeGridProps = {
   date: Date;
@@ -111,7 +110,7 @@ export function MonthTimeGrid({
               return (
                 <div
                   className={cn(
-                    "flex min-h-[100px] flex-col border-b border-r",
+                    "flex min-h-[100px] flex-col border-r border-b",
                     !isCurrentMonth && "bg-muted/30",
                     isToday && "bg-primary/5"
                   )}
@@ -122,7 +121,8 @@ export function MonthTimeGrid({
                   <div
                     className={cn(
                       "flex h-8 items-center justify-center border-b px-2 text-xs",
-                      isToday && "bg-primary font-semibold text-primary-foreground"
+                      isToday &&
+                        "bg-primary font-semibold text-primary-foreground"
                     )}
                   >
                     {format(day, "d")}
@@ -132,7 +132,7 @@ export function MonthTimeGrid({
                   <div className="flex-1 space-y-1 overflow-y-auto p-1">
                     {dayJobs.length === 0 ? (
                       <div className="flex h-full items-center justify-center">
-                        <div className="text-muted-foreground text-[10px]">
+                        <div className="text-[10px] text-muted-foreground">
                           No jobs
                         </div>
                       </div>
@@ -140,14 +140,14 @@ export function MonthTimeGrid({
                       <>
                         {dayJobs.slice(0, 3).map((job) => (
                           <GanttJobBlock
-                            job={job}
                             isSelected={selectedJobId === job.id}
+                            job={job}
                             key={job.id}
                             onClick={() => onJobClick?.(job.id)}
                           />
                         ))}
                         {dayJobs.length > 3 && (
-                          <div className="text-muted-foreground text-[10px] px-1">
+                          <div className="px-1 text-[10px] text-muted-foreground">
                             +{dayJobs.length - 3} more
                           </div>
                         )}
@@ -163,4 +163,3 @@ export function MonthTimeGrid({
     </div>
   );
 }
-

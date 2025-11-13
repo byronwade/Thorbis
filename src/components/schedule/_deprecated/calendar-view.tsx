@@ -9,10 +9,10 @@ import { mockTechnicians } from "./schedule-types";
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 7); // 7 AM to 7 PM
 
 const statusColors = {
-  scheduled: "bg-blue-500/90 border-blue-600 text-white",
-  "in-progress": "bg-amber-500/90 border-amber-600 text-white",
-  completed: "bg-green-500/90 border-green-600 text-white",
-  cancelled: "bg-red-500/90 border-red-600 text-white",
+  scheduled: "bg-primary/90 border-primary text-white",
+  "in-progress": "bg-warning/90 border-warning text-white",
+  completed: "bg-success/90 border-success text-white",
+  cancelled: "bg-destructive/90 border-destructive text-white",
 };
 
 export function CalendarView() {

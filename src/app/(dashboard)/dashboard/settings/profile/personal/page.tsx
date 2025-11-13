@@ -175,7 +175,7 @@ export default function PersonalInformationPage() {
               </Tooltip>
             </div>
             {hasChanges && (
-              <Badge className="bg-amber-600" variant="default">
+              <Badge className="bg-warning" variant="default">
                 Unsaved Changes
               </Badge>
             )}
@@ -632,8 +632,8 @@ export default function PersonalInformationPage() {
                 <div className="flex items-center gap-3">
                   {hasChanges ? (
                     <>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                        <div className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/30">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">Unsaved Changes</p>
@@ -644,8 +644,8 @@ export default function PersonalInformationPage() {
                     </>
                   ) : (
                     <>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                        <Check className="h-4 w-4 text-green-600 dark:text-green-500" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
+                        <Check className="h-4 w-4 text-success dark:text-success" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">All Changes Saved</p>

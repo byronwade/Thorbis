@@ -106,7 +106,7 @@ export default function ProfitLossCalculator() {
       </div>
 
       {/* Info Card */}
-      <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+      <Card className="border-primary/20 bg-gradient-to-br from-blue-500/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <AlertCircle className="size-5" />
@@ -323,7 +323,7 @@ export default function ProfitLossCalculator() {
         {/* Results */}
         <div className="space-y-4">
           <Card
-            className={`border-2 ${netProfit >= 0 ? "border-green-500/20 bg-gradient-to-br from-green-500/10" : "border-red-500/20 bg-gradient-to-br from-red-500/10"} to-transparent`}
+            className={`border-2 ${netProfit >= 0 ? "border-success/20 bg-gradient-to-br from-green-500/10" : "border-destructive/20 bg-gradient-to-br from-red-500/10"} to-transparent`}
           >
             <CardHeader>
               <CardTitle>Net Profit</CardTitle>
@@ -335,7 +335,7 @@ export default function ProfitLossCalculator() {
                     Your Bottom Line
                   </p>
                   <p
-                    className={`font-bold text-5xl ${netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
+                    className={`font-bold text-5xl ${netProfit >= 0 ? "text-success" : "text-destructive"}`}
                   >
                     ${netProfit.toLocaleString()}
                   </p>
@@ -344,7 +344,7 @@ export default function ProfitLossCalculator() {
                   <div>
                     <p className="text-muted-foreground text-xs">Net Margin</p>
                     <p
-                      className={`font-semibold text-2xl ${netMargin >= 0 ? "text-green-600" : "text-red-600"}`}
+                      className={`font-semibold text-2xl ${netMargin >= 0 ? "text-success" : "text-destructive"}`}
                     >
                       {netMargin.toFixed(1)}%
                     </p>
@@ -440,7 +440,7 @@ export default function ProfitLossCalculator() {
                 </div>
 
                 <div
-                  className={`flex justify-between border-t-2 pt-2 font-bold text-lg ${netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={`flex justify-between border-t-2 pt-2 font-bold text-lg ${netProfit >= 0 ? "text-success" : "text-destructive"}`}
                 >
                   <span>Net Profit</span>
                   <div className="text-right">
@@ -454,7 +454,7 @@ export default function ProfitLossCalculator() {
             </CardContent>
           </Card>
 
-          <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+          <Card className="border-warning/20 bg-gradient-to-br from-amber-500/5 to-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <AlertCircle className="size-4" />

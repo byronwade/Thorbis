@@ -9,6 +9,8 @@
 
 import { Archive } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { archiveContract } from "@/actions/contracts";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,8 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { archiveContract } from "@/actions/contracts";
-import { toast } from "sonner";
 
 type ContractActionsProps = {
   contractId: string;
@@ -58,16 +58,16 @@ export function ContractActions({
     <>
       {/* Archive Button */}
       <Button
-        variant="outline"
-        size="sm"
         onClick={() => setIsArchiveDialogOpen(true)}
+        size="sm"
+        variant="outline"
       >
         <Archive className="mr-2 size-4" />
         Archive
       </Button>
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Contract?</DialogTitle>
@@ -78,16 +78,16 @@ export function ContractActions({
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveContract}
               disabled={isArchiving}
+              onClick={handleArchiveContract}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Contract"}
             </Button>

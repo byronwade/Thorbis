@@ -9,7 +9,6 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,8 +23,9 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { formatCurrency } from "@/lib/formatters";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
+import { formatCurrency } from "@/lib/formatters";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 
 export type MaintenancePlan = {
   id: string;
@@ -36,25 +36,27 @@ export type MaintenancePlan = {
   nextVisit: string;
   monthlyFee: number;
   status: "active" | "pending" | "paused" | "cancelled";
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
 
 const MAINTENANCE_PLAN_STATUS_CONFIG = {
   active: {
-    className: "bg-green-500 hover:bg-green-600 text-white",
+    className: "bg-success hover:bg-success text-white",
     label: "Active",
   },
   pending: {
-    className:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
     label: "Pending",
   },
   paused: {
     className:
-      "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+      "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
     label: "Paused",
   },
   cancelled: {
-    className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+    className:
+      "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
     label: "Cancelled",
   },
 } as const;
@@ -66,15 +68,29 @@ export function MaintenancePlansTable({
   plans: MaintenancePlan[];
   itemsPerPage?: number;
 }) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore(
+    (state) => state.filters.maintenance_plans
+  );
+
+  // Filter plans based on archive status
+  const filteredPlans = plans.filter((plan) => {
+    const isArchived = Boolean(plan.archived_at || plan.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const columns: ColumnDef<MaintenancePlan>[] = [
     {
       key: "planName",
       header: "Plan Name",
       width: "w-40",
       shrink: true,
+      sortable: true,
       render: (plan) => (
         <Link
-          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          className="font-medium text-foreground text-sm leading-tight hover:underline"
           href={`/dashboard/work/maintenance-plans/${plan.id}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -86,15 +102,20 @@ export function MaintenancePlansTable({
       key: "customer",
       header: "Customer",
       width: "flex-1",
+      sortable: true,
       render: (plan) => (
-        <div className="min-w-0">
-          <div className="truncate font-medium text-foreground text-sm leading-tight">
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/maintenance-plans/${plan.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
             {plan.customer}
           </div>
           <div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
             {plan.serviceType}
           </div>
-        </div>
+        </Link>
       ),
     },
     {
@@ -102,6 +123,7 @@ export function MaintenancePlansTable({
       header: "Frequency",
       width: "w-32",
       shrink: true,
+      sortable: true,
       hideOnMobile: true,
       render: (plan) => (
         <span className="text-foreground text-sm">{plan.frequency}</span>
@@ -112,6 +134,7 @@ export function MaintenancePlansTable({
       header: "Next Visit",
       width: "w-32",
       shrink: true,
+      sortable: true,
       hideOnMobile: true,
       render: (plan) => (
         <span className="text-muted-foreground text-sm tabular-nums">
@@ -124,6 +147,7 @@ export function MaintenancePlansTable({
       header: "Monthly Fee",
       width: "w-28",
       shrink: true,
+      sortable: true,
       align: "right",
       render: (plan) => (
         <span className="font-semibold tabular-nums">
@@ -136,11 +160,12 @@ export function MaintenancePlansTable({
       header: "Status",
       width: "w-28",
       shrink: true,
+      sortable: true,
       render: (plan) => (
         <GenericStatusBadge
-          status={plan.status}
           config={MAINTENANCE_PLAN_STATUS_CONFIG}
           defaultStatus="pending"
+          status={plan.status}
         />
       ),
     },
@@ -194,6 +219,7 @@ export function MaintenancePlansTable({
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
+      variant: "destructive",
       onClick: (selectedIds) => console.log("Archive:", selectedIds),
     },
     {
@@ -219,14 +245,16 @@ export function MaintenancePlansTable({
     <FullWidthDataTable
       bulkActions={bulkActions}
       columns={columns}
-      data={plans}
+      data={filteredPlans}
       emptyIcon={
         <Calendar className="mx-auto h-12 w-12 text-muted-foreground" />
       }
       emptyMessage="No maintenance plans found"
       enableSelection={true}
-      getHighlightClass={() => "bg-green-50/30 dark:bg-green-950/10"}
+      entity="maintenance_plans"
+      getHighlightClass={() => "bg-success/30 dark:bg-success/10"}
       getItemId={(plan) => plan.id}
+      isArchived={(plan) => Boolean(plan.archived_at || plan.deleted_at)}
       isHighlighted={(plan) => plan.status === "active"}
       itemsPerPage={itemsPerPage}
       onRefresh={() => window.location.reload()}
@@ -235,6 +263,7 @@ export function MaintenancePlansTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search plans by name, customer, service type, frequency, or status..."
+      showArchived={archiveFilter !== "active"}
       showRefresh={false}
     />
   );

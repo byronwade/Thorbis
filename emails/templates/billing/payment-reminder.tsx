@@ -14,6 +14,7 @@ import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export default function PaymentReminderEmail({
   customerName,
@@ -131,7 +132,7 @@ const overdueDays = {
 };
 
 const invoiceDetails = {
-  backgroundColor: "#ffffff",
+  backgroundColor: EMAIL_COLORS.surface,
   borderRadius: "8px",
   padding: "20px",
 };

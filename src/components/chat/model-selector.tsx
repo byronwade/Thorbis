@@ -94,10 +94,12 @@ export function ModelSelector({
             </div>
             <div className="flex flex-1 flex-col">
               <div className="font-medium">{model.name}</div>
-              <div className="text-xs text-zinc-500">{model.provider}</div>
+              <div className="text-muted-foreground text-xs">
+                {model.provider}
+              </div>
             </div>
             {model.id === selectedModel && (
-              <div className="text-blue-600">
+              <div className="text-primary">
                 <CheckCircleFillIcon />
               </div>
             )}

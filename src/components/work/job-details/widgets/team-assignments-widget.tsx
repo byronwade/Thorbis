@@ -68,11 +68,7 @@ export function TeamAssignmentsWidget({
     })
     .filter(Boolean) as TeamMember[];
 
-  // If no team assignments from database, show assigned_to user
-  if (teamMembers.length === 0 && job.assignedTo) {
-    // Show empty state with option to assign team
-    // In a real scenario, we'd fetch the assigned user details
-  }
+  // TODO: Consider showing fallback assignment details if available when no team assignments exist
 
   const primaryAssignee = teamMembers.find(
     (member) => member.role === "primary"
@@ -83,17 +79,17 @@ export function TeamAssignmentsWidget({
     available: {
       label: "Available",
       variant: "default" as const,
-      color: "text-green-600",
+      color: "text-success",
     },
     on_job: {
       label: "On Job",
       variant: "secondary" as const,
-      color: "text-blue-600",
+      color: "text-primary",
     },
     off_duty: {
       label: "Off Duty",
       variant: "outline" as const,
-      color: "text-gray-600",
+      color: "text-muted-foreground",
     },
   };
 

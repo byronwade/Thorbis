@@ -59,9 +59,9 @@ const navigationItems: NavItemWithMobile[] = [
     href: "/dashboard/ai",
     status: "coming-soon",
     isSpecial: true,
-    mobileIcon: "T",
-    mobileIconBg: "bg-gradient-to-r from-blue-500 to-cyan-400",
-    mobileIconColor: "text-white",
+    mobileIcon: "AI",
+    mobileIconBg: "bg-primary/10",
+    mobileIconColor: "text-primary",
   },
   {
     label: "Today",
@@ -74,15 +74,15 @@ const navigationItems: NavItemWithMobile[] = [
     label: "Schedule",
     href: "/dashboard/schedule",
     mobileIcon: "S",
-    mobileIconBg: "bg-indigo-500/10",
-    mobileIconColor: "text-indigo-600",
+    mobileIconBg: "bg-accent/10",
+    mobileIconColor: "text-accent-foreground",
   },
   {
     label: "Communication",
     href: "/dashboard/communication",
     mobileIcon: "C",
-    mobileIconBg: "bg-green-500/10",
-    mobileIconColor: "text-green-600",
+    mobileIconBg: "bg-success/10",
+    mobileIconColor: "text-success",
   },
   {
     label: "Work",
@@ -105,24 +105,24 @@ const navigationItems: NavItemWithMobile[] = [
     href: "/dashboard/reporting",
     status: "coming-soon",
     mobileIcon: "R",
-    mobileIconBg: "bg-blue-500/10",
-    mobileIconColor: "text-blue-600",
+    mobileIconBg: "bg-primary/10",
+    mobileIconColor: "text-primary",
   },
   {
     label: "Marketing",
     href: "/dashboard/marketing",
     status: "coming-soon",
     mobileIcon: "M",
-    mobileIconBg: "bg-pink-500/10",
-    mobileIconColor: "text-pink-600",
+    mobileIconBg: "bg-accent/10",
+    mobileIconColor: "text-accent-foreground",
   },
   {
     label: "Training",
     href: "/dashboard/training",
     status: "coming-soon",
     mobileIcon: "T",
-    mobileIconBg: "bg-purple-500/10",
-    mobileIconColor: "text-purple-600",
+    mobileIconBg: "bg-accent/10",
+    mobileIconColor: "text-accent-foreground",
   },
 ];
 
@@ -137,7 +137,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
   // For beta and coming-soon, show badge
   if (status === "beta") {
     return (
-      <span className="-top-1.5 absolute right-0 rounded border border-blue-600 bg-blue-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide">
+      <span className="-top-1.5 absolute right-0 rounded bg-blue-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide shadow-sm">
         Beta
       </span>
     );
@@ -145,17 +145,25 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 
   if (status === "coming-soon") {
     return (
-      <span className="-top-1.5 absolute right-0 whitespace-nowrap rounded border border-purple-600 bg-purple-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide">
+      <span className="-top-1.5 absolute right-0 whitespace-nowrap rounded bg-purple-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide shadow-sm">
         Soon
       </span>
     );
   }
 
-  // Small blue circle for "new" and "updated"
+  // Badge for "new" and "updated"
+  if (status === "new") {
+    return (
+      <span className="-top-1.5 absolute right-0 rounded bg-green-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide shadow-sm">
+        New
+      </span>
+    );
+  }
+
   return (
     <span
-      className="-top-1 absolute right-0 size-2 rounded-full bg-blue-500"
-      title={status === "new" ? "New" : "Updated"}
+      className="-top-1 absolute right-0 size-2 rounded-full bg-blue-500 shadow-sm"
+      title="Updated"
     />
   );
 }
@@ -166,10 +174,10 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
   }
 
   const styles = {
-    beta: "bg-blue-500 text-white",
-    new: "bg-green-500 text-white",
-    updated: "bg-orange-500 text-white",
-    "coming-soon": "bg-purple-500 text-white",
+    beta: "bg-blue-500 text-white shadow-sm",
+    new: "bg-green-500 text-white shadow-sm",
+    updated: "bg-purple-500 text-white shadow-sm",
+    "coming-soon": "bg-purple-500 text-white shadow-sm",
   };
 
   const labels = {
@@ -239,11 +247,11 @@ export function AppHeaderClient({
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-header-bg">
-      <div className="flex h-14 items-center gap-2 px-4">
+    <header className="safe-top sticky top-0 z-50 w-full bg-header-bg">
+      <div className="flex h-14 items-center gap-2 px-4 md:px-6">
         {/* Mobile menu button */}
         <button
-          className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
+          className="touch-target no-select native-transition hover-gradient flex items-center justify-center rounded-md border border-transparent outline-none hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 active:scale-95 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           type="button"
         >
@@ -283,23 +291,15 @@ export function AppHeaderClient({
               return (
                 <div className="relative" key={item.href}>
                   <Link
-                    className={`hover-gradient group relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${
+                    className={`relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${
                       isActive
-                        ? "text-white dark:text-white"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-primary/15 text-primary shadow-sm dark:bg-primary/25"
+                        : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                     }`}
                     data-slot="button"
                     href={item.href}
                   >
-                    {/* Active state - gradient background */}
-                    {isActive && (
-                      <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary via-primary/90 to-primary/80 opacity-100 dark:from-primary dark:via-primary/80 dark:to-primary/60" />
-                    )}
-                    {/* Hover state - gradient background (only when not active) */}
-                    {!isActive && (
-                      <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/60 via-primary/50 to-primary/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:from-primary/50 dark:via-primary/40 dark:to-primary/30" />
-                    )}
-                    <span className="relative z-10">{item.label}</span>
+                    {item.label}
                   </Link>
                   <StatusIndicator status={item.status} />
                 </div>
@@ -309,10 +309,10 @@ export function AppHeaderClient({
             return (
               <div className="relative" key={item.href}>
                 <Link
-                  className={`hover-gradient relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 ${
+                  className={`relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${
                     isActive
-                      ? "bg-primary/10 text-primary dark:bg-white/10 dark:text-white"
-                      : "text-muted-foreground hover:bg-primary/5 hover:text-foreground dark:hover:bg-white/5"
+                      ? "bg-primary/15 text-primary shadow-sm dark:bg-primary/25"
+                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                   }`}
                   data-slot="button"
                   href={item.href}
@@ -331,7 +331,7 @@ export function AppHeaderClient({
             {/* Overlay */}
             <button
               aria-label="Close mobile menu"
-              className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm duration-300 lg:hidden ${
+              className={`fixed inset-0 z-40 bg-foreground/60 backdrop-blur-sm duration-300 lg:hidden dark:bg-background/80 ${
                 isClosing ? "fade-out animate-out" : "fade-in animate-in"
               }`}
               onClick={closeMobileMenu}
@@ -340,7 +340,7 @@ export function AppHeaderClient({
 
             {/* Sidebar Sheet */}
             <div
-              className={`fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-background shadow-2xl duration-300 lg:hidden ${
+              className={`safe-top safe-bottom safe-left fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-background shadow-2xl duration-300 lg:hidden ${
                 isClosing
                   ? "slide-out-to-left animate-out"
                   : "slide-in-from-left animate-in"
@@ -351,7 +351,7 @@ export function AppHeaderClient({
               <div className="flex items-center justify-between border-b p-4">
                 <h2 className="font-semibold text-lg">Navigation</h2>
                 <button
-                  className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent"
+                  className="touch-target no-select native-transition flex items-center justify-center rounded-md hover:bg-accent active:scale-95"
                   onClick={closeMobileMenu}
                   type="button"
                 >
@@ -360,7 +360,7 @@ export function AppHeaderClient({
               </div>
 
               {/* Scrollable content */}
-              <div className="flex-1 overflow-y-auto">
+              <div className="momentum-scroll flex-1 overflow-y-auto">
                 <div className="flex flex-col space-y-1 p-4">
                   {/* AI Section */}
                   <div className="mb-4">
@@ -376,7 +376,11 @@ export function AppHeaderClient({
                             : pathname.startsWith(item.href);
                         return (
                           <Link
-                            className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:shadow-sm ${isActive ? "bg-accent text-accent-foreground shadow-sm" : "text-foreground"}`}
+                            className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 ${
+                              isActive
+                                ? "bg-primary/15 text-primary shadow-sm"
+                                : "text-foreground hover:bg-muted/70 hover:text-foreground hover:shadow-sm"
+                            }`}
                             href={item.href}
                             key={item.href}
                             onClick={closeMobileMenu}
@@ -413,7 +417,11 @@ export function AppHeaderClient({
                             : pathname.startsWith(item.href);
                         return (
                           <Link
-                            className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:shadow-sm ${isActive ? "bg-accent text-accent-foreground shadow-sm" : "text-foreground"}`}
+                            className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 ${
+                              isActive
+                                ? "bg-primary/15 text-primary shadow-sm"
+                                : "text-foreground hover:bg-muted/70 hover:text-foreground hover:shadow-sm"
+                            }`}
                             href={item.href}
                             key={item.href}
                             onClick={closeMobileMenu}
@@ -445,7 +453,7 @@ export function AppHeaderClient({
         <div className="ml-auto flex items-center gap-2 overflow-visible md:flex-1 md:justify-end">
           {/* TV Display */}
           <Link
-            className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+            className="touch-target no-select native-transition hover-gradient flex items-center justify-center rounded-md border border-transparent outline-none hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
             href="/dashboard/tv"
             title="TV Display"
           >

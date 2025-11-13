@@ -46,9 +46,9 @@ export function PropertiesBlockComponent({ node, editor }: any) {
 
   const getPropertyBadge = (type: string) => {
     const variants: Record<string, string> = {
-      residential: "bg-green-100 text-green-700",
-      commercial: "bg-blue-100 text-blue-700",
-      industrial: "bg-purple-100 text-purple-700",
+      residential: "bg-success text-success",
+      commercial: "bg-primary text-primary",
+      industrial: "bg-accent text-accent-foreground",
     } as any;
 
     return (
@@ -71,7 +71,7 @@ export function PropertiesBlockComponent({ node, editor }: any) {
 
   const handleAddProperty = () => {
     // Navigate to add property page with customer pre-selected
-    window.location.href = `/dashboard/properties/new?customerId=${customerId}`;
+    window.location.href = `/dashboard/work/properties/new?customerId=${customerId}`;
   };
 
   return (

@@ -3,18 +3,14 @@
 /**
  * Invoice Toolbar Actions - Client Component
  *
- * Provides invoice-specific toolbar actions used in AppToolbar
- * - Save invoice
- * - Preview
- * - Export to PDF
- * - Send via email
+ * Provides invoice-specific toolbar actions used in AppToolbar:
+ * - Preview, PDF, Send
+ * - Ellipsis menu with export/archive
  *
- * Note:
- * - Invoice number and status are displayed in the toolbar title/subtitle
- * - Right sidebar toggle is now handled by AppToolbar (unified across all pages)
+ * Design: Clean, compact, no button groups, outline variant
  */
 
-import { Download, Eye, Mail, Save } from "lucide-react";
+import { Download, Eye, Mail } from "lucide-react";
 import { useState } from "react";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
@@ -25,10 +21,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-// ============================================================================
-// Invoice Toolbar Actions Component
-// ============================================================================
 
 export function InvoiceToolbarActions() {
   const [isSaving, setIsSaving] = useState(false);
@@ -58,81 +50,65 @@ export function InvoiceToolbarActions() {
 
   return (
     <div className="flex items-center gap-1.5">
-      {/* Primary Action - Save */}
-      <Button
-        className="gap-2 font-medium"
-        disabled={isSaving}
-        onClick={handleSave}
-        size="sm"
-        variant="default"
-      >
-        <Save className="size-4" />
-        {isSaving ? "Saving..." : "Save"}
-      </Button>
+      {/* Quick Actions - Individual Buttons, NO Groups */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="h-8 gap-1.5"
+              onClick={handlePreview}
+              size="sm"
+              variant="outline"
+            >
+              <Eye className="size-3.5" />
+              <span className="hidden md:inline">Preview</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Preview invoice</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
-      <Separator className="h-6" orientation="vertical" />
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="h-8 gap-1.5"
+              onClick={handleExportPDF}
+              size="sm"
+              variant="outline"
+            >
+              <Download className="size-3.5" />
+              <span className="hidden lg:inline">PDF</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Export to PDF</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
-      {/* Secondary Actions Group */}
-      <div className="flex items-center gap-1 rounded-lg border bg-muted/30 p-1">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="size-8 shrink-0 hover:bg-background"
-                onClick={handlePreview}
-                size="icon"
-                variant="ghost"
-              >
-                <Eye className="size-4" />
-                <span className="sr-only">Preview invoice</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Preview invoice</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="h-8 gap-1.5"
+              onClick={handleSendEmail}
+              size="sm"
+              variant="outline"
+            >
+              <Mail className="size-3.5" />
+              <span className="hidden lg:inline">Send</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Send via email</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="size-8 shrink-0 hover:bg-background"
-                onClick={handleExportPDF}
-                size="icon"
-                variant="ghost"
-              >
-                <Download className="size-4" />
-                <span className="sr-only">Export to PDF</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Export to PDF</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="size-8 shrink-0 hover:bg-background"
-                onClick={handleSendEmail}
-                size="icon"
-                variant="ghost"
-              >
-                <Mail className="size-4" />
-                <span className="sr-only">Send via email</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Send via email</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-      {/* Ellipsis Menu - Export/Import & More */}
+      {/* Ellipsis Menu - Export/Import & Archive */}
       <Separator className="h-6" orientation="vertical" />
       <ImportExportDropdown dataType="invoices" />
     </div>

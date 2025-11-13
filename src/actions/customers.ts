@@ -1207,6 +1207,8 @@ type CustomerRecord = {
   next_scheduled_job?: string;
   created_at: string;
   updated_at: string;
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
 
 /**

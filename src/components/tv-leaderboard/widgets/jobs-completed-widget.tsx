@@ -42,7 +42,7 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
           <div className="flex items-center justify-between">
             <ResponsiveText variant="title">Jobs Completed</ResponsiveText>
             <ResponsiveIcon>
-              <Briefcase className="text-blue-500" />
+              <Briefcase className="text-primary" />
             </ResponsiveIcon>
           </div>
         </ShowAt>
@@ -57,7 +57,7 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
               Jobs
             </ResponsiveText>
             <ResponsiveIcon>
-              <Briefcase className="text-blue-500" />
+              <Briefcase className="text-primary" />
             </ResponsiveIcon>
           </ResponsiveFlex>
         </ShowAt>
@@ -66,7 +66,7 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
         <ShowAt stage="compact">
           <div className="flex justify-center">
             <ResponsiveIcon>
-              <Briefcase className="text-blue-500" />
+              <Briefcase className="text-primary" />
             </ResponsiveIcon>
           </div>
         </ShowAt>

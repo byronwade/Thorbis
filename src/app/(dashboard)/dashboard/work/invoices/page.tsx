@@ -10,19 +10,23 @@
  */
 
 import { notFound, redirect } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
 import { InvoicesKanban } from "@/components/work/invoices-kanban";
 import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
 import { WorkDataView } from "@/components/work/work-data-view";
+import { WorkPageLayout } from "@/components/work/work-page-layout";
 import {
   getActiveCompanyId,
   isActiveCompanyOnboardingComplete,
 } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
+export const revalidate = 0; // Disable caching - always fetch fresh data
+export const dynamic = "force-dynamic"; // Force dynamic rendering
+
 // Configuration constants
-const MAX_INVOICES_PER_PAGE = 100;
+const MAX_INVOICES_PER_PAGE = 10_000; // Fetch all invoices for virtualization
 
 export default async function InvoicesPage() {
   const supabase = await createClient();
@@ -57,7 +61,8 @@ export default async function InvoicesPage() {
     redirect("/dashboard/welcome");
   }
 
-  // Fetch invoices from Supabase with customer details
+  // Fetch ALL invoices from Supabase with customer details
+  // Including archived invoices - filtering is handled client-side
   const { data: invoicesRaw, error } = await supabase
     .from("invoices")
     .select(`
@@ -78,6 +83,33 @@ export default async function InvoicesPage() {
       error.message || JSON.stringify(error) || "Unknown database error";
     throw new Error(`Failed to load invoices: ${errorMessage}`);
   }
+
+  // Debug logging (shows in terminal)
+  console.log("📊 SERVER: Fetched invoices count:", invoicesRaw?.length || 0);
+  console.log(
+    "📊 SERVER: First 3 invoice numbers:",
+    invoicesRaw?.slice(0, 3).map((i: any) => i.invoice_number)
+  );
+
+  // Map database statuses to display statuses
+  const mapStatus = (
+    dbStatus: string
+  ): "paid" | "pending" | "draft" | "overdue" => {
+    switch (dbStatus) {
+      case "draft":
+        return "draft";
+      case "sent":
+        return "pending";
+      case "partial":
+        return "pending"; // Partially paid = still pending
+      case "paid":
+        return "paid";
+      case "past_due":
+        return "overdue";
+      default:
+        return "pending";
+    }
+  };
 
   // Transform for table component
   const invoices: Invoice[] = (invoicesRaw || []).map((inv: any) => ({
@@ -100,73 +132,123 @@ export default async function InvoicesPage() {
         })
       : "-",
     amount: inv.total_amount,
-    status: inv.status as "paid" | "pending" | "draft" | "overdue",
+    status: mapStatus(inv.status),
+    archived_at: inv.archived_at,
+    deleted_at: inv.deleted_at,
   }));
 
-  // Calculate invoice stats
-  const draftCount = invoices.filter((inv) => inv.status === "draft").length;
-  const pendingCount = invoices.filter(
-    (inv) => inv.status === "pending"
-  ).length;
-  const paidCount = invoices.filter((inv) => inv.status === "paid").length;
-  const overdueCount = invoices.filter(
-    (inv) => inv.status === "overdue"
-  ).length;
+  // Calculate invoice stats from RAW data (more accurate)
+  // Only count non-archived invoices in stats
+  const activeInvoices =
+    invoicesRaw?.filter((inv: any) => !(inv.archived_at || inv.deleted_at)) ||
+    [];
 
-  const totalRevenue = invoices
-    .filter((inv) => inv.status === "paid")
-    .reduce((sum, inv) => sum + inv.amount, 0);
+  const draftInvoices = activeInvoices.filter(
+    (inv: any) => inv.status === "draft"
+  );
+  const pendingInvoices = activeInvoices.filter(
+    (inv: any) => inv.status === "sent" || inv.status === "partial"
+  );
+  const paidInvoices = activeInvoices.filter(
+    (inv: any) => inv.status === "paid"
+  );
+  const overdueInvoices = activeInvoices.filter(
+    (inv: any) => inv.status === "past_due"
+  );
 
-  const pendingRevenue = invoices
-    .filter((inv) => inv.status === "pending")
-    .reduce((sum, inv) => sum + inv.amount, 0);
+  const draftCount = draftInvoices.length;
+  const pendingCount = pendingInvoices.length;
+  const paidCount = paidInvoices.length;
+  const overdueCount = overdueInvoices.length;
 
-  const overdueRevenue = invoices
-    .filter((inv) => inv.status === "overdue")
-    .reduce((sum, inv) => sum + inv.amount, 0);
+  // Use paid_amount for actual revenue, balance_amount for pending/overdue
+  const totalRevenue = paidInvoices.reduce(
+    (sum: number, inv: any) => sum + (inv.paid_amount || 0),
+    0
+  );
+  const pendingRevenue = pendingInvoices.reduce(
+    (sum: number, inv: any) =>
+      sum + (inv.balance_amount || inv.total_amount || 0),
+    0
+  );
+  const overdueRevenue = overdueInvoices.reduce(
+    (sum: number, inv: any) =>
+      sum + (inv.balance_amount || inv.total_amount || 0),
+    0
+  );
+  const draftRevenue = draftInvoices.reduce(
+    (sum: number, inv: any) => sum + (inv.total_amount || 0),
+    0
+  );
+
+  // Debug logging for stats
+  console.log("💰 INVOICE STATS:", {
+    draft: { count: draftCount, amount: `$${(draftRevenue / 100).toFixed(2)}` },
+    pending: {
+      count: pendingCount,
+      amount: `$${(pendingRevenue / 100).toFixed(2)}`,
+    },
+    paid: { count: paidCount, amount: `$${(totalRevenue / 100).toFixed(2)}` },
+    overdue: {
+      count: overdueCount,
+      amount: `$${(overdueRevenue / 100).toFixed(2)}`,
+    },
+    total: invoicesRaw?.length || 0,
+  });
 
   const invoiceStats: StatCard[] = [
     {
       label: "Draft",
-      value: draftCount,
-      change: draftCount > 0 ? 0 : 5.2, // Neutral if drafts exist, green if none
-      changeLabel: "ready to send",
+      value:
+        draftCount > 0
+          ? `${draftCount} ($${(draftRevenue / 100).toLocaleString()})`
+          : "0",
+      change: 0,
+      changeLabel: draftCount > 0 ? "ready to send" : "no drafts",
     },
     {
       label: "Pending",
       value: `$${(pendingRevenue / 100).toLocaleString()}`,
-      change: pendingCount > 0 ? 0 : 8.1, // Neutral if pending, green if all paid
-      changeLabel: `${pendingCount} invoices`,
+      change: 0,
+      changeLabel: `${pendingCount} invoice${pendingCount !== 1 ? "s" : ""}`,
     },
     {
       label: "Paid",
       value: `$${(totalRevenue / 100).toLocaleString()}`,
-      change: paidCount > 0 ? 12.4 : 0, // Green if paid invoices exist
-      changeLabel: `${paidCount} invoices`,
+      change: paidCount > 0 ? 12.4 : 0,
+      changeLabel: `${paidCount} invoice${paidCount !== 1 ? "s" : ""}`,
     },
     {
       label: "Overdue",
-      value: `$${(overdueRevenue / 100).toLocaleString()}`,
-      change: overdueCount > 0 ? -8.3 : 6.5, // Red if overdue, green if all current
+      value:
+        overdueCount > 0 ? `$${(overdueRevenue / 100).toLocaleString()}` : "$0",
+      change: overdueCount > 0 ? -15.2 : 0, // NEGATIVE = BAD (red)
       changeLabel:
-        overdueCount > 0 ? `${overdueCount} need attention` : "all current",
+        overdueCount > 0
+          ? `${overdueCount} need${overdueCount === 1 ? "s" : ""} attention`
+          : "all current",
     },
     {
       label: "Total Invoices",
-      value: invoices.length,
-      change: invoices.length > 0 ? 9.2 : 0, // Green if invoices exist
-      changeLabel: "this month",
+      value: activeInvoices.length,
+      change: 0,
+      changeLabel: "active",
     },
   ];
 
   return (
-    <>
-      <StatusPipeline compact stats={invoiceStats} />
+    <WorkPageLayout stats={<StatusPipeline compact stats={invoiceStats} />}>
       <WorkDataView
         kanban={<InvoicesKanban invoices={invoices} />}
         section="invoices"
-        table={<InvoicesTable invoices={invoices} itemsPerPage={50} />}
+        table={
+          <InvoicesTable
+            enableVirtualization={true}
+            invoices={invoices}
+            itemsPerPage={50}
+          />
+        }
       />
-    </>
+    </WorkPageLayout>
   );
 }

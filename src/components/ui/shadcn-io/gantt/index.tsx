@@ -26,7 +26,6 @@ import {
   startOfMonth,
 } from "date-fns";
 import { atom, useAtom } from "jotai";
-import throttle from "lodash.throttle";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import type {
   CSSProperties,
@@ -1409,6 +1408,40 @@ export const GanttProvider: FC<GanttProviderProps> = ({
     </GanttContext.Provider>
   );
 };
+
+/**
+ * Simple throttle utility to limit function execution rate
+ * Replaces lodash.throttle dependency
+ * @param func - Function to throttle
+ * @param wait - Milliseconds to wait between executions
+ * @returns Throttled function
+ */
+function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+  let lastRan = 0;
+
+  return function (this: any, ...args: Parameters<T>) {
+    const now = Date.now();
+
+    if (!lastRan || now - lastRan >= wait) {
+      func.apply(this, args);
+      lastRan = now;
+    } else {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(
+        () => {
+          func.apply(this, args);
+          lastRan = Date.now();
+          timeout = null;
+        },
+        wait - (now - lastRan)
+      );
+    }
+  };
+}
 
 export type GanttTimelineProps = {
   children: ReactNode;

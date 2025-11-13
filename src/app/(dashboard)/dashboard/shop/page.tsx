@@ -216,7 +216,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 )}
                 {product.originalPrice && (
                   <Badge
-                    className="absolute top-2 left-2 bg-red-500"
+                    className="absolute top-2 left-2 bg-destructive"
                     variant="destructive"
                   >
                     Save ${(product.originalPrice - product.price).toFixed(0)}
@@ -233,7 +233,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1 text-sm">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <Star className="h-4 w-4 fill-yellow-400 text-warning" />
                   <span className="font-semibold">{product.rating}</span>
                   <span className="text-muted-foreground">
                     ({product.reviews})
@@ -248,11 +248,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                   )}
                 </div>
                 {product.inStock ? (
-                  <p className="mt-1 text-green-600 text-xs dark:text-green-400">
+                  <p className="mt-1 text-success text-xs dark:text-success">
                     In Stock
                   </p>
                 ) : (
-                  <p className="mt-1 text-red-600 text-xs dark:text-red-400">
+                  <p className="mt-1 text-destructive text-xs dark:text-destructive">
                     Out of Stock
                   </p>
                 )}

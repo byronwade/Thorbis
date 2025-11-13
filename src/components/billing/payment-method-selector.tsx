@@ -200,7 +200,7 @@ function PaymentMethodSelectorInner({
           selectedMethod !== "new-card" &&
           selectedMethod !== "apple-pay" &&
           selectedMethod !== "google-pay" && (
-            <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-green-700 text-sm dark:border-green-800 dark:bg-green-950 dark:text-green-400">
+            <div className="flex items-center gap-2 rounded-lg border border-success bg-success p-3 text-sm text-success dark:border-success dark:bg-success dark:text-success">
               <CheckCircle2 className="size-4" />
               <span>Payment method selected from primary organization</span>
             </div>
@@ -313,7 +313,7 @@ export function PaymentMethodSelector(
 ) {
   if (!props.stripe) {
     return (
-      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200">
+      <div className="rounded-lg border border-warning bg-warning p-4 text-warning dark:border-warning dark:bg-warning dark:text-warning">
         <p className="text-sm">
           Payment system is not configured. Please contact support.
         </p>

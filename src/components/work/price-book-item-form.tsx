@@ -415,7 +415,7 @@ export function PriceBookItemForm({
                   <p className="text-muted-foreground text-xs">
                     Profit per Unit
                   </p>
-                  <p className="font-semibold text-green-600 dark:text-green-500">
+                  <p className="font-semibold text-success dark:text-success">
                     $
                     {(
                       Number.parseFloat(formData.price) -
@@ -425,7 +425,7 @@ export function PriceBookItemForm({
                 </div>
                 <div>
                   <p className="text-muted-foreground text-xs">Profit Margin</p>
-                  <p className="font-semibold text-green-600 dark:text-green-500">
+                  <p className="font-semibold text-success dark:text-success">
                     {profitMargin.toFixed(1)}%
                   </p>
                 </div>

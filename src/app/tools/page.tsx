@@ -382,8 +382,8 @@ export default function ToolsPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent">
           <CardHeader>
             <div className="flex items-start gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-blue-500/15">
-                <Calculator className="size-6 text-blue-600 dark:text-blue-400" />
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+                <Calculator className="size-6 text-primary dark:text-primary" />
               </div>
               <div className="space-y-1">
                 <CardTitle className="text-lg">Business Calculators</CardTitle>
@@ -406,8 +406,8 @@ export default function ToolsPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent">
           <CardHeader>
             <div className="flex items-start gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-green-500/15">
-                <Search className="size-6 text-green-600 dark:text-green-400" />
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-success/15">
+                <Search className="size-6 text-success dark:text-success" />
               </div>
               <div className="space-y-1">
                 <CardTitle className="text-lg">Google Business</CardTitle>
@@ -430,8 +430,8 @@ export default function ToolsPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent">
           <CardHeader>
             <div className="flex items-start gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-purple-500/15">
-                <CreditCard className="size-6 text-purple-600 dark:text-purple-400" />
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent/15">
+                <CreditCard className="size-6 text-accent-foreground dark:text-accent-foreground" />
               </div>
               <div className="space-y-1">
                 <CardTitle className="text-lg">Consumer Financing</CardTitle>

@@ -44,9 +44,9 @@ const defaultViews: Record<WorkSection, WorkViewMode> = {
 function createInitialState(): WorkViewState {
   return {
     views: { ...defaultViews },
-    setView: () => undefined,
+    setView: () => {},
     getView: () => "table",
-    reset: () => undefined,
+    reset: () => {},
   };
 }
 
@@ -84,4 +84,3 @@ export function useSetWorkView(section: WorkSection) {
   const setView = useWorkViewStore((state) => state.setView);
   return (mode: WorkViewMode) => setView(section, mode);
 }
-

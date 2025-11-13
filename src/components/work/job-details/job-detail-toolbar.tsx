@@ -4,14 +4,26 @@
  * Job Detail Toolbar - AppToolbar Actions
  *
  * Displays in AppToolbar for job detail pages:
- * - Quick actions (New Invoice, New Estimate, Clone Job, Archive Job)
+ * - Quick actions (Invoice, Estimate, Clone)
+ * - Ellipsis menu with Statistics, Export, Archive
+ *
+ * Design: Clean, compact, no button groups, outline variant
  */
 
-import { Archive, BarChart3, Copy, FileText, Receipt } from "lucide-react";
+import {
+  Archive,
+  BarChart3,
+  Copy,
+  Download,
+  FileText,
+  MoreVertical,
+  Printer,
+  Receipt,
+  Share2,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveJob } from "@/actions/jobs";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,6 +33,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -84,122 +104,103 @@ export function JobDetailToolbar({
 
   return (
     <>
-      <div className="flex items-center gap-1.5">
-        {/* Analytics Section */}
-        {job && metrics && (
-          <>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30"
-                    onClick={() => setIsStatisticsOpen(true)}
-                    size="sm"
-                    variant="outline"
-                  >
-                    <BarChart3 className="size-4 text-primary" />
-                    <span className="font-medium">Statistics</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View job analytics and metrics</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <Separator className="h-6" orientation="vertical" />
-          </>
-        )}
-
-        {/* Quick Actions Group */}
-        <div className="flex items-center gap-1.5 rounded-lg border bg-muted/30 p-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  asChild
-                  className="gap-2 hover:bg-background"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <a href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
-                    <Receipt className="size-4" />
-                    <span className="hidden sm:inline">Invoice</span>
-                  </a>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Create invoice from this job</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  asChild
-                  className="gap-2 hover:bg-background"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <a href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
-                    <FileText className="size-4" />
-                    <span className="hidden sm:inline">Estimate</span>
-                  </a>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Create estimate from this job</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  asChild
-                  className="gap-2 hover:bg-background"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <a href={`/dashboard/work/new?cloneFrom=${jobId}`}>
-                    <Copy className="size-4" />
-                    <span className="hidden sm:inline">Clone</span>
-                  </a>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Duplicate this job</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        {/* Archive Action */}
-        <Separator className="h-6" orientation="vertical" />
+      <div className="flex items-center gap-2">
+        {/* Quick Actions - Individual Buttons with consistent styling */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10 hover:border-destructive/30"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="size-4" />
-                <span className="hidden sm:inline">Archive</span>
+              <Button asChild size="sm" variant="outline">
+                <a href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
+                  <Receipt />
+                  <span className="hidden md:inline">Invoice</span>
+                </a>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Archive this job</p>
+              <p>Create invoice from this job</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button asChild size="sm" variant="outline">
+                <a href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
+                  <FileText />
+                  <span className="hidden md:inline">Estimate</span>
+                </a>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Create estimate from this job</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button asChild size="sm" variant="outline">
+                <a href={`/dashboard/work/new?cloneFrom=${jobId}`}>
+                  <Copy />
+                  <span className="hidden lg:inline">Clone</span>
+                </a>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Duplicate this job</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
-        {/* Ellipsis Menu - Export/Import & More */}
-        <Separator className="h-6" orientation="vertical" />
-        <ImportExportDropdown dataType="jobs" />
+        {/* Ellipsis Menu - Includes Statistics + Archive */}
+        <Separator className="h-8" orientation="vertical" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon-sm" variant="outline">
+              <MoreVertical />
+              <span className="sr-only">More actions</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+              Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {/* Statistics - Only if available */}
+            {job && metrics && (
+              <>
+                <DropdownMenuItem onClick={() => setIsStatisticsOpen(true)}>
+                  <BarChart3 className="mr-2 size-3.5" />
+                  View Statistics
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+
+            {/* Export/Print/Share */}
+            <DropdownMenuItem>
+              <Download className="mr-2 size-3.5" />
+              Export to CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Printer className="mr-2 size-3.5" />
+              Print Job Details
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Share2 className="mr-2 size-3.5" />
+              Share Job Link
+            </DropdownMenuItem>
+
+            {/* Destructive Actions */}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => setIsArchiveDialogOpen(true)}
+            >
+              <Archive className="mr-2 size-3.5" />
+              Archive Job
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Archive Confirmation Dialog */}

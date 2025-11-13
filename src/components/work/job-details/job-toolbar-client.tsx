@@ -38,17 +38,42 @@ export function JobToolbarClient({
   communications,
 }: JobToolbarClientProps) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const jobNumber = job.jobNumber != null ? String(job.jobNumber) : "Job";
+  const jobStatus = (job.status ?? "quoted") as string;
+  const toDate = (value: unknown): Date | null => {
+    if (!value) {
+      return null;
+    }
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? null : value;
+    }
+    const parsed = new Date(String(value));
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const jobRaw = job as unknown as Record<string, unknown>;
+  const getTimelineDate = (
+    primary: Date | string | null | undefined,
+    fallbackKey: string
+  ) => toDate(primary ?? jobRaw[fallbackKey]);
+
+  const timelineDates = {
+    quoted: getTimelineDate(job.createdAt, "created_at"),
+    scheduled: getTimelineDate(job.scheduledStart, "scheduled_start"),
+    inProgress: getTimelineDate(job.actualStart, "actual_start"),
+    completed: getTimelineDate(job.actualEnd, "actual_end"),
+  };
 
   return (
     <div className="space-y-6">
       {/* Toolbar with Edit Toggle */}
       <JobToolbar
         isEditMode={isEditMode}
-        jobNumber={job.jobNumber}
+        jobNumber={jobNumber}
         jobTitle={(job.title || "Untitled Job") as string}
         jobType={(job.jobType || "service") as string}
         onToggleEditMode={setIsEditMode}
-        status={job.status}
+        status={jobStatus}
       />
 
       <Separator />
@@ -57,13 +82,8 @@ export function JobToolbarClient({
       <div className="rounded-lg border bg-card p-6">
         <h2 className="mb-4 font-semibold text-lg">Project Timeline</h2>
         <JobProcessIndicator
-          currentStatus={job.status as never}
-          dates={{
-            quoted: job.createdAt,
-            scheduled: job.scheduledStart,
-            inProgress: job.actualStart,
-            completed: job.actualEnd,
-          }}
+          currentStatus={jobStatus as never}
+          dates={timelineDates}
         />
       </div>
 

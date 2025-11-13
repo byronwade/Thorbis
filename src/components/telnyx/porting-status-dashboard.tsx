@@ -361,12 +361,12 @@ function PortingRequestCard({
 
         {/* Completion Alert */}
         {request.status === "porting_complete" && (
-          <Alert className="mb-4 border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20">
-            <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
-            <AlertTitle className="text-green-900 dark:text-green-100">
+          <Alert className="mb-4 border-success bg-success dark:border-success dark:bg-success/20">
+            <CheckCircle2 className="size-4 text-success dark:text-success" />
+            <AlertTitle className="text-success dark:text-success">
               Port Complete!
             </AlertTitle>
-            <AlertDescription className="text-green-700 dark:text-green-300">
+            <AlertDescription className="text-success dark:text-success">
               <p className="mb-3">
                 Your number is now active on Telnyx and ready to use. You can
                 safely cancel your service with {request.currentCarrier}.
@@ -447,11 +447,11 @@ function TimelineStageItem({
   const getStageIcon = () => {
     switch (stage.status) {
       case "completed":
-        return <CheckCircle2 className="size-5 text-green-600" />;
+        return <CheckCircle2 className="size-5 text-success" />;
       case "current":
-        return <Loader2 className="size-5 animate-spin text-blue-600" />;
+        return <Loader2 className="size-5 animate-spin text-primary" />;
       case "failed":
-        return <XCircle className="size-5 text-red-600" />;
+        return <XCircle className="size-5 text-destructive" />;
       default:
         return (
           <div className="size-5 rounded-full border-2 border-muted-foreground" />
@@ -462,11 +462,11 @@ function TimelineStageItem({
   const getStageColor = () => {
     switch (stage.status) {
       case "completed":
-        return "border-green-600";
+        return "border-success";
       case "current":
-        return "border-blue-600";
+        return "border-primary";
       case "failed":
-        return "border-red-600";
+        return "border-destructive";
       default:
         return "border-muted";
     }
@@ -479,7 +479,7 @@ function TimelineStageItem({
         <div
           className={cn(
             "absolute top-8 left-[10px] h-[calc(100%+1rem)] w-0.5",
-            stage.status === "completed" ? "bg-green-600" : "bg-muted"
+            stage.status === "completed" ? "bg-success" : "bg-muted"
           )}
         />
       )}

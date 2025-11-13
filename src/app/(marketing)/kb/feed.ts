@@ -25,8 +25,8 @@ export async function GET() {
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     ${articles
       .map((article) => {
-        const pubDate = article.publishedAt
-          ? new Date(article.publishedAt).toUTCString()
+        const pubDate = article.published_at
+          ? new Date(String(article.published_at)).toUTCString()
           : new Date().toUTCString();
         const url = `${siteUrl}/kb/${article.category.slug}/${article.slug}`;
 
@@ -40,8 +40,8 @@ export async function GET() {
       <category><![CDATA[${article.category.title}]]></category>
       ${article.tags
         ?.map(
-          (tag: { name: string }) =>
-            `<category><![CDATA[${tag.name}]]></category>`
+          (tag) =>
+            `<category><![CDATA[${String((tag as { name?: string }).name || "")}]]></category>`
         )
         .join("\n      ")}
     </item>`;

@@ -32,6 +32,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { PermissionsEditor } from "@/components/team/permissions-editor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,6 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { PermissionsEditor } from "@/components/team/permissions-editor";
 import type { UserRole } from "@/lib/auth/permissions";
 
 type EmploymentType = "full-time" | "part-time" | "contractor" | "intern";
@@ -189,7 +189,9 @@ export default function EmployeeProfilePage() {
 
   // Role and permissions state
   const [currentRole, setCurrentRole] = useState<UserRole>("technician");
-  const [customPermissions, setCustomPermissions] = useState<Record<string, boolean>>({});
+  const [customPermissions, setCustomPermissions] = useState<
+    Record<string, boolean>
+  >({});
 
   const [employee, setEmployee] = useState<EmployeeProfile>({
     // Personal Information
@@ -385,15 +387,15 @@ export default function EmployeeProfilePage() {
   const _getEmploymentStatusColor = (status: EmploymentStatus) => {
     switch (status) {
       case "active":
-        return "bg-green-500";
+        return "bg-success";
       case "on-leave":
-        return "bg-yellow-500";
+        return "bg-warning";
       case "suspended":
-        return "bg-orange-500";
+        return "bg-warning";
       case "terminated":
-        return "bg-red-500";
+        return "bg-destructive";
       default:
-        return "bg-gray-500";
+        return "bg-secondary0";
     }
   };
 
@@ -472,8 +474,8 @@ export default function EmployeeProfilePage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
-                <DollarSign className="h-5 w-5 text-green-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
+                <DollarSign className="h-5 w-5 text-success" />
               </div>
               <div>
                 <p className="text-muted-foreground text-xs">Pay Rate</p>
@@ -492,8 +494,8 @@ export default function EmployeeProfilePage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                <Calendar className="h-5 w-5 text-blue-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <Calendar className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-muted-foreground text-xs">PTO Balance</p>
@@ -506,8 +508,8 @@ export default function EmployeeProfilePage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
-                <Clock className="h-5 w-5 text-purple-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
+                <Clock className="h-5 w-5 text-accent-foreground" />
               </div>
               <div>
                 <p className="text-muted-foreground text-xs">Tenure</p>
@@ -526,8 +528,8 @@ export default function EmployeeProfilePage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
-                <Shield className="h-5 w-5 text-orange-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
+                <Shield className="h-5 w-5 text-warning" />
               </div>
               <div>
                 <p className="text-muted-foreground text-xs">Performance</p>
@@ -941,9 +943,9 @@ export default function EmployeeProfilePage() {
               {employee.employmentStatus === "terminated" && (
                 <>
                   <Separator />
-                  <Card className="border-red-500/50 bg-red-500/5">
+                  <Card className="border-destructive/50 bg-destructive/5">
                     <CardContent className="space-y-4 pt-6">
-                      <h3 className="font-medium text-red-700 dark:text-red-400">
+                      <h3 className="font-medium text-destructive dark:text-destructive">
                         Termination Information
                       </h3>
                       <div className="grid gap-4 md:grid-cols-2">
@@ -1341,9 +1343,9 @@ export default function EmployeeProfilePage() {
                         </div>
                       </div>
                       {employee.w4OnFile ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       ) : (
-                        <XCircle className="h-5 w-5 text-red-500" />
+                        <XCircle className="h-5 w-5 text-destructive" />
                       )}
                     </CardContent>
                   </Card>
@@ -1360,9 +1362,9 @@ export default function EmployeeProfilePage() {
                         </div>
                       </div>
                       {employee.i9OnFile ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       ) : (
-                        <XCircle className="h-5 w-5 text-red-500" />
+                        <XCircle className="h-5 w-5 text-destructive" />
                       )}
                     </CardContent>
                   </Card>
@@ -1814,7 +1816,7 @@ export default function EmployeeProfilePage() {
                               </p>
                             )}
                           </div>
-                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          <CheckCircle2 className="h-5 w-5 text-success" />
                         </div>
                       </CardContent>
                     </Card>
@@ -1849,7 +1851,7 @@ export default function EmployeeProfilePage() {
                               ).toLocaleDateString()}
                             </p>
                           </div>
-                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          <CheckCircle2 className="h-5 w-5 text-success" />
                         </div>
                       </CardContent>
                     </Card>

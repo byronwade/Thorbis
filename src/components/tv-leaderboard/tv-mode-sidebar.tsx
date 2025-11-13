@@ -7,8 +7,19 @@
  * Matches the design of the main dashboard sidebar
  */
 
-import { AnimatePresence, motion } from "framer-motion";
 import { Eye, Grid3x3, LayoutGrid, Plus, Settings, X } from "lucide-react";
+import {
+  LazyAnimatePresence as AnimatePresence,
+  LazyMotionButton as motion_button,
+  LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
+
+// Alias for backward compatibility
+const motion = {
+  div: motion_div,
+  button: motion_button,
+};
+
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -160,7 +171,7 @@ export function TVModeSidebar({
                         <span
                           className={cn(
                             "font-medium",
-                            view.isFull ? "text-orange-500" : "text-green-500"
+                            view.isFull ? "text-warning" : "text-success"
                           )}
                         >
                           {view.availableCells} cells free

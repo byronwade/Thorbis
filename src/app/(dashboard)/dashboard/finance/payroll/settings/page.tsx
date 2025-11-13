@@ -273,11 +273,11 @@ export default function PayrollSettingsPage() {
       </div>
 
       {/* Help Section */}
-      <Card className="border-blue-500/50 bg-blue-500/5">
+      <Card className="border-primary/50 bg-primary/5">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-blue-500" />
-            <CardTitle className="text-base text-blue-700 dark:text-blue-400">
+            <Settings className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base text-primary dark:text-primary">
               Need Help Configuring Payroll?
             </CardTitle>
           </div>
@@ -289,13 +289,13 @@ export default function PayrollSettingsPage() {
         <CardContent>
           <div className="flex gap-2">
             <Link href="/help/payroll-setup">
-              <span className="text-blue-600 text-sm underline hover:text-blue-700">
+              <span className="text-primary text-sm underline hover:text-primary">
                 View Setup Guide
               </span>
             </Link>
             <span className="text-muted-foreground">•</span>
             <Link href="/contact">
-              <span className="text-blue-600 text-sm underline hover:text-blue-700">
+              <span className="text-primary text-sm underline hover:text-primary">
                 Contact Support
               </span>
             </Link>

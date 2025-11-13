@@ -1,7 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import {
+  LazyMotionButton as motion_button,
+  LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
 import { cn } from "@/lib/utils";
+
+// Alias for backward compatibility
+const motion = {
+  div: motion_div,
+  button: motion_button,
+};
 
 type SlideIndicatorsProps = {
   slideCount: number;

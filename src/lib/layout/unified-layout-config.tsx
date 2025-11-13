@@ -26,34 +26,40 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 // Toolbar action components
 import { CommunicationToolbarActions } from "@/components/communication/communication-toolbar-actions";
-import { CustomerDetailBreadcrumbs } from "@/components/customers/customer-detail-breadcrumbs";
 import { CustomerDetailToolbar } from "@/components/customers/customer-detail-toolbar";
 import { CustomersToolbarActions } from "@/components/customers/customers-toolbar-actions";
+import { EquipmentToolbarActions } from "@/components/inventory/equipment-toolbar-actions";
+import { MaterialsToolbarActions } from "@/components/inventory/materials-toolbar-actions";
+import { DetailBackButton } from "@/components/layout/detail-back-button";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
-import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
+import { PropertyDetailToolbarActions } from "@/components/properties/property-detail-toolbar-actions";
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
+import type { StatCard } from "@/components/ui/stats-cards";
+import { AppointmentDetailToolbarActions } from "@/components/work/appointments/appointment-detail-toolbar-actions";
+import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
+import { ContractToolbarActions } from "@/components/work/contract-toolbar-actions";
+import { ContractDetailToolbarActions } from "@/components/work/contracts/contract-detail-toolbar-actions";
+import { EquipmentDetailToolbarActions } from "@/components/work/equipment-detail-toolbar-actions";
 import { EstimateDetailToolbarActions } from "@/components/work/estimate-detail-toolbar-actions";
 import { EstimateToolbarActions } from "@/components/work/estimate-toolbar-actions";
 import { InvoiceToolbarActions } from "@/components/work/invoice-toolbar-actions";
 import { InvoicesListToolbarActions } from "@/components/work/invoices-list-toolbar-actions";
 import { ItemDetailToolbarWrapper } from "@/components/work/item-detail-toolbar-wrapper";
-import { JobDetailBreadcrumbs } from "@/components/work/job-details/job-detail-breadcrumbs";
 import { JobDetailToolbarWrapper } from "@/components/work/job-details/job-detail-toolbar-wrapper";
-import { ContractToolbarActions } from "@/components/work/contract-toolbar-actions";
 import { MaintenancePlanToolbarActions } from "@/components/work/maintenance-plan-toolbar-actions";
-import { ServiceAgreementToolbarActions } from "@/components/work/service-agreement-toolbar-actions";
-import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
-import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
-import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
+import { MaintenancePlanDetailToolbarActions } from "@/components/work/maintenance-plans/maintenance-plan-detail-toolbar-actions";
+import { PaymentDetailToolbarActions } from "@/components/work/payments/payment-detail-toolbar-actions";
 import { PaymentsToolbarActions } from "@/components/work/payments-toolbar-actions";
-import { MaterialsToolbarActions } from "@/components/inventory/materials-toolbar-actions";
-import { EquipmentToolbarActions } from "@/components/inventory/equipment-toolbar-actions";
+import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-toolbar-actions";
-import { TeamToolbarActions } from "@/components/work/team-toolbar-actions";
-import { TeamMemberDetailBreadcrumbs } from "@/components/work/team-member-detail-breadcrumbs";
+import { PurchaseOrderDetailToolbarActions } from "@/components/work/purchase-orders/purchase-order-detail-toolbar-actions";
+import { ServiceAgreementToolbarActions } from "@/components/work/service-agreement-toolbar-actions";
+import { ServiceAgreementDetailToolbarActions } from "@/components/work/service-agreements/service-agreement-detail-toolbar-actions";
 import { TeamMemberDetailToolbar } from "@/components/work/team-member-detail-toolbar";
+import { TeamToolbarActions } from "@/components/work/team-toolbar-actions";
+import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 import type { SidebarConfig } from "@/lib/sidebar/types";
 
 // ============================================================================
@@ -85,9 +91,13 @@ export const ROUTE_PATTERNS = {
   WORK_APPOINTMENTS_DETAIL: /^\/dashboard\/work\/appointments\/[^/]+$/,
   WORK_PAYMENTS_LIST: /^\/dashboard\/work\/payments$/,
   WORK_PAYMENTS_DETAIL: /^\/dashboard\/work\/payments\/[^/]+$/,
+  WORK_PROPERTIES_LIST: /^\/dashboard\/work\/properties$/,
+  WORK_PROPERTIES_DETAIL: /^\/dashboard\/work\/properties\/[^/]+$/,
   WORK_ESTIMATES_DETAIL: /^\/dashboard\/work\/estimates\/[^/]+$/,
-  WORK_MAINTENANCE_PLANS_DETAIL: /^\/dashboard\/work\/maintenance-plans\/[^/]+$/,
-  WORK_SERVICE_AGREEMENTS_DETAIL: /^\/dashboard\/work\/service-agreements\/[^/]+$/,
+  WORK_MAINTENANCE_PLANS_DETAIL:
+    /^\/dashboard\/work\/maintenance-plans\/[^/]+$/,
+  WORK_SERVICE_AGREEMENTS_DETAIL:
+    /^\/dashboard\/work\/service-agreements\/[^/]+$/,
   WORK_EQUIPMENT_DETAIL: /^\/dashboard\/work\/equipment\/[^/]+$/,
   WORK_CONTRACTS_LIST: /^\/dashboard\/work\/contracts$/,
   WORK_CONTRACTS_DETAIL: /^\/dashboard\/work\/contracts\/[^/]+$/,
@@ -116,6 +126,10 @@ export const ROUTE_PATTERNS = {
   // Customers
   CUSTOMERS_LIST: /^\/dashboard\/customers$/,
   CUSTOMER_DETAIL: /^\/dashboard\/customers\/[^/]+$/,
+
+  // Invoices (top-level)
+  INVOICES_ROOT: /^\/dashboard\/invoices$/,
+  INVOICES_SUBPAGES: /^\/dashboard\/invoices\//,
 
   // Finance
   FINANCE_ROOT: /^\/dashboard\/finance$/,
@@ -177,8 +191,12 @@ export type ToolbarConfig = {
   actions?: ReactNode;
   /** Breadcrumb navigation (React component) */
   breadcrumbs?: ReactNode;
+  /** Back button (React component) - shown before title, no breadcrumb trail */
+  back?: ReactNode;
   /** Whether to show search bar */
   showSearch?: boolean;
+  /** Statistics to display inline in toolbar */
+  stats?: StatCard[];
 };
 
 /**
@@ -335,7 +353,7 @@ const DETAIL_PAGE_STRUCTURE: PageStructureConfig = {
   fixedHeight: false,
   variant: "detail",
   background: "default",
-  insetPadding: "md",
+  insetPadding: "none", // No inset padding - toolbar must be edge-to-edge
 };
 
 // ============================================================================
@@ -470,8 +488,9 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        breadcrumbs: <CustomerDetailBreadcrumbs />,
-        title: "Customer Details",
+        back: (
+          <DetailBackButton href="/dashboard/customers" label="Customers" />
+        ),
         actions: <CustomerDetailToolbar />,
       },
       sidebar: { show: false },
@@ -725,17 +744,17 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Item Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/pricebook"
+            label="Price Book"
+          />
+        ),
+        title: "Item",
         subtitle: "View and manage price book item",
         actions: <ItemDetailToolbarWrapper />,
       },
-      sidebar: {
-        show: true,
-        variant: "standard",
-        customConfig: {
-          width: "20rem",
-        },
-      },
+      sidebar: { show: false },
       rightSidebar: {
         show: true,
         component: "pricebook",
@@ -755,17 +774,18 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Invoice Editor",
-        subtitle: "Edit invoice details and manage payments",
+        back: (
+          <DetailBackButton href="/dashboard/work/invoices" label="Invoices" />
+        ),
         actions: <InvoiceToolbarActions />,
       },
-      sidebar: DEFAULT_SIDEBAR,
+      sidebar: { show: false },
       rightSidebar: {
         show: true,
         component: "invoice",
         width: 380,
         collapsible: true,
-        defaultOpen: true,
+        defaultOpen: false,
       },
     },
     priority: 75,
@@ -823,7 +843,14 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
-        show: false, // Purchase order details page has its own header, no toolbar needed
+        show: true,
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/purchase-orders"
+            label="Purchase Orders"
+          />
+        ),
+        actions: <PurchaseOrderDetailToolbarActions />,
       },
       sidebar: {
         show: false,
@@ -831,7 +858,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 57,
     description:
-      "Purchase order details page - full width with custom header, no toolbar",
+      "Purchase order details page - full width with toolbar and back button",
   },
 
   // Job details pages
@@ -842,8 +869,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        breadcrumbs: <JobDetailBreadcrumbs />,
-        title: "Job Details",
+        back: <DetailBackButton href="/dashboard/work" label="Jobs" />,
         actions: <JobDetailToolbarWrapper />,
       },
       sidebar: {
@@ -862,14 +888,46 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Appointment Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/appointments"
+            label="Appointments"
+          />
+        ),
+        actions: <AppointmentDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
     },
     priority: 56,
-    description: "Appointment detail page - full width with toolbar",
+    description:
+      "Appointment detail page - full width with toolbar and back button",
+  },
+
+  // Properties detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PROPERTIES_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/properties"
+            label="Properties"
+          />
+        ),
+        actions: <PropertyDetailToolbarActions />,
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description:
+      "Property detail page - full width with toolbar and back button",
   },
 
   // Payments detail page
@@ -880,14 +938,18 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Payment Details",
+        back: (
+          <DetailBackButton href="/dashboard/work/payments" label="Payments" />
+        ),
+        actions: <PaymentDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
     },
     priority: 56,
-    description: "Payment detail page - full width with toolbar",
+    description:
+      "Payment detail page - full width with toolbar and back button",
   },
 
   // Estimates detail page
@@ -898,15 +960,28 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Estimate Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/estimates"
+            label="Estimates"
+          />
+        ),
         actions: <EstimateDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
+      rightSidebar: {
+        show: true,
+        component: "invoice",
+        width: 380,
+        collapsible: true,
+        defaultOpen: false,
+      },
     },
     priority: 56,
-    description: "Estimate detail page - full width with toolbar",
+    description:
+      "Estimate detail page - full width with toolbar and back button",
   },
 
   // Maintenance Plans detail page
@@ -917,14 +992,21 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Maintenance Plan Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/maintenance-plans"
+            label="Maintenance Plans"
+          />
+        ),
+        actions: <MaintenancePlanDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
     },
     priority: 56,
-    description: "Maintenance plan detail page - full width with toolbar",
+    description:
+      "Maintenance plan detail page - full width with toolbar and back button",
   },
 
   // Service Agreements detail page
@@ -935,14 +1017,21 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Service Agreement Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/service-agreements"
+            label="Service Agreements"
+          />
+        ),
+        actions: <ServiceAgreementDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
     },
     priority: 56,
-    description: "Service agreement detail page - full width with toolbar",
+    description:
+      "Service agreement detail page - full width with toolbar and back button",
   },
 
   // Equipment detail page
@@ -953,14 +1042,21 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Equipment Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/equipment"
+            label="Equipment"
+          />
+        ),
+        actions: <EquipmentDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
     },
     priority: 56,
-    description: "Equipment detail page - full width with toolbar",
+    description:
+      "Equipment detail page - full width with toolbar and back button",
   },
 
   // Contracts detail page
@@ -971,14 +1067,21 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Contract Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/contracts"
+            label="Contracts"
+          />
+        ),
+        actions: <ContractDetailToolbarActions />,
       },
       sidebar: {
         show: false,
       },
     },
     priority: 56,
-    description: "Contract detail page - full width with toolbar",
+    description:
+      "Contract detail page - full width with toolbar and back button",
   },
 
   // Invoices list page (specific config with toolbar actions)
@@ -997,6 +1100,24 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 56,
     description: "Invoices list page with view switcher in toolbar",
+  },
+
+  // Invoices root page (top-level /dashboard/invoices)
+  {
+    pattern: ROUTE_PATTERNS.INVOICES_ROOT,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Invoices",
+        subtitle: "Create, track, and manage customer invoices",
+        actions: <InvoicesListToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 57,
+    description: "Top-level invoices list page with toolbar actions",
   },
 
   // Appointments list page
@@ -1187,8 +1308,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        breadcrumbs: <TeamMemberDetailBreadcrumbs />,
-        title: "Team Member Details",
+        back: <DetailBackButton href="/dashboard/team" label="Team" />,
         actions: <TeamMemberDetailToolbar />,
       },
       sidebar: {
@@ -1196,13 +1316,13 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       },
     },
     priority: 57,
-    description: "Team member detail page - full width with toolbar, no sidebar",
+    description:
+      "Team member detail page - full width with toolbar, no sidebar",
   },
 
   // Other work list pages
   {
-    pattern:
-      /^\/dashboard\/work\/(pricebook)/,
+    pattern: /^\/dashboard\/work\/(pricebook)/,
     config: {
       structure: FULL_WIDTH_STRUCTURE,
       header: DEFAULT_HEADER,
@@ -1224,15 +1344,16 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Message Details",
+        back: (
+          <DetailBackButton
+            href="/dashboard/communication"
+            label="Communications"
+          />
+        ),
         actions: <CommunicationToolbarActions />,
       },
       sidebar: {
-        show: true,
-        variant: "compact",
-        customConfig: {
-          width: "16rem",
-        },
+        show: false,
       },
     },
     priority: 66,
@@ -1376,22 +1497,14 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   {
     pattern: ROUTE_PATTERNS.SHOP_PRODUCT_DETAILS,
     config: {
-      structure: {
-        maxWidth: "7xl",
-        padding: "none",
-        gap: "lg",
-        fixedHeight: false,
-        variant: "detail",
-        background: "default",
-        insetPadding: "md",
-      },
+      structure: DETAIL_PAGE_STRUCTURE,
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        title: "Product Details",
+        back: <DetailBackButton href="/dashboard/shop" label="Shop" />,
         actions: <ShopToolbarActions />,
       },
-      sidebar: DEFAULT_SIDEBAR,
+      sidebar: { show: false },
     },
     priority: 56,
     description: "Shop product details",

@@ -3,7 +3,7 @@
 import { Building2, CheckCircle2, LogOut, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "@/actions/auth";
 import { switchCompany } from "@/actions/company-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,6 +34,7 @@ export function OnboardingHeaderClient({
   companies,
 }: OnboardingHeaderClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   // Use companies passed as props, which already include onboarding status from the API
   const companiesWithStatus = companies.map((company) => ({
@@ -50,11 +51,12 @@ export function OnboardingHeaderClient({
   ) => {
     const result = await switchCompany(companyId);
     if (result.success) {
-      // If onboarding is not complete, redirect to onboarding page
-      if (onboardingComplete) {
-        router.push("/dashboard");
-      } else {
+      // If onboarding is not complete and not on welcome page, redirect to onboarding
+      if (!onboardingComplete && pathname !== "/dashboard/welcome") {
         router.push("/dashboard/welcome");
+      } else {
+        // Stay on current page and refresh data
+        router.refresh();
       }
     }
   };
@@ -197,3 +199,4 @@ export function OnboardingHeaderClient({
     </header>
   );
 }
+

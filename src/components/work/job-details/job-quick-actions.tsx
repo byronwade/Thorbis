@@ -74,7 +74,7 @@ export function JobQuickActions({
         <div className="flex justify-end">
           {canArrive && (
             <Button
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-success hover:bg-success"
               disabled={isLoading === "arrive"}
               onClick={handleArrive}
             >
@@ -84,7 +84,7 @@ export function JobQuickActions({
           )}
           {canClose && (
             <Button
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-accent hover:bg-accent"
               disabled={isLoading === "close"}
               onClick={handleClose}
             >

@@ -1,16 +1,21 @@
 "use client";
 
+import {
+  ArrowUpRight,
+  CalendarDays,
+  PackageCheck,
+  Warehouse,
+} from "lucide-react";
 import Link from "next/link";
-import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
-import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { type ColumnMeta, EntityKanban } from "@/components/ui/entity-kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
 import type {
   POStatus,
   PurchaseOrder,
 } from "@/components/work/purchase-orders-table";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, CalendarDays, PackageCheck, Warehouse } from "lucide-react";
 
 type PurchaseOrderKanbanItem = KanbanItemBase & {
   order: PurchaseOrder;
@@ -25,21 +30,27 @@ const PO_COLUMNS: Array<{
   { id: "pending_approval", name: "Pending Approval", accentColor: "#F59E0B" },
   { id: "approved", name: "Approved", accentColor: "#22C55E" },
   { id: "ordered", name: "Ordered", accentColor: "#2563EB" },
-  { id: "partially_received", name: "Partially Received", accentColor: "#9333EA" },
+  {
+    id: "partially_received",
+    name: "Partially Received",
+    accentColor: "#9333EA",
+  },
   { id: "received", name: "Received", accentColor: "#16A34A" },
   { id: "cancelled", name: "Cancelled", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(PO_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+  PO_COLUMNS.map((column) => [column.id, column.name])
+);
 
 const priorityBadge: Record<
   PurchaseOrder["priority"],
   { label: string; className: string }
 > = {
-  low: { label: "Low", className: "bg-blue-100 text-blue-700" },
+  low: { label: "Low", className: "bg-primary text-primary" },
   normal: { label: "Normal", className: "bg-muted text-muted-foreground" },
-  high: { label: "High", className: "bg-orange-100 text-orange-700" },
-  urgent: { label: "Urgent", className: "bg-red-100 text-red-700" },
+  high: { label: "High", className: "bg-warning text-warning" },
+  urgent: { label: "Urgent", className: "bg-destructive text-destructive" },
 };
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -50,19 +61,6 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 export function PurchaseOrdersKanban({ orders }: { orders: PurchaseOrder[] }) {
   return (
     <EntityKanban<PurchaseOrder, POStatus>
-      columns={PO_COLUMNS}
-      data={orders}
-      entityName="POs"
-      mapToKanbanItem={(order) => ({
-        id: order.id,
-        columnId: order.status,
-        entity: order,
-        order,
-      })}
-      updateEntityStatus={(order, newStatus) => ({
-        ...order,
-        status: newStatus,
-      })}
       calculateColumnMeta={(columnId, items): ColumnMeta => {
         const columnItems = items.filter((item) => item.columnId === columnId);
         const total = columnItems.reduce(
@@ -71,14 +69,33 @@ export function PurchaseOrdersKanban({ orders }: { orders: PurchaseOrder[] }) {
         );
         return { count: columnItems.length, total };
       }}
-      showTotals={true}
+      columns={PO_COLUMNS}
+      data={orders}
+      entityName="POs"
       formatTotal={(total) => currencyFormatter.format(total / 100)}
-      renderCard={(item) => <PurchaseOrderCard item={{ ...item, order: item.entity } as PurchaseOrderKanbanItem} />}
+      mapToKanbanItem={(order) => ({
+        id: order.id,
+        columnId: order.status,
+        entity: order,
+        order,
+      })}
+      renderCard={(item) => (
+        <PurchaseOrderCard
+          item={{ ...item, order: item.entity } as PurchaseOrderKanbanItem}
+        />
+      )}
       renderDragOverlay={(item) => (
         <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-          <PurchaseOrderCard item={{ ...item, order: item.entity } as PurchaseOrderKanbanItem} />
+          <PurchaseOrderCard
+            item={{ ...item, order: item.entity } as PurchaseOrderKanbanItem}
+          />
         </div>
       )}
+      showTotals={true}
+      updateEntityStatus={(order, newStatus) => ({
+        ...order,
+        status: newStatus,
+      })}
     />
   );
 }
@@ -91,15 +108,22 @@ function PurchaseOrderCard({ item }: { item: PurchaseOrderKanbanItem }) {
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
             {order.poNumber}
           </p>
-          <h3 className="text-sm font-semibold text-foreground">
+          <h3 className="font-semibold text-foreground text-sm">
             {order.title}
           </h3>
-          <p className="text-xs text-muted-foreground">{order.vendor}</p>
+          <p className="text-muted-foreground text-xs">{order.vendor}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Badge
+              className={cn(
+                "text-xs",
+                columnId === "cancelled" &&
+                  "bg-destructive/10 text-destructive",
+                (columnId === "approved" || columnId === "received") &&
+                  "bg-primary/10 text-primary"
+              )}
               variant={
                 columnId === "cancelled"
                   ? "destructive"
@@ -107,20 +131,20 @@ function PurchaseOrderCard({ item }: { item: PurchaseOrderKanbanItem }) {
                     ? "secondary"
                     : "outline"
               }
-              className={cn(
-                "text-xs",
-                columnId === "cancelled" && "bg-destructive/10 text-destructive",
-                (columnId === "approved" || columnId === "received") &&
-                  "bg-primary/10 text-primary"
-              )}
             >
               {columnLabel.get(columnId as POStatus) ?? columnId}
             </Badge>
-            <Badge variant="outline" className={cn("text-xs", priority.className)}>
+            <Badge
+              className={cn("text-xs", priority.className)}
+              variant="outline"
+            >
               {priority.label}
             </Badge>
             {order.autoGenerated && (
-              <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground/80">
+              <Badge
+                className="bg-secondary/20 text-secondary-foreground/80"
+                variant="secondary"
+              >
                 Auto-generated
               </Badge>
             )}
@@ -128,10 +152,12 @@ function PurchaseOrderCard({ item }: { item: PurchaseOrderKanbanItem }) {
         </div>
       </div>
 
-      <div className="space-y-2 text-xs text-muted-foreground">
+      <div className="space-y-2 text-muted-foreground text-xs">
         <div className="flex items-center gap-2">
           <Warehouse className="size-4 text-primary" />
-          <span className="font-medium text-foreground">{order.requestedBy}</span>
+          <span className="font-medium text-foreground">
+            {order.requestedBy}
+          </span>
         </div>
         {order.jobNumber && (
           <div className="flex items-center gap-2">
@@ -148,7 +174,7 @@ function PurchaseOrderCard({ item }: { item: PurchaseOrderKanbanItem }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between pt-2 text-muted-foreground text-xs">
         <span>Total</span>
         <span className="font-semibold text-foreground">
           {currencyFormatter.format(order.totalAmount / 100)}
@@ -157,9 +183,9 @@ function PurchaseOrderCard({ item }: { item: PurchaseOrderKanbanItem }) {
 
       <Button
         asChild
+        className="w-full justify-between text-primary text-xs"
         size="sm"
         variant="ghost"
-        className="w-full justify-between text-xs text-primary"
       >
         <Link href={`/dashboard/work/purchase-orders/${order.id}`}>
           View purchase order
@@ -169,4 +195,3 @@ function PurchaseOrderCard({ item }: { item: PurchaseOrderKanbanItem }) {
     </div>
   );
 }
-

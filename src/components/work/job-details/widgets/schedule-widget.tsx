@@ -63,14 +63,27 @@ interface ScheduleDetails {
 }
 
 export function ScheduleWidget({ job }: ScheduleWidgetProps) {
+  const toDate = (value: unknown, fallback?: Date): Date => {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return value;
+    }
+    if (typeof value === "string" || typeof value === "number") {
+      const parsed = new Date(value);
+      if (!Number.isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    }
+    return fallback ?? new Date();
+  };
+
   // Mock schedule data (in production, fetch from database)
+  const scheduledStartDate = job.scheduledStart
+    ? toDate(job.scheduledStart as unknown)
+    : new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
+
   const schedule: ScheduleDetails = {
-    scheduledStart:
-      job.scheduledStart || new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-    scheduledEnd: new Date(
-      (job.scheduledStart?.getTime() || Date.now() + 2 * 24 * 60 * 60 * 1000) +
-        4 * 60 * 60 * 1000
-    ), // +4 hours
+    scheduledStart: scheduledStartDate,
+    scheduledEnd: new Date(scheduledStartDate.getTime() + 4 * 60 * 60 * 1000), // +4 hours
     estimatedDuration: 240, // 4 hours
     status: "scheduled",
     technicians: [
@@ -96,36 +109,36 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
     scheduled: {
       label: "Scheduled",
       icon: Calendar,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950",
+      color: "text-primary",
+      bgColor: "bg-primary dark:bg-primary",
       variant: "secondary" as const,
     },
     in_progress: {
       label: "In Progress",
       icon: Clock,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default" as const,
     },
     completed: {
       label: "Completed",
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default" as const,
     },
     rescheduled: {
       label: "Rescheduled",
       icon: Calendar,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-100 dark:bg-yellow-950",
+      color: "text-warning",
+      bgColor: "bg-warning dark:bg-warning",
       variant: "outline" as const,
     },
     cancelled: {
       label: "Cancelled",
       icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-100 dark:bg-red-950",
+      color: "text-destructive",
+      bgColor: "bg-destructive dark:bg-destructive",
       variant: "destructive" as const,
     },
   };
@@ -133,11 +146,12 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
   const config = statusConfig[schedule.status];
   const Icon = config.icon;
 
-  function formatDateTime(date: Date): string {
-    return formatDate(date, { preset: "datetime" });
+  function formatDateTime(date: Date | null | undefined): string {
+    return formatDate(date ?? null, { preset: "datetime" });
   }
 
-  function formatTime(date: Date): string {
+  function formatTime(date: Date | null | undefined): string {
+    if (!date) return "—";
     return new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
@@ -152,7 +166,8 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
     return `${hours}h ${mins}m`;
   }
 
-  function getTimeUntilStart(date: Date): string {
+  function getTimeUntilStart(date: Date | null | undefined): string {
+    if (!date) return "unknown";
     const diffMs = date.getTime() - Date.now();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor(
@@ -359,15 +374,15 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
           <div className="space-y-2">
             {schedule.conflicts?.map((conflict, index) => (
               <div
-                className="flex items-start gap-2 rounded-lg border-red-500 border-l-4 bg-red-50 p-3 dark:bg-red-950/30"
+                className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30"
                 key={index}
               >
-                <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-600" />
+                <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
                 <div>
-                  <p className="font-medium text-red-900 text-sm dark:text-red-100">
+                  <p className="font-medium text-destructive text-sm dark:text-destructive">
                     Scheduling Conflict
                   </p>
-                  <p className="text-red-800 text-xs dark:text-red-200">
+                  <p className="text-destructive text-xs dark:text-destructive">
                     {conflict.message}
                   </p>
                 </div>
@@ -383,12 +398,12 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
           <Separator />
           <div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 p-3 dark:from-purple-950/30 dark:to-purple-900/20">
             <div className="mb-1 flex items-center gap-1.5">
-              <Calendar className="size-4 text-purple-600" />
-              <span className="font-medium text-purple-900 text-sm dark:text-purple-100">
+              <Calendar className="size-4 text-accent-foreground" />
+              <span className="font-medium text-accent-foreground text-sm dark:text-accent-foreground">
                 Recurring Job
               </span>
             </div>
-            <p className="text-purple-800 text-xs dark:text-purple-200">
+            <p className="text-accent-foreground text-xs dark:text-accent-foreground">
               {schedule.recurringSchedule.frequency} • Next:{" "}
               {formatDateTime(schedule.recurringSchedule.nextOccurrence)}
             </p>

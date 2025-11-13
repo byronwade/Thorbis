@@ -1,16 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-
-import { getMarketingIcon } from "./marketing-icons";
-import type { MarketingIntegrationContent } from "@/lib/marketing/types";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,6 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { MarketingIntegrationContent } from "@/lib/marketing/types";
+import { getMarketingIcon } from "./marketing-icons";
 
 interface IntegrationPageProps {
   integration: MarketingIntegrationContent;
@@ -28,7 +27,9 @@ export function IntegrationPage({
   integration,
   related = [],
 }: IntegrationPageProps) {
-  const PrimaryIcon = getMarketingIcon(integration.valueProps[0]?.icon ?? "sparkles");
+  const PrimaryIcon = getMarketingIcon(
+    integration.valueProps[0]?.icon ?? "sparkles"
+  );
 
   return (
     <div className="space-y-16">
@@ -38,7 +39,7 @@ export function IntegrationPage({
             <Badge className="uppercase tracking-wide" variant="secondary">
               {integration.heroEyebrow}
             </Badge>
-            <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
+            <h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
               {integration.heroTitle}
             </h1>
             <p className="text-lg text-muted-foreground">
@@ -58,17 +59,20 @@ export function IntegrationPage({
                 </Button>
               ) : null}
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
               <span className="inline-flex items-center gap-2">
                 <span className="relative flex size-9 items-center justify-center rounded-full bg-muted">
-                  <PrimaryIcon aria-hidden="true" className="size-5 text-primary" />
+                  <PrimaryIcon
+                    aria-hidden="true"
+                    className="size-5 text-primary"
+                  />
                 </span>
                 {integration.partner.name}
               </span>
               <span aria-hidden="true">•</span>
               <Link
-                href={integration.partner.website}
                 className="text-primary underline-offset-4 hover:underline"
+                href={integration.partner.website}
                 rel="noopener"
                 target="_blank"
               >
@@ -86,21 +90,21 @@ export function IntegrationPage({
           <div className="relative hidden h-full min-h-[320px] lg:block">
             {integration.heroImage ? (
               <Image
-                src={integration.heroImage}
                 alt={`${integration.name} integration`}
-                fill
                 className="object-cover"
+                fill
                 priority
                 sizes="480px"
+                src={integration.heroImage}
               />
             ) : integration.partner.logo ? (
               <div className="flex h-full items-center justify-center bg-background">
                 <Image
-                  src={integration.partner.logo}
                   alt={integration.partner.name}
-                  width={240}
-                  height={240}
                   className="max-h-48 w-auto"
+                  height={240}
+                  src={integration.partner.logo}
+                  width={240}
                 />
               </div>
             ) : null}
@@ -110,21 +114,26 @@ export function IntegrationPage({
 
       <section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div className="rounded-2xl border bg-muted/20 p-8">
-          <h2 className="text-xl font-semibold">Why teams connect {integration.name}</h2>
+          <h2 className="font-semibold text-xl">
+            Why teams connect {integration.name}
+          </h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
             {integration.summary}
           </p>
         </div>
         <div className="rounded-2xl border bg-background p-8">
-          <h3 className="text-lg font-semibold">Key benefits</h3>
+          <h3 className="font-semibold text-lg">Key benefits</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {integration.valueProps.map((prop) => {
               const Icon = getMarketingIcon(prop.icon);
               return (
-                <div key={prop.title} className="space-y-2 rounded-xl border bg-muted/20 p-4">
+                <div
+                  className="space-y-2 rounded-xl border bg-muted/20 p-4"
+                  key={prop.title}
+                >
                   <Icon aria-hidden="true" className="size-5 text-primary" />
                   <h4 className="font-medium">{prop.title}</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {prop.description}
                   </p>
                 </div>
@@ -136,16 +145,16 @@ export function IntegrationPage({
 
       <section className="grid gap-8 lg:grid-cols-2">
         <div className="rounded-2xl border bg-background p-8">
-          <h2 className="text-2xl font-semibold">Popular workflows</h2>
+          <h2 className="font-semibold text-2xl">Popular workflows</h2>
           <div className="mt-4 space-y-6">
             {integration.workflows.map((workflow) => (
-              <div key={workflow.title} className="space-y-2">
-                <h3 className="text-lg font-semibold">{workflow.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+              <div className="space-y-2" key={workflow.title}>
+                <h3 className="font-semibold text-lg">{workflow.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {workflow.description}
                 </p>
                 {workflow.steps ? (
-                  <ul className="list-decimal space-y-1 pl-4 text-sm text-muted-foreground">
+                  <ul className="list-decimal space-y-1 pl-4 text-muted-foreground text-sm">
                     {workflow.steps.map((step) => (
                       <li key={step}>{step}</li>
                     ))}
@@ -169,16 +178,16 @@ export function IntegrationPage({
                 <dl className="grid gap-4 sm:grid-cols-2">
                   {integration.stats.map((stat) => (
                     <div
+                      className="rounded-xl border border-primary/30 border-dashed bg-background/80 p-4"
                       key={stat.label}
-                      className="rounded-xl border border-dashed border-primary/30 bg-background/80 p-4"
                     >
-                      <dt className="text-sm font-medium text-muted-foreground">
+                      <dt className="font-medium text-muted-foreground text-sm">
                         {stat.label}
                       </dt>
-                      <dd className="text-2xl font-semibold text-primary">
+                      <dd className="font-semibold text-2xl text-primary">
                         {stat.value}
                       </dd>
-                      <p className="mt-1 text-xs text-muted-foreground">
+                      <p className="mt-1 text-muted-foreground text-xs">
                         {stat.description}
                       </p>
                     </div>
@@ -197,9 +206,9 @@ export function IntegrationPage({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <ul className="space-y-2 text-muted-foreground text-sm">
                   {integration.requirements.map((item) => (
-                    <li key={item} className="flex gap-2">
+                    <li className="flex gap-2" key={item}>
                       <span className="mt-1 text-primary">•</span>
                       <span>{item}</span>
                     </li>
@@ -216,7 +225,7 @@ export function IntegrationPage({
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
                 {integration.resources.map((resource) => (
-                  <Button key={resource.href} asChild variant="outline">
+                  <Button asChild key={resource.href} variant="outline">
                     <Link href={resource.href}>{resource.label}</Link>
                   </Button>
                 ))}
@@ -227,14 +236,14 @@ export function IntegrationPage({
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Frequently asked questions</h2>
-        <Accordion type="single" collapsible>
+        <h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+        <Accordion collapsible type="single">
           {integration.faq.map((item, index) => (
             <AccordionItem key={item.question} value={`faq-${index}`}>
               <AccordionTrigger className="text-left">
                 {item.question}
               </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+              <AccordionContent className="text-muted-foreground text-sm leading-relaxed">
                 {item.answer}
               </AccordionContent>
             </AccordionItem>
@@ -245,14 +254,14 @@ export function IntegrationPage({
       {related.length ? (
         <section className="space-y-6">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-semibold">Related integrations</h2>
+            <h2 className="font-semibold text-2xl">Related integrations</h2>
             <Button asChild variant="ghost">
               <Link href="/integrations">Browse all integrations</Link>
             </Button>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
-              <IntegrationRelatedCard key={item.slug} integration={item} />
+              <IntegrationRelatedCard integration={item} key={item.slug} />
             ))}
           </div>
         </section>
@@ -282,7 +291,7 @@ function IntegrationRelatedCard({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-muted-foreground text-sm leading-relaxed">
           {integration.summary}
         </p>
         <Button asChild variant="outline">
@@ -294,4 +303,3 @@ function IntegrationRelatedCard({
     </Card>
   );
 }
-

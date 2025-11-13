@@ -66,15 +66,15 @@ export const useRoleStore = create<RoleStore>()(
           const state = get();
 
           // If no development override, use actual role
-          if (!state.isDevelopmentOverride || !isDevelopment) {
+          if (state.isDevelopmentOverride && isDevelopment) {
+            // Keep development override but store actual role
+            set({ actualRole });
+          } else {
             set({
               actualRole,
               role: actualRole || USER_ROLES.OWNER,
               isDevelopmentOverride: false,
             });
-          } else {
-            // Keep development override but store actual role
-            set({ actualRole });
           }
         },
 
@@ -96,7 +96,9 @@ export const useRoleStore = create<RoleStore>()(
         partialize: (state) => ({
           // Only persist in development mode
           role: isDevelopment ? state.role : undefined,
-          isDevelopmentOverride: isDevelopment ? state.isDevelopmentOverride : false,
+          isDevelopmentOverride: isDevelopment
+            ? state.isDevelopmentOverride
+            : false,
         }),
       }
     ),

@@ -89,10 +89,10 @@ export default function AIAutomationPage() {
               Create Automations with Natural Language
             </h2>
             <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-purple-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-purple-500/10">
-                    <MessageSquare className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <MessageSquare className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -105,16 +105,16 @@ export default function AIAutomationPage() {
                   24 hours before → Send SMS and email reminder → Log
                   confirmation
                 </p>
-                <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Sparkles className="size-3" />
                   <span>Built in seconds, not hours</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <Bell className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Bell className="size-6 text-primary dark:text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -127,16 +127,16 @@ export default function AIAutomationPage() {
                   Check payment status → If unpaid, notify you → Create
                   follow-up task
                 </p>
-                <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
+                <div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
                   <Zap className="size-3" />
                   <span>No manual tracking needed</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-success/20 bg-gradient-to-br from-green-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-green-500/10">
-                    <Users className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-success/10">
+                    <Users className="size-6 text-success dark:text-success" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -149,16 +149,16 @@ export default function AIAutomationPage() {
                   right skills → Check availability → Calculate distance →
                   Assign to best match → Notify tech
                 </p>
-                <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
+                <div className="flex items-center gap-1 text-success text-xs dark:text-success">
                   <TrendingUp className="size-3" />
                   <span>Saves 60% dispatch time</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-orange-500/10">
-                    <FileText className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <FileText className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -171,7 +171,7 @@ export default function AIAutomationPage() {
                   invoice from work order → Email and SMS to customer → Log in
                   finance system
                 </p>
-                <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <Rocket className="size-3" />
                   <span>Get paid 3x faster</span>
                 </div>
@@ -186,10 +186,10 @@ export default function AIAutomationPage() {
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {/* AI-Powered Automation */}
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <Brain className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Brain className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">AI Assistant</h3>
@@ -200,10 +200,10 @@ export default function AIAutomationPage() {
               </div>
 
               {/* Smart Dispatch */}
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <MapPin className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <MapPin className="size-6 text-primary dark:text-primary" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">Smart Dispatch</h3>
@@ -214,10 +214,10 @@ export default function AIAutomationPage() {
               </div>
 
               {/* Auto-Billing */}
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 transition-all duration-300 hover:border-success/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
-                    <DollarSign className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-success/10">
+                    <DollarSign className="size-6 text-success dark:text-success" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">
@@ -230,10 +230,10 @@ export default function AIAutomationPage() {
               </div>
 
               {/* 24/7 AI Answering */}
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-6 transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
-                    <Phone className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Phone className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">
@@ -246,10 +246,10 @@ export default function AIAutomationPage() {
               </div>
 
               {/* Workflow Builder */}
-              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all duration-300 hover:border-pink-500/20 hover:shadow-lg hover:shadow-pink-500/10">
+              <div className="group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-6 transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-pink-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-pink-500/10">
-                    <Settings className="size-6 text-pink-600 dark:text-pink-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Settings className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-lg">
@@ -284,10 +284,10 @@ export default function AIAutomationPage() {
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {/* Job Assignment */}
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-blue-500/10">
-                    <Wrench className="size-4 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                    <Wrench className="size-4 text-primary dark:text-primary" />
                   </div>
                   <h3 className="font-semibold text-sm">Auto Job Assignment</h3>
                 </div>
@@ -295,17 +295,17 @@ export default function AIAutomationPage() {
                   When job approved → Find best tech by skills, location &
                   availability → Auto-assign & notify
                 </p>
-                <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
+                <div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
                   <Sparkles className="size-3" />
                   <span>Saves 60% dispatch time</span>
                 </div>
               </div>
 
               {/* Payment Follow-up */}
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-success/20 bg-gradient-to-br from-green-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-green-500/10">
-                    <CreditCard className="size-4 text-green-600 dark:text-green-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-success/10">
+                    <CreditCard className="size-4 text-success dark:text-success" />
                   </div>
                   <h3 className="font-semibold text-sm">Payment Reminders</h3>
                 </div>
@@ -313,17 +313,17 @@ export default function AIAutomationPage() {
                   Invoice unpaid 7 days → Send friendly reminder → Wait 7 days →
                   Send urgent notice → Create collection task
                 </p>
-                <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
+                <div className="flex items-center gap-1 text-success text-xs dark:text-success">
                   <TrendingUp className="size-3" />
                   <span>Collect 40% faster</span>
                 </div>
               </div>
 
               {/* Review Request */}
-              <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-purple-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-purple-500/10">
-                    <Smartphone className="size-4 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-accent/10">
+                    <Smartphone className="size-4 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <h3 className="font-semibold text-sm">Review Request Flow</h3>
                 </div>
@@ -331,17 +331,17 @@ export default function AIAutomationPage() {
                   Job completed → Wait 1 hour → Send review request via SMS →
                   Thank customer → Escalate low ratings
                 </p>
-                <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Sparkles className="size-3" />
                   <span>5x more reviews</span>
                 </div>
               </div>
 
               {/* Appointment Reminder */}
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-orange-500/10">
-                    <Calendar className="size-4 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-warning/10">
+                    <Calendar className="size-4 text-warning dark:text-warning" />
                   </div>
                   <h3 className="font-semibold text-sm">
                     Appointment Reminders
@@ -351,17 +351,17 @@ export default function AIAutomationPage() {
                   Appointment scheduled → Send confirmation → 24 hours before →
                   SMS reminder → 2 hours before → Final reminder
                 </p>
-                <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <CheckCircle2 className="size-3" />
                   <span>Cut no-shows by 30%</span>
                 </div>
               </div>
 
               {/* Lead Follow-up */}
-              <div className="rounded-xl border border-pink-500/20 bg-gradient-to-br from-pink-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-pink-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-pink-500/10">
-                    <Mail className="size-4 text-pink-600 dark:text-pink-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-accent/10">
+                    <Mail className="size-4 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <h3 className="font-semibold text-sm">
                     Lead Nurture Sequence
@@ -371,7 +371,7 @@ export default function AIAutomationPage() {
                   New lead → Send welcome email → Day 3: Follow-up call → Day 7:
                   Special offer → Day 14: Final outreach
                 </p>
-                <div className="flex items-center gap-1 text-pink-600 text-xs dark:text-pink-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Rocket className="size-3" />
                   <span>Close 25% more leads</span>
                 </div>
@@ -396,10 +396,10 @@ export default function AIAutomationPage() {
               </div>
 
               {/* Schedule Optimization */}
-              <div className="rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-indigo-500/10">
-                    <Calendar className="size-4 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-accent/10">
+                    <Calendar className="size-4 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <h3 className="font-semibold text-sm">
                     Schedule Optimization
@@ -409,17 +409,17 @@ export default function AIAutomationPage() {
                   Every night → Analyze next day schedule → Optimize routes →
                   Group nearby jobs → Notify techs of changes
                 </p>
-                <div className="flex items-center gap-1 text-indigo-600 text-xs dark:text-indigo-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <TrendingUp className="size-3" />
                   <span>20% more jobs/day</span>
                 </div>
               </div>
 
               {/* Customer Onboarding */}
-              <div className="rounded-xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-yellow-500/10">
-                    <Users className="size-4 text-yellow-600 dark:text-yellow-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-warning/10">
+                    <Users className="size-4 text-warning dark:text-warning" />
                   </div>
                   <h3 className="font-semibold text-sm">Customer Onboarding</h3>
                 </div>
@@ -427,17 +427,17 @@ export default function AIAutomationPage() {
                   New customer → Send welcome pack → Add to CRM → Schedule
                   follow-up → Offer membership → Track engagement
                 </p>
-                <div className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <Sparkles className="size-3" />
                   <span>Higher retention</span>
                 </div>
               </div>
 
               {/* Tech Performance */}
-              <div className="rounded-xl border border-red-500/20 bg-gradient-to-br from-red-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-destructive/20 bg-gradient-to-br from-red-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-red-500/10">
-                    <TrendingUp className="size-4 text-red-600 dark:text-red-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-destructive/10">
+                    <TrendingUp className="size-4 text-destructive dark:text-destructive" />
                   </div>
                   <h3 className="font-semibold text-sm">Performance Alerts</h3>
                 </div>
@@ -445,7 +445,7 @@ export default function AIAutomationPage() {
                   Tech running late → Alert dispatcher → Notify next customer →
                   Offer reschedule option → Track pattern
                 </p>
-                <div className="flex items-center gap-1 text-red-600 text-xs dark:text-red-400">
+                <div className="flex items-center gap-1 text-destructive text-xs dark:text-destructive">
                   <Bell className="size-3" />
                   <span>Proactive service</span>
                 </div>
@@ -488,10 +488,10 @@ export default function AIAutomationPage() {
               </div>
 
               {/* Warranty Tracking */}
-              <div className="rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-transparent p-5 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-violet-500/10 to-transparent p-5 text-left">
                 <div className="mb-3 flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-violet-500/10">
-                    <FileText className="size-4 text-violet-600 dark:text-violet-400" />
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-accent/10">
+                    <FileText className="size-4 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <h3 className="font-semibold text-sm">Warranty Management</h3>
                 </div>
@@ -499,7 +499,7 @@ export default function AIAutomationPage() {
                   Equipment installed → Track warranty period → 30 days before
                   expiry → Offer extended warranty → Auto-follow-up
                 </p>
-                <div className="flex items-center gap-1 text-violet-600 text-xs dark:text-violet-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <Briefcase className="size-3" />
                   <span>Never miss renewals</span>
                 </div>
@@ -516,8 +516,8 @@ export default function AIAutomationPage() {
               <div className="mb-6 grid gap-4 sm:grid-cols-3">
                 <div className="text-left">
                   <div className="mb-3 flex items-center gap-2">
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-blue-500/10">
-                      <Zap className="size-5 text-blue-600 dark:text-blue-400" />
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                      <Zap className="size-5 text-primary dark:text-primary" />
                     </div>
                     <h3 className="font-semibold">Triggers</h3>
                   </div>
@@ -543,8 +543,8 @@ export default function AIAutomationPage() {
 
                 <div className="text-left">
                   <div className="mb-3 flex items-center gap-2">
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-purple-500/10">
-                      <Settings className="size-5 text-purple-600 dark:text-purple-400" />
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-accent/10">
+                      <Settings className="size-5 text-accent-foreground dark:text-accent-foreground" />
                     </div>
                     <h3 className="font-semibold">Conditions</h3>
                   </div>
@@ -570,8 +570,8 @@ export default function AIAutomationPage() {
 
                 <div className="text-left">
                   <div className="mb-3 flex items-center gap-2">
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-green-500/10">
-                      <Send className="size-5 text-green-600 dark:text-green-400" />
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-success/10">
+                      <Send className="size-5 text-success dark:text-success" />
                     </div>
                     <h3 className="font-semibold">Actions</h3>
                   </div>
@@ -608,7 +608,7 @@ export default function AIAutomationPage() {
             <h2 className="mb-4 font-semibold text-2xl">What to Expect</h2>
             <div className="mx-auto max-w-3xl space-y-3 text-left text-muted-foreground">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     AI-Powered Creation:
@@ -618,7 +618,7 @@ export default function AIAutomationPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Smart Dispatch & Scheduling:
@@ -628,7 +628,7 @@ export default function AIAutomationPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Financial Automation:
@@ -638,7 +638,7 @@ export default function AIAutomationPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     24/7 AI Phone System:
@@ -648,7 +648,7 @@ export default function AIAutomationPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Custom Workflows:
@@ -658,7 +658,7 @@ export default function AIAutomationPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Team Management:
@@ -676,8 +676,8 @@ export default function AIAutomationPage() {
               Quick Wins You&apos;ll Get
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-4 text-center">
-                <div className="mb-2 font-bold text-3xl text-green-600 dark:text-green-400">
+              <div className="rounded-xl border border-success/20 bg-gradient-to-br from-green-500/10 to-transparent p-4 text-center">
+                <div className="mb-2 font-bold text-3xl text-success dark:text-success">
                   60%
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -685,8 +685,8 @@ export default function AIAutomationPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-4 text-center">
-                <div className="mb-2 font-bold text-3xl text-blue-600 dark:text-blue-400">
+              <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-4 text-center">
+                <div className="mb-2 font-bold text-3xl text-primary dark:text-primary">
                   3x
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -694,8 +694,8 @@ export default function AIAutomationPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-4 text-center">
-                <div className="mb-2 font-bold text-3xl text-purple-600 dark:text-purple-400">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-purple-500/10 to-transparent p-4 text-center">
+                <div className="mb-2 font-bold text-3xl text-accent-foreground dark:text-accent-foreground">
                   30%
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -703,8 +703,8 @@ export default function AIAutomationPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-4 text-center">
-                <div className="mb-2 font-bold text-3xl text-orange-600 dark:text-orange-400">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-4 text-center">
+                <div className="mb-2 font-bold text-3xl text-warning dark:text-warning">
                   24/7
                 </div>
                 <p className="text-muted-foreground text-sm">

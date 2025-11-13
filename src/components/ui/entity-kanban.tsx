@@ -1,9 +1,9 @@
 /**
  * EntityKanban - Generic Kanban Component
- * 
+ *
  * Reusable kanban board component that handles common kanban logic.
  * Replaces individual kanban components (JobsKanban, InvoicesKanban, etc.)
- * 
+ *
  * Features:
  * - Column definitions with status mapping
  * - Drag and drop functionality
@@ -15,17 +15,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import {
   KanbanBoard,
   KanbanCard,
   KanbanCards,
-  KanbanHeader,
-  KanbanProvider,
-  type KanbanItemBase,
   type KanbanColumn,
+  KanbanHeader,
+  type KanbanItemBase,
   type KanbanMoveEvent,
+  KanbanProvider,
 } from "@/components/ui/shadcn-io/kanban";
-import { Badge } from "@/components/ui/badge";
 
 export type ColumnMeta = {
   count: number;
@@ -36,44 +36,48 @@ export type ColumnMeta = {
 export type EntityKanbanProps<TEntity, TStatus extends string> = {
   /** Entity data array */
   data: TEntity[];
-  
+
   /** Column definitions */
   columns: Array<{
     id: TStatus;
     name: string;
     accentColor: string;
   }>;
-  
+
   /** Map entity to kanban item */
   mapToKanbanItem: (entity: TEntity) => KanbanItemBase & { entity: TEntity };
-  
+
   /** Update entity status when moved */
   updateEntityStatus?: (entity: TEntity, newStatus: TStatus) => TEntity;
-  
+
   /** Render card component */
   renderCard: (item: KanbanItemBase & { entity: TEntity }) => React.ReactNode;
-  
+
   /** Render drag overlay */
-  renderDragOverlay?: (item: KanbanItemBase & { entity: TEntity }) => React.ReactNode;
-  
+  renderDragOverlay?: (
+    item: KanbanItemBase & { entity: TEntity }
+  ) => React.ReactNode;
+
   /** Calculate column metadata (count, totals) */
   calculateColumnMeta?: (
     columnId: TStatus,
     items: (KanbanItemBase & { entity: TEntity })[]
   ) => ColumnMeta;
-  
+
   /** Handle item move event */
-  onItemMove?: (event: KanbanMoveEvent<KanbanItemBase & { entity: TEntity }>) => void | Promise<void>;
-  
+  onItemMove?: (
+    event: KanbanMoveEvent<KanbanItemBase & { entity: TEntity }>
+  ) => void | Promise<void>;
+
   /** Entity name for empty states (e.g., "jobs", "invoices") */
   entityName?: string;
-  
+
   /** Custom empty state message */
   emptyStateMessage?: (columnName: string) => string;
-  
+
   /** Show totals in column headers */
   showTotals?: boolean;
-  
+
   /** Format total value */
   formatTotal?: (total: number) => string;
 };
@@ -92,8 +96,8 @@ export function EntityKanban<TEntity, TStatus extends string>({
   showTotals = false,
   formatTotal,
 }: EntityKanbanProps<TEntity, TStatus>) {
-  const [items, setItems] = useState<(KanbanItemBase & { entity: TEntity })[]>(() =>
-    data.map(mapToKanbanItem)
+  const [items, setItems] = useState<(KanbanItemBase & { entity: TEntity })[]>(
+    () => data.map(mapToKanbanItem)
   );
 
   useEffect(() => {
@@ -177,22 +181,22 @@ export function EntityKanban<TEntity, TStatus extends string>({
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: column.accentColor }}
                 />
-                <span className="font-semibold text-sm text-foreground">
+                <span className="font-semibold text-foreground text-sm">
                   {column.name}
                 </span>
                 <Badge
-                  className="rounded-full bg-muted px-2 py-0 text-xs font-medium text-muted-foreground"
+                  className="rounded-full bg-muted px-2 py-0 font-medium text-muted-foreground text-xs"
                   variant="secondary"
                 >
                   {meta.count} {entityName}
                 </Badge>
                 {showTotals && meta.total !== undefined && formatTotal && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {formatTotal(meta.total)}
                   </span>
                 )}
                 {showTotals && meta.value !== undefined && formatTotal && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {formatTotal(meta.value)}
                   </span>
                 )}
@@ -202,7 +206,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
               className="min-h-[200px]"
               columnId={column.id}
               emptyState={
-                <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-4 text-center text-xs text-muted-foreground">
+                <div className="rounded-xl border border-border/60 border-dashed bg-background/60 p-4 text-center text-muted-foreground text-xs">
                   {getEmptyStateMessage(column.name)}
                 </div>
               }
@@ -219,8 +223,3 @@ export function EntityKanban<TEntity, TStatus extends string>({
     </KanbanProvider>
   );
 }
-
-
-
-
-

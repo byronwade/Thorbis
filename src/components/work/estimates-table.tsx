@@ -1,7 +1,24 @@
 "use client";
 
-import { Download, FileText, MoreHorizontal, Send, Trash2 } from "lucide-react";
+import {
+  Archive,
+  Download,
+  FileText,
+  MoreHorizontal,
+  Send,
+} from "lucide-react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,7 +34,12 @@ import {
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { EstimateStatusBadge } from "@/components/ui/status-badge";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import {
+  ClearFiltersButton,
+  type FilterGroup,
+  TableFilters,
+} from "@/components/ui/table-filters";
+import { formatCurrency } from "@/lib/formatters";
 
 export type Estimate = {
   id: string;
@@ -27,9 +49,10 @@ export type Estimate = {
   date: string;
   validUntil: string;
   amount: number;
-  status: "accepted" | "sent" | "draft" | "declined";
+  status: "accepted" | "sent" | "draft" | "declined" | "expired";
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
-
 
 export function EstimatesTable({
   estimates,
@@ -38,12 +61,134 @@ export function EstimatesTable({
   estimates: Estimate[];
   itemsPerPage?: number;
 }) {
+  // Filter state
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({
+    Status: "all",
+    Archive: "active",
+  });
+
+  const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
+  const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
+  const [isBulkSendDialogOpen, setIsBulkSendDialogOpen] = useState(false);
+  const [estimateToArchive, setEstimateToArchive] = useState<string | null>(
+    null
+  );
+  const [selectedEstimateIds, setSelectedEstimateIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(
+    new Set()
+  );
+
+  // Count estimates by status
+  const statusCounts = useMemo(() => {
+    const counts = {
+      all: estimates.length,
+      draft: 0,
+      sent: 0,
+      accepted: 0,
+      declined: 0,
+      expired: 0,
+    };
+
+    for (const estimate of estimates) {
+      if (estimate.status === "draft") counts.draft++;
+      else if (estimate.status === "sent") counts.sent++;
+      else if (estimate.status === "accepted") counts.accepted++;
+      else if (estimate.status === "declined") counts.declined++;
+      else if (estimate.status === "expired") counts.expired++;
+    }
+
+    return counts;
+  }, [estimates]);
+
+  // Count by archive status
+  const archiveCounts = useMemo(() => {
+    let active = 0;
+    let archived = 0;
+
+    for (const estimate of estimates) {
+      const isArchived = Boolean(estimate.archived_at || estimate.deleted_at);
+      if (isArchived) archived++;
+      else active++;
+    }
+
+    return { all: estimates.length, active, archived };
+  }, [estimates]);
+
+  // Define filter groups
+  const filterGroups: FilterGroup[] = [
+    {
+      label: "Status",
+      options: [
+        { label: "All Statuses", value: "all", count: statusCounts.all },
+        { label: "Draft", value: "draft", count: statusCounts.draft },
+        { label: "Sent", value: "sent", count: statusCounts.sent },
+        { label: "Accepted", value: "accepted", count: statusCounts.accepted },
+        { label: "Declined", value: "declined", count: statusCounts.declined },
+        { label: "Expired", value: "expired", count: statusCounts.expired },
+      ],
+    },
+    {
+      label: "Archive",
+      options: [
+        { label: "Active Only", value: "active", count: archiveCounts.active },
+        { label: "All Estimates", value: "all", count: archiveCounts.all },
+        {
+          label: "Archived Only",
+          value: "archived",
+          count: archiveCounts.archived,
+        },
+      ],
+    },
+  ];
+
+  // Filter estimates based on active filters
+  const filteredEstimates = useMemo(() => {
+    return estimates.filter((estimate) => {
+      // Filter by status
+      const statusFilter = activeFilters.Status;
+      if (statusFilter !== "all" && estimate.status !== statusFilter) {
+        return false;
+      }
+
+      // Filter by archive status
+      const archiveFilter = activeFilters.Archive;
+      const isArchived = Boolean(estimate.archived_at || estimate.deleted_at);
+      if (archiveFilter === "active" && isArchived) return false;
+      if (archiveFilter === "archived" && !isArchived) return false;
+
+      return true;
+    });
+  }, [estimates, activeFilters]);
+
+  // Handle filter changes
+  const handleFilterChange = (filterGroup: string, value: string) => {
+    setActiveFilters((prev) => ({ ...prev, [filterGroup]: value }));
+  };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setActiveFilters({
+      Status: "all",
+      Archive: "active",
+    });
+  };
+
+  // Count active filters (excluding defaults)
+  const activeFilterCount =
+    (activeFilters.Status !== "all" ? 1 : 0) +
+    (activeFilters.Archive !== "active" ? 1 : 0);
+
   const columns: ColumnDef<Estimate>[] = [
     {
       key: "estimateNumber",
       header: "Estimate #",
       width: "w-36",
       shrink: true,
+      sortable: true,
+      hideable: false,
+      sortFn: (a, b) => a.estimateNumber.localeCompare(b.estimateNumber),
       render: (estimate) => (
         <Link
           className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
@@ -59,6 +204,9 @@ export function EstimatesTable({
       header: "Customer",
       width: "w-48",
       shrink: true,
+      sortable: true,
+      hideable: true,
+      sortFn: (a, b) => a.customer.localeCompare(b.customer),
       render: (estimate) => (
         <span className="font-medium text-foreground text-sm">
           {estimate.customer}
@@ -69,8 +217,19 @@ export function EstimatesTable({
       key: "project",
       header: "Project",
       width: "flex-1",
+      sortable: true,
+      hideable: false,
+      sortFn: (a, b) => a.project.localeCompare(b.project),
       render: (estimate) => (
-        <span className="text-foreground text-sm">{estimate.project}</span>
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/estimates/${estimate.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="font-medium text-foreground text-sm leading-tight hover:underline">
+            {estimate.project}
+          </span>
+        </Link>
       ),
     },
     {
@@ -79,6 +238,9 @@ export function EstimatesTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      sortable: true,
+      hideable: true,
+      sortFn: (a, b) => a.date.localeCompare(b.date),
       render: (estimate) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {estimate.date}
@@ -91,6 +253,9 @@ export function EstimatesTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      sortable: true,
+      hideable: true,
+      sortFn: (a, b) => a.validUntil.localeCompare(b.validUntil),
       render: (estimate) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {estimate.validUntil}
@@ -103,6 +268,9 @@ export function EstimatesTable({
       width: "w-32",
       shrink: true,
       align: "right",
+      sortable: true,
+      hideable: true,
+      sortFn: (a, b) => a.amount - b.amount,
       render: (estimate) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(estimate.amount, { decimals: 2 })}
@@ -114,6 +282,9 @@ export function EstimatesTable({
       header: "Status",
       width: "w-28",
       shrink: true,
+      sortable: true,
+      hideable: true,
+      sortFn: (a, b) => a.status.localeCompare(b.status),
       render: (estimate) => <EstimateStatusBadge status={estimate.status} />,
     },
     {
@@ -141,9 +312,15 @@ export function EstimatesTable({
                 Download PDF
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 size-4" />
-                Delete
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => {
+                  setEstimateToArchive(estimate.id);
+                  setIsSingleArchiveOpen(true);
+                }}
+              >
+                <Archive className="mr-2 size-4" />
+                Archive Estimate
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -152,21 +329,38 @@ export function EstimatesTable({
     },
   ];
 
+  // Loading state for bulk actions
+  const [isBulkSending, setIsBulkSending] = useState(false);
+
   const bulkActions: BulkAction[] = [
     {
       label: "Send",
       icon: <Send className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Send:", selectedIds),
+      onClick: async (selectedIds) => {
+        if (isBulkSending) return;
+
+        const estimatesToSend = filteredEstimates.filter((est) =>
+          selectedIds.has(est.id)
+        );
+
+        if (estimatesToSend.length === 0) {
+          const { toast } = await import("sonner");
+          toast.error("No estimates selected");
+          return;
+        }
+
+        // Open confirmation dialog
+        setPendingSendIds(selectedIds);
+        setIsBulkSendDialogOpen(true);
+      },
     },
     {
-      label: "Download",
-      icon: <Download className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Download:", selectedIds),
-    },
-    {
-      label: "Delete",
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Delete:", selectedIds),
+      label: "Archive Selected",
+      icon: <Archive className="h-4 w-4" />,
+      onClick: async (selectedIds) => {
+        setSelectedEstimateIds(selectedIds);
+        setIsBulkArchiveOpen(true);
+      },
       variant: "destructive",
     },
   ];
@@ -182,26 +376,185 @@ export function EstimatesTable({
   };
 
   return (
-    <FullWidthDataTable
-      bulkActions={bulkActions}
-      columns={columns}
-      data={estimates}
-      emptyIcon={
-        <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-      }
-      emptyMessage="No estimates found"
-      enableSelection={true}
-      getHighlightClass={() => "bg-green-50/30 dark:bg-green-950/10"}
-      getItemId={(estimate) => estimate.id}
-      isHighlighted={(estimate) => estimate.status === "accepted"}
-      itemsPerPage={itemsPerPage}
-      onRefresh={() => window.location.reload()}
-      onRowClick={(estimate) =>
-        (window.location.href = `/dashboard/work/estimates/${estimate.id}`)
-      }
-      searchFilter={searchFilter}
-      searchPlaceholder="Search estimates by number, customer, project, or status..."
-      showRefresh={false}
-    />
+    <>
+      <FullWidthDataTable
+        bulkActions={bulkActions}
+        columns={columns}
+        data={filteredEstimates}
+        emptyIcon={
+          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+        }
+        emptyMessage="No estimates found"
+        enableSelection={true}
+        entity="estimates"
+        getHighlightClass={() => "bg-success/30 dark:bg-success/10"}
+        getItemId={(estimate) => estimate.id}
+        isArchived={(est) => Boolean(est.archived_at || est.deleted_at)}
+        isHighlighted={(estimate) => estimate.status === "accepted"}
+        itemsPerPage={itemsPerPage}
+        onRefresh={() => window.location.reload()}
+        onRowClick={(estimate) =>
+          (window.location.href = `/dashboard/work/estimates/${estimate.id}`)
+        }
+        searchFilter={searchFilter}
+        searchPlaceholder="Search estimates by number, customer, project, or status..."
+        showArchived={activeFilters.Archive !== "active"}
+        showRefresh={false}
+        toolbarActions={
+          <>
+            <TableFilters
+              activeFilters={activeFilters}
+              filters={filterGroups}
+              onFilterChange={handleFilterChange}
+            />
+            <ClearFiltersButton
+              count={activeFilterCount}
+              onClear={handleClearFilters}
+            />
+          </>
+        }
+      />
+
+      {/* Single Estimate Archive Dialog */}
+      <AlertDialog
+        onOpenChange={setIsSingleArchiveOpen}
+        open={isSingleArchiveOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Estimate?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This estimate will be archived and can be restored within 90 days.
+              After 90 days, it will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (estimateToArchive) {
+                  const { archiveEstimate } = await import(
+                    "@/actions/estimates"
+                  );
+                  await archiveEstimate(estimateToArchive);
+                  window.location.reload();
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Archive Dialog */}
+      <AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Archive {selectedEstimateIds.size} Estimate(s)?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              These estimates will be archived and can be restored within 90
+              days. After 90 days, they will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                const { archiveEstimate } = await import("@/actions/estimates");
+                for (const estimateId of selectedEstimateIds) {
+                  await archiveEstimate(estimateId);
+                }
+                window.location.reload();
+              }}
+            >
+              Archive All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Send Confirmation Dialog */}
+      <AlertDialog
+        onOpenChange={setIsBulkSendDialogOpen}
+        open={isBulkSendDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Send {pendingSendIds.size} Estimate(s)?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will send {pendingSendIds.size} estimate
+              {pendingSendIds.size !== 1 ? "s" : ""} via email to your customers.
+              <br />
+              <br />
+              <strong>Estimated time:</strong>{" "}
+              {Math.ceil(pendingSendIds.size * 0.5)} second
+              {Math.ceil(pendingSendIds.size * 0.5) !== 1 ? "s" : ""}
+              <br />
+              <br />
+              Note: Only estimates with customer email addresses will be sent.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setIsBulkSendDialogOpen(false);
+                setIsBulkSending(true);
+                
+                const { toast } = await import("sonner");
+                const loadingToast = toast.loading(
+                  `Sending ${pendingSendIds.size} estimate${pendingSendIds.size !== 1 ? "s" : ""}...`
+                );
+
+                try {
+                  const { bulkSendEstimates } = await import(
+                    "@/actions/bulk-communications"
+                  );
+
+                  const result = await bulkSendEstimates(
+                    Array.from(pendingSendIds),
+                    {
+                      batchSize: 10,
+                      batchDelay: 1000,
+                    }
+                  );
+
+                  toast.dismiss(loadingToast);
+
+                  if (result.success || (result.results?.successful ?? 0) > 0) {
+                    toast.success(result.message);
+                  } else {
+                    toast.error(result.error || "Failed to send estimates");
+                  }
+
+                  if ((result.results?.successful ?? 0) > 0) {
+                    window.location.reload();
+                  }
+                } catch (error) {
+                  toast.dismiss(loadingToast);
+                  toast.error(
+                    error instanceof Error
+                      ? error.message
+                      : "Failed to send estimates"
+                  );
+                } finally {
+                  setIsBulkSending(false);
+                  setPendingSendIds(new Set());
+                }
+              }}
+            >
+              Send Estimates
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

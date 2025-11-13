@@ -17,6 +17,7 @@
 
 "use server";
 
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type {
   KBArticleWithRelations,
   KBCategoryWithChildren,
@@ -24,6 +25,46 @@ import type {
   KBSearchFilters,
 } from "@/lib/kb/types";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/supabase";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const publicSupabase =
+  supabaseUrl && supabaseAnonKey
+    ? createSupabaseClient<Database>(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      })
+    : null;
+
+function normalizeCategory(raw: any): KBCategoryWithChildren {
+  return {
+    ...raw,
+    description: raw?.description ?? undefined,
+    icon: raw?.icon ?? undefined,
+  };
+}
+
+function normalizeArticle(raw: any): KBArticleWithRelations {
+  return {
+    ...raw,
+    excerpt: raw?.excerpt ?? undefined,
+    featured_image: raw?.featured_image ?? undefined,
+    author: raw?.author ?? undefined,
+    published_at: raw?.published_at ?? undefined,
+    updated_at: raw?.updated_at ?? undefined,
+    metaTitle: raw?.metaTitle ?? undefined,
+    metaDescription: raw?.metaDescription ?? undefined,
+    keywords: raw?.keywords ?? undefined,
+    tags: raw?.tags?.map((at: any) => at.tag) ?? [],
+    category: raw?.category
+      ? normalizeCategory(raw.category)
+      : raw?.category,
+  };
+}
 
 // ============================================================================
 // GET ARTICLES
@@ -39,10 +80,10 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
   total?: number;
 }> {
   try {
-    const supabase = await createClient();
+    const supabase = publicSupabase;
 
     if (!supabase) {
-      return { success: false, error: "Database connection not available" };
+      return { success: false, error: "Supabase configuration is missing" };
     }
 
     let query = supabase
@@ -81,12 +122,8 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
       return { success: false, error: error.message };
     }
 
-    // Transform data to include tags properly
     const articles: KBArticleWithRelations[] =
-      data?.map((article: any) => ({
-        ...article,
-        tags: article.tags?.map((at: any) => at.tag) || [],
-      })) || [];
+      data?.map((article: any) => normalizeArticle(article)) ?? [];
 
     return {
       success: true,
@@ -114,10 +151,10 @@ export async function getKBArticle(
   article?: KBArticleWithRelations;
 }> {
   try {
-    const supabase = await createClient();
+    const supabase = publicSupabase;
 
     if (!supabase) {
-      return { success: false, error: "Database connection not available" };
+      return { success: false, error: "Supabase configuration is missing" };
     }
 
     // First get the category
@@ -159,10 +196,7 @@ export async function getKBArticle(
     }
 
     // Transform data
-    const article: KBArticleWithRelations = {
-      ...data,
-      tags: data.tags?.map((at: any) => at.tag) || [],
-    };
+    const article = normalizeArticle(data);
 
     return { success: true, article };
   } catch (error) {
@@ -187,10 +221,10 @@ export async function getKBCategories(): Promise<{
   categories?: KBCategoryWithChildren[];
 }> {
   try {
-    const supabase = await createClient();
+    const supabase = publicSupabase;
 
     if (!supabase) {
-      return { success: false, error: "Database connection not available" };
+      return { success: false, error: "Supabase configuration is missing" };
     }
 
     const { data, error } = await supabase
@@ -211,7 +245,10 @@ export async function getKBCategories(): Promise<{
 
     // First pass: create all categories
     data?.forEach((cat) => {
-      categoryMap.set(cat.id, { ...cat, children: [] });
+      categoryMap.set(cat.id, {
+        ...normalizeCategory(cat),
+        children: [] as KBCategoryWithChildren[],
+      });
     });
 
     // Second pass: build hierarchy
@@ -257,10 +294,10 @@ export async function searchKBArticles(
   total?: number;
 }> {
   try {
-    const supabase = await createClient();
+    const supabase = publicSupabase;
 
     if (!supabase) {
-      return { success: false, error: "Database connection not available" };
+      return { success: false, error: "Supabase configuration is missing" };
     }
 
     if (!query || query.trim().length === 0) {
@@ -274,7 +311,7 @@ export async function searchKBArticles(
       .map((term) => `${term}:*`)
       .join(" & ");
 
-    const sqlQuery = supabase.rpc("search_kb_articles", {
+    void (supabase as any).rpc("search_kb_articles", {
       search_query: searchQuery,
       category_filter: filters?.category || null,
       limit_count: filters?.limit || 20,
@@ -313,10 +350,7 @@ export async function searchKBArticles(
 
     // Transform data
     const articles: KBArticleWithRelations[] =
-      data?.map((article: any) => ({
-        ...article,
-        tags: article.tags?.map((at: any) => at.tag) || [],
-      })) || [];
+      data?.map((article: any) => normalizeArticle(article)) ?? [];
 
     return {
       success: true,
@@ -348,10 +382,10 @@ export async function getKBRelatedArticles(
   articles?: KBArticleWithRelations[];
 }> {
   try {
-    const supabase = await createClient();
+    const supabase = publicSupabase;
 
     if (!supabase) {
-      return { success: false, error: "Database connection not available" };
+      return { success: false, error: "Supabase configuration is missing" };
     }
 
     const { data, error } = await supabase
@@ -378,10 +412,7 @@ export async function getKBRelatedArticles(
     }
 
     const articles: KBArticleWithRelations[] =
-      data?.map((rel: any) => ({
-        ...rel.related_article,
-        tags: rel.related_article.tags?.map((at: any) => at.tag) || [],
-      })) || [];
+      data?.map((rel: any) => normalizeArticle(rel.related_article)) ?? [];
 
     return { success: true, articles };
   } catch (error) {

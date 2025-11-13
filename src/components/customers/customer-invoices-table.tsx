@@ -104,7 +104,7 @@ export function CustomerInvoicesTable({
         shrink: true,
         render: (invoice) => (
           <Link
-            className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+            className="font-medium text-foreground text-sm leading-tight hover:underline"
             href={`/dashboard/work/invoices/${invoice.id}`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -116,9 +116,16 @@ export function CustomerInvoicesTable({
         key: "title",
         header: "Title",
         render: (invoice) => (
-          <span className="text-sm">{invoice.title || "—"}</span>
+          <Link
+            className="font-medium text-foreground text-sm leading-tight hover:underline"
+            href={`/dashboard/work/invoices/${invoice.id}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {invoice.title || "—"}
+          </Link>
         ),
       },
+
       {
         key: "status",
         header: "Status",

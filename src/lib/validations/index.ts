@@ -4,19 +4,13 @@
  * All validation schemas are exported from this file for consistency.
  */
 
-// Shared schemas
-export * from "./shared-schemas";
+// Auth schemas
+export * from "./auth-schemas";
 
 // Database schemas
 export * from "./database-schemas";
 
 // Import schemas
 export * from "./import-schemas";
-
-// Auth schemas
-export * from "./auth-schemas";
-
-
-
-
-
+// Shared schemas
+export * from "./shared-schemas";

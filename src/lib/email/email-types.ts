@@ -106,6 +106,38 @@ export interface InvoiceSentProps extends BaseEmailProps {
   downloadUrl: string;
 }
 
+export interface InvoiceNotificationProps extends BaseEmailProps {
+  customerName: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  dueDate?: string;
+  totalAmount: number; // in cents
+  invoiceUrl: string;
+  currency?: string;
+  items?: Array<{
+    description: string;
+    quantity: number;
+    amount: number; // in cents
+  }>;
+  notes?: string;
+}
+
+export interface EstimateNotificationProps extends BaseEmailProps {
+  customerName: string;
+  estimateNumber: string;
+  estimateDate: string;
+  validUntil?: string;
+  totalAmount: number; // in cents
+  estimateUrl: string;
+  currency?: string;
+  items?: Array<{
+    description: string;
+    quantity: number;
+    amount: number; // in cents
+  }>;
+  notes?: string;
+}
+
 export interface PaymentReceivedProps extends BaseEmailProps {
   customerName: string;
   invoiceNumber: string;
@@ -197,6 +229,8 @@ export enum EmailTemplate {
   JOB_COMPLETE = "job-complete",
 
   // Billing
+  INVOICE = "invoice",
+  ESTIMATE = "estimate",
   INVOICE_SENT = "invoice-sent",
   PAYMENT_RECEIVED = "payment-received",
   PAYMENT_REMINDER = "payment-reminder",
@@ -207,6 +241,9 @@ export enum EmailTemplate {
   SERVICE_REMINDER = "service-reminder",
   WELCOME_CUSTOMER = "welcome-customer",
   PORTAL_INVITATION = "portal-invitation",
+
+  // Team
+  TEAM_INVITATION = "team-invitation",
 
   // Generic
   GENERIC = "generic",

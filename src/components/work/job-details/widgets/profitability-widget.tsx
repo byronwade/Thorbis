@@ -172,10 +172,10 @@ export function ProfitabilityWidget({
         {/* Revenue */}
         <div className="rounded-lg border bg-gradient-to-br from-green-50 to-green-100/50 p-3 dark:from-green-950/30 dark:to-green-900/20">
           <div className="mb-1 flex items-center gap-1.5">
-            <DollarSign className="size-4 text-green-600" />
+            <DollarSign className="size-4 text-success" />
             <span className="text-muted-foreground text-xs">Revenue</span>
           </div>
-          <p className="font-bold text-green-900 text-lg dark:text-green-100">
+          <p className="font-bold text-lg text-success dark:text-success">
             {formatCurrency(totalRevenue)}
           </p>
         </div>
@@ -183,10 +183,10 @@ export function ProfitabilityWidget({
         {/* Costs */}
         <div className="rounded-lg border bg-gradient-to-br from-red-50 to-red-100/50 p-3 dark:from-red-950/30 dark:to-red-900/20">
           <div className="mb-1 flex items-center gap-1.5">
-            <TrendingDown className="size-4 text-red-600" />
+            <TrendingDown className="size-4 text-destructive" />
             <span className="text-muted-foreground text-xs">Costs</span>
           </div>
-          <p className="font-bold text-lg text-red-900 dark:text-red-100">
+          <p className="font-bold text-destructive text-lg dark:text-destructive">
             {formatCurrency(totalCosts)}
           </p>
         </div>
@@ -204,7 +204,7 @@ export function ProfitabilityWidget({
               {isProfitable ? (
                 <TrendingUp className="size-4 text-primary" />
               ) : (
-                <TrendingDown className="size-4 text-red-600" />
+                <TrendingDown className="size-4 text-destructive" />
               )}
               <span className="text-muted-foreground text-xs">
                 Gross Profit
@@ -224,7 +224,9 @@ export function ProfitabilityWidget({
           </div>
           <p
             className={`font-bold text-xl ${
-              isProfitable ? "text-primary" : "text-red-900 dark:text-red-100"
+              isProfitable
+                ? "text-primary"
+                : "text-destructive dark:text-destructive"
             }`}
           >
             {formatCurrency(grossProfit)}
@@ -286,7 +288,7 @@ export function ProfitabilityWidget({
                   </div>
                 </div>
                 <Progress
-                  className="h-1.5 [&>div]:bg-red-500"
+                  className="h-1.5 [&>div]:bg-destructive"
                   value={percentage}
                 />
               </div>
@@ -299,13 +301,13 @@ export function ProfitabilityWidget({
       {isLoss && (
         <>
           <Separator />
-          <div className="flex items-start gap-2 rounded-lg border-red-500 border-l-4 bg-red-50 p-3 dark:bg-red-950/30">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-600" />
+          <div className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" />
             <div>
-              <p className="font-medium text-red-900 text-sm dark:text-red-100">
+              <p className="font-medium text-destructive text-sm dark:text-destructive">
                 Loss Alert
               </p>
-              <p className="text-red-800 text-xs dark:text-red-200">
+              <p className="text-destructive text-xs dark:text-destructive">
                 This job is currently unprofitable. Review costs and consider
                 price adjustments.
               </p>
@@ -317,13 +319,13 @@ export function ProfitabilityWidget({
       {isLowMargin && !isLoss && (
         <>
           <Separator />
-          <div className="flex items-start gap-2 rounded-lg border-yellow-500 border-l-4 bg-yellow-50 p-3 dark:bg-yellow-950/30">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-yellow-600" />
+          <div className="flex items-start gap-2 rounded-lg border-warning border-l-4 bg-warning p-3 dark:bg-warning/30">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
             <div>
-              <p className="font-medium text-sm text-yellow-900 dark:text-yellow-100">
+              <p className="font-medium text-sm text-warning dark:text-warning">
                 Low Margin Warning
               </p>
-              <p className="text-xs text-yellow-800 dark:text-yellow-200">
+              <p className="text-warning text-xs dark:text-warning">
                 Profit margin is below 15%. Monitor costs closely.
               </p>
             </div>
@@ -334,13 +336,13 @@ export function ProfitabilityWidget({
       {isHighMargin && (
         <>
           <Separator />
-          <div className="flex items-start gap-2 rounded-lg border-green-500 border-l-4 bg-green-50 p-3 dark:bg-green-950/30">
-            <TrendingUp className="mt-0.5 size-4 shrink-0 text-green-600" />
+          <div className="flex items-start gap-2 rounded-lg border-success border-l-4 bg-success p-3 dark:bg-success/30">
+            <TrendingUp className="mt-0.5 size-4 shrink-0 text-success" />
             <div>
-              <p className="font-medium text-green-900 text-sm dark:text-green-100">
+              <p className="font-medium text-sm text-success dark:text-success">
                 Healthy Margin
               </p>
-              <p className="text-green-800 text-xs dark:text-green-200">
+              <p className="text-success text-xs dark:text-success">
                 Great work! This job has a strong profit margin of{" "}
                 {profitMargin.toFixed(2)}
                 %.

@@ -20,8 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/lib/db/schema";
-import type { PropertyEnrichment } from "@/lib/services/property-enrichment";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import type { PropertyEnrichment } from "@/lib/services/property-enrichment";
 
 // ============================================================================
 // Helper Functions
@@ -32,12 +32,12 @@ function getRiskColor(zone: string | undefined): string {
 
   const lowerZone = zone.toLowerCase();
   if (lowerZone.includes("high") || lowerZone.includes("x")) {
-    return "text-red-600";
+    return "text-destructive";
   }
   if (lowerZone.includes("moderate") || lowerZone.includes("a")) {
-    return "text-yellow-600";
+    return "text-warning";
   }
-  return "text-green-600";
+  return "text-success";
 }
 
 // ============================================================================
@@ -205,21 +205,21 @@ export function PropertyIntelligenceWidget({
           <div className="mt-2 space-y-1 rounded-md bg-muted/50 p-2 text-xs">
             {details.heatingType ? (
               <div className="flex items-center gap-1.5">
-                <Flame className="size-3 text-orange-600" />
+                <Flame className="size-3 text-warning" />
                 <span className="text-muted-foreground">Heating:</span>
                 <span className="font-medium">{details.heatingType}</span>
               </div>
             ) : null}
             {details.coolingType ? (
               <div className="flex items-center gap-1.5">
-                <Zap className="size-3 text-blue-600" />
+                <Zap className="size-3 text-primary" />
                 <span className="text-muted-foreground">Cooling:</span>
                 <span className="font-medium">{details.coolingType}</span>
               </div>
             ) : null}
             {details.roofType ? (
               <div className="flex items-center gap-1.5">
-                <Home className="size-3 text-gray-600" />
+                <Home className="size-3 text-muted-foreground" />
                 <span className="text-muted-foreground">Roof:</span>
                 <span className="font-medium">{details.roofType}</span>
               </div>

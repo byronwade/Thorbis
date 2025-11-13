@@ -53,7 +53,7 @@ export function BonusTrackerWidget({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <ResponsiveIcon>
-              <DollarSign className="text-green-500" />
+              <DollarSign className="text-success" />
             </ResponsiveIcon>
             <ShowAt stage="full">
               <ResponsiveText variant="title">Team Bonus Pool</ResponsiveText>
@@ -65,7 +65,7 @@ export function BonusTrackerWidget({
             </ShowAt>
           </div>
           <ShowAt stage="full-comfortable">
-            <div className="rounded-full bg-green-500/20 px-2 py-0.5 text-green-500 text-xs">
+            <div className="rounded-full bg-success/20 px-2 py-0.5 text-success text-xs">
               {data.daysRemaining}d
             </div>
           </ShowAt>
@@ -84,7 +84,7 @@ export function BonusTrackerWidget({
                   Current Bonus
                 </ResponsiveText>
                 <ResponsiveText
-                  className="font-bold text-green-500"
+                  className="font-bold text-success"
                   variant="display"
                 >
                   {formatCurrency(data.currentBonus, "comfortable")}
@@ -107,7 +107,7 @@ export function BonusTrackerWidget({
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="font-bold text-green-500">
+                <span className="font-bold text-success">
                   {formatPercentage(data.progress, "full")}
                 </span>
               </div>
@@ -136,7 +136,7 @@ export function BonusTrackerWidget({
                 </div>
               </div>
               <div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
-                <DollarSign className="size-3.5 text-green-500" />
+                <DollarSign className="size-3.5 text-success" />
                 <div>
                   <ResponsiveText
                     className="text-muted-foreground"
@@ -145,7 +145,7 @@ export function BonusTrackerWidget({
                     Each
                   </ResponsiveText>
                   <ResponsiveText
-                    className="font-bold text-green-500"
+                    className="font-bold text-success"
                     variant="body"
                   >
                     ${bonusPerPerson}
@@ -153,7 +153,7 @@ export function BonusTrackerWidget({
                 </div>
               </div>
               <div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
-                <Target className="size-3.5 text-orange-500" />
+                <Target className="size-3.5 text-warning" />
                 <div>
                   <ResponsiveText
                     className="text-muted-foreground"
@@ -162,7 +162,7 @@ export function BonusTrackerWidget({
                     Left
                   </ResponsiveText>
                   <ResponsiveText
-                    className="font-bold text-orange-500"
+                    className="font-bold text-warning"
                     variant="body"
                   >
                     ${(remaining / 1000).toFixed(0)}k
@@ -178,10 +178,7 @@ export function BonusTrackerWidget({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <ResponsiveText variant="caption">Current</ResponsiveText>
-              <ResponsiveText
-                className="font-bold text-green-500"
-                variant="body"
-              >
+              <ResponsiveText className="font-bold text-success" variant="body">
                 {formatCurrency(data.currentBonus, "comfortable")}
               </ResponsiveText>
             </div>
@@ -217,7 +214,7 @@ export function BonusTrackerWidget({
               Bonus
             </ResponsiveText>
             <ResponsiveText
-              className="font-bold text-green-500"
+              className="font-bold text-success"
               variant="display"
             >
               {formatCurrency(data.currentBonus, "compact")}
@@ -232,7 +229,7 @@ export function BonusTrackerWidget({
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
             <ResponsiveText
-              className="font-bold text-green-500"
+              className="font-bold text-success"
               variant="display"
             >
               {formatCurrency(data.currentBonus, "tiny")}

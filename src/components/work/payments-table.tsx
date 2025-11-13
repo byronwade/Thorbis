@@ -21,6 +21,17 @@ import {
   Plus,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +47,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
 
 type Payment = {
@@ -52,6 +64,8 @@ type Payment = {
   } | null;
   invoice_id?: string | null;
   job_id?: string | null;
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
 
 type PaymentsTableProps = {
@@ -71,7 +85,7 @@ function formatCurrency(cents: number | null): string {
   }).format(cents / 100);
 }
 
-function formatDate(date: Date | string | null): string {
+function formatDate(date: Date | string | null | undefined): string {
   if (!date) {
     return "—";
   }
@@ -93,35 +107,34 @@ function getStatusBadge(status: string) {
   > = {
     pending: {
       className:
-        "border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 dark:border-yellow-900 dark:bg-yellow-950/50 dark:text-yellow-400",
+        "border-warning bg-warning text-warning hover:bg-warning dark:border-warning dark:bg-warning/50 dark:text-warning",
       label: "Pending",
     },
     processing: {
       className:
-        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+        "border-primary bg-primary text-primary hover:bg-primary dark:border-primary dark:bg-primary/50 dark:text-primary",
       label: "Processing",
     },
     completed: {
-      className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      className: "border-success/50 bg-success text-white hover:bg-success",
       label: "Completed",
     },
     failed: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      className:
+        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
       label: "Failed",
     },
     refunded: {
-      className:
-        "border-orange-500/50 bg-orange-500 text-white hover:bg-orange-600",
+      className: "border-warning/50 bg-warning text-white hover:bg-warning",
       label: "Refunded",
     },
     partially_refunded: {
       className:
-        "border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100 dark:border-orange-900 dark:bg-orange-950/50 dark:text-orange-400",
+        "border-warning bg-warning text-warning hover:bg-warning dark:border-warning dark:bg-warning/50 dark:text-warning",
       label: "Partially Refunded",
     },
     cancelled: {
-      className: "border-gray-500/50 bg-gray-500 text-white hover:bg-gray-600",
+      className: "border-border/50 bg-secondary0 text-white hover:bg-accent",
       label: "Cancelled",
     },
   };
@@ -172,12 +185,27 @@ export function PaymentsTable({
   onPaymentClick,
   showRefresh = false,
 }: PaymentsTableProps) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore((state) => state.filters.payments);
+
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [itemToArchive, setItemToArchive] = useState<string | null>(null);
+
+  // Filter payments based on archive status
+  const filteredPayments = payments.filter((payment) => {
+    const isArchived = Boolean(payment.archived_at || payment.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const columns: ColumnDef<Payment>[] = [
     {
       key: "payment_number",
       header: "Payment #",
       width: "w-36",
       shrink: true,
+      sortable: true,
       render: (payment) => (
         <Link
           className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
@@ -193,6 +221,7 @@ export function PaymentsTable({
       header: "Customer",
       width: "w-48",
       shrink: true,
+      sortable: true,
       render: (payment) => (
         <span className="text-muted-foreground text-sm">
           {getCustomerName(payment)}
@@ -205,6 +234,7 @@ export function PaymentsTable({
       width: "w-32",
       shrink: true,
       align: "right",
+      sortable: true,
       render: (payment) => (
         <span className="font-semibold tabular-nums">
           {formatCurrency(payment.amount)}
@@ -217,6 +247,7 @@ export function PaymentsTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      sortable: true,
       render: (payment) => (
         <span className="text-muted-foreground text-sm">
           {getPaymentMethodLabel(payment.payment_method)}
@@ -228,6 +259,7 @@ export function PaymentsTable({
       header: "Status",
       width: "w-32",
       shrink: true,
+      sortable: true,
       render: (payment) => getStatusBadge(payment.status),
     },
     {
@@ -235,6 +267,7 @@ export function PaymentsTable({
       header: "Date",
       width: "w-32",
       shrink: true,
+      sortable: true,
       hideOnMobile: true,
       render: (payment) => (
         <span className="text-muted-foreground text-sm tabular-nums">
@@ -274,20 +307,13 @@ export function PaymentsTable({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
-                onClick={async () => {
-                  if (
-                    !confirm(
-                      "Delete this payment record? This action cannot be undone."
-                    )
-                  ) {
-                    return;
-                  }
-                  // TODO: Implement delete payment action
-                  window.location.reload();
+                onClick={() => {
+                  setItemToArchive(payment.id);
+                  setIsArchiveDialogOpen(true);
                 }}
               >
                 <Archive className="mr-2 size-4" />
-                Delete Payment
+                Archive Payment
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -337,31 +363,64 @@ export function PaymentsTable({
   };
 
   return (
-    <FullWidthDataTable
-      bulkActions={bulkActions}
-      columns={columns}
-      data={payments}
-      emptyAction={
-        <Button onClick={handleAddPayment} size="sm">
-          <Plus className="mr-2 size-4" />
-          Record Payment
-        </Button>
-      }
-      emptyIcon={<CreditCard className="h-8 w-8 text-muted-foreground" />}
-      emptyMessage="No payments found"
-      enableSelection={true}
-      getItemId={(payment) => payment.id}
-      itemsPerPage={itemsPerPage}
-      onRefresh={handleRefresh}
-      onRowClick={handleRowClick}
-      searchFilter={searchFilter}
-      searchPlaceholder="Search payments by number, customer, or method..."
-      showRefresh={showRefresh}
-    />
+    <>
+      <FullWidthDataTable
+        bulkActions={bulkActions}
+        columns={columns}
+        data={filteredPayments}
+        emptyAction={
+          <Button onClick={handleAddPayment} size="sm">
+            <Plus className="mr-2 size-4" />
+            Record Payment
+          </Button>
+        }
+        emptyIcon={<CreditCard className="h-8 w-8 text-muted-foreground" />}
+        emptyMessage="No payments found"
+        enableSelection={true}
+        entity="payments"
+        getItemId={(payment) => payment.id}
+        isArchived={(payment) =>
+          Boolean(payment.archived_at || payment.deleted_at)
+        }
+        itemsPerPage={itemsPerPage}
+        onRefresh={handleRefresh}
+        onRowClick={handleRowClick}
+        searchFilter={searchFilter}
+        searchPlaceholder="Search payments by number, customer, or method..."
+        showArchived={archiveFilter !== "active"}
+        showRefresh={showRefresh}
+      />
+
+      {/* Archive Payment Dialog */}
+      <AlertDialog
+        onOpenChange={setIsArchiveDialogOpen}
+        open={isArchiveDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Payment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This payment will be archived and can be restored within 90 days.
+              After 90 days, it will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (itemToArchive) {
+                  const { archivePayment } = await import("@/actions/payments");
+                  await archivePayment(itemToArchive);
+                  window.location.reload();
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
-
-
-
-
-

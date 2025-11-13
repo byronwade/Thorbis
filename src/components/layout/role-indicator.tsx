@@ -23,12 +23,12 @@ export function RoleIndicator() {
   }
 
   const colorClasses = {
-    purple: "border-purple-600 text-purple-600 bg-purple-500/10",
-    blue: "border-blue-600 text-blue-600 bg-blue-500/10",
-    green: "border-green-600 text-green-600 bg-green-500/10",
-    orange: "border-orange-600 text-orange-600 bg-orange-500/10",
-    pink: "border-pink-600 text-pink-600 bg-pink-500/10",
-    red: "border-red-600 text-red-600 bg-red-500/10",
+    purple: "border-border text-accent-foreground bg-accent/10",
+    blue: "border-primary text-primary bg-primary/10",
+    green: "border-success text-success bg-success/10",
+    orange: "border-warning text-warning bg-warning/10",
+    pink: "border-border text-accent-foreground bg-accent/10",
+    red: "border-destructive text-destructive bg-destructive/10",
   };
 
   return (

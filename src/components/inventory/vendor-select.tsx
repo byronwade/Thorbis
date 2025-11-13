@@ -1,7 +1,7 @@
 "use client";
 
 import { Building2, Check, ChevronsUpDown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { searchVendors } from "@/actions/vendors";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,10 @@ type Vendor = {
 
 type VendorSelectProps = {
   value?: string;
-  onValueChange: (vendorId: string | undefined, vendor: Vendor | undefined) => void;
+  onValueChange: (
+    vendorId: string | undefined,
+    vendor: Vendor | undefined
+  ) => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
@@ -97,7 +100,7 @@ export function VendorSelect({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent align="start" className="w-full p-0">
         <Command>
           <CommandInput
             onValueChange={setSearchQuery}
@@ -144,4 +147,3 @@ export function VendorSelect({
     </Popover>
   );
 }
-

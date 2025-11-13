@@ -17,6 +17,19 @@ jest.mock("../business-enrichment");
 jest.mock("../social-enrichment");
 jest.mock("../property-enrichment");
 
+const mockedPersonEnrichment = personEnrichmentService as jest.Mocked<
+  typeof personEnrichmentService
+>;
+const mockedBusinessEnrichment = businessEnrichmentService as jest.Mocked<
+  typeof businessEnrichmentService
+>;
+const mockedSocialEnrichment = socialEnrichmentService as jest.Mocked<
+  typeof socialEnrichmentService
+>;
+const mockedPropertyEnrichment = propertyEnrichmentService as jest.Mocked<
+  typeof propertyEnrichmentService
+>;
+
 describe("CustomerEnrichmentService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,18 +50,10 @@ describe("CustomerEnrichmentService", () => {
         enrichedAt: new Date().toISOString(),
       };
 
-      (personEnrichmentService.enrichPerson as jest.Mock).mockResolvedValue(
-        mockPersonData
-      );
-      (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
-        null
-      );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
-        null
-      );
-      (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
-        null
-      );
+      mockedPersonEnrichment.enrichPerson.mockResolvedValue(mockPersonData);
+      mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(null);
+      mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
+      mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
 
       const result = await customerEnrichmentService.enrichCustomer({
         id: "test-id",
@@ -64,18 +69,12 @@ describe("CustomerEnrichmentService", () => {
     });
 
     it("should handle enrichment failures gracefully", async () => {
-      (personEnrichmentService.enrichPerson as jest.Mock).mockRejectedValue(
+      mockedPersonEnrichment.enrichPerson.mockRejectedValue(
         new Error("API error")
       );
-      (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
-        null
-      );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
-        null
-      );
-      (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
-        null
-      );
+      mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(null);
+      mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
+      mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
 
       const result = await customerEnrichmentService.enrichCustomer({
         id: "test-id",
@@ -101,18 +100,12 @@ describe("CustomerEnrichmentService", () => {
         enrichedAt: new Date().toISOString(),
       };
 
-      (personEnrichmentService.enrichPerson as jest.Mock).mockResolvedValue(
-        mockPersonData
-      );
-      (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
+      mockedPersonEnrichment.enrichPerson.mockResolvedValue(mockPersonData);
+      mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(
         mockBusinessData
       );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
-        null
-      );
-      (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
-        null
-      );
+      mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
+      mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
 
       const result = await customerEnrichmentService.enrichCustomer({
         id: "test-id",
@@ -142,18 +135,12 @@ describe("CustomerEnrichmentService", () => {
         enrichedAt: new Date().toISOString(),
       };
 
-      (personEnrichmentService.enrichPerson as jest.Mock).mockResolvedValue(
-        mockPersonData
-      );
-      (businessEnrichmentService.enrichBusiness as jest.Mock).mockResolvedValue(
+      mockedPersonEnrichment.enrichPerson.mockResolvedValue(mockPersonData);
+      mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(
         mockBusinessData
       );
-      (socialEnrichmentService.enrichSocial as jest.Mock).mockResolvedValue(
-        null
-      );
-      (propertyEnrichmentService.enrichProperty as jest.Mock).mockResolvedValue(
-        null
-      );
+      mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
+      mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
 
       const result = await customerEnrichmentService.enrichCustomer({
         id: "test-id",

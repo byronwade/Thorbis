@@ -191,7 +191,7 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
               </Label>
             </div>
 
-            <div className="rounded-lg border border-blue-500/50 bg-blue-500/5 p-4">
+            <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
               <p className="text-muted-foreground text-sm">
                 Estimated records: <strong>1,247</strong>
               </p>
@@ -276,7 +276,7 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
                 onClick={() => setSelectedFormat("xlsx")}
                 type="button"
               >
-                <FileSpreadsheet className="size-8 text-green-600" />
+                <FileSpreadsheet className="size-8 text-success" />
                 <div className="flex-1">
                   <p className="font-medium">Excel (.xlsx)</p>
                   <p className="text-muted-foreground text-sm">
@@ -297,7 +297,7 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
                 onClick={() => setSelectedFormat("csv")}
                 type="button"
               >
-                <FileSpreadsheet className="size-8 text-blue-600" />
+                <FileSpreadsheet className="size-8 text-primary" />
                 <div className="flex-1">
                   <p className="font-medium">CSV (.csv)</p>
                   <p className="text-muted-foreground text-sm">
@@ -318,7 +318,7 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
                 onClick={() => setSelectedFormat("pdf")}
                 type="button"
               >
-                <FileSpreadsheet className="size-8 text-red-600" />
+                <FileSpreadsheet className="size-8 text-destructive" />
                 <div className="flex-1">
                   <p className="font-medium">PDF (.pdf)</p>
                   <p className="text-muted-foreground text-sm">

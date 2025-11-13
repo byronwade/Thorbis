@@ -102,7 +102,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <Brain className="size-8 text-blue-600 dark:text-blue-400" />
+                <Brain className="size-8 text-primary dark:text-primary" />
                 <h2 className="font-bold text-3xl">AI Assistant</h2>
               </div>
               <p className="text-muted-foreground">
@@ -111,10 +111,10 @@ export default function ComingSoonPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <MessageSquare className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <MessageSquare className="size-6 text-primary dark:text-primary" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -125,10 +125,10 @@ export default function ComingSoonPage() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-success/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
-                    <Bell className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-success/10">
+                    <Bell className="size-6 text-success dark:text-success" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -140,10 +140,10 @@ export default function ComingSoonPage() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <Database className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Database className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -155,10 +155,10 @@ export default function ComingSoonPage() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
-                    <Zap className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Zap className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -176,7 +176,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <Phone className="size-8 text-purple-600 dark:text-purple-400" />
+                <Phone className="size-8 text-accent-foreground dark:text-accent-foreground" />
                 <h2 className="font-bold text-3xl">AI Phone System</h2>
               </div>
               <p className="text-muted-foreground">
@@ -208,8 +208,8 @@ export default function ComingSoonPage() {
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <PhoneOutgoing className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <PhoneOutgoing className="size-6 text-primary dark:text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -228,8 +228,8 @@ export default function ComingSoonPage() {
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-purple-500/10">
-                    <PhoneCall className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <PhoneCall className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Campaign Calling</h3>
@@ -250,7 +250,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <DollarSign className="size-8 text-green-600 dark:text-green-400" />
+                <DollarSign className="size-8 text-success dark:text-success" />
                 <h2 className="font-bold text-3xl">Payroll Management</h2>
               </div>
               <p className="text-muted-foreground">
@@ -305,7 +305,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <CreditCard className="size-8 text-indigo-600 dark:text-indigo-400" />
+                <CreditCard className="size-8 text-accent-foreground dark:text-accent-foreground" />
                 <h2 className="font-bold text-3xl">Financing Solutions</h2>
               </div>
               <p className="text-muted-foreground">
@@ -316,8 +316,8 @@ export default function ComingSoonPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <Building2 className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Building2 className="size-6 text-primary dark:text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -330,15 +330,15 @@ export default function ComingSoonPage() {
                 </div>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-blue-600 dark:text-blue-400" />
+                    <CheckCircle2 className="size-4 text-primary dark:text-primary" />
                     Term loans & lines of credit
                   </li>
                   <li className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-blue-600 dark:text-blue-400" />
+                    <CheckCircle2 className="size-4 text-primary dark:text-primary" />
                     Equipment financing
                   </li>
                   <li className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-blue-600 dark:text-blue-400" />
+                    <CheckCircle2 className="size-4 text-primary dark:text-primary" />
                     SBA loans & merchant cash advances
                   </li>
                 </ul>
@@ -346,8 +346,8 @@ export default function ComingSoonPage() {
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-green-500/10">
-                    <UserCheck className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-success/10">
+                    <UserCheck className="size-6 text-success dark:text-success" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -360,15 +360,15 @@ export default function ComingSoonPage() {
                 </div>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
+                    <CheckCircle2 className="size-4 text-success dark:text-success" />
                     Instant approvals for customers
                   </li>
                   <li className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
+                    <CheckCircle2 className="size-4 text-success dark:text-success" />
                     Flexible payment plans
                   </li>
                   <li className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
+                    <CheckCircle2 className="size-4 text-success dark:text-success" />
                     Increase average ticket size
                   </li>
                 </ul>
@@ -380,7 +380,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <Megaphone className="size-8 text-pink-600 dark:text-pink-400" />
+                <Megaphone className="size-8 text-accent-foreground dark:text-accent-foreground" />
                 <h2 className="font-bold text-3xl">Marketing Center</h2>
               </div>
               <p className="text-muted-foreground">
@@ -390,8 +390,8 @@ export default function ComingSoonPage() {
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-pink-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-pink-500/10">
-                  <Target className="size-5 text-pink-600 dark:text-pink-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-accent/10">
+                  <Target className="size-5 text-accent-foreground dark:text-accent-foreground" />
                 </div>
                 <h3 className="mb-2 font-semibold">Lead Management</h3>
                 <p className="text-muted-foreground text-sm">
@@ -400,8 +400,8 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-yellow-500/10">
-                  <Star className="size-5 text-yellow-600 dark:text-yellow-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-warning/10">
+                  <Star className="size-5 text-warning dark:text-warning" />
                 </div>
                 <h3 className="mb-2 font-semibold">Review Management</h3>
                 <p className="text-muted-foreground text-sm">
@@ -410,8 +410,8 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Send className="size-5 text-blue-600 dark:text-blue-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Send className="size-5 text-primary dark:text-primary" />
                 </div>
                 <h3 className="mb-2 font-semibold">Campaigns</h3>
                 <p className="text-muted-foreground text-sm">
@@ -420,8 +420,8 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-green-500/10">
-                  <LineChart className="size-5 text-green-600 dark:text-green-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-success/10">
+                  <LineChart className="size-5 text-success dark:text-success" />
                 </div>
                 <h3 className="mb-2 font-semibold">Analytics</h3>
                 <p className="text-muted-foreground text-sm">
@@ -435,7 +435,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <GraduationCap className="size-8 text-blue-600 dark:text-blue-400" />
+                <GraduationCap className="size-8 text-primary dark:text-primary" />
                 <h2 className="font-bold text-3xl">Training Center</h2>
               </div>
               <p className="text-muted-foreground">
@@ -446,8 +446,8 @@ export default function ComingSoonPage() {
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Building2 className="size-5 text-blue-600 dark:text-blue-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Building2 className="size-5 text-primary dark:text-primary" />
                 </div>
                 <h3 className="mb-2 font-semibold">System Training</h3>
                 <p className="text-muted-foreground text-sm">
@@ -456,8 +456,8 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-purple-500/10">
-                  <Star className="size-5 text-purple-600 dark:text-purple-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-accent/10">
+                  <Star className="size-5 text-accent-foreground dark:text-accent-foreground" />
                 </div>
                 <h3 className="mb-2 font-semibold">Nextstar</h3>
                 <p className="text-muted-foreground text-sm">
@@ -466,8 +466,8 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-orange-500/10">
-                  <Wrench className="size-5 text-orange-600 dark:text-orange-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-warning/10">
+                  <Wrench className="size-5 text-warning dark:text-warning" />
                 </div>
                 <h3 className="mb-2 font-semibold">Trade Certs</h3>
                 <p className="text-muted-foreground text-sm">
@@ -476,8 +476,8 @@ export default function ComingSoonPage() {
               </div>
 
               <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left">
-                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-green-500/10">
-                  <Upload className="size-5 text-green-600 dark:text-green-400" />
+                <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-success/10">
+                  <Upload className="size-5 text-success dark:text-success" />
                 </div>
                 <h3 className="mb-2 font-semibold">Company Training</h3>
                 <p className="text-muted-foreground text-sm">
@@ -491,7 +491,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <BarChart3 className="size-8 text-purple-600 dark:text-purple-400" />
+                <BarChart3 className="size-8 text-accent-foreground dark:text-accent-foreground" />
                 <h2 className="font-bold text-3xl">Advanced Analytics</h2>
               </div>
               <p className="text-muted-foreground">
@@ -536,7 +536,7 @@ export default function ComingSoonPage() {
           <div className="space-y-8">
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <Briefcase className="size-8 text-orange-600 dark:text-orange-400" />
+                <Briefcase className="size-8 text-warning dark:text-warning" />
                 <h2 className="font-bold text-3xl">Inventory Management</h2>
               </div>
               <p className="text-muted-foreground">

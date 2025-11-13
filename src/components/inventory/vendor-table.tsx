@@ -1,6 +1,13 @@
 "use client";
 
-import { Building2, Download, Mail, MoreHorizontal, Phone, Pause } from "lucide-react";
+import {
+  Building2,
+  Download,
+  Mail,
+  MoreHorizontal,
+  Pause,
+  Phone,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +24,6 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { formatCurrency } from "@/lib/formatters";
 
 export type Vendor = {
   id: string;
@@ -37,34 +43,38 @@ const statusConfig: Record<
 > = {
   active: {
     label: "Active",
-    className: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+    className: "bg-success text-success dark:bg-success/20 dark:text-success",
   },
   inactive: {
     label: "Inactive",
-    className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+    className:
+      "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
   },
 };
 
 const categoryConfig: Record<string, { label: string; className: string }> = {
   supplier: {
     label: "Supplier",
-    className: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    className: "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
   },
   distributor: {
     label: "Distributor",
-    className: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+    className:
+      "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
   },
   manufacturer: {
     label: "Manufacturer",
-    className: "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+    className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
   },
   service_provider: {
     label: "Service Provider",
-    className: "bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
+    className:
+      "bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
   },
   other: {
     label: "Other",
-    className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+    className:
+      "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
   },
 };
 
@@ -76,8 +86,9 @@ const columns: ColumnDef<Vendor>[] = [
     shrink: true,
     render: (vendor) => (
       <Link
-        className="font-medium text-primary hover:underline"
+        className="font-medium text-foreground text-sm leading-tight hover:underline"
         href={`/dashboard/inventory/vendors/${vendor.id}`}
+        onClick={(e) => e.stopPropagation()}
       >
         {vendor.vendor_number}
       </Link>
@@ -90,8 +101,9 @@ const columns: ColumnDef<Vendor>[] = [
     render: (vendor) => (
       <div className="flex flex-col">
         <Link
-          className="font-medium text-primary hover:underline"
+          className="font-medium text-foreground text-sm leading-tight hover:underline"
           href={`/dashboard/inventory/vendors/${vendor.id}`}
+          onClick={(e) => e.stopPropagation()}
         >
           {vendor.display_name || vendor.name}
         </Link>
@@ -138,7 +150,7 @@ const columns: ColumnDef<Vendor>[] = [
             </a>
           </div>
         )}
-        {!vendor.email && !vendor.phone && (
+        {!(vendor.email || vendor.phone) && (
           <span className="text-muted-foreground text-xs">No contact info</span>
         )}
       </div>
@@ -194,7 +206,9 @@ const columns: ColumnDef<Vendor>[] = [
           )}
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href={`/dashboard/work/purchase-orders?vendorId=${vendor.id}`}>
+            <Link
+              href={`/dashboard/work/purchase-orders?vendorId=${vendor.id}`}
+            >
               View Purchase Orders
             </Link>
           </DropdownMenuItem>
@@ -267,4 +281,3 @@ export function VendorTable({
     />
   );
 }
-

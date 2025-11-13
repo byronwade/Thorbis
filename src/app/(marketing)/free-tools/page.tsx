@@ -1,5 +1,5 @@
-import Script from "next/script";
 import Link from "next/link";
+import Script from "next/script";
 
 import { ResourceCard } from "@/components/content/resource-card";
 import { Badge } from "@/components/ui/badge";
@@ -86,13 +86,12 @@ const breadcrumbLd = generateBreadcrumbStructuredData([
 const faqLd = generateFAQStructuredData(FAQS);
 
 export default async function FreeToolsPage() {
-  const [templatesResult, guidesResult, webinarsResult] = await Promise.allSettled(
-    [
+  const [templatesResult, guidesResult, webinarsResult] =
+    await Promise.allSettled([
       getResourceItems({ limit: 6, type: "template" }),
       getResourceItems({ limit: 6, type: "guide" }),
       getResourceItems({ limit: 3, type: "webinar" }),
-    ]
-  );
+    ]);
 
   const templates =
     templatesResult.status === "fulfilled" ? templatesResult.value.data : [];
@@ -104,19 +103,19 @@ export default async function FreeToolsPage() {
   return (
     <>
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         id="free-tools-breadcrumb-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ITEM_LIST_LD) }}
         id="free-tools-list-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ITEM_LIST_LD) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
         id="free-tools-faq-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
 
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -124,11 +123,14 @@ export default async function FreeToolsPage() {
           <Badge className="uppercase tracking-wide" variant="secondary">
             Free Resources
           </Badge>
-          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
             Download templates, calculators, and guides built for contractors
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Explore battle-tested tools from Thorbis customers—covering operations, finance, training, and marketing. No paywall, no fluff, and included with the $100/month base subscription, pay-as-you-go usage, and zero lock-in.
+            Explore battle-tested tools from Thorbis customers—covering
+            operations, finance, training, and marketing. No paywall, no fluff,
+            and included with the $100/month base subscription, pay-as-you-go
+            usage, and zero lock-in.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
@@ -143,14 +145,17 @@ export default async function FreeToolsPage() {
         <main className="mt-16 space-y-20">
           <section className="space-y-6">
             <div className="flex flex-col gap-3 text-center">
-              <h2 className="text-3xl font-semibold">Popular templates & checklists</h2>
+              <h2 className="font-semibold text-3xl">
+                Popular templates & checklists
+              </h2>
               <p className="text-muted-foreground">
-                Import-ready spreadsheets and PDF resources to accelerate onboarding and process improvements.
+                Import-ready spreadsheets and PDF resources to accelerate
+                onboarding and process improvements.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {templates.map((item) => (
-                <ResourceCard key={item.id} item={item} />
+                <ResourceCard item={item} key={item.id} />
               ))}
             </div>
             <div className="flex justify-center">
@@ -162,9 +167,12 @@ export default async function FreeToolsPage() {
 
           <section className="space-y-6">
             <div className="flex flex-col gap-3 text-center">
-              <h2 className="text-3xl font-semibold">Calculators & quick estimators</h2>
+              <h2 className="font-semibold text-3xl">
+                Calculators & quick estimators
+              </h2>
               <p className="text-muted-foreground">
-                Quantify the business impact of AI call handling, automation, and streamlined operations.
+                Quantify the business impact of AI call handling, automation,
+                and streamlined operations.
               </p>
             </div>
             <div className="grid gap-6 lg:grid-cols-3">
@@ -192,7 +200,7 @@ export default async function FreeToolsPage() {
                   <CardHeader>
                     <CardTitle className="text-lg">{tool.title}</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                  <CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
                     <p>{tool.description}</p>
                     <Button asChild variant="outline">
                       <Link href={tool.href}>Access resource</Link>
@@ -205,28 +213,30 @@ export default async function FreeToolsPage() {
 
           <section className="space-y-6">
             <div className="flex flex-col gap-3 text-center">
-              <h2 className="text-3xl font-semibold">Implementation guides</h2>
+              <h2 className="font-semibold text-3xl">Implementation guides</h2>
               <p className="text-muted-foreground">
-                Deep dives on QuickBooks sync, AI automation, and rollout best practices.
+                Deep dives on QuickBooks sync, AI automation, and rollout best
+                practices.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {guides.map((item) => (
-                <ResourceCard key={item.id} item={item} showImage={false} />
+                <ResourceCard item={item} key={item.id} showImage={false} />
               ))}
             </div>
           </section>
 
           <section className="space-y-6">
             <div className="flex flex-col gap-3 text-center">
-              <h2 className="text-3xl font-semibold">On-demand webinars</h2>
+              <h2 className="font-semibold text-3xl">On-demand webinars</h2>
               <p className="text-muted-foreground">
-                Watch product walkthroughs, customer success stories, and AI strategy sessions.
+                Watch product walkthroughs, customer success stories, and AI
+                strategy sessions.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {webinars.map((item) => (
-                <ResourceCard key={item.id} item={item} />
+                <ResourceCard item={item} key={item.id} />
               ))}
             </div>
             <div className="flex justify-center">
@@ -238,18 +248,22 @@ export default async function FreeToolsPage() {
 
           <section className="space-y-6">
             <div className="mx-auto max-w-3xl text-center">
-              <h2 className="text-3xl font-semibold">Stay ahead with the Thorbis help center</h2>
+              <h2 className="font-semibold text-3xl">
+                Stay ahead with the Thorbis help center
+              </h2>
               <p className="text-muted-foreground">
-                Our knowledge base covers configuration, best practices, and troubleshooting for every module.
+                Our knowledge base covers configuration, best practices, and
+                troubleshooting for every module.
               </p>
             </div>
-            <Card className="mx-auto max-w-4xl border-dashed border-primary/30 bg-primary/5">
+            <Card className="mx-auto max-w-4xl border-primary/30 border-dashed bg-primary/5">
               <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
-                <p className="text-lg font-semibold">
+                <p className="font-semibold text-lg">
                   Looking for something specific?
                 </p>
-                <p className="text-muted-foreground text-sm max-w-2xl">
-                  Search the knowledge base for written walkthroughs or head to the community to ask questions and share wins with peers.
+                <p className="max-w-2xl text-muted-foreground text-sm">
+                  Search the knowledge base for written walkthroughs or head to
+                  the community to ask questions and share wins with peers.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Button asChild>
@@ -264,14 +278,16 @@ export default async function FreeToolsPage() {
           </section>
 
           <section className="mx-auto max-w-4xl space-y-4">
-            <h2 className="text-3xl font-semibold text-center">Free tools FAQ</h2>
+            <h2 className="text-center font-semibold text-3xl">
+              Free tools FAQ
+            </h2>
             <div className="space-y-4">
               {FAQS.map((faq) => (
                 <Card key={faq.question}>
                   <CardHeader>
                     <CardTitle className="text-lg">{faq.question}</CardTitle>
                   </CardHeader>
-                  <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <CardContent className="text-muted-foreground text-sm leading-relaxed">
                     {faq.answer}
                   </CardContent>
                 </Card>
@@ -283,4 +299,3 @@ export default async function FreeToolsPage() {
     </>
   );
 }
-

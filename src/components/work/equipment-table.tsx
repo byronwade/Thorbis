@@ -11,7 +11,6 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,6 +26,7 @@ import {
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 
 export type Equipment = {
   id: string;
@@ -37,26 +37,26 @@ export type Equipment = {
   lastService: string;
   nextService: string;
   status: "available" | "in-use" | "maintenance" | "retired";
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
 
 const EQUIPMENT_STATUS_CONFIG = {
   available: {
-    className: "bg-green-500 hover:bg-green-600 text-white",
+    className: "bg-success hover:bg-success text-white",
     label: "Available",
   },
   "in-use": {
-    className:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    className: "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
     label: "In Use",
   },
   maintenance: {
-    className:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
     label: "Maintenance",
   },
   retired: {
     className:
-      "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+      "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
     label: "Retired",
   },
 } as const;
@@ -68,15 +68,27 @@ export function EquipmentTable({
   equipment: Equipment[];
   itemsPerPage?: number;
 }) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore((state) => state.filters.equipment);
+
+  // Filter equipment based on archive status
+  const filteredEquipment = equipment.filter((item) => {
+    const isArchived = Boolean(item.archived_at || item.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const columns: ColumnDef<Equipment>[] = [
     {
       key: "assetId",
       header: "Asset ID",
       width: "w-32",
       shrink: true,
+      sortable: true,
       render: (item) => (
         <Link
-          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          className="font-medium text-foreground text-sm leading-tight hover:underline"
           href={`/dashboard/work/equipment/${item.id}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -88,15 +100,20 @@ export function EquipmentTable({
       key: "name",
       header: "Name",
       width: "flex-1",
+      sortable: true,
       render: (item) => (
-        <div className="min-w-0">
-          <div className="truncate font-medium text-foreground text-sm leading-tight">
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/equipment/${item.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
             {item.name}
           </div>
           <div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
             {item.type}
           </div>
-        </div>
+        </Link>
       ),
     },
     {
@@ -105,6 +122,7 @@ export function EquipmentTable({
       width: "w-40",
       shrink: true,
       hideOnMobile: true,
+      sortable: true,
       render: (item) => (
         <span className="text-foreground text-sm">{item.assignedTo}</span>
       ),
@@ -115,6 +133,7 @@ export function EquipmentTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      sortable: true,
       render: (item) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {item.lastService}
@@ -127,6 +146,7 @@ export function EquipmentTable({
       width: "w-32",
       shrink: true,
       hideOnMobile: true,
+      sortable: true,
       render: (item) => (
         <span className="text-muted-foreground text-sm tabular-nums">
           {item.nextService}
@@ -138,11 +158,12 @@ export function EquipmentTable({
       header: "Status",
       width: "w-32",
       shrink: true,
+      sortable: true,
       render: (item) => (
         <GenericStatusBadge
-          status={item.status}
           config={EQUIPMENT_STATUS_CONFIG}
           defaultStatus="available"
+          status={item.status}
         />
       ),
     },
@@ -196,6 +217,7 @@ export function EquipmentTable({
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
+      variant: "destructive",
       onClick: (selectedIds) => console.log("Archive:", selectedIds),
     },
     {
@@ -221,10 +243,12 @@ export function EquipmentTable({
     <FullWidthDataTable
       bulkActions={bulkActions}
       columns={columns}
-      data={equipment}
+      data={filteredEquipment}
       emptyAction={
         <Button
-          onClick={() => (window.location.href = "/dashboard/work/equipment/new")}
+          onClick={() =>
+            (window.location.href = "/dashboard/work/equipment/new")
+          }
           size="sm"
         >
           <Plus className="mr-2 size-4" />
@@ -234,8 +258,10 @@ export function EquipmentTable({
       emptyIcon={<Truck className="h-8 w-8 text-muted-foreground" />}
       emptyMessage="No equipment found"
       enableSelection={true}
-      getHighlightClass={() => "bg-yellow-50/30 dark:bg-yellow-950/10"}
+      entity="equipment"
+      getHighlightClass={() => "bg-warning/30 dark:bg-warning/10"}
       getItemId={(item) => item.id}
+      isArchived={(item) => Boolean(item.archived_at || item.deleted_at)}
       isHighlighted={(item) => item.status === "maintenance"}
       itemsPerPage={itemsPerPage}
       onRefresh={() => window.location.reload()}
@@ -244,6 +270,7 @@ export function EquipmentTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
+      showArchived={archiveFilter !== "active"}
       showRefresh={false}
     />
   );

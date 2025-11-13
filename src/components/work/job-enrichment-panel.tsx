@@ -730,7 +730,7 @@ export function JobEnrichmentPanel({
                       {place.rating && (
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            <Star className="h-3 w-3 fill-yellow-400 text-warning" />
                             <span className="font-medium text-sm">
                               {place.rating.toFixed(1)}
                             </span>
@@ -869,8 +869,8 @@ export function JobEnrichmentPanel({
               if (googleFeatures.length === 0) return null;
 
               return (
-                <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-                  <Camera className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <Alert className="border-success bg-success dark:border-success dark:bg-success">
+                  <Camera className="h-4 w-4 text-success dark:text-success" />
                   <AlertDescription className="text-sm">
                     <strong>Google Maps:</strong> {googleFeatures.join(", ")}{" "}
                     available (100% FREE - 25k+ requests/month)

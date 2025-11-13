@@ -56,7 +56,7 @@ export function ImportProgress({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {isComplete ? (
-            <CheckCircle className="size-5 text-green-500" />
+            <CheckCircle className="size-5 text-success" />
           ) : (
             <Loader2 className="size-5 animate-spin" />
           )}
@@ -72,7 +72,10 @@ export function ImportProgress({
             <p className="text-sm">Progress</p>
             <p className="font-medium text-sm">{progress}%</p>
           </div>
-          <Progress className={isFailed ? "bg-red-100" : ""} value={progress} />
+          <Progress
+            className={isFailed ? "bg-destructive" : ""}
+            value={progress}
+          />
         </div>
 
         {currentBatch && totalBatches && (

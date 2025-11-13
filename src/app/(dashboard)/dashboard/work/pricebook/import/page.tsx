@@ -50,7 +50,7 @@ export default async function BulkImportPage() {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Upload className="h-5 w-5" />
               </div>
               <h3 className="font-medium">1. Upload File</h3>
@@ -60,7 +60,7 @@ export default async function BulkImportPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <FileSpreadsheet className="h-5 w-5" />
               </div>
               <h3 className="font-medium">2. Map Columns</h3>
@@ -70,7 +70,7 @@ export default async function BulkImportPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <CheckCircle2 className="h-5 w-5" />
               </div>
               <h3 className="font-medium">3. Review & Import</h3>

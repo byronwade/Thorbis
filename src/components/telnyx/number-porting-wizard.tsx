@@ -43,6 +43,7 @@ import { Progress } from "@/components/ui/progress";
 interface NumberPortingWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (phoneNumber: string) => void;
 }
 
 interface PortingData {
@@ -62,6 +63,7 @@ interface PortingData {
 export function NumberPortingWizard({
   open,
   onOpenChange,
+  onSuccess,
 }: NumberPortingWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [portingData, setPortingData] = useState<PortingData>({
@@ -153,7 +155,13 @@ export function NumberPortingWizard({
 
       if (result.success) {
         setSubmitting(false);
-        nextStep();
+        
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess(portingData.phoneNumber);
+        } else {
+          nextStep();
+        }
       } else {
         setSubmitting(false);
         alert(result.error || "Failed to submit porting request");
@@ -272,14 +280,14 @@ function Step1Introduction({ onNext }: { onNext: () => void }) {
 
       {/* Pros & Cons */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/20">
+        <div className="rounded-lg border border-success bg-success p-4 dark:border-success dark:bg-success/20">
           <div className="mb-3 flex items-center gap-2">
-            <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
-            <h4 className="font-semibold text-green-900 dark:text-green-100">
+            <CheckCircle2 className="size-5 text-success dark:text-success" />
+            <h4 className="font-semibold text-success dark:text-success">
               Advantages
             </h4>
           </div>
-          <ul className="space-y-2 text-green-800 text-sm dark:text-green-200">
+          <ul className="space-y-2 text-sm text-success dark:text-success">
             <li className="flex gap-2">
               <span>•</span>
               <span>Keep your existing business number</span>
@@ -303,14 +311,14 @@ function Step1Introduction({ onNext }: { onNext: () => void }) {
           </ul>
         </div>
 
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
+        <div className="rounded-lg border border-warning bg-warning p-4 dark:border-warning dark:bg-warning/20">
           <div className="mb-3 flex items-center gap-2">
-            <AlertCircle className="size-5 text-amber-600 dark:text-amber-400" />
-            <h4 className="font-semibold text-amber-900 dark:text-amber-100">
+            <AlertCircle className="size-5 text-warning dark:text-warning" />
+            <h4 className="font-semibold text-warning dark:text-warning">
               Considerations
             </h4>
           </div>
-          <ul className="space-y-2 text-amber-800 text-sm dark:text-amber-200">
+          <ul className="space-y-2 text-sm text-warning dark:text-warning">
             <li className="flex gap-2">
               <span>•</span>
               <span>Takes 7-10 business days typically</span>
@@ -471,12 +479,12 @@ function Step2Eligibility({
 
       {/* Eligibility Result */}
       {isEligible === true && (
-        <Alert className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20">
-          <CheckCircle2 className="size-4 text-green-600" />
-          <AlertTitle className="text-green-900 dark:text-green-100">
+        <Alert className="border-success bg-success dark:border-success dark:bg-success/20">
+          <CheckCircle2 className="size-4 text-success" />
+          <AlertTitle className="text-success dark:text-success">
             Number is Portable!
           </AlertTitle>
-          <AlertDescription className="text-green-800 text-sm dark:text-green-200">
+          <AlertDescription className="text-sm text-success dark:text-success">
             <div className="mt-2 space-y-1">
               <div>✓ This number can be ported to Ultrathink</div>
               <div>✓ Estimated timeline: 7-10 business days</div>
@@ -636,14 +644,14 @@ function Step4ServiceAddress({
       </div>
 
       <Alert
-        className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20"
+        className="border-warning bg-warning dark:border-warning dark:bg-warning/20"
         variant="default"
       >
-        <AlertCircle className="size-4 text-amber-600" />
-        <AlertTitle className="text-amber-900 dark:text-amber-100">
+        <AlertCircle className="size-4 text-warning" />
+        <AlertTitle className="text-warning dark:text-warning">
           Critical: Address Must Match Exactly
         </AlertTitle>
-        <AlertDescription className="text-amber-800 text-sm dark:text-amber-200">
+        <AlertDescription className="text-sm text-warning dark:text-warning">
           The #1 reason ports are rejected is address mismatch. Verify this
           address on your most recent bill. Even small differences (like "St" vs
           "Street" or "Apt 2" vs "#2") will cause rejection.
@@ -1066,8 +1074,8 @@ function Step8Confirmation({
 
   return (
     <div className="space-y-6 text-center">
-      <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-        <CheckCircle2 className="size-8 text-green-600 dark:text-green-400" />
+      <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success dark:bg-success/20">
+        <CheckCircle2 className="size-8 text-success dark:text-success" />
       </div>
 
       <div>

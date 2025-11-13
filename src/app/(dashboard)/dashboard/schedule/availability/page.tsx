@@ -220,12 +220,12 @@ export default function AvailabilityPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           tech.status === "Available"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success text-success"
                             : tech.status === "On Break"
-                              ? "bg-yellow-100 text-yellow-800"
+                              ? "bg-warning text-warning"
                               : tech.status === "Busy"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-destructive text-destructive"
+                                : "bg-muted text-foreground"
                         }`}
                       >
                         {tech.status}

@@ -1,15 +1,15 @@
 /**
  * Generic Status Badge Component
- * 
+ *
  * A reusable badge component that accepts a status configuration map.
  * Used to consolidate duplicate getStatusBadge functions across table components.
- * 
+ *
  * @example
  * const statusConfig = {
- *   active: { label: "Active", className: "bg-green-500 text-white" },
- *   pending: { label: "Pending", className: "bg-yellow-500 text-white" },
+ *   active: { label: "Active", className: "bg-success text-white" },
+ *   pending: { label: "Pending", className: "bg-warning text-white" },
  * };
- * 
+ *
  * <GenericStatusBadge status="active" config={statusConfig} />
  */
 
@@ -47,12 +47,16 @@ export function GenericStatusBadge({
   className,
   variant,
 }: GenericStatusBadgeProps) {
-  const statusConfig = config[status] || (defaultStatus ? config[defaultStatus] : null);
+  const statusConfig =
+    config[status] || (defaultStatus ? config[defaultStatus] : null);
 
   if (!statusConfig) {
     // Fallback if status not found and no default
     return (
-      <Badge className={cn("font-medium text-xs", className)} variant={variant || "outline"}>
+      <Badge
+        className={cn("font-medium text-xs", className)}
+        variant={variant || "outline"}
+      >
         {status}
       </Badge>
     );
@@ -67,8 +71,3 @@ export function GenericStatusBadge({
     </Badge>
   );
 }
-
-
-
-
-

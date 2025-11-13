@@ -132,7 +132,7 @@ export function ExportFieldSelector({
       </div>
 
       {/* Summary */}
-      <div className="rounded-lg border border-blue-500/50 bg-blue-500/5 p-4">
+      <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
         <p className="text-muted-foreground text-sm">
           <strong>{selectedFields.length}</strong> of{" "}
           <strong>{fields.length}</strong> fields selected

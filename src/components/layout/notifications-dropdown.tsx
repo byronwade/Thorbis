@@ -51,12 +51,12 @@ const notificationIcons: Record<NotificationType, typeof Bell> = {
 };
 
 const notificationColors: Record<NotificationType, string> = {
-  message: "text-blue-500",
-  alert: "text-orange-500",
-  payment: "text-green-500",
-  job: "text-purple-500",
+  message: "text-primary",
+  alert: "text-warning",
+  payment: "text-success",
+  job: "text-accent-foreground",
   team: "text-cyan-500",
-  system: "text-gray-500",
+  system: "text-muted-foreground",
 };
 
 // Display constants
@@ -99,7 +99,7 @@ function NotificationBadge({ count }: { count: number }) {
     return null;
   }
   return (
-    <span className="-right-1 -top-1 absolute flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 font-bold text-[0.625rem] text-white leading-none">
+    <span className="-right-1 -top-1 absolute flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1.5 font-bold text-[0.625rem] text-white leading-none">
       {formatBadgeCount(count)}
     </span>
   );

@@ -77,46 +77,47 @@ export function JobHeaderPermanent({
   const statusConfig = {
     quoted: {
       label: "Quoted",
-      color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+      color:
+        "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
     },
     scheduled: {
       label: "Scheduled",
       color:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+        "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
     },
     in_progress: {
       label: "In Progress",
-      color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      color: "bg-primary text-primary dark:bg-primary dark:text-primary",
     },
     completed: {
       label: "Completed",
-      color:
-        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      color: "bg-success text-success dark:bg-success dark:text-success",
     },
     cancelled: {
       label: "Cancelled",
-      color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      color:
+        "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
     },
   };
 
   const priorityConfig = {
     low: {
       label: "Low",
-      color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+      color:
+        "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
     },
     medium: {
       label: "Medium",
-      color:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+      color: "bg-warning text-warning dark:bg-warning dark:text-warning",
     },
     high: {
       label: "High",
-      color:
-        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      color: "bg-warning text-warning dark:bg-warning dark:text-warning",
     },
     urgent: {
       label: "Urgent",
-      color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      color:
+        "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
     },
   };
 
@@ -153,9 +154,11 @@ export function JobHeaderPermanent({
 
   // Format next appointment
   const nextAppointment = job.scheduledStart
-    ? new Date(job.scheduledStart)
+    ? new Date(String(job.scheduledStart))
     : null;
-  const appointmentEnd = job.scheduledEnd ? new Date(job.scheduledEnd) : null;
+  const appointmentEnd = job.scheduledEnd
+    ? new Date(String(job.scheduledEnd))
+    : null;
 
   const formatDate = (date: Date) =>
     new Intl.DateTimeFormat("en-US", {
@@ -173,7 +176,7 @@ export function JobHeaderPermanent({
     }).format(date);
 
   // Get time window from notes if available
-  const timeWindow = job.notes?.match(
+  const timeWindow = String(job.notes || "").match(
     /\[Scheduling\] Customer preferred time window: (\w+)/
   )?.[1];
 
@@ -270,7 +273,7 @@ export function JobHeaderPermanent({
                         <p className="text-sm">
                           <Link
                             className="hover:underline"
-                            href={`/dashboard/properties/${property.id}`}
+                            href={`/dashboard/work/properties/${property.id}`}
                           >
                             {property.name || property.address}
                           </Link>
@@ -321,12 +324,12 @@ export function JobHeaderPermanent({
                 property={
                   property
                     ? {
-                        address: property.address,
-                        city: property.city,
-                        state: property.state,
-                        zip_code: property.zip_code,
-                        lat: property.lat,
-                        lon: property.lon,
+                        address: property.address ?? undefined,
+                        city: property.city ?? undefined,
+                        state: property.state ?? undefined,
+                        zip_code: property.zip_code ?? undefined,
+                        lat: property.lat ?? undefined,
+                        lon: property.lon ?? undefined,
                       }
                     : undefined
                 }
@@ -444,7 +447,7 @@ export function JobHeaderPermanent({
                   </p>
                   {job.paidAmount && job.paidAmount > 0 && (
                     <p className="text-xs">
-                      <span className="text-green-600">
+                      <span className="text-success">
                         ${((job.paidAmount || 0) / 100).toLocaleString()} paid
                       </span>
                     </p>

@@ -468,11 +468,11 @@ function getActivityIconComponent(activityType: Activity["activityType"]) {
  */
 function getActivityIconColorClass(category: ActivityCategory): string {
   const colorMap = {
-    system: "text-blue-500",
-    user: "text-green-500",
-    ai: "text-purple-500",
-    automation: "text-orange-500",
+    system: "text-primary",
+    user: "text-success",
+    ai: "text-accent-foreground",
+    automation: "text-warning",
   };
 
-  return colorMap[category] || "text-gray-500";
+  return colorMap[category] || "text-muted-foreground";
 }

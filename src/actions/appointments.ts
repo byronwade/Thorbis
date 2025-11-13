@@ -763,7 +763,7 @@ export async function unlinkScheduleFromJob(
 
     if (unlinkError) {
       throw new ActionError(
-        ERROR_MESSAGES.operationFailed("unlink appointment from job"),
+        "Failed to unlink appointment from job",
         ERROR_CODES.DB_QUERY_ERROR
       );
     }

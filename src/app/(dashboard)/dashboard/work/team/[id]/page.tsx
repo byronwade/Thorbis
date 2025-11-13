@@ -1,18 +1,29 @@
 /**
- * Team Member Details Page - Server Component
- *
- * Displays individual team member information
+ * Team Member Details Page - Single Page with Collapsible Sections
+ * Matches customer and job details page pattern
  */
 
 import { notFound } from "next/navigation";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { ToolbarActionsProvider } from "@/components/layout/toolbar-actions-provider";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
+import { TeamMemberPageContent } from "@/components/team/team-member-page-content";
+import { generateTeamMemberStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { TeamMemberPermissionsAdvanced } from "@/components/work/team-member-permissions-advanced";
-import { TeamMemberDetailToolbar } from "@/components/work/team-member-detail-toolbar";
-import { Mail, Phone, Calendar, Clock, Briefcase, Building2, Archive } from "lucide-react";
+
+// Configure page for full width with no sidebars
+export const dynamic = "force-dynamic";
+
+// Custom metadata for this page
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return {
+    title: "Team Member Details",
+  };
+}
 
 export default async function TeamMemberDetailsPage({
   params,
@@ -24,68 +35,110 @@ export default async function TeamMemberDetailsPage({
   const supabase = await createClient();
 
   if (!supabase) {
+    console.error("[Team Member Page] Supabase client not initialized");
     return notFound();
   }
 
   // Get authenticated user
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
 
+  if (authError) {
+    console.error("[Team Member Page] Auth error:", authError);
+    return notFound();
+  }
+
   if (!user) {
+    console.error("[Team Member Page] No authenticated user");
     return notFound();
   }
 
-  // Get active company ID
-  const companyId = await getActiveCompanyId();
+  // Get the active company ID
+  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+  const activeCompanyId = await getActiveCompanyId();
 
-  if (!companyId) {
+  if (!activeCompanyId) {
+    console.error("[Team Member Page] No active company ID");
     return notFound();
   }
 
-  // Fetch team member details
-  const { data: member, error } = await supabase
+  // Get user's membership for the ACTIVE company
+  const { data: teamMember, error: teamMemberError } = await supabase
     .from("team_members")
-    .select(
-      `
-      id,
-      user_id,
-      company_id,
-      role_id,
-      department_id,
-      status,
-      job_title,
-      phone,
-      invited_at,
-      joined_at,
-      last_active_at,
-      created_at,
-      archived_at
-    `
-    )
-    .eq("id", memberId)
-    .eq("company_id", companyId)
-    .single();
+    .select("company_id")
+    .eq("user_id", user.id)
+    .eq("company_id", activeCompanyId)
+    .eq("status", "active")
+    .maybeSingle();
 
-  if (error || !member) {
+  // Check for real errors
+  const hasRealError =
+    teamMemberError &&
+    teamMemberError.code !== "PGRST116" &&
+    Object.keys(teamMemberError).length > 0;
+
+  if (hasRealError) {
+    try {
+      console.error(
+        "[Team Member Page] Team member query error:",
+        JSON.stringify(teamMemberError, null, 2)
+      );
+    } catch (e) {
+      console.error(
+        "[Team Member Page] Team member error (could not serialize):",
+        teamMemberError
+      );
+    }
     return notFound();
   }
 
-  // Fetch user details
-  const { data: userData } = await supabase
-    .from("users")
-    .select("id, name, email, avatar")
-    .eq("id", member.user_id)
+  if (!teamMember?.company_id) {
+    console.error(
+      "[Team Member Page] User has no active company membership. User ID:",
+      user.id
+    );
+    return notFound();
+  }
+
+  // Fetch the specific team member details (basic first)
+  const { data: member, error: memberError } = await supabase
+    .from("team_members")
+    .select("*")
+    .eq("id", memberId)
+    .eq("company_id", teamMember.company_id)
     .single();
 
-  // Fetch role details
-  const { data: roleData } = await supabase
-    .from("custom_roles")
-    .select("id, name, color")
-    .eq("id", member.role_id)
-    .single();
+  if (memberError) {
+    console.error("[Team Member Page] Member query error:", memberError);
+    console.error("[Team Member Page] Member ID:", memberId);
+    console.error("[Team Member Page] Company ID:", teamMember.company_id);
+    return notFound();
+  }
 
-  // Fetch department details if exists
+  if (!member) {
+    console.error(
+      "[Team Member Page] Member not found. ID:",
+      memberId,
+      "Company ID:",
+      teamMember.company_id
+    );
+    return notFound();
+  }
+
+  // Fetch role details if role_id exists
+  let roleData = null;
+  if (member.role_id) {
+    const { data } = await supabase
+      .from("custom_roles")
+      .select("id, name, color")
+      .eq("id", member.role_id)
+      .single();
+    roleData = data;
+  }
+
+  // Fetch department details if department_id exists
   let departmentData = null;
   if (member.department_id) {
     const { data } = await supabase
@@ -96,240 +149,150 @@ export default async function TeamMemberDetailsPage({
     departmentData = data;
   }
 
-  const getInitials = (name: string) =>
-    name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  // Fetch user details
+  const { data: userData } = await supabase
+    .from("users")
+    .select("id, name, email, avatar")
+    .eq("id", member.user_id)
+    .single();
 
-  const getStatusBadgeVariant = (
-    status: string
-  ): "default" | "secondary" | "outline" => {
-    switch (status) {
-      case "active":
-        return "default";
-      case "invited":
-        return "secondary";
-      case "suspended":
-        return "outline";
-      default:
-        return "secondary";
-    }
+  // Fetch related data for display
+  const [
+    { data: assignedJobs },
+    { data: timeEntries },
+    { data: certifications },
+    { data: activities },
+    { data: attachments },
+    { data: permissions },
+  ] = await Promise.all([
+    // Assigned Jobs
+    supabase
+      .from("job_assignments")
+      .select(
+        `
+        *,
+        job:jobs(
+          id,
+          job_number,
+          title,
+          status,
+          scheduled_start,
+          scheduled_end,
+          customer:customers(id, first_name, last_name, display_name, company_name)
+        )
+      `
+      )
+      .eq("team_member_id", memberId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    // Time Entries
+    supabase
+      .from("time_entries")
+      .select(
+        `
+        *,
+        job:jobs(id, job_number, title)
+      `
+      )
+      .eq("team_member_id", memberId)
+      .order("clock_in", { ascending: false })
+      .limit(50),
+    // Certifications
+    supabase
+      .from("certifications")
+      .select("*")
+      .eq("team_member_id", memberId)
+      .order("issue_date", { ascending: false }),
+    // Activities
+    supabase
+      .from("audit_logs")
+      .select(
+        `
+        *,
+        user:users!user_id(name, email, avatar)
+      `
+      )
+      .eq("entity_type", "team_members")
+      .eq("entity_id", memberId)
+      .order("created_at", { ascending: false })
+      .limit(50),
+    // Attachments
+    supabase
+      .from("attachments")
+      .select("*")
+      .eq("entity_type", "team_members")
+      .eq("entity_id", memberId)
+      .is("deleted_at", null)
+      .order("uploaded_at", { ascending: false })
+      .limit(100),
+    // Permissions (if we have a permissions table)
+    supabase
+      .from("role_permissions")
+      .select("*")
+      .eq("role_id", member.role_id)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  // Calculate metrics
+  const totalJobs = assignedJobs?.length || 0;
+  const totalHours =
+    timeEntries?.reduce(
+      (sum: number, entry: any) => sum + (entry.total_hours || 0),
+      0
+    ) || 0;
+  const activeCertifications =
+    certifications?.filter((cert: any) => {
+      if (!cert.expiry_date) return true;
+      return new Date(cert.expiry_date) > new Date();
+    }).length || 0;
+
+  const metrics = {
+    totalJobs,
+    totalHours,
+    activeCertifications,
+    totalCertifications: certifications?.length || 0,
+    completedJobs:
+      assignedJobs?.filter((a: any) => a.job?.status === "completed").length ||
+      0,
+    activeJobs:
+      assignedJobs?.filter(
+        (a: any) =>
+          a.job?.status === "in_progress" || a.job?.status === "scheduled"
+      ).length || 0,
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+  // Prepare team member data object with role and department
+  const teamMemberData = {
+    teamMember: {
+      ...member,
+      role: roleData,
+      department: departmentData,
+      user: userData,
+    },
+    user: userData,
+    assignedJobs: assignedJobs || [],
+    timeEntries: timeEntries || [],
+    certifications: certifications || [],
+    activities: activities || [],
+    attachments: attachments || [],
+    permissions: permissions || [],
   };
 
-  const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return "Never";
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60_000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  };
-
-  const isArchived = Boolean(member.archived_at);
-  const archivedDate = member.archived_at ? formatDate(member.archived_at) : null;
+  // Generate stats for toolbar
+  const stats = generateTeamMemberStats(metrics);
 
   return (
-    <div className="h-full w-full overflow-auto">
-      <div className="mx-auto max-w-7xl space-y-6 p-6">
-        {/* Archive Notice */}
-        {isArchived && (
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/20">
-            <div className="flex items-center gap-3">
-              <Archive className="size-5 text-orange-600 dark:text-orange-400" />
-              <div>
-                <p className="font-medium text-orange-900 dark:text-orange-100">
-                  This team member has been archived
-                </p>
-                <p className="text-sm text-orange-700 dark:text-orange-300">
-                  Archived on {archivedDate}. This member no longer has access and doesn't count in team statistics.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Profile Header */}
-        <div className="flex items-start gap-4 rounded-lg border bg-card p-6">
-          <Avatar className="size-20">
-            <AvatarImage alt={userData?.name || "User"} src={userData?.avatar} />
-            <AvatarFallback className="text-xl">
-              {getInitials(userData?.name || "Unknown")}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">{userData?.name || "Unknown"}</h1>
-              {isArchived && (
-                <Badge variant="outline" className="text-orange-600 border-orange-300">
-                  Archived
-                </Badge>
-              )}
-            </div>
-            <p className="text-muted-foreground">{userData?.email}</p>
-            <div className="mt-3 flex items-center gap-2">
-            <Badge variant={getStatusBadgeVariant(member.status)}>
-              {member.status === "active" ? "Active" : member.status === "invited" ? "Invited" : "Suspended"}
-            </Badge>
-            {roleData && (
-              <Badge
-                style={{
-                  backgroundColor: roleData.color || undefined,
-                }}
-                variant={roleData.color ? "default" : "secondary"}
-              >
-                {roleData.name}
-              </Badge>
-            )}
-            {departmentData && (
-              <Badge
-                style={{
-                  backgroundColor: departmentData.color || undefined,
-                }}
-                variant={departmentData.color ? "default" : "outline"}
-              >
-                {departmentData.name}
-              </Badge>
-            )}
+    <ToolbarStatsProvider stats={stats}>
+      <ToolbarActionsProvider actions={null}>
+        <div className="flex h-full w-full flex-col overflow-auto">
+          <div className="mx-auto w-full max-w-7xl">
+            <TeamMemberPageContent
+              entityData={teamMemberData}
+              metrics={metrics}
+            />
           </div>
         </div>
-        <div className="flex items-center justify-end">
-          <TeamMemberDetailToolbar />
-        </div>
-      </div>
-
-      {/* Contact & Employment Info */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-            <CardDescription>How to reach this team member</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Mail className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Email</p>
-                <p className="text-sm text-muted-foreground">
-                  {userData?.email || "N/A"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Phone</p>
-                <p className="text-sm text-muted-foreground">
-                  {member.phone || "Not provided"}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Employment Details</CardTitle>
-            <CardDescription>Role and department information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Briefcase className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Job Title</p>
-                <p className="text-sm text-muted-foreground">
-                  {member.job_title || "Not specified"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Building2 className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Department</p>
-                <p className="text-sm text-muted-foreground">
-                  {departmentData?.name || "Not assigned"}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Permissions & Access */}
-      <TeamMemberPermissionsAdvanced />
-
-      {/* Activity & Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Activity Timeline</CardTitle>
-          <CardDescription>Member activity and important dates</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between border-b pb-4">
-            <div className="flex items-center gap-3">
-              <Clock className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Last Active</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatDateTime(member.last_active_at)}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between border-b pb-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Joined Date</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(member.joined_at)}
-                </p>
-              </div>
-            </div>
-          </div>
-          {member.invited_at && (
-            <div className="flex items-center justify-between border-b pb-4">
-              <div className="flex items-center gap-3">
-                <Mail className="size-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Invited Date</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(member.invited_at)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Calendar className="size-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Member Since</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(member.created_at)}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      </div>
-    </div>
+      </ToolbarActionsProvider>
+    </ToolbarStatsProvider>
   );
 }

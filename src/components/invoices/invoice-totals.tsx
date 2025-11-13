@@ -31,7 +31,6 @@ interface InvoiceTotalsProps {
 }
 
 export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
-
   return (
     <Card className="mb-8 ml-auto max-w-md p-6">
       <div className="space-y-3">
@@ -57,7 +56,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
         {invoice.discount_amount > 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Discount</span>
-            <span className="font-medium text-green-600">
+            <span className="font-medium text-success">
               -{formatCurrency(invoice.discount_amount || 0, { decimals: 2 })}
             </span>
           </div>
@@ -79,7 +78,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
             <Separator />
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Paid</span>
-              <span className="font-medium text-green-600">
+              <span className="font-medium text-success">
                 {formatCurrency(invoice.paid_amount || 0, { decimals: 2 })}
               </span>
             </div>
@@ -104,7 +103,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 
         {/* Paid in Full */}
         {invoice.balance_amount === 0 && invoice.paid_amount > 0 && (
-          <div className="rounded-md bg-green-50 p-3 text-center font-medium text-green-800 text-sm dark:bg-green-950 dark:text-green-200">
+          <div className="rounded-md bg-success p-3 text-center font-medium text-sm text-success dark:bg-success dark:text-success">
             Paid in Full
           </div>
         )}

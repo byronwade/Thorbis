@@ -121,7 +121,7 @@ export function ReviewsManagement() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Avg. Rating</CardTitle>
-            <Star className="h-4 w-4 text-yellow-500" />
+            <Star className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">{avgRating}</div>
@@ -236,7 +236,7 @@ export function ReviewsManagement() {
                                 <Star
                                   className={`h-3 w-3 ${
                                     i < review.rating
-                                      ? "fill-yellow-500 text-yellow-500"
+                                      ? "fill-yellow-500 text-warning"
                                       : "text-muted"
                                   }`}
                                   key={i}

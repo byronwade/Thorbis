@@ -72,8 +72,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       ? relatedArticlesResult.articles
       : [];
 
-  const publishedDate = article.publishedAt
-    ? new Date(article.publishedAt as string)
+  const publishedDate = article.published_at
+    ? new Date(article.published_at as string)
     : null;
 
   return (
@@ -93,7 +93,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       >
         {JSON.stringify(
           generateBreadcrumbStructuredData(
-            { slug: article.category.slug, title: article.category.title } as { slug: string; title: string },
+            { slug: article.category.slug, title: article.category.title } as {
+              slug: string;
+              title: string;
+            },
             {
               slug: article.slug as string,
               title: article.title as string,
@@ -134,9 +137,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <header className="mb-8">
               <div className="mb-4 flex items-center gap-2">
                 <Link href={`/kb/${article.category.slug}`}>
-                  <Badge variant="secondary">{String(article.category.title)}</Badge>
+                  <Badge variant="secondary">
+                    {String(article.category.title)}
+                  </Badge>
                 </Link>
-                {Boolean(article.featured) && <Badge variant="default">Featured</Badge>}
+                {Boolean(article.featured) && (
+                  <Badge variant="default">Featured</Badge>
+                )}
               </div>
               <h1 className="mb-4 font-bold text-4xl tracking-tight">
                 {String(article.title)}
@@ -162,7 +169,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 {(article.viewCount as number) > 0 && (
                   <div className="flex items-center gap-1">
                     <Eye className="size-4" />
-                    <span>{(article.viewCount as number).toLocaleString()} views</span>
+                    <span>
+                      {(article.viewCount as number).toLocaleString()} views
+                    </span>
                   </div>
                 )}
                 {article.author && (
@@ -174,7 +183,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </header>
 
             {/* Featured Image */}
-            {article.featuredImage && (
+            {article.featured_image && (
               <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
                 <Image
                   alt={String(article.title)}
@@ -182,7 +191,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                  src={String(article.featuredImage)}
+                  src={String(article.featured_image)}
                 />
               </div>
             )}

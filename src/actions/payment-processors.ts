@@ -101,11 +101,28 @@ export async function configurePaymentProcessor(
     }
 
     const processorType = formData.get("processorType") as string;
+    const bankAccountId = formData.get("bankAccountId") as string | null;
+
     const configData: any = {
       company_id: teamMember.company_id,
       processor_type: processorType,
       status: "pending",
     };
+
+    // Link to bank account if provided
+    if (bankAccountId) {
+      // Verify bank account belongs to company
+      const { data: bankAccount } = await supabase
+        .from("finance_bank_accounts")
+        .select("id")
+        .eq("id", bankAccountId)
+        .eq("company_id", teamMember.company_id)
+        .single();
+
+      if (bankAccount) {
+        configData.bank_account_id = bankAccountId;
+      }
+    }
 
     // Configure based on processor type
     if (processorType === "adyen") {

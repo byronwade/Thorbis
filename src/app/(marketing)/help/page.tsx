@@ -119,7 +119,9 @@ export default async function HelpCenterPage() {
             </h1>
             <p className="text-lg text-muted-foreground">
               Search our knowledge base, explore upcoming trainings, and reach
-              the support team in one place. Every plan includes Help Center access with the $100/month base subscription, pay-as-you-go usage, and no lock-in.
+              the support team in one place. Every plan includes Help Center
+              access with the $100/month base subscription, pay-as-you-go usage,
+              and no lock-in.
             </p>
             <div className="mt-8">
               <KBSearch showButton />
@@ -313,8 +315,8 @@ export default async function HelpCenterPage() {
                 </div>
               ) : (
                 <p className="rounded-xl border border-dashed bg-muted/20 p-6 text-muted-foreground">
-                  Case studies are coming soon. In the meantime, create your account to
-                  explore how teams like yours use Thorbis.
+                  Case studies are coming soon. In the meantime, create your
+                  account to explore how teams like yours use Thorbis.
                 </p>
               )}
             </div>

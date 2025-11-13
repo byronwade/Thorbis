@@ -19,6 +19,16 @@ import {
   deleteCustomerNote,
   getCustomerNotes,
 } from "@/actions/customer-notes";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +70,8 @@ export function CustomerNotesTable({
   const [newNoteType, setNewNoteType] = useState<"customer" | "internal">(
     "customer"
   );
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
   const pageSize = 20;
 
@@ -108,13 +120,6 @@ export function CustomerNotesTable({
   };
 
   const handleArchiveNote = async (noteId: string) => {
-    if (
-      !confirm(
-        "Archive this note? It can be restored within 90 days from the archive page."
-      )
-    )
-      return;
-
     const result = await deleteCustomerNote(noteId); // Function already does soft delete
     if (result.success) {
       loadNotes();
@@ -269,7 +274,10 @@ export function CustomerNotesTable({
                   <TableCell>
                     <Button
                       className="size-8 p-0"
-                      onClick={() => handleArchiveNote(note.id)}
+                      onClick={() => {
+                        setItemToArchive(note.id);
+                        setIsArchiveDialogOpen(true);
+                      }}
                       size="sm"
                       title="Archive note"
                       variant="ghost"
@@ -311,6 +319,35 @@ export function CustomerNotesTable({
           </div>
         </div>
       )}
+
+      {/* Archive Note Dialog */}
+      <AlertDialog
+        onOpenChange={setIsArchiveDialogOpen}
+        open={isArchiveDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Note?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This note will be archived and can be restored within 90 days from
+              the archive page.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (itemToArchive) {
+                  await handleArchiveNote(itemToArchive);
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

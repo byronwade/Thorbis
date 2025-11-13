@@ -3,15 +3,10 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -23,11 +18,7 @@ export const metadata = generateSEOMetadata({
     "Create your Thorbis account in minutes. Choose a plan, invite your team, and start automating operations without waiting for a sales call.",
   path: "/demo",
   section: "Company",
-  keywords: [
-    "thorbis signup",
-    "start thorbis trial",
-    "thorbis onboarding",
-  ],
+  keywords: ["thorbis signup", "start thorbis trial", "thorbis onboarding"],
 });
 
 const GET_STARTED_STEPS = [
@@ -76,8 +67,6 @@ export default function DemoPage() {
   return (
     <>
       <Script
-        id="demo-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -86,17 +75,22 @@ export default function DemoPage() {
             ])
           ),
         }}
+        id="demo-breadcrumb-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <section className="mx-auto max-w-3xl space-y-6 text-center">
-          <Badge variant="secondary" className="uppercase tracking-wide">
+          <Badge className="uppercase tracking-wide" variant="secondary">
             Self-serve signup
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             Spin up your Thorbis account today
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Choose your plan, invite your team, and start automating operations without waiting for a sales call. Thorbis costs $100/month for the base platform with pay-as-you-go usage—unlimited users, no contracts, no lock-in.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Choose your plan, invite your team, and start automating operations
+            without waiting for a sales call. Thorbis costs $100/month for the
+            base platform with pay-as-you-go usage—unlimited users, no
+            contracts, no lock-in.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
@@ -109,15 +103,17 @@ export default function DemoPage() {
         </section>
 
         <section className="mt-16 space-y-6">
-          <h2 className="text-2xl font-semibold text-center">Three simple steps</h2>
+          <h2 className="text-center font-semibold text-2xl">
+            Three simple steps
+          </h2>
           <div className="grid gap-6 md:grid-cols-3">
             {GET_STARTED_STEPS.map((step) => (
-              <Card key={step.title} className="bg-muted/40">
+              <Card className="bg-muted/40" key={step.title}>
                 <CardHeader>
                   <CardTitle className="text-lg">{step.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {step.description}
                   </p>
                 </CardContent>
@@ -127,7 +123,7 @@ export default function DemoPage() {
         </section>
 
         <section className="mt-16 space-y-6">
-          <h2 className="text-2xl font-semibold text-center">
+          <h2 className="text-center font-semibold text-2xl">
             Resources to guide your rollout
           </h2>
           <div className="grid gap-6 md:grid-cols-3">
@@ -136,7 +132,7 @@ export default function DemoPage() {
                 <CardHeader>
                   <CardTitle className="text-lg">{resource.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                <CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
                   <p>{resource.description}</p>
                   <Button asChild variant="outline">
                     <Link href={resource.href}>{resource.cta}</Link>
@@ -149,9 +145,10 @@ export default function DemoPage() {
 
         <section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
           <p className="text-lg text-muted-foreground">
-            Already a customer? Visit the Help Center for training resources, live webinars, and office hours with our success team.
+            Already a customer? Visit the Help Center for training resources,
+            live webinars, and office hours with our success team.
           </p>
-          <Button className="mt-6" variant="secondary" asChild>
+          <Button asChild className="mt-6" variant="secondary">
             <Link href="/help">Visit the Help Center</Link>
           </Button>
         </section>
@@ -159,4 +156,3 @@ export default function DemoPage() {
     </>
   );
 }
-

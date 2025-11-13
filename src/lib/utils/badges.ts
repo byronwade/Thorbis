@@ -55,38 +55,38 @@ export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
   const configs: Record<string, BadgeConfig> = {
     paid: {
       className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+        "border-green-500/30 bg-green-500 text-white hover:bg-green-600 shadow-sm",
       label: "Paid",
     },
     unpaid: {
       className:
-        "border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400",
+        "border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400 shadow-sm",
       label: "Unpaid",
     },
     overdue: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      className: "border-red-500/30 bg-red-500 text-white hover:bg-red-600 shadow-sm ring-1 ring-red-500/20",
       label: "Overdue",
     },
     draft: {
       className:
-        "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+        "border-border/50 bg-background text-muted-foreground hover:bg-muted/50 shadow-sm",
       label: "Draft",
     },
     sent: {
       className:
-        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+        "border-blue-200/50 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400 shadow-sm",
       label: "Sent",
     },
     pending: {
       className:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 shadow-sm",
       label: "Pending",
     },
   };
 
   return (
     configs[status] || {
-      className: "border-border/50 bg-background text-muted-foreground",
+      className: "border-border/50 bg-background text-muted-foreground shadow-sm",
       label: status.replace(/_/g, " "),
     }
   );
@@ -342,4 +342,3 @@ export function getStatusBadgeConfig(
       };
   }
 }
-

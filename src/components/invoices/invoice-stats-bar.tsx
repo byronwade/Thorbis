@@ -17,23 +17,25 @@
  * - Supports compact mode for sticky scrolling
  */
 
-import { type StatCard } from "@/components/ui/stats-cards";
 import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
+import type { StatCard } from "@/components/ui/stats-cards";
 
 interface InvoiceStatsBarProps {
-  invoice: {
-    total_amount: number; // in cents
-    paid_amount: number; // in cents
-    balance_amount: number; // in cents
-    due_date: string;
+  entityId: string;
+  metrics: {
+    totalAmount: number; // in cents
+    paidAmount: number; // in cents
+    balanceAmount: number; // in cents
+    dueDate: string | null;
     status: string;
-    created_at: string;
+    createdAt: string;
   };
   compact?: boolean;
 }
 
 export function InvoiceStatsBar({
-  invoice,
+  entityId,
+  metrics,
   compact = false,
 }: InvoiceStatsBarProps) {
   // Format currency
@@ -45,14 +47,14 @@ export function InvoiceStatsBar({
 
   // Calculate percentage paid
   const percentPaid =
-    invoice.total_amount > 0
-      ? Math.round((invoice.paid_amount / invoice.total_amount) * 100)
+    metrics.totalAmount > 0
+      ? Math.round((metrics.paidAmount / metrics.totalAmount) * 100)
       : 0;
 
   // Calculate days until due
   const daysUntilDue = () => {
-    if (!invoice.due_date) return null;
-    const due = new Date(invoice.due_date);
+    if (!metrics.dueDate) return null;
+    const due = new Date(metrics.dueDate);
     const now = new Date();
     const diffTime = due.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -66,40 +68,40 @@ export function InvoiceStatsBar({
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "paid":
-        return "text-green-600";
+        return "text-success";
       case "draft":
-        return "text-gray-500";
+        return "text-muted-foreground";
       case "sent":
-        return "text-blue-600";
+        return "text-primary";
       case "overdue":
-        return "text-red-600";
+        return "text-destructive";
       case "partial":
-        return "text-orange-600";
+        return "text-warning";
       default:
-        return "text-gray-600";
+        return "text-muted-foreground";
     }
   };
 
   const stats: StatCard[] = [
     {
       label: "Total Amount",
-      value: formatCurrency(invoice.total_amount),
+      value: formatCurrency(metrics.totalAmount),
     },
     {
       label: "Paid",
-      value: formatCurrency(invoice.paid_amount),
+      value: formatCurrency(metrics.paidAmount),
       change: percentPaid,
       changeLabel: `${percentPaid}% paid`,
     },
     {
       label: "Balance Due",
-      value: formatCurrency(invoice.balance_amount),
-      change: invoice.balance_amount > 0 ? -1 : 1,
+      value: formatCurrency(metrics.balanceAmount),
+      change: metrics.balanceAmount > 0 ? -1 : 1,
     },
     {
       label: "Due Date",
-      value: invoice.due_date
-        ? new Date(invoice.due_date).toLocaleDateString("en-US", {
+      value: metrics.dueDate
+        ? new Date(metrics.dueDate).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
@@ -115,7 +117,7 @@ export function InvoiceStatsBar({
     },
     {
       label: "Status",
-      value: invoice.status.toUpperCase(),
+      value: metrics.status.toUpperCase(),
     },
   ];
 

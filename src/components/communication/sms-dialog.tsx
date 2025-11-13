@@ -143,11 +143,11 @@ export function SMSDialog({
               </Select>
             </div>
           ) : (
-            <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 text-center dark:border-orange-800 dark:bg-orange-950">
-              <p className="text-orange-900 text-sm dark:text-orange-200">
+            <div className="rounded-lg border border-warning bg-warning p-4 text-center dark:border-warning dark:bg-warning">
+              <p className="text-sm text-warning dark:text-warning">
                 No company phone numbers configured.
               </p>
-              <p className="mt-1 text-orange-700 text-xs dark:text-orange-300">
+              <p className="mt-1 text-warning text-xs dark:text-warning">
                 Purchase or port a phone number from Settings → Phone Numbers
               </p>
             </div>

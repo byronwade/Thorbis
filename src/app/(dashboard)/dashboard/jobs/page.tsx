@@ -210,12 +210,12 @@ export default function JobsPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           job.status === "In Progress"
-                            ? "bg-blue-100 text-blue-800"
+                            ? "bg-primary text-primary"
                             : job.status === "Assigned"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-success text-success"
                               : job.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-warning text-warning"
+                                : "bg-destructive text-destructive"
                         }`}
                       >
                         {job.status}
@@ -223,10 +223,10 @@ export default function JobsPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           job.priority === "High"
-                            ? "bg-red-100 text-red-800"
+                            ? "bg-destructive text-destructive"
                             : job.priority === "Medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
+                              ? "bg-warning text-warning"
+                              : "bg-success text-success"
                         }`}
                       >
                         {job.priority}

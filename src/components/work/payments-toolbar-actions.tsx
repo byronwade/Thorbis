@@ -4,36 +4,58 @@
  * PaymentsToolbarActions Component - Client Component
  *
  * Toolbar actions for the payments page
- * - View switcher
- * - Filter button
+ * - Comprehensive filter dropdown (archive + status + method + amount + customer + reference#)
+ * - Column visibility toggle
  * - Record Payment button
  * - Import/Export
  */
 
-import { Filter } from "lucide-react";
+import { PaymentsFilterDropdown } from "@/components/work/payments-filter-dropdown";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
-import { Button } from "@/components/ui/button";
+import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 
-export function PaymentsToolbarActions() {
+// Define hideable columns for payments
+const PAYMENTS_COLUMNS = [
+  { key: "customer", label: "Customer" },
+  { key: "invoice", label: "Invoice" },
+  { key: "amount", label: "Amount" },
+  { key: "payment_method", label: "Payment Method" },
+  { key: "status", label: "Status" },
+  { key: "processed_at", label: "Processed At" },
+];
+
+type PaymentsToolbarActionsProps = {
+  totalCount?: number;
+  activeCount?: number;
+  archivedCount?: number;
+};
+
+export function PaymentsToolbarActions({
+  totalCount = 0,
+  activeCount,
+  archivedCount,
+}: PaymentsToolbarActionsProps) {
   return (
     <BaseToolbarActions
-      viewSwitcherSection="payments"
       beforePrimaryAction={
-        <Button size="sm" variant="ghost">
-          <Filter className="mr-2 size-4" />
-          Filter
-        </Button>
+        <div className="flex items-center gap-2">
+          <PaymentsFilterDropdown
+            activeCount={activeCount}
+            archivedCount={archivedCount}
+            totalCount={totalCount}
+          />
+          <ColumnVisibilityMenu
+            columns={PAYMENTS_COLUMNS}
+            entity="payments"
+          />
+        </div>
       }
+      importExportDataType="payments"
       primaryAction={{
         href: "/dashboard/work/payments/new",
         label: "Record Payment",
       }}
-      importExportDataType="payments"
+      viewSwitcherSection={undefined} // Kanban disabled
     />
   );
 }
-
-
-
-
-

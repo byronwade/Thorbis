@@ -136,9 +136,9 @@ export function JobToolbar({
                     Edit job data inline (customer, amounts, etc.)
                   </li>
                 </ul>
-                <div className="mt-2 flex items-center gap-2 rounded-md bg-amber-500/10 p-2 text-xs">
-                  <Lock className="size-3.5 text-amber-600" />
-                  <span className="text-amber-900 dark:text-amber-100">
+                <div className="mt-2 flex items-center gap-2 rounded-md bg-warning/10 p-2 text-xs">
+                  <Lock className="size-3.5 text-warning" />
+                  <span className="text-warning dark:text-warning">
                     Job number and some fields are locked and cannot be changed
                   </span>
                 </div>

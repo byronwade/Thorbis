@@ -66,7 +66,7 @@ export function ScheduleCalendarView() {
                   <div className="relative h-20 border-b" key={hour}>
                     {/* Sample events for demo */}
                     {index === 3 && hour === 9 && (
-                      <div className="absolute inset-x-1 top-1 bottom-auto rounded border-blue-500 border-l-2 bg-blue-500/20 p-1 text-xs">
+                      <div className="absolute inset-x-1 top-1 bottom-auto rounded border-primary border-l-2 bg-primary/20 p-1 text-xs">
                         <div className="truncate font-semibold">
                           System Inspection
                         </div>
@@ -76,7 +76,7 @@ export function ScheduleCalendarView() {
                       </div>
                     )}
                     {index === 3 && hour === 14 && (
-                      <div className="absolute inset-x-1 top-1 bottom-auto rounded border-yellow-500 border-l-2 bg-yellow-500/20 p-1 text-xs">
+                      <div className="absolute inset-x-1 top-1 bottom-auto rounded border-warning border-l-2 bg-warning/20 p-1 text-xs">
                         <div className="truncate font-semibold">
                           Emergency Repair
                         </div>
@@ -86,7 +86,7 @@ export function ScheduleCalendarView() {
                       </div>
                     )}
                     {index === 1 && hour === 10 && (
-                      <div className="absolute inset-x-1 top-1 bottom-auto rounded border-green-500 border-l-2 bg-green-500/20 p-1 text-xs">
+                      <div className="absolute inset-x-1 top-1 bottom-auto rounded border-success border-l-2 bg-success/20 p-1 text-xs">
                         <div className="truncate font-semibold">
                           Maintenance
                         </div>

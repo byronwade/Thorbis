@@ -14,6 +14,7 @@ import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export default function AppointmentReminderEmail({
   customerName,
@@ -99,7 +100,7 @@ const highlightCard = {
 };
 
 const highlightContent = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
 };
 
 const highlightLabel = {

@@ -9,11 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   type BadgeConfig,
-  getContractStatusBadgeConfig,
   getContractTypeBadgeConfig,
-  getCustomerStatusBadgeConfig,
-  getEstimateStatusBadgeConfig,
-  getInvoiceStatusBadgeConfig,
   getJobStatusBadgeConfig,
   getPriorityBadgeConfig,
   getPurchaseOrderStatusBadgeConfig,
@@ -22,7 +18,13 @@ import {
 
 type StatusBadgeProps = {
   status: string;
-  type?: "job" | "invoice" | "estimate" | "contract" | "customer" | "purchase_order";
+  type?:
+    | "job"
+    | "invoice"
+    | "estimate"
+    | "contract"
+    | "customer"
+    | "purchase_order";
   priority?: string;
   contractType?: string;
   className?: string;
@@ -57,7 +59,7 @@ export function StatusBadge({
 
   return (
     <Badge
-      className={cn("font-medium text-xs", config.className, className)}
+      className={cn("font-medium text-[11px] px-2 py-0.5 transition-all duration-200", config.className, className)}
       variant={variant}
     >
       {config.label}
@@ -75,7 +77,7 @@ export function JobStatusBadge({
   status: string;
   className?: string;
 }) {
-  return <StatusBadge status={status} type="job" className={className} />;
+  return <StatusBadge className={className} status={status} type="job" />;
 }
 
 /**
@@ -88,7 +90,7 @@ export function InvoiceStatusBadge({
   status: string;
   className?: string;
 }) {
-  return <StatusBadge status={status} type="invoice" className={className} />;
+  return <StatusBadge className={className} status={status} type="invoice" />;
 }
 
 /**
@@ -101,9 +103,7 @@ export function EstimateStatusBadge({
   status: string;
   className?: string;
 }) {
-  return (
-    <StatusBadge status={status} type="estimate" className={className} />
-  );
+  return <StatusBadge className={className} status={status} type="estimate" />;
 }
 
 /**
@@ -116,9 +116,7 @@ export function ContractStatusBadge({
   status: string;
   className?: string;
 }) {
-  return (
-    <StatusBadge status={status} type="contract" className={className} />
-  );
+  return <StatusBadge className={className} status={status} type="contract" />;
 }
 
 /**
@@ -131,9 +129,7 @@ export function CustomerStatusBadge({
   status: string;
   className?: string;
 }) {
-  return (
-    <StatusBadge status={status} type="customer" className={className} />
-  );
+  return <StatusBadge className={className} status={status} type="customer" />;
 }
 
 /**
@@ -146,7 +142,7 @@ export function PriorityBadge({
   priority: string;
   className?: string;
 }) {
-  return <StatusBadge priority={priority} status="" className={className} />;
+  return <StatusBadge className={className} priority={priority} status="" />;
 }
 
 /**
@@ -159,8 +155,5 @@ export function ContractTypeBadge({
   type: string;
   className?: string;
 }) {
-  return (
-    <StatusBadge contractType={type} status="" className={className} />
-  );
+  return <StatusBadge className={className} contractType={type} status="" />;
 }
-

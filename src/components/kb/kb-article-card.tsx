@@ -30,8 +30,8 @@ export function KBArticleCard({
   className,
 }: KBArticleCardProps) {
   const url = `/kb/${article.category.slug}/${article.slug}`;
-  const publishedDate = article.publishedAt
-    ? new Date(article.publishedAt)
+  const publishedDate = article.published_at
+    ? new Date(String(article.published_at))
     : null;
 
   return (
@@ -42,31 +42,33 @@ export function KBArticleCard({
           featured && "border-primary/50"
         )}
       >
-        {article.featuredImage && (
+        {article.featured_image ? (
           <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
             <Image
-              alt={article.title}
+              alt={String(article.title)}
               className="object-cover"
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              src={article.featuredImage}
+              src={String(article.featured_image)}
             />
           </div>
-        )}
+        ) : null}
         <CardHeader>
           <div className="flex items-start justify-between gap-2">
-            <CardTitle className="line-clamp-2">{article.title}</CardTitle>
-            {featured && (
+            <CardTitle className="line-clamp-2">
+              {String(article.title)}
+            </CardTitle>
+            {featured ? (
               <Badge className="shrink-0" variant="default">
                 Featured
               </Badge>
-            )}
+            ) : null}
           </div>
-          {article.excerpt && (
+          {article.excerpt ? (
             <CardDescription className="line-clamp-2">
-              {article.excerpt}
+              {String(article.excerpt)}
             </CardDescription>
-          )}
+          ) : null}
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
@@ -82,23 +84,21 @@ export function KBArticleCard({
                 </time>
               </div>
             )}
-            {article.viewCount > 0 && (
+            {Number(article.views) > 0 ? (
               <div className="flex items-center gap-1">
                 <Eye className="size-4" />
-                <span>{article.viewCount.toLocaleString()} views</span>
+                <span>{Number(article.views).toLocaleString()} views</span>
               </div>
-            )}
+            ) : null}
           </div>
           {article.tags && article.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
-              {article.tags
-                .slice(0, 3)
-                .map((tag: { id: string; slug: string; name: string }) => (
-                  <Badge className="text-xs" key={tag.id} variant="secondary">
-                    <Tag className="mr-1 size-3" />
-                    {tag.name}
-                  </Badge>
-                ))}
+              {article.tags.slice(0, 3).map((tag) => (
+                <Badge className="text-xs" key={tag.id} variant="secondary">
+                  <Tag className="mr-1 size-3" />
+                  {(tag as any).name || tag.id}
+                </Badge>
+              ))}
             </div>
           )}
         </CardContent>

@@ -31,10 +31,10 @@ export function parseMarkdown(content: string): {
     tags: Array.isArray(data.tags) ? data.tags : [],
     featured: data.featured ?? false,
     published: data.published ?? false,
-    publishedAt: data.publishedAt,
-    updatedAt: data.updatedAt,
+    publishedAt: data.published_at,
+    updatedAt: data.updated_at,
     author: data.author,
-    featuredImage: data.featuredImage,
+    featuredImage: data.featured_image,
     relatedArticles: Array.isArray(data.relatedArticles)
       ? data.relatedArticles
       : [],

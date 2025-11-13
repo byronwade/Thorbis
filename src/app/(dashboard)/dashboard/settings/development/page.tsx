@@ -1,28 +1,55 @@
 "use client";
 
 /**
- * Development Settings Page - Client Component
+ * Development Settings Page - Enhanced with Simulations
  *
- * Developer tools for testing and debugging.
- * Includes role switcher for testing different user role dashboards.
+ * Comprehensive developer tools for testing and debugging the application.
+ * Includes role switcher, communication simulations, and debugging utilities.
+ *
+ * Features:
+ * - Role switching for testing different user experiences
+ * - Incoming call simulation (with WebRTC integration)
+ * - SMS/Email simulation
+ * - Voicemail simulation
+ * - Test customer data generation
+ * - State inspection tools
+ * - Cross-tab sync testing
+ * - Performance monitoring
  *
  * Client-side features:
  * - Role state management with Zustand
- * - Interactive role switcher
- * - Real-time role updates
+ * - Interactive simulation triggers
+ * - Real-time state updates
  */
 
-import { AlertTriangle, Code, RefreshCw, User } from "lucide-react";
+import {
+  AlertTriangle,
+  Code,
+  Database,
+  Mail,
+  MessageSquare,
+  Monitor,
+  Phone,
+  RefreshCw,
+  TestTube,
+  User,
+  Users,
+  Voicemail,
+  Zap,
+} from "lucide-react";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   SettingsInfoBanner,
   SettingsPageLayout,
 } from "@/components/settings/settings-page-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { useCommunicationNotificationsStore } from "@/lib/stores/communication-notifications-store";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { ROLE_CONFIGS, USER_ROLES, type UserRole } from "@/types/roles";
 
@@ -31,6 +58,34 @@ export default function DevelopmentSettingsPage() {
   const setRole = useRoleStore((state) => state.setRole);
   const [selectedRole, setSelectedRole] = useState<UserRole>(currentRole);
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Simulation state
+  const [simulationCustomerName, setSimulationCustomerName] =
+    useState("John Smith");
+  const [simulationPhone, setSimulationPhone] = useState("+1 (555) 123-4567");
+  const [simulationEmail, setSimulationEmail] = useState(
+    "john.smith@example.com"
+  );
+  const [simulationMessage, setSimulationMessage] = useState(
+    "Hi, I have a question about my recent order."
+  );
+  const [simulationCallStatus, setSimulationCallStatus] = useState<
+    "incoming" | "missed" | "completed"
+  >("incoming");
+
+  // Communication simulation actions
+  const showCallToast = useCommunicationNotificationsStore(
+    (state) => state.showCallToast
+  );
+  const showSMSToast = useCommunicationNotificationsStore(
+    (state) => state.showSMSToast
+  );
+  const showEmailToast = useCommunicationNotificationsStore(
+    (state) => state.showEmailToast
+  );
+  const showVoicemailToast = useCommunicationNotificationsStore(
+    (state) => state.showVoicemailToast
+  );
 
   // Handle role selection
   const handleRoleChange = (role: UserRole) => {
@@ -65,9 +120,83 @@ export default function DevelopmentSettingsPage() {
     USER_ROLES.CSR,
   ];
 
+  // Simulation handlers
+  const handleSimulateIncomingCall = () => {
+    showCallToast(simulationCustomerName, simulationPhone, "incoming", {
+      timestamp: new Date().toISOString(),
+      duration: 0,
+    });
+
+    // Also trigger the actual incoming call notification popup
+    if (typeof window !== "undefined") {
+      // Dispatch custom event to trigger IncomingCallNotification
+      window.dispatchEvent(
+        new CustomEvent("simulate-incoming-call", {
+          detail: {
+            name: simulationCustomerName,
+            number: simulationPhone,
+            avatar: undefined,
+          },
+        })
+      );
+    }
+  };
+
+  const handleSimulateOutgoingCall = () => {
+    // Trigger the outgoing call popup (shows as active call)
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("simulate-outgoing-call", {
+          detail: {
+            name: simulationCustomerName,
+            number: simulationPhone,
+            avatar: undefined,
+          },
+        })
+      );
+    }
+  };
+
+  const handleSimulateMissedCall = () => {
+    showCallToast(simulationCustomerName, simulationPhone, "missed", {
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  const handleSimulateCompletedCall = () => {
+    showCallToast(simulationCustomerName, simulationPhone, "completed", {
+      timestamp: new Date().toISOString(),
+      duration: "3:45",
+    });
+  };
+
+  const handleSimulateSMS = () => {
+    showSMSToast(simulationCustomerName, simulationPhone, simulationMessage);
+  };
+
+  const handleSimulateEmail = () => {
+    showEmailToast(
+      simulationCustomerName,
+      simulationEmail,
+      "Question about order"
+    );
+  };
+
+  const handleSimulateVoicemail = () => {
+    showVoicemailToast(simulationCustomerName, simulationPhone, 45);
+  };
+
+  const handleSimulateMultiple = () => {
+    // Simulate a realistic burst of communications
+    setTimeout(() => handleSimulateIncomingCall(), 0);
+    setTimeout(() => handleSimulateSMS(), 2000);
+    setTimeout(() => handleSimulateEmail(), 4000);
+    setTimeout(() => handleSimulateVoicemail(), 6000);
+  };
+
   return (
     <SettingsPageLayout
-      description="Developer tools for testing and debugging the application."
+      description="Developer tools for testing, debugging, and simulating application features."
       hasChanges={hasChanges}
       helpText="These settings are for development and testing purposes only. Changes here do not affect production behavior."
       onCancel={handleCancel}
@@ -77,7 +206,7 @@ export default function DevelopmentSettingsPage() {
     >
       {/* Warning Banner */}
       <SettingsInfoBanner
-        description="These settings are only available in development mode and should not be used in production. Role changes will reload the page to update the dashboard."
+        description="These settings are only available in development mode and should not be used in production. Some features may trigger notifications across all open tabs."
         icon={AlertTriangle}
         title="Development Mode Only"
         variant="amber"
@@ -100,7 +229,9 @@ export default function DevelopmentSettingsPage() {
                 </p>
                 <Badge
                   className="capitalize"
-                  variant={currentRole === USER_ROLES.OWNER ? "default" : "secondary"}
+                  variant={
+                    currentRole === USER_ROLES.OWNER ? "default" : "secondary"
+                  }
                 >
                   {currentRole}
                 </Badge>
@@ -204,9 +335,286 @@ export default function DevelopmentSettingsPage() {
         </CardContent>
       </Card>
 
+      <Separator />
+
+      {/* Communication Simulations */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Phone className="h-5 w-5" />
+            Communication Simulations
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <p className="text-muted-foreground text-sm">
+            Simulate incoming communications to test notification systems, UI
+            components, and cross-tab synchronization. These will trigger real
+            notifications across all open tabs.
+          </p>
+
+          {/* Simulation Data */}
+          <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+            <h4 className="font-semibold text-sm">Simulation Data</h4>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="sim-name">Customer Name</Label>
+                <Input
+                  id="sim-name"
+                  onChange={(e) => setSimulationCustomerName(e.target.value)}
+                  placeholder="John Smith"
+                  value={simulationCustomerName}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sim-phone">Phone Number</Label>
+                <Input
+                  id="sim-phone"
+                  onChange={(e) => setSimulationPhone(e.target.value)}
+                  placeholder="+1 (555) 123-4567"
+                  value={simulationPhone}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sim-email">Email Address</Label>
+                <Input
+                  id="sim-email"
+                  onChange={(e) => setSimulationEmail(e.target.value)}
+                  placeholder="john.smith@example.com"
+                  type="email"
+                  value={simulationEmail}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sim-message">Message Content</Label>
+                <Input
+                  id="sim-message"
+                  onChange={(e) => setSimulationMessage(e.target.value)}
+                  placeholder="Hi, I have a question..."
+                  value={simulationMessage}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Call Simulations */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-primary" />
+              <h4 className="font-semibold text-sm">Phone Call Simulations</h4>
+            </div>
+            <p className="text-muted-foreground text-xs">
+              Simulate calls to test the calling popup interface. Incoming calls
+              show the incoming call view, outgoing calls show the active call
+              view.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button
+                className="w-full"
+                onClick={handleSimulateIncomingCall}
+                size="sm"
+                variant="outline"
+              >
+                <Phone className="mr-2 h-4 w-4" />
+                Simulate Incoming Call
+              </Button>
+              <Button
+                className="w-full"
+                onClick={handleSimulateOutgoingCall}
+                size="sm"
+                variant="outline"
+              >
+                <Phone className="mr-2 h-4 w-4" />
+                Simulate Outgoing Call
+              </Button>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button
+                className="w-full"
+                onClick={handleSimulateMissedCall}
+                size="sm"
+                variant="outline"
+              >
+                <Phone className="mr-2 h-4 w-4 text-destructive" />
+                Missed Call Toast
+              </Button>
+              <Button
+                className="w-full"
+                onClick={handleSimulateCompletedCall}
+                size="sm"
+                variant="outline"
+              >
+                <Phone className="mr-2 h-4 w-4 text-success" />
+                Completed Call Toast
+              </Button>
+            </div>
+          </div>
+
+          {/* Voicemail Simulation */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Voicemail className="h-4 w-4 text-primary" />
+              <h4 className="font-semibold text-sm">Voicemail Simulation</h4>
+            </div>
+            <Button
+              className="w-full"
+              onClick={handleSimulateVoicemail}
+              size="sm"
+              variant="outline"
+            >
+              <Voicemail className="mr-2 h-4 w-4" />
+              New Voicemail (45s)
+            </Button>
+          </div>
+
+          {/* SMS Simulation */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              <h4 className="font-semibold text-sm">SMS Simulation</h4>
+            </div>
+            <Button
+              className="w-full"
+              onClick={handleSimulateSMS}
+              size="sm"
+              variant="outline"
+            >
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Incoming Text Message
+            </Button>
+          </div>
+
+          {/* Email Simulation */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-primary" />
+              <h4 className="font-semibold text-sm">Email Simulation</h4>
+            </div>
+            <Button
+              className="w-full"
+              onClick={handleSimulateEmail}
+              size="sm"
+              variant="outline"
+            >
+              <Mail className="mr-2 h-4 w-4" />
+              Incoming Email
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Multiple Simulations */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-warning" />
+              <h4 className="font-semibold text-sm">
+                Bulk Simulation (Stress Test)
+              </h4>
+            </div>
+            <Button
+              className="w-full"
+              onClick={handleSimulateMultiple}
+              size="sm"
+              variant="default"
+            >
+              <Zap className="mr-2 h-4 w-4" />
+              Simulate Multiple Communications
+            </Button>
+            <p className="text-muted-foreground text-xs">
+              Simulates call, SMS, email, and voicemail in sequence (2s
+              intervals). Tests notification handling under load.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* State Inspection Tools */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Monitor className="h-5 w-5" />
+            State Inspection
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground text-sm">
+            Tools for inspecting application state and debugging issues.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Button
+              onClick={() => {
+                console.log("Zustand Stores:", {
+                  role: useRoleStore.getState(),
+                  communications: useCommunicationNotificationsStore.getState(),
+                });
+              }}
+              size="sm"
+              variant="outline"
+            >
+              <Database className="mr-2 h-4 w-4" />
+              Log Store State
+            </Button>
+
+            <Button
+              onClick={() => {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.reload();
+              }}
+              size="sm"
+              variant="outline"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Clear All Storage
+            </Button>
+
+            <Button
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  const info = {
+                    userAgent: navigator.userAgent,
+                    viewport: {
+                      width: window.innerWidth,
+                      height: window.innerHeight,
+                    },
+                    storage: {
+                      localStorageSize: Object.keys(localStorage).length,
+                      sessionStorageSize: Object.keys(sessionStorage).length,
+                    },
+                    performance: (performance as any).memory
+                      ? {
+                          usedJSHeapSize: `${((performance as any).memory.usedJSHeapSize / 1_048_576).toFixed(2)} MB`,
+                          totalJSHeapSize: `${((performance as any).memory.totalJSHeapSize / 1_048_576).toFixed(2)} MB`,
+                        }
+                      : "Not available",
+                  };
+                  console.log("Browser Info:", info);
+                }
+              }}
+              size="sm"
+              variant="outline"
+            >
+              <TestTube className="mr-2 h-4 w-4" />
+              Log Browser Info
+            </Button>
+
+            <Button
+              onClick={() => {
+                window.open("/dashboard", "_blank");
+              }}
+              size="sm"
+              variant="outline"
+            >
+              <Users className="mr-2 h-4 w-4" />
+              Open Second Tab
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Additional Dev Tools Info */}
       <SettingsInfoBanner
-        description="Role changes are persisted in localStorage under the key 'stratos_dev_role'. Clear your browser storage to reset to the default role."
+        description="Role changes are persisted in localStorage under the key 'stratos_dev_role'. Communication simulations trigger real notifications and will sync across all open tabs. Clear your browser storage to reset to defaults."
         icon={Code}
         title="Technical Details"
         variant="blue"

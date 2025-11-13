@@ -1,9 +1,9 @@
 import Script from "next/script";
 
 import { Button } from "@/components/ui/button";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -15,11 +15,7 @@ export const metadata = generateSEOMetadata({
     "View real-time uptime information for Thorbis services, APIs, and integrations.",
   path: "/status",
   section: "Company",
-  keywords: [
-    "thorbis status",
-    "thorbis uptime",
-    "thorbis service status",
-  ],
+  keywords: ["thorbis status", "thorbis uptime", "thorbis service status"],
 });
 
 export default function StatusPage() {
@@ -28,8 +24,6 @@ export default function StatusPage() {
   return (
     <>
       <Script
-        id="status-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -38,17 +32,19 @@ export default function StatusPage() {
             ])
           ),
         }}
+        id="status-breadcrumb-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
           Thorbis System Status
         </h1>
-        <p className="text-muted-foreground mt-4 text-lg">
-          We monitor uptime and incident history for the Thorbis platform. Visit our status
-          page for real-time updates.
+        <p className="mt-4 text-lg text-muted-foreground">
+          We monitor uptime and incident history for the Thorbis platform. Visit
+          our status page for real-time updates.
         </p>
-        <Button className="mt-6" size="lg" variant="secondary" asChild>
-          <a href={statusUrl} target="_blank" rel="noopener">
+        <Button asChild className="mt-6" size="lg" variant="secondary">
+          <a href={statusUrl} rel="noopener" target="_blank">
             Open status.thorbis.com
           </a>
         </Button>
@@ -56,4 +52,3 @@ export default function StatusPage() {
     </>
   );
 }
-

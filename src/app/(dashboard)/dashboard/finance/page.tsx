@@ -50,8 +50,8 @@ export default function FinancePage() {
           <CardContent>
             <div className="font-bold text-2xl">$243,250</div>
             <p className="flex items-center gap-1 text-muted-foreground text-xs">
-              <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
-              <span className="text-green-600 dark:text-green-400">
+              <TrendingUp className="h-3 w-3 text-success dark:text-success" />
+              <span className="text-success dark:text-success">
                 +5.8% from last month
               </span>
             </p>

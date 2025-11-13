@@ -57,34 +57,34 @@ function getStatusBadge(status: string) {
     },
     scheduled: {
       className:
-        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+        "border-primary bg-primary text-primary hover:bg-primary dark:border-primary dark:bg-primary/50 dark:text-primary",
       label: "Scheduled",
     },
     in_progress: {
-      className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
+      className: "border-primary/50 bg-primary text-white hover:bg-primary",
       label: "In Progress",
     },
     completed: {
-      className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      className: "border-success/50 bg-success text-white hover:bg-success",
       label: "Completed",
     },
     cancelled: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      className:
+        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
       label: "Cancelled",
     },
     paid: {
-      className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      className: "border-success/50 bg-success text-white hover:bg-success",
       label: "Paid",
     },
     unpaid: {
       className:
-        "border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400",
+        "border-warning/50 bg-warning/50 text-warning dark:border-warning/50 dark:bg-warning/30 dark:text-warning",
       label: "Unpaid",
     },
     overdue: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      className:
+        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
       label: "Overdue",
     },
   };
@@ -95,7 +95,10 @@ function getStatusBadge(status: string) {
   };
 
   return (
-    <Badge className={`font-medium text-xs ${config.className}`} variant="outline">
+    <Badge
+      className={`font-medium text-xs ${config.className}`}
+      variant="outline"
+    >
       {config.label}
     </Badge>
   );
@@ -121,7 +124,7 @@ export function CustomerDataTables({
       shrink: true,
       render: (job) => (
         <Link
-          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          className="font-medium text-foreground text-sm leading-tight hover:underline"
           href={`/dashboard/work/${job.id}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -134,7 +137,15 @@ export function CustomerDataTables({
       header: "Title",
       width: "flex-1",
       render: (job) => (
-        <span className="font-medium text-sm">{job.title}</span>
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/${job.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="truncate font-medium text-sm leading-tight hover:underline">
+            {job.title}
+          </span>
+        </Link>
       ),
     },
     {
@@ -151,7 +162,7 @@ export function CustomerDataTables({
       shrink: true,
       align: "right",
       render: (job) => (
-        <span className="font-semibold tabular-nums text-sm">
+        <span className="font-semibold text-sm tabular-nums">
           {formatCurrencyFromDollars(job.totalAmount)}
         </span>
       ),
@@ -179,7 +190,7 @@ export function CustomerDataTables({
       shrink: true,
       render: (invoice) => (
         <Link
-          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          className="font-medium text-foreground text-sm leading-tight hover:underline"
           href={`/dashboard/work/invoices/${invoice.id}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -192,7 +203,15 @@ export function CustomerDataTables({
       header: "Title",
       width: "flex-1",
       render: (invoice) => (
-        <span className="font-medium text-sm">{invoice.title}</span>
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/invoices/${invoice.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="truncate font-medium text-sm leading-tight hover:underline">
+            {invoice.title}
+          </span>
+        </Link>
       ),
     },
     {
@@ -209,7 +228,7 @@ export function CustomerDataTables({
       shrink: true,
       align: "right",
       render: (invoice) => (
-        <span className="font-semibold tabular-nums text-sm">
+        <span className="font-semibold text-sm tabular-nums">
           {formatCurrencyFromDollars(invoice.totalAmount)}
         </span>
       ),

@@ -115,7 +115,7 @@ export function PropertyDetailsWidget({
       <Separator />
       <div className="space-y-2">
         <Button asChild className="w-full" size="sm" variant="outline">
-          <Link href={`/dashboard/properties/${property.id}`}>
+          <Link href={`/dashboard/work/properties/${property.id}`}>
             <Building2 className="mr-2 size-4" />
             View Full Property Details
           </Link>

@@ -36,8 +36,8 @@ export function ArchiveConfirmDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-950">
-              <Archive className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning dark:bg-warning">
+              <Archive className="h-5 w-5 text-warning dark:text-warning" />
             </div>
             <AlertDialogTitle>
               Archive {itemCount} {pluralEntity}?
@@ -49,9 +49,9 @@ export function ArchiveConfirmDialog({
               the archive and {itemCount === 1 ? "will" : "will"} no longer
               appear in your active lists.
             </p>
-            <div className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-900 dark:bg-orange-950/30">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400" />
-              <div className="text-orange-900 text-sm dark:text-orange-200">
+            <div className="flex items-start gap-2 rounded-lg border border-warning bg-warning p-3 dark:border-warning dark:bg-warning/30">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning dark:text-warning" />
+              <div className="text-sm text-warning dark:text-warning">
                 <p className="font-medium">Archived items will be:</p>
                 <ul className="mt-1 list-inside list-disc space-y-0.5">
                   <li>Hidden from all active views</li>
@@ -65,7 +65,7 @@ export function ArchiveConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
+            className="bg-warning hover:bg-warning dark:bg-warning dark:hover:bg-warning"
             disabled={isLoading}
             onClick={(e) => {
               e.preventDefault();

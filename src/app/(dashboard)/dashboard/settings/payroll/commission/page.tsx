@@ -168,7 +168,7 @@ export default async function CommissionSettingsPage() {
                     </TableCell>
                     <TableCell>
                       {rule.is_active ? (
-                        <Badge className="bg-green-500">Active</Badge>
+                        <Badge className="bg-success">Active</Badge>
                       ) : (
                         <Badge variant="secondary">Inactive</Badge>
                       )}
@@ -210,7 +210,7 @@ export default async function CommissionSettingsPage() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-2xl text-green-600">$250</p>
+                  <p className="font-bold text-2xl text-success">$250</p>
                   <p className="text-muted-foreground text-xs">
                     Commission Earned
                   </p>
@@ -316,19 +316,19 @@ export default async function CommissionSettingsPage() {
               <h4 className="font-semibold">Earn Timing</h4>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <div className="h-2 w-2 rounded-full bg-success" />
                   <span className="text-sm">On Job Completion</span>
                 </div>
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  <div className="h-2 w-2 rounded-full bg-primary" />
                   <span className="text-sm">On Invoice Sent</span>
                 </div>
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                  <div className="h-2 w-2 rounded-full bg-warning" />
                   <span className="text-sm">On Payment Received</span>
                 </div>
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  <div className="h-2 w-2 rounded-full bg-accent" />
                   <span className="text-sm">On Full Payment</span>
                 </div>
               </div>
@@ -337,19 +337,19 @@ export default async function CommissionSettingsPage() {
               <h4 className="font-semibold">Payout Frequency</h4>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <div className="h-2 w-2 rounded-full bg-success" />
                   <span className="text-sm">Per Job (Immediate)</span>
                 </div>
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  <div className="h-2 w-2 rounded-full bg-primary" />
                   <span className="text-sm">Weekly</span>
                 </div>
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                  <div className="h-2 w-2 rounded-full bg-warning" />
                   <span className="text-sm">Bi-Weekly</span>
                 </div>
                 <div className="flex items-center gap-2 rounded border p-2">
-                  <div className="h-2 w-2 rounded-full bg-purple-500" />
+                  <div className="h-2 w-2 rounded-full bg-accent" />
                   <span className="text-sm">Monthly</span>
                 </div>
               </div>

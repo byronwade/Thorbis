@@ -46,7 +46,7 @@ type LeaderboardWidgetProps = {
 
 function TrophyIcon({ rank }: { rank: number }) {
   if (rank >= 3) return null;
-  const colors = ["text-yellow-500", "text-gray-400", "text-orange-600"];
+  const colors = ["text-warning", "text-muted-foreground", "text-warning"];
   return <Trophy className={`size-3.5 ${colors[rank]}`} />;
 }
 
@@ -59,7 +59,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
         {/* Header - adapts across stages */}
         <div className="flex items-center gap-2">
           <ResponsiveIcon>
-            <Trophy className="text-yellow-500" />
+            <Trophy className="text-warning" />
           </ResponsiveIcon>
           <ShowAt stage="full">
             <ResponsiveText variant="title">Top Technicians</ResponsiveText>
@@ -177,7 +177,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
           {technicians[0] && (
             <div className="flex flex-col items-center justify-center gap-1">
               <div className="flex items-center gap-1">
-                <Trophy className="size-3 text-yellow-500" />
+                <Trophy className="size-3 text-warning" />
                 <ResponsiveText className="font-bold" variant="caption">
                   #1
                 </ResponsiveText>
@@ -197,7 +197,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
           {technicians[0] && (
             <div className="flex h-full items-center justify-center">
               <ResponsiveText
-                className="font-bold text-yellow-500"
+                className="font-bold text-warning"
                 variant="display"
               >
                 {formatCurrency(technicians[0].stats.revenue, "tiny")}

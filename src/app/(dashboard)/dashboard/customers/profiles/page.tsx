@@ -230,12 +230,12 @@ export default function CustomerProfilesPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           customer.status === "VIP"
-                            ? "bg-purple-100 text-purple-800"
+                            ? "bg-accent text-accent-foreground"
                             : customer.status === "Active"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-success text-success"
                               : customer.status === "Prospect"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-primary text-primary"
+                                : "bg-muted text-foreground"
                         }`}
                       >
                         {customer.status}

@@ -206,12 +206,12 @@ export default function WorkOrdersPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           order.status === "In Progress"
-                            ? "bg-blue-100 text-blue-800"
+                            ? "bg-primary text-primary"
                             : order.status === "Approved"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-success text-success"
                               : order.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-warning text-warning"
+                                : "bg-muted text-foreground"
                         }`}
                       >
                         {order.status}
@@ -219,10 +219,10 @@ export default function WorkOrdersPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           order.priority === "High"
-                            ? "bg-red-100 text-red-800"
+                            ? "bg-destructive text-destructive"
                             : order.priority === "Medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
+                              ? "bg-warning text-warning"
+                              : "bg-success text-success"
                         }`}
                       >
                         {order.priority}

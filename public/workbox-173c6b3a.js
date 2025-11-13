@@ -271,7 +271,7 @@ define(["exports"], (t) => {
       let s;
       const { cacheName: n, matchOptions: r } = this.u,
         i = await this.getCacheKey(e, "read"),
-        a = Object.assign({ ...r }, { cacheName: n });
+        a = { ...r, cacheName: n };
       s = await caches.match(i, a);
       for (const t of this.iterateCallbacks("cachedResponseWillBeUsed"))
         s =
@@ -307,7 +307,7 @@ define(["exports"], (t) => {
           ? await (async (t, e, s, n) => {
               const r = p(e.url, s);
               if (e.url === r) return t.match(e, n);
-              const i = Object.assign({ ...n }, { ignoreSearch: !0 }),
+              const i = { ...n, ignoreSearch: !0 },
                 a = await t.keys(e, i);
               for (const e of a) if (r === p(e.url, s)) return t.match(e, n);
             })(h, r.clone(), ["__WB_REVISION__"], c)
@@ -361,7 +361,7 @@ define(["exports"], (t) => {
         if (typeof e[t] == "function") {
           const s = this.R.get(e),
             n = (n) => {
-              const r = Object.assign({ ...n }, { state: s });
+              const r = { ...n, state: s };
               return e[t](r);
             };
           yield n;

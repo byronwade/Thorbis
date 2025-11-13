@@ -1,8 +1,17 @@
 "use client";
 
 import useEmblaCarousel from "embla-carousel-react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect } from "react";
+import {
+  LazyAnimatePresence as AnimatePresence,
+  LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
+
+// Alias for backward compatibility
+const motion = {
+  div: motion_div,
+};
+
 import { DraggableGrid } from "./draggable-grid";
 import type { Slide } from "./slide-types";
 import type { Widget } from "./widget-types";

@@ -20,7 +20,7 @@
  * - Optimized for streaming
  */
 
-import { type ReactElement } from "react";
+import type { ReactElement } from "react";
 import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,15 @@ interface DetailPageLayoutProps<TData, TMetrics> {
   entityId: string;
 
   /** Entity type for logging and analytics */
-  entityType: "job" | "customer" | "appointment" | "team-member" | "purchase-order";
+  entityType:
+    | "job"
+    | "customer"
+    | "appointment"
+    | "team-member"
+    | "purchase-order"
+    | "estimate"
+    | "invoice"
+    | "property";
 
   /** All entity data to pass to content component */
   entityData: TData;
@@ -48,6 +56,7 @@ interface DetailPageLayoutProps<TData, TMetrics> {
   ContentComponent: React.ComponentType<{
     entityData: TData;
     metrics: TMetrics;
+    statsBar?: ReactElement;
   }>;
 
   /** Optional additional className */
@@ -63,22 +72,25 @@ export function DetailPageLayout<TData = any, TMetrics = any>({
   ContentComponent,
   className,
 }: DetailPageLayoutProps<TData, TMetrics>) {
+  // Wrap stats bar in StickyStatsBar for scroll behavior
+  const statsBar = (
+    <StickyStatsBar>
+      <StatsBarComponent entityId={entityId} metrics={metrics} />
+    </StickyStatsBar>
+  );
+
   return (
     <div
-      className={cn(
-        "flex h-full w-full flex-col overflow-auto",
-        className
-      )}
-      data-entity-type={entityType}
+      className={cn("flex h-full w-full flex-col overflow-auto", className)}
       data-entity-id={entityId}
+      data-entity-type={entityType}
     >
-      {/* Sticky Stats Bar - Compacts on scroll */}
-      <StickyStatsBar>
-        <StatsBarComponent entityId={entityId} metrics={metrics} />
-      </StickyStatsBar>
-
-      {/* Main Content - Scrollable */}
-      <ContentComponent entityData={entityData} metrics={metrics} />
+      {/* Main Content - Scrollable, stats bar is rendered inside the container */}
+      <ContentComponent
+        entityData={entityData}
+        metrics={metrics}
+        statsBar={statsBar}
+      />
     </div>
   );
 }

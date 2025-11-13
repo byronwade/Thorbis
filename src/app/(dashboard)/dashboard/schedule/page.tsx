@@ -11,11 +11,11 @@
  */
 
 import { useEffect, useState } from "react";
-import { TimelineViewV2 } from "@/components/schedule/timeline-view-v2";
 // import { ListView } from "@/components/schedule/list-view"
 // import { CalendarView } from "@/components/schedule/calendar-view"
 // import { MapView } from "@/components/schedule/map-view"
 import { GanttScheduler } from "@/components/schedule/gantt-scheduler";
+import { TimelineViewV2 } from "@/components/schedule/timeline-view-v2";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { TestSchedule } from "./test-schedule";
 

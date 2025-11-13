@@ -3,13 +3,12 @@
  */
 
 import {
-  Building2,
   ChevronLeft,
   Edit,
+  Globe,
   Mail,
   MoreVertical,
   Phone,
-  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -93,25 +92,25 @@ export default async function VendorDetailPage({
     .limit(10);
 
   const statusConfig: Record<string, { label: string; color: string }> = {
-    active: { label: "Active", color: "bg-green-100 text-green-800" },
-    inactive: { label: "Inactive", color: "bg-gray-100 text-gray-800" },
+    active: { label: "Active", color: "bg-success text-success" },
+    inactive: { label: "Inactive", color: "bg-muted text-foreground" },
   };
 
   const categoryConfig: Record<string, { label: string; color: string }> = {
-    supplier: { label: "Supplier", color: "bg-blue-100 text-blue-800" },
+    supplier: { label: "Supplier", color: "bg-primary text-primary" },
     distributor: {
       label: "Distributor",
-      color: "bg-purple-100 text-purple-800",
+      color: "bg-accent text-accent-foreground",
     },
     manufacturer: {
       label: "Manufacturer",
-      color: "bg-orange-100 text-orange-800",
+      color: "bg-warning text-warning",
     },
     service_provider: {
       label: "Service Provider",
       color: "bg-teal-100 text-teal-800",
     },
-    other: { label: "Other", color: "bg-gray-100 text-gray-800" },
+    other: { label: "Other", color: "bg-muted text-foreground" },
   };
 
   return (
@@ -129,7 +128,12 @@ export default async function VendorDetailPage({
               <h1 className="font-bold text-2xl tracking-tight">
                 {vendor.display_name || vendor.name}
               </h1>
-              <Badge className={statusConfig[vendor.status || "inactive"]?.color || statusConfig.inactive.color}>
+              <Badge
+                className={
+                  statusConfig[vendor.status || "inactive"]?.color ||
+                  statusConfig.inactive.color
+                }
+              >
                 {statusConfig[vendor.status || "inactive"]?.label || "Inactive"}
               </Badge>
               {vendor.category && (
@@ -327,7 +331,7 @@ export default async function VendorDetailPage({
                 {vendor.notes && (
                   <div>
                     <p className="mb-1 font-medium text-sm">Public Notes</p>
-                    <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+                    <p className="whitespace-pre-wrap text-muted-foreground text-sm">
                       {vendor.notes}
                     </p>
                   </div>
@@ -337,7 +341,7 @@ export default async function VendorDetailPage({
                     {vendor.notes && <Separator />}
                     <div>
                       <p className="mb-1 font-medium text-sm">Internal Notes</p>
-                      <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+                      <p className="whitespace-pre-wrap text-muted-foreground text-sm">
                         {vendor.internal_notes}
                       </p>
                     </div>
@@ -363,9 +367,9 @@ export default async function VendorDetailPage({
                 <div className="space-y-3">
                   {purchaseOrders.map((po: any) => (
                     <Link
-                      key={po.id}
-                      className="block rounded-lg border p-3 hover:bg-muted transition-colors"
+                      className="block rounded-lg border p-3 transition-colors hover:bg-muted"
                       href={`/dashboard/work/purchase-orders/${po.id}`}
+                      key={po.id}
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -378,10 +382,7 @@ export default async function VendorDetailPage({
                           <p className="font-medium text-sm">
                             {formatCurrency(po.total_amount)}
                           </p>
-                          <Badge
-                            className="mt-1"
-                            variant="outline"
-                          >
+                          <Badge className="mt-1" variant="outline">
                             {po.status}
                           </Badge>
                         </div>
@@ -411,4 +412,3 @@ export default async function VendorDetailPage({
     </div>
   );
 }
-

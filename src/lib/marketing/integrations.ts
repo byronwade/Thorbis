@@ -77,12 +77,14 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
       {
         label: "Manual entry savings",
         value: "-20 hrs",
-        description: "per week eliminated for accounting teams after syncing Thorbis and QuickBooks.",
+        description:
+          "per week eliminated for accounting teams after syncing Thorbis and QuickBooks.",
       },
       {
         label: "Posting accuracy",
         value: "99.8%",
-        description: "accuracy rate across invoices and payments after go-live.",
+        description:
+          "accuracy rate across invoices and payments after go-live.",
       },
     ],
     requirements: [
@@ -190,7 +192,8 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
       {
         label: "Days sales outstanding",
         value: "-9 days",
-        description: "average reduction once customers can pay immediately with Stripe in Thorbis.",
+        description:
+          "average reduction once customers can pay immediately with Stripe in Thorbis.",
       },
     ],
     requirements: [
@@ -373,4 +376,3 @@ export function getFeaturedIntegrations(
       Boolean(integration)
     );
 }
-

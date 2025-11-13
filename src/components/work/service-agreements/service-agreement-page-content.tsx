@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveServiceAgreement } from "@/actions/service-agreements";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,8 +33,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { archiveServiceAgreement } from "@/actions/service-agreements";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -189,10 +189,10 @@ export function ServiceAgreementPageContent({
               </Link>
               {/* Archive Button */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsArchiveDialogOpen(true)}
                 className="ml-auto"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
               >
                 <Archive className="mr-2 size-4" />
                 Archive
@@ -385,36 +385,61 @@ export function ServiceAgreementPageContent({
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Invoice #</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Title</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Total</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Balance</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Invoice #
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Balance
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {generatedInvoices.map((invoice: any) => (
-                    <tr key={invoice.id} className="border-b hover:bg-muted/30">
-                      <td className="px-6 py-4 text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</td>
-                      <td className="px-6 py-4 text-sm">{invoice.title || "-"}</td>
+                    <tr className="border-b hover:bg-muted/30" key={invoice.id}>
+                      <td className="px-6 py-4 text-sm">
+                        #{invoice.invoice_number || invoice.id.slice(0, 8)}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {invoice.title || "-"}
+                      </td>
                       <td className="px-6 py-4 text-sm">
                         {new Date(invoice.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium">
+                      <td className="px-6 py-4 font-medium text-sm">
                         {formatCurrency(invoice.total_amount)}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium">
+                      <td className="px-6 py-4 font-medium text-sm">
                         {formatCurrency(invoice.balance_amount)}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Badge variant={invoice.status === "paid" ? "default" : "outline"}>
+                        <Badge
+                          variant={
+                            invoice.status === "paid" ? "default" : "outline"
+                          }
+                        >
                           {invoice.status}
                         </Badge>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Link href={`/dashboard/work/invoices/${invoice.id}`} className="text-primary hover:underline">
+                        <Link
+                          className="text-primary hover:underline"
+                          href={`/dashboard/work/invoices/${invoice.id}`}
+                        >
                           View
                         </Link>
                       </td>
@@ -444,19 +469,33 @@ export function ServiceAgreementPageContent({
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Job #</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Title</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Completed</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Job #
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Completed
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {generatedJobs.map((job: any) => (
-                    <tr key={job.id} className="border-b hover:bg-muted/30">
+                    <tr className="border-b hover:bg-muted/30" key={job.id}>
                       <td className="px-6 py-4 text-sm">#{job.job_number}</td>
-                      <td className="px-6 py-4 text-sm font-medium">{job.title}</td>
+                      <td className="px-6 py-4 font-medium text-sm">
+                        {job.title}
+                      </td>
                       <td className="px-6 py-4 text-sm">
                         {new Date(job.created_at).toLocaleDateString()}
                       </td>
@@ -464,10 +503,15 @@ export function ServiceAgreementPageContent({
                         <Badge variant="outline">{job.status}</Badge>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        {job.completed_at ? new Date(job.completed_at).toLocaleDateString() : "-"}
+                        {job.completed_at
+                          ? new Date(job.completed_at).toLocaleDateString()
+                          : "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Link href={`/dashboard/work/${job.id}`} className="text-primary hover:underline">
+                        <Link
+                          className="text-primary hover:underline"
+                          href={`/dashboard/work/${job.id}`}
+                        >
                           View
                         </Link>
                       </td>
@@ -497,22 +541,41 @@ export function ServiceAgreementPageContent({
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Equipment #</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Name</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Type</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Manufacturer</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Equipment #
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Type
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Manufacturer
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {equipment.map((item: any) => (
-                    <tr key={item.id} className="border-b hover:bg-muted/30">
-                      <td className="px-6 py-4 text-sm">#{item.equipment_number || item.id.slice(0, 8)}</td>
-                      <td className="px-6 py-4 text-sm font-medium">{item.name}</td>
-                      <td className="px-6 py-4 text-sm">{item.type || "-"}</td>
-                      <td className="px-6 py-4 text-sm">{item.manufacturer || "-"}</td>
+                    <tr className="border-b hover:bg-muted/30" key={item.id}>
                       <td className="px-6 py-4 text-sm">
-                        <Link href={`/dashboard/work/equipment/${item.id}`} className="text-primary hover:underline">
+                        #{item.equipment_number || item.id.slice(0, 8)}
+                      </td>
+                      <td className="px-6 py-4 font-medium text-sm">
+                        {item.name}
+                      </td>
+                      <td className="px-6 py-4 text-sm">{item.type || "-"}</td>
+                      <td className="px-6 py-4 text-sm">
+                        {item.manufacturer || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <Link
+                          className="text-primary hover:underline"
+                          href={`/dashboard/work/equipment/${item.id}`}
+                        >
                           View
                         </Link>
                       </td>
@@ -578,26 +641,27 @@ export function ServiceAgreementPageContent({
       />
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Service Agreement?</DialogTitle>
             <DialogDescription>
-              This will archive the service agreement. You can restore it from the archive within 90 days.
+              This will archive the service agreement. You can restore it from
+              the archive within 90 days.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveServiceAgreement}
               disabled={isArchiving}
+              onClick={handleArchiveServiceAgreement}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Service Agreement"}
             </Button>

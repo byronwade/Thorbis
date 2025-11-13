@@ -6,10 +6,10 @@ import {
   getAllCompetitors,
   getCompetitorBySlug,
 } from "@/lib/marketing/competitors";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
   generateFAQStructuredData,
+  generateMetadata as generateSEOMetadata,
   generateServiceStructuredData,
   siteUrl,
 } from "@/lib/seo/metadata";
@@ -59,7 +59,8 @@ export default async function CompetitorDetailPage({
       {
         price: "Custom",
         currency: "USD",
-        description: "AI-powered field management platform tailored to your team.",
+        description:
+          "AI-powered field management platform tailored to your team.",
       },
     ],
   });
@@ -67,8 +68,6 @@ export default async function CompetitorDetailPage({
   return (
     <>
       <Script
-        id="comparison-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -81,20 +80,22 @@ export default async function CompetitorDetailPage({
             ])
           ),
         }}
+        id="comparison-breadcrumb-ld"
+        type="application/ld+json"
       />
       <Script
-        id="comparison-service-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(serviceStructuredData),
         }}
+        id="comparison-service-ld"
+        type="application/ld+json"
       />
       <Script
-        id="comparison-faq-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(faqStructuredData),
         }}
+        id="comparison-faq-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <CompetitorPage competitor={competitor} />
@@ -102,4 +103,3 @@ export default async function CompetitorDetailPage({
     </>
   );
 }
-

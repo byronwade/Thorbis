@@ -81,7 +81,7 @@ export function OperationalAlerts() {
               className={cn(
                 "group relative rounded-lg border bg-card p-6 transition-all hover:shadow-md",
                 alert.type === "critical" &&
-                  "border-red-200 dark:border-red-900/50"
+                  "border-destructive dark:border-destructive/50"
               )}
               key={alert.id}
             >

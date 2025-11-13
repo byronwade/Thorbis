@@ -352,20 +352,20 @@ export function PricingCalculator() {
 
             {/* Quick comparison */}
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+              <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4">
                 <div className="mb-2 text-2xl">🏢</div>
                 <p className="mb-1 font-bold">ServiceTitan</p>
-                <p className="text-red-600 text-sm dark:text-red-400">
+                <p className="text-destructive text-sm dark:text-destructive">
                   $398/user/mo
                 </p>
                 <p className="text-muted-foreground text-xs">
                   5 users = $23,880/year
                 </p>
               </div>
-              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-4">
+              <div className="rounded-xl border border-warning/20 bg-warning/5 p-4">
                 <div className="mb-2 text-2xl">📱</div>
                 <p className="mb-1 font-bold">Housecall Pro</p>
-                <p className="text-orange-600 text-sm dark:text-orange-400">
+                <p className="text-sm text-warning dark:text-warning">
                   $289/user/mo
                 </p>
                 <p className="text-muted-foreground text-xs">
@@ -524,7 +524,7 @@ export function PricingCalculator() {
                               {quantity !== 1 ? "s" : ""}
                             </span>
                             {item.note && (
-                              <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-green-600 text-xs dark:text-green-400">
+                              <span className="rounded-full bg-success/10 px-2 py-0.5 text-success text-xs dark:text-success">
                                 {item.note}
                               </span>
                             )}
@@ -574,11 +574,11 @@ export function PricingCalculator() {
                   </div>
                 </div>
 
-                <div className="mt-6 rounded-xl border border-green-500/20 bg-green-500/5 p-4">
+                <div className="mt-6 rounded-xl border border-success/20 bg-success/5 p-4">
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                     <div>
-                      <p className="mb-1 font-semibold text-green-600 dark:text-green-400">
+                      <p className="mb-1 font-semibold text-success dark:text-success">
                         You&apos;re saving $
                         {(23_880 - monthlyTotal * 12).toFixed(0)}/year vs
                         ServiceTitan (5 users)
@@ -716,9 +716,9 @@ export function PricingCalculator() {
                         <td className="p-4 text-center">
                           {typeof row.st === "boolean" ? (
                             row.st ? (
-                              <CheckCircle2 className="mx-auto size-5 text-green-600 dark:text-green-400" />
+                              <CheckCircle2 className="mx-auto size-5 text-success dark:text-success" />
                             ) : (
-                              <XCircle className="mx-auto size-5 text-red-600 dark:text-red-400" />
+                              <XCircle className="mx-auto size-5 text-destructive dark:text-destructive" />
                             )
                           ) : (
                             <span className="text-muted-foreground text-sm">
@@ -729,9 +729,9 @@ export function PricingCalculator() {
                         <td className="p-4 text-center">
                           {typeof row.hcp === "boolean" ? (
                             row.hcp ? (
-                              <CheckCircle2 className="mx-auto size-5 text-green-600 dark:text-green-400" />
+                              <CheckCircle2 className="mx-auto size-5 text-success dark:text-success" />
                             ) : (
-                              <XCircle className="mx-auto size-5 text-red-600 dark:text-red-400" />
+                              <XCircle className="mx-auto size-5 text-destructive dark:text-destructive" />
                             )
                           ) : (
                             <span className="text-muted-foreground text-sm">

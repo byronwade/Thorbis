@@ -32,7 +32,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * User roles in the system
  * Matches the user_role ENUM in database
  */
-export type UserRole = "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr";
+export type UserRole =
+  | "owner"
+  | "admin"
+  | "manager"
+  | "dispatcher"
+  | "technician"
+  | "csr";
 
 /**
  * Permission keys for fine-grained access control
@@ -87,7 +93,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
   owner: {
     id: "owner",
     label: "Owner",
-    description: "Full system access with focus on business financials and growth",
+    description:
+      "Full system access with focus on business financials and growth",
     permissions: [
       "view_reports",
       "manage_team",
@@ -152,7 +159,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
   manager: {
     id: "manager",
     label: "Manager",
-    description: "Oversee team performance, customer satisfaction, and operations",
+    description:
+      "Oversee team performance, customer satisfaction, and operations",
     permissions: [
       "view_reports",
       "manage_team",
@@ -184,7 +192,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
   dispatcher: {
     id: "dispatcher",
     label: "Dispatcher",
-    description: "Manage technician schedules, job assignments, and real-time operations",
+    description:
+      "Manage technician schedules, job assignments, and real-time operations",
     permissions: [
       "view_reports",
       "dispatch_jobs",
@@ -210,7 +219,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
   technician: {
     id: "technician",
     label: "Technician",
-    description: "View assigned jobs, update job status, and track personal performance",
+    description:
+      "View assigned jobs, update job status, and track personal performance",
     permissions: [
       "update_job_status",
       "create_invoices",
@@ -231,7 +241,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
   csr: {
     id: "csr",
     label: "Customer Service Rep",
-    description: "Handle customer calls, schedule appointments, and manage customer relationships",
+    description:
+      "Handle customer calls, schedule appointments, and manage customer relationships",
     permissions: [
       "create_jobs",
       "schedule_appointments",
@@ -467,8 +478,11 @@ export function getRolePermissions(role: UserRole): Permission[] {
  * const canDelete = roleHasPermission("manager", "delete_jobs");
  * ```
  */
-export function roleHasPermission(role: UserRole, permission: Permission): boolean {
-  return ROLES[role]?.permissions.includes(permission) || false;
+export function roleHasPermission(
+  role: UserRole,
+  permission: Permission
+): boolean {
+  return ROLES[role]?.permissions.includes(permission);
 }
 
 /**

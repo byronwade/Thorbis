@@ -276,9 +276,9 @@ export default function BillingPage() {
           <p className="text-lg text-muted-foreground">
             Simple, transparent pricing - only pay for what you actually use
           </p>
-          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-500" />
-            <p className="text-amber-900 text-sm dark:text-amber-100">
+          <div className="flex items-start gap-2 rounded-lg border border-warning bg-warning p-4 dark:border-warning/50 dark:bg-warning/20">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning dark:text-warning" />
+            <p className="text-sm text-warning dark:text-warning">
               All prices are subject to change. We'll notify you at least 30
               days in advance of any pricing updates.
             </p>
@@ -320,7 +320,7 @@ export default function BillingPage() {
                     March 1 - March 31, 2024 • {DAYS_LEFT} days remaining
                   </p>
                 </div>
-                <Badge className="bg-green-600 px-3 py-1" variant="default">
+                <Badge className="bg-success px-3 py-1" variant="default">
                   Active
                 </Badge>
               </div>
@@ -461,14 +461,14 @@ export default function BillingPage() {
             </div>
 
             {/* Trust Message */}
-            <div className="rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-900/50 dark:bg-green-950/20">
+            <div className="rounded-lg border border-success bg-success p-6 dark:border-success/50 dark:bg-success/20">
               <div className="flex gap-4">
-                <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-600 dark:text-green-500" />
+                <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-success dark:text-success" />
                 <div className="space-y-1">
-                  <p className="font-semibold text-green-900 dark:text-green-100">
+                  <p className="font-semibold text-success dark:text-success">
                     We believe in honest pricing
                   </p>
-                  <p className="text-green-800 text-sm dark:text-green-200">
+                  <p className="text-sm text-success dark:text-success">
                     Every single thing we charge for is shown below with a clear
                     explanation. No hidden fees, no surprises. You only pay for
                     what you actually use.
@@ -641,7 +641,7 @@ export default function BillingPage() {
                         Expires December 2025
                       </p>
                     </div>
-                    <Badge className="bg-green-600" variant="default">
+                    <Badge className="bg-success" variant="default">
                       Active
                     </Badge>
                   </div>
@@ -657,7 +657,7 @@ export default function BillingPage() {
 
                 <Separator />
 
-                <div className="space-y-2 rounded-lg bg-blue-50 p-4 dark:bg-blue-950/20">
+                <div className="space-y-2 rounded-lg bg-primary p-4 dark:bg-primary/20">
                   <p className="font-medium text-sm">
                     Automatic billing on the 1st
                   </p>
@@ -722,8 +722,8 @@ export default function BillingPage() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-500" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
+                          <CheckCircle className="h-4 w-4 text-success dark:text-success" />
                         </div>
                         <div className="flex-1">
                           <p className="font-semibold text-sm">

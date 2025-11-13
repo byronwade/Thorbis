@@ -37,11 +37,13 @@ import {
 interface PhoneNumberSearchModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (phoneNumber: string) => void;
 }
 
 export function PhoneNumberSearchModal({
   open,
   onOpenChange,
+  onSuccess,
 }: PhoneNumberSearchModalProps) {
   const [areaCode, setAreaCode] = useState("831");
   const [numberType, setNumberType] = useState<"local" | "toll-free">("local");
@@ -84,10 +86,15 @@ export function PhoneNumberSearchModal({
     });
 
     setPurchasing(null);
-    onOpenChange(false);
-
-    // Refresh the phone numbers list
-    window.location.reload();
+    
+    // Call onSuccess callback if provided
+    if (onSuccess) {
+      onSuccess(phoneNumber);
+    } else {
+      onOpenChange(false);
+      // Refresh the phone numbers list only if not using callback
+      window.location.reload();
+    }
   };
 
   return (

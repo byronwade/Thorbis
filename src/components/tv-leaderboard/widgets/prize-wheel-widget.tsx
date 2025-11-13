@@ -46,7 +46,7 @@ export function PrizeWheelWidget({
         {/* Header - adapts across stages */}
         <div className="flex items-center gap-2">
           <ResponsiveIcon>
-            <Gift className="text-purple-500" />
+            <Gift className="text-accent-foreground" />
           </ResponsiveIcon>
           <ShowAt stage="full">
             <ResponsiveText variant="title">Prize Winner</ResponsiveText>
@@ -63,7 +63,7 @@ export function PrizeWheelWidget({
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             {/* Trophy icon */}
             <div className="flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/20">
-              <Trophy className="size-8 text-purple-500" />
+              <Trophy className="size-8 text-accent-foreground" />
             </div>
 
             {/* Winner name */}
@@ -75,7 +75,7 @@ export function PrizeWheelWidget({
                 Winner
               </ResponsiveText>
               <ResponsiveText
-                className="font-bold text-purple-500"
+                className="font-bold text-accent-foreground"
                 variant="title"
               >
                 {currentPrize.winner}
@@ -96,16 +96,16 @@ export function PrizeWheelWidget({
           <div className="flex flex-1 flex-col justify-center gap-3">
             {/* Winner */}
             <div className="flex items-center gap-2">
-              <Trophy className="size-4 text-purple-500" />
+              <Trophy className="size-4 text-accent-foreground" />
               <ResponsiveText className="font-bold" variant="body">
                 {currentPrize.winner}
               </ResponsiveText>
             </div>
 
             {/* Prize */}
-            <div className="rounded-lg bg-purple-500/20 p-2 text-center">
+            <div className="rounded-lg bg-accent/20 p-2 text-center">
               <ResponsiveText
-                className="font-bold text-purple-500"
+                className="font-bold text-accent-foreground"
                 variant="body"
               >
                 {currentPrize.label}
@@ -117,9 +117,9 @@ export function PrizeWheelWidget({
         {/* COMPACT Stage: Winner name only */}
         <ShowAt stage="compact">
           <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-            <Trophy className="size-6 text-purple-500" />
+            <Trophy className="size-6 text-accent-foreground" />
             <ResponsiveText
-              className="font-bold text-purple-500"
+              className="font-bold text-accent-foreground"
               variant="body"
             >
               {currentPrize.winner}
@@ -134,7 +134,7 @@ export function PrizeWheelWidget({
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
             <ResponsiveText
-              className="font-bold text-purple-500"
+              className="font-bold text-accent-foreground"
               variant="display"
             >
               {currentPrize.value || "🎁"}

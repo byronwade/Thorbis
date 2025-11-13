@@ -1,6 +1,12 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  CartesianGrid,
+  LazyBarChart,
+  XAxis,
+  YAxis,
+} from "@/components/lazy/chart";
 import {
   Card,
   CardContent,
@@ -65,7 +71,7 @@ export function CallActivityChart() {
           className="aspect-auto h-[300px] w-full"
           config={chartConfig}
         >
-          <BarChart
+          <LazyBarChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -90,7 +96,7 @@ export function CallActivityChart() {
             <Bar dataKey="inbound" fill="var(--color-inbound)" radius={4} />
             <Bar dataKey="booked" fill="var(--color-booked)" radius={4} />
             <Bar dataKey="missed" fill="var(--color-missed)" radius={4} />
-          </BarChart>
+          </LazyBarChart>
         </ChartContainer>
       </CardContent>
     </Card>

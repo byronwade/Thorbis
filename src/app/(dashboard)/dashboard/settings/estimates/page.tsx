@@ -986,9 +986,9 @@ export default function EstimatesSettingsPage() {
               </>
             )}
 
-            <div className="rounded-lg border border-blue-500/50 bg-blue-500/10 p-4">
+            <div className="rounded-lg border border-primary/50 bg-primary/10 p-4">
               <div className="flex items-start gap-3">
-                <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+                <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                 <div className="flex-1 space-y-1">
                   <p className="font-medium text-sm">
                     Multiple Options Increase Sales

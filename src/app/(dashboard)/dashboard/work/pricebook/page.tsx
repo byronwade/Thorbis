@@ -16,8 +16,8 @@
  */
 
 import { notFound } from "next/navigation";
-import { PriceBookTable } from "@/components/work/price-book-table";
 import type { PriceBookItem } from "@/components/work/price-book-table";
+import { PriceBookTable } from "@/components/work/price-book-table";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PriceBookPage() {
@@ -41,7 +41,9 @@ export default async function PriceBookPage() {
       return (
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
-            <h3 className="mb-2 font-semibold text-lg">Failed to load price book items</h3>
+            <h3 className="mb-2 font-semibold text-lg">
+              Failed to load price book items
+            </h3>
             <p className="text-muted-foreground text-sm">{error.message}</p>
           </div>
         </div>
@@ -72,11 +74,7 @@ export default async function PriceBookPage() {
       lastUpdated: item.updated_at ? new Date(item.updated_at) : undefined,
     }));
 
-    return (
-      <div className="flex h-full flex-col">
-        <PriceBookTable items={items} itemsPerPage={50} />
-      </div>
-    );
+    return <PriceBookTable items={items} itemsPerPage={50} />;
   } catch (error) {
     console.error("Unexpected error in PriceBookPage:", error);
     return (
@@ -84,7 +82,9 @@ export default async function PriceBookPage() {
         <div className="text-center">
           <h3 className="mb-2 font-semibold text-lg">Something went wrong</h3>
           <p className="text-muted-foreground text-sm">
-            {error instanceof Error ? error.message : "Failed to load price book"}
+            {error instanceof Error
+              ? error.message
+              : "Failed to load price book"}
           </p>
         </div>
       </div>

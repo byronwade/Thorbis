@@ -80,11 +80,7 @@ export function ItemDetailToolbarActions({
       {/* More Actions Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            className="gap-2 hover:bg-muted"
-            size="sm"
-            variant="ghost"
-          >
+          <Button className="gap-2 hover:bg-muted" size="sm" variant="ghost">
             <MoreVertical className="size-4" />
             <span className="hidden sm:inline">More</span>
             <span className="sr-only">More actions</span>

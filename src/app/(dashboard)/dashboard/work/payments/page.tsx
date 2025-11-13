@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
-import { PaymentsTable } from "@/components/work/payments-table";
 import { PaymentsKanban } from "@/components/work/payments-kanban";
+import { PaymentsTable } from "@/components/work/payments-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -44,6 +44,7 @@ export default async function PaymentsPage() {
   }
 
   // Fetch payments from payments table
+  // Fetch all payments including archived (filter in UI)
   const { data: paymentsRaw, error } = await supabase
     .from("payments")
     .select(`
@@ -51,7 +52,6 @@ export default async function PaymentsPage() {
       customers!customer_id(first_name, last_name, display_name)
     `)
     .eq("company_id", activeCompanyId)
-    .is("deleted_at", null)
     .order("processed_at", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(MAX_PAYMENTS_PER_PAGE);
@@ -75,7 +75,9 @@ export default async function PaymentsPage() {
     processed_at: payment.processed_at ? new Date(payment.processed_at) : null,
     created_at: new Date(payment.created_at),
     updated_at: new Date(payment.updated_at),
-    customer: Array.isArray(payment.customers) ? payment.customers[0] : payment.customers,
+    customer: Array.isArray(payment.customers)
+      ? payment.customers[0]
+      : payment.customers,
     invoice_id: payment.invoice_id,
     job_id: payment.job_id,
     customer_id: payment.customer_id,
@@ -83,13 +85,22 @@ export default async function PaymentsPage() {
     description: payment.description,
     transaction_id: payment.transaction_id,
     processor: payment.processor,
+    archived_at: payment.archived_at,
+    deleted_at: payment.deleted_at,
   }));
 
-  // Calculate payment stats
-  const completedCount = payments.filter((p) => p.status === "completed").length;
-  const pendingCount = payments.filter((p) => p.status === "pending").length;
-  const refundedCount = payments.filter((p) => p.status === "refunded" || p.status === "partially_refunded").length;
-  const failedCount = payments.filter((p) => p.status === "failed").length;
+  // Filter to active payments for stats calculations
+  const activePayments = payments.filter((p) => !p.archived_at && !p.deleted_at);
+
+  // Calculate payment stats (from active payments only)
+  const completedCount = activePayments.filter(
+    (p) => p.status === "completed"
+  ).length;
+  const pendingCount = activePayments.filter((p) => p.status === "pending").length;
+  const refundedCount = activePayments.filter(
+    (p) => p.status === "refunded" || p.status === "partially_refunded"
+  ).length;
+  const failedCount = activePayments.filter((p) => p.status === "failed").length;
 
   const paymentStats: StatCard[] = [
     {
@@ -133,4 +144,3 @@ export default async function PaymentsPage() {
     </>
   );
 }
-

@@ -1,13 +1,12 @@
 "use client";
 
+import { ArrowUpRight, Building2, Shield, User } from "lucide-react";
 import Link from "next/link";
-import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
-import { EntityKanban } from "@/components/ui/entity-kanban";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ArrowUpRight, Building2, Shield, User } from "lucide-react";
+import { EntityKanban } from "@/components/ui/entity-kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
 import type { TeamMember } from "@/components/work/teams-table";
 
 type TeamMemberStatus = "active" | "invited" | "suspended";
@@ -128,17 +127,22 @@ export function TeamsKanban({ members }: { members: TeamMember[] }) {
         entity: member,
         member,
       })}
+      renderCard={(item) => (
+        <MemberCard
+          item={{ ...item, member: item.entity } as TeamsKanbanItem}
+        />
+      )}
+      renderDragOverlay={(item) => (
+        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+          <MemberCard
+            item={{ ...item, member: item.entity } as TeamsKanbanItem}
+          />
+        </div>
+      )}
       updateEntityStatus={(member, newStatus) => ({
         ...member,
         status: newStatus,
       })}
-      renderCard={(item) => <MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />}
-      renderDragOverlay={(item) => (
-        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-          <MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />
-        </div>
-      )}
     />
   );
 }
-

@@ -492,7 +492,9 @@ export default async function CustomerDetailsPage({
                 </p>
               </div>
               <Button asChild size="sm" variant="outline">
-                <Link href={`/dashboard/properties/new?customer=${customerId}`}>
+                <Link
+                  href={`/dashboard/work/properties/new?customer=${customerId}`}
+                >
                   <Building2 className="mr-2 size-4" />
                   Add Property
                 </Link>
@@ -569,7 +571,7 @@ export default async function CustomerDetailsPage({
 
                   <div className="flex gap-2">
                     <Button asChild size="sm" variant="outline">
-                      <Link href={`/dashboard/properties/${property.id}`}>
+                      <Link href={`/dashboard/work/properties/${property.id}`}>
                         View Details
                       </Link>
                     </Button>
@@ -630,7 +632,9 @@ export default async function CustomerDetailsPage({
                 portalInvitedAt={customer.portal_invited_at}
               />
               <Button asChild className="w-full" variant="outline">
-                <Link href={`/dashboard/properties/new?customer=${customerId}`}>
+                <Link
+                  href={`/dashboard/work/properties/new?customer=${customerId}`}
+                >
                   <Building2 className="mr-2 size-4" />
                   Add Property
                 </Link>

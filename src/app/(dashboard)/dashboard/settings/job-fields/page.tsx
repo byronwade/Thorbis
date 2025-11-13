@@ -308,13 +308,13 @@ export default function JobFieldsPage() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      customer: "bg-blue-500",
-      property: "bg-green-500",
-      job: "bg-purple-500",
-      estimate: "bg-yellow-500",
-      invoice: "bg-orange-500",
+      customer: "bg-primary",
+      property: "bg-success",
+      job: "bg-accent",
+      estimate: "bg-warning",
+      invoice: "bg-warning",
     };
-    return colors[category] || "bg-gray-500";
+    return colors[category] || "bg-secondary0";
   };
 
   const filteredFields =

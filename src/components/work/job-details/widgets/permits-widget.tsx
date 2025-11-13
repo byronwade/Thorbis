@@ -105,36 +105,36 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
     pending: {
       label: "Pending",
       icon: Clock,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-100 dark:bg-yellow-950",
+      color: "text-warning",
+      bgColor: "bg-warning dark:bg-warning",
       variant: "outline",
     },
     submitted: {
       label: "Submitted",
       icon: FileText,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950",
+      color: "text-primary",
+      bgColor: "bg-primary dark:bg-primary",
       variant: "secondary",
     },
     approved: {
       label: "Approved",
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default",
     },
     rejected: {
       label: "Rejected",
       icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-100 dark:bg-red-950",
+      color: "text-destructive",
+      bgColor: "bg-destructive dark:bg-destructive",
       variant: "destructive",
     },
     expired: {
       label: "Expired",
       icon: AlertCircle,
-      color: "text-gray-600",
-      bgColor: "bg-gray-100 dark:bg-gray-950",
+      color: "text-muted-foreground",
+      bgColor: "bg-muted dark:bg-foreground",
       variant: "outline",
     },
   };
@@ -251,7 +251,7 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
                 {permit.approvedDate && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Approved:</span>
-                    <span className="font-medium text-green-600">
+                    <span className="font-medium text-success">
                       {formatDate(permit.approvedDate)}
                     </span>
                   </div>
@@ -261,7 +261,7 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Expires:</span>
                     <span
-                      className={`font-medium ${isExpiringSoon ? "text-orange-600" : ""}`}
+                      className={`font-medium ${isExpiringSoon ? "text-warning" : ""}`}
                     >
                       {formatDate(permit.expiryDate)}
                       {isExpiringSoon && ` (${daysUntilExpiry}d)`}
@@ -298,13 +298,13 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
       }) && (
         <>
           <Separator />
-          <div className="flex items-start gap-2 rounded-lg border-orange-500 border-l-4 bg-orange-50 p-3 dark:bg-orange-950/30">
-            <AlertCircle className="mt-0.5 size-4 shrink-0 text-orange-600" />
+          <div className="flex items-start gap-2 rounded-lg border-warning border-l-4 bg-warning p-3 dark:bg-warning/30">
+            <AlertCircle className="mt-0.5 size-4 shrink-0 text-warning" />
             <div>
-              <p className="font-medium text-orange-900 text-sm dark:text-orange-100">
+              <p className="font-medium text-sm text-warning dark:text-warning">
                 Permits Expiring Soon
               </p>
-              <p className="text-orange-800 text-xs dark:text-orange-200">
+              <p className="text-warning text-xs dark:text-warning">
                 Some permits will expire within 30 days. Renew them to avoid
                 delays.
               </p>

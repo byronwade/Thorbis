@@ -115,7 +115,7 @@ export function AddPropertyDialog({
             Add a new service location for this customer. All fields marked with
             * are required.
             {customerAddress?.address && (
-              <span className="mt-2 block font-medium text-green-600">
+              <span className="mt-2 block font-medium text-success">
                 ✓ Address fields pre-filled from customer profile
               </span>
             )}

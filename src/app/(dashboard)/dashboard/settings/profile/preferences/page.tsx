@@ -175,7 +175,7 @@ export default function PreferencesPage() {
                 type="button"
               >
                 <div className="mb-2 flex items-center gap-2">
-                  <Sun className="h-5 w-5 text-yellow-500" />
+                  <Sun className="h-5 w-5 text-warning" />
                   <span className="font-medium">Light</span>
                   {settings.theme === "light" && (
                     <Check className="ml-auto h-4 w-4 text-primary" />
@@ -196,7 +196,7 @@ export default function PreferencesPage() {
                 type="button"
               >
                 <div className="mb-2 flex items-center gap-2">
-                  <Moon className="h-5 w-5 text-blue-500" />
+                  <Moon className="h-5 w-5 text-primary" />
                   <span className="font-medium">Dark</span>
                   {settings.theme === "dark" && (
                     <Check className="ml-auto h-4 w-4 text-primary" />
@@ -217,7 +217,7 @@ export default function PreferencesPage() {
                 type="button"
               >
                 <div className="mb-2 flex items-center gap-2">
-                  <Monitor className="h-5 w-5 text-purple-500" />
+                  <Monitor className="h-5 w-5 text-accent-foreground" />
                   <span className="font-medium">System</span>
                   {settings.theme === "system" && (
                     <Check className="ml-auto h-4 w-4 text-primary" />

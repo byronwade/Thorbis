@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
-import { AppointmentsTable } from "@/components/work/appointments-table";
 import { AppointmentsKanban } from "@/components/work/appointments-kanban";
+import { AppointmentsTable } from "@/components/work/appointments-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -43,7 +43,8 @@ export default async function AppointmentsPage() {
     return notFound();
   }
 
-  // Fetch appointments from schedules table where type = 'appointment'
+  // Fetch ALL appointments from schedules table where type = 'appointment'
+  // Client-side filtering will handle archive status
   const { data: appointmentsRaw, error } = await supabase
     .from("schedules")
     .select(`
@@ -54,7 +55,6 @@ export default async function AppointmentsPage() {
     `)
     .eq("company_id", activeCompanyId)
     .eq("type", "appointment")
-    .is("deleted_at", null)
     .order("start_time", { ascending: true })
     .limit(MAX_APPOINTMENTS_PER_PAGE);
 
@@ -71,35 +71,59 @@ export default async function AppointmentsPage() {
   const appointments = (appointmentsRaw || [])
     .filter((apt: any) => apt.start_time) // Only include appointments with start time
     .map((apt: any) => {
-      const customer = Array.isArray(apt.customers) ? apt.customers[0] : apt.customers;
-      const property = Array.isArray(apt.properties) ? apt.properties[0] : apt.properties;
+      const customer = Array.isArray(apt.customers)
+        ? apt.customers[0]
+        : apt.customers;
+      const property = Array.isArray(apt.properties)
+        ? apt.properties[0]
+        : apt.properties;
 
       return {
         id: apt.id,
         title: apt.title,
         description: apt.description,
         start_time: new Date(apt.start_time),
-        end_time: apt.end_time ? new Date(apt.end_time) : new Date(apt.start_time),
+        end_time: apt.end_time
+          ? new Date(apt.end_time)
+          : new Date(apt.start_time),
         status: apt.status || "scheduled",
         type: apt.type,
         customer,
         property,
-        assigned_user: Array.isArray(apt.assigned_user) ? apt.assigned_user[0] : apt.assigned_user,
+        assigned_user: Array.isArray(apt.assigned_user)
+          ? apt.assigned_user[0]
+          : apt.assigned_user,
         job_id: apt.job_id,
         property_id: apt.property_id,
         customer_id: apt.customer_id,
         company_id: apt.company_id,
         created_at: new Date(apt.created_at),
         updated_at: new Date(apt.updated_at),
+        archived_at: apt.archived_at,
+        deleted_at: apt.deleted_at,
       };
     });
 
-  // Calculate appointment stats
-  const scheduledCount = appointments.filter((a) => a.status === "scheduled").length;
-  const confirmedCount = appointments.filter((a) => a.status === "confirmed").length;
-  const inProgressCount = appointments.filter((a) => a.status === "in_progress").length;
-  const completedCount = appointments.filter((a) => a.status === "completed").length;
-  const cancelledCount = appointments.filter((a) => a.status === "cancelled").length;
+  // Only count active (non-archived) appointments in stats
+  const activeAppointments = appointments.filter(
+    (a) => !a.archived_at && !a.deleted_at
+  );
+
+  const scheduledCount = activeAppointments.filter(
+    (a) => a.status === "scheduled"
+  ).length;
+  const confirmedCount = activeAppointments.filter(
+    (a) => a.status === "confirmed"
+  ).length;
+  const inProgressCount = activeAppointments.filter(
+    (a) => a.status === "in_progress"
+  ).length;
+  const completedCount = activeAppointments.filter(
+    (a) => a.status === "completed"
+  ).length;
+  const cancelledCount = activeAppointments.filter(
+    (a) => a.status === "cancelled"
+  ).length;
 
   const appointmentStats: StatCard[] = [
     {
@@ -135,18 +159,17 @@ export default async function AppointmentsPage() {
   ];
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       <StatusPipeline compact stats={appointmentStats} />
-      <WorkDataView
-        kanban={<AppointmentsKanban appointments={appointments} />}
-        section="appointments"
-        table={
-          <div>
-            <AppointmentsTable itemsPerPage={50} appointments={appointments} />
-          </div>
-        }
-      />
-    </>
+      <div className="flex-1 overflow-hidden">
+        <WorkDataView
+          kanban={<AppointmentsKanban appointments={appointments} />}
+          section="appointments"
+          table={
+            <AppointmentsTable appointments={appointments} itemsPerPage={50} />
+          }
+        />
+      </div>
+    </div>
   );
 }
-

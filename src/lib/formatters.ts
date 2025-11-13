@@ -1,9 +1,9 @@
 /**
  * Centralized Formatting Utilities
- * 
+ *
  * Professional formatting functions following DRY principles.
  * Handles currency, dates, percentages, and other common formatting needs.
- * 
+ *
  * Features:
  * - Type-safe with proper null/undefined handling
  * - Consistent formatting across the application
@@ -22,14 +22,14 @@ export type CurrencyFormatOptions = {
   decimals?: number;
 };
 
-export type DateFormatPreset = 
-  | "short"        // "Jan 15, 2024"
-  | "medium"       // "Jan 15, 2024"
-  | "long"         // "January 15, 2024"
-  | "full"         // "Monday, January 15, 2024"
-  | "table"        // "Jan 15, 2024" (optimized for tables)
-  | "time"         // "2:30 PM"
-  | "datetime";    // "Jan 15, 2024, 2:30 PM"
+export type DateFormatPreset =
+  | "short" // "Jan 15, 2024"
+  | "medium" // "Jan 15, 2024"
+  | "long" // "January 15, 2024"
+  | "full" // "Monday, January 15, 2024"
+  | "table" // "Jan 15, 2024" (optimized for tables)
+  | "time" // "2:30 PM"
+  | "datetime"; // "Jan 15, 2024, 2:30 PM"
 
 export type DateFormatOptions = {
   /** Preset format style */
@@ -40,11 +40,11 @@ export type DateFormatOptions = {
 
 /**
  * Format currency from cents to USD string
- * 
+ *
  * @param cents - Amount in cents (can be null/undefined)
  * @param options - Formatting options
  * @returns Formatted currency string (e.g., "$1,234.56")
- * 
+ *
  * @example
  * formatCurrency(123456) // "$1,234.56"
  * formatCurrency(null) // "$0.00"
@@ -60,10 +60,12 @@ export function formatCurrency(
     showZero = true,
     decimals,
   } = options;
-  
+
   // Use decimals if provided, otherwise use maximumFractionDigits
-  const finalMaxFractionDigits = decimals !== undefined ? decimals : maximumFractionDigits;
-  const finalMinFractionDigits = decimals !== undefined ? decimals : minimumFractionDigits;
+  const finalMaxFractionDigits =
+    decimals !== undefined ? decimals : maximumFractionDigits;
+  const finalMinFractionDigits =
+    decimals !== undefined ? decimals : minimumFractionDigits;
 
   if (cents === null || cents === undefined) {
     return showZero
@@ -86,11 +88,11 @@ export function formatCurrency(
 
 /**
  * Format currency from dollars (not cents)
- * 
+ *
  * @param amount - Amount in dollars (can be null/undefined)
  * @param options - Formatting options
  * @returns Formatted currency string
- * 
+ *
  * @example
  * formatCurrencyFromDollars(1234.56) // "$1,234.56"
  * formatCurrencyFromDollars(null) // "$0.00"
@@ -105,10 +107,12 @@ export function formatCurrencyFromDollars(
     showZero = true,
     decimals,
   } = options;
-  
+
   // Use decimals if provided, otherwise use maximumFractionDigits
-  const finalMaxFractionDigits = decimals !== undefined ? decimals : maximumFractionDigits;
-  const finalMinFractionDigits = decimals !== undefined ? decimals : minimumFractionDigits;
+  const finalMaxFractionDigits =
+    decimals !== undefined ? decimals : maximumFractionDigits;
+  const finalMinFractionDigits =
+    decimals !== undefined ? decimals : minimumFractionDigits;
 
   if (amount === null || amount === undefined || isNaN(amount)) {
     return showZero
@@ -131,11 +135,11 @@ export function formatCurrencyFromDollars(
 
 /**
  * Format date with flexible presets or custom options
- * 
+ *
  * @param date - Date value (Date, number, string, or null)
  * @param options - Formatting options
  * @returns Formatted date string or "—" if null
- * 
+ *
  * @example
  * formatDate(new Date()) // "Jan 15, 2024"
  * formatDate(new Date(), { preset: "long" }) // "January 15, 2024"
@@ -149,9 +153,10 @@ export function formatDate(
     return "—";
   }
 
-  const dateObj = typeof date === "number" || typeof date === "string" 
-    ? new Date(date) 
-    : date;
+  const dateObj =
+    typeof date === "number" || typeof date === "string"
+      ? new Date(date)
+      : date;
 
   if (isNaN(dateObj.getTime())) {
     return "—";
@@ -219,10 +224,10 @@ export function formatDate(
 
 /**
  * Format date and time together
- * 
+ *
  * @param date - Date value
  * @returns Formatted date + time string
- * 
+ *
  * @example
  * formatDateTime(new Date()) // "Jan 15, 2024, 2:30 PM"
  */
@@ -234,10 +239,10 @@ export function formatDateTime(
 
 /**
  * Format time only (no date)
- * 
+ *
  * @param date - Date value
  * @returns Formatted time string (e.g., "2:30 PM")
- * 
+ *
  * @example
  * formatTime(new Date()) // "2:30 PM"
  */
@@ -249,11 +254,11 @@ export function formatTime(
 
 /**
  * Format date range (start → end)
- * 
+ *
  * @param start - Start date
  * @param end - End date (optional)
  * @returns Formatted date range string
- * 
+ *
  * @example
  * formatDateRange(new Date("2024-01-15"), new Date("2024-01-20")) // "Jan 15 → Jan 20, 2024"
  */
@@ -265,9 +270,10 @@ export function formatDateRange(
     return "—";
   }
 
-  const startDate = typeof start === "number" || typeof start === "string"
-    ? new Date(start)
-    : start;
+  const startDate =
+    typeof start === "number" || typeof start === "string"
+      ? new Date(start)
+      : start;
 
   if (isNaN(startDate.getTime())) {
     return "—";
@@ -277,9 +283,8 @@ export function formatDateRange(
     return formatDate(startDate, { preset: "short" });
   }
 
-  const endDate = typeof end === "number" || typeof end === "string"
-    ? new Date(end)
-    : end;
+  const endDate =
+    typeof end === "number" || typeof end === "string" ? new Date(end) : end;
 
   if (isNaN(endDate.getTime())) {
     return formatDate(startDate, { preset: "short" });
@@ -312,18 +317,18 @@ export function formatDateRange(
 
 /**
  * Format percentage value
- * 
+ *
  * @param value - Percentage value (0-100)
  * @param decimals - Number of decimal places (default: 0)
  * @returns Formatted percentage string
- * 
+ *
  * @example
  * formatPercentage(45.5) // "46%"
  * formatPercentage(45.5, 1) // "45.5%"
  */
 export function formatPercentage(
   value: number | null | undefined,
-  decimals: number = 0
+  decimals = 0
 ): string {
   if (value === null || value === undefined) {
     return "—";
@@ -334,10 +339,10 @@ export function formatPercentage(
 
 /**
  * Format hours (decimal to "Xh Ym" format)
- * 
+ *
  * @param hours - Hours as decimal number
  * @returns Formatted hours string
- * 
+ *
  * @example
  * formatHours(2.5) // "2h 30m"
  * formatHours(1.25) // "1h 15m"
@@ -359,18 +364,18 @@ export function formatHours(hours: number | null | undefined): string {
 
 /**
  * Format number with thousand separators
- * 
+ *
  * @param value - Number value
  * @param decimals - Number of decimal places (default: 0)
  * @returns Formatted number string
- * 
+ *
  * @example
  * formatNumber(1234567) // "1,234,567"
  * formatNumber(1234.56, 2) // "1,234.56"
  */
 export function formatNumber(
   value: number | null | undefined,
-  decimals: number = 0
+  decimals = 0
 ): string {
   if (value === null || value === undefined) {
     return "0";
@@ -381,4 +386,3 @@ export function formatNumber(
     maximumFractionDigits: decimals,
   }).format(value);
 }
-

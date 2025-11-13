@@ -107,14 +107,18 @@ export default async function KBHomePage() {
                 <Card className="h-full transition-all hover:shadow-md">
                   <CardHeader>
                     <div className="mb-2 flex items-center gap-2">
-                      {category.icon && (
-                        <span className="text-2xl">{category.icon}</span>
-                      )}
-                      <CardTitle>{category.title}</CardTitle>
+                      {category.icon ? (
+                        <span className="text-2xl">
+                          {String(category.icon)}
+                        </span>
+                      ) : null}
+                      <CardTitle>{String(category.title)}</CardTitle>
                     </div>
-                    {category.description && (
-                      <CardDescription>{category.description}</CardDescription>
-                    )}
+                    {category.description ? (
+                      <CardDescription>
+                        {String(category.description)}
+                      </CardDescription>
+                    ) : null}
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2 font-medium text-primary text-sm">

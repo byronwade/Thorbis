@@ -602,8 +602,3 @@ export const uiSelectors = {
   callStatus: (state: UIStore) => state.call.status,
   caller: (state: UIStore) => state.call.caller,
 };
-
-
-
-
-

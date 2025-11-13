@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
-import { JobsTable } from "@/components/work/jobs-table";
 import { JobsKanban } from "@/components/work/jobs-kanban";
+import { JobsTable } from "@/components/work/jobs-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { createClient } from "@/lib/supabase/server";
 
@@ -128,20 +128,18 @@ export default async function JobsPage() {
   ];
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       {/* Job Flow Pipeline - Rendered on server, passed to client component */}
       <StatusPipeline compact stats={jobStats} />
 
       {/* Jobs Table - Client component handles sorting, filtering, pagination */}
-      <WorkDataView
-        kanban={<JobsKanban jobs={jobs} />}
-        section="jobs"
-        table={
-          <div>
-            <JobsTable itemsPerPage={50} jobs={jobs} />
-          </div>
-        }
-      />
-    </>
+      <div className="flex-1 overflow-hidden">
+        <WorkDataView
+          kanban={<JobsKanban jobs={jobs} />}
+          section="jobs"
+          table={<JobsTable itemsPerPage={50} jobs={jobs} />}
+        />
+      </div>
+    </div>
   );
 }

@@ -298,11 +298,11 @@ export default function TemplatesSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-purple-500/50 bg-purple-500/5">
+        <Card className="border-border/50 bg-accent/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <FileText className="mt-0.5 h-5 w-5 shrink-0 text-purple-500" />
+            <FileText className="mt-0.5 h-5 w-5 shrink-0 text-accent-foreground" />
             <div className="space-y-1">
-              <p className="font-medium text-purple-700 text-sm dark:text-purple-400">
+              <p className="font-medium text-accent-foreground text-sm dark:text-accent-foreground">
                 Template Best Practices
               </p>
               <p className="text-muted-foreground text-sm">

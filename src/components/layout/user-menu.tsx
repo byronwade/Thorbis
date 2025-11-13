@@ -15,7 +15,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { signOut } from "@/actions/auth";
@@ -65,6 +65,7 @@ interface UserMenuProps {
 export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   // Find the active team based on activeCompanyId, fallback to first team
   const initialActiveTeam =
@@ -84,12 +85,8 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
     const result = await switchCompany(team.id);
     if (result.success) {
       setActiveTeam(team);
-      // If onboarding is not complete, redirect to onboarding page
-      if (team.onboardingComplete) {
-        router.push("/dashboard");
-      } else {
-        router.push("/dashboard/welcome");
-      }
+      // Stay on current page and refresh data
+      router.refresh();
     }
   };
 
@@ -278,3 +275,4 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
     </DropdownMenu>
   );
 }
+

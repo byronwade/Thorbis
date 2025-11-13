@@ -665,7 +665,7 @@ export function IntelligentCustomerWizard() {
                 <div className="flex items-start gap-3 rounded-lg border bg-muted/30 p-4">
                   <input
                     checked={customerData.taxExempt}
-                    className="mt-1 size-4 rounded border-gray-300"
+                    className="mt-1 size-4 rounded border-border"
                     id="taxExempt"
                     onChange={(e) => updateField("taxExempt", e.target.checked)}
                     type="checkbox"

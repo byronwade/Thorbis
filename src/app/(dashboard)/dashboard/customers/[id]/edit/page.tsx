@@ -345,7 +345,7 @@ export default async function EditCustomerPage({ params }: PageProps) {
                 </div>
                 <div className="flex items-center space-x-2 pt-8">
                   <input
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                     defaultChecked={customer.tax_exempt}
                     id="taxExempt"
                     name="taxExempt"

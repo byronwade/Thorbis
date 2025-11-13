@@ -84,7 +84,7 @@ export function OptimisticCustomerForm() {
               value={email}
             />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-destructive text-sm">{error}</p>}
           <Button disabled={isLoading} type="submit">
             {isLoading ? "Creating..." : "Create Customer"}
           </Button>

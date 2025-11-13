@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
 import { filterJobs, sortJobsByStartTime } from "@/lib/schedule-utils";
-import { createClient } from "@/lib/supabase/client";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useViewStore } from "@/lib/stores/view-store";
+import { createClient } from "@/lib/supabase/client";
 
 /**
  * Custom hook for managing schedule data
@@ -146,29 +146,35 @@ export function useSchedule() {
                   .eq("company_id", userTeamMember.company_id)
                   .eq("status", "active");
 
-              if (teamMembers && teamMembers.length > 0) {
-                // Convert team members to Technician format
-                const convertedTechnicians = teamMembers.map((member: any) => ({
-                  id: member.user_id,
-                  name: member.users?.name || member.job_title || "Team Member",
-                  email: member.users?.email || "",
-                  phone: member.users?.phone || member.phone || "",
-                  avatar: member.users?.avatar_url || member.avatar_url,
-                  color: "#3B82F6",
-                  role: member.job_title || "Team Member",
-                  isActive: member.status === "active",
-                  status: "available" as const,
-                  schedule: {
-                    workingHours: { start: "08:00", end: "17:00" },
-                    daysOff: [],
-                    availableHours: { start: 0, end: 40 },
-                  },
-                  createdAt: new Date(member.created_at),
-                  updatedAt: new Date(member.updated_at),
-                }));
+                if (teamMembers && teamMembers.length > 0) {
+                  // Convert team members to Technician format
+                  const convertedTechnicians = teamMembers.map(
+                    (member: any) => ({
+                      id: member.user_id,
+                      name:
+                        member.users?.name || member.job_title || "Team Member",
+                      email: member.users?.email || "",
+                      phone: member.users?.phone || member.phone || "",
+                      avatar: member.users?.avatar_url || member.avatar_url,
+                      color: "#3B82F6",
+                      role: member.job_title || "Team Member",
+                      isActive: member.status === "active",
+                      status: "available" as const,
+                      schedule: {
+                        workingHours: { start: "08:00", end: "17:00" },
+                        daysOff: [],
+                        availableHours: { start: 0, end: 40 },
+                      },
+                      createdAt: new Date(member.created_at),
+                      updatedAt: new Date(member.updated_at),
+                    })
+                  );
 
-                if (isMounted) {
-                  setTechnicians(convertedTechnicians);
+                  if (isMounted) {
+                    setTechnicians(convertedTechnicians);
+                  }
+                } else if (isMounted) {
+                  setTechnicians([]);
                 }
               } else if (isMounted) {
                 setTechnicians([]);
@@ -176,29 +182,45 @@ export function useSchedule() {
             } else if (isMounted) {
               setTechnicians([]);
             }
-          } else if (isMounted) {
-            setTechnicians([]);
+          } catch (teamError) {
+            // Silently fail - team members are optional for schedule display
+            console.warn(
+              "Failed to load team members (non-critical):",
+              teamError
+            );
+            if (isMounted) {
+              setTechnicians([]);
+            }
           }
-        } catch (teamError) {
-          // Silently fail - team members are optional for schedule display
-          console.warn("Failed to load team members (non-critical):", teamError);
-          if (isMounted) {
-            setTechnicians([]);
-          }
-        }
 
-        // Convert schedules to Job format (filter out jobs without customers)
-        const convertedJobs = (schedules || [])
-          .filter((schedule: any) => schedule.customer)
-          .map((schedule: any) => ({
-            id: schedule.id,
-            technicianId: schedule.assigned_to || "",
-            customerId: schedule.customer_id || "",
-            customer: {
-              id: schedule.customer_id,
-              name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
-              email: schedule.customer.email,
-              phone: schedule.customer.phone,
+          // Convert schedules to Job format (filter out jobs without customers)
+          const convertedJobs = (schedules || [])
+            .filter((schedule: any) => schedule.customer)
+            .map((schedule: any) => ({
+              id: schedule.id,
+              technicianId: schedule.assigned_to || "",
+              customerId: schedule.customer_id || "",
+              customer: {
+                id: schedule.customer_id,
+                name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
+                email: schedule.customer.email,
+                phone: schedule.customer.phone,
+                location: {
+                  address: {
+                    street: "",
+                    city: "",
+                    state: "",
+                    zip: "",
+                    country: "",
+                  },
+                  coordinates: {
+                    lat: 0,
+                    lng: 0,
+                  },
+                },
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
               location: {
                 address: {
                   street: "",
@@ -212,33 +234,17 @@ export function useSchedule() {
                   lng: 0,
                 },
               },
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-            location: {
-              address: {
-                street: "",
-                city: "",
-                state: "",
-                zip: "",
-                country: "",
-              },
-              coordinates: {
-                lat: 0,
-                lng: 0,
-              },
-            },
-            title: schedule.title || "",
-            description: schedule.description || "",
-            status: schedule.status || "scheduled",
-            priority: schedule.priority || "normal",
-            startTime: new Date(schedule.start_time),
-            endTime: new Date(schedule.end_time),
-            notes: schedule.notes || "",
-            metadata: {},
-            createdAt: new Date(schedule.created_at),
-            updatedAt: new Date(schedule.updated_at),
-          }));
+              title: schedule.title || "",
+              description: schedule.description || "",
+              status: schedule.status || "scheduled",
+              priority: schedule.priority || "normal",
+              startTime: new Date(schedule.start_time),
+              endTime: new Date(schedule.end_time),
+              notes: schedule.notes || "",
+              metadata: {},
+              createdAt: new Date(schedule.created_at),
+              updatedAt: new Date(schedule.updated_at),
+            }));
 
           if (!isMounted) {
             setLoading(false);
@@ -254,7 +260,11 @@ export function useSchedule() {
           let errorMessage = "Unknown error";
           if (error instanceof Error) {
             errorMessage = error.message;
-          } else if (typeof error === "object" && error !== null && "message" in error) {
+          } else if (
+            typeof error === "object" &&
+            error !== null &&
+            "message" in error
+          ) {
             errorMessage = String(error.message);
           }
           console.error("Schedule loading error:", error);

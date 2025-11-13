@@ -5,21 +5,20 @@
  * Main component for the Gantt-style scheduler view
  */
 
+import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from "date-fns";
 import { useMemo } from "react";
 import { useSchedule } from "@/hooks/use-schedule";
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
-import { HourlyTimeGrid } from "./hourly-time-grid";
-import { WeekTimeGrid } from "./week-time-grid";
-import { MonthTimeGrid } from "./month-time-grid";
-import { TechnicianSidebar } from "./technician-sidebar";
 import { useGanttSchedulerStore } from "@/lib/stores/gantt-scheduler-store";
 import {
   EmptyState,
-  NoTechniciansEmptyState,
-  NoJobsEmptyState,
   ErrorState,
+  NoTechniciansEmptyState,
 } from "./empty-states";
+import { HourlyTimeGrid } from "./hourly-time-grid";
+import { MonthTimeGrid } from "./month-time-grid";
 import type { Job } from "./schedule-types";
+import { TechnicianSidebar } from "./technician-sidebar";
+import { WeekTimeGrid } from "./week-time-grid";
 
 export function GanttScheduler() {
   const {
@@ -54,51 +53,50 @@ export function GanttScheduler() {
       const end = new Date(currentDate);
       end.setHours(23, 59, 59, 999);
       return { start, end };
-    } else if (view === "week") {
+    }
+    if (view === "week") {
       const start = startOfWeek(currentDate, { weekStartsOn: 0 });
       start.setHours(0, 0, 0, 0);
       const end = endOfWeek(currentDate, { weekStartsOn: 0 });
       end.setHours(23, 59, 59, 999);
       return { start, end };
-    } else {
-      // month
-      const start = startOfMonth(currentDate);
-      start.setHours(0, 0, 0, 0);
-      const end = endOfMonth(currentDate);
-      end.setHours(23, 59, 59, 999);
-      return { start, end };
     }
+    // month
+    const start = startOfMonth(currentDate);
+    start.setHours(0, 0, 0, 0);
+    const end = endOfMonth(currentDate);
+    end.setHours(23, 59, 59, 999);
+    return { start, end };
   }, [currentDate, view]);
 
   // Get jobs for selected technician or all technicians, filtered by date range and status
   const getJobsForDisplay = (technicianId: string): Job[] => {
     const jobs = getJobsForTechnician(technicianId);
-    
+
     // Filter by date range
     let filtered = jobs.filter((job) => {
       const jobStart = new Date(job.startTime);
       const jobEnd = new Date(job.endTime);
       return jobStart <= dateRange.end && jobEnd >= dateRange.start;
     });
-    
+
     // Filter by status if set
     if (statusFilter) {
       filtered = filtered.filter((job) => job.status === statusFilter);
     }
-    
+
     return filtered;
   };
 
   // Get job count for a technician
-  const getJobCount = (technicianId: string): number => {
-    return getJobsForDisplay(technicianId).length;
-  };
+  const getJobCount = (technicianId: string): number =>
+    getJobsForDisplay(technicianId).length;
 
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div className="text-center">
-          <div className="text-muted-foreground mb-2">Loading schedule...</div>
+          <div className="mb-2 text-muted-foreground">Loading schedule...</div>
           <div className="text-muted-foreground text-xs">
             Please wait while we fetch your schedule data
           </div>
@@ -137,11 +135,11 @@ export function GanttScheduler() {
       <div className="flex flex-1 overflow-hidden">
         {/* Technician Sidebar */}
         <TechnicianSidebar
-          technicians={filteredTechnicians}
-          selectedTechnicianId={selectedTechnicianId}
-          onTechnicianSelect={setSelectedTechnicianId}
           getJobCount={getJobCount}
           multiRowMode={!selectedTechnicianId}
+          onTechnicianSelect={setSelectedTechnicianId}
+          selectedTechnicianId={selectedTechnicianId}
+          technicians={filteredTechnicians}
         />
 
         {/* Time Grid Area */}
@@ -153,24 +151,24 @@ export function GanttScheduler() {
                 <HourlyTimeGrid
                   date={currentDate}
                   jobs={getJobsForDisplay(selectedTechnicianId)}
-                  selectedJobId={selectedJobId || undefined}
                   onJobClick={selectJob}
+                  selectedJobId={selectedJobId || undefined}
                 />
               )}
               {view === "week" && (
                 <WeekTimeGrid
                   date={currentDate}
                   jobs={getJobsForDisplay(selectedTechnicianId)}
-                  selectedJobId={selectedJobId || undefined}
                   onJobClick={selectJob}
+                  selectedJobId={selectedJobId || undefined}
                 />
               )}
               {view === "month" && (
                 <MonthTimeGrid
                   date={currentDate}
                   jobs={getJobsForDisplay(selectedTechnicianId)}
-                  selectedJobId={selectedJobId || undefined}
                   onJobClick={selectJob}
+                  selectedJobId={selectedJobId || undefined}
                 />
               )}
             </>
@@ -179,8 +177,8 @@ export function GanttScheduler() {
             <div className="flex h-full flex-col overflow-y-auto">
               {filteredTechnicians.length === 0 ? (
                 <EmptyState
-                  title="No Technicians Selected"
                   description="Select a technician from the sidebar or clear filters to view all technicians."
+                  title="No Technicians Selected"
                 />
               ) : (
                 filteredTechnicians.map((technician) => {
@@ -213,24 +211,24 @@ export function GanttScheduler() {
                           <HourlyTimeGrid
                             date={currentDate}
                             jobs={jobs}
-                            selectedJobId={selectedJobId || undefined}
                             onJobClick={selectJob}
+                            selectedJobId={selectedJobId || undefined}
                           />
                         )}
                         {view === "week" && (
                           <WeekTimeGrid
                             date={currentDate}
                             jobs={jobs}
-                            selectedJobId={selectedJobId || undefined}
                             onJobClick={selectJob}
+                            selectedJobId={selectedJobId || undefined}
                           />
                         )}
                         {view === "month" && (
                           <MonthTimeGrid
                             date={currentDate}
                             jobs={jobs}
-                            selectedJobId={selectedJobId || undefined}
                             onJobClick={selectJob}
+                            selectedJobId={selectedJobId || undefined}
                           />
                         )}
                       </div>
@@ -245,4 +243,3 @@ export function GanttScheduler() {
     </div>
   );
 }
-

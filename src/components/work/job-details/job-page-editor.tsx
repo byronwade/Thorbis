@@ -34,6 +34,16 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -194,6 +204,8 @@ export function JobPageEditor({
 
   // Local state for save feedback
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] =
+    useState(false);
 
   // ============================================================================
   // Keyboard Shortcuts
@@ -216,12 +228,8 @@ export function JobPageEditor({
       // Escape: Cancel edit mode (if unsaved changes, show confirmation)
       if (e.key === "Escape" && isEditMode) {
         if (hasUnsavedChanges) {
-          const confirm = window.confirm(
-            "You have unsaved changes. Are you sure you want to cancel?"
-          );
-          if (confirm) {
-            toggleEditMode();
-          }
+          e.preventDefault();
+          setIsUnsavedChangesDialogOpen(true);
         } else {
           toggleEditMode();
         }
@@ -340,7 +348,7 @@ export function JobPageEditor({
           )}
 
           {showSaveSuccess && (
-            <Badge className="bg-green-500" variant="default">
+            <Badge className="bg-success" variant="default">
               Saved!
             </Badge>
           )}
@@ -514,6 +522,33 @@ export function JobPageEditor({
 
       {/* Command Palette (Cmd+K) */}
       <JobCommandPalette customer={customer} jobId={job.id} />
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog
+        onOpenChange={setIsUnsavedChangesDialogOpen}
+        open={isUnsavedChangesDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to cancel? All
+              unsaved changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Continue Editing</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                toggleEditMode();
+                setIsUnsavedChangesDialogOpen(false);
+              }}
+            >
+              Discard Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

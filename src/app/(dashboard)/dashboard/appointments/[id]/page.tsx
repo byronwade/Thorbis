@@ -5,9 +5,9 @@
  */
 
 import { notFound } from "next/navigation";
-import { DetailPageLayout } from "@/components/layout/detail-page-layout";
-import { AppointmentStatsBar } from "@/components/appointments/appointment-stats-bar";
 import { AppointmentPageContent } from "@/components/appointments/appointment-page-content";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
+import { generateAppointmentStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppointmentDetailsPage({
@@ -114,7 +114,9 @@ export default async function AppointmentDetailsPage({
   const property = Array.isArray(appointment.property)
     ? appointment.property[0]
     : appointment.property;
-  const job = Array.isArray(appointment.job) ? appointment.job[0] : appointment.job;
+  const job = Array.isArray(appointment.job)
+    ? appointment.job[0]
+    : appointment.job;
 
   // Calculate metrics
   const appointmentStart = new Date(appointment.start_time);
@@ -141,14 +143,25 @@ export default async function AppointmentDetailsPage({
     activities: activities || [],
   };
 
+  // Generate stats for toolbar
+  // jobValue from job.total_amount is in cents
+  const stats = generateAppointmentStats({
+    ...metrics,
+    jobValue: metrics.jobValue || 0,
+  });
+
   return (
-    <DetailPageLayout
-      entityId={appointmentId}
-      entityType="appointment"
-      entityData={appointmentData}
-      metrics={metrics}
-      StatsBarComponent={AppointmentStatsBar}
-      ContentComponent={AppointmentPageContent}
-    />
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="p-6">
+            <AppointmentPageContent
+              entityData={appointmentData}
+              metrics={metrics}
+            />
+          </div>
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

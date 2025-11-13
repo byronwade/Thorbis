@@ -409,17 +409,17 @@ export default function JobsSettingsPage() {
               />
             </div>
 
-            <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
+            <div className="rounded-lg border-2 border-primary bg-primary p-4 dark:border-primary dark:bg-primary/20">
               <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                <AlertCircle className="h-5 w-5 shrink-0 text-primary dark:text-primary" />
                 <div>
-                  <p className="font-semibold text-blue-900 text-sm dark:text-blue-100">
+                  <p className="font-semibold text-primary text-sm dark:text-primary">
                     Example Job Number
                   </p>
-                  <p className="mt-1 font-mono text-blue-800 text-lg dark:text-blue-200">
+                  <p className="mt-1 font-mono text-lg text-primary dark:text-primary">
                     {getJobNumberExample()}
                   </p>
-                  <p className="mt-1 text-blue-800 text-xs dark:text-blue-200">
+                  <p className="mt-1 text-primary text-xs dark:text-primary">
                     This is how your next job number will look
                   </p>
                 </div>

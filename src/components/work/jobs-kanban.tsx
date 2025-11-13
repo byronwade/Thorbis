@@ -1,21 +1,24 @@
 "use client";
 
-import Link from "next/link";
-import { useTransition } from "react";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
-import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import type { Job } from "@/lib/db/schema";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarDays,
   MapPin,
 } from "lucide-react";
+import Link from "next/link";
+import { useTransition } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EntityKanban } from "@/components/ui/entity-kanban";
+import type {
+  KanbanItemBase,
+  KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
+import { useToast } from "@/hooks/use-toast";
+import type { Job } from "@/lib/db/schema";
 import { formatCurrency, formatDate, formatDateRange } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 
 type JobStatus =
   | "quoted"
@@ -44,9 +47,7 @@ type ExtendedJob = Job & {
   properties?: RelatedProperty | null;
 };
 
-type JobsKanbanItem = KanbanItemBase & {
-  job: ExtendedJob;
-};
+type JobsKanbanItem = KanbanItemBase & { entity: ExtendedJob };
 
 type JobsKanbanProps = {
   jobs: ExtendedJob[];
@@ -65,7 +66,9 @@ const JOB_STATUS_COLUMNS: Array<{
   { id: "cancelled", name: "Cancelled", accentColor: "#EF4444" },
 ];
 
-const COLUMN_LABEL = new Map(JOB_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+  JOB_STATUS_COLUMNS.map((column) => [column.id, column.name])
+);
 const DEFAULT_STATUS: JobStatus = "quoted";
 
 function resolveStatus(status: Job["status"] | null | undefined): JobStatus {
@@ -75,29 +78,6 @@ function resolveStatus(status: Job["status"] | null | undefined): JobStatus {
 
   const normalized = status as JobStatus;
   return COLUMN_LABEL.has(normalized) ? normalized : DEFAULT_STATUS;
-}
-
-function createItems(jobs: ExtendedJob[]): JobsKanbanItem[] {
-  return jobs.map((job) => ({
-    id: job.id,
-    columnId: resolveStatus(job.status),
-    job,
-  }));
-}
-
-function cloneItems(items: JobsKanbanItem[]): JobsKanbanItem[] {
-  return items.map((item) => ({
-    ...item,
-    job: {
-      ...item.job,
-      customers: item.job.customers
-        ? { ...item.job.customers }
-        : item.job.customers,
-      properties: item.job.properties
-        ? { ...item.job.properties }
-        : item.job.properties,
-    },
-  }));
 }
 
 function formatScheduledRange(job: ExtendedJob) {
@@ -149,22 +129,22 @@ function PriorityBadge({ priority }: { priority: Job["priority"] }) {
     low: {
       label: "Low",
       className:
-        "border-blue-200/60 bg-blue-50/60 text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300",
+        "border-primary/60 bg-primary/60 text-primary dark:border-primary/40 dark:bg-primary/40 dark:text-primary",
     },
     medium: {
       label: "Medium",
       className:
-        "border-amber-200/60 bg-amber-50/60 text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-300",
+        "border-warning/60 bg-warning/60 text-warning dark:border-warning/40 dark:bg-warning/40 dark:text-warning",
     },
     high: {
       label: "High",
       className:
-        "border-orange-200/60 bg-orange-50/60 text-orange-700 dark:border-orange-900/40 dark:bg-orange-950/40 dark:text-orange-300",
+        "border-warning/60 bg-warning/60 text-warning dark:border-warning/40 dark:bg-warning/40 dark:text-warning",
     },
     urgent: {
       label: "Urgent",
       className:
-        "border-red-200/60 bg-red-50/60 text-red-700 dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-300",
+        "border-destructive/60 bg-destructive/60 text-destructive dark:border-destructive/40 dark:bg-destructive/40 dark:text-destructive",
     },
   };
 
@@ -179,7 +159,8 @@ function PriorityBadge({ priority }: { priority: Job["priority"] }) {
 }
 
 function JobCardContent({ item }: { item: JobsKanbanItem }) {
-  const { job, columnId } = item;
+  const job = item.entity;
+  const columnId = item.columnId as JobStatus | undefined;
   const scheduledRange = formatScheduledRange(job);
   const propertySummary = getPropertySummary(job);
 
@@ -188,46 +169,43 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <Link
-            className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-primary"
+            className="block font-semibold text-muted-foreground text-xs uppercase tracking-wide hover:text-primary"
             href={`/dashboard/work/${job.id}`}
           >
-            {job.jobNumber}
+            {String(job.jobNumber ?? "—")}
           </Link>
-          <h3 className="text-sm font-semibold leading-snug text-foreground">
-            {job.title}
+          <h3 className="font-semibold text-foreground text-sm leading-snug">
+            {job.title ?? "Untitled Job"}
           </h3>
           <div className="flex flex-wrap items-center gap-2">
             {job.jobType && (
-              <Badge
-                variant="secondary"
-                className="bg-primary/10 text-primary"
-              >
+              <Badge className="bg-primary/10 text-primary" variant="secondary">
                 {job.jobType}
               </Badge>
             )}
-            <PriorityBadge priority={job.priority} />
+            <PriorityBadge priority={(job.priority ?? "medium") as string} />
             {typeof job.aiPriorityScore === "number" && (
               <Badge
+                className="border-primary/40 border-dashed bg-primary/5 text-primary"
                 variant="outline"
-                className="border-dashed border-primary/40 bg-primary/5 text-primary"
               >
                 AI Score {job.aiPriorityScore}
               </Badge>
             )}
           </div>
         </div>
-        <span className="text-sm font-semibold text-foreground">
+        <span className="font-semibold text-foreground text-sm">
           {formatCurrency(job.totalAmount)}
         </span>
       </div>
 
       {job.description && (
-        <p className="line-clamp-3 text-xs text-muted-foreground">
+        <p className="line-clamp-3 text-muted-foreground text-xs">
           {job.description}
         </p>
       )}
 
-      <div className="space-y-2 text-xs text-muted-foreground">
+      <div className="space-y-2 text-muted-foreground text-xs">
         <div className="flex items-center gap-2">
           <BriefcaseBusiness className="size-4 text-primary" />
           <span className="font-medium text-foreground">
@@ -250,21 +228,19 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-2 text-[11px] tracking-wide text-muted-foreground">
-        <span>
-          Updated {formatDate(job.updatedAt, { preset: "short" })}
-        </span>
+      <div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
+        <span>Updated {formatDate(job.updatedAt, { preset: "short" })}</span>
         <span className="uppercase">
-          {COLUMN_LABEL.get(columnId as JobStatus) ?? columnId}
+          {columnId ? COLUMN_LABEL.get(columnId) ?? columnId : "—"}
         </span>
       </div>
 
       <div className="flex items-center justify-end pt-1">
         <Button
           asChild
+          className="gap-1 text-primary text-xs"
           size="sm"
           variant="ghost"
-          className="gap-1 text-xs text-primary"
         >
           <Link href={`/dashboard/work/${job.id}`}>
             View
@@ -284,7 +260,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
     item,
     fromColumnId,
     toColumnId,
-  }: KanbanMoveEvent<JobsKanbanItem>) => {
+  }: KanbanMoveEvent<KanbanItemBase & { entity: ExtendedJob }>) => {
     if (fromColumnId === toColumnId) {
       return;
     }
@@ -292,7 +268,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
     startTransition(() => {
       void (async () => {
         const { updateJobStatus } = await import("@/actions/jobs");
-        const result = await updateJobStatus(item.job.id, toColumnId);
+        const result = await updateJobStatus(item.entity.id, toColumnId);
 
         if (!result.success) {
           toast.error("Unable to move job", {
@@ -302,7 +278,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
         }
 
         toast.success(
-          `Job ${item.job.jobNumber} moved to ${COLUMN_LABEL.get(
+          `Job ${item.entity.jobNumber} moved to ${COLUMN_LABEL.get(
             toColumnId as JobStatus
           )}`
         );
@@ -312,37 +288,35 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
 
   return (
     <EntityKanban<ExtendedJob, JobStatus>
-      columns={JOB_STATUS_COLUMNS}
-      data={jobs}
-      entityName="jobs"
-      mapToKanbanItem={(job) => ({
-        id: job.id,
-        columnId: resolveStatus(job.status),
-        entity: job,
-        job,
-      })}
-      updateEntityStatus={(job, newStatus) => ({
-        ...job,
-        status: newStatus,
-      })}
       calculateColumnMeta={(columnId, items) => {
         const columnItems = items.filter((item) => item.columnId === columnId);
         const total = columnItems.reduce(
-          (sum, item) => sum + ((item.entity as ExtendedJob).totalAmount ?? 0),
+          (sum, item) => sum + (item.entity.totalAmount ?? 0),
           0
         );
         return { count: columnItems.length, total };
       }}
-      showTotals={true}
+      columns={JOB_STATUS_COLUMNS}
+      data={jobs}
+      entityName="jobs"
       formatTotal={(total) => formatCurrency(total)}
+      mapToKanbanItem={(job) => ({
+        id: job.id,
+        columnId: resolveStatus(job.status),
+        entity: job,
+      })}
       onItemMove={handleItemMove}
-      renderCard={(item) => <JobCardContent item={{ ...item, job: item.entity } as JobsKanbanItem} />}
+      renderCard={(item) => <JobCardContent item={item as JobsKanbanItem} />}
       renderDragOverlay={(item) => (
         <div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
-          <JobCardContent item={{ ...item, job: item.entity } as JobsKanbanItem} />
+          <JobCardContent item={item as JobsKanbanItem} />
         </div>
       )}
+      showTotals={true}
+      updateEntityStatus={(job, newStatus) => ({
+        ...job,
+        status: newStatus,
+      })}
     />
   );
 }
-

@@ -41,9 +41,19 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
 
   // Known work subpaths that should NOT mark Jobs (/dashboard/work) as active
   const workSubpaths = [
-    '/team', '/invoices', '/estimates', '/contracts', '/appointments',
-    '/payments', '/purchase-orders', '/maintenance-plans', '/service-agreements',
-    '/materials', '/equipment', '/pricebook', '/schedule'
+    "/team",
+    "/invoices",
+    "/estimates",
+    "/contracts",
+    "/appointments",
+    "/payments",
+    "/purchase-orders",
+    "/maintenance-plans",
+    "/service-agreements",
+    "/materials",
+    "/equipment",
+    "/pricebook",
+    "/schedule",
   ];
 
   return (
@@ -66,10 +76,10 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
 
                 // Special handling for Jobs (/dashboard/work) to exclude known work subpaths
                 let isDetailPage = pathname.startsWith(`${item.url}/`);
-                if (item.url === '/dashboard/work' && isDetailPage) {
+                if (item.url === "/dashboard/work" && isDetailPage) {
                   // Check if pathname matches any known work subpath
-                  const pathAfterWork = pathname.replace('/dashboard/work', '');
-                  const isKnownSubpath = workSubpaths.some(subpath =>
+                  const pathAfterWork = pathname.replace("/dashboard/work", "");
+                  const isKnownSubpath = workSubpaths.some((subpath) =>
                     pathAfterWork.startsWith(subpath)
                   );
                   if (isKnownSubpath) {

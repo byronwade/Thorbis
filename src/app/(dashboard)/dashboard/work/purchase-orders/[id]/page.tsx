@@ -6,9 +6,9 @@
  */
 
 import { notFound } from "next/navigation";
-import { DetailPageLayout } from "@/components/layout/detail-page-layout";
-import { PurchaseOrderStatsBar } from "@/components/work/purchase-order-stats-bar";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { PurchaseOrderPageContent } from "@/components/work/purchase-order-page-content";
+import { generatePurchaseOrderStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PurchaseOrderDetailPage({
@@ -66,10 +66,12 @@ export default async function PurchaseOrderDetailPage({
     return notFound();
   }
 
-  // Fetch related data
+  // Fetch related data (including estimate and invoice for complete context)
   const [
     { data: lineItems },
     { data: job },
+    { data: estimate },
+    { data: invoice },
     { data: activities },
     { data: attachments },
     { data: requestedByUser },
@@ -84,8 +86,26 @@ export default async function PurchaseOrderDetailPage({
     po.job_id
       ? supabase
           .from("jobs")
-          .select("id, job_number, title")
+          .select("id, job_number, title, status")
           .eq("id", po.job_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
+    // NEW: Fetch source estimate (if PO was created from an estimate)
+    po.estimate_id
+      ? supabase
+          .from("estimates")
+          .select("id, estimate_number, title, total_amount, status")
+          .eq("id", po.estimate_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+
+    // NEW: Fetch related invoice (if PO is for an invoice)
+    po.invoice_id
+      ? supabase
+          .from("invoices")
+          .select("id, invoice_number, title, total_amount, status")
+          .eq("id", po.invoice_id)
           .single()
       : Promise.resolve({ data: null, error: null }),
 
@@ -125,7 +145,10 @@ export default async function PurchaseOrderDetailPage({
   const totalAmount = po.total_amount || 0;
   const lineItemCount = lineItems?.length || 0;
   const daysUntilDelivery = po.expected_delivery
-    ? Math.ceil((new Date(po.expected_delivery).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil(
+        (new Date(po.expected_delivery).getTime() - Date.now()) /
+          (1000 * 60 * 60 * 24)
+      )
     : undefined;
 
   const metrics = {
@@ -138,6 +161,8 @@ export default async function PurchaseOrderDetailPage({
   const purchaseOrderData = {
     purchaseOrder: po,
     job,
+    estimate, // NEW: source estimate
+    invoice, // NEW: related invoice
     lineItems: lineItems || [],
     activities: activities || [],
     attachments: attachments || [],
@@ -145,14 +170,19 @@ export default async function PurchaseOrderDetailPage({
     approvedByUser: approvedByUser || null,
   };
 
+  // Generate stats for toolbar
+  const stats = generatePurchaseOrderStats(metrics);
+
   return (
-    <DetailPageLayout
-      entityId={poId}
-      entityType="purchase-order"
-      entityData={purchaseOrderData}
-      metrics={metrics}
-      StatsBarComponent={PurchaseOrderStatsBar}
-      ContentComponent={PurchaseOrderPageContent}
-    />
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <PurchaseOrderPageContent
+            entityData={purchaseOrderData}
+            metrics={metrics}
+          />
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

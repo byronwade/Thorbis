@@ -263,7 +263,7 @@ export default function DispatchPage() {
                   </div>
                   <div className="text-right">
                     <p
-                      className={`font-medium text-xs ${job.priority === "High" ? "text-red-600" : job.priority === "Medium" ? "text-yellow-600" : "text-green-600"}`}
+                      className={`font-medium text-xs ${job.priority === "High" ? "text-destructive" : job.priority === "Medium" ? "text-warning" : "text-success"}`}
                     >
                       {job.priority}
                     </p>

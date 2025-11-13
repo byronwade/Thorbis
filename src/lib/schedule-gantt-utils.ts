@@ -3,7 +3,14 @@
  * Helper functions for time calculations, positioning, and date manipulation
  */
 
-import { addHours, addMinutes, format, getHours, getMinutes, setHours, setMinutes, startOfDay } from "date-fns";
+import {
+  addMinutes,
+  format,
+  getHours,
+  getMinutes,
+  setHours,
+  startOfDay,
+} from "date-fns";
 
 /**
  * Generate hourly time slots for a given day
@@ -63,7 +70,8 @@ export function calculateJobWidth(
   endRange: Date,
   totalWidth: number
 ): number {
-  const totalMinutes = (endRange.getTime() - startRange.getTime()) / (1000 * 60);
+  const totalMinutes =
+    (endRange.getTime() - startRange.getTime()) / (1000 * 60);
   const jobMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
   const percentage = jobMinutes / totalMinutes;
   return percentage * totalWidth;
@@ -156,4 +164,3 @@ export function dateFromMinutes(baseDate: Date, minutes: number): Date {
   const dayStart = startOfDay(baseDate);
   return addMinutes(dayStart, minutes);
 }
-

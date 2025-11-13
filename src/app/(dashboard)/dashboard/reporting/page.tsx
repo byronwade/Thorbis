@@ -87,7 +87,7 @@ export default function ReportingPage() {
             AI performance metrics, conversation analytics, and sentiment
             analysis
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             7 reports available
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Phone calls, SMS, emails, and support ticket analytics
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             10 reports available
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             P&L, revenue, expenses, cash flow, and profitability analysis
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             12 reports available
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Job performance, schedule efficiency, and dispatch analytics
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             10 reports available
           </p>
         </div>
@@ -129,7 +129,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Technician leaderboards, productivity, revenue, and ratings
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             12 reports available
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Acquisition, retention, churn, and customer lifetime value
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             9 reports available
           </p>
         </div>
@@ -149,7 +149,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Campaigns, leads, conversions, and ROI analysis
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             9 reports available
           </p>
         </div>
@@ -159,7 +159,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Predictive insights, trends, forecasting, and benchmarks
           </p>
-          <p className="font-medium text-blue-500 text-xs">
+          <p className="font-medium text-primary text-xs">
             6 reports available
           </p>
         </div>
@@ -169,7 +169,7 @@ export default function ReportingPage() {
           <p className="mb-4 text-muted-foreground text-sm">
             Scheduled reports, templates, and data export options
           </p>
-          <p className="font-medium text-blue-500 text-xs">5 tools available</p>
+          <p className="font-medium text-primary text-xs">5 tools available</p>
         </div>
       </div>
 
@@ -187,7 +187,7 @@ export default function ReportingPage() {
                   Generated 2 hours ago
                 </p>
               </div>
-              <button className="text-blue-500 text-sm hover:underline">
+              <button className="text-primary text-sm hover:underline">
                 View
               </button>
             </div>
@@ -198,7 +198,7 @@ export default function ReportingPage() {
                   Generated 5 hours ago
                 </p>
               </div>
-              <button className="text-blue-500 text-sm hover:underline">
+              <button className="text-primary text-sm hover:underline">
                 View
               </button>
             </div>
@@ -209,7 +209,7 @@ export default function ReportingPage() {
                   Generated yesterday
                 </p>
               </div>
-              <button className="text-blue-500 text-sm hover:underline">
+              <button className="text-primary text-sm hover:underline">
                 View
               </button>
             </div>

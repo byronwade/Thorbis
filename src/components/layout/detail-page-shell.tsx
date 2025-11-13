@@ -29,6 +29,7 @@ interface DetailPageShellProps {
   children?: ReactNode;
   className?: string;
   contentGapClassName?: string;
+  statsBar?: ReactNode;
 }
 
 export function DetailPageShell({
@@ -40,6 +41,7 @@ export function DetailPageShell({
   children,
   className,
   contentGapClassName,
+  statsBar,
 }: DetailPageShellProps) {
   const resolvedMetadata = metadata ?? header?.metadata ?? [];
 
@@ -48,6 +50,8 @@ export function DetailPageShell({
       className={cn("flex w-full flex-col gap-6", className)}
       data-detail-shell=""
     >
+      {/* Stats bar rendered first, inside the max-w-7xl container */}
+      {statsBar}
       {customHeader ?? (header ? <Header section={header} /> : null)}
 
       {resolvedMetadata.length > 0 ? (
@@ -100,13 +104,11 @@ export function DetailPageSurface({
 }: DetailPageSurfaceProps) {
   return (
     <section
-      className={cn(
-        "rounded-xl",
-        SURFACE_VARIANT_CLASSES[variant],
-        className
-      )}
+      className={cn("rounded-xl", SURFACE_VARIANT_CLASSES[variant], className)}
     >
-      <div className={cn("flex flex-col gap-4", SURFACE_PADDING_CLASSES[padding])}>
+      <div
+        className={cn("flex flex-col gap-4", SURFACE_PADDING_CLASSES[padding])}
+      >
         {children}
       </div>
     </section>
@@ -128,7 +130,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
   return (
     <header className="flex flex-col gap-4 lg:gap-6">
       {breadcrumbs ? (
-        <div className="text-sm text-muted-foreground">{breadcrumbs}</div>
+        <div className="text-muted-foreground text-sm">{breadcrumbs}</div>
       ) : null}
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
@@ -137,19 +139,21 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                 {leadingVisual ? (
-                  <div className="flex items-center justify-center">{leadingVisual}</div>
+                  <div className="flex items-center justify-center">
+                    {leadingVisual}
+                  </div>
                 ) : null}
                 <div className="flex flex-col gap-2">
                   {renderTitle(title)}
                   {subtitle ? (
-                    <div className="max-w-3xl text-sm text-muted-foreground md:text-base">
+                    <div className="max-w-3xl text-muted-foreground text-sm md:text-base">
                       {subtitle}
                     </div>
                   ) : null}
                 </div>
               </div>
               {description ? (
-                <div className="max-w-3xl text-sm text-muted-foreground">
+                <div className="max-w-3xl text-muted-foreground text-sm">
                   {description}
                 </div>
               ) : null}
@@ -159,7 +163,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
           {badges && badges.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
               {badges.map((badge, index) => (
-                <span key={index} className="inline-flex">
+                <span className="inline-flex" key={index}>
                   {badge}
                 </span>
               ))}
@@ -170,12 +174,12 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
         {hasAnyActions(actions, secondaryActions) ? (
           <div className="hidden flex-wrap items-center gap-2 lg:flex">
             {actions?.map((action, index) => (
-              <span key={index} className="inline-flex">
+              <span className="inline-flex" key={index}>
                 {action}
               </span>
             ))}
             {secondaryActions?.map((action, index) => (
-              <span key={`secondary-${index}`} className="inline-flex">
+              <span className="inline-flex" key={`secondary-${index}`}>
                 {action}
               </span>
             ))}
@@ -188,7 +192,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
           {actions && actions.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {actions.map((action, index) => (
-                <span key={index} className="flex-1">
+                <span className="flex-1" key={index}>
                   {action}
                 </span>
               ))}
@@ -197,7 +201,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
           {secondaryActions && secondaryActions.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {secondaryActions.map((action, index) => (
-                <span key={`secondary-mobile-${index}`} className="flex-1">
+                <span className="flex-1" key={`secondary-mobile-${index}`}>
                   {action}
                 </span>
               ))}
@@ -211,21 +215,21 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
 
 function MetadataGrid({ items }: { items: DetailPageMetadataItem[] }) {
   return (
-    <section className="grid grid-cols-1 gap-4 @xl-page:grid-cols-4 md:grid-cols-2">
+    <section className="grid @xl-page:grid-cols-4 grid-cols-1 gap-4 md:grid-cols-2">
       {items.map((item, index) => (
         <div
-          key={index}
           className="flex flex-col gap-1 rounded-lg border border-border/50 bg-card/60 px-4 py-3 shadow-sm"
+          key={index}
         >
-          <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="flex items-center gap-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
             {item.icon}
             {item.label}
           </span>
-          <div className="text-sm font-semibold text-foreground">
+          <div className="font-semibold text-foreground text-sm">
             {item.value}
           </div>
           {item.helperText ? (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
               {item.helperText}
             </span>
           ) : null}
@@ -252,16 +256,15 @@ function renderTitle(title?: ReactNode) {
 
   if (typeof title === "string") {
     return (
-      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+      <h1 className="font-semibold text-2xl tracking-tight md:text-3xl">
         {title}
       </h1>
     );
   }
 
   return (
-    <div className="text-2xl font-semibold tracking-tight md:text-3xl">
+    <div className="font-semibold text-2xl tracking-tight md:text-3xl">
       {title}
     </div>
   );
 }
-

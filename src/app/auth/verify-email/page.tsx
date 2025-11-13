@@ -61,8 +61,8 @@ async function VerifyEmailContent({ token }: { token: string }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg bg-green-50 p-4 dark:bg-green-950/20">
-          <p className="text-green-900 text-sm dark:text-green-100">
+        <div className="rounded-lg bg-success p-4 dark:bg-success/20">
+          <p className="text-sm text-success dark:text-success">
             {result.data?.message ||
               "Your account is now active. You can sign in to get started!"}
           </p>

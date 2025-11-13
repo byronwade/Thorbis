@@ -60,7 +60,9 @@ export default function IndustriesOverviewPage() {
           <p className="mt-4 text-lg text-muted-foreground">
             Whether you respond to emergency plumbing calls or run recurring
             landscaping routes, Thorbis adapts to your playbooks with proven
-            workflows, automations, and reporting. Every industry gets the same transparent pricing—$100/month base plus pay-as-you-go usage, unlimited users, and no lock-in contracts.
+            workflows, automations, and reporting. Every industry gets the same
+            transparent pricing—$100/month base plus pay-as-you-go usage,
+            unlimited users, and no lock-in contracts.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button asChild>

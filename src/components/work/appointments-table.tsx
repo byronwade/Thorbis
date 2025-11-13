@@ -21,6 +21,17 @@ import {
   Plus,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +47,7 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
 
 type Appointment = {
@@ -45,6 +57,8 @@ type Appointment = {
   start_time: string | Date;
   end_time: string | Date;
   status: string;
+  archived_at?: string | null;
+  deleted_at?: string | null;
   customer?: {
     first_name?: string | null;
     last_name?: string | null;
@@ -98,30 +112,29 @@ function getStatusBadge(status: string) {
   > = {
     scheduled: {
       className:
-        "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+        "border-primary bg-primary text-primary-foreground hover:bg-primary/90 dark:border-primary dark:bg-primary dark:text-primary-foreground",
       label: "Scheduled",
     },
     confirmed: {
       className:
-        "border-green-200 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-900 dark:bg-green-950/50 dark:text-green-400",
+        "border-success bg-success text-white hover:bg-success/90 dark:border-success dark:bg-success dark:text-white",
       label: "Confirmed",
     },
     in_progress: {
-      className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
+      className: "border-primary/50 bg-primary text-white hover:bg-primary",
       label: "In Progress",
     },
     completed: {
-      className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      className: "border-success/50 bg-success text-white hover:bg-success",
       label: "Completed",
     },
     cancelled: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      className:
+        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
       label: "Cancelled",
     },
     no_show: {
-      className:
-        "border-orange-500/50 bg-orange-500 text-white hover:bg-orange-600",
+      className: "border-warning/50 bg-warning text-white hover:bg-warning",
       label: "No Show",
     },
   };
@@ -157,14 +170,43 @@ export function AppointmentsTable({
   onAppointmentClick,
   showRefresh = false,
 }: AppointmentsTableProps) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore((state) => state.filters.appointments);
+
+  // State for archive confirmation dialogs
+  const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
+  const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
+  const [isPermanentDeleteOpen, setIsPermanentDeleteOpen] = useState(false);
+  const [appointmentToArchive, setAppointmentToArchive] = useState<
+    string | null
+  >(null);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(
+    null
+  );
+  const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
+    Set<string>
+  >(new Set());
+
+  // Filter appointments based on archive status
+  const filteredAppointments = appointments.filter((apt) => {
+    const isArchived = Boolean(apt.archived_at || apt.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const columns: ColumnDef<Appointment>[] = [
     {
       key: "title",
       header: "Title",
       width: "flex-1",
       render: (appointment) => (
-        <div className="min-w-0">
-          <div className="truncate font-medium leading-tight">
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/appointments/${appointment.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="truncate font-medium text-sm leading-tight hover:underline">
             {appointment.title}
           </div>
           {appointment.description && (
@@ -172,7 +214,7 @@ export function AppointmentsTable({
               {appointment.description}
             </div>
           )}
-        </div>
+        </Link>
       ),
     },
     {
@@ -193,10 +235,13 @@ export function AppointmentsTable({
       width: "w-40",
       shrink: true,
       render: (appointment) => (
-        <div className="text-muted-foreground text-sm tabular-nums">
-          <div>{formatDate(appointment.start_time)}</div>
-          <div className="text-xs">
-            {formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}
+        <div className="text-muted-foreground text-xs tabular-nums">
+          <div className="leading-tight">
+            {formatDate(appointment.start_time)}
+          </div>
+          <div className="text-xs leading-tight">
+            {formatTime(appointment.start_time)} -{" "}
+            {formatTime(appointment.end_time)}
           </div>
         </div>
       ),
@@ -244,7 +289,9 @@ export function AppointmentsTable({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/dashboard/work/appointments/${appointment.id}/edit`}>
+                <Link
+                  href={`/dashboard/work/appointments/${appointment.id}/edit`}
+                >
                   <Edit className="mr-2 size-4" />
                   Edit Appointment
                 </Link>
@@ -252,20 +299,13 @@ export function AppointmentsTable({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
-                onClick={async () => {
-                  if (
-                    !confirm(
-                      "Cancel this appointment? This action cannot be undone."
-                    )
-                  ) {
-                    return;
-                  }
-                  // TODO: Implement cancel appointment action
-                  window.location.reload();
+                onClick={() => {
+                  setAppointmentToArchive(appointment.id);
+                  setIsSingleArchiveOpen(true);
                 }}
               >
                 <Archive className="mr-2 size-4" />
-                Cancel Appointment
+                Archive Appointment
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -277,19 +317,11 @@ export function AppointmentsTable({
   // Bulk actions
   const bulkActions: BulkAction[] = [
     {
-      label: "Cancel Selected",
+      label: "Archive Selected",
       icon: <Archive className="h-4 w-4" />,
       onClick: async (selectedIds) => {
-        if (
-          !confirm(
-            `Cancel ${selectedIds.size} appointment(s)? This action cannot be undone.`
-          )
-        ) {
-          return;
-        }
-
-        // TODO: Implement bulk cancel action
-        window.location.reload();
+        setSelectedAppointmentIds(selectedIds);
+        setIsBulkArchiveOpen(true);
       },
       variant: "destructive",
     },
@@ -325,31 +357,96 @@ export function AppointmentsTable({
   };
 
   return (
-    <FullWidthDataTable
-      bulkActions={bulkActions}
-      columns={columns}
-      data={appointments}
-      emptyAction={
-        <Button onClick={handleAddAppointment} size="sm">
-          <Plus className="mr-2 size-4" />
-          Add Appointment
-        </Button>
-      }
-      emptyIcon={<Calendar className="h-8 w-8 text-muted-foreground" />}
-      emptyMessage="No appointments found"
-      enableSelection={true}
-      getItemId={(appointment) => appointment.id}
-      itemsPerPage={itemsPerPage}
-      onRefresh={handleRefresh}
-      onRowClick={handleRowClick}
-      searchFilter={searchFilter}
-      searchPlaceholder="Search appointments by title, customer, or assigned user..."
-      showRefresh={showRefresh}
-    />
+    <>
+      <FullWidthDataTable
+        bulkActions={bulkActions}
+        columns={columns}
+        data={filteredAppointments}
+        emptyAction={
+          <Button onClick={handleAddAppointment} size="sm">
+            <Plus className="mr-2 size-4" />
+            Add Appointment
+          </Button>
+        }
+        emptyIcon={<Calendar className="h-8 w-8 text-muted-foreground" />}
+        emptyMessage="No appointments found"
+        enableSelection={true}
+        entity="appointments"
+        getItemId={(appointment) => appointment.id}
+        isArchived={(apt) => Boolean(apt.archived_at || apt.deleted_at)}
+        itemsPerPage={itemsPerPage}
+        onRefresh={handleRefresh}
+        onRowClick={handleRowClick}
+        searchFilter={searchFilter}
+        searchPlaceholder="Search appointments by title, customer, or assigned user..."
+        showArchived={archiveFilter !== "active"}
+        showRefresh={showRefresh}
+      />
+
+      {/* Single Appointment Archive Dialog */}
+      <AlertDialog
+        onOpenChange={setIsSingleArchiveOpen}
+        open={isSingleArchiveOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Appointment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This appointment will be archived and can be restored within 90
+              days. After 90 days, it will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (appointmentToArchive) {
+                  const { archiveAppointment } = await import(
+                    "@/actions/appointments"
+                  );
+                  await archiveAppointment(appointmentToArchive);
+                  window.location.reload();
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Archive Dialog */}
+      <AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Archive {selectedAppointmentIds.size} Appointment(s)?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              These appointments will be archived and can be restored within 90
+              days. After 90 days, they will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                const { archiveAppointment } = await import(
+                  "@/actions/appointments"
+                );
+                for (const appointmentId of selectedAppointmentIds) {
+                  await archiveAppointment(appointmentId);
+                }
+                window.location.reload();
+              }}
+            >
+              Archive All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
-
-
-
-
-

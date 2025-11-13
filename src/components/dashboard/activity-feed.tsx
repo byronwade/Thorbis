@@ -101,8 +101,8 @@ const activities: Activity[] = [
 const activityConfig = {
   "job-completed": {
     icon: CheckCircle2,
-    color: "text-green-600 dark:text-green-400",
-    bgColor: "bg-green-50 dark:bg-green-950",
+    color: "text-success dark:text-success",
+    bgColor: "bg-success dark:bg-success",
   },
   payment: {
     icon: DollarSign,
@@ -111,18 +111,18 @@ const activityConfig = {
   },
   booking: {
     icon: Calendar,
-    color: "text-blue-600 dark:text-blue-400",
-    bgColor: "bg-blue-50 dark:bg-blue-950",
+    color: "text-primary dark:text-primary",
+    bgColor: "bg-primary dark:bg-primary",
   },
   review: {
     icon: Star,
-    color: "text-yellow-600 dark:text-yellow-400",
-    bgColor: "bg-yellow-50 dark:bg-yellow-950",
+    color: "text-warning dark:text-warning",
+    bgColor: "bg-warning dark:bg-warning",
   },
   alert: {
     icon: AlertCircle,
-    color: "text-red-600 dark:text-red-400",
-    bgColor: "bg-red-50 dark:bg-red-950",
+    color: "text-destructive dark:text-destructive",
+    bgColor: "bg-destructive dark:bg-destructive",
   },
 };
 

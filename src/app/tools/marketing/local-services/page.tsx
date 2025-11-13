@@ -32,7 +32,7 @@ export default function LocalServicesAdsPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/15 to-green-500/5">
-            <BadgeCheck className="size-6 text-green-600 dark:text-green-400" />
+            <BadgeCheck className="size-6 text-success dark:text-success" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export default function LocalServicesAdsPage() {
       </div>
 
       {/* Why It Matters */}
-      <Card className="border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent">
+      <Card className="border-success/20 bg-gradient-to-br from-green-500/10 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="size-5" />
@@ -64,7 +64,7 @@ export default function LocalServicesAdsPage() {
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">Top of Search Results</p>
                 <p className="text-muted-foreground text-xs">
@@ -73,7 +73,7 @@ export default function LocalServicesAdsPage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">Pay Per Lead Only</p>
                 <p className="text-muted-foreground text-xs">
@@ -82,7 +82,7 @@ export default function LocalServicesAdsPage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">Google Screened Badge</p>
                 <p className="text-muted-foreground text-xs">
@@ -91,7 +91,7 @@ export default function LocalServicesAdsPage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
+              <CheckCircle className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <p className="font-semibold text-sm">Higher Conversion Rates</p>
                 <p className="text-muted-foreground text-xs">
@@ -280,14 +280,14 @@ export default function LocalServicesAdsPage() {
             <div className="space-y-3">
               <div>
                 <p className="font-semibold text-sm">Average Conversion Rate</p>
-                <p className="font-bold text-2xl text-green-600">30-40%</p>
+                <p className="font-bold text-2xl text-success">30-40%</p>
                 <p className="text-muted-foreground text-xs">
                   Of leads that contact you become paying customers
                 </p>
               </div>
               <div>
                 <p className="font-semibold text-sm">Average ROI</p>
-                <p className="font-bold text-2xl text-green-600">3-5x</p>
+                <p className="font-bold text-2xl text-success">3-5x</p>
                 <p className="text-muted-foreground text-xs">
                   For every $1 spent, generate $3-5 in revenue
                 </p>
@@ -305,7 +305,7 @@ export default function LocalServicesAdsPage() {
       </div>
 
       {/* Pro Tips */}
-      <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+      <Card className="border-warning/20 bg-gradient-to-br from-amber-500/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="size-5" />

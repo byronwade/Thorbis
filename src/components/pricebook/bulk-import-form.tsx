@@ -423,13 +423,13 @@ export function BulkImportForm() {
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-lg border bg-muted/30 p-3">
               <p className="text-muted-foreground text-xs">Errors</p>
-              <p className="font-semibold text-2xl text-red-600">
+              <p className="font-semibold text-2xl text-destructive">
                 {errorCount}
               </p>
             </div>
             <div className="rounded-lg border bg-muted/30 p-3">
               <p className="text-muted-foreground text-xs">Warnings</p>
-              <p className="font-semibold text-2xl text-amber-600">
+              <p className="font-semibold text-2xl text-warning">
                 {warningCount}
               </p>
             </div>
@@ -441,24 +441,24 @@ export function BulkImportForm() {
                 <div
                   className={`flex items-start gap-2 rounded-lg border p-3 ${
                     issue.severity === "error"
-                      ? "border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/30"
-                      : "border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30"
+                      ? "border-destructive bg-destructive dark:border-destructive/50 dark:bg-destructive/30"
+                      : "border-warning bg-warning dark:border-warning/50 dark:bg-warning/30"
                   }`}
                   key={index}
                 >
                   <AlertCircle
                     className={`mt-0.5 h-4 w-4 ${
                       issue.severity === "error"
-                        ? "text-red-600 dark:text-red-400"
-                        : "text-amber-600 dark:text-amber-400"
+                        ? "text-destructive dark:text-destructive"
+                        : "text-warning dark:text-warning"
                     }`}
                   />
                   <div className="flex-1">
                     <p
                       className={`font-medium text-sm ${
                         issue.severity === "error"
-                          ? "text-red-800 dark:text-red-300"
-                          : "text-amber-800 dark:text-amber-300"
+                          ? "text-destructive dark:text-destructive"
+                          : "text-warning dark:text-warning"
                       }`}
                     >
                       Row {issue.row} - {issue.field}
@@ -466,8 +466,8 @@ export function BulkImportForm() {
                     <p
                       className={`text-xs ${
                         issue.severity === "error"
-                          ? "text-red-700 dark:text-red-400"
-                          : "text-amber-700 dark:text-amber-400"
+                          ? "text-destructive dark:text-destructive"
+                          : "text-warning dark:text-warning"
                       }`}
                     >
                       {issue.message}
@@ -567,7 +567,7 @@ export function BulkImportForm() {
       <CardContent className="space-y-4">
         <div className="flex min-h-[200px] items-center justify-center">
           <div className="text-center">
-            <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-green-600" />
+            <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-success" />
             <p className="mb-2 font-medium text-lg">Import Successful</p>
             <p className="text-muted-foreground text-sm">
               All items have been added to your price book

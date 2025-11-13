@@ -5,11 +5,15 @@
  * Renders hourly columns with job blocks positioned by time
  */
 
-import { useMemo, useRef, useEffect } from "react";
-import { formatHourLabel, getCurrentTimePosition, jobOverlapsRange } from "@/lib/schedule-gantt-utils";
+import { useEffect, useMemo, useRef } from "react";
+import {
+  formatHourLabel,
+  getCurrentTimePosition,
+  jobOverlapsRange,
+} from "@/lib/schedule-gantt-utils";
+import { cn } from "@/lib/utils";
 import { GanttJobBlock } from "./gantt-job-block";
 import type { Job } from "./schedule-types";
-import { cn } from "@/lib/utils";
 
 type HourlyTimeGridProps = {
   date: Date;
@@ -110,7 +114,8 @@ export function HourlyTimeGrid({
   // Scroll to current time on mount
   useEffect(() => {
     if (scrollContainerRef.current && currentTimePosition !== null) {
-      const scrollLeft = currentTimePosition - scrollContainerRef.current.clientWidth / 2;
+      const scrollLeft =
+        currentTimePosition - scrollContainerRef.current.clientWidth / 2;
       scrollContainerRef.current.scrollLeft = Math.max(0, scrollLeft);
     }
   }, [currentTimePosition]);
@@ -157,10 +162,10 @@ export function HourlyTimeGrid({
           {/* Current Time Indicator */}
           {currentTimePosition !== null && (
             <div
-              className="absolute top-0 z-10 h-full w-0.5 bg-red-500"
+              className="absolute top-0 z-10 h-full w-0.5 bg-destructive"
               style={{ left: currentTimePosition }}
             >
-              <div className="absolute -left-1.5 -top-1.5 size-3 rounded-full bg-red-500" />
+              <div className="-left-1.5 -top-1.5 absolute size-3 rounded-full bg-destructive" />
             </div>
           )}
 
@@ -185,8 +190,8 @@ export function HourlyTimeGrid({
                   }}
                 >
                   <GanttJobBlock
-                    job={job}
                     isSelected={selectedJobId === job.id}
+                    job={job}
                     onClick={() => onJobClick?.(job.id)}
                   />
                 </div>
@@ -198,4 +203,3 @@ export function HourlyTimeGrid({
     </div>
   );
 }
-

@@ -21,8 +21,8 @@
 import {
   Calendar,
   Clock,
-  MapPin,
   Mail,
+  MapPin,
   Phone,
   Save,
   User,
@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,11 +45,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import {
   UnifiedAccordionContent,
-  UnifiedAccordionSection,
+  type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
 
 export type AppointmentData = {
@@ -95,7 +95,9 @@ export function AppointmentPageContent({
   const appointmentEnd = new Date(appointment.end_time);
   const durationMinutes = Math.max(
     0,
-    Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60))
+    Math.floor(
+      (appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60)
+    )
   );
 
   const statusBadgeVariant =
@@ -120,7 +122,7 @@ export function AppointmentPageContent({
   ].filter(Boolean);
 
   const customHeader = (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="py-6">
       <div className="rounded-md bg-muted/50 shadow-sm">
         <div className="flex flex-col gap-4 p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -131,7 +133,7 @@ export function AppointmentPageContent({
                 ))}
               </div>
               <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold sm:text-3xl">
+                <h1 className="font-semibold text-2xl sm:text-3xl">
                   {appointmentStart.toLocaleDateString("en-US", {
                     weekday: "long",
                     year: "numeric",
@@ -139,13 +141,12 @@ export function AppointmentPageContent({
                     day: "numeric",
                   })}
                 </h1>
-                <p className="text-sm text-muted-foreground sm:text-base">
+                <p className="text-muted-foreground text-sm sm:text-base">
                   {appointmentStart.toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "2-digit",
                   })}{" "}
-                  -
-                  {" "}
+                  -{" "}
                   {appointmentEnd.toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "2-digit",
@@ -175,7 +176,7 @@ export function AppointmentPageContent({
           {customer && (
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                 href={`/dashboard/customers/${customer.id}`}
               >
                 <User className="size-4" />
@@ -184,7 +185,7 @@ export function AppointmentPageContent({
 
               {customer.email && (
                 <a
-                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                   href={`mailto:${customer.email}`}
                 >
                   <Mail className="size-4" />
@@ -194,7 +195,7 @@ export function AppointmentPageContent({
 
               {customer.phone && (
                 <a
-                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
                   href={`tel:${customer.phone}`}
                 >
                   <Phone className="size-4" />
@@ -214,7 +215,8 @@ export function AppointmentPageContent({
               <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
                 <Users className="size-4 text-muted-foreground" />
                 <span className="font-medium">
-                  {teamAssignments.length} team member{teamAssignments.length === 1 ? "" : "s"}
+                  {teamAssignments.length} team member
+                  {teamAssignments.length === 1 ? "" : "s"}
                 </span>
               </div>
             )}
@@ -247,17 +249,21 @@ export function AppointmentPageContent({
               <div>
                 <Label>Start Time</Label>
                 <Input
-                  type="datetime-local"
-                  value={new Date(appointment.start_time).toISOString().slice(0, 16)}
                   readOnly
+                  type="datetime-local"
+                  value={new Date(appointment.start_time)
+                    .toISOString()
+                    .slice(0, 16)}
                 />
               </div>
               <div>
                 <Label>End Time</Label>
                 <Input
-                  type="datetime-local"
-                  value={new Date(appointment.end_time).toISOString().slice(0, 16)}
                   readOnly
+                  type="datetime-local"
+                  value={new Date(appointment.end_time)
+                    .toISOString()
+                    .slice(0, 16)}
                 />
               </div>
               <div>
@@ -277,7 +283,10 @@ export function AppointmentPageContent({
               </div>
               <div>
                 <Label>Type</Label>
-                <Input value={appointment.appointment_type || "Service"} readOnly />
+                <Input
+                  readOnly
+                  value={appointment.appointment_type || "Service"}
+                />
               </div>
             </div>
           </UnifiedAccordionContent>
@@ -314,7 +323,9 @@ export function AppointmentPageContent({
                 </div>
               </div>
               <Button asChild size="sm" variant="ghost">
-                <Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+                <Link href={`/dashboard/customers/${customer.id}`}>
+                  View Full Profile
+                </Link>
               </Button>
             </div>
           </UnifiedAccordionContent>
@@ -336,17 +347,17 @@ export function AppointmentPageContent({
                   {property.address}
                   {property.address2 && `, ${property.address2}`}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {property.city}, {property.state} {property.zip_code}
                 </p>
               </div>
-              <Button asChild variant="outline" size="sm">
+              <Button asChild size="sm" variant="outline">
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                     `${property.address}, ${property.city}, ${property.state}`
                   )}`}
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   <MapPin className="mr-2 size-4" />
                   Open in Google Maps
@@ -369,8 +380,8 @@ export function AppointmentPageContent({
             {teamAssignments.length > 0 ? (
               teamAssignments.map((assignment: any) => (
                 <div
-                  key={assignment.id}
                   className="flex items-center gap-4 rounded-lg border p-4"
+                  key={assignment.id}
                 >
                   <Avatar>
                     <AvatarImage src={assignment.user?.avatar} />
@@ -383,12 +394,16 @@ export function AppointmentPageContent({
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <p className="font-medium">{assignment.user?.name || "Unknown"}</p>
+                    <p className="font-medium">
+                      {assignment.user?.name || "Unknown"}
+                    </p>
                     <p className="text-muted-foreground text-sm">
                       {assignment.role || "Technician"}
                     </p>
                   </div>
-                  <Badge variant="outline">{assignment.status || "assigned"}</Badge>
+                  <Badge variant="outline">
+                    {assignment.status || "assigned"}
+                  </Badge>
                 </div>
               ))
             ) : (
@@ -458,7 +473,7 @@ export function AppointmentPageContent({
         type: "property",
         title: property.address,
         subtitle: `${property.city}, ${property.state}`,
-        href: `/dashboard/properties/${property.id}`,
+        href: `/dashboard/work/properties/${property.id}`,
       });
     }
 
@@ -480,15 +495,15 @@ export function AppointmentPageContent({
 
   return (
     <DetailPageContentLayout
+      activities={activities}
       customHeader={customHeader}
       customSections={customSections}
-      activities={activities}
+      defaultOpenSection="appointment-info"
       notes={notes}
       relatedItems={relatedItems}
       showStandardSections={{
         attachments: false,
       }}
-      defaultOpenSection="appointment-info"
     />
   );
 }

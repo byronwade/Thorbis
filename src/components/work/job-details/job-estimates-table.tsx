@@ -5,7 +5,7 @@ import {
   CheckCircle,
   Download,
   Eye,
-  LinkOff,
+  Link2Off,
   MoreHorizontal,
   Receipt,
   Send,
@@ -222,7 +222,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
                 className="cursor-pointer text-destructive focus:text-destructive"
                 onClick={() => setUnlinkEstimateId(estimate.id)}
               >
-                <LinkOff className="mr-2 size-4" />
+                <Link2Off className="mr-2 size-4" />
                 Unlink from Job
               </DropdownMenuItem>
             </DropdownMenuContent>

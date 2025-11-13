@@ -54,7 +54,8 @@ export async function getTeamMember(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get team member",
+      error:
+        error instanceof Error ? error.message : "Failed to get team member",
     };
   }
 }
@@ -84,7 +85,19 @@ export async function updateTeamMember(
     }
 
     if (formData.has("hourly_rate")) {
-      updates.hourly_rate = Number.parseFloat(formData.get("hourly_rate") as string);
+      updates.hourly_rate = Number.parseFloat(
+        formData.get("hourly_rate") as string
+      );
+    }
+
+    if (formData.has("phone")) {
+      const value = formData.get("phone");
+      updates.phone = value ? value.toString() : null;
+    }
+
+    if (formData.has("job_title")) {
+      const value = formData.get("job_title");
+      updates.job_title = value ? value.toString() : null;
     }
 
     const { data, error } = await supabase
@@ -103,7 +116,8 @@ export async function updateTeamMember(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to update team member",
+      error:
+        error instanceof Error ? error.message : "Failed to update team member",
     };
   }
 }
@@ -179,7 +193,8 @@ export async function getTeamMemberTimeEntries(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to get time entries",
+      error:
+        error instanceof Error ? error.message : "Failed to get time entries",
     };
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
 import { KanbanSquare, List } from "lucide-react";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -10,10 +10,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  type WorkSection,
-  type WorkViewMode,
   useSetWorkView,
   useWorkView,
+  type WorkSection,
+  type WorkViewMode,
 } from "@/lib/stores/work-view-store";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +47,7 @@ export function WorkViewSwitcher({
     <TooltipProvider>
       <div
         className={cn(
-          "flex h-9 items-center gap-1 rounded-md border border-border/60 bg-background/80 p-1",
+          "flex h-7 items-center gap-0.5 rounded-md border border-border/60 bg-background/80 p-0.5",
           className
         )}
       >
@@ -55,13 +55,13 @@ export function WorkViewSwitcher({
           <TooltipTrigger asChild>
             <Button
               aria-pressed={viewMode === "table"}
-              className={cn("h-7 w-9 p-0", viewMode === "table" && "bg-accent")}
+              className={cn("h-6 w-7 p-0", viewMode === "table" && "bg-accent")}
               onClick={handleSelect("table")}
               size="sm"
               type="button"
               variant="ghost"
             >
-              <List className="size-4" />
+              <List className="size-3.5" />
               <span className="sr-only">Table view</span>
             </Button>
           </TooltipTrigger>
@@ -73,7 +73,7 @@ export function WorkViewSwitcher({
             <Button
               aria-pressed={viewMode === "kanban"}
               className={cn(
-                "h-7 w-9 p-0",
+                "h-6 w-7 p-0",
                 viewMode === "kanban" && "bg-accent",
                 isModeDisabled("kanban") && "opacity-60"
               )}
@@ -83,7 +83,7 @@ export function WorkViewSwitcher({
               type="button"
               variant="ghost"
             >
-              <KanbanSquare className="size-4" />
+              <KanbanSquare className="size-3.5" />
               <span className="sr-only">Kanban view</span>
             </Button>
           </TooltipTrigger>
@@ -93,4 +93,3 @@ export function WorkViewSwitcher({
     </TooltipProvider>
   );
 }
-

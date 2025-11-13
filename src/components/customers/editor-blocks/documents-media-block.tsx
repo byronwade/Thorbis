@@ -474,11 +474,11 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
                               className={cn(
                                 "flex size-10 shrink-0 items-center justify-center rounded-lg",
                                 attachment.is_image &&
-                                  "bg-blue-50 text-blue-600 dark:bg-blue-950",
+                                  "bg-primary text-primary dark:bg-primary",
                                 attachment.is_document &&
-                                  "bg-gray-50 text-gray-600 dark:bg-gray-950",
+                                  "bg-secondary text-muted-foreground dark:bg-foreground",
                                 attachment.is_video &&
-                                  "bg-purple-50 text-purple-600 dark:bg-purple-950"
+                                  "bg-accent text-accent-foreground dark:bg-accent"
                               )}
                             >
                               <Icon className="size-5" />

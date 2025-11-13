@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { type WorkSection, useWorkView } from "@/lib/stores/work-view-store";
+import { useWorkView, type WorkSection } from "@/lib/stores/work-view-store";
 
 type WorkDataViewProps = {
   section: WorkSection;
@@ -24,4 +24,3 @@ export function WorkDataView({
 
   return <>{table ?? fallback}</>;
 }
-

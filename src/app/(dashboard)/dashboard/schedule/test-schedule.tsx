@@ -35,7 +35,7 @@ export function TestSchedule() {
       <div className="rounded border p-4">
         <h2 className="mb-2 font-bold text-lg">Button Actions</h2>
         <button
-          className="rounded bg-red-500 px-4 py-2 text-white"
+          className="rounded bg-destructive px-4 py-2 text-white"
           onClick={() => {
             localStorage.clear();
             window.location.reload();

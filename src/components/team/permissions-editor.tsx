@@ -17,7 +17,6 @@
 
 import {
   AlertCircle,
-  Check,
   CheckCircle2,
   Eye,
   Lock,
@@ -40,7 +39,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ROLES, type Permission, type UserRole } from "@/lib/auth/permissions";
+import { type Permission, ROLES, type UserRole } from "@/lib/auth/permissions";
 
 // Permission categories for organization
 const PERMISSION_CATEGORIES = {
@@ -94,7 +93,10 @@ const PERMISSION_CATEGORIES = {
 };
 
 // Permission labels and descriptions
-const PERMISSION_INFO: Record<Permission, { label: string; description: string }> = {
+const PERMISSION_INFO: Record<
+  Permission,
+  { label: string; description: string }
+> = {
   // View permissions
   view_customers: {
     label: "View Customers",
@@ -209,9 +211,8 @@ export function PermissionsEditor({
   isOwner = false,
 }: PermissionsEditorProps) {
   const [selectedRole, setSelectedRole] = useState<UserRole>(currentRole);
-  const [customPermissions, setCustomPermissions] = useState<Record<string, boolean>>(
-    currentPermissions
-  );
+  const [customPermissions, setCustomPermissions] =
+    useState<Record<string, boolean>>(currentPermissions);
 
   // Get role configuration
   const roleConfig = ROLES[selectedRole];
@@ -227,9 +228,8 @@ export function PermissionsEditor({
   };
 
   // Check if permission is custom (overridden)
-  const isPermissionCustom = (permission: Permission): boolean => {
-    return permission in customPermissions;
-  };
+  const isPermissionCustom = (permission: Permission): boolean =>
+    permission in customPermissions;
 
   // Handle role change
   const handleRoleChange = (role: UserRole) => {
@@ -268,16 +268,18 @@ export function PermissionsEditor({
     <div className="space-y-6">
       {/* Owner Protection Warning */}
       {isOwner && (
-        <Card className="border-blue-500/50 bg-blue-500/5">
+        <Card className="border-primary/50 bg-primary/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <Lock className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+            <Lock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <div className="flex-1 space-y-2">
-              <p className="font-medium text-sm text-blue-700 dark:text-blue-400">
+              <p className="font-medium text-primary text-sm dark:text-primary">
                 Company Owner - Protected Role
               </p>
               <p className="text-muted-foreground text-sm">
-                This team member is the company owner. The owner role cannot be changed and the owner cannot be removed.
-                To change ownership, use the "Transfer Ownership" option in the team member's action menu.
+                This team member is the company owner. The owner role cannot be
+                changed and the owner cannot be removed. To change ownership,
+                use the "Transfer Ownership" option in the team member's action
+                menu.
               </p>
             </div>
           </CardContent>
@@ -294,8 +296,8 @@ export function PermissionsEditor({
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            Select the primary role for this team member. Roles come with predefined
-            permissions that can be customized below.
+            Select the primary role for this team member. Roles come with
+            predefined permissions that can be customized below.
           </p>
 
           <RadioGroup
@@ -304,71 +306,79 @@ export function PermissionsEditor({
             onValueChange={(value) => handleRoleChange(value as UserRole)}
             value={selectedRole}
           >
-            {(["owner", "admin", "manager", "dispatcher", "technician", "csr"] as UserRole[]).map(
-              (role) => {
-                const config = ROLES[role];
-                const isSelected = selectedRole === role;
-                const isCurrent = currentRole === role;
+            {(
+              [
+                "owner",
+                "admin",
+                "manager",
+                "dispatcher",
+                "technician",
+                "csr",
+              ] as UserRole[]
+            ).map((role) => {
+              const config = ROLES[role];
+              const isSelected = selectedRole === role;
+              const isCurrent = currentRole === role;
 
-                return (
-                  <div
-                    className={`flex items-start space-x-3 rounded-lg border p-4 transition-colors ${
-                      isSelected
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:bg-muted/50"
-                    }`}
-                    key={role}
-                  >
-                    <RadioGroupItem className="mt-1" id={role} value={role} />
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label
-                          className="cursor-pointer font-semibold text-base"
-                          htmlFor={role}
-                        >
-                          {config.label}
-                        </Label>
-                        {isCurrent && (
-                          <Badge className="text-xs" variant="default">
-                            Current
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-muted-foreground text-sm">
-                        {config.description}
-                      </p>
-                      {/* Show permission count */}
-                      <div className="flex items-center gap-2 text-xs">
-                        <Badge variant="outline">
-                          {config.permissions.length} permissions
+              return (
+                <div
+                  className={`flex items-start space-x-3 rounded-lg border p-4 transition-colors ${
+                    isSelected
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:bg-muted/50"
+                  }`}
+                  key={role}
+                >
+                  <RadioGroupItem className="mt-1" id={role} value={role} />
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Label
+                        className="cursor-pointer font-semibold text-base"
+                        htmlFor={role}
+                      >
+                        {config.label}
+                      </Label>
+                      {isCurrent && (
+                        <Badge className="text-xs" variant="default">
+                          Current
                         </Badge>
-                        {config.permissions.length > 10 && (
-                          <span className="text-muted-foreground">
-                            (Full access)
-                          </span>
-                        )}
-                      </div>
+                      )}
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      {config.description}
+                    </p>
+                    {/* Show permission count */}
+                    <div className="flex items-center gap-2 text-xs">
+                      <Badge variant="outline">
+                        {config.permissions.length} permissions
+                      </Badge>
+                      {config.permissions.length > 10 && (
+                        <span className="text-muted-foreground">
+                          (Full access)
+                        </span>
+                      )}
                     </div>
                   </div>
-                );
-              }
-            )}
+                </div>
+              );
+            })}
           </RadioGroup>
         </CardContent>
       </Card>
 
       {/* Custom Permissions Notice */}
       {hasCustomPermissions && (
-        <Card className="border-amber-500/50 bg-amber-500/5">
+        <Card className="border-warning/50 bg-warning/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
             <div className="flex-1 space-y-2">
-              <p className="font-medium text-sm text-amber-700 dark:text-amber-400">
+              <p className="font-medium text-sm text-warning dark:text-warning">
                 Custom Permissions Active
               </p>
               <p className="text-muted-foreground text-sm">
-                This user has {Object.keys(customPermissions).length} custom permission
-                override(s). Custom permissions take precedence over role defaults.
+                This user has {Object.keys(customPermissions).length} custom
+                permission override(s). Custom permissions take precedence over
+                role defaults.
               </p>
               <Button
                 onClick={handleResetPermissions}
@@ -394,7 +404,9 @@ export function PermissionsEditor({
                 <CategoryIcon className="h-5 w-5 text-primary" />
                 {category.label}
               </CardTitle>
-              <p className="text-muted-foreground text-sm">{category.description}</p>
+              <p className="text-muted-foreground text-sm">
+                {category.description}
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               {category.permissions.map((permission) => {
@@ -410,7 +422,10 @@ export function PermissionsEditor({
                   >
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
-                        <Label className="font-medium text-sm" htmlFor={permission}>
+                        <Label
+                          className="font-medium text-sm"
+                          htmlFor={permission}
+                        >
                           {info.label}
                         </Label>
                         {isCustom && (
@@ -425,8 +440,8 @@ export function PermissionsEditor({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className="max-w-xs text-xs">
-                                This permission has been customized. Role default:{" "}
-                                {roleHasPerm ? "Enabled" : "Disabled"}
+                                This permission has been customized. Role
+                                default: {roleHasPerm ? "Enabled" : "Disabled"}
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -434,7 +449,7 @@ export function PermissionsEditor({
                         {!isCustom && roleHasPerm && (
                           <Tooltip>
                             <TooltipTrigger>
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              <CheckCircle2 className="h-4 w-4 text-success" />
                             </TooltipTrigger>
                             <TooltipContent>
                               <p className="text-xs">
@@ -444,7 +459,9 @@ export function PermissionsEditor({
                           </Tooltip>
                         )}
                       </div>
-                      <p className="text-muted-foreground text-xs">{info.description}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {info.description}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2">
                       {/* Show indicator if using role default */}
@@ -484,13 +501,17 @@ export function PermissionsEditor({
                     <Badge>{roleConfig.label}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Role Permissions:</span>
+                    <span className="text-muted-foreground">
+                      Role Permissions:
+                    </span>
                     <span className="font-medium">
                       {roleConfig.permissions.length} granted
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Custom Overrides:</span>
+                    <span className="text-muted-foreground">
+                      Custom Overrides:
+                    </span>
                     <span className="font-medium">
                       {Object.keys(customPermissions).length} active
                     </span>
@@ -500,7 +521,8 @@ export function PermissionsEditor({
                     <span className="font-medium">Total Permissions:</span>
                     <span className="font-bold text-primary">
                       {
-                        Object.values(PERMISSION_CATEGORIES).flatMap((c) => c.permissions)
+                        Object.values(PERMISSION_CATEGORIES)
+                          .flatMap((c) => c.permissions)
                           .filter((p) => isPermissionEnabled(p)).length
                       }{" "}
                       enabled
@@ -520,7 +542,7 @@ export function PermissionsEditor({
             <p className="font-medium text-sm">Legend:</p>
             <div className="grid gap-2 text-sm">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
                 <span className="text-muted-foreground">
                   Permission enabled by role
                 </span>

@@ -45,6 +45,8 @@ export {
   getDebitCards,
   getGasCards,
   getGiftCardSettings,
+  getPrimaryBankAccount,
+  getUserCompanyId,
   getVirtualBucketSettings,
   getVirtualBuckets,
   updateAccountingSettings,

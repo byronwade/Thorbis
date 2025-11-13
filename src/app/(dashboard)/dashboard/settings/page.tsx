@@ -336,10 +336,10 @@ export default async function SettingsOverviewPage({
                               {item.status && (
                                 <div>
                                   {item.status === "complete" && (
-                                    <CheckCircle2 className="size-4 text-green-500" />
+                                    <CheckCircle2 className="size-4 text-success" />
                                   )}
                                   {item.status === "warning" && (
-                                    <AlertCircle className="size-4 text-yellow-500" />
+                                    <AlertCircle className="size-4 text-warning" />
                                   )}
                                   {item.status === "incomplete" && (
                                     <AlertCircle className="size-4 text-muted-foreground" />

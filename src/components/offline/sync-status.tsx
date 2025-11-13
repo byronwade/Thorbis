@@ -144,7 +144,7 @@ export function SyncStatus() {
       <CardContent>
         {operations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <CheckCircle2 className="mb-2 size-12 text-green-500" />
+            <CheckCircle2 className="mb-2 size-12 text-success" />
             <p className="font-medium text-sm">All Synced</p>
             <p className="text-muted-foreground text-xs">
               No pending operations in the queue
@@ -156,7 +156,7 @@ export function SyncStatus() {
             {failedOps.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="size-4 text-red-500" />
+                  <AlertCircle className="size-4 text-destructive" />
                   <h4 className="font-semibold text-sm">
                     Failed Operations ({failedOps.length})
                   </h4>
@@ -177,7 +177,7 @@ export function SyncStatus() {
             {pendingOps.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Clock className="size-4 text-blue-500" />
+                  <Clock className="size-4 text-primary" />
                   <h4 className="font-semibold text-sm">
                     Pending Operations ({pendingOps.length})
                   </h4>
@@ -210,13 +210,13 @@ function OperationCard({
   const getOperationColor = () => {
     switch (operation.operation) {
       case "INSERT":
-        return "text-green-700 dark:text-green-400 bg-green-500/10";
+        return "text-success dark:text-success bg-success/10";
       case "UPDATE":
-        return "text-blue-700 dark:text-blue-400 bg-blue-500/10";
+        return "text-primary dark:text-primary bg-primary/10";
       case "DELETE":
-        return "text-red-700 dark:text-red-400 bg-red-500/10";
+        return "text-destructive dark:text-destructive bg-destructive/10";
       default:
-        return "text-gray-700 dark:text-gray-400 bg-gray-500/10";
+        return "text-foreground dark:text-muted-foreground bg-secondary0/10";
     }
   };
 
@@ -238,7 +238,7 @@ function OperationCard({
           {new Date(operation.timestamp).toLocaleString()}
         </p>
         {operation.error && (
-          <p className="text-red-600 text-xs dark:text-red-400">
+          <p className="text-destructive text-xs dark:text-destructive">
             {operation.error}
           </p>
         )}

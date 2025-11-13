@@ -12,7 +12,6 @@ import {
   Calendar,
   CheckCircle2,
   DollarSign,
-  FileText,
   Package,
   Receipt,
   User,
@@ -20,6 +19,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveMaintenancePlan } from "@/actions/maintenance-plans";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,8 +32,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { archiveMaintenancePlan } from "@/actions/maintenance-plans";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -205,10 +204,10 @@ export function MaintenancePlanPageContent({
               </Link>
               {/* Archive Button */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsArchiveDialogOpen(true)}
                 className="ml-auto"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
               >
                 <Archive className="mr-2 size-4" />
                 Archive
@@ -424,28 +423,49 @@ export function MaintenancePlanPageContent({
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Job #</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Title</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Completed</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Job #
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Property
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Completed
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {generatedJobs.map((job: any) => (
-                    <tr key={job.id} className="border-b hover:bg-muted/30">
+                    <tr className="border-b hover:bg-muted/30" key={job.id}>
                       <td className="px-6 py-4 text-sm">#{job.job_number}</td>
-                      <td className="px-6 py-4 text-sm font-medium">{job.title}</td>
-                      <td className="px-6 py-4 text-sm">{job.property?.name || job.property?.address || "-"}</td>
+                      <td className="px-6 py-4 font-medium text-sm">
+                        {job.title}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {job.property?.name || job.property?.address || "-"}
+                      </td>
                       <td className="px-6 py-4 text-sm">
                         <Badge variant="outline">{job.status}</Badge>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        {job.completed_at ? new Date(job.completed_at).toLocaleDateString() : "-"}
+                        {job.completed_at
+                          ? new Date(job.completed_at).toLocaleDateString()
+                          : "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Link href={`/dashboard/work/${job.id}`} className="text-primary hover:underline">
+                        <Link
+                          className="text-primary hover:underline"
+                          href={`/dashboard/work/${job.id}`}
+                        >
                           View
                         </Link>
                       </td>
@@ -469,42 +489,66 @@ export function MaintenancePlanPageContent({
         content: (
           <UnifiedAccordionContent className="p-0">
             <div className="border-b px-6 py-4 text-muted-foreground text-sm">
-              Scheduled maintenance appointments for equipment covered by this plan.
+              Scheduled maintenance appointments for equipment covered by this
+              plan.
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Date & Time</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Job</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Date & Time
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Job
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Property
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {scheduledAppointments.map((appointment: any) => (
-                    <tr key={appointment.id} className="border-b hover:bg-muted/30">
+                    <tr
+                      className="border-b hover:bg-muted/30"
+                      key={appointment.id}
+                    >
                       <td className="px-6 py-4 text-sm">
-                        {new Date(appointment.scheduled_start).toLocaleString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
+                        {new Date(appointment.scheduled_start).toLocaleString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
+                          }
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        {appointment.job ? `#${appointment.job.job_number}` : "-"}
+                        {appointment.job
+                          ? `#${appointment.job.job_number}`
+                          : "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        {appointment.property?.name || appointment.property?.address || "-"}
+                        {appointment.property?.name ||
+                          appointment.property?.address ||
+                          "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <Badge variant="outline">{appointment.status}</Badge>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Link href={`/dashboard/appointments/${appointment.id}`} className="text-primary hover:underline">
+                        <Link
+                          className="text-primary hover:underline"
+                          href={`/dashboard/appointments/${appointment.id}`}
+                        >
                           View
                         </Link>
                       </td>
@@ -534,30 +578,49 @@ export function MaintenancePlanPageContent({
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Invoice #</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Total</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Invoice #
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {generatedInvoices.map((invoice: any) => (
-                    <tr key={invoice.id} className="border-b hover:bg-muted/30">
-                      <td className="px-6 py-4 text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</td>
+                    <tr className="border-b hover:bg-muted/30" key={invoice.id}>
+                      <td className="px-6 py-4 text-sm">
+                        #{invoice.invoice_number || invoice.id.slice(0, 8)}
+                      </td>
                       <td className="px-6 py-4 text-sm">
                         {new Date(invoice.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium">
+                      <td className="px-6 py-4 font-medium text-sm">
                         {formatCurrency(invoice.total_amount)}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Badge variant={invoice.status === "paid" ? "default" : "outline"}>
+                        <Badge
+                          variant={
+                            invoice.status === "paid" ? "default" : "outline"
+                          }
+                        >
                           {invoice.status}
                         </Badge>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Link href={`/dashboard/work/invoices/${invoice.id}`} className="text-primary hover:underline">
+                        <Link
+                          className="text-primary hover:underline"
+                          href={`/dashboard/work/invoices/${invoice.id}`}
+                        >
                           View
                         </Link>
                       </td>
@@ -572,7 +635,15 @@ export function MaintenancePlanPageContent({
     }
 
     return sections;
-  }, [plan, customer, equipment, generatedJobs, scheduledAppointments, generatedInvoices, includedServices]);
+  }, [
+    plan,
+    customer,
+    equipment,
+    generatedJobs,
+    scheduledAppointments,
+    generatedInvoices,
+    includedServices,
+  ]);
 
   const relatedItems = useMemo(() => {
     const items: any[] = [];
@@ -634,26 +705,27 @@ export function MaintenancePlanPageContent({
       />
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Maintenance Plan?</DialogTitle>
             <DialogDescription>
-              This will archive the maintenance plan. You can restore it from the archive within 90 days.
+              This will archive the maintenance plan. You can restore it from
+              the archive within 90 days.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveMaintenancePlan}
               disabled={isArchiving}
+              onClick={handleArchiveMaintenancePlan}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Maintenance Plan"}
             </Button>

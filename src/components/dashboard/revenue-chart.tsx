@@ -9,7 +9,12 @@
  * - Tooltip interactions require browser APIs
  */
 
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Area,
+  CartesianGrid,
+  LazyAreaChart,
+  XAxis,
+} from "@/components/lazy/chart";
 import {
   Card,
   CardContent,
@@ -68,7 +73,7 @@ export function RevenueChart() {
           className="aspect-auto h-[340px] w-full"
           config={chartConfig}
         >
-          <AreaChart
+          <LazyAreaChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -111,7 +116,7 @@ export function RevenueChart() {
               strokeWidth={3}
               type="monotone"
             />
-          </AreaChart>
+          </LazyAreaChart>
         </ChartContainer>
       </CardContent>
     </Card>

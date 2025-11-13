@@ -141,7 +141,7 @@ export default async function SupplierDetailPage({ params }: PageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <CheckCircle2 className="h-5 w-5 text-success" />
               <span className="font-semibold">Connected</span>
             </div>
           </CardContent>
@@ -191,8 +191,8 @@ export default async function SupplierDetailPage({ params }: PageProps) {
               <div key={index}>
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/10">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">Sync Completed</p>

@@ -72,9 +72,11 @@ export default function TestAuthPage() {
           </div>
 
           {error && (
-            <div className="rounded-lg border border-red-500 bg-red-50 p-4">
-              <h2 className="mb-2 font-semibold text-lg text-red-700">Error</h2>
-              <p className="text-red-600">{error}</p>
+            <div className="rounded-lg border border-destructive bg-destructive p-4">
+              <h2 className="mb-2 font-semibold text-destructive text-lg">
+                Error
+              </h2>
+              <p className="text-destructive">{error}</p>
             </div>
           )}
 
@@ -102,13 +104,13 @@ export default function TestAuthPage() {
                   <summary className="cursor-pointer font-semibold">
                     Full User Object
                   </summary>
-                  <pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
+                  <pre className="mt-2 overflow-auto rounded bg-muted p-2 text-xs">
                     {JSON.stringify(user, null, 2)}
                   </pre>
                 </details>
               </div>
             ) : (
-              <p className="text-gray-500">No user data</p>
+              <p className="text-muted-foreground">No user data</p>
             )}
           </div>
 
@@ -128,13 +130,13 @@ export default function TestAuthPage() {
                   <summary className="cursor-pointer font-semibold">
                     Full Session Object
                   </summary>
-                  <pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
+                  <pre className="mt-2 overflow-auto rounded bg-muted p-2 text-xs">
                     {JSON.stringify(session, null, 2)}
                   </pre>
                 </details>
               </div>
             ) : (
-              <p className="text-gray-500">No session data</p>
+              <p className="text-muted-foreground">No session data</p>
             )}
           </div>
 

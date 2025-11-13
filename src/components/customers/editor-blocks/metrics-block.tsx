@@ -32,32 +32,33 @@ export function MetricsBlockComponent({ node }: any) {
       label: "Total Revenue",
       value: formatCurrency(totalRevenue || 0),
       icon: DollarSign,
-      iconColor: "text-green-600",
-      bgColor: "bg-green-50 dark:bg-green-950",
+      iconColor: "text-success",
+      bgColor: "bg-success dark:bg-success",
     },
     {
       label: "Total Jobs",
       value: totalJobs || 0,
       icon: Briefcase,
-      iconColor: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950",
+      iconColor: "text-primary",
+      bgColor: "bg-primary dark:bg-primary",
     },
     {
       label: "Properties",
       value: totalProperties || 0,
       icon: MapPin,
-      iconColor: "text-purple-600",
-      bgColor: "bg-purple-50 dark:bg-purple-950",
+      iconColor: "text-accent-foreground",
+      bgColor: "bg-accent dark:bg-accent",
     },
     {
       label: "Outstanding",
       value: formatCurrency(outstandingBalance || 0),
       icon: AlertCircle,
-      iconColor: outstandingBalance > 0 ? "text-orange-600" : "text-gray-600",
+      iconColor:
+        outstandingBalance > 0 ? "text-warning" : "text-muted-foreground",
       bgColor:
         outstandingBalance > 0
-          ? "bg-orange-50 dark:bg-orange-950"
-          : "bg-gray-50 dark:bg-gray-950",
+          ? "bg-warning dark:bg-warning"
+          : "bg-secondary dark:bg-foreground",
     },
   ];
 

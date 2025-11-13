@@ -12,10 +12,11 @@
  * - Matches Customer page design pattern
  */
 
-import { type StatCard } from "@/components/ui/stats-cards";
 import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
+import type { StatCard } from "@/components/ui/stats-cards";
 
 interface JobStatsBarProps {
+  entityId: string;
   metrics: {
     totalAmount: number; // in cents
     paidAmount: number; // in cents
@@ -24,17 +25,17 @@ interface JobStatsBarProps {
     materialsCost: number; // in cents
     profitMargin: number; // percentage
     completionPercentage: number; // 0-100
+    status: string;
   };
-  jobId: string;
-  status: string;
   compact?: boolean;
 }
 
 export function JobStatsBar({
+  entityId,
   metrics,
-  status,
   compact = false,
 }: JobStatsBarProps) {
+  const status = metrics.status;
   const formatCurrency = (cents: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",

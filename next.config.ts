@@ -10,53 +10,57 @@ const withBundleAnalyzer =
       })
     : (config: NextConfig) => config;
 
-const withPWA = require("next-pwa")({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-  register: true,
-  skipWaiting: true,
-  buildExcludes: [/app-build-manifest\.json$/], // Exclude from build for faster builds
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "supabase-api-cache",
-        expiration: {
-          maxEntries: 100,
-          maxAgeSeconds: 60 * 60, // 1 hour
+const isPwaEnabled = process.env.NEXT_PUBLIC_ENABLE_PWA === "true";
+
+const withPWA = isPwaEnabled
+  ? require("next-pwa")({
+      dest: "public",
+      disable: false,
+      register: true,
+      skipWaiting: true,
+      buildExcludes: [/app-build-manifest\.json$/], // Exclude from build for faster builds
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "supabase-api-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60, // 1 hour
+            },
+            networkTimeoutSeconds: 10,
+          },
         },
-        networkTimeoutSeconds: 10,
-      },
-    },
-    {
-      urlPattern: /^https:\/\/.*\.supabase\.co\/auth\/.*/i,
-      handler: "NetworkOnly", // Never cache auth requests for security
-    },
-    {
-      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
-      handler: "CacheFirst",
-      options: {
-        cacheName: "image-cache",
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        {
+          urlPattern: /^https:\/\/.*\.supabase\.co\/auth\/.*/i,
+          handler: "NetworkOnly", // Never cache auth requests for security
         },
-      },
-    },
-    {
-      urlPattern: /\.(?:js|css)$/i,
-      handler: "StaleWhileRevalidate",
-      options: {
-        cacheName: "static-resources",
-        expiration: {
-          maxEntries: 60,
-          maxAgeSeconds: 24 * 60 * 60, // 1 day
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "image-cache",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+            },
+          },
         },
-      },
-    },
-  ],
-});
+        {
+          urlPattern: /\.(?:js|css)$/i,
+          handler: "StaleWhileRevalidate",
+          options: {
+            cacheName: "static-resources",
+            expiration: {
+              maxEntries: 60,
+              maxAgeSeconds: 24 * 60 * 60, // 1 day
+            },
+          },
+        },
+      ],
+    })
+  : (config: NextConfig) => config;
 
 const nextConfig: NextConfig = {
   // PERFORMANCE: Static generation RE-ENABLED! ✅
@@ -137,6 +141,10 @@ const nextConfig: NextConfig = {
 
       // Other heavy dependencies
       "framer-motion",
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@uidotdev/usehooks",
+      "jotai",
       "ai",
     ],
     // Enable faster refresh for better DX

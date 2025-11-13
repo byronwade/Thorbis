@@ -74,25 +74,25 @@ export default function IndustryPricingStandards() {
     if (value < min)
       return {
         label: "Below Market",
-        color: "text-red-600",
-        bg: "bg-red-500/10",
+        color: "text-destructive",
+        bg: "bg-destructive/10",
       };
     if (value > max)
       return {
         label: "Above Market",
-        color: "text-amber-600",
-        bg: "bg-amber-500/10",
+        color: "text-warning",
+        bg: "bg-warning/10",
       };
     if (value >= avg - 5 && value <= avg + 5)
       return {
         label: "Market Average",
-        color: "text-green-600",
-        bg: "bg-green-500/10",
+        color: "text-success",
+        bg: "bg-success/10",
       };
     return {
       label: "Within Range",
-      color: "text-blue-600",
-      bg: "bg-blue-500/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
     };
   };
 
@@ -138,7 +138,7 @@ export default function IndustryPricingStandards() {
       </div>
 
       {/* Info Card */}
-      <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+      <Card className="border-primary/20 bg-gradient-to-br from-blue-500/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <AlertCircle className="size-5" />
@@ -232,7 +232,7 @@ export default function IndustryPricingStandards() {
             </CardContent>
           </Card>
 
-          <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+          <Card className="border-warning/20 bg-gradient-to-br from-amber-500/5 to-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <AlertCircle className="size-4" />
@@ -374,7 +374,7 @@ export default function IndustryPricingStandards() {
             </CardContent>
           </Card>
 
-          <Card className="border-green-500/20 bg-gradient-to-br from-green-500/5 to-transparent">
+          <Card className="border-success/20 bg-gradient-to-br from-green-500/5 to-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <TrendingUp className="size-4" />

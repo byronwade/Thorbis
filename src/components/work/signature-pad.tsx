@@ -184,7 +184,7 @@ export function SignaturePad({
             Clear
           </Button>
           {hasSignature && (
-            <div className="flex items-center gap-2 text-green-600 text-sm dark:text-green-400">
+            <div className="flex items-center gap-2 text-sm text-success dark:text-success">
               <Check className="size-4" />
               Signature captured
             </div>

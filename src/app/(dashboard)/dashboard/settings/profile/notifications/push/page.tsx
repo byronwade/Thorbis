@@ -109,8 +109,8 @@ export default function PushNotificationsPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
-                  <Smartphone className="h-5 w-5 text-blue-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary dark:bg-primary/20">
+                  <Smartphone className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <div className="font-medium">iPhone 13</div>
@@ -135,8 +135,8 @@ export default function PushNotificationsPage() {
 
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-                  <Monitor className="h-5 w-5 text-green-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success dark:bg-success/20">
+                  <Monitor className="h-5 w-5 text-success" />
                 </div>
                 <div>
                   <div className="font-medium">MacBook Pro</div>
@@ -161,8 +161,8 @@ export default function PushNotificationsPage() {
 
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/20">
-                  <Tablet className="h-5 w-5 text-purple-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent dark:bg-accent/20">
+                  <Tablet className="h-5 w-5 text-accent-foreground" />
                 </div>
                 <div>
                   <div className="font-medium">iPad Pro</div>
@@ -218,8 +218,8 @@ export default function PushNotificationsPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
-                  <Volume2 className="h-4 w-4 text-red-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-destructive dark:bg-destructive/20">
+                  <Volume2 className="h-4 w-4 text-destructive" />
                 </div>
                 <div>
                   <div className="font-medium">Critical Alerts</div>
@@ -236,8 +236,8 @@ export default function PushNotificationsPage() {
 
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20">
-                  <MapPin className="h-4 w-4 text-blue-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary dark:bg-primary/20">
+                  <MapPin className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <div className="font-medium">Job Updates</div>
@@ -254,8 +254,8 @@ export default function PushNotificationsPage() {
 
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-                  <Volume2 className="h-4 w-4 text-green-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/20">
+                  <Volume2 className="h-4 w-4 text-success" />
                 </div>
                 <div>
                   <div className="font-medium">Customer Messages</div>
@@ -272,8 +272,8 @@ export default function PushNotificationsPage() {
 
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
-                  <Clock className="h-4 w-4 text-yellow-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/20">
+                  <Clock className="h-4 w-4 text-warning" />
                 </div>
                 <div>
                   <div className="font-medium">Schedule Reminders</div>
@@ -290,8 +290,8 @@ export default function PushNotificationsPage() {
 
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/20">
-                  <VolumeX className="h-4 w-4 text-purple-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent dark:bg-accent/20">
+                  <VolumeX className="h-4 w-4 text-accent-foreground" />
                 </div>
                 <div>
                   <div className="font-medium">System Updates</div>

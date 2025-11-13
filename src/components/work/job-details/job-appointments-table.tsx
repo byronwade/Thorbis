@@ -429,7 +429,7 @@ export function JobAppointmentsTable({
             <div className="flex items-center justify-end gap-1">
               {canDispatch && (
                 <Button
-                  className="h-8 bg-blue-600 px-3 text-xs hover:bg-blue-700"
+                  className="h-8 bg-primary px-3 text-xs hover:bg-primary"
                   disabled={isLoading}
                   onClick={() => handleDispatch(appointment.id)}
                   size="sm"
@@ -440,7 +440,7 @@ export function JobAppointmentsTable({
               )}
               {canArrive && (
                 <Button
-                  className="h-8 bg-green-600 px-3 text-xs hover:bg-green-700"
+                  className="h-8 bg-success px-3 text-xs hover:bg-success"
                   disabled={isLoading}
                   onClick={() => handleArrive(appointment.id)}
                   size="sm"
@@ -451,7 +451,7 @@ export function JobAppointmentsTable({
               )}
               {canClose && (
                 <Button
-                  className="h-8 bg-purple-600 px-3 text-xs hover:bg-purple-700"
+                  className="h-8 bg-accent px-3 text-xs hover:bg-accent"
                   disabled={isLoading}
                   onClick={() => handleClose(appointment)}
                   size="sm"

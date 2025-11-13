@@ -1,9 +1,9 @@
 /**
  * EntityStatsBar - Generic Stats Bar Component
- * 
+ *
  * Reusable component for displaying entity statistics in a ticker-style format.
  * Replaces individual stats bar components (JobStatsBar, CustomerStatsBar, etc.)
- * 
+ *
  * Features:
  * - Stock ticker design with colored trend indicators
  * - Supports compact mode for sticky scrolling
@@ -23,8 +23,3 @@ export function EntityStatsBar({
 }: EntityStatsBarProps) {
   return <StatsCards compact={compact} stats={stats} variant="ticker" />;
 }
-
-
-
-
-

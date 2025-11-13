@@ -1,7 +1,4 @@
 import Link from "next/link";
-
-import { getMarketingIcon } from "./marketing-icons";
-import type { MarketingIntegrationContent } from "@/lib/marketing/types";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -10,7 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { MarketingIntegrationContent } from "@/lib/marketing/types";
 import { cn } from "@/lib/utils";
+import { getMarketingIcon } from "./marketing-icons";
 
 interface IntegrationCardProps {
   integration: MarketingIntegrationContent;
@@ -24,7 +23,7 @@ export function IntegrationCard({
   const Icon = getMarketingIcon(integration.valueProps[0]?.icon ?? "sparkles");
 
   return (
-    <Link href={`/integrations/${integration.slug}`} className="block h-full">
+    <Link className="block h-full" href={`/integrations/${integration.slug}`}>
       <Card
         className={cn(
           "h-full transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
@@ -53,10 +52,11 @@ export function IntegrationCard({
               </Badge>
             ))}
           </div>
-          <p className="font-medium text-primary text-sm">Explore integration →</p>
+          <p className="font-medium text-primary text-sm">
+            Explore integration →
+          </p>
         </CardContent>
       </Card>
     </Link>
   );
 }
-

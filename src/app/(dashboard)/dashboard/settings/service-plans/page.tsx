@@ -1082,9 +1082,9 @@ export default function ServicePlansPage() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4">
+            <div className="rounded-lg border border-success/50 bg-success/10 p-4">
               <div className="flex items-start gap-3">
-                <Star className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+                <Star className="mt-0.5 h-5 w-5 shrink-0 text-success" />
                 <div className="flex-1 space-y-1">
                   <p className="font-medium text-sm">
                     Benefits Drive Enrollment
@@ -1283,7 +1283,7 @@ export default function ServicePlansPage() {
                         className="flex items-center gap-2 text-xs"
                         key={index}
                       >
-                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                        <CheckCircle2 className="h-3 w-3 text-success" />
                         <span>{benefit}</span>
                       </div>
                     ))}

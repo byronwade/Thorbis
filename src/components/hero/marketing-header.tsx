@@ -146,7 +146,7 @@ export function MarketingHeader() {
     () =>
       PRIMARY_LINKS.map((item) => (
         <Link
-          className="text-sm text-muted-foreground transition hover:text-foreground"
+          className="text-muted-foreground text-sm transition hover:text-foreground"
           href={item.href}
           key={item.href}
         >
@@ -167,7 +167,7 @@ export function MarketingHeader() {
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
-          className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground transition hover:text-primary"
+          className="flex items-center gap-2 font-semibold text-foreground text-sm tracking-tight transition hover:text-primary"
           href="/"
         >
           <Image
@@ -211,7 +211,7 @@ export function MarketingHeader() {
           ) : (
             <>
               <Link
-                className="text-sm text-muted-foreground transition hover:text-foreground"
+                className="text-muted-foreground text-sm transition hover:text-foreground"
                 href="/login"
               >
                 Sign in
@@ -237,7 +237,7 @@ export function MarketingHeader() {
           <SheetContent className="w-full max-w-xs overflow-y-auto px-0 pb-0">
             <SheetHeader className="border-b px-4 pb-4">
               <Link
-                className="flex items-center gap-2 text-base font-semibold"
+                className="flex items-center gap-2 font-semibold text-base"
                 href="/"
               >
                 <Image
@@ -254,7 +254,7 @@ export function MarketingHeader() {
               <div className="space-y-2">
                 {PRIMARY_LINKS.map((item) => (
                   <Link
-                    className="block text-base font-medium text-foreground transition hover:text-primary"
+                    className="block font-medium text-base text-foreground transition hover:text-primary"
                     href={item.href}
                     key={item.href}
                   >
@@ -264,13 +264,13 @@ export function MarketingHeader() {
               </div>
 
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                <p className="text-muted-foreground text-xs uppercase tracking-wide">
                   Discover
                 </p>
                 <div className="mt-2 space-y-2">
                   {DISCOVER_LINKS.map((item) => (
                     <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-sm text-muted-foreground transition hover:border-border hover:text-foreground"
+                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
                       href={item.href}
                       key={item.href}
                     >
@@ -281,13 +281,13 @@ export function MarketingHeader() {
               </div>
 
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                <p className="text-muted-foreground text-xs uppercase tracking-wide">
                   Support
                 </p>
                 <div className="mt-2 space-y-2">
                   {SUPPORT_LINKS.map((item) => (
                     <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-sm text-muted-foreground transition hover:border-border hover:text-foreground"
+                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
                       href={item.href}
                       key={item.href}
                     >
@@ -307,7 +307,7 @@ export function MarketingHeader() {
                       {userProfile.email}
                     </p>
                     <Link
-                      className="mt-2 inline-flex text-xs font-medium text-primary underline underline-offset-4"
+                      className="mt-2 inline-flex font-medium text-primary text-xs underline underline-offset-4"
                       href="/dashboard"
                     >
                       Go to dashboard
@@ -316,13 +316,13 @@ export function MarketingHeader() {
                 ) : (
                   <div className="space-y-2">
                     <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-sm text-muted-foreground transition hover:border-border hover:text-foreground"
+                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
                       href="/login"
                     >
                       Sign in
                     </Link>
                     <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-sm text-muted-foreground transition hover:border-border hover:text-foreground"
+                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
                       href="/register"
                     >
                       Create account
@@ -331,7 +331,7 @@ export function MarketingHeader() {
                 )}
               </div>
             </div>
-            {!loading && !userProfile && (
+            {!(loading || userProfile) && (
               <SheetFooter className="border-t bg-muted/30">
                 <Button asChild className="w-full" size="lg">
                   <Link href={CTA_LINK.href}>{CTA_LINK.label}</Link>
@@ -344,4 +344,3 @@ export function MarketingHeader() {
     </header>
   );
 }
-

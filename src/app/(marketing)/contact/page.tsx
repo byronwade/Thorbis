@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -60,8 +60,6 @@ export default function ContactPage() {
   return (
     <>
       <Script
-        id="contact-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -70,26 +68,29 @@ export default function ContactPage() {
             ])
           ),
         }}
+        id="contact-breadcrumb-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <section className="max-w-2xl space-y-6">
-          <Badge variant="secondary" className="uppercase tracking-wide">
+          <Badge className="uppercase tracking-wide" variant="secondary">
             Contact Thorbis
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             We’re here to help
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Whether you’re exploring Thorbis, need support, or want to partner, our team
-            responds quickly. Pricing stays simple—$100/month base subscription with
-            pay-as-you-go usage, unlimited users, no contracts, no lock-in. Choose the option that fits
-            and we’ll get back within one business day.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Whether you’re exploring Thorbis, need support, or want to partner,
+            our team responds quickly. Pricing stays simple—$100/month base
+            subscription with pay-as-you-go usage, unlimited users, no
+            contracts, no lock-in. Choose the option that fits and we’ll get
+            back within one business day.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
               <Link href="/register">Create your account</Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button asChild variant="outline">
               <a href="https://status.thorbis.com" rel="noopener">
                 View system status
               </a>
@@ -104,7 +105,7 @@ export default function ContactPage() {
                 <CardTitle>{option.title}</CardTitle>
                 <CardDescription>{option.description}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
+              <CardContent className="space-y-2 text-muted-foreground text-sm">
                 <p>
                   Email:{" "}
                   <a
@@ -121,14 +122,14 @@ export default function ContactPage() {
         </section>
 
         <section className="mt-16 rounded-3xl border bg-muted/20 p-10">
-          <h2 className="text-2xl font-semibold">Office locations</h2>
-          <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-            Thorbis operates remotely with hubs in Austin, Denver, and Toronto. All visits
-            are by appointment—reach out to coordinate an onsite workshop.
+          <h2 className="font-semibold text-2xl">Office locations</h2>
+          <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
+            Thorbis operates remotely with hubs in Austin, Denver, and Toronto.
+            All visits are by appointment—reach out to coordinate an onsite
+            workshop.
           </p>
         </section>
       </div>
     </>
   );
 }
-

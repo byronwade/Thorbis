@@ -8,6 +8,9 @@
 import { ZodError } from "zod";
 import { ActionError, ERROR_CODES } from "./action-error";
 
+// Re-export for convenience
+export { ActionError, ERROR_CODES } from "./action-error";
+
 /**
  * Standard Action Result Type
  *
@@ -161,6 +164,23 @@ export function errorResult(
     ...(code && { code }),
     ...(details && { details }),
   };
+}
+
+/**
+ * Assert Supabase client is available
+ *
+ * Helper to check if Supabase client exists and throw ActionError if not
+ */
+export function assertSupabase<T>(
+  supabase: T | null | undefined
+): asserts supabase is T {
+  if (!supabase) {
+    throw new ActionError(
+      "Database connection failed",
+      ERROR_CODES.DB_CONNECTION_ERROR,
+      500
+    );
+  }
 }
 
 /**

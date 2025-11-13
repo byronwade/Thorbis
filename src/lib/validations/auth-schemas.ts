@@ -13,6 +13,7 @@
  */
 
 import { z } from "zod";
+import { emailSchema } from "./shared-schemas";
 
 /**
  * Password Validation Rules
@@ -33,19 +34,6 @@ export const passwordSchema = z
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     "Password must contain uppercase, lowercase, and number"
   );
-
-/**
- * Email Validation
- *
- * - Valid email format
- * - Lowercase normalized
- * - Trimmed whitespace
- */
-export const emailSchema = z
-  .string()
-  .email("Invalid email address")
-  .toLowerCase()
-  .trim();
 
 /**
  * Sign Up Schema

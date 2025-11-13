@@ -48,30 +48,30 @@ export function AttachmentsSection({
         {onUpload && (
           <div>
             <input
-              type="file"
-              id="file-upload"
               className="hidden"
+              disabled={isUploading}
+              id="file-upload"
               multiple
               onChange={handleFileChange}
-              disabled={isUploading}
+              type="file"
             />
             <label htmlFor="file-upload">
               <Button
-                variant="outline"
-                size="sm"
+                asChild
                 className="w-full cursor-pointer"
                 disabled={isUploading}
-                asChild
+                size="sm"
+                variant="outline"
               >
                 <span>
                   {isUploading ? (
                     <>
-                      <Upload className="size-4 mr-2 animate-pulse" />
+                      <Upload className="mr-2 size-4 animate-pulse" />
                       Uploading...
                     </>
                   ) : (
                     <>
-                      <Plus className="size-4 mr-2" />
+                      <Plus className="mr-2 size-4" />
                       Upload Files
                     </>
                   )}
@@ -86,18 +86,18 @@ export function AttachmentsSection({
           <div className="space-y-2">
             {attachments.map((attachment: any) => (
               <div
+                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
                 key={attachment.id}
-                className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors"
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <FileText className="size-4 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <FileText className="size-4 flex-shrink-0 text-muted-foreground" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-sm">
                       {attachment.original_file_name ||
                         attachment.file_name ||
                         "Untitled"}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       {attachment.file_size
                         ? `${(attachment.file_size / 1024).toFixed(1)} KB`
                         : ""}
@@ -107,15 +107,15 @@ export function AttachmentsSection({
                 </div>
                 <Button
                   asChild
+                  className="flex-shrink-0"
                   size="sm"
                   variant="ghost"
-                  className="flex-shrink-0"
                 >
                   <a
-                    href={attachment.storage_url || attachment.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     download
+                    href={attachment.storage_url || attachment.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     <Download className="size-4" />
                   </a>
@@ -127,7 +127,7 @@ export function AttachmentsSection({
           <div className="flex h-32 items-center justify-center">
             <div className="text-center">
               <Paperclip className="mx-auto size-8 text-muted-foreground/50" />
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-2 text-muted-foreground text-sm">
                 No attachments yet
               </p>
             </div>
@@ -137,4 +137,3 @@ export function AttachmentsSection({
     </UnifiedAccordionContent>
   );
 }
-

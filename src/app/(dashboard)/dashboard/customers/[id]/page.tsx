@@ -5,8 +5,9 @@
 
 import { notFound } from "next/navigation";
 import { CustomerPageContent } from "@/components/customers/customer-page-content";
-import { CustomerStatsBar } from "@/components/customers/customer-stats-bar";
-import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
+import { ToolbarActionsProvider } from "@/components/layout/toolbar-actions-provider";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
+import { generateCustomerStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 // Configure page for full width with no sidebars
@@ -157,7 +158,10 @@ export default async function CustomerDetailsPage({
     console.error("[Customer Page] Error hint:", customerError.hint);
     console.error("[Customer Page] Customer ID:", id);
     console.error("[Customer Page] Company ID:", teamMember.company_id);
-    console.error("[Customer Page] Full error object:", JSON.stringify(customerError, null, 2));
+    console.error(
+      "[Customer Page] Full error object:",
+      JSON.stringify(customerError, null, 2)
+    );
 
     // Try to get more info about why it failed
     const { data: customerWithoutCompanyCheck, error: simpleError } =
@@ -168,10 +172,14 @@ export default async function CustomerDetailsPage({
         "[Customer Page] Customer doesn't exist at all:",
         simpleError
       );
-      console.error("[Customer Page] Simple error details:", JSON.stringify(simpleError, null, 2));
+      console.error(
+        "[Customer Page] Simple error details:",
+        JSON.stringify(simpleError, null, 2)
+      );
       // Customer doesn't exist - show 404
       return notFound();
-    } else if (customerWithoutCompanyCheck) {
+    }
+    if (customerWithoutCompanyCheck) {
       console.error(
         "[Customer Page] Customer exists but company_id mismatch:",
         {
@@ -184,16 +192,18 @@ export default async function CustomerDetailsPage({
       return (
         <div className="flex min-h-[60vh] items-center justify-center p-4">
           <div className="max-w-md text-center">
-            <h1 className="mb-2 text-2xl font-semibold">Access Denied</h1>
+            <h1 className="mb-2 font-semibold text-2xl">Access Denied</h1>
             <p className="mb-4 text-muted-foreground">
-              This customer belongs to a different company. You can only access customers from your active company.
+              This customer belongs to a different company. You can only access
+              customers from your active company.
             </p>
             <p className="mb-6 text-muted-foreground text-sm">
-              If you need to access this customer, please switch to the correct company using the company selector in the header.
+              If you need to access this customer, please switch to the correct
+              company using the company selector in the header.
             </p>
             <a
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/90"
               href="/dashboard/customers"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-primary-foreground text-sm font-medium hover:bg-primary/90"
             >
               Back to Customers
             </a>
@@ -216,11 +226,17 @@ export default async function CustomerDetailsPage({
     return notFound();
   }
 
-  // Fetch related data for display
+  // Fetch related data for display (including missing entities for Customer 360° view)
   const [
     { data: properties },
     { data: jobs },
     { data: invoices },
+    { data: estimates },
+    { data: appointments },
+    { data: contracts },
+    { data: payments },
+    { data: maintenancePlans },
+    { data: serviceAgreements },
     { data: activities },
     { data: equipment },
     { data: attachments },
@@ -244,6 +260,73 @@ export default async function CustomerDetailsPage({
       .from("invoices")
       .select("*")
       .eq("customer_id", id)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    // NEW: Fetch estimates for this customer
+    supabase
+      .from("estimates")
+      .select("*")
+      .eq("customer_id", id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    // NEW: Fetch appointments/schedules for this customer
+    supabase
+      .from("schedules")
+      .select(`
+        *,
+        job:jobs!job_id(id, job_number, title),
+        property:properties!property_id(id, name, address)
+      `)
+      .eq("customer_id", id)
+      .is("deleted_at", null)
+      .order("scheduled_start", { ascending: false })
+      .limit(10),
+    // NEW: Fetch contracts for this customer (via jobs/estimates/invoices)
+    supabase
+      .from("contracts")
+      .select(`
+        *,
+        job:jobs!job_id(id, job_number),
+        estimate:estimates!estimate_id(id, estimate_number),
+        invoice:invoices!invoice_id(id, invoice_number)
+      `)
+      .eq("company_id", teamMember.company_id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(50), // Fetch more, will filter below
+    // NEW: Fetch payments for this customer
+    supabase
+      .from("payments")
+      .select(`
+        *,
+        invoice:invoices!invoice_id(id, invoice_number, total_amount)
+      `)
+      .eq("customer_id", id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    // NEW: Fetch maintenance plans for this customer
+    supabase
+      .from("service_plans")
+      .select(`
+        *,
+        property:properties!property_id(id, name, address)
+      `)
+      .eq("customer_id", id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    // NEW: Fetch service agreements for this customer
+    supabase
+      .from("service_agreements")
+      .select(`
+        *,
+        property:properties!property_id(id, name, address),
+        contract:contracts!contract_id(id, contract_number)
+      `)
+      .eq("customer_id", id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(10),
     supabase
@@ -282,6 +365,23 @@ export default async function CustomerDetailsPage({
       .order("created_at", { ascending: false }),
   ]);
 
+  // Filter contracts that belong to this customer's jobs/estimates/invoices
+  const customerJobIds = jobs?.map((j) => j.id) || [];
+  const customerEstimateIds = estimates?.map((e) => e.id) || [];
+  const customerInvoiceIds = invoices?.map((i) => i.id) || [];
+
+  const filteredContracts =
+    contracts
+      ?.filter(
+        (contract) =>
+          (contract.job_id && customerJobIds.includes(contract.job_id)) ||
+          (contract.estimate_id &&
+            customerEstimateIds.includes(contract.estimate_id)) ||
+          (contract.invoice_id &&
+            customerInvoiceIds.includes(contract.invoice_id))
+      )
+      .slice(0, 10) || []; // Limit to 10 after filtering
+
   // Calculate metrics
   const metrics = {
     totalRevenue: customer.total_revenue || 0,
@@ -294,13 +394,19 @@ export default async function CustomerDetailsPage({
   // Load enrichment client-side for instant page render
   // Enrichment is optional and shouldn't block page load
 
-  // Prepare customer data object with raw data
+  // Prepare customer data object with raw data (Customer 360° view with all related entities)
   // Client component will load enrichment in background
   const customerData = {
     customer,
     properties: properties || [], // Pass raw properties, enrichment loads client-side
     jobs: jobs || [],
     invoices: invoices || [],
+    estimates: estimates || [], // NEW
+    appointments: appointments || [], // NEW
+    contracts: filteredContracts, // NEW - filtered to only this customer's contracts
+    payments: payments || [], // NEW
+    maintenancePlans: maintenancePlans || [], // NEW
+    serviceAgreements: serviceAgreements || [], // NEW
     activities: activities || [],
     equipment: equipment || [],
     attachments: attachments || [],
@@ -308,15 +414,21 @@ export default async function CustomerDetailsPage({
     enrichmentData: null, // Loaded client-side for optimistic rendering
   };
 
-  return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      {/* Sticky Stats Bar - Becomes compact on scroll */}
-      <StickyStatsBar>
-        <CustomerStatsBar customerId={id} metrics={metrics} />
-      </StickyStatsBar>
+  // Generate stats for toolbar
+  const stats = generateCustomerStats(metrics);
 
-      {/* Full-Width Content - No Padding */}
-      <CustomerPageContent customerData={customerData} metrics={metrics} />
-    </div>
+  return (
+    <ToolbarStatsProvider stats={stats}>
+      <ToolbarActionsProvider actions={null}>
+        <div className="flex h-full w-full flex-col overflow-auto">
+          <div className="mx-auto w-full max-w-7xl">
+            <CustomerPageContent
+              customerData={customerData}
+              metrics={metrics}
+            />
+          </div>
+        </div>
+      </ToolbarActionsProvider>
+    </ToolbarStatsProvider>
   );
 }

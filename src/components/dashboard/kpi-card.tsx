@@ -42,12 +42,11 @@ export function KPICard({
             <p
               className={cn(
                 "font-medium text-xs",
-                changeType === "positive" &&
-                  "text-green-600 dark:text-green-400",
-                changeType === "negative" && "text-red-600 dark:text-red-400",
+                changeType === "positive" && "text-success dark:text-success",
+                changeType === "negative" &&
+                  "text-destructive dark:text-destructive",
                 changeType === "neutral" && "text-muted-foreground",
-                changeType === "warning" &&
-                  "text-yellow-600 dark:text-yellow-400"
+                changeType === "warning" && "text-warning dark:text-warning"
               )}
             >
               {change}

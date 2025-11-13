@@ -515,7 +515,7 @@ export function PresetReportsDropdown() {
                           <span className="flex-1 truncate">{item.title}</span>
                           {item.badge && (
                             <span
-                              className="ml-auto flex size-2 rounded-full bg-blue-500"
+                              className="ml-auto flex size-2 rounded-full bg-primary"
                               title={item.badge}
                             />
                           )}

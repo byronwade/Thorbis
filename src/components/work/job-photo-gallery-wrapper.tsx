@@ -12,7 +12,8 @@
  * Server Components to Client Components in Next.js 16+.
  */
 
-import { type JobPhoto, PhotoGallery } from "./job-details/PhotoGallery";
+import { PhotoGallery } from "./job-details/PhotoGallery";
+import type { JobPhoto } from "./job-details/photo-types";
 
 type JobPhotoGalleryWrapperProps = {
   jobId: string;

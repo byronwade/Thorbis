@@ -189,7 +189,7 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
               <span className="font-medium text-sm">{property.name}</span>
             </div>
             <Button asChild className="mt-2 w-full" size="sm" variant="outline">
-              <Link href={`/dashboard/properties/${property.id}`}>
+              <Link href={`/dashboard/work/properties/${property.id}`}>
                 View Property Details
               </Link>
             </Button>

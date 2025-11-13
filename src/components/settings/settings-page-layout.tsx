@@ -115,7 +115,7 @@ export function SettingsPageLayout({
             )}
           </div>
           {hasChanges && (
-            <Badge className="bg-amber-600 hover:bg-amber-700">
+            <Badge className="bg-warning hover:bg-warning">
               Unsaved Changes
             </Badge>
           )}
@@ -133,8 +133,8 @@ export function SettingsPageLayout({
           <div className="flex items-center gap-3">
             {hasChanges ? (
               <>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/30">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">Unsaved Changes</p>
@@ -145,8 +145,8 @@ export function SettingsPageLayout({
               </>
             ) : (
               <>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                  <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
+                  <Check className="h-4 w-4 text-success dark:text-success" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">All Changes Saved</p>
@@ -233,24 +233,24 @@ export function SettingsInfoBanner({
 }: SettingsInfoBannerProps) {
   const variantStyles = {
     blue: {
-      card: "border-blue-500/50 bg-blue-500/5",
-      icon: "text-blue-500",
-      title: "text-blue-700 dark:text-blue-400",
+      card: "border-primary/50 bg-primary/5",
+      icon: "text-primary",
+      title: "text-primary dark:text-primary",
     },
     amber: {
-      card: "border-amber-500/50 bg-amber-500/5",
-      icon: "text-amber-500",
-      title: "text-amber-700 dark:text-amber-400",
+      card: "border-warning/50 bg-warning/5",
+      icon: "text-warning",
+      title: "text-warning dark:text-warning",
     },
     red: {
-      card: "border-red-500/50 bg-red-500/5",
-      icon: "text-red-500",
-      title: "text-red-700 dark:text-red-400",
+      card: "border-destructive/50 bg-destructive/5",
+      icon: "text-destructive",
+      title: "text-destructive dark:text-destructive",
     },
     green: {
-      card: "border-green-500/50 bg-green-500/5",
-      icon: "text-green-500",
-      title: "text-green-700 dark:text-green-400",
+      card: "border-success/50 bg-success/5",
+      icon: "text-success",
+      title: "text-success dark:text-success",
     },
   };
 

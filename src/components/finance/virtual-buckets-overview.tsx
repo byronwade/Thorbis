@@ -96,7 +96,7 @@ export function VirtualBucketsOverview() {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5 text-purple-500" />
+              <Layers className="h-5 w-5 text-accent-foreground" />
               Virtual Savings Buckets
             </CardTitle>
             <CardDescription>Organize funds for specific goals</CardDescription>
@@ -111,7 +111,7 @@ export function VirtualBucketsOverview() {
 
       <CardContent>
         {/* Total Overview */}
-        <div className="rounded-lg border-2 border-purple-500/20 bg-purple-500/5 p-4">
+        <div className="rounded-lg border-2 border-border/20 bg-accent/5 p-4">
           <p className="text-muted-foreground text-sm">Total in Buckets</p>
           <p className="font-bold text-3xl">
             ${totalAllocated.toLocaleString()}
@@ -140,7 +140,7 @@ export function VirtualBucketsOverview() {
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{bucket.name}</p>
                     {bucket.autoAllocate && (
-                      <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-purple-600 text-xs dark:text-purple-400">
+                      <span className="rounded-full bg-accent/10 px-2 py-0.5 text-accent-foreground text-xs dark:text-accent-foreground">
                         Auto {bucket.allocationValue}
                         {bucket.allocationType === "percentage" ? "%" : "$"}
                       </span>
@@ -149,7 +149,7 @@ export function VirtualBucketsOverview() {
                   <div className="mt-1 flex items-center gap-2">
                     <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full bg-purple-500 transition-all"
+                        className="h-full bg-accent transition-all"
                         style={{ width: `${Math.min(progress, 100)}%` }}
                       />
                     </div>

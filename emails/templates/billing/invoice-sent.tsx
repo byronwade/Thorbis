@@ -15,6 +15,7 @@ import { Card } from "../../components/card";
 import { Divider } from "../../components/divider";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export default function InvoiceSentEmail({
   customerName,
@@ -104,7 +105,7 @@ const paragraph = {
 };
 
 const invoiceCard = {
-  backgroundColor: "#ffffff",
+  backgroundColor: EMAIL_COLORS.surface,
   border: "2px solid hsl(217 91% 60%)",
   borderRadius: "12px",
   padding: "32px",

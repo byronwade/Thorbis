@@ -18,12 +18,21 @@ interface JobTimelineWidgetProps {
 }
 
 export function JobTimelineWidget({ job }: JobTimelineWidgetProps) {
+  const toDate = (value: unknown): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? null : value;
+    }
+    const parsed = new Date(String(value));
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
   // Map job data to timeline dates
   const dates = {
-    quoted: job.createdAt,
-    scheduled: job.scheduledStart,
-    inProgress: job.actualStart,
-    completed: job.actualEnd,
+    quoted: toDate(job.createdAt),
+    scheduled: toDate(job.scheduledStart),
+    inProgress: toDate(job.actualStart),
+    completed: toDate(job.actualEnd),
   };
 
   return (
@@ -42,7 +51,7 @@ export function JobTimelineWidget({ job }: JobTimelineWidgetProps) {
 
       {/* Additional timeline details */}
       <div className="space-y-2 text-sm">
-        {job.scheduledStart && (
+        {toDate(job.scheduledStart) && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Scheduled Start:</span>
             <span className="font-medium">
@@ -50,12 +59,12 @@ export function JobTimelineWidget({ job }: JobTimelineWidgetProps) {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
-              }).format(new Date(job.scheduledStart))}
+              }).format(toDate(job.scheduledStart)!)}
             </span>
           </div>
         )}
 
-        {job.scheduledEnd && (
+        {toDate(job.scheduledEnd) && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Scheduled End:</span>
             <span className="font-medium">
@@ -63,12 +72,12 @@ export function JobTimelineWidget({ job }: JobTimelineWidgetProps) {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
-              }).format(new Date(job.scheduledEnd))}
+              }).format(toDate(job.scheduledEnd)!)}
             </span>
           </div>
         )}
 
-        {job.actualStart && (
+        {toDate(job.actualStart) && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Actual Start:</span>
             <span className="font-medium">
@@ -76,20 +85,20 @@ export function JobTimelineWidget({ job }: JobTimelineWidgetProps) {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
-              }).format(new Date(job.actualStart))}
+              }).format(toDate(job.actualStart)!)}
             </span>
           </div>
         )}
 
-        {job.actualEnd && (
+        {toDate(job.actualEnd) && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Completed:</span>
-            <span className="font-medium text-green-600">
+            <span className="font-medium text-success">
               {new Intl.DateTimeFormat("en-US", {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
-              }).format(new Date(job.actualEnd))}
+              }).format(toDate(job.actualEnd)!)}
             </span>
           </div>
         )}

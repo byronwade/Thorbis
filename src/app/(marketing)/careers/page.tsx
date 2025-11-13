@@ -1,13 +1,12 @@
 import Script from "next/script";
-
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,9 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -129,8 +128,6 @@ export default function CareersPage() {
   return (
     <>
       <Script
-        id="careers-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -139,39 +136,42 @@ export default function CareersPage() {
             ])
           ),
         }}
+        id="careers-breadcrumb-ld"
+        type="application/ld+json"
       />
       <Script
-        id="careers-jobposting-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(JOB_POSTING_JSON),
         }}
+        id="careers-jobposting-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <section className="max-w-3xl space-y-6">
-          <Badge variant="secondary" className="uppercase tracking-wide">
+          <Badge className="uppercase tracking-wide" variant="secondary">
             Build the future of service operations
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             We’re assembling a team of builders obsessed with the trades
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Thorbis hires curious, mission-driven people who love solving real-world
-            problems for dispatchers, technicians, and operators. We work fast, ship
-            thoughtfully, and measure impact by the outcomes our customers achieve.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Thorbis hires curious, mission-driven people who love solving
+            real-world problems for dispatchers, technicians, and operators. We
+            work fast, ship thoughtfully, and measure impact by the outcomes our
+            customers achieve.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
               <a href="mailto:careers@thorbis.com">Introduce yourself</a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button asChild variant="outline">
               <a href="/about">Meet the team</a>
             </Button>
           </div>
         </section>
 
         <section className="mt-16 space-y-6">
-          <h2 className="text-2xl font-semibold">Benefits & culture</h2>
+          <h2 className="font-semibold text-2xl">Benefits & culture</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {BENEFITS.map((benefit) => (
               <Card key={benefit.title}>
@@ -190,23 +190,25 @@ export default function CareersPage() {
 
         <section className="mt-16 space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <h2 className="text-2xl font-semibold">Open roles</h2>
-            <Button variant="outline" asChild>
-              <a href="mailto:careers@thorbis.com">Submit a general application</a>
+            <h2 className="font-semibold text-2xl">Open roles</h2>
+            <Button asChild variant="outline">
+              <a href="mailto:careers@thorbis.com">
+                Submit a general application
+              </a>
             </Button>
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             {OPEN_ROLES.map((role) => (
-              <Card key={role.title} className="h-full">
+              <Card className="h-full" key={role.title}>
                 <CardHeader>
                   <CardTitle>{role.title}</CardTitle>
                   <CardDescription>{role.location}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {role.description}
                   </p>
-                  <Button className="mt-4" asChild>
+                  <Button asChild className="mt-4">
                     <a href="mailto:careers@thorbis.com?subject=Application%20for%20Thorbis%20Role">
                       Apply via email
                     </a>
@@ -218,14 +220,14 @@ export default function CareersPage() {
         </section>
 
         <section className="mt-16 space-y-4">
-          <h2 className="text-2xl font-semibold">Frequently asked questions</h2>
-          <Accordion type="single" collapsible>
+          <h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+          <Accordion collapsible type="single">
             {FAQ.map((item, index) => (
               <AccordionItem key={item.question} value={`careers-faq-${index}`}>
                 <AccordionTrigger className="text-left">
                   {item.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                <AccordionContent className="text-muted-foreground text-sm leading-relaxed">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>
@@ -235,11 +237,11 @@ export default function CareersPage() {
 
         <section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
           <p className="text-lg text-muted-foreground">
-            Don’t see the perfect role? We hire exceptional people across product, design,
-            engineering, customer experience, and go-to-market. Tell us how you want to
-            make an impact.
+            Don’t see the perfect role? We hire exceptional people across
+            product, design, engineering, customer experience, and go-to-market.
+            Tell us how you want to make an impact.
           </p>
-          <Button className="mt-6" asChild>
+          <Button asChild className="mt-6">
             <a href="mailto:careers@thorbis.com">Send us your story</a>
           </Button>
         </section>
@@ -247,4 +249,3 @@ export default function CareersPage() {
     </>
   );
 }
-

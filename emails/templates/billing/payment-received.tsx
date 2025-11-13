@@ -14,6 +14,7 @@ import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export default function PaymentReceivedEmail({
   customerName,
@@ -99,8 +100,8 @@ const confirmationCard = {
 
 const successIcon = {
   fontSize: "64px",
-  color: "#ffffff",
-  backgroundColor: "rgba(255, 255, 255, 0.2)",
+  color: EMAIL_COLORS.primaryText,
+  backgroundColor: "rgba(245, 248, 254, 0.2)",
   width: "96px",
   height: "96px",
   borderRadius: "50%",
@@ -112,14 +113,14 @@ const successIcon = {
 };
 
 const successText = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "24px",
   fontWeight: "700",
   margin: "0 0 32px 0",
 };
 
 const detailsGrid = {
-  backgroundColor: "rgba(255, 255, 255, 0.95)",
+  backgroundColor: "rgba(245, 248, 254, 0.95)",
   borderRadius: "8px",
   padding: "24px",
   margin: "0",

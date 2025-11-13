@@ -68,15 +68,52 @@ export default async function ServiceAgreementDetailsPage({
   }
 
   // Get related data
-  const customer = Array.isArray(agreement.customer) ? agreement.customer[0] : agreement.customer;
-  const property = Array.isArray(agreement.property) ? agreement.property[0] : agreement.property;
+  const customer = Array.isArray(agreement.customer)
+    ? agreement.customer[0]
+    : agreement.customer;
+  const property = Array.isArray(agreement.property)
+    ? agreement.property[0]
+    : agreement.property;
 
-  // Fetch all related data
+  // Fetch all related data (including generated invoices, jobs, and equipment)
   const [
+    { data: generatedInvoices },
+    { data: generatedJobs },
+    { data: equipment },
     { data: activities },
     { data: notes },
     { data: attachments },
   ] = await Promise.all([
+    // NEW: Fetch invoices generated from this service agreement
+    supabase
+      .from("invoices")
+      .select(
+        "id, invoice_number, title, total_amount, balance_amount, status, created_at"
+      )
+      .eq("company_id", activeCompanyId)
+      .or(`metadata->>'service_agreement_id'.eq.${agreementId}`)
+      .order("created_at", { ascending: false })
+      .limit(10),
+
+    // NEW: Fetch jobs generated from this service agreement
+    supabase
+      .from("jobs")
+      .select("id, job_number, title, status, completed_at, created_at")
+      .eq("job_service_agreement_id", agreementId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(10),
+
+    // NEW: Fetch equipment covered by this service agreement
+    property?.id
+      ? supabase
+          .from("equipment")
+          .select("id, equipment_number, name, type, manufacturer, model")
+          .eq("property_id", property.id)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null }),
+
     supabase
       .from("activity_log")
       .select("*, user:users!user_id(*)")
@@ -103,6 +140,9 @@ export default async function ServiceAgreementDetailsPage({
     agreement,
     customer,
     property,
+    generatedInvoices: generatedInvoices || [], // NEW
+    generatedJobs: generatedJobs || [], // NEW
+    equipment: equipment || [], // NEW
     activities: activities || [],
     notes: notes || [],
     attachments: attachments || [],
@@ -114,8 +154,3 @@ export default async function ServiceAgreementDetailsPage({
     </div>
   );
 }
-
-
-
-
-

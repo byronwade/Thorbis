@@ -16,7 +16,7 @@ import type {
   ProcessPaymentResponse,
   RefundPaymentRequest,
   RefundPaymentResponse,
-} from "../processor";
+} from "../processor-types";
 
 interface StripeConfig {
   companyId: string;

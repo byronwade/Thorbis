@@ -114,11 +114,11 @@ export function SettingsComingSoon({
         </Card>
 
         {/* Standard Info Banner (matches other settings pages) */}
-        <Card className="border-blue-500/50 bg-blue-500/5">
+        <Card className="border-primary/50 bg-primary/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <div className="space-y-1">
-              <p className="font-medium text-blue-700 text-sm dark:text-blue-400">
+              <p className="font-medium text-primary text-sm dark:text-primary">
                 Want to be notified when this feature launches?
               </p>
               <p className="text-muted-foreground text-sm">

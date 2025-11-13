@@ -8,17 +8,17 @@ import { cn } from "@/lib/utils";
 import { type Job, mockTechnicians } from "./schedule-types";
 
 const statusColors = {
-  scheduled: "bg-blue-500",
-  "in-progress": "bg-amber-500",
-  completed: "bg-green-500",
-  cancelled: "bg-red-500",
+  scheduled: "bg-primary",
+  "in-progress": "bg-warning",
+  completed: "bg-success",
+  cancelled: "bg-destructive",
 };
 
 const priorityColors = {
-  low: "bg-slate-500",
-  medium: "bg-blue-500",
-  high: "bg-orange-500",
-  urgent: "bg-red-500",
+  low: "bg-accent",
+  medium: "bg-primary",
+  high: "bg-warning",
+  urgent: "bg-destructive",
 };
 
 export function MapView() {
@@ -70,15 +70,15 @@ export function MapView() {
           </h4>
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-xs">
-              <div className="size-3 rounded-full bg-amber-500" />
+              <div className="size-3 rounded-full bg-warning" />
               <span>In Progress</span>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <div className="size-3 rounded-full bg-blue-500" />
+              <div className="size-3 rounded-full bg-primary" />
               <span>Scheduled</span>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <div className="size-3 rounded-full bg-green-500" />
+              <div className="size-3 rounded-full bg-success" />
               <span>Completed</span>
             </div>
           </div>
@@ -210,11 +210,11 @@ export function MapView() {
                     className={cn(
                       "border",
                       selectedJob.status === "scheduled" &&
-                        "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-300",
+                        "border-primary/20 bg-primary/10 text-primary dark:text-primary",
                       selectedJob.status === "in-progress" &&
-                        "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+                        "border-warning/20 bg-warning/10 text-warning dark:text-warning",
                       selectedJob.status === "completed" &&
-                        "border-green-500/20 bg-green-500/10 text-green-700 dark:text-green-300"
+                        "border-success/20 bg-success/10 text-success dark:text-success"
                     )}
                     variant="secondary"
                   >

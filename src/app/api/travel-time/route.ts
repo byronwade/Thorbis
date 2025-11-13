@@ -217,7 +217,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Travel time calculation unavailable",
-          message: "Google Maps API key not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables."
+          message:
+            "Google Maps API key not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.",
         },
         { status: 503 }
       );
@@ -263,7 +264,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to calculate travel time",
-        message: error instanceof Error ? error.message : "Internal server error"
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );

@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+
 // import { getSupabaseClient } from "@/lib/db";
 
 /**
@@ -82,18 +83,16 @@ const categoryIcons = {
 function getItemTypeBadge(type: string) {
   const config = {
     service: {
-      className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+      className: "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
       label: "Service",
     },
     material: {
       className:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+        "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
       label: "Material",
     },
     package: {
-      className:
-        "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+      className: "bg-success text-success dark:bg-success/20 dark:text-success",
       label: "Package",
     },
   };
@@ -167,324 +166,342 @@ export default async function PriceBookItemPage({
       <div className="flex-1">
         <div className="mx-auto max-w-7xl space-y-6 p-6">
           {/* Item Header - Simplified (Actions now in AppToolbar) */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <h1 className="font-semibold text-3xl tracking-tight">{item.name}</h1>
-          {getItemTypeBadge(item.itemType)}
-          <Badge variant={item.isActive ? "default" : "secondary"}>
-            {item.isActive ? "Active" : "Inactive"}
-          </Badge>
-        </div>
-        <p className="text-muted-foreground">
-          {item.category}
-          {item.subcategory && ` › ${item.subcategory}`}
-        </p>
-      </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="font-semibold text-3xl tracking-tight">
+                {item.name}
+              </h1>
+              {getItemTypeBadge(item.itemType)}
+              <Badge variant={item.isActive ? "default" : "secondary"}>
+                {item.isActive ? "Active" : "Inactive"}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground">
+              {item.category}
+              {item.subcategory && ` › ${item.subcategory}`}
+            </p>
+          </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main Content */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Pricing Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Pricing Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 sm:grid-cols-3">
-                <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
-                  <p className="font-medium text-muted-foreground text-xs uppercase">
-                    Cost
-                  </p>
-                  <p className="font-semibold text-2xl">
-                    {formatCurrency(item.cost)}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    Per {item.unit}
-                  </p>
-                </div>
-
-                <div className="space-y-2 rounded-lg border bg-primary/5 p-4">
-                  <p className="font-medium text-muted-foreground text-xs uppercase">
-                    Price
-                  </p>
-                  <p className="font-semibold text-2xl text-primary">
-                    {formatCurrency(item.price)}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    Per {item.unit}
-                  </p>
-                </div>
-
-                <div className="space-y-2 rounded-lg border bg-green-50/50 p-4 dark:bg-green-950/20">
-                  <p className="font-medium text-muted-foreground text-xs uppercase">
-                    Profit Margin
-                  </p>
-                  <p className="font-semibold text-2xl text-green-600 dark:text-green-500">
-                    {marginPercent}%
-                  </p>
-                  <p className="text-green-600 text-xs dark:text-green-500">
-                    {formatCurrency(revenue)} profit
-                  </p>
-                </div>
-              </div>
-
-              <Separator className="my-4" />
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">
-                    Markup Percentage
-                  </span>
-                  <span className="font-medium">{item.markupPercent}%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">
-                    Minimum Quantity
-                  </span>
-                  <span className="font-medium">{item.minimumQuantity}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">Taxable</span>
-                  <Badge variant={item.isTaxable ? "default" : "secondary"}>
-                    {item.isTaxable ? "Yes" : "No"}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Description */}
-          {item.description && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Description</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
-                  {item.description}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Price History */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Price History</CardTitle>
-                <History className="size-4 text-muted-foreground" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {history.map((change) => (
-                  <div
-                    className="flex gap-4 rounded-lg border bg-muted/30 p-4"
-                    key={change.id}
-                  >
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background">
-                      <TrendingUp className="size-5 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="font-medium text-sm">
-                            {change.changeType === "manual"
-                              ? "Manual Price Update"
-                              : change.changeType === "bulk_update"
-                                ? "Bulk Price Update"
-                                : "Supplier Sync"}
-                          </p>
-                          {change.changeReason && (
-                            <p className="text-muted-foreground text-xs">
-                              {change.changeReason}
-                            </p>
-                          )}
-                        </div>
-                        <p className="text-nowrap text-muted-foreground text-xs">
-                          {formatDateTime(change.effectiveDate)}
-                        </p>
-                      </div>
-                      <div className="grid gap-3 text-sm sm:grid-cols-2">
-                        <div>
-                          <p className="text-muted-foreground text-xs">
-                            Cost Change
-                          </p>
-                          <p className="font-medium">
-                            {formatCurrency(change.oldCost)} →{" "}
-                            <span className="text-green-600 dark:text-green-500">
-                              {formatCurrency(change.newCost)}
-                            </span>
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground text-xs">
-                            Price Change
-                          </p>
-                          <p className="font-medium">
-                            {formatCurrency(change.oldPrice)} →{" "}
-                            <span className="text-green-600 dark:text-green-500">
-                              {formatCurrency(change.newPrice)}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Main Content */}
+            <div className="space-y-6 lg:col-span-2">
+              {/* Pricing Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pricing Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6 sm:grid-cols-3">
+                    <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
+                      <p className="font-medium text-muted-foreground text-xs uppercase">
+                        Cost
+                      </p>
+                      <p className="font-semibold text-2xl">
+                        {formatCurrency(item.cost)}
+                      </p>
                       <p className="text-muted-foreground text-xs">
-                        Changed by {change.changedBy}
+                        Per {item.unit}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2 rounded-lg border bg-primary/5 p-4">
+                      <p className="font-medium text-muted-foreground text-xs uppercase">
+                        Price
+                      </p>
+                      <p className="font-semibold text-2xl text-primary">
+                        {formatCurrency(item.price)}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Per {item.unit}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2 rounded-lg border bg-success/50 p-4 dark:bg-success/20">
+                      <p className="font-medium text-muted-foreground text-xs uppercase">
+                        Profit Margin
+                      </p>
+                      <p className="font-semibold text-2xl text-success dark:text-success">
+                        {marginPercent}%
+                      </p>
+                      <p className="text-success text-xs dark:text-success">
+                        {formatCurrency(revenue)} profit
                       </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Internal Notes */}
-          {item.notes && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Internal Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm">{item.notes}</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+                  <Separator className="my-4" />
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Item Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Item Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-                  <IconComponent className="size-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{item.category}</p>
-                  {item.subcategory && (
-                    <p className="text-muted-foreground text-xs">
-                      {item.subcategory}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground text-sm">
+                        Markup Percentage
+                      </span>
+                      <span className="font-medium">{item.markupPercent}%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground text-sm">
+                        Minimum Quantity
+                      </span>
+                      <span className="font-medium">
+                        {item.minimumQuantity}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground text-sm">
+                        Taxable
+                      </span>
+                      <Badge variant={item.isTaxable ? "default" : "secondary"}>
+                        {item.isTaxable ? "Yes" : "No"}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Description */}
+              {item.description && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Description</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {item.description}
                     </p>
-                  )}
-                </div>
-              </div>
+                  </CardContent>
+                </Card>
+              )}
 
-              <Separator />
+              {/* Price History */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Price History</CardTitle>
+                    <History className="size-4 text-muted-foreground" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {history.map((change) => (
+                      <div
+                        className="flex gap-4 rounded-lg border bg-muted/30 p-4"
+                        key={change.id}
+                      >
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background">
+                          <TrendingUp className="size-5 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <p className="font-medium text-sm">
+                                {change.changeType === "manual"
+                                  ? "Manual Price Update"
+                                  : change.changeType === "bulk_update"
+                                    ? "Bulk Price Update"
+                                    : "Supplier Sync"}
+                              </p>
+                              {change.changeReason && (
+                                <p className="text-muted-foreground text-xs">
+                                  {change.changeReason}
+                                </p>
+                              )}
+                            </div>
+                            <p className="text-nowrap text-muted-foreground text-xs">
+                              {formatDateTime(change.effectiveDate)}
+                            </p>
+                          </div>
+                          <div className="grid gap-3 text-sm sm:grid-cols-2">
+                            <div>
+                              <p className="text-muted-foreground text-xs">
+                                Cost Change
+                              </p>
+                              <p className="font-medium">
+                                {formatCurrency(change.oldCost)} →{" "}
+                                <span className="text-success dark:text-success">
+                                  {formatCurrency(change.newCost)}
+                                </span>
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground text-xs">
+                                Price Change
+                              </p>
+                              <p className="font-medium">
+                                {formatCurrency(change.oldPrice)} →{" "}
+                                <span className="text-success dark:text-success">
+                                  {formatCurrency(change.newPrice)}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                          <p className="text-muted-foreground text-xs">
+                            Changed by {change.changedBy}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="space-y-1">
-                <p className="text-muted-foreground text-xs">SKU / Item Code</p>
-                <p className="font-medium font-mono text-sm">{item.sku}</p>
-              </div>
+              {/* Internal Notes */}
+              {item.notes && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Internal Notes</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm">
+                      {item.notes}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
-              <div className="space-y-1">
-                <p className="text-muted-foreground text-xs">Unit Type</p>
-                <p className="font-medium text-sm capitalize">{item.unit}</p>
-              </div>
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Item Details */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Item Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                      <IconComponent className="size-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{item.category}</p>
+                      {item.subcategory && (
+                        <p className="text-muted-foreground text-xs">
+                          {item.subcategory}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-              <Separator />
+                  <Separator />
 
-              <div className="space-y-1">
-                <p className="text-muted-foreground text-xs">Created</p>
-                <p className="font-medium text-sm">
-                  {formatDate(item.createdAt)}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-muted-foreground text-xs">Last Updated</p>
-                <p className="font-medium text-sm">
-                  {formatDate(item.updatedAt)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Supplier Info */}
-          {item.supplierName && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Supplier</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Supplier Name</p>
-                  <p className="font-medium text-sm">{item.supplierName}</p>
-                </div>
-
-                {item.supplierSku && (
                   <div className="space-y-1">
                     <p className="text-muted-foreground text-xs">
-                      Supplier SKU
+                      SKU / Item Code
                     </p>
-                    <p className="font-medium font-mono text-sm">
-                      {item.supplierSku}
+                    <p className="font-medium font-mono text-sm">{item.sku}</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-xs">Unit Type</p>
+                    <p className="font-medium text-sm capitalize">
+                      {item.unit}
                     </p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
 
-          {/* Tags */}
-          {item.tags && item.tags.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Tags</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  <Separator />
 
-          {/* Quick Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Revenue per unit</span>
-                </div>
-                <span className="font-semibold text-green-600 text-sm dark:text-green-500">
-                  {formatCurrency(revenue)}
-                </span>
-              </div>
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-xs">Created</p>
+                    <p className="font-medium text-sm">
+                      {formatDate(item.createdAt)}
+                    </p>
+                  </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Markup</span>
-                </div>
-                <span className="font-semibold text-sm">
-                  {item.markupPercent}%
-                </span>
-              </div>
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-xs">
+                      Last Updated
+                    </p>
+                    <p className="font-medium text-sm">
+                      {formatDate(item.updatedAt)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Clock className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Price updates</span>
-                </div>
-                <span className="font-semibold text-sm">{history.length}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              {/* Supplier Info */}
+              {item.supplierName && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Supplier</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground text-xs">
+                        Supplier Name
+                      </p>
+                      <p className="font-medium text-sm">{item.supplierName}</p>
+                    </div>
+
+                    {item.supplierSku && (
+                      <div className="space-y-1">
+                        <p className="text-muted-foreground text-xs">
+                          Supplier SKU
+                        </p>
+                        <p className="font-medium font-mono text-sm">
+                          {item.supplierSku}
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Tags */}
+              {item.tags && item.tags.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Tags</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Quick Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="size-4 text-muted-foreground" />
+                      <span className="text-sm">Revenue per unit</span>
+                    </div>
+                    <span className="font-semibold text-sm text-success dark:text-success">
+                      {formatCurrency(revenue)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="size-4 text-muted-foreground" />
+                      <span className="text-sm">Markup</span>
+                    </div>
+                    <span className="font-semibold text-sm">
+                      {item.markupPercent}%
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="size-4 text-muted-foreground" />
+                      <span className="text-sm">Price updates</span>
+                    </div>
+                    <span className="font-semibold text-sm">
+                      {history.length}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -283,8 +283,8 @@ export function QuickActions() {
           </div>
 
           <div className="flex items-center gap-3 rounded-lg border p-3">
-            <div className="rounded-lg bg-green-500/10 p-2">
-              <Layers className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <div className="rounded-lg bg-success/10 p-2">
+              <Layers className="h-4 w-4 text-success dark:text-success" />
             </div>
             <div>
               <p className="text-muted-foreground text-xs">In Buckets</p>
@@ -293,8 +293,8 @@ export function QuickActions() {
           </div>
 
           <div className="flex items-center gap-3 rounded-lg border p-3">
-            <div className="rounded-lg bg-blue-500/10 p-2">
-              <Plus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <div className="rounded-lg bg-primary/10 p-2">
+              <Plus className="h-4 w-4 text-primary dark:text-primary" />
             </div>
             <div>
               <p className="text-muted-foreground text-xs">Available</p>

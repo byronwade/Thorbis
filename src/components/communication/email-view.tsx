@@ -123,11 +123,19 @@ export function EmailView({ messages }: EmailViewProps) {
         {selectedIds.size > 0 && (
           <>
             <div className="mx-2 h-4 w-px bg-border" />
-            <Button size="sm" variant="ghost">
+            <Button
+              className="text-destructive hover:text-destructive"
+              size="sm"
+              variant="ghost"
+            >
               <Archive className="mr-2 size-4" />
               Archive
             </Button>
-            <Button size="sm" variant="ghost">
+            <Button
+              className="text-destructive hover:text-destructive"
+              size="sm"
+              variant="ghost"
+            >
               <Trash2 className="mr-2 size-4" />
               Delete
             </Button>
@@ -160,7 +168,7 @@ export function EmailView({ messages }: EmailViewProps) {
               <div
                 className={`group flex cursor-pointer items-center gap-4 px-4 py-2 transition-colors hover:bg-muted/50 ${
                   message.status === "unread"
-                    ? "bg-blue-50/30 dark:bg-blue-950/10"
+                    ? "bg-primary/30 dark:bg-primary/10"
                     : ""
                 } ${selectedIds.has(message.id) ? "bg-muted/50" : ""}`}
                 key={message.id}
@@ -178,7 +186,7 @@ export function EmailView({ messages }: EmailViewProps) {
                     className="opacity-0 transition-opacity group-hover:opacity-100"
                     type="button"
                   >
-                    <Star className="h-4 w-4 text-muted-foreground hover:text-yellow-500" />
+                    <Star className="h-4 w-4 text-muted-foreground hover:text-warning" />
                   </button>
                 </div>
 

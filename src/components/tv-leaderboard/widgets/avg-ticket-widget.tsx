@@ -42,7 +42,7 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
           <div className="flex items-center justify-between">
             <ResponsiveText variant="title">Average Ticket</ResponsiveText>
             <ResponsiveIcon>
-              <DollarSign className="text-green-500" />
+              <DollarSign className="text-success" />
             </ResponsiveIcon>
           </div>
         </ShowAt>
@@ -57,7 +57,7 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
               Avg Ticket
             </ResponsiveText>
             <ResponsiveIcon>
-              <DollarSign className="text-green-500" />
+              <DollarSign className="text-success" />
             </ResponsiveIcon>
           </ResponsiveFlex>
         </ShowAt>
@@ -66,7 +66,7 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
         <ShowAt stage="compact">
           <div className="flex justify-center">
             <ResponsiveIcon>
-              <DollarSign className="text-green-500" />
+              <DollarSign className="text-success" />
             </ResponsiveIcon>
           </div>
         </ShowAt>

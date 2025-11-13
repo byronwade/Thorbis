@@ -93,8 +93,8 @@ export function InlineCurrency({
         isEditable &&
           !readOnly && [
             "cursor-text",
-            "hover:bg-gray-50",
-            "focus:bg-blue-50/50",
+            "hover:bg-secondary",
+            "focus:bg-primary/50",
             "focus:ring-1",
             "focus:ring-blue-500/20",
             "rounded",

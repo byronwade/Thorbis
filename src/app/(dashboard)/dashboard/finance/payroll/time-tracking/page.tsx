@@ -124,7 +124,7 @@ export default function TimeTrackingPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
+            <Clock className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">2</div>
@@ -134,7 +134,7 @@ export default function TimeTrackingPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Approved</CardTitle>
-            <Check className="h-4 w-4 text-green-500" />
+            <Check className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">2</div>
@@ -144,7 +144,7 @@ export default function TimeTrackingPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Overtime</CardTitle>
-            <Clock className="h-4 w-4 text-orange-500" />
+            <Clock className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">15h</div>
@@ -194,7 +194,7 @@ export default function TimeTrackingPage() {
                   <TableCell>{timesheet.regularHours}h</TableCell>
                   <TableCell>
                     {timesheet.overtimeHours > 0 ? (
-                      <span className="text-orange-500">
+                      <span className="text-warning">
                         {timesheet.overtimeHours}h
                       </span>
                     ) : (

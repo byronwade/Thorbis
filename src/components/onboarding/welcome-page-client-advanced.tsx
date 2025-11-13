@@ -1,0 +1,1168 @@
+"use client";
+
+/**
+ * Advanced Welcome Page Client Component
+ * 
+ * Complete onboarding experience with:
+ * - 4-step wizard (Company, Team, Phone, Banking)
+ * - Phone number purchase/porting
+ * - Beautiful centered timeline
+ * - Modern animations and design
+ * - Progress persistence
+ */
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  Check,
+  CheckCircle,
+  CreditCard,
+  Edit,
+  FileSpreadsheet,
+  Loader2,
+  Phone,
+  Shield,
+  Sparkles,
+  Trash2,
+  UserPlus,
+  Users,
+  PhoneCall,
+  PhoneIncoming,
+  PhoneOff,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { createOrganizationCheckoutSession } from "@/actions/billing";
+import {
+  archiveIncompleteCompany,
+  saveOnboardingStepProgress,
+} from "@/actions/onboarding";
+import { SmartAddressInput } from "@/components/customers/smart-address-input";
+import { PlaidLinkButton } from "@/components/finance/plaid-link-button";
+import { OnboardingHeader } from "@/components/onboarding/onboarding-header";
+import { TeamMemberEditDialog } from "@/components/onboarding/team-member-edit-dialog";
+import { TeamBulkUploadDialog } from "@/components/onboarding/team-bulk-upload-dialog";
+import { PhoneNumberSearchModal } from "@/components/telnyx/phone-number-search-modal";
+import { NumberPortingWizard } from "@/components/telnyx/number-porting-wizard";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import type { TeamMemberRow } from "@/lib/onboarding/team-bulk-upload";
+
+// Constants
+const INDUSTRIES = [
+  { value: "hvac", label: "HVAC" },
+  { value: "plumbing", label: "Plumbing" },
+  { value: "electrical", label: "Electrical" },
+  { value: "pest-control", label: "Pest Control" },
+  { value: "locksmith", label: "Locksmith" },
+  { value: "appliance-repair", label: "Appliance Repair" },
+  { value: "garage-door", label: "Garage Door" },
+  { value: "landscaping", label: "Landscaping" },
+  { value: "pool-service", label: "Pool Service" },
+  { value: "cleaning", label: "Cleaning" },
+  { value: "roofing", label: "Roofing" },
+  { value: "painting", label: "Painting" },
+  { value: "handyman", label: "Handyman" },
+  { value: "other", label: "Other" },
+];
+
+const COMPANY_SIZES = [
+  { value: "1-5", label: "1-5 employees" },
+  { value: "6-10", label: "6-10 employees" },
+  { value: "11-25", label: "11-25 employees" },
+  { value: "26-50", label: "26-50 employees" },
+  { value: "51-100", label: "51-100 employees" },
+  { value: "100+", label: "100+ employees" },
+];
+
+// Form Schema
+const formSchema = z.object({
+  orgName: z.string().min(2, "Company name must be at least 2 characters"),
+  orgIndustry: z.string().min(1, "Please select an industry"),
+  orgSize: z.string().min(1, "Please select company size"),
+  orgPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  orgAddress: z.string().min(5, "Address must be at least 5 characters"),
+  orgCity: z.string().min(2, "City must be at least 2 characters"),
+  orgState: z.string().min(2, "State must be at least 2 characters"),
+  orgZip: z.string().min(5, "ZIP code must be at least 5 digits"),
+  orgWebsite: z.string().optional(),
+  orgTaxId: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+// Advanced Step configuration
+const STEPS = [
+  {
+    id: 1,
+    title: "Company",
+    icon: Building2,
+    description: "Basic information",
+  },
+  { id: 2, title: "Team", icon: Users, description: "Add members" },
+  { id: 3, title: "Phone", icon: Phone, description: "Setup number" },
+  { id: 4, title: "Banking", icon: CreditCard, description: "Connect account" },
+];
+
+type ExtendedTeamMember = TeamMemberRow & {
+  id?: string;
+  photoPreview?: string | null;
+  photo?: File | null;
+  isCurrentUser?: boolean;
+};
+
+interface WelcomePageClientProps {
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  };
+  incompleteCompany: any | null;
+  hasActiveCompany: boolean;
+}
+
+export function WelcomePageClientAdvanced({
+  user,
+  incompleteCompany,
+  hasActiveCompany,
+}: WelcomePageClientProps) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState(incompleteCompany?.currentStep || 1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [companyId, setCompanyId] = useState<string | null>(
+    incompleteCompany?.id || null
+  );
+  const [savedAddress, setSavedAddress] = useState<any>(null);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+
+  // Team members state
+  const [teamMembers, setTeamMembers] = useState<ExtendedTeamMember[]>([]);
+  const [editingMember, setEditingMember] = useState<ExtendedTeamMember | null>(
+    null
+  );
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
+
+  // Phone number state
+  const [phoneOption, setPhoneOption] = useState<"purchase" | "port" | "existing" | null>(
+    incompleteCompany?.onboardingProgress?.step3?.phoneOption || null
+  );
+  const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
+    incompleteCompany?.onboardingProgress?.step3?.phoneNumber || null
+  );
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
+  const [portingWizardOpen, setPortingWizardOpen] = useState(false);
+
+  // Bank account state
+  const [linkedBankAccounts, setLinkedBankAccounts] = useState(
+    incompleteCompany?.onboardingProgress?.step4?.bankAccounts || 0
+  );
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      orgName: incompleteCompany?.name || "",
+      orgIndustry: incompleteCompany?.industry || "",
+      orgSize: incompleteCompany?.size || "",
+      orgPhone: incompleteCompany?.phone || "",
+      orgAddress: incompleteCompany?.address || "",
+      orgCity: incompleteCompany?.city || "",
+      orgState: incompleteCompany?.state || "",
+      orgZip: incompleteCompany?.zipCode || "",
+      orgWebsite: incompleteCompany?.website || "",
+      orgTaxId: incompleteCompany?.taxId || "",
+    },
+  });
+
+  // Load saved progress
+  useEffect(() => {
+    if (incompleteCompany) {
+      setSavedAddress({
+        address: incompleteCompany.address,
+        city: incompleteCompany.city,
+        state: incompleteCompany.state,
+        zipCode: incompleteCompany.zipCode,
+        country: "USA",
+      });
+
+      // Load team members
+      if (incompleteCompany.onboardingProgress?.step2?.teamMembers) {
+        setTeamMembers(incompleteCompany.onboardingProgress.step2.teamMembers);
+      }
+
+      // Load phone setup
+      if (incompleteCompany.onboardingProgress?.step3) {
+        setPhoneOption(incompleteCompany.onboardingProgress.step3.phoneOption);
+        setSelectedPhoneNumber(incompleteCompany.onboardingProgress.step3.phoneNumber);
+      }
+
+      // Load bank accounts
+      if (incompleteCompany.onboardingProgress?.step4?.bankAccounts) {
+        setLinkedBankAccounts(incompleteCompany.onboardingProgress.step4.bankAccounts);
+      }
+    }
+  }, [incompleteCompany]);
+
+  // Auto-add current user as owner
+  useEffect(() => {
+    if (teamMembers.length === 0 && currentStep === 2) {
+      const hasCurrentUser = teamMembers.some((m) => m.email === user.email);
+
+      if (!hasCurrentUser) {
+        const nameParts = user.name.split(" ");
+        const newMember: ExtendedTeamMember = {
+          id: crypto.randomUUID(),
+          firstName: nameParts[0] || "Owner",
+          lastName: nameParts.slice(1).join(" ") || "",
+          email: user.email,
+          role: "owner",
+          phone: "",
+          isCurrentUser: true,
+        };
+        setTeamMembers([newMember]);
+      }
+    }
+  }, [currentStep, teamMembers, user]);
+
+  // Save progress helper
+  const saveStepProgress = async (step: number, data: Record<string, unknown>) => {
+    if (!companyId) return;
+
+    try {
+      await saveOnboardingStepProgress(companyId, step, data);
+    } catch (err) {
+      // Silent fail - don't block user progress
+    }
+  };
+
+  // Handle next
+  const handleNext = async () => {
+    if (currentStep === 1) {
+      const isValid = await form.trigger();
+      if (!isValid) return;
+
+      setIsLoading(true);
+      try {
+        const values = form.getValues();
+
+        const response = await fetch("/api/save-company", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: companyId,
+            name: values.orgName,
+            industry: values.orgIndustry,
+            size: values.orgSize,
+            phone: values.orgPhone,
+            address: values.orgAddress,
+            city: values.orgCity,
+            state: values.orgState,
+            zipCode: values.orgZip,
+            website: values.orgWebsite,
+            taxId: values.orgTaxId,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to save company");
+        }
+
+        if (data.companyId) {
+          setCompanyId(data.companyId);
+        }
+
+        await saveStepProgress(1, {
+          companyInfo: values,
+          completed: true,
+          completedAt: new Date().toISOString(),
+        });
+
+        toast.success("Company information saved successfully");
+        setCurrentStep(2);
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to save company"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (currentStep === 2) {
+      setIsLoading(true);
+      try {
+        await saveStepProgress(2, {
+          teamMembers,
+          completed: true,
+          completedAt: new Date().toISOString(),
+        });
+
+        toast.success("Team information saved successfully");
+        setCurrentStep(3);
+      } catch {
+        toast.error("Failed to save team information");
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (currentStep === 3) {
+      // Phone setup - can skip
+      setIsLoading(true);
+      try {
+        await saveStepProgress(3, {
+          phoneOption,
+          phoneNumber: selectedPhoneNumber,
+          completed: true,
+          completedAt: new Date().toISOString(),
+        });
+
+        toast.success("Phone setup saved successfully");
+        setCurrentStep(4);
+      } catch {
+        toast.error("Failed to save phone information");
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (currentStep === 4) {
+      if (linkedBankAccounts === 0) {
+        toast.error("Please connect a bank account to continue");
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        await saveStepProgress(4, {
+          bankAccounts: linkedBankAccounts,
+          completed: true,
+          completedAt: new Date().toISOString(),
+        });
+
+        await handlePayment();
+      } catch {
+        toast.error("Failed to save banking information");
+        setIsLoading(false);
+      }
+    }
+  };
+
+  // Handle payment
+  const handlePayment = async () => {
+    if (!companyId) return;
+
+    setIsLoading(true);
+    try {
+      const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const result = await createOrganizationCheckoutSession(
+        companyId,
+        `${siteUrl}/dashboard?onboarding=complete`,
+        `${siteUrl}/dashboard/welcome`,
+        undefined
+      );
+
+      if (result.success && result.url) {
+        window.location.href = result.url;
+      } else {
+        toast.error(result.error || "Failed to create payment session");
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Payment setup failed"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle archive
+  const handleArchive = async () => {
+    if (!companyId) return;
+
+    setIsLoading(true);
+    try {
+      await archiveIncompleteCompany(companyId);
+      toast.success("Company setup has been cancelled");
+      router.push("/dashboard");
+    } catch {
+      toast.error("Failed to cancel setup");
+    } finally {
+      setIsLoading(false);
+      setArchiveDialogOpen(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Header */}
+      <OnboardingHeader />
+
+      {/* Main Content */}
+      <div className="container mx-auto max-w-6xl flex-1 px-4 py-8 lg:py-12">
+        {/* Welcome Banner */}
+        {!hasActiveCompany && (
+          <Card className="mb-8 border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5">
+            <CardHeader>
+              <div className="flex items-start gap-4">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+                  <Sparkles className="size-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="mb-2">Welcome to Thorbis!</CardTitle>
+                  <CardDescription className="text-base">
+                    Let's get your business set up in just a few steps. This will only take a few minutes.
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        )}
+
+        {/* Back to Dashboard */}
+        {hasActiveCompany && (
+          <div className="mb-6">
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="mr-2 size-4" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        {/* Centered Progress Timeline */}
+        <div className="mb-12">
+          <div className="mx-auto max-w-4xl">
+            <div className="relative flex items-center justify-center">
+              {STEPS.map((step, index) => (
+                <div key={step.id} className="flex flex-1 items-center">
+                  <div className="flex w-full flex-col items-center">
+                    <div
+                      className={cn(
+                        "relative z-10 flex size-16 items-center justify-center rounded-full border-2 transition-all duration-300",
+                        currentStep >= step.id
+                          ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-110"
+                          : "border-muted-foreground/30 bg-background text-muted-foreground hover:border-muted-foreground/50"
+                      )}
+                    >
+                      {currentStep > step.id ? (
+                        <Check className="size-7" />
+                      ) : (
+                        <step.icon className="size-7" />
+                      )}
+                    </div>
+                    <div className="mt-4 text-center">
+                      <span
+                        className={cn(
+                          "block font-semibold text-sm",
+                          currentStep >= step.id
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {step.title}
+                      </span>
+                      <span className="mt-1 block text-muted-foreground text-xs">
+                        {step.description}
+                      </span>
+                    </div>
+                  </div>
+                  {index < STEPS.length - 1 && (
+                    <div className="flex-1 px-4">
+                      <div
+                        className={cn(
+                          "h-1 rounded-full transition-all duration-500",
+                          currentStep > step.id
+                            ? "bg-primary"
+                            : "bg-muted-foreground/20"
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Content Card */}
+        <Card className="mx-auto max-w-4xl shadow-2xl">
+          <CardContent className="p-8 lg:p-12">
+            <Form {...form}>
+              {/* Step 1: Company Info */}
+              {currentStep === 1 && (
+                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                  <div>
+                    <h2 className="font-bold text-3xl">Company Information</h2>
+                    <p className="mt-3 text-muted-foreground text-lg">
+                      Tell us about your business so we can tailor the experience for you.
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="orgName"
+                      render={({ field }) => (
+                        <FormItem className="sm:col-span-2">
+                          <FormLabel className="text-base">Company Name *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Acme HVAC Services"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="orgIndustry"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Industry *</FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="h-12 text-base">
+                                <SelectValue placeholder="Select industry" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {INDUSTRIES.map((industry) => (
+                                <SelectItem key={industry.value} value={industry.value}>
+                                  {industry.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="orgSize"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Company Size *</FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="h-12 text-base">
+                                <SelectValue placeholder="Select size" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {COMPANY_SIZES.map((size) => (
+                                <SelectItem key={size.value} value={size.value}>
+                                  {size.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="orgPhone"
+                      render={({ field }) => (
+                        <FormItem className="sm:col-span-2">
+                          <FormLabel className="text-base">Main Phone Number *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="(555) 123-4567"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="sm:col-span-2">
+                      <Label className="text-base">Business Address *</Label>
+                      <SmartAddressInput
+                        initialAddress={savedAddress}
+                        onAddressChange={(address) => {
+                          form.setValue("orgAddress", address.address);
+                          form.setValue("orgCity", address.city);
+                          form.setValue("orgState", address.state);
+                          form.setValue("orgZip", address.zipCode);
+                        }}
+                        required
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="orgWebsite"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Website</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="https://example.com"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="orgTaxId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Tax ID / EIN</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="12-3456789"
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Team Members */}
+              {currentStep === 2 && (
+                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h2 className="font-bold text-3xl">Team Members</h2>
+                      <p className="mt-3 text-muted-foreground text-lg">
+                        Add your team members. You're already included as the owner.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setBulkUploadOpen(true)}
+                      >
+                        <FileSpreadsheet className="mr-2 size-4" />
+                        Bulk Upload
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          const newMember: ExtendedTeamMember = {
+                            id: crypto.randomUUID(),
+                            firstName: "",
+                            lastName: "",
+                            email: "",
+                            role: "technician",
+                            phone: "",
+                          };
+                          setTeamMembers((prev: ExtendedTeamMember[]) => [...prev, newMember]);
+                          setEditingMember(newMember);
+                        }}
+                      >
+                        <UserPlus className="mr-2 size-4" />
+                        Add Member
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {teamMembers.length === 0 ? (
+                    <Card className="border-2 border-dashed">
+                      <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="mb-4 rounded-full bg-primary/10 p-6">
+                          <Users className="size-12 text-primary" />
+                        </div>
+                        <h3 className="mb-2 font-semibold text-xl">No Team Members Yet</h3>
+                        <p className="mb-6 max-w-md text-muted-foreground">
+                          Add your first team member to get started. You can always add more later.
+                        </p>
+                        <Button
+                          type="button"
+                          size="lg"
+                          onClick={() => {
+                            const newMember: ExtendedTeamMember = {
+                              id: crypto.randomUUID(),
+                              firstName: "",
+                              lastName: "",
+                              email: "",
+                              role: "technician",
+                              phone: "",
+                            };
+                            setTeamMembers([newMember]);
+                            setEditingMember(newMember);
+                          }}
+                        >
+                          <UserPlus className="mr-2 size-4" />
+                          Add First Member
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="rounded-lg border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead className="w-[100px] text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {teamMembers.map((member) => (
+                            <TableRow key={member.id}>
+                              <TableCell className="font-medium">
+                                {member.firstName} {member.lastName}
+                                {member.isCurrentUser && (
+                                  <Badge variant="outline" className="ml-2">
+                                    You
+                                  </Badge>
+                                )}
+                              </TableCell>
+                              <TableCell>{member.email}</TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant={
+                                    member.role === "owner" ? "default" : "secondary"
+                                  }
+                                >
+                                  {member.role}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setEditingMember(member)}
+                                  >
+                                    <Edit className="size-4" />
+                                  </Button>
+                                  {member.role !== "owner" && !member.isCurrentUser && (
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                        setTeamMembers((prev: ExtendedTeamMember[]) =>
+                                          prev.filter((m) => m.id !== member.id)
+                                        );
+                                      }}
+                                    >
+                                      <Trash2 className="size-4 text-destructive" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 3: Phone Number Setup */}
+              {currentStep === 3 && (
+                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                  <div>
+                    <h2 className="font-bold text-3xl">Phone Number Setup</h2>
+                    <p className="mt-3 text-muted-foreground text-lg">
+                      Set up your business phone number for calls, SMS, and VoIP.
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  {selectedPhoneNumber && (
+                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
+                      <CheckCircle className="size-5 text-green-600 dark:text-green-400" />
+                      <AlertDescription className="text-green-900 dark:text-green-100">
+                        <span className="font-semibold">Success!</span> Phone number {selectedPhoneNumber} is configured
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {/* Purchase New Number */}
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all hover:shadow-lg",
+                        phoneOption === "purchase" && "border-primary border-2 ring-2 ring-primary/20"
+                      )}
+                      onClick={() => {
+                        setPhoneOption("purchase");
+                        setPurchaseModalOpen(true);
+                      }}
+                    >
+                      <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                        <div className="mb-4 rounded-full bg-primary/10 p-4">
+                          <PhoneCall className="size-8 text-primary" />
+                        </div>
+                        <h3 className="mb-2 font-semibold text-lg">Purchase New</h3>
+                        <p className="text-muted-foreground text-sm">
+                          Get a new phone number with your preferred area code
+                        </p>
+                        {phoneOption === "purchase" && selectedPhoneNumber && (
+                          <Badge className="mt-4" variant="outline">
+                            {selectedPhoneNumber}
+                          </Badge>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Port Existing Number */}
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all hover:shadow-lg",
+                        phoneOption === "port" && "border-primary border-2 ring-2 ring-primary/20"
+                      )}
+                      onClick={() => {
+                        setPhoneOption("port");
+                        setPortingWizardOpen(true);
+                      }}
+                    >
+                      <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                        <div className="mb-4 rounded-full bg-primary/10 p-4">
+                          <PhoneIncoming className="size-8 text-primary" />
+                        </div>
+                        <h3 className="mb-2 font-semibold text-lg">Port Existing</h3>
+                        <p className="text-muted-foreground text-sm">
+                          Transfer your current phone number from another carrier
+                        </p>
+                        {phoneOption === "port" && (
+                          <Badge className="mt-4" variant="outline">
+                            Porting in progress
+                          </Badge>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Use Existing */}
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all hover:shadow-lg",
+                        phoneOption === "existing" && "border-primary border-2 ring-2 ring-primary/20"
+                      )}
+                      onClick={() => {
+                        setPhoneOption("existing");
+                        toast.success("You can configure your existing phone system later in settings");
+                      }}
+                    >
+                      <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                        <div className="mb-4 rounded-full bg-primary/10 p-4">
+                          <PhoneOff className="size-8 text-primary" />
+                        </div>
+                        <h3 className="mb-2 font-semibold text-lg">Use Existing</h3>
+                        <p className="text-muted-foreground text-sm">
+                          Continue using your current phone system
+                        </p>
+                        {phoneOption === "existing" && (
+                          <Badge className="mt-4" variant="outline">
+                            Selected
+                          </Badge>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card className="border-primary/20 bg-primary/5">
+                    <CardContent className="flex gap-4 p-6">
+                      <Phone className="size-6 shrink-0 text-primary" />
+                      <div className="space-y-2">
+                        <h4 className="font-semibold">Optional Step</h4>
+                        <p className="text-muted-foreground text-sm">
+                          You can skip this step and set up your phone number later in Settings → Communications. Phone features include calls, SMS, and VoIP capabilities.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Step 4: Bank Account */}
+              {currentStep === 4 && (
+                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                  <div>
+                    <h2 className="font-bold text-3xl">Connect Your Bank</h2>
+                    <p className="mt-3 text-muted-foreground text-lg">
+                      Connect your business bank account to receive payments and manage finances.
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  {linkedBankAccounts > 0 ? (
+                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
+                      <CheckCircle className="size-5 text-green-600 dark:text-green-400" />
+                      <AlertDescription className="text-green-900 dark:text-green-100">
+                        <span className="font-semibold">Success!</span> {linkedBankAccounts} bank account{linkedBankAccounts > 1 ? "s" : ""} connected
+                      </AlertDescription>
+                    </Alert>
+                  ) : null}
+
+                  <Card className={cn(
+                    "border-2 transition-all",
+                    linkedBankAccounts === 0 ? "border-dashed" : ""
+                  )}>
+                    <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                      <div className="mb-6 rounded-full bg-primary/10 p-8">
+                        <CreditCard className="size-16 text-primary" />
+                      </div>
+                      <h3 className="mb-3 font-bold text-2xl">
+                        {linkedBankAccounts > 0 ? "Add Another Account" : "Connect Your Bank"}
+                      </h3>
+                      <p className="mb-8 max-w-md text-muted-foreground text-lg">
+                        Securely link your business bank account with Plaid. Your credentials are encrypted and never stored on our servers.
+                      </p>
+                      {companyId && (
+                        <PlaidLinkButton
+                          companyId={companyId}
+                          onSuccess={() => {
+                            setLinkedBankAccounts((prev: number) => prev + 1);
+                            toast.success(
+                              "Your bank account has been connected successfully!"
+                            );
+                          }}
+                          size="lg"
+                        >
+                          {linkedBankAccounts > 0 ? "Add Another Account" : "Connect Bank Account"}
+                        </PlaidLinkButton>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-primary/20 bg-primary/5">
+                    <CardContent className="flex gap-4 p-6">
+                      <Shield className="size-6 shrink-0 text-primary" />
+                      <div className="space-y-2">
+                        <h4 className="font-semibold">Bank-Level Security</h4>
+                        <p className="text-muted-foreground text-sm">
+                          We use Plaid, the same technology trusted by companies like Venmo, Robinhood, and Coinbase. Your data is encrypted with 256-bit encryption and never stored on our servers.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Navigation */}
+              <div className="mt-12 flex items-center justify-between gap-4 border-t pt-8">
+                <div>
+                  {companyId && currentStep === 1 && !hasActiveCompany && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setArchiveDialogOpen(true)}
+                    >
+                      Cancel Setup
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  {currentStep > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCurrentStep((prev: number) => prev - 1)}
+                      disabled={isLoading}
+                      size="lg"
+                    >
+                      <ArrowLeft className="mr-2 size-4" />
+                      Back
+                    </Button>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    disabled={isLoading || (currentStep === 4 && linkedBankAccounts === 0)}
+                    size="lg"
+                    className="min-w-[180px]"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 size-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : currentStep === 3 ? (
+                      <>
+                        {phoneOption ? "Continue" : "Skip for Now"}
+                        <ArrowRight className="ml-2 size-5" />
+                      </>
+                    ) : currentStep === 4 ? (
+                      <>
+                        Complete Setup
+                        <CheckCircle className="ml-2 size-5" />
+                      </>
+                    ) : (
+                      <>
+                        Continue
+                        <ArrowRight className="ml-2 size-5" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </Form>
+          </CardContent>
+        </Card>
+
+        {/* Help Text */}
+        <p className="mt-8 text-center text-muted-foreground">
+          Need help? Contact us at{" "}
+          <a
+            href="mailto:support@thorbis.com"
+            className="font-medium text-primary hover:underline"
+          >
+            support@thorbis.com
+          </a>
+        </p>
+      </div>
+
+      {/* Modals & Dialogs */}
+      {editingMember && (
+        <TeamMemberEditDialog
+          member={editingMember}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setEditingMember(null);
+          }}
+          onSave={(updatedMember) => {
+            setTeamMembers((prev: ExtendedTeamMember[]) =>
+              prev.map((m) =>
+                m.email === updatedMember.email
+                  ? updatedMember
+                  : m
+              )
+            );
+            setEditingMember(null);
+          }}
+        />
+      )}
+
+      <TeamBulkUploadDialog
+        open={bulkUploadOpen}
+        onOpenChange={setBulkUploadOpen}
+        onImport={(members: TeamMemberRow[]) => {
+          const membersWithIds = members.map((member) => ({
+            ...member,
+            id: crypto.randomUUID(),
+          }));
+          setTeamMembers((prev: ExtendedTeamMember[]) => [...prev, ...membersWithIds]);
+          setBulkUploadOpen(false);
+        }}
+      />
+
+      {companyId && (
+        <>
+          <PhoneNumberSearchModal
+            open={purchaseModalOpen}
+            onOpenChange={setPurchaseModalOpen}
+            onSuccess={(phoneNumber) => {
+              setSelectedPhoneNumber(phoneNumber);
+              setPhoneOption("purchase");
+              setPurchaseModalOpen(false);
+              toast.success(`Phone number ${phoneNumber} purchased successfully!`);
+            }}
+          />
+
+          <NumberPortingWizard
+            open={portingWizardOpen}
+            onOpenChange={setPortingWizardOpen}
+            onSuccess={(phoneNumber) => {
+              setSelectedPhoneNumber(phoneNumber);
+              setPhoneOption("port");
+              setPortingWizardOpen(false);
+              toast.success(`Porting request submitted for ${phoneNumber}`);
+            }}
+          />
+        </>
+      )}
+
+      <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Company Setup?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will cancel your company setup. Your progress will be saved and you can resume later from where you left off.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Continue Setup</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleArchive}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Cancel Setup
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+

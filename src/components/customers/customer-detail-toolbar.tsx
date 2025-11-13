@@ -4,15 +4,31 @@
  * Customer Detail Toolbar - AppToolbar Actions
  *
  * Displays in AppToolbar for customer detail pages:
- * - Back button to customers list
  * - Edit mode toggle button
  * - Quick actions (New Job, New Invoice)
+ * - Ellipsis menu with archive
  */
 
-import { Briefcase, Edit3, Eye, FileText } from "lucide-react";
+import {
+  Archive,
+  Briefcase,
+  Download,
+  Edit3,
+  Eye,
+  FileText,
+  Mail,
+  MoreVertical,
+} from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -40,30 +56,21 @@ export function CustomerDetailToolbar() {
   const customerId = pathname.split("/").pop();
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       {/* Edit/View Mode Toggle */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              className={
-                isEditMode
-                  ? "gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30"
-              }
-              onClick={toggleEditMode}
-              size="sm"
-              variant={isEditMode ? "default" : "outline"}
-            >
+            <Button onClick={toggleEditMode} size="sm" variant="outline">
               {isEditMode ? (
                 <>
-                  <Eye className="size-4" />
-                  <span className="font-medium">View</span>
+                  <Eye />
+                  <span className="hidden md:inline">View</span>
                 </>
               ) : (
                 <>
-                  <Edit3 className="size-4" />
-                  <span className="font-medium">Edit</span>
+                  <Edit3 />
+                  <span className="hidden md:inline">Edit</span>
                 </>
               )}
             </Button>
@@ -72,63 +79,72 @@ export function CustomerDetailToolbar() {
             <p>{isEditMode ? "Switch to view mode" : "Switch to edit mode"}</p>
           </TooltipContent>
         </Tooltip>
+
+        {/* Quick Actions - Only show in view mode */}
+        {!isEditMode && (
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button asChild size="sm" variant="outline">
+                  <a href={`/dashboard/work/new?customerId=${customerId}`}>
+                    <Briefcase />
+                    <span className="hidden md:inline">Job</span>
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Create new job for this customer</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button asChild size="sm" variant="outline">
+                  <a
+                    href={`/dashboard/work/invoices/new?customerId=${customerId}`}
+                  >
+                    <FileText />
+                    <span className="hidden lg:inline">Invoice</span>
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Create new invoice for this customer</p>
+              </TooltipContent>
+            </Tooltip>
+          </>
+        )}
       </TooltipProvider>
 
-      {/* Quick Actions - Only show in view mode */}
-      {!isEditMode && (
-        <>
-          <Separator className="h-6" orientation="vertical" />
-          <div className="flex items-center gap-1.5 rounded-lg border bg-muted/30 p-1">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    className="gap-2 hover:bg-background"
-                    size="sm"
-                    variant="ghost"
-                  >
-                    <a href={`/dashboard/work/new?customerId=${customerId}`}>
-                      <Briefcase className="size-4" />
-                      <span className="hidden sm:inline">Job</span>
-                    </a>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Create new job for this customer</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    className="gap-2 hover:bg-background"
-                    size="sm"
-                    variant="ghost"
-                  >
-                    <a
-                      href={`/dashboard/work/invoices/new?customerId=${customerId}`}
-                    >
-                      <FileText className="size-4" />
-                      <span className="hidden sm:inline">Invoice</span>
-                    </a>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Create new invoice for this customer</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </>
-      )}
-
-      {/* Ellipsis Menu - Export/Import & More */}
-      <Separator className="h-6" orientation="vertical" />
-      <ImportExportDropdown dataType="customers" />
+      {/* Ellipsis Menu - Includes Archive */}
+      <Separator className="h-8" orientation="vertical" />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="icon-sm" suppressHydrationWarning variant="outline">
+            <MoreVertical />
+            <span className="sr-only">More actions</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+            Actions
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <Mail className="mr-2 size-3.5" />
+            Send Email
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Download className="mr-2 size-3.5" />
+            Export Customer Data
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <Archive className="mr-2 size-3.5" />
+            Archive Customer
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

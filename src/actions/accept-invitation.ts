@@ -7,7 +7,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
   ActionError,
@@ -37,9 +36,9 @@ const acceptInvitationSchema = z.object({
 /**
  * Accept a team invitation and create user account
  */
-export async function acceptTeamInvitation(formData: FormData): Promise<
-  ActionResult<string>
-> {
+export async function acceptTeamInvitation(
+  formData: FormData
+): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -204,8 +203,7 @@ export async function acceptTeamInvitation(formData: FormData): Promise<
     }
 
     revalidatePath("/dashboard/settings/team");
-    
+
     return "Invitation accepted successfully";
   });
 }
-

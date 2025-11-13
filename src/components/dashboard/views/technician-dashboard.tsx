@@ -37,12 +37,12 @@ export default function TechnicianDashboard() {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
           <h1 className="font-bold text-4xl tracking-tight">My Dashboard</h1>
-          <Badge className="text-orange-600" variant="outline">
+          <Badge className="text-warning" variant="outline">
             Technician View
           </Badge>
-          <div className="flex items-center gap-2 rounded-full border border-border bg-green-500/10 px-3 py-1">
-            <div className="size-2 rounded-full bg-green-500" />
-            <span className="font-medium text-green-700 text-xs dark:text-green-400">
+          <div className="flex items-center gap-2 rounded-full border border-border bg-success/10 px-3 py-1">
+            <div className="size-2 rounded-full bg-success" />
+            <span className="font-medium text-success text-xs dark:text-success">
               Clocked In
             </span>
           </div>
@@ -51,11 +51,11 @@ export default function TechnicianDashboard() {
       </div>
 
       {/* Active Job Alert */}
-      <Card className="border-blue-500 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30">
+      <Card className="border-primary bg-primary dark:border-primary dark:bg-primary/30">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-full bg-blue-500">
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary">
                 <Wrench className="size-6 text-white" />
               </div>
               <div>
@@ -129,8 +129,8 @@ export default function TechnicianDashboard() {
           <Card>
             <CardContent className="space-y-3 pt-6">
               {/* Current Job - In Progress */}
-              <div className="flex items-start gap-3 rounded-lg border-2 border-blue-500 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950/30">
-                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500">
+              <div className="flex items-start gap-3 rounded-lg border-2 border-primary bg-primary p-3 dark:border-primary dark:bg-primary/30">
+                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary">
                   <Wrench className="size-5 text-white" />
                 </div>
                 <div className="flex-1">
@@ -224,7 +224,7 @@ export default function TechnicianDashboard() {
                     <span className="text-muted-foreground text-sm">
                       Total Revenue
                     </span>
-                    <span className="font-bold text-green-600">$12,840</span>
+                    <span className="font-bold text-success">$12,840</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground text-sm">
@@ -246,19 +246,19 @@ export default function TechnicianDashboard() {
                 <p className="font-medium text-sm">Achievements</p>
                 <div className="flex flex-wrap gap-2">
                   <Badge
-                    className="border-green-600 text-green-600"
+                    className="border-success text-success"
                     variant="outline"
                   >
                     ⭐ Top Performer
                   </Badge>
                   <Badge
-                    className="border-blue-600 text-blue-600"
+                    className="border-primary text-primary"
                     variant="outline"
                   >
                     🎯 Target Met
                   </Badge>
                   <Badge
-                    className="border-purple-600 text-purple-600"
+                    className="border-border text-accent-foreground"
                     variant="outline"
                   >
                     💰 Highest Revenue
@@ -267,7 +267,7 @@ export default function TechnicianDashboard() {
               </div>
 
               {/* Team Ranking */}
-              <div className="rounded-lg border bg-green-50 p-4 dark:bg-green-950/30">
+              <div className="rounded-lg border bg-success p-4 dark:bg-success/30">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-bold text-sm">Team Ranking</p>
@@ -276,14 +276,14 @@ export default function TechnicianDashboard() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-3xl text-green-600">#2</p>
-                    <p className="text-green-600 text-xs">This week</p>
+                    <p className="font-bold text-3xl text-success">#2</p>
+                    <p className="text-success text-xs">This week</p>
                   </div>
                 </div>
               </div>
 
               {/* Commission Estimate */}
-              <div className="rounded-lg border bg-blue-50 p-4 dark:bg-blue-950/30">
+              <div className="rounded-lg border bg-primary p-4 dark:bg-primary/30">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-bold text-sm">Estimated Commission</p>
@@ -292,8 +292,8 @@ export default function TechnicianDashboard() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-2xl text-blue-600">$1,284</p>
-                    <p className="text-blue-600 text-xs">10% of revenue</p>
+                    <p className="font-bold text-2xl text-primary">$1,284</p>
+                    <p className="text-primary text-xs">10% of revenue</p>
                   </div>
                 </div>
               </div>
@@ -314,8 +314,8 @@ export default function TechnicianDashboard() {
           <Card>
             <CardContent className="space-y-3 pt-6">
               {/* Low Stock Warning */}
-              <div className="flex items-start gap-3 rounded-lg border border-red-500 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/30">
-                <AlertCircle className="mt-0.5 size-5 text-red-500" />
+              <div className="flex items-start gap-3 rounded-lg border border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
+                <AlertCircle className="mt-0.5 size-5 text-destructive" />
                 <div className="flex-1">
                   <Badge variant="destructive">LOW STOCK</Badge>
                   <p className="mt-1 font-bold text-sm">PEX Fittings - 1/2"</p>
@@ -355,7 +355,7 @@ export default function TechnicianDashboard() {
                       </p>
                     </div>
                   </div>
-                  <Badge className="text-green-600" variant="outline">
+                  <Badge className="text-success" variant="outline">
                     {item.status}
                   </Badge>
                 </div>
@@ -470,11 +470,11 @@ export default function TechnicianDashboard() {
               },
             ].map((review, index) => (
               <div
-                className="rounded-lg border bg-green-50 p-3 dark:bg-green-950/30"
+                className="rounded-lg border bg-success p-3 dark:bg-success/30"
                 key={index}
               >
                 <div className="flex items-center gap-2">
-                  <Star className="size-4 text-yellow-500" />
+                  <Star className="size-4 text-warning" />
                   <span className="font-bold text-sm">
                     {review.rating}.0 ⭐
                   </span>

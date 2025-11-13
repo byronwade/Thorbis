@@ -28,29 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { PhotoUploader } from "./PhotoUploader";
-
-export type PhotoCategory = "before" | "during" | "after" | "other";
-
-export interface JobPhoto {
-  id: string;
-  url: string;
-  thumbnailUrl?: string;
-  category: PhotoCategory;
-  caption?: string;
-  uploadedBy: string;
-  uploadedByName: string;
-  uploadedAt: Date;
-  gpsCoords?: {
-    lat: number;
-    lng: number;
-  };
-  metadata?: {
-    fileSize: number;
-    mimeType: string;
-    width: number;
-    height: number;
-  };
-}
+import type { JobPhoto, PhotoCategory } from "./photo-types";
 
 interface PhotoGalleryProps {
   jobId: string;
@@ -113,13 +91,13 @@ export function PhotoGallery({
   const getCategoryColor = (category: PhotoCategory): string => {
     switch (category) {
       case "before":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
+        return "bg-primary text-primary dark:bg-primary/20 dark:text-primary";
       case "during":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+        return "bg-warning text-warning dark:bg-warning/20 dark:text-warning";
       case "after":
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+        return "bg-success text-success dark:bg-success/20 dark:text-success";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+        return "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground";
     }
   };
 

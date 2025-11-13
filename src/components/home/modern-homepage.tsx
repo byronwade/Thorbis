@@ -35,7 +35,7 @@ export function ModernHomepage() {
         <div className="-z-10 absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
           <div className="pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full bg-primary/20 opacity-40 blur-3xl" />
-          <div className="pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full bg-blue-500/20 opacity-40 blur-3xl delay-1000" />
+          <div className="pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full bg-primary/20 opacity-40 blur-3xl delay-1000" />
         </div>
 
         <div className="container relative mx-auto px-4 py-20 sm:px-6 lg:px-8">
@@ -62,12 +62,14 @@ export function ModernHomepage() {
                 </span>
               </h1>
               <p className="mx-auto mb-3 max-w-3xl text-foreground/80 text-xl leading-relaxed md:text-2xl">
-                All-in-one platform for scheduling, invoicing, payments, and customer
-                management. AI built in so every team member gets more done in less time.
+                All-in-one platform for scheduling, invoicing, payments, and
+                customer management. AI built in so every team member gets more
+                done in less time.
               </p>
-              <p className="mx-auto max-w-2xl text-muted-foreground text-base">
-                Pricing is simple: $100/month base subscription with pay-as-you-go usage.
-                Unlimited users, no contracts, no lock-in—cancel anytime and export your data whenever you like.
+              <p className="mx-auto max-w-2xl text-base text-muted-foreground">
+                Pricing is simple: $100/month base subscription with
+                pay-as-you-go usage. Unlimited users, no contracts, no
+                lock-in—cancel anytime and export your data whenever you like.
               </p>
             </div>
 
@@ -86,7 +88,7 @@ export function ModernHomepage() {
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <Star
-                        className="size-4 fill-yellow-500 text-yellow-500"
+                        className="size-4 fill-yellow-500 text-warning"
                         key={i}
                       />
                     ))}
@@ -124,27 +126,27 @@ export function ModernHomepage() {
             {/* Trust indicators */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-muted-foreground text-sm">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-green-500" />
+                <CheckCircle2 className="size-4 text-success" />
                 <span>$100/mo base + pay-as-you-go usage</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-green-500" />
+                <CheckCircle2 className="size-4 text-success" />
                 <span>Unlimited users included</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-green-500" />
+                <CheckCircle2 className="size-4 text-success" />
                 <span>No credit card required</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-green-500" />
+                <CheckCircle2 className="size-4 text-success" />
                 <span>Setup in 24 hours</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-green-500" />
+                <CheckCircle2 className="size-4 text-success" />
                 <span>No lock-in contracts</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-green-500" />
+                <CheckCircle2 className="size-4 text-success" />
                 <span>Cancel anytime</span>
               </div>
             </div>
@@ -155,9 +157,9 @@ export function ModernHomepage() {
                 {/* Browser chrome */}
                 <div className="flex items-center gap-2 border-border border-b bg-muted/50 px-4 py-3">
                   <div className="flex gap-2">
-                    <div className="size-3 rounded-full bg-red-500" />
-                    <div className="size-3 rounded-full bg-yellow-500" />
-                    <div className="size-3 rounded-full bg-green-500" />
+                    <div className="size-3 rounded-full bg-destructive" />
+                    <div className="size-3 rounded-full bg-warning" />
+                    <div className="size-3 rounded-full bg-success" />
                   </div>
                   <div className="ml-4 flex-1 rounded-md bg-background/50 px-3 py-1 text-muted-foreground text-xs">
                     app.thorbis.com/dashboard
@@ -181,7 +183,7 @@ export function ModernHomepage() {
                           {stat.label}
                         </p>
                         <p className="mb-1 font-bold text-2xl">{stat.value}</p>
-                        <p className="text-green-600 text-xs dark:text-green-400">
+                        <p className="text-success text-xs dark:text-success">
                           {stat.change} vs last week
                         </p>
                       </div>
@@ -221,42 +223,42 @@ export function ModernHomepage() {
                   title: "AI Phone System",
                   description:
                     "24/7 AI assistant answers calls, books appointments, and handles customer questions automatically.",
-                  color: "text-blue-500",
+                  color: "text-primary",
                 },
                 {
                   icon: BarChart3,
                   title: "Smart Scheduling",
                   description:
                     "Drag-and-drop scheduling with 4 view types, route optimization, and intelligent dispatch.",
-                  color: "text-green-500",
+                  color: "text-success",
                 },
                 {
                   icon: DollarSign,
                   title: "Invoicing & Payments",
                   description:
                     "Get paid faster with instant invoicing, online payments, and 0% processing fees.",
-                  color: "text-yellow-500",
+                  color: "text-warning",
                 },
                 {
                   icon: MessageSquare,
                   title: "Customer Communication",
                   description:
                     "Automated SMS, email campaigns, review requests, and a self-service customer portal.",
-                  color: "text-purple-500",
+                  color: "text-accent-foreground",
                 },
                 {
                   icon: TrendingUp,
                   title: "Business Intelligence",
                   description:
                     "Real-time dashboards, reports, and insights to make data-driven decisions.",
-                  color: "text-red-500",
+                  color: "text-destructive",
                 },
                 {
                   icon: Shield,
                   title: "Enterprise Security",
                   description:
                     "Bank-level encryption, SOC 2 compliant, and regular security audits to protect your data.",
-                  color: "text-indigo-500",
+                  color: "text-accent-foreground",
                 },
               ].map((feature, i) => (
                 <div
@@ -403,7 +405,7 @@ export function ModernHomepage() {
                   <div className="mb-4 flex gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
-                        className="size-4 fill-yellow-500 text-yellow-500"
+                        className="size-4 fill-yellow-500 text-warning"
                         key={star}
                       />
                     ))}
@@ -439,8 +441,9 @@ export function ModernHomepage() {
             </h2>
             <p className="mx-auto mb-10 max-w-2xl text-foreground/70 text-xl">
               Join thousands of service businesses using Thorbis to grow faster,
-              work smarter, and deliver exceptional customer experiences. It&apos;s just
-              $100/month base plus pay-as-you-go usage—no per-user fees or long contracts.
+              work smarter, and deliver exceptional customer experiences.
+              It&apos;s just $100/month base plus pay-as-you-go usage—no
+              per-user fees or long contracts.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
@@ -463,8 +466,8 @@ export function ModernHomepage() {
               </Button>
             </div>
             <p className="mt-6 text-muted-foreground text-sm">
-              $100/month base • Pay-as-you-go usage • No credit card required • 14-day free
-              trial • No lock-in • Cancel anytime
+              $100/month base • Pay-as-you-go usage • No credit card required •
+              14-day free trial • No lock-in • Cancel anytime
             </p>
           </div>
         </div>

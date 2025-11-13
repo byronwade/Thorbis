@@ -25,7 +25,6 @@ import { Table as TiptapTable } from "@tiptap/extension-table";
 import { TableCell as TiptapTableCell } from "@tiptap/extension-table-cell";
 import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table-header";
 import { TableRow as TiptapTableRow } from "@tiptap/extension-table-row";
-import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
   AtSign,
@@ -46,8 +45,20 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  LazyTipTapEditor as EditorContent,
+  useEditor,
+} from "@/components/lazy/tiptap-editor";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +67,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ActivityTimelineBlock } from "./editor-blocks/activity-timeline-block";
@@ -372,6 +385,12 @@ export function CustomerPageEditor({
     };
   };
 
+  // State for URL input dialogs
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
   // Initialize editor with all extensions
   const editor = useEditor({
     immediatelyRender: false, // Required for Next.js SSR to avoid hydration mismatches
@@ -551,10 +570,8 @@ export function CustomerPageEditor({
           <Button
             className={cn(editor.isActive("link") && "bg-muted")}
             onClick={() => {
-              const url = window.prompt("Enter URL");
-              if (url) {
-                editor.chain().focus().setLink({ href: url }).run();
-              }
+              setLinkUrl("");
+              setIsLinkDialogOpen(true);
             }}
             size="sm"
             title="Add Link (Cmd+K)"
@@ -565,10 +582,8 @@ export function CustomerPageEditor({
           </Button>
           <Button
             onClick={() => {
-              const url = window.prompt("Enter image URL");
-              if (url) {
-                editor.chain().focus().setImage({ src: url }).run();
-              }
+              setImageUrl("");
+              setIsImageDialogOpen(true);
             }}
             size="sm"
             title="Add Image"
@@ -781,6 +796,116 @@ export function CustomerPageEditor({
           mention team member
         </p>
       </div>
+
+      {/* Link URL Input Dialog */}
+      <Dialog onOpenChange={setIsLinkDialogOpen} open={isLinkDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insert Link</DialogTitle>
+            <DialogDescription>
+              Enter the URL you want to link to.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="link-url">URL</Label>
+              <Input
+                autoFocus
+                id="link-url"
+                onChange={(e) => setLinkUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && linkUrl) {
+                    e.preventDefault();
+                    if (editor) {
+                      editor.chain().focus().setLink({ href: linkUrl }).run();
+                    }
+                    setIsLinkDialogOpen(false);
+                  }
+                }}
+                placeholder="https://example.com"
+                type="url"
+                value={linkUrl}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setIsLinkDialogOpen(false)}
+              type="button"
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={!linkUrl}
+              onClick={() => {
+                if (editor && linkUrl) {
+                  editor.chain().focus().setLink({ href: linkUrl }).run();
+                }
+                setIsLinkDialogOpen(false);
+              }}
+              type="button"
+            >
+              Insert Link
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image URL Input Dialog */}
+      <Dialog onOpenChange={setIsImageDialogOpen} open={isImageDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insert Image</DialogTitle>
+            <DialogDescription>
+              Enter the URL of the image you want to insert.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="image-url">Image URL</Label>
+              <Input
+                autoFocus
+                id="image-url"
+                onChange={(e) => setImageUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && imageUrl) {
+                    e.preventDefault();
+                    if (editor) {
+                      editor.chain().focus().setImage({ src: imageUrl }).run();
+                    }
+                    setIsImageDialogOpen(false);
+                  }
+                }}
+                placeholder="https://example.com/image.jpg"
+                type="url"
+                value={imageUrl}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setIsImageDialogOpen(false)}
+              type="button"
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={!imageUrl}
+              onClick={() => {
+                if (editor && imageUrl) {
+                  editor.chain().focus().setImage({ src: imageUrl }).run();
+                }
+                setIsImageDialogOpen(false);
+              }}
+              type="button"
+            >
+              Insert Image
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

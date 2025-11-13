@@ -55,19 +55,20 @@ const notificationIcons: Record<NotificationType, typeof Bell> = {
 };
 
 const notificationColors: Record<NotificationType, string> = {
-  message: "text-blue-500",
-  alert: "text-orange-500",
-  payment: "text-green-500",
-  job: "text-purple-500",
+  message: "text-primary",
+  alert: "text-warning",
+  payment: "text-success",
+  job: "text-accent-foreground",
   team: "text-cyan-500",
-  system: "text-gray-500",
+  system: "text-muted-foreground",
 };
 
 const priorityColors: Record<NotificationPriority, string> = {
-  low: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
-  medium: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  high: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-  urgent: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  low: "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
+  medium: "bg-primary text-primary dark:bg-primary dark:text-primary",
+  high: "bg-warning text-warning dark:bg-warning dark:text-warning",
+  urgent:
+    "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
 };
 
 function formatTimestamp(date: Date): string {

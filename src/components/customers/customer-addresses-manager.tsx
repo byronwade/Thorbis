@@ -79,13 +79,13 @@ const ADDRESS_TYPE_ICONS = {
 };
 
 const ADDRESS_TYPE_COLORS = {
-  billing: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  shipping: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  billing: "bg-primary text-primary dark:bg-primary dark:text-primary",
+  shipping: "bg-success text-success dark:bg-success dark:text-success",
   service:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  mailing:
-    "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-  other: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+    "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
+  mailing: "bg-warning text-warning dark:bg-warning dark:text-warning",
+  other:
+    "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
 };
 
 export function CustomerAddressesManager({

@@ -184,7 +184,7 @@ export function BulkExportForm() {
               <div className="flex items-center justify-between space-x-2 rounded-lg border p-3 hover:bg-accent">
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem id="excel" value="excel" />
-                  <FileSpreadsheet className="h-5 w-5 text-green-600" />
+                  <FileSpreadsheet className="h-5 w-5 text-success" />
                   <div>
                     <Label className="font-normal" htmlFor="excel">
                       Excel
@@ -200,7 +200,7 @@ export function BulkExportForm() {
               <div className="flex items-center justify-between space-x-2 rounded-lg border p-3 hover:bg-accent">
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem id="pdf" value="pdf" />
-                  <FileText className="h-5 w-5 text-red-600" />
+                  <FileText className="h-5 w-5 text-destructive" />
                   <div>
                     <Label className="font-normal" htmlFor="pdf">
                       PDF

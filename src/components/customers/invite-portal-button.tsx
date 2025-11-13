@@ -58,7 +58,7 @@ export function InvitePortalButton({
   if (isInvited) {
     return (
       <Button className="w-full" disabled variant="outline">
-        <Check className="mr-2 size-4 text-green-600" />
+        <Check className="mr-2 size-4 text-success" />
         Portal Invited
       </Button>
     );

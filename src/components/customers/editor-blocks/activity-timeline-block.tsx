@@ -64,18 +64,18 @@ export function ActivityTimelineBlockComponent({ node }: any) {
       case "job_completed":
       case "invoice_paid":
       case "payment_received":
-        return "text-green-600 bg-green-50 dark:bg-green-950";
+        return "text-success bg-success dark:bg-success";
       case "invoice_sent":
       case "email_sent":
-        return "text-blue-600 bg-blue-50 dark:bg-blue-950";
+        return "text-primary bg-primary dark:bg-primary";
       case "job_created":
       case "customer_created":
-        return "text-purple-600 bg-purple-50 dark:bg-purple-950";
+        return "text-accent-foreground bg-accent dark:bg-accent";
       case "call_made":
       case "call_received":
-        return "text-orange-600 bg-orange-50 dark:bg-orange-950";
+        return "text-warning bg-warning dark:bg-warning";
       default:
-        return "text-gray-600 bg-gray-50 dark:bg-gray-950";
+        return "text-muted-foreground bg-secondary dark:bg-foreground";
     }
   };
 
@@ -209,11 +209,11 @@ export function ActivityTimelineBlockComponent({ node }: any) {
                                 <span className="font-medium text-muted-foreground">
                                   {change.field}:
                                 </span>{" "}
-                                <span className="text-red-600 line-through">
+                                <span className="text-destructive line-through">
                                   {String(change.old)}
                                 </span>
                                 {" → "}
-                                <span className="text-green-600">
+                                <span className="text-success">
                                   {String(change.new)}
                                 </span>
                               </div>

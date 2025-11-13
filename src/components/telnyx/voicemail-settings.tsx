@@ -284,11 +284,11 @@ export function VoicemailSettings() {
           {greeting.type === "audio-file" && (
             <div className="space-y-4">
               {greeting.content ? (
-                <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20">
+                <Card className="border-success bg-success dark:border-success dark:bg-success/20">
                   <CardContent className="pt-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
-                        <FileAudio className="size-5 text-green-600 dark:text-green-400" />
+                        <FileAudio className="size-5 text-success dark:text-success" />
                         <div>
                           <div className="font-medium">{greeting.fileName}</div>
                           <div className="text-muted-foreground text-sm">

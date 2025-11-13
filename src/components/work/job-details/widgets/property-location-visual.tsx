@@ -105,7 +105,7 @@ export function PropertyLocationVisual({
 
   return (
     <>
-      <div className="space-y-3">
+      <div className="space-y-3 p-4 sm:p-6">
         {/* Address - Shown once at the top */}
         <div>
           <div className="mb-2 flex items-center justify-between">
@@ -163,7 +163,7 @@ export function PropertyLocationVisual({
                   title="Property Map with Directions"
                 />
                 <Button
-                  className="absolute top-2 right-2 h-8 w-8 bg-white/90 shadow-md hover:bg-white"
+                  className="absolute top-2 right-2 h-8 w-8 bg-card/90 shadow-md hover:bg-card"
                   onClick={() => {
                     setActiveTab("map");
                     setIsExpanded(true);
@@ -171,7 +171,7 @@ export function PropertyLocationVisual({
                   size="icon"
                   variant="ghost"
                 >
-                  <Maximize2 className="h-4 w-4 text-gray-900" />
+                  <Maximize2 className="h-4 w-4 text-foreground" />
                 </Button>
               </div>
             </div>
@@ -203,7 +203,7 @@ export function PropertyLocationVisual({
                       title="Property Street View"
                     />
                     <Button
-                      className="absolute top-2 right-2 h-8 w-8 bg-white/90 shadow-md hover:bg-white"
+                      className="absolute top-2 right-2 h-8 w-8 bg-card/90 shadow-md hover:bg-card"
                       onClick={() => {
                         setActiveTab("street");
                         setIsExpanded(true);
@@ -211,7 +211,7 @@ export function PropertyLocationVisual({
                       size="icon"
                       variant="ghost"
                     >
-                      <Maximize2 className="h-4 w-4 text-gray-900" />
+                      <Maximize2 className="h-4 w-4 text-foreground" />
                     </Button>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export function PropertyLocationVisual({
                   title="Satellite View"
                 />
                 <Button
-                  className="absolute top-2 right-2 h-8 w-8 bg-white/90 shadow-md hover:bg-white"
+                  className="absolute top-2 right-2 h-8 w-8 bg-card/90 shadow-md hover:bg-card"
                   onClick={() => {
                     setActiveTab("earth");
                     setIsExpanded(true);
@@ -254,7 +254,7 @@ export function PropertyLocationVisual({
                   size="icon"
                   variant="ghost"
                 >
-                  <Maximize2 className="h-4 w-4 text-gray-900" />
+                  <Maximize2 className="h-4 w-4 text-foreground" />
                 </Button>
               </div>
             </div>

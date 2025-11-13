@@ -35,56 +35,56 @@ const payrollSections = [
     subtitle: "Configure commission structures and payout timing",
     icon: BadgeDollarSign,
     href: "/dashboard/settings/payroll/commission",
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
   {
     title: "Materials",
     subtitle: "Manage material cost deductions and handling",
     icon: Layers,
     href: "/dashboard/settings/payroll/materials",
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent/10",
   },
   {
     title: "Callbacks",
     subtitle: "Set callback deductions and warranty work rates",
     icon: AlertCircle,
     href: "/dashboard/settings/payroll/callbacks",
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
   },
   {
     title: "Bonuses",
     subtitle: "Configure performance bonuses and incentives",
     icon: TrendingUp,
     href: "/dashboard/settings/payroll/bonuses",
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
+    color: "text-success",
+    bgColor: "bg-success/10",
   },
   {
     title: "Overtime",
     subtitle: "Set overtime rules and premium pay rates",
     icon: Clock,
     href: "/dashboard/settings/payroll/overtime",
-    color: "text-amber-500",
-    bgColor: "bg-amber-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
   },
   {
     title: "Deductions",
     subtitle: "Manage equipment deductions and reimbursements",
     icon: Wallet,
     href: "/dashboard/settings/payroll/deductions",
-    color: "text-red-500",
-    bgColor: "bg-red-500/10",
+    color: "text-destructive",
+    bgColor: "bg-destructive/10",
   },
   {
     title: "Schedule",
     subtitle: "Configure payroll timing and approval workflow",
     icon: Calendar,
     href: "/dashboard/settings/payroll/schedule",
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent/10",
   },
 ];
 
@@ -101,11 +101,11 @@ export default function PayrollSettingsPage() {
       </div>
 
       {/* Warning Banner */}
-      <Card className="border-amber-500/50 bg-amber-500/5">
+      <Card className="border-warning/50 bg-warning/5">
         <CardContent className="flex items-start gap-3 pt-6">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
           <div className="space-y-1">
-            <p className="font-medium text-amber-700 text-sm dark:text-amber-400">
+            <p className="font-medium text-sm text-warning dark:text-warning">
               Important: Payroll Policy Configuration
             </p>
             <p className="text-muted-foreground text-sm">
@@ -178,11 +178,11 @@ export default function PayrollSettingsPage() {
       </div>
 
       {/* Help Section */}
-      <Card className="border-blue-500/50 bg-blue-500/5">
+      <Card className="border-primary/50 bg-primary/5">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-blue-500" />
-            <CardTitle className="text-base text-blue-700 dark:text-blue-400">
+            <Settings className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base text-primary dark:text-primary">
               Need Help Configuring Payroll?
             </CardTitle>
           </div>
@@ -194,13 +194,13 @@ export default function PayrollSettingsPage() {
         <CardContent>
           <div className="flex gap-2">
             <Link href="/help/payroll-setup">
-              <span className="text-blue-600 text-sm underline hover:text-blue-700">
+              <span className="text-primary text-sm underline hover:text-primary">
                 View Setup Guide
               </span>
             </Link>
             <span className="text-muted-foreground">•</span>
             <Link href="/contact">
-              <span className="text-blue-600 text-sm underline hover:text-blue-700">
+              <span className="text-primary text-sm underline hover:text-primary">
                 Contact Support
               </span>
             </Link>

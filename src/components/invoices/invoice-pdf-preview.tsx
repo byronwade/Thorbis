@@ -18,12 +18,11 @@ export function InvoicePDFPreview({
   customer: any;
   company: any;
 }) {
-
   const lineItems = invoice.line_items || [];
 
   return (
     <div
-      className="mx-auto bg-white shadow-2xl"
+      className="mx-auto bg-card shadow-2xl"
       style={{
         width: "8.5in",
         minHeight: "11in",
@@ -47,19 +46,19 @@ export function InvoicePDFPreview({
           <h2 className="mb-4 font-bold text-5xl">INVOICE</h2>
           <div className="space-y-1 text-sm">
             <div>
-              <span className="text-gray-600">Invoice #:</span>{" "}
+              <span className="text-muted-foreground">Invoice #:</span>{" "}
               <span className="font-mono font-semibold">
                 {invoice.invoice_number}
               </span>
             </div>
             <div>
-              <span className="text-gray-600">Date:</span>{" "}
-              {formatDate(invoice.created_at, "long", "")}
+              <span className="text-muted-foreground">Date:</span>{" "}
+              {formatDate(invoice.created_at, "long")}
             </div>
             <div>
-              <span className="text-gray-600">Due:</span>{" "}
+              <span className="text-muted-foreground">Due:</span>{" "}
               <span className="font-semibold">
-                {formatDate(invoice.due_date, "long", "")}
+                {formatDate(invoice.due_date, "long")}
               </span>
             </div>
           </div>
@@ -68,7 +67,7 @@ export function InvoicePDFPreview({
 
       {/* Bill To */}
       <div className="mb-12">
-        <h3 className="mb-3 font-semibold text-gray-600 text-xs uppercase tracking-wider">
+        <h3 className="mb-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
           Bill To
         </h3>
         <p className="font-semibold">
@@ -103,7 +102,7 @@ export function InvoicePDFPreview({
         </thead>
         <tbody>
           {lineItems.map((item: any, i: number) => (
-            <tr className="border-gray-200 border-b" key={i}>
+            <tr className="border-border border-b" key={i}>
               <td className="py-3 text-sm">{item.description}</td>
               <td className="py-3 text-right font-mono text-sm">
                 {item.quantity}
@@ -116,7 +115,7 @@ export function InvoicePDFPreview({
               </td>
             </tr>
           ))}
-          <tr className="border-gray-400 border-t-2">
+          <tr className="border-border border-t-2">
             <td
               className="pt-3 pb-2 text-right font-semibold text-sm uppercase"
               colSpan={3}
@@ -134,14 +133,14 @@ export function InvoicePDFPreview({
       <div className="mb-12 flex justify-end">
         <div className="w-96 space-y-2 text-sm">
           <div className="flex justify-between py-1">
-            <span className="text-gray-600">Subtotal</span>
+            <span className="text-muted-foreground">Subtotal</span>
             <span className="font-mono">
               {formatCurrency(invoice.subtotal || 0)}
             </span>
           </div>
           {invoice.tax_amount > 0 && (
             <div className="flex justify-between py-1">
-              <span className="text-gray-600">Tax</span>
+              <span className="text-muted-foreground">Tax</span>
               <span className="font-mono">
                 {formatCurrency(invoice.tax_amount)}
               </span>
@@ -149,7 +148,7 @@ export function InvoicePDFPreview({
           )}
           {invoice.discount_amount > 0 && (
             <div className="flex justify-between py-1">
-              <span className="text-gray-600">Discount</span>
+              <span className="text-muted-foreground">Discount</span>
               <span className="font-mono">
                 -{formatCurrency(invoice.discount_amount)}
               </span>
@@ -168,7 +167,7 @@ export function InvoicePDFPreview({
       {invoice.notes && (
         <div className="mb-8">
           <h3 className="mb-2 font-semibold text-xs uppercase">Notes</h3>
-          <p className="whitespace-pre-wrap text-gray-700 text-sm">
+          <p className="whitespace-pre-wrap text-foreground text-sm">
             {invoice.notes}
           </p>
         </div>

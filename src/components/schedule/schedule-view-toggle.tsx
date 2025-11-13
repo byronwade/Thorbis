@@ -1,6 +1,6 @@
 "use client";
 
-import { Bug, LayoutGrid, GanttChart } from "lucide-react";
+import { Bug, GanttChart, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ScheduleView } from "@/types/schedule";
 

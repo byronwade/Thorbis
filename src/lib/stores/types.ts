@@ -29,8 +29,3 @@ export type ExtractState<S> = Omit<
   S,
   keyof StoreActions | "_hasHydrated" | "setHasHydrated"
 >;
-
-
-
-
-

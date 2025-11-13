@@ -42,19 +42,19 @@ const DEFAULT_DATA: PerformanceScaleData = {
 
 // Get color based on score
 function getScoreColor(score: number): string {
-  if (score >= 85) return "text-green-500";
-  if (score >= 70) return "text-blue-500";
-  if (score >= 50) return "text-orange-500";
-  return "text-red-500";
+  if (score >= 85) return "text-success";
+  if (score >= 70) return "text-primary";
+  if (score >= 50) return "text-warning";
+  return "text-destructive";
 }
 
 // Get performance level text
 function getPerformanceLevel(score: number): { level: string; color: string } {
-  if (score >= 90) return { level: "Exceptional", color: "text-green-500" };
-  if (score >= 80) return { level: "Excellent", color: "text-green-500" };
-  if (score >= 70) return { level: "Good", color: "text-blue-500" };
-  if (score >= 60) return { level: "Fair", color: "text-orange-500" };
-  return { level: "Needs Work", color: "text-red-500" };
+  if (score >= 90) return { level: "Exceptional", color: "text-success" };
+  if (score >= 80) return { level: "Excellent", color: "text-success" };
+  if (score >= 70) return { level: "Good", color: "text-primary" };
+  if (score >= 60) return { level: "Fair", color: "text-warning" };
+  return { level: "Needs Work", color: "text-destructive" };
 }
 
 export function PerformanceScaleWidget({
@@ -100,8 +100,8 @@ export function PerformanceScaleWidget({
             <div
               className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${
                 scoreChange >= 0
-                  ? "bg-green-500/20 text-green-500"
-                  : "bg-red-500/20 text-red-500"
+                  ? "bg-success/20 text-success"
+                  : "bg-destructive/20 text-destructive"
               }`}
             >
               <TrendingUp
@@ -167,15 +167,15 @@ export function PerformanceScaleWidget({
             </div>
 
             {/* Target info */}
-            <div className="flex items-center justify-between rounded-lg bg-orange-500/10 p-1.5">
+            <div className="flex items-center justify-between rounded-lg bg-warning/10 p-1.5">
               <div className="flex items-center gap-1.5">
-                <Target className="size-3.5 text-orange-500" />
+                <Target className="size-3.5 text-warning" />
                 <ResponsiveText variant="caption">
                   Target: {data.target}
                 </ResponsiveText>
               </div>
               <ResponsiveText
-                className="font-bold text-orange-500"
+                className="font-bold text-warning"
                 variant="caption"
               >
                 {targetDiff > 0 ? `${targetDiff} to go` : "Met!"}
@@ -201,7 +201,7 @@ export function PerformanceScaleWidget({
             </div>
 
             {/* Target */}
-            <div className="flex items-center justify-between rounded-lg bg-orange-500/10 p-1.5">
+            <div className="flex items-center justify-between rounded-lg bg-warning/10 p-1.5">
               <ResponsiveText variant="caption">Target</ResponsiveText>
               <ResponsiveText className="font-bold" variant="caption">
                 {data.target}

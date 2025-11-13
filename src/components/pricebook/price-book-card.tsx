@@ -34,17 +34,17 @@ const itemTypeConfig = {
   service: {
     icon: Wrench,
     label: "Service",
-    color: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+    color: "bg-primary/10 text-primary border-primary/20",
   },
   material: {
     icon: Package,
     label: "Material",
-    color: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+    color: "bg-accent/10 text-accent-foreground border-border/20",
   },
   equipment: {
     icon: Box,
     label: "Equipment",
-    color: "bg-orange-500/10 text-orange-700 border-orange-500/20",
+    color: "bg-warning/10 text-warning border-warning/20",
   },
 };
 

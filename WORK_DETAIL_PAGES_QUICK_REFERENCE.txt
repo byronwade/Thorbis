@@ -1,0 +1,143 @@
+═══════════════════════════════════════════════════════════════════════════════
+  WORK DETAIL PAGES: RELATIONSHIP & UNLINK AUDIT - QUICK SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+OVERALL STATUS: 40% have unlink capability, 60% missing
+
+┌─────────────────┬────────────────────────────┬────────────────────────────┐
+│ PAGE            │ HAS UNLINK                 │ MISSING UNLINK             │
+├─────────────────┼────────────────────────────┼────────────────────────────┤
+│ Jobs            │ ✅ Estimates               │ ❌ Payments                │
+│                 │ ✅ Invoices                │ ❌ Materials               │
+│                 │ ✅ Equipment               │ ❌ Appointments            │
+│                 │                            │ ❌ Purchase Orders         │
+│                 │                            │                            │
+│ Invoices        │ ❌ NONE                    │ ❌ Payments (junction)     │
+│                 │                            │                            │
+│ Estimates       │ ✅ Job (via job page)      │ ❌ NONE                    │
+│                 │                            │                            │
+│ Appointments    │ ❌ NONE                    │ ❌ Job                     │
+│                 │                            │                            │
+│ Contracts       │ ✅ N/A (workflow only)     │ N/A                        │
+│                 │                            │                            │
+│ Payments        │ ❌ NONE                    │ ❌ Invoice                 │
+│                 │                            │ ❌ Job                     │
+│                 │                            │                            │
+│ Equipment       │ ❌ NONE                    │ ❌ Service Plan            │
+│                 │                            │ ❌ Install Job             │
+│                 │                            │ ❌ Last Service Job        │
+│                 │                            │                            │
+│ Maintenance Pln │ ✅ Equipment               │ ❌ NONE                    │
+│                 │                            │                            │
+│ Service Agree   │ ✅ N/A (workflow only)     │ ❌ NONE                    │
+│                 │                            │                            │
+│ Purchase Orders │ ❌ NONE                    │ ❌ Job                     │
+│                 │                            │ ❌ Estimate                │
+│                 │                            │ ❌ Invoice                 │
+│                 │                            │                            │
+│ Properties      │ ✅ N/A (read-only)         │ ❌ NONE                    │
+└─────────────────┴────────────────────────────┴────────────────────────────┘
+
+HIGH PRIORITY QUICK WINS (4-5 hours total)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Remove Material from Job [Jobs page]
+   ├─ Effort: 30 min
+   ├─ Action: removeMaterialFromJob() - DELETE from job_materials junction
+   └─ Impact: HIGH
+
+2. Remove Payment from Invoice [Invoices page]
+   ├─ Effort: 45 min
+   ├─ Action: removePaymentFromInvoice() - DELETE from invoice_payments junction
+   ├─ UI: Add trash button to payment rows
+   └─ Impact: HIGH
+
+3. Remove Payment from Job [Jobs page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkPaymentFromJob() - SET payments.job_id = NULL
+   └─ Impact: HIGH
+
+4. Remove Appointment from Job [Appointments/Jobs page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkAppointmentFromJob() - SET schedules.job_id = NULL
+   └─ Impact: HIGH
+
+5. Unlink Service Plan from Equipment [Equipment page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkServicePlanFromEquipment() - SET service_plan_id = NULL
+   └─ Impact: MEDIUM
+
+MEDIUM PRIORITY (Secondary)
+═══════════════════════════════════════════════════════════════════════════════
+
+6. Unlink Payment from Invoice [Payment page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkPaymentFromInvoice() - DELETE from invoice_payments
+   └─ Impact: MEDIUM
+
+7. Unlink Payment from Job [Payment page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkPaymentFromJob() - SET job_id = NULL
+   └─ Impact: MEDIUM
+
+8. Unlink Install Job from Equipment [Equipment page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkInstallJobFromEquipment() - SET install_job_id = NULL
+   └─ Impact: LOW
+
+9. Unlink Purchase Orders from Job [Jobs/PO page]
+   ├─ Effort: 30 min
+   ├─ Action: unlinkPurchaseOrderFromJob() - SET job_id = NULL
+   └─ Impact: MEDIUM
+
+DATABASE PATTERNS FOUND
+═══════════════════════════════════════════════════════════════════════════════
+
+Pattern 1: FOREIGN KEY (Simple)
+├─ invoices.job_id
+├─ estimates.job_id
+├─ payments.job_id
+├─ schedules.job_id
+├─ equipment.service_plan_id
+└─ Action: UPDATE table SET fk = NULL WHERE id = ?
+
+Pattern 2: JUNCTION TABLE (Simple)
+├─ job_equipment (DELETE removes serviced equipment)
+├─ job_materials (DELETE removes used material)
+├─ invoice_payments (DELETE unlinks payment from invoice)
+└─ Action: DELETE FROM junction WHERE id = ?
+
+Pattern 3: WORKFLOW LINKS (No unlink needed)
+├─ contracts.estimate_id (represents conversion)
+├─ contracts.invoice_id (contract for invoice)
+└─ contracts.job_id (contract relates to job)
+
+EXISTING UNLINK PATTERNS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ unlinkEstimateFromJob()
+   └─ Location: src/actions/estimates.ts
+   └─ Implementation: UPDATE estimates SET job_id = NULL
+
+✅ unlinkInvoiceFromJob()
+   └─ Location: src/actions/invoices.ts
+   └─ Implementation: UPDATE invoices SET job_id = NULL
+
+✅ removeEquipmentFromJob()
+   └─ Location: src/actions/equipment.ts
+   └─ Implementation: DELETE FROM job_equipment
+
+COMPONENT IMPLEMENTATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ JobInvoicesTable - Has unlink button with dialog
+✅ JobEstimatesTable - Has unlink button with dialog
+✅ EquipmentServicedSection - Has remove equipment button
+
+❌ InvoicePayments - Shows payments but NO remove buttons
+❌ JobPaymentsView - Shows payments but NO unlink buttons
+❌ Other tables - No unlink UI
+
+═══════════════════════════════════════════════════════════════════════════════
+Full audit report saved to: WORK_DETAIL_PAGES_AUDIT.md
+═══════════════════════════════════════════════════════════════════════════════

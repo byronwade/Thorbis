@@ -240,12 +240,12 @@ export function IVRMenuBuilder() {
 
       {/* Test Mode Panel */}
       {testMode && (
-        <Card className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/20">
+        <Card className="border-primary bg-primary dark:border-primary dark:bg-primary/20">
           <CardHeader>
-            <CardTitle className="text-base text-blue-900 dark:text-blue-100">
+            <CardTitle className="text-base text-primary dark:text-primary">
               Test Mode Active
             </CardTitle>
-            <CardDescription className="text-blue-700 dark:text-blue-300">
+            <CardDescription className="text-primary dark:text-primary">
               Simulate calling your IVR menu. Press keys to navigate.
             </CardDescription>
           </CardHeader>

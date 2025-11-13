@@ -132,28 +132,28 @@ export function SubscriptionCard({
     switch (status) {
       case "active":
         return (
-          <Badge className="bg-green-500">
+          <Badge className="bg-success">
             <CheckCircle className="mr-1 size-3" />
             Active
           </Badge>
         );
       case "trialing":
         return (
-          <Badge className="bg-blue-500">
+          <Badge className="bg-primary">
             <CheckCircle className="mr-1 size-3" />
             Trial
           </Badge>
         );
       case "past_due":
         return (
-          <Badge className="bg-orange-500">
+          <Badge className="bg-warning">
             <AlertCircle className="mr-1 size-3" />
             Past Due
           </Badge>
         );
       case "canceled":
         return (
-          <Badge className="bg-red-500">
+          <Badge className="bg-destructive">
             <XCircle className="mr-1 size-3" />
             Canceled
           </Badge>
@@ -212,11 +212,11 @@ export function SubscriptionCard({
           <div className="space-y-3">
             {/* Trial Period */}
             {status === "trialing" && trialEndsAt && (
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950">
-                <p className="font-medium text-blue-900 text-sm dark:text-blue-100">
+              <div className="rounded-lg border border-primary bg-primary p-3 dark:border-primary dark:bg-primary">
+                <p className="font-medium text-primary text-sm dark:text-primary">
                   Trial Period
                 </p>
-                <p className="text-blue-700 text-sm dark:text-blue-300">
+                <p className="text-primary text-sm dark:text-primary">
                   Trial ends on {formatDate(trialEndsAt)}
                 </p>
               </div>

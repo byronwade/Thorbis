@@ -236,7 +236,7 @@ export function ServiceLocationMap({
         scale: 8,
         fillColor: "#ef4444",
         fillOpacity: 1,
-        strokeColor: "#ffffff",
+        strokeColor: "#f3f7fd",
         strokeWeight: 2,
       },
       label: {
@@ -259,7 +259,7 @@ export function ServiceLocationMap({
           scale: 6,
           fillColor: "#3b82f6",
           fillOpacity: 0.8,
-          strokeColor: "#ffffff",
+          strokeColor: "#f3f7fd",
           strokeWeight: 2,
         },
       });
@@ -324,7 +324,7 @@ export function ServiceLocationMap({
                   </span>
                   {nearbySuppliers.length > 0 && (
                     <Badge
-                      className="h-5 bg-blue-500/80 text-[10px] text-white"
+                      className="h-5 bg-primary/80 text-[10px] text-white"
                       variant="secondary"
                     >
                       <Store className="mr-1 h-3 w-3" />
@@ -338,12 +338,12 @@ export function ServiceLocationMap({
                 </p>
               </div>
               <Button
-                className="h-8 w-8 bg-white/90 hover:bg-white"
+                className="h-8 w-8 bg-card/90 hover:bg-card"
                 onClick={() => setIsExpanded(true)}
                 size="icon"
                 variant="ghost"
               >
-                <Maximize2 className="h-4 w-4 text-gray-900" />
+                <Maximize2 className="h-4 w-4 text-foreground" />
               </Button>
             </div>
           </div>
@@ -373,14 +373,14 @@ export function ServiceLocationMap({
           <div className="border-t p-4">
             <div className="flex items-center gap-6 text-sm">
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-destructive">
                   <MapPin className="h-4 w-4 text-white" />
                 </div>
                 <span>Service Location</span>
               </div>
               {nearbySuppliers.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
                     <Store className="h-4 w-4 text-white" />
                   </div>
                   <span>Nearby Suppliers ({nearbySuppliers.length})</span>

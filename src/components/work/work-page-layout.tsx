@@ -1,72 +1,85 @@
+"use client";
+
 /**
- * Work Page Layout - Server Component
+ * WorkPageLayout - Semantic container for work pages
  *
- * Performance optimizations:
- * - Server Component (no "use client")
- * - Pure layout wrapper rendered on server
- * - Links use Next.js routing (no JavaScript required)
- * - Reduced JavaScript bundle size
+ * Provides proper structure with:
+ * - Stats bar that hides on scroll
+ * - Proper flex container for datatable
+ * - Correct height calculations
  */
 
-import type { LucideIcon } from "lucide-react";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-
-type SecondaryAction = {
-  label: string;
-  href: string;
-  icon?: LucideIcon;
-};
+import { useEffect, useRef, useState } from "react";
 
 type WorkPageLayoutProps = {
-  title: string;
-  description: string;
-  actionLabel?: string;
-  actionHref?: string;
-  secondaryActions?: SecondaryAction[];
+  stats?: ReactNode;
   children: ReactNode;
 };
 
-export function WorkPageLayout({
-  title,
-  description,
-  actionLabel = "Add New",
-  actionHref,
-  secondaryActions = [],
-  children,
-}: WorkPageLayoutProps) {
+export function WorkPageLayout({ stats, children }: WorkPageLayoutProps) {
+  const [hideStats, setHideStats] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    // Find the actual scrolling element inside the datatable
+    const findScrollContainer = () => {
+      const container = scrollContainerRef.current;
+      if (!container) {
+        return null;
+      }
+
+      // Look for the scroll container inside the datatable
+      const scrollElement = container.querySelector(".momentum-scroll");
+      return scrollElement as HTMLElement;
+    };
+
+    const scrollElement = findScrollContainer();
+    if (!scrollElement) {
+      return;
+    }
+
+    const handleScroll = () => {
+      const currentScrollY = scrollElement.scrollTop;
+
+      // Hide stats immediately when scrolling down
+      if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+        setHideStats(true);
+      }
+      // Show when scrolling back to top or scrolling up
+      else if (currentScrollY === 0 || currentScrollY < lastScrollY.current) {
+        setHideStats(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      scrollElement.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-bold text-3xl tracking-tight">{title}</h1>
-          <p className="text-muted-foreground">{description}</p>
+    <>
+      {/* Stats Bar - hides on scroll */}
+      {stats && (
+        <div
+          className={`${
+            hideStats
+              ? "-translate-y-full h-0 opacity-0"
+              : "translate-y-0 opacity-100 transition-all duration-200"
+          }`}
+        >
+          {stats}
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-          {secondaryActions.map((action) => {
-            const Icon = action.icon;
-            return (
-              <Button asChild key={action.href} variant="outline">
-                <Link href={action.href}>
-                  {Icon && <Icon className="mr-2 size-4" />}
-                  {action.label}
-                </Link>
-              </Button>
-            );
-          })}
-          {actionHref && (
-            <Button asChild>
-              <Link href={actionHref}>
-                <Plus className="mr-2 size-4" />
-                {actionLabel}
-              </Link>
-            </Button>
-          )}
-        </div>
+      )}
+
+      {/* Data Container - fills remaining space and handles scroll */}
+      <div className="flex-1 overflow-hidden" ref={scrollContainerRef}>
+        {children}
       </div>
-      {children}
-    </div>
+    </>
   );
 }

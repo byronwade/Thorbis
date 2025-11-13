@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { PhotoCategory } from "./PhotoGallery";
+import type { PhotoCategory } from "./photo-types";
 
 interface PhotoFile {
   id: string;

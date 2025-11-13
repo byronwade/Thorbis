@@ -206,12 +206,12 @@ export default function EstimatesPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           estimate.status === "Approved"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success text-success"
                             : estimate.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-800"
+                              ? "bg-warning text-warning"
                               : estimate.status === "Rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-destructive text-destructive"
+                                : "bg-muted text-foreground"
                         }`}
                       >
                         {estimate.status}

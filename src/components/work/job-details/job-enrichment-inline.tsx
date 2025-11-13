@@ -7,7 +7,7 @@
 
 "use client";
 
-import { AlertTriangle, CloudRain, MapPin, Thermometer } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -147,7 +147,7 @@ export function JobEnrichmentInline({
 
   useEffect(() => {
     // Only fetch once on mount if no initial data
-    if (!initialData && !hasFetched && jobId && property) {
+    if (!(initialData || hasFetched) && jobId && property) {
       fetchEnrichment();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -246,21 +246,52 @@ export function JobEnrichmentInline({
   };
 
   return (
-    <div className="space-y-2">
-      {/* Weather Alerts, Traffic & Safety Warnings - Badges inline */}
+    <div className="space-y-3">
+      {/* Safety Warnings, Weather Alerts & Traffic - Badges inline */}
       {(uniqueAlerts.length > 0 ||
         hasTrafficIncidents ||
         hasSafetyWarnings) && (
         <div className="flex flex-wrap items-center gap-2">
+          {/* Safety Warnings Badge - Always shown first for visibility */}
+          {hasSafetyWarnings && recommendations?.safetyWarnings && (
+            <HoverCard openDelay={200}>
+              <HoverCardTrigger asChild>
+                <Badge className="cursor-help gap-1" variant="destructive">
+                  <AlertTriangle className="size-3" />
+                  {recommendations.safetyWarnings.length} Safety Warning
+                  {recommendations.safetyWarnings.length > 1 ? "s" : ""}
+                </Badge>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-96">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="size-4" />
+                    <h4 className="font-semibold text-sm">Safety Warnings</h4>
+                  </div>
+                  <ul className="space-y-2">
+                    {recommendations.safetyWarnings.map((warning, idx) => (
+                      <li
+                        className="text-muted-foreground text-xs leading-relaxed"
+                        key={idx}
+                      >
+                        • {warning}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          )}
+
           {/* Weather Alerts */}
           {uniqueAlerts.map((alert, index) => (
             <HoverCard key={index} openDelay={200}>
               <HoverCardTrigger asChild>
                 <Badge
-                  className="cursor-help gap-1"
+                  className="cursor-help gap-1.5 font-medium"
                   variant={getSeverityVariant(alert.severity)}
                 >
-                  <AlertTriangle className="size-3" />
+                  <AlertTriangle className="size-3.5" />
                   {alert.event}
                 </Badge>
               </HoverCardTrigger>
@@ -323,7 +354,7 @@ export function JobEnrichmentInline({
                           {incident.distance.toFixed(1)} mi
                         </span>
                         {incident.affectsRoute && (
-                          <span className="font-medium text-orange-600 dark:text-orange-400">
+                          <span className="font-medium text-warning dark:text-warning">
                             Affects your route
                           </span>
                         )}
@@ -333,70 +364,8 @@ export function JobEnrichmentInline({
                 </HoverCard>
               );
             })}
-
-          {/* Safety Warnings Badge */}
-          {hasSafetyWarnings && recommendations?.safetyWarnings && (
-            <HoverCard openDelay={200}>
-              <HoverCardTrigger asChild>
-                <Badge className="cursor-help gap-1" variant="destructive">
-                  <AlertTriangle className="size-3" />
-                  {recommendations.safetyWarnings.length} Safety Warning
-                  {recommendations.safetyWarnings.length > 1 ? "s" : ""}
-                </Badge>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-96">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="size-4" />
-                    <h4 className="font-semibold text-sm">Safety Warnings</h4>
-                  </div>
-                  <ul className="space-y-2">
-                    {recommendations.safetyWarnings.map((warning, idx) => (
-                      <li
-                        className="text-muted-foreground text-xs leading-relaxed"
-                        key={idx}
-                      >
-                        • {warning}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
-          )}
         </div>
       )}
-
-      {/* Today's Forecast & Time Zone - Info */}
-      <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
-        {todayForecast && (
-          <>
-            <div className="flex items-center gap-1.5">
-              <Thermometer className="size-3.5" />
-              <span>
-                {todayForecast.temperature}°{todayForecast.temperatureUnit}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CloudRain className="size-3.5" />
-              <span>{todayForecast.shortForecast}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin className="size-3.5" />
-              <span>{todayForecast.windSpeed}</span>
-            </div>
-          </>
-        )}
-        {timeZone && (
-          <div className="flex items-center gap-1.5">
-            <span className="font-medium">Local Time:</span>
-            <span>
-              {new Date(timeZone.currentLocalTime).toLocaleTimeString()}
-            </span>
-            <span className="text-xs">({timeZone.timeZoneId})</span>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

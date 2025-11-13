@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
-import { formatDate } from "@/lib/formatters";
 
 interface MaterialsListWidgetProps {
   job: Job;
@@ -74,36 +73,36 @@ export function MaterialsListWidget({
     in_stock: {
       label: "In Stock",
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default" as const,
     },
     low_stock: {
       label: "Low Stock",
       icon: AlertTriangle,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-100 dark:bg-yellow-950",
+      color: "text-warning",
+      bgColor: "bg-warning dark:bg-warning",
       variant: "outline" as const,
     },
     out_of_stock: {
       label: "Out of Stock",
       icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-100 dark:bg-red-950",
+      color: "text-destructive",
+      bgColor: "bg-destructive dark:bg-destructive",
       variant: "destructive" as const,
     },
     ordered: {
       label: "Ordered",
       icon: Package,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950",
+      color: "text-primary",
+      bgColor: "bg-primary dark:bg-primary",
       variant: "secondary" as const,
     },
     received: {
       label: "Received",
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-950",
+      color: "text-success",
+      bgColor: "bg-success dark:bg-success",
       variant: "default" as const,
     },
   };
@@ -268,8 +267,8 @@ export function MaterialsListWidget({
 
                       {/* Notes */}
                       {material.notes && (
-                        <div className="rounded border-yellow-500 border-l-2 bg-yellow-50 p-2 dark:bg-yellow-950/30">
-                          <p className="text-xs text-yellow-900 dark:text-yellow-100">
+                        <div className="rounded border-warning border-l-2 bg-warning p-2 dark:bg-warning/30">
+                          <p className="text-warning text-xs dark:text-warning">
                             {material.notes}
                           </p>
                         </div>
@@ -289,13 +288,13 @@ export function MaterialsListWidget({
       ) && (
         <>
           <Separator />
-          <div className="flex items-start gap-2 rounded-lg border-yellow-500 border-l-4 bg-yellow-50 p-3 dark:bg-yellow-950/30">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-yellow-600" />
+          <div className="flex items-start gap-2 rounded-lg border-warning border-l-4 bg-warning p-3 dark:bg-warning/30">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
             <div>
-              <p className="font-medium text-sm text-yellow-900 dark:text-yellow-100">
+              <p className="font-medium text-sm text-warning dark:text-warning">
                 Stock Alert
               </p>
-              <p className="text-xs text-yellow-800 dark:text-yellow-200">
+              <p className="text-warning text-xs dark:text-warning">
                 Some materials are low or out of stock. Order now to avoid
                 delays.
               </p>

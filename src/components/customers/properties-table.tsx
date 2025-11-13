@@ -25,6 +25,16 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { archiveProperty } from "@/actions/properties";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +42,6 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { formatCurrency } from "@/lib/formatters";
 import {
   Sheet,
   SheetContent,
@@ -42,6 +51,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { JobEnrichmentPanel } from "@/components/work/job-enrichment-panel";
+import { formatCurrency } from "@/lib/formatters";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
 
 type Property = {
@@ -56,6 +67,8 @@ type Property = {
   square_footage?: number;
   year_built?: number;
   customer_id: string;
+  archived_at?: string | null;
+  deleted_at?: string | null;
   enrichment?: {
     details?: {
       squareFootage?: number;
@@ -92,11 +105,10 @@ function getPropertyIcon(type?: string) {
 
 function getPropertyBadge(type?: string) {
   const variants: Record<string, string> = {
-    residential:
-      "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400",
-    commercial: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
+    residential: "bg-success text-success dark:bg-success dark:text-success",
+    commercial: "bg-primary text-primary dark:bg-primary dark:text-primary",
     industrial:
-      "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400",
+      "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
   };
 
   return (
@@ -116,8 +128,23 @@ export function PropertiesTable({
   itemsPerPage = 10,
   customerId,
 }: PropertiesTableProps) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore((state) => state.filters.properties);
+
+  // Filter properties based on archive status
+  const filteredProperties = properties.filter((property) => {
+    const isArchived = Boolean(property.archived_at || property.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
+  const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+    new Set()
+  );
 
   const handleMouseEnter = (property: Property, event: React.MouseEvent) => {
     setHoveredProperty(property);
@@ -138,25 +165,9 @@ export function PropertiesTable({
       label: "Archive Properties",
       icon: <Archive className="size-4" />,
       variant: "destructive",
-      onClick: async (selectedIds) => {
-        if (
-          !confirm(
-            `Archive ${selectedIds.size} selected ${selectedIds.size === 1 ? "property" : "properties"}? They can be restored within 90 days.`
-          )
-        ) {
-          return;
-        }
-
-        const propertyIds = Array.from(selectedIds);
-        let archived = 0;
-        for (const propertyId of propertyIds) {
-          const result = await archiveProperty(propertyId as string);
-          if (result.success) archived++;
-        }
-
-        if (archived > 0) {
-          window.location.reload();
-        }
+      onClick: (selectedIds) => {
+        setSelectedItemIds(selectedIds);
+        setIsBulkArchiveOpen(true);
       },
     },
     {
@@ -177,6 +188,7 @@ export function PropertiesTable({
       key: "address",
       header: "Address",
       width: "flex-1",
+      sortable: true,
       render: (property) => {
         const Icon = getPropertyIcon(property.type);
         return (
@@ -202,6 +214,7 @@ export function PropertiesTable({
     {
       key: "type",
       header: "Type",
+      sortable: true,
       width: "w-32",
       shrink: true,
       render: (property) => getPropertyBadge(property.type),
@@ -211,6 +224,7 @@ export function PropertiesTable({
       header: "Size",
       width: "w-32",
       shrink: true,
+      sortable: true,
       align: "right",
       render: (property) => {
         const sqFt =
@@ -241,6 +255,7 @@ export function PropertiesTable({
       header: "Value",
       width: "w-36",
       shrink: true,
+      sortable: true,
       align: "right",
       hideOnMobile: true,
       render: (property) => {
@@ -254,7 +269,7 @@ export function PropertiesTable({
           <div className="text-sm">
             {displayValue ? (
               <>
-                <p className="font-semibold text-green-700 dark:text-green-400">
+                <p className="font-semibold text-success dark:text-success">
                   {formatCurrency(displayValue)}
                 </p>
                 {tax && (
@@ -343,11 +358,11 @@ export function PropertiesTable({
       <FullWidthDataTable
         bulkActions={bulkActions}
         columns={columns}
-        data={properties}
+        data={filteredProperties}
         emptyAction={
           <Button
             onClick={() =>
-              (window.location.href = `/dashboard/properties/new?customerId=${customerId || properties[0]?.customer_id || ""}`)
+              (window.location.href = `/dashboard/work/properties/new?customerId=${customerId || properties[0]?.customer_id || ""}`)
             }
             size="sm"
           >
@@ -358,10 +373,15 @@ export function PropertiesTable({
         emptyIcon={<Building2 className="h-8 w-8 text-muted-foreground" />}
         emptyMessage="No properties found"
         enableSelection={true}
+        entity="properties"
         getItemId={(property) => property.id}
+        isArchived={(property) =>
+          Boolean(property.archived_at || property.deleted_at)
+        }
         itemsPerPage={itemsPerPage}
         searchFilter={searchFilter}
         searchPlaceholder="Search properties..."
+        showArchived={archiveFilter !== "active"}
         showRefresh={false}
       />
 
@@ -403,6 +423,42 @@ export function PropertiesTable({
           </div>
         </div>
       )}
+
+      {/* Bulk Archive Dialog */}
+      <AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Archive {selectedItemIds.size}{" "}
+              {selectedItemIds.size === 1 ? "Property" : "Properties"}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {selectedItemIds.size}{" "}
+              {selectedItemIds.size === 1 ? "property" : "properties"} will be
+              archived and can be restored within 90 days.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                const propertyIds = Array.from(selectedItemIds);
+                let archived = 0;
+                for (const propertyId of propertyIds) {
+                  const result = await archiveProperty(propertyId as string);
+                  if (result.success) archived++;
+                }
+                if (archived > 0) {
+                  window.location.reload();
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

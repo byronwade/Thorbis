@@ -402,11 +402,7 @@ function SidebarContent({
       data-slot="sidebar-content"
       {...props}
     >
-      {/* Top gradient overlay */}
-      <div className="-top-1 sticky z-10 h-8 shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
       {children}
-      {/* Bottom gradient overlay */}
-      <div className="-bottom-1 sticky z-10 h-16 shrink-0 bg-gradient-to-t from-background via-background/80 to-background/50 blur-xs" />
     </div>
   );
 }

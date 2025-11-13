@@ -225,10 +225,10 @@ export default function AssignmentsPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           assignment.status === "In Progress"
-                            ? "bg-blue-100 text-blue-800"
+                            ? "bg-primary text-primary"
                             : assignment.status === "Assigned"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
+                              ? "bg-success text-success"
+                              : "bg-warning text-warning"
                         }`}
                       >
                         {assignment.status}
@@ -236,10 +236,10 @@ export default function AssignmentsPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           assignment.priority === "High"
-                            ? "bg-red-100 text-red-800"
+                            ? "bg-destructive text-destructive"
                             : assignment.priority === "Medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
+                              ? "bg-warning text-warning"
+                              : "bg-success text-success"
                         }`}
                       >
                         {assignment.priority}

@@ -152,9 +152,9 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
               </div>
             </div>
 
-            <div className="rounded-lg border border-blue-500/50 bg-blue-500/5 p-4">
+            <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
               <div className="flex items-start gap-3">
-                <FileSpreadsheet className="mt-0.5 size-5 shrink-0 text-blue-500" />
+                <FileSpreadsheet className="mt-0.5 size-5 shrink-0 text-primary" />
                 <div>
                   <p className="font-medium text-sm">Don't have a template?</p>
                   <p className="mt-1 text-muted-foreground text-sm">
@@ -232,9 +232,9 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Badge className="bg-green-500">1,200 Valid</Badge>
-                  <Badge className="bg-yellow-500">32 Warnings</Badge>
-                  <Badge className="bg-red-500">15 Errors</Badge>
+                  <Badge className="bg-success">1,200 Valid</Badge>
+                  <Badge className="bg-warning">32 Warnings</Badge>
+                  <Badge className="bg-destructive">15 Errors</Badge>
                 </div>
               </div>
             </div>
@@ -245,9 +245,9 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
               </p>
             </div>
 
-            <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/5 p-4">
+            <div className="rounded-lg border border-warning/50 bg-warning/5 p-4">
               <div className="flex items-start gap-3">
-                <AlertCircle className="mt-0.5 size-5 shrink-0 text-yellow-500" />
+                <AlertCircle className="mt-0.5 size-5 shrink-0 text-warning" />
                 <div>
                   <p className="font-medium text-sm">Validation Errors Found</p>
                   <p className="mt-1 text-muted-foreground text-sm">
@@ -321,9 +321,9 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
               </Card>
             </div>
 
-            <div className="rounded-lg border border-blue-500/50 bg-blue-500/5 p-4">
+            <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
               <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 size-5 shrink-0 text-blue-500" />
+                <CheckCircle className="mt-0.5 size-5 shrink-0 text-primary" />
                 <div>
                   <p className="font-medium text-sm">Dry Run Successful</p>
                   <p className="mt-1 text-muted-foreground text-sm">
@@ -388,13 +388,13 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
                     Current data will be backed up for 24 hours
                   </p>
                 </div>
-                <Badge className="bg-green-500">Enabled</Badge>
+                <Badge className="bg-success">Enabled</Badge>
               </div>
             </div>
 
-            <div className="rounded-lg border border-red-500/50 bg-red-500/5 p-4">
+            <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-4">
               <div className="flex items-start gap-3">
-                <AlertCircle className="mt-0.5 size-5 shrink-0 text-red-500" />
+                <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
                 <div>
                   <p className="font-medium text-sm">Large Import Detected</p>
                   <p className="mt-1 text-muted-foreground text-sm">
@@ -463,7 +463,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="size-6 text-green-500" />
+              <CheckCircle className="size-6 text-success" />
               Import Completed Successfully
             </CardTitle>
             <CardDescription>Your data has been imported</CardDescription>
@@ -475,7 +475,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
                   <CardTitle className="text-sm">Created</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="font-bold text-2xl text-green-600">1,150</p>
+                  <p className="font-bold text-2xl text-success">1,150</p>
                   <p className="text-muted-foreground text-xs">new records</p>
                 </CardContent>
               </Card>
@@ -484,7 +484,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
                   <CardTitle className="text-sm">Updated</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="font-bold text-2xl text-blue-600">50</p>
+                  <p className="font-bold text-2xl text-primary">50</p>
                   <p className="text-muted-foreground text-xs">
                     existing records
                   </p>
@@ -495,15 +495,15 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
                   <CardTitle className="text-sm">Skipped</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="font-bold text-2xl text-yellow-600">47</p>
+                  <p className="font-bold text-2xl text-warning">47</p>
                   <p className="text-muted-foreground text-xs">duplicates</p>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="rounded-lg border border-green-500/50 bg-green-500/5 p-4">
+            <div className="rounded-lg border border-success/50 bg-success/5 p-4">
               <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 size-5 shrink-0 text-green-500" />
+                <CheckCircle className="mt-0.5 size-5 shrink-0 text-success" />
                 <div>
                   <p className="font-medium text-sm">Backup Created</p>
                   <p className="mt-1 text-muted-foreground text-sm">

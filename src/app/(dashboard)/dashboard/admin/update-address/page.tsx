@@ -58,7 +58,7 @@ export default function UpdateAddressPage() {
       <h1 className="mb-4 font-bold text-2xl">Test Enrichment Feature</h1>
 
       {/* Step 1: Setup Test Company */}
-      <div className="mb-6 rounded border border-blue-200 bg-blue-50 p-4">
+      <div className="mb-6 rounded border border-primary bg-primary p-4">
         <h2 className="mb-2 font-semibold">Step 1: Create Test Company</h2>
         <p className="mb-3 text-sm">
           First, create a test company with sample data (customer, property,
@@ -70,7 +70,7 @@ export default function UpdateAddressPage() {
 
         {setupResult && (
           <div
-            className={`mt-3 rounded p-3 ${setupResult.success ? "border border-green-300 bg-green-100" : "border border-red-300 bg-red-100"}`}
+            className={`mt-3 rounded p-3 ${setupResult.success ? "border border-success bg-success" : "border border-destructive bg-destructive"}`}
           >
             <pre className="whitespace-pre-wrap text-sm">
               {JSON.stringify(setupResult, null, 2)}
@@ -79,10 +79,10 @@ export default function UpdateAddressPage() {
         )}
 
         {setupResult?.success && setupResult.job && (
-          <div className="mt-3 rounded border border-green-300 bg-green-100 p-3">
+          <div className="mt-3 rounded border border-success bg-success p-3">
             <p className="mb-2 font-semibold text-sm">✅ Ready to test!</p>
             <a
-              className="text-blue-600 underline hover:text-blue-800"
+              className="text-primary underline hover:text-primary"
               href={`/dashboard/work/${setupResult.job.id}`}
             >
               View Test Job → See Enrichment Data
@@ -122,7 +122,7 @@ export default function UpdateAddressPage() {
 
         {result && (
           <div
-            className={`rounded p-4 ${result.success ? "border border-green-200 bg-green-50" : "border border-red-200 bg-red-50"}`}
+            className={`rounded p-4 ${result.success ? "border border-success bg-success" : "border border-destructive bg-destructive"}`}
           >
             <pre className="whitespace-pre-wrap text-sm">
               {JSON.stringify(result, null, 2)}
@@ -131,7 +131,7 @@ export default function UpdateAddressPage() {
         )}
 
         {result?.success && (
-          <div className="mt-4 rounded border border-blue-200 bg-blue-50 p-4">
+          <div className="mt-4 rounded border border-primary bg-primary p-4">
             <p className="mb-2 font-medium">✅ Success!</p>
             <p className="mb-3 text-sm">
               Updated <strong>{result.propertiesUpdated}</strong> properties.

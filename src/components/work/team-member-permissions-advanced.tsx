@@ -54,11 +54,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Permission } from "@/lib/auth/permissions";
-import {
-  getRolePreset,
-  PERMISSION_GROUPS,
-  type PermissionDefinition,
-} from "@/lib/team/permission-groups";
+import { getRolePreset, PERMISSION_GROUPS } from "@/lib/team/permission-groups";
 
 const ROLE_OPTIONS = [
   {
@@ -149,7 +145,7 @@ export function TeamMemberPermissionsAdvanced() {
         const isCustom =
           preset &&
           JSON.stringify(result.data.permissions) !== JSON.stringify(preset);
-        setIsCustomMode(isCustom || false);
+        setIsCustomMode(isCustom ?? false);
       } else {
         toast.error("Failed to load permissions");
       }
@@ -207,9 +203,9 @@ export function TeamMemberPermissionsAdvanced() {
     JSON.stringify(customPermissions) !== JSON.stringify(currentPermissions);
 
   const enabledCount = Object.values(customPermissions).filter(Boolean).length;
-  const criticalEnabled = PERMISSION_GROUPS.flatMap((g) => g.permissions)
-    .filter((p) => p.critical && customPermissions[p.key])
-    .length;
+  const criticalEnabled = PERMISSION_GROUPS.flatMap(
+    (g) => g.permissions
+  ).filter((p) => p.critical && customPermissions[p.key]).length;
 
   if (isLoading) {
     return (
@@ -240,13 +236,13 @@ export function TeamMemberPermissionsAdvanced() {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <p className="mb-2 text-sm font-medium">Current Role</p>
+              <p className="mb-2 font-medium text-sm">Current Role</p>
               <Badge className="capitalize" variant="secondary">
                 {currentRole || "Not Set"}
               </Badge>
             </div>
             <div>
-              <p className="mb-2 text-sm font-medium">Active Permissions</p>
+              <p className="mb-2 font-medium text-sm">Active Permissions</p>
               <p className="text-muted-foreground text-sm">
                 {enabledCount} permission{enabledCount !== 1 ? "s" : ""} enabled
               </p>
@@ -278,7 +274,7 @@ export function TeamMemberPermissionsAdvanced() {
         {/* Role Selector */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-base font-medium">Role Preset</Label>
+            <Label className="font-medium text-base">Role Preset</Label>
             {isCustomMode && (
               <Badge variant="outline">
                 <AlertCircle className="mr-1 size-3" />
@@ -286,7 +282,7 @@ export function TeamMemberPermissionsAdvanced() {
               </Badge>
             )}
           </div>
-          <Select value={selectedRole} onValueChange={handleRoleChange}>
+          <Select onValueChange={handleRoleChange} value={selectedRole}>
             <SelectTrigger className="h-auto">
               <SelectValue placeholder="Select a role" />
             </SelectTrigger>
@@ -314,14 +310,14 @@ export function TeamMemberPermissionsAdvanced() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border p-3">
             <div className="flex items-center gap-2">
-              <Check className="size-4 text-green-600" />
+              <Check className="size-4 text-success" />
               <span className="text-muted-foreground text-sm">Enabled</span>
             </div>
             <p className="mt-1 font-semibold text-2xl">{enabledCount}</p>
           </div>
           <div className="rounded-lg border p-3">
             <div className="flex items-center gap-2">
-              <X className="size-4 text-gray-400" />
+              <X className="size-4 text-muted-foreground" />
               <span className="text-muted-foreground text-sm">Disabled</span>
             </div>
             <p className="mt-1 font-semibold text-2xl">
@@ -329,14 +325,14 @@ export function TeamMemberPermissionsAdvanced() {
                 enabledCount}
             </p>
           </div>
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/20">
+          <div className="rounded-lg border border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/20">
             <div className="flex items-center gap-2">
-              <AlertCircle className="size-4 text-red-600" />
-              <span className="text-sm text-red-700 dark:text-red-400">
+              <AlertCircle className="size-4 text-destructive" />
+              <span className="text-destructive text-sm dark:text-destructive">
                 Critical
               </span>
             </div>
-            <p className="mt-1 font-semibold text-2xl text-red-700 dark:text-red-400">
+            <p className="mt-1 font-semibold text-2xl text-destructive dark:text-destructive">
               {criticalEnabled}
             </p>
           </div>
@@ -345,15 +341,15 @@ export function TeamMemberPermissionsAdvanced() {
         <Separator />
 
         {/* Permission Categories Tabs */}
-        <Tabs defaultValue={PERMISSION_GROUPS[0]?.category} className="w-full">
+        <Tabs className="w-full" defaultValue={PERMISSION_GROUPS[0]?.category}>
           <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
             {PERMISSION_GROUPS.map((group) => {
               const Icon = CATEGORY_ICONS[group.category];
               return (
                 <TabsTrigger
+                  className="flex items-center gap-1.5"
                   key={group.category}
                   value={group.category}
-                  className="flex items-center gap-1.5"
                 >
                   <Icon className="size-3.5" />
                   <span className="hidden sm:inline">{group.label}</span>
@@ -366,9 +362,9 @@ export function TeamMemberPermissionsAdvanced() {
             const Icon = CATEGORY_ICONS[group.category];
             return (
               <TabsContent
+                className="space-y-4"
                 key={group.category}
                 value={group.category}
-                className="space-y-4"
               >
                 <div>
                   <div className="mb-4 flex items-start gap-3">
@@ -386,7 +382,6 @@ export function TeamMemberPermissionsAdvanced() {
                   <div className="space-y-3">
                     {group.permissions.map((permission) => (
                       <div
-                        key={permission.key}
                         className={`flex items-start justify-between rounded-lg border p-4 transition-colors ${
                           customPermissions[permission.key]
                             ? "border-primary/50 bg-primary/5"
@@ -396,20 +391,18 @@ export function TeamMemberPermissionsAdvanced() {
                             ? "border-l-4 border-l-red-500"
                             : ""
                         }`}
+                        key={permission.key}
                       >
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
                             <Label
-                              htmlFor={permission.key}
                               className="cursor-pointer font-medium"
+                              htmlFor={permission.key}
                             >
                               {permission.label}
                             </Label>
                             {permission.critical && (
-                              <Badge
-                                variant="destructive"
-                                className="text-xs"
-                              >
+                              <Badge className="text-xs" variant="destructive">
                                 Critical
                               </Badge>
                             )}
@@ -419,12 +412,12 @@ export function TeamMemberPermissionsAdvanced() {
                           </p>
                         </div>
                         <Switch
+                          checked={customPermissions[permission.key]}
+                          className="ml-4"
                           id={permission.key}
-                          checked={customPermissions[permission.key] || false}
                           onCheckedChange={() =>
                             handlePermissionToggle(permission.key)
                           }
-                          className="ml-4"
                         />
                       </div>
                     ))}
@@ -452,14 +445,14 @@ export function TeamMemberPermissionsAdvanced() {
         {hasChanges && (
           <div className="flex items-center justify-end gap-2 border-t pt-4">
             <Button
-              variant="outline"
-              size="default"
-              onClick={handleReset}
               disabled={isSaving}
+              onClick={handleReset}
+              size="default"
+              variant="outline"
             >
               Cancel
             </Button>
-            <Button size="default" onClick={handleSave} disabled={isSaving}>
+            <Button disabled={isSaving} onClick={handleSave} size="default">
               {isSaving ? (
                 <>
                   <div className="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

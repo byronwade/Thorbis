@@ -167,11 +167,11 @@ export default function PrivacyConsentPage() {
           )}
         </div>
 
-        <Card className="border-amber-500/50 bg-amber-500/5">
+        <Card className="border-warning/50 bg-warning/5">
           <CardContent className="flex items-start gap-3 pt-6">
-            <Shield className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+            <Shield className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
             <div className="space-y-1">
-              <p className="font-medium text-amber-700 text-sm dark:text-amber-400">
+              <p className="font-medium text-sm text-warning dark:text-warning">
                 Legal Compliance Notice
               </p>
               <p className="text-muted-foreground text-sm">

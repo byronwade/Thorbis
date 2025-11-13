@@ -211,12 +211,12 @@ export default function TechniciansPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           tech.status === "On Job"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success text-success"
                             : tech.status === "Available"
-                              ? "bg-blue-100 text-blue-800"
+                              ? "bg-primary text-primary"
                               : tech.status === "On Break"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-purple-100 text-purple-800"
+                                ? "bg-warning text-warning"
+                                : "bg-accent text-accent-foreground"
                         }`}
                       >
                         {tech.status}

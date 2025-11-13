@@ -5,11 +5,11 @@
  * Renders a week view with days as columns and hourly rows
  */
 
+import { addDays, format, isSameDay, startOfWeek } from "date-fns";
 import { useMemo } from "react";
-import { format, startOfWeek, addDays, isSameDay } from "date-fns";
+import { cn } from "@/lib/utils";
 import { GanttJobBlock } from "./gantt-job-block";
 import type { Job } from "./schedule-types";
-import { cn } from "@/lib/utils";
 
 type WeekTimeGridProps = {
   date: Date;
@@ -37,9 +37,11 @@ export function WeekTimeGrid({
   }, [date]);
 
   // Generate hourly rows
-  const hours = useMemo(() => {
-    return Array.from({ length: endHour - startHour + 1 }, (_, i) => i + startHour);
-  }, [startHour, endHour]);
+  const hours = useMemo(
+    () =>
+      Array.from({ length: endHour - startHour + 1 }, (_, i) => i + startHour),
+    [startHour, endHour]
+  );
 
   // Filter jobs that overlap with the week
   const weekStart = weekDays[0];
@@ -102,7 +104,7 @@ export function WeekTimeGrid({
             style={{ width: dayWidth }}
           >
             <div className="font-semibold text-xs">{format(day, "EEE")}</div>
-            <div className="text-muted-foreground text-[10px]">
+            <div className="text-[10px] text-muted-foreground">
               {format(day, "MMM d")}
             </div>
           </div>
@@ -166,8 +168,8 @@ export function WeekTimeGrid({
                     }}
                   >
                     <GanttJobBlock
-                      job={job}
                       isSelected={selectedJobId === job.id}
+                      job={job}
                       onClick={() => onJobClick?.(job.id)}
                     />
                   </div>
@@ -180,4 +182,3 @@ export function WeekTimeGrid({
     </div>
   );
 }
-

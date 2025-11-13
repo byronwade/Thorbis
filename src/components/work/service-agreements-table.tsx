@@ -23,8 +23,9 @@ import {
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { formatCurrency } from "@/lib/formatters";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
+import { formatCurrency } from "@/lib/formatters";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 
 export type ServiceAgreement = {
   id: string;
@@ -39,25 +40,27 @@ export type ServiceAgreement = {
   endDate: string;
   value: number;
   status: "active" | "pending" | "expired" | "cancelled";
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
 
 const SERVICE_AGREEMENT_STATUS_CONFIG = {
   active: {
-    className: "bg-green-500 hover:bg-green-600 text-white",
+    className: "bg-success hover:bg-success text-white",
     label: "Active",
   },
   pending: {
-    className:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
     label: "Pending",
   },
   expired: {
-    className: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+    className:
+      "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
     label: "Expired",
   },
   cancelled: {
     className:
-      "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+      "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
     label: "Cancelled",
   },
 } as const;
@@ -69,12 +72,26 @@ export function ServiceAgreementsTable({
   agreements: ServiceAgreement[];
   itemsPerPage?: number;
 }) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore(
+    (state) => state.filters.service_agreements
+  );
+
+  // Filter agreements based on archive status
+  const filteredAgreements = agreements.filter((agreement) => {
+    const isArchived = Boolean(agreement.archived_at || agreement.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const columns: ColumnDef<ServiceAgreement>[] = [
     {
       key: "agreementNumber",
       header: "Agreement #",
       width: "w-36",
       shrink: true,
+      sortable: true,
       render: (agreement) => (
         <Link
           className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
@@ -87,17 +104,22 @@ export function ServiceAgreementsTable({
     },
     {
       key: "customer",
+      sortable: true,
       header: "Customer",
       width: "flex-1",
       render: (agreement) => (
-        <div className="min-w-0">
-          <div className="truncate font-medium text-foreground text-sm leading-tight">
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/service-agreements/${agreement.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
             {agreement.customer}
           </div>
           <div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
             {agreement.type}
           </div>
-        </div>
+        </Link>
       ),
     },
     {
@@ -143,9 +165,9 @@ export function ServiceAgreementsTable({
       shrink: true,
       render: (agreement) => (
         <GenericStatusBadge
-          status={agreement.status}
           config={SERVICE_AGREEMENT_STATUS_CONFIG}
           defaultStatus="pending"
+          status={agreement.status}
         />
       ),
     },
@@ -199,6 +221,7 @@ export function ServiceAgreementsTable({
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
+      variant: "destructive",
       onClick: (selectedIds) => console.log("Archive:", selectedIds),
     },
     {
@@ -223,14 +246,18 @@ export function ServiceAgreementsTable({
     <FullWidthDataTable
       bulkActions={bulkActions}
       columns={columns}
-      data={agreements}
+      data={filteredAgreements}
       emptyIcon={
         <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
       }
       emptyMessage="No service agreements found"
       enableSelection={true}
-      getHighlightClass={() => "bg-red-50/30 dark:bg-red-950/10"}
+      entity="service_agreements"
+      getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
       getItemId={(agreement) => agreement.id}
+      isArchived={(agreement) =>
+        Boolean(agreement.archived_at || agreement.deleted_at)
+      }
       isHighlighted={(agreement) => agreement.status === "expired"}
       itemsPerPage={itemsPerPage}
       onRefresh={() => window.location.reload()}
@@ -239,6 +266,7 @@ export function ServiceAgreementsTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search agreements by number, customer, type, or status..."
+      showArchived={archiveFilter !== "active"}
       showRefresh={false}
     />
   );

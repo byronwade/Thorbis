@@ -32,7 +32,7 @@ export default function CashFlowPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Cash Inflow</CardTitle>
-            <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <ArrowUpRight className="h-4 w-4 text-success dark:text-success" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">$0</div>
@@ -43,7 +43,7 @@ export default function CashFlowPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Cash Outflow</CardTitle>
-            <ArrowDownRight className="h-4 w-4 text-red-600 dark:text-red-400" />
+            <ArrowDownRight className="h-4 w-4 text-destructive dark:text-destructive" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">$0</div>

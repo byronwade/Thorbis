@@ -60,7 +60,7 @@ export function EnrichmentPreviewCard({
         )}
         {businessData?.rating && (
           <Badge className="text-xs" variant="secondary">
-            <Star className="mr-1 h-3 w-3 fill-yellow-500 text-yellow-500" />
+            <Star className="mr-1 h-3 w-3 fill-yellow-500 text-warning" />
             {businessData.rating}/5
           </Badge>
         )}
@@ -99,7 +99,7 @@ export function EnrichmentPreviewCard({
           )}
           {businessData?.rating && (
             <div className="flex items-center gap-2">
-              <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+              <Star className="h-3 w-3 fill-yellow-500 text-warning" />
               <span>{businessData.rating}/5</span>
             </div>
           )}

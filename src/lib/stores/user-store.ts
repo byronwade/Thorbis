@@ -123,4 +123,3 @@ export const userSelectors = {
   isAuthenticated: (state: UserStore) => state.isAuthenticated,
   isLoading: (state: UserStore) => state.isLoading,
 };
-

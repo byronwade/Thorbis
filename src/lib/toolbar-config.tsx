@@ -106,7 +106,8 @@ const JOB_DETAILS_PATTERN =
   /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment)([^/]+)$/;
 const PRODUCT_DETAILS_PATTERN = /^\/dashboard\/shop\/([^/]+)$/;
 const INVOICE_DETAILS_PATTERN = /^\/dashboard\/work\/invoices\/([^/]+)$/;
-const PURCHASE_ORDER_DETAILS_PATTERN = /^\/dashboard\/work\/purchase-orders\/([^/]+)$/;
+const PURCHASE_ORDER_DETAILS_PATTERN =
+  /^\/dashboard\/work\/purchase-orders\/([^/]+)$/;
 const PRICEBOOK_DETAILS_PATTERN =
   /^\/dashboard\/work\/pricebook\/(?!new)([^/]+)$/;
 const PRICEBOOK_NEW_PATTERN = /^\/dashboard\/work\/pricebook\/new$/;
@@ -156,7 +157,9 @@ export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
   }
 
   // Check for purchase order details page pattern: /dashboard/work/purchase-orders/[id]
-  const purchaseOrderDetailsMatch = pathname.match(PURCHASE_ORDER_DETAILS_PATTERN);
+  const purchaseOrderDetailsMatch = pathname.match(
+    PURCHASE_ORDER_DETAILS_PATTERN
+  );
   if (purchaseOrderDetailsMatch) {
     return {
       title: "Purchase Order Details",

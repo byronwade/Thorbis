@@ -342,197 +342,211 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Product Details */}
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Product Image */}
-        <div className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
-          <Image
-            alt={product.name}
-            className="object-cover"
-            fill
-            priority
-            src={product.image}
-          />
-          {product.badge && (
-            <Badge className="absolute top-4 right-4 text-base">
-              {product.badge}
-            </Badge>
-          )}
-          {product.originalPrice && (
-            <Badge
-              className="absolute top-4 left-4 bg-red-500 text-base"
-              variant="destructive"
-            >
-              Save ${(product.originalPrice - product.price).toFixed(0)}
-            </Badge>
-          )}
-        </div>
-
-        {/* Product Info */}
-        <div className="flex flex-col gap-6">
-          {/* Title and Rating */}
-          <div>
-            <h1 className="font-bold text-3xl">{product.name}</h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {product.description}
-            </p>
-            <div className="mt-4 flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    className={`h-5 w-5 ${
-                      i < Math.floor(product.rating)
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-muted"
-                    }`}
-                    key={i}
-                  />
-                ))}
-              </div>
-              <span className="font-semibold">{product.rating}</span>
-              <span className="text-muted-foreground">
-                ({product.reviews} reviews)
-              </span>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Price */}
-          <div>
-            <div className="flex items-baseline gap-3">
-              <span className="font-bold text-4xl">${product.price}</span>
+    <div className="flex h-full w-full flex-col overflow-auto">
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="space-y-6 p-6">
+          {/* Product Details */}
+          <div className="grid gap-8 lg:grid-cols-2">
+            {/* Product Image */}
+            <div className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
+              <Image
+                alt={product.name}
+                className="object-cover"
+                fill
+                priority
+                src={product.image}
+              />
+              {product.badge && (
+                <Badge className="absolute top-4 right-4 text-base">
+                  {product.badge}
+                </Badge>
+              )}
               {product.originalPrice && (
-                <span className="text-2xl text-muted-foreground line-through">
-                  ${product.originalPrice}
-                </span>
+                <Badge
+                  className="absolute top-4 left-4 bg-destructive text-base"
+                  variant="destructive"
+                >
+                  Save ${(product.originalPrice - product.price).toFixed(0)}
+                </Badge>
               )}
             </div>
-            {product.inStock ? (
-              <p className="mt-2 flex items-center gap-2 text-green-600 dark:text-green-400">
-                <Check className="h-5 w-5" />
-                In Stock - Ships within 2-3 business days
-              </p>
-            ) : (
-              <p className="mt-2 text-red-600 dark:text-red-400">
-                Out of Stock
-              </p>
-            )}
-          </div>
 
-          <Separator />
+            {/* Product Info */}
+            <div className="flex flex-col gap-6">
+              {/* Title and Rating */}
+              <div>
+                <h1 className="font-bold text-3xl">{product.name}</h1>
+                <p className="mt-2 text-lg text-muted-foreground">
+                  {product.description}
+                </p>
+                <div className="mt-4 flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        className={`h-5 w-5 ${
+                          i < Math.floor(product.rating)
+                            ? "fill-yellow-400 text-warning"
+                            : "text-muted"
+                        }`}
+                        key={i}
+                      />
+                    ))}
+                  </div>
+                  <span className="font-semibold">{product.rating}</span>
+                  <span className="text-muted-foreground">
+                    ({product.reviews} reviews)
+                  </span>
+                </div>
+              </div>
 
-          {/* Add to Cart */}
-          <div className="space-y-3">
-            <Button className="w-full" disabled={!product.inStock} size="lg">
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              Add to Cart
-            </Button>
-            <div className="grid gap-3 md:grid-cols-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Truck className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Free Shipping</span>
+              <Separator />
+
+              {/* Price */}
+              <div>
+                <div className="flex items-baseline gap-3">
+                  <span className="font-bold text-4xl">${product.price}</span>
+                  {product.originalPrice && (
+                    <span className="text-2xl text-muted-foreground line-through">
+                      ${product.originalPrice}
+                    </span>
+                  )}
+                </div>
+                {product.inStock ? (
+                  <p className="mt-2 flex items-center gap-2 text-success dark:text-success">
+                    <Check className="h-5 w-5" />
+                    In Stock - Ships within 2-3 business days
+                  </p>
+                ) : (
+                  <p className="mt-2 text-destructive dark:text-destructive">
+                    Out of Stock
+                  </p>
+                )}
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">2-3 Day Delivery</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Secure Checkout</span>
+
+              <Separator />
+
+              {/* Add to Cart */}
+              <div className="space-y-3">
+                <Button
+                  className="w-full"
+                  disabled={!product.inStock}
+                  size="lg"
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to Cart
+                </Button>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Truck className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Free Shipping</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      2-3 Day Delivery
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      Secure Checkout
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Product Details Tabs */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Description & Features */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Description</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  {product.longDescription}
+                </p>
+
+                <div className="pt-4">
+                  <h3 className="mb-3 font-semibold text-lg">Key Features</h3>
+                  <ul className="space-y-2">
+                    {product.features.map((feature, index) => (
+                      <li className="flex items-start gap-2" key={index}>
+                        <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                        <span className="text-muted-foreground text-sm">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Specifications */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Specifications</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <dl className="divide-y">
+                  {product.specifications.map((spec, index) => (
+                    <div
+                      className="flex justify-between gap-4 py-3 text-sm"
+                      key={index}
+                    >
+                      <dt className="font-medium">{spec.label}</dt>
+                      <dd className="text-right text-muted-foreground">
+                        {spec.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Why Buy Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Why Buy From Thorbis?</CardTitle>
+              <CardDescription>
+                More than just products - we support your business success
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Package className="h-8 w-8 text-primary" />
+                  <h3 className="font-semibold">Quality Guaranteed</h3>
+                  <p className="text-muted-foreground text-sm">
+                    We only sell products we'd use in our own businesses. Every
+                    item is tested for quality and durability.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <CreditCard className="h-8 w-8 text-primary" />
+                  <h3 className="font-semibold">Net-30 Terms Available</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Approved businesses can pay on account with Net-30 terms.
+                    Focus on growing your business.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Truck className="h-8 w-8 text-primary" />
+                  <h3 className="font-semibold">Fast, Free Shipping</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Free shipping on orders over $100. Most items ship within 1
+                    business day.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      {/* Product Details Tabs */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Description & Features */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Product Description</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">{product.longDescription}</p>
-
-            <div className="pt-4">
-              <h3 className="mb-3 font-semibold text-lg">Key Features</h3>
-              <ul className="space-y-2">
-                {product.features.map((feature, index) => (
-                  <li className="flex items-start gap-2" key={index}>
-                    <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-muted-foreground text-sm">
-                      {feature}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Specifications */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Specifications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="divide-y">
-              {product.specifications.map((spec, index) => (
-                <div
-                  className="flex justify-between gap-4 py-3 text-sm"
-                  key={index}
-                >
-                  <dt className="font-medium">{spec.label}</dt>
-                  <dd className="text-right text-muted-foreground">
-                    {spec.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Why Buy Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Why Buy From Thorbis?</CardTitle>
-          <CardDescription>
-            More than just products - we support your business success
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="space-y-2">
-              <Package className="h-8 w-8 text-primary" />
-              <h3 className="font-semibold">Quality Guaranteed</h3>
-              <p className="text-muted-foreground text-sm">
-                We only sell products we'd use in our own businesses. Every item
-                is tested for quality and durability.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <CreditCard className="h-8 w-8 text-primary" />
-              <h3 className="font-semibold">Net-30 Terms Available</h3>
-              <p className="text-muted-foreground text-sm">
-                Approved businesses can pay on account with Net-30 terms. Focus
-                on growing your business.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Truck className="h-8 w-8 text-primary" />
-              <h3 className="font-semibold">Fast, Free Shipping</h3>
-              <p className="text-muted-foreground text-sm">
-                Free shipping on orders over $100. Most items ship within 1
-                business day.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

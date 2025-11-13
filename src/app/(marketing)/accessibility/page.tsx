@@ -1,12 +1,11 @@
 import Script from "next/script";
-
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 604800;
+export const revalidate = 604_800;
 
 export const metadata = generateSEOMetadata({
   title: "Thorbis Accessibility Statement",
@@ -43,8 +42,6 @@ export default function AccessibilityPage() {
   return (
     <>
       <Script
-        id="accessibility-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -53,22 +50,24 @@ export default function AccessibilityPage() {
             ])
           ),
         }}
+        id="accessibility-breadcrumb-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <header className="mb-10 space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             Accessibility Statement
           </h1>
           <p className="text-muted-foreground">
-            Thorbis strives to deliver inclusive experiences across our platform and customer
-            touchpoints. Accessibility is an ongoing priority.
+            Thorbis strives to deliver inclusive experiences across our platform
+            and customer touchpoints. Accessibility is an ongoing priority.
           </p>
         </header>
         <article className="space-y-8">
           {SECTIONS.map((section) => (
-            <section key={section.heading} className="space-y-2">
-              <h2 className="text-xl font-semibold">{section.heading}</h2>
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            <section className="space-y-2" key={section.heading}>
+              <h2 className="font-semibold text-xl">{section.heading}</h2>
+              <p className="whitespace-pre-line text-muted-foreground leading-relaxed">
                 {section.body}
               </p>
             </section>
@@ -78,4 +77,3 @@ export default function AccessibilityPage() {
     </>
   );
 }
-

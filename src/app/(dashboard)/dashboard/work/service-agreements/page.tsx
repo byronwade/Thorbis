@@ -10,13 +10,10 @@
  */
 
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
-import {
-  type ServiceAgreement,
-  ServiceAgreementsTable,
-} from "@/components/work/service-agreements-table";
 import { ServiceAgreementsKanban } from "@/components/work/service-agreements-kanban";
+import { ServiceAgreementsTable } from "@/components/work/service-agreements-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -45,6 +42,7 @@ export default async function ServiceAgreementsPage() {
   }
 
   // Fetch service agreements from service_plans table where type = 'contract'
+  // Fetch all agreements including archived (filter in UI)
   const { data: agreementsRaw, error } = await supabase
     .from("service_plans")
     .select(`
@@ -53,7 +51,6 @@ export default async function ServiceAgreementsPage() {
     `)
     .eq("company_id", activeCompanyId)
     .eq("type", "contract")
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -62,7 +59,9 @@ export default async function ServiceAgreementsPage() {
 
   // Transform data for table component
   const agreements = (agreementsRaw || []).map((agreement: any) => {
-    const customer = Array.isArray(agreement.customer) ? agreement.customer[0] : agreement.customer;
+    const customer = Array.isArray(agreement.customer)
+      ? agreement.customer[0]
+      : agreement.customer;
 
     return {
       id: agreement.id,
@@ -90,22 +89,29 @@ export default async function ServiceAgreementsPage() {
           })
         : "",
       contractValue: agreement.price || 0,
+      archived_at: agreement.archived_at,
+      deleted_at: agreement.deleted_at,
     };
   });
 
-  // Calculate service agreement stats
-  const totalAgreements = agreements.length;
-  const activeCount = agreements.filter((a) => a.status === "active").length;
-  const draftCount = agreements.filter((a) => a.status === "draft").length;
-  const expiredCount = agreements.filter((a) => a.status === "expired").length;
-  const totalValue = agreements
+  // Filter to active agreements for stats calculations
+  const activeAgreements = agreements.filter((a) => !a.archived_at && !a.deleted_at);
+
+  // Calculate service agreement stats (from active agreements only)
+  const totalAgreements = activeAgreements.length;
+  const activeCount = activeAgreements.filter((a) => a.status === "active").length;
+  const draftCount = activeAgreements.filter((a) => a.status === "draft").length;
+  const expiredCount = activeAgreements.filter((a) => a.status === "expired").length;
+  const totalValue = activeAgreements
     .filter((a) => a.status === "active")
     .reduce((sum, a) => sum + (a.contractValue || 0), 0);
-  const expiringSoon = agreements.filter((a) => {
+  const expiringSoon = activeAgreements.filter((a) => {
     if (!a.endDate) return false;
     const endDate = new Date(a.endDate);
     const now = new Date();
-    const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const daysUntilExpiry = Math.ceil(
+      (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return daysUntilExpiry <= 30 && daysUntilExpiry >= 0;
   }).length;
 
@@ -148,7 +154,9 @@ export default async function ServiceAgreementsPage() {
       <WorkDataView
         kanban={<ServiceAgreementsKanban agreements={agreements} />}
         section="serviceAgreements"
-        table={<ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />}
+        table={
+          <ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />
+        }
       />
     </>
   );

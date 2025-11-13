@@ -80,10 +80,10 @@ export function FinanceComingSoon() {
               Complete Financial Control
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-green-500/20 hover:shadow-green-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-success/20 hover:shadow-green-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-green-500/10">
-                    <Building2 className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-success/10">
+                    <Building2 className="size-6 text-success dark:text-success" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -95,10 +95,10 @@ export function FinanceComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-blue-500/20 hover:shadow-blue-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <Calculator className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <Calculator className="size-6 text-primary dark:text-primary" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -110,10 +110,10 @@ export function FinanceComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-purple-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-border/20 hover:shadow-lg hover:shadow-purple-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <CreditCard className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <CreditCard className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -125,10 +125,10 @@ export function FinanceComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-orange-500/20 hover:shadow-lg hover:shadow-orange-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-orange-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-orange-500/10">
-                    <Users className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Users className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -140,10 +140,10 @@ export function FinanceComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-indigo-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-indigo-500/20 hover:shadow-indigo-500/10 hover:shadow-lg">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-indigo-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-border/20 hover:shadow-indigo-500/10 hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-indigo-500/10">
-                    <Receipt className="size-6 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
+                    <Receipt className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -170,10 +170,10 @@ export function FinanceComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-red-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-red-500/20 hover:shadow-lg hover:shadow-red-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-red-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-destructive/20 hover:shadow-lg hover:shadow-red-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-red-500/10">
-                    <Shield className="size-6 text-red-600 dark:text-red-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10">
+                    <Shield className="size-6 text-destructive dark:text-destructive" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">Tax Compliance</h3>
@@ -183,10 +183,10 @@ export function FinanceComingSoon() {
                 </p>
               </div>
 
-              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/10">
+              <div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-yellow-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-warning/20 hover:shadow-lg hover:shadow-yellow-500/10">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-yellow-500/10">
-                    <Zap className="size-6 text-yellow-600 dark:text-yellow-400" />
+                  <div className="flex size-12 items-center justify-center rounded-full bg-warning/10">
+                    <Zap className="size-6 text-warning dark:text-warning" />
                   </div>
                 </div>
                 <h3 className="mb-2 font-semibold text-base">
@@ -206,10 +206,10 @@ export function FinanceComingSoon() {
               Intelligent Financial Monitoring
             </h2>
             <div className="grid gap-5 sm:grid-cols-2">
-              <div className="rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-success/20 bg-gradient-to-br from-green-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-green-500/10">
-                    <Wallet className="size-6 text-green-600 dark:text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-success/10">
+                    <Wallet className="size-6 text-success dark:text-success" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Cash Flow Alerts</h3>
@@ -223,16 +223,16 @@ export function FinanceComingSoon() {
                   Tuesday based on scheduled payments. Consider moving $10,000
                   from savings or delaying vendor payment #234.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-green-600 text-xs dark:text-green-400">
+                <div className="flex items-center gap-1 text-success text-xs dark:text-success">
                   <Bell className="size-3" />
                   <span>Never run out of cash</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-orange-500/10">
-                    <AlertCircle className="size-6 text-orange-600 dark:text-orange-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-warning/10">
+                    <AlertCircle className="size-6 text-warning dark:text-warning" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Unusual Expenses</h3>
@@ -245,16 +245,16 @@ export function FinanceComingSoon() {
                   &quot;Fuel expense for Truck #3 is 2.5x normal this week ($485
                   vs usual $195). Would you like to review transactions?&quot;
                 </p>
-                <div className="flex items-center gap-1 text-orange-600 text-xs dark:text-orange-400">
+                <div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
                   <Zap className="size-3" />
                   <span>Fraud prevention</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <ArrowRightLeft className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                    <ArrowRightLeft className="size-6 text-primary dark:text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Smart Transfers</h3>
@@ -268,16 +268,16 @@ export function FinanceComingSoon() {
                   checking account. We noticed you had this to spare after
                   reviewing bills and existing totals.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-blue-600 text-xs dark:text-blue-400">
+                <div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
                   <CheckCircle2 className="size-3" />
                   <span>Intelligent automation</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-6 text-left">
+              <div className="rounded-xl border border-border/20 bg-gradient-to-br from-purple-500/10 to-transparent p-6 text-left">
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-purple-500/10">
-                    <Calendar className="size-6 text-purple-600 dark:text-purple-400" />
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-accent/10">
+                    <Calendar className="size-6 text-accent-foreground dark:text-accent-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Bill Reminders</h3>
@@ -291,7 +291,7 @@ export function FinanceComingSoon() {
                   week ($3,200). QuickBooks subscription renews tomorrow ($79).
                   Total upcoming: $5,729.&quot;
                 </p>
-                <div className="flex items-center gap-1 text-purple-600 text-xs dark:text-purple-400">
+                <div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
                   <TrendingUp className="size-3" />
                   <span>Stay on top of bills</span>
                 </div>
@@ -352,7 +352,7 @@ export function FinanceComingSoon() {
             </h2>
             <div className="mx-auto max-w-3xl space-y-3 text-left text-muted-foreground">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     All-In-One Platform:
@@ -362,7 +362,7 @@ export function FinanceComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Real-Time Insights:
@@ -372,7 +372,7 @@ export function FinanceComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Intelligent Automation:
@@ -382,7 +382,7 @@ export function FinanceComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Proactive Monitoring:
@@ -392,7 +392,7 @@ export function FinanceComingSoon() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
                 <p className="text-sm">
                   <span className="font-medium text-foreground">
                     Seamless Integrations:

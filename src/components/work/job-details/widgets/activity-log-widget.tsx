@@ -36,33 +36,33 @@ interface ActivityLogWidgetProps {
 const activityConfig = {
   status_change: {
     icon: CheckCircle2,
-    color: "text-blue-600",
-    bgColor: "bg-blue-100 dark:bg-blue-950",
+    color: "text-primary",
+    bgColor: "bg-primary dark:bg-primary",
   },
   payment: {
     icon: DollarSign,
-    color: "text-green-600",
-    bgColor: "bg-green-100 dark:bg-green-950",
+    color: "text-success",
+    bgColor: "bg-success dark:bg-success",
   },
   schedule: {
     icon: Calendar,
-    color: "text-purple-600",
-    bgColor: "bg-purple-100 dark:bg-purple-950",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent dark:bg-accent",
   },
   communication: {
     icon: MessageSquare,
-    color: "text-orange-600",
-    bgColor: "bg-orange-100 dark:bg-orange-950",
+    color: "text-warning",
+    bgColor: "bg-warning dark:bg-warning",
   },
   document: {
     icon: FileText,
-    color: "text-gray-600",
-    bgColor: "bg-gray-100 dark:bg-gray-950",
+    color: "text-muted-foreground",
+    bgColor: "bg-muted dark:bg-foreground",
   },
   work: {
     icon: Wrench,
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-100 dark:bg-indigo-950",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent dark:bg-accent",
   },
   assignment: {
     icon: User,

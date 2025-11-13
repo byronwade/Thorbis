@@ -208,10 +208,10 @@ export default function JobTemplatesPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           template.status === "Active"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success text-success"
                             : template.status === "Draft"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-gray-100 text-gray-800"
+                              ? "bg-warning text-warning"
+                              : "bg-muted text-foreground"
                         }`}
                       >
                         {template.status}

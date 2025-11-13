@@ -165,7 +165,7 @@ export function PriceBookTable({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Link
-              className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+              className="truncate font-medium text-foreground text-sm leading-tight hover:underline"
               href={`/dashboard/work/pricebook/${item.id}`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -277,7 +277,7 @@ export function PriceBookTable({
       align: "right",
       hideOnMobile: true,
       render: (item) => (
-        <div className="font-medium text-green-600 text-sm dark:text-green-500">
+        <div className="font-medium text-sm text-success dark:text-success">
           {item.markupPercent}%
         </div>
       ),
@@ -338,14 +338,14 @@ export function PriceBookTable({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="text-orange-600 dark:text-orange-400"
+                className="text-warning dark:text-warning"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Archive className="mr-2 h-4 w-4" />
                 {item.isActive ? "Deactivate" : "Activate"}
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-red-600 dark:text-red-400"
+                className="text-destructive dark:text-destructive"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -415,7 +415,7 @@ export function PriceBookTable({
     <div className="flex h-full flex-col">
       {/* Filter Summary Banner */}
       {filterSummary !== "All Items" && (
-        <div className="border-b bg-muted/30 px-6 py-3">
+        <div className="shrink-0 border-b bg-muted/30 px-6 py-3">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-sm">Showing:</span>
             <Badge className="font-medium" variant="secondary">
@@ -429,7 +429,7 @@ export function PriceBookTable({
         </div>
       )}
 
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <FullWidthDataTable
           bulkActions={bulkActions}
           columns={columns}

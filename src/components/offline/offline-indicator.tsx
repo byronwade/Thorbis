@@ -41,11 +41,11 @@ export function OfflineIndicator() {
   // Offline mode
   if (!isOnline) {
     return (
-      <div className="flex items-center gap-2 rounded-md bg-yellow-500/10 px-3 py-1 text-sm text-yellow-700 dark:text-yellow-400">
+      <div className="flex items-center gap-2 rounded-md bg-warning/10 px-3 py-1 text-sm text-warning dark:text-warning">
         <WifiOff className="size-4" />
         <span className="hidden sm:inline">Offline Mode</span>
         {pendingOperations > 0 && (
-          <span className="rounded-full bg-yellow-500/20 px-2 py-0.5 font-medium text-xs">
+          <span className="rounded-full bg-warning/20 px-2 py-0.5 font-medium text-xs">
             {pendingOperations}
           </span>
         )}
@@ -56,11 +56,11 @@ export function OfflineIndicator() {
   // Syncing
   if (isSyncing) {
     return (
-      <div className="flex items-center gap-2 rounded-md bg-blue-500/10 px-3 py-1 text-blue-700 text-sm dark:text-blue-400">
+      <div className="flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-primary text-sm dark:text-primary">
         <RefreshCw className="size-4 animate-spin" />
         <span className="hidden sm:inline">Syncing...</span>
         {pendingOperations > 0 && (
-          <span className="rounded-full bg-blue-500/20 px-2 py-0.5 font-medium text-xs">
+          <span className="rounded-full bg-primary/20 px-2 py-0.5 font-medium text-xs">
             {pendingOperations}
           </span>
         )}
@@ -71,7 +71,7 @@ export function OfflineIndicator() {
   // Pending operations (online but not syncing)
   if (pendingOperations > 0) {
     return (
-      <div className="flex items-center gap-2 rounded-md bg-orange-500/10 px-3 py-1 text-orange-700 text-sm dark:text-orange-400">
+      <div className="flex items-center gap-2 rounded-md bg-warning/10 px-3 py-1 text-sm text-warning dark:text-warning">
         <AlertCircle className="size-4" />
         <span className="hidden sm:inline">{pendingOperations} pending</span>
         <span className="sm:hidden">{pendingOperations}</span>
@@ -82,7 +82,7 @@ export function OfflineIndicator() {
   // Recently synced (show for 5 seconds)
   if (lastSync && Date.now() - lastSync.getTime() < 5000) {
     return (
-      <div className="flex items-center gap-2 rounded-md bg-green-500/10 px-3 py-1 text-green-700 text-sm dark:text-green-400">
+      <div className="flex items-center gap-2 rounded-md bg-success/10 px-3 py-1 text-sm text-success dark:text-success">
         <CheckCircle2 className="size-4" />
         <span className="hidden sm:inline">Synced</span>
       </div>
@@ -124,12 +124,12 @@ export function SyncStatusDetail() {
         <div className="flex items-center gap-2">
           {isOnline ? (
             <>
-              <div className="size-2 rounded-full bg-green-500" />
+              <div className="size-2 rounded-full bg-success" />
               <span className="font-medium text-sm">Online</span>
             </>
           ) : (
             <>
-              <div className="size-2 rounded-full bg-yellow-500" />
+              <div className="size-2 rounded-full bg-warning" />
               <span className="font-medium text-sm">Offline</span>
             </>
           )}
@@ -149,7 +149,7 @@ export function SyncStatusDetail() {
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground text-sm">Sync Status</span>
           <div className="flex items-center gap-2">
-            <RefreshCw className="size-4 animate-spin text-blue-500" />
+            <RefreshCw className="size-4 animate-spin text-primary" />
             <span className="font-medium text-sm">Syncing...</span>
           </div>
         </div>
@@ -192,7 +192,7 @@ export function OfflineBadge() {
     <div
       className={cn(
         "flex size-6 items-center justify-center rounded-full font-bold text-xs",
-        isOnline ? "bg-orange-500 text-white" : "bg-yellow-500 text-white"
+        isOnline ? "bg-warning text-white" : "bg-warning text-white"
       )}
     >
       {pendingOperations > 0 ? (

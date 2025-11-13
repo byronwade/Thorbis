@@ -8,10 +8,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { PasswordResetTemplate } from "@/components/emails/password-reset-template";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { hasRole, isCompanyOwner } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/email-sender";
-import { PasswordResetTemplate } from "@/components/emails/password-reset-template";
 import {
   ActionError,
   ERROR_CODES,
@@ -177,8 +177,43 @@ export async function inviteTeamMember(
       );
     }
 
-    // TODO: Send invitation email via Supabase Auth or email service
-    // await supabase.auth.admin.inviteUserByEmail(data.email)
+    // Send magic link invitation email
+    try {
+      const { sendSingleTeamInvitation } = await import(
+        "@/actions/team-invitations"
+      );
+
+      // Create FormData for the invitation
+      const invitationFormData = new FormData();
+      invitationFormData.append("email", formData.get("email") as string);
+      invitationFormData.append(
+        "firstName",
+        (formData.get("first_name") as string) || ""
+      );
+      invitationFormData.append(
+        "lastName",
+        (formData.get("last_name") as string) || ""
+      );
+      invitationFormData.append("role", formData.get("role") as string);
+      invitationFormData.append(
+        "phone",
+        (formData.get("phone") as string) || ""
+      );
+
+      const invitationResult =
+        await sendSingleTeamInvitation(invitationFormData);
+
+      if (!invitationResult.success) {
+        console.error(
+          "Failed to send invitation email:",
+          invitationResult.error
+        );
+        // Don't fail the whole operation if email fails
+      }
+    } catch (error) {
+      console.error("Error sending invitation email:", error);
+      // Don't fail the whole operation if email fails
+    }
 
     revalidatePath("/dashboard/settings/team");
     return invitation.id;
@@ -381,8 +416,7 @@ export async function removeTeamMember(
       !canDeleteResult.data.canDelete
     ) {
       throw new ActionError(
-        canDeleteResult.data.reason ||
-          "Cannot delete this team member",
+        canDeleteResult.data.reason || "Cannot delete this team member",
         ERROR_CODES.BUSINESS_RULE_VIOLATION
       );
     }
@@ -473,8 +507,7 @@ export async function suspendTeamMember(
       !canSuspendResult.data.canDelete
     ) {
       throw new ActionError(
-        canSuspendResult.data.reason ||
-          "Cannot suspend this team member",
+        canSuspendResult.data.reason || "Cannot suspend this team member",
         ERROR_CODES.BUSINESS_RULE_VIOLATION
       );
     }
@@ -627,8 +660,7 @@ export async function archiveTeamMember(
       !canArchiveResult.data.canDelete
     ) {
       throw new ActionError(
-        canArchiveResult.data.reason ||
-          "Cannot archive this team member",
+        canArchiveResult.data.reason || "Cannot archive this team member",
         ERROR_CODES.BUSINESS_RULE_VIOLATION
       );
     }
@@ -655,8 +687,13 @@ export async function archiveTeamMember(
       entity_id: memberId,
       metadata: {
         archived_by_name:
-          (await supabase.from("users").select("name").eq("id", user.id).single()).data
-            ?.name || "Unknown",
+          (
+            await supabase
+              .from("users")
+              .select("name")
+              .eq("id", user.id)
+              .single()
+          ).data?.name || "Unknown",
       },
     });
 
@@ -701,7 +738,7 @@ export async function restoreTeamMember(
     const isOwner = await isCompanyOwner(supabase, user.id, companyId);
     const isManager = await hasRole(supabase, user.id, "manager", companyId);
 
-    if (!isOwner && !isManager) {
+    if (!(isOwner || isManager)) {
       throw new ActionError(
         "Only owners and managers can restore team members",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -748,8 +785,13 @@ export async function restoreTeamMember(
       entity_id: memberId,
       metadata: {
         restored_by_name:
-          (await supabase.from("users").select("name").eq("id", user.id).single()).data
-            ?.name || "Unknown",
+          (
+            await supabase
+              .from("users")
+              .select("name")
+              .eq("id", user.id)
+              .single()
+          ).data?.name || "Unknown",
       },
     });
 
@@ -795,7 +837,7 @@ export async function sendPasswordResetEmail(
     const isOwner = await isCompanyOwner(supabase, user.id, companyId);
     const isManager = await hasRole(supabase, user.id, "manager", companyId);
 
-    if (!isOwner && !isManager) {
+    if (!(isOwner || isManager)) {
       throw new ActionError(
         "Only owners and managers can reset passwords",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -935,9 +977,7 @@ export async function canManageTeamMember(
  * Get team member permissions and settings
  * Only accessible by owners and managers
  */
-export async function getTeamMemberPermissions(
-  memberId: string
-): Promise<
+export async function getTeamMemberPermissions(memberId: string): Promise<
   ActionResult<{
     role: string;
     permissions: Record<string, boolean>;
@@ -1038,7 +1078,7 @@ export async function updateTeamMemberPermissions(
     const isManager = await hasRole(supabase, user.id, "manager", companyId);
     const isAdmin = await hasRole(supabase, user.id, "admin", companyId);
 
-    if (!isOwner && !isManager && !isAdmin) {
+    if (!(isOwner || isManager || isAdmin)) {
       throw new ActionError(
         "Only owners, admins, and managers can update permissions",
         ERROR_CODES.AUTH_FORBIDDEN,

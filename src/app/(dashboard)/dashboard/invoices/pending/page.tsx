@@ -201,14 +201,14 @@ export default function PendingInvoicesPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           invoice.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-warning text-warning"
+                            : "bg-destructive text-destructive"
                         }`}
                       >
                         {invoice.status}
                       </span>
                       {Number.parseInt(invoice.daysOverdue, 10) > 0 && (
-                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 font-medium text-red-800 text-xs">
+                        <span className="inline-flex items-center rounded-full bg-destructive px-2 py-1 font-medium text-destructive text-xs">
                           {invoice.daysOverdue} days overdue
                         </span>
                       )}

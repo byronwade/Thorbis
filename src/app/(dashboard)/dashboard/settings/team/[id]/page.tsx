@@ -4,10 +4,10 @@
  */
 
 import { notFound, redirect } from "next/navigation";
-import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
-import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { TeamMemberPageContent } from "@/components/team/team-member-page-content";
-import { TeamMemberStatsBar } from "@/components/team/team-member-stats-bar";
+import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import { generateTeamMemberStatsSimple } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function TeamMemberDetailsPage({
@@ -20,7 +20,9 @@ export default async function TeamMemberDetailsPage({
   const supabase = await createClient();
   if (!supabase) return notFound();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return notFound();
 
   const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
@@ -32,14 +34,16 @@ export default async function TeamMemberDetailsPage({
 
   const { data: teamMember } = await supabase
     .from("team_members")
-    .select(`*,user:users!user_id(*)`)
+    .select("*,user:users!user_id(*)")
     .eq("id", teamMemberId)
     .eq("company_id", activeCompanyId)
     .single();
 
   if (!teamMember) return notFound();
 
-  const userData = Array.isArray(teamMember.user) ? teamMember.user[0] : teamMember.user;
+  const userData = Array.isArray(teamMember.user)
+    ? teamMember.user[0]
+    : teamMember.user;
 
   const [
     { data: assignedJobs },
@@ -49,7 +53,7 @@ export default async function TeamMemberDetailsPage({
   ] = await Promise.all([
     supabase
       .from("jobs")
-      .select(`*,customer:customers!customer_id(id, first_name, last_name)`)
+      .select("*,customer:customers!customer_id(id, first_name, last_name)")
       .eq("company_id", activeCompanyId)
       .contains("assigned_team_member_ids", [teamMemberId])
       .is("deleted_at", null)
@@ -57,7 +61,7 @@ export default async function TeamMemberDetailsPage({
       .limit(20),
     supabase
       .from("job_time_entries")
-      .select(`*,job:jobs!job_id(id, job_number, title)`)
+      .select("*,job:jobs!job_id(id, job_number, title)")
       .eq("user_id", teamMember.user_id)
       .order("clock_in", { ascending: false })
       .limit(50),
@@ -71,14 +75,17 @@ export default async function TeamMemberDetailsPage({
       .select("*, user:users!user_id(*)")
       .eq("entity_type", "team_member")
       .eq("entity_id", teamMemberId)
-      .order("created_at", { ascending: false})
+      .order("created_at", { ascending: false })
       .limit(50),
   ]);
 
   const totalJobs = assignedJobs?.length || 0;
-  const completedJobs = assignedJobs?.filter((job) => job.status === "completed").length || 0;
-  const hoursWorked = timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
-  const revenueGenerated = assignedJobs?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
+  const completedJobs =
+    assignedJobs?.filter((job) => job.status === "completed").length || 0;
+  const hoursWorked =
+    timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+  const revenueGenerated =
+    assignedJobs?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
 
   const metrics = {
     totalJobs,
@@ -102,16 +109,16 @@ export default async function TeamMemberDetailsPage({
     activities: activities || [],
   };
 
+  // Generate stats for toolbar
+  const stats = generateTeamMemberStatsSimple(metrics);
+
   return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      <StickyStatsBar>
-        <TeamMemberStatsBar
-          entityId={teamMemberId}
-          metrics={metrics}
-          compact={false}
-        />
-      </StickyStatsBar>
-      <TeamMemberPageContent entityData={entityData} metrics={metrics} />
-    </div>
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <TeamMemberPageContent entityData={entityData} metrics={metrics} />
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

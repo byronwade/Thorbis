@@ -259,7 +259,7 @@ export function InvoicePaymentManagement({
 
               <DialogFooter>
                 <Button
-                  className={`w-full ${isOverdue ? "bg-red-600 text-white hover:bg-red-700" : ""}`}
+                  className={`w-full ${isOverdue ? "bg-destructive text-white hover:bg-destructive" : ""}`}
                   disabled={!(paymentAmount && selectedCard) || isProcessing}
                   onClick={handlePayment}
                   size="lg"

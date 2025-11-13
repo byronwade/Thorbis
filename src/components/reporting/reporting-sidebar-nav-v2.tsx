@@ -130,7 +130,7 @@ export function ReportingSidebarNav() {
                 No custom reports yet
               </p>
               <button
-                className="text-blue-500 text-xs hover:underline"
+                className="text-primary text-xs hover:underline"
                 onClick={handleCreateReport}
                 type="button"
               >

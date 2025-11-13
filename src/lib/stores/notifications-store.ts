@@ -28,32 +28,14 @@ import { createClient } from "@/lib/supabase/client";
 // Types
 // =====================================================================================
 
-export type NotificationType =
-  | "message"
-  | "alert"
-  | "payment"
-  | "job"
-  | "team"
-  | "system";
+// Re-export shared types to maintain backward compatibility
+export type {
+  Notification,
+  NotificationPriority,
+  NotificationType,
+} from "./notifications-types";
 
-export type NotificationPriority = "low" | "medium" | "high" | "urgent";
-
-export interface Notification {
-  id: string;
-  user_id: string;
-  company_id: string;
-  type: NotificationType;
-  priority: NotificationPriority;
-  title: string;
-  message: string;
-  read: boolean;
-  read_at: string | null;
-  action_url: string | null;
-  action_label: string | null;
-  metadata: Record<string, any>;
-  created_at: string;
-  updated_at: string;
-}
+import type { Notification, NotificationType, NotificationPriority } from "./notifications-types";
 
 interface NotificationsState {
   // State
@@ -63,6 +45,7 @@ interface NotificationsState {
   isSubscribed: boolean;
   error: string | null;
   realtimeChannel: RealtimeChannel | null;
+  subscriptionPromise: Promise<void> | null; // Prevents race conditions
 
   // Actions
   setNotifications: (notifications: Notification[]) => void;
@@ -95,6 +78,7 @@ const initialState = {
   isSubscribed: false,
   error: null,
   realtimeChannel: null,
+  subscriptionPromise: null,
 };
 
 // =====================================================================================
@@ -208,151 +192,188 @@ export const useNotificationsStore = create<NotificationsState>()(
         try {
           const state = get();
 
-          // Don't subscribe if already subscribed (CRITICAL: Check before any async operations)
+          // CRITICAL: Return existing promise if subscription is in progress
+          if (state.subscriptionPromise) {
+            console.log("Subscription already in progress, waiting...");
+            return state.subscriptionPromise;
+          }
+
+          // Don't subscribe if already subscribed
           if (state.isSubscribed || state.realtimeChannel) {
             console.log("Already subscribed to notifications");
-            return;
+            return Promise.resolve();
           }
 
-          // CRITICAL FIX: Set flag immediately to prevent race condition
-          set({ isSubscribed: true });
+          // Create subscription promise BEFORE any async operations
+          const subscriptionPromise = (async () => {
+            // CRITICAL FIX: Set flag immediately to prevent race condition
+            set({ isSubscribed: true });
 
-          const supabase = createClient();
+            const supabase = createClient();
 
-          if (!supabase) {
-            console.warn("⚠️ Supabase client not configured, realtime updates disabled");
-            set({
-              isSubscribed: false,
-            });
-            return;
-          }
+            if (!supabase) {
+              console.warn(
+                "⚠️ Supabase client not configured, realtime updates disabled"
+              );
+              set({
+                isSubscribed: false,
+              });
+              return;
+            }
 
-          // Create realtime channel for notifications
-          const channel = supabase
-            .channel("notifications-changes")
-            .on(
-              "postgres_changes",
-              {
-                event: "INSERT",
-                schema: "public",
-                table: "notifications",
-                filter: `user_id=eq.${userId}`,
-              },
-              (payload: RealtimePostgresChangesPayload<Notification>) => {
-                // New notification received
-                if (payload.new) {
-                  get().addNotification(payload.new as Notification);
+            // Create realtime channel for notifications
+            const channel = supabase
+              .channel("notifications-changes")
+              .on(
+                "postgres_changes",
+                {
+                  event: "INSERT",
+                  schema: "public",
+                  table: "notifications",
+                  filter: `user_id=eq.${userId}`,
+                },
+                (payload: RealtimePostgresChangesPayload<Notification>) => {
+                  // New notification received
+                  if (payload.new) {
+                    const notification = payload.new as Notification;
+                    get().addNotification(notification);
 
-                  // Play notification sound if enabled
-                  if (typeof window !== "undefined") {
-                    // Check user preferences for sound (could be stored in localStorage)
-                    const soundEnabled = localStorage.getItem(
-                      "notifications_sound_enabled"
-                    );
-                    if (soundEnabled !== "false") {
-                      // Play a subtle notification sound
-                      const audio = new Audio("/sounds/notification.mp3");
-                      audio.volume = 0.3;
-                      audio.play().catch(() => {
-                        // Ignore errors (user hasn't interacted with page yet)
-                      });
-                    }
+                    // Show toast notification for communication events
+                    if (typeof window !== "undefined") {
+                      // Check if this is a communication-related notification
+                      const isCommunication =
+                        notification.metadata?.communication_id;
 
-                    // Show desktop notification if enabled and permission granted
-                    const desktopEnabled = localStorage.getItem(
-                      "notifications_desktop_enabled"
-                    );
-                    if (
-                      desktopEnabled !== "false" &&
-                      "Notification" in window &&
-                      Notification.permission === "granted"
-                    ) {
-                      const notification = payload.new as Notification;
-                      new Notification(notification.title, {
-                        body: notification.message,
-                        icon: "/icon-192x192.svg",
-                        badge: "/icon-192x192.svg",
-                        tag: notification.id,
-                      });
+                      if (isCommunication) {
+                        // Use communication notifications store for toast
+                        import("./communication-notifications-store").then(
+                          ({ useCommunicationNotificationsStore }) => {
+                            useCommunicationNotificationsStore
+                              .getState()
+                              .showCommunicationToast(notification);
+                          }
+                        );
+                      } else {
+                        // Use standard notification handling for non-communication events
+                        // Play notification sound if enabled
+                        const soundEnabled = localStorage.getItem(
+                          "notifications_sound_enabled"
+                        );
+                        if (soundEnabled !== "false") {
+                          // Play a subtle notification sound
+                          const audio = new Audio("/sounds/notification.mp3");
+                          audio.volume = 0.3;
+                          audio.play().catch(() => {
+                            // Ignore errors (user hasn't interacted with page yet)
+                          });
+                        }
+
+                        // Show desktop notification if enabled and permission granted
+                        const desktopEnabled = localStorage.getItem(
+                          "notifications_desktop_enabled"
+                        );
+                        if (
+                          desktopEnabled !== "false" &&
+                          "Notification" in window &&
+                          Notification.permission === "granted"
+                        ) {
+                          new Notification(notification.title, {
+                            body: notification.message,
+                            icon: "/icon-192x192.svg",
+                            badge: "/icon-192x192.svg",
+                            tag: notification.id,
+                          });
+                        }
+                      }
                     }
                   }
                 }
-              }
-            )
-            .on(
-              "postgres_changes",
-              {
-                event: "UPDATE",
-                schema: "public",
-                table: "notifications",
-                filter: `user_id=eq.${userId}`,
-              },
-              (payload: RealtimePostgresChangesPayload<Notification>) => {
-                // Notification updated
-                if (payload.new) {
-                  const notification = payload.new as Notification;
-                  get().updateNotification(notification.id, notification);
+              )
+              .on(
+                "postgres_changes",
+                {
+                  event: "UPDATE",
+                  schema: "public",
+                  table: "notifications",
+                  filter: `user_id=eq.${userId}`,
+                },
+                (payload: RealtimePostgresChangesPayload<Notification>) => {
+                  // Notification updated
+                  if (payload.new) {
+                    const notification = payload.new as Notification;
+                    get().updateNotification(notification.id, notification);
+                  }
                 }
-              }
-            )
-            .on(
-              "postgres_changes",
-              {
-                event: "DELETE",
-                schema: "public",
-                table: "notifications",
-                filter: `user_id=eq.${userId}`,
-              },
-              (payload: RealtimePostgresChangesPayload<Notification>) => {
-                // Notification deleted
-                if (payload.old) {
-                  get().removeNotification((payload.old as Notification).id);
+              )
+              .on(
+                "postgres_changes",
+                {
+                  event: "DELETE",
+                  schema: "public",
+                  table: "notifications",
+                  filter: `user_id=eq.${userId}`,
+                },
+                (payload: RealtimePostgresChangesPayload<Notification>) => {
+                  // Notification deleted
+                  if (payload.old) {
+                    get().removeNotification((payload.old as Notification).id);
+                  }
                 }
-              }
-            )
-            .subscribe((status, err) => {
-              if (status === "SUBSCRIBED") {
-                console.log("✅ Successfully subscribed to notifications channel");
-                set({ error: null }); // Clear any previous errors
-              } else if (status === "CHANNEL_ERROR") {
-                // Log as warning instead of error to avoid cluttering console
-                console.warn(
-                  "⚠️ Notifications real-time updates unavailable:",
-                  err || "Channel error"
-                );
-                console.warn(
-                  "💡 This is usually because:\n" +
-                    "  1. Realtime is not enabled on the 'notifications' table in Supabase\n" +
-                    "  2. RLS policies are blocking the subscription\n" +
-                    "  3. The app will still work, but won't receive live updates"
-                );
-                // Don't set error state to avoid breaking the UI
-                set({
-                  isSubscribed: false,
-                  realtimeChannel: null,
-                });
-              } else if (status === "TIMED_OUT") {
-                console.warn("⚠️ Notification subscription timed out");
-                set({
-                  isSubscribed: false,
-                  realtimeChannel: null,
-                });
-              } else if (status === "CLOSED") {
-                console.log("ℹ️ Notification channel closed");
-                set({
-                  isSubscribed: false,
-                  realtimeChannel: null,
-                });
-              }
-            });
+              )
+              .subscribe((status, err) => {
+                if (status === "SUBSCRIBED") {
+                  console.log(
+                    "✅ Successfully subscribed to notifications channel"
+                  );
+                  set({ error: null }); // Clear any previous errors
+                } else if (status === "CHANNEL_ERROR") {
+                  // Log as warning instead of error to avoid cluttering console
+                  console.warn(
+                    "⚠️ Notifications real-time updates unavailable:",
+                    err || "Channel error"
+                  );
+                  console.warn(
+                    "💡 This is usually because:\n" +
+                      "  1. Realtime is not enabled on the 'notifications' table in Supabase\n" +
+                      "  2. RLS policies are blocking the subscription\n" +
+                      "  3. The app will still work, but won't receive live updates"
+                  );
+                  // Don't set error state to avoid breaking the UI
+                  set({
+                    isSubscribed: false,
+                    realtimeChannel: null,
+                  });
+                } else if (status === "TIMED_OUT") {
+                  console.warn("⚠️ Notification subscription timed out");
+                  set({
+                    isSubscribed: false,
+                    realtimeChannel: null,
+                  });
+                } else if (status === "CLOSED") {
+                  console.log("ℹ️ Notification channel closed");
+                  set({
+                    isSubscribed: false,
+                    realtimeChannel: null,
+                  });
+                }
+              });
 
-          set({ realtimeChannel: channel });
+            set({
+              realtimeChannel: channel,
+              subscriptionPromise: null, // Clear promise when done
+            });
+          })(); // End of async IIFE
+
+          // Set the promise immediately to prevent concurrent calls
+          set({ subscriptionPromise });
+          return subscriptionPromise;
         } catch (error) {
           console.warn("⚠️ Could not set up realtime subscription:", error);
           // App will still work without realtime, so don't set error state
           set({
             isSubscribed: false,
             realtimeChannel: null,
+            subscriptionPromise: null,
           });
         }
       },

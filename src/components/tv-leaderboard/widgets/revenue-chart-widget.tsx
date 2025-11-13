@@ -34,7 +34,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
         {/* Header - adapts across stages */}
         <div className="flex items-center gap-2">
           <ResponsiveIcon>
-            <TrendingUp className="text-green-500" />
+            <TrendingUp className="text-success" />
           </ResponsiveIcon>
           <ShowAt stage="full">
             <ResponsiveText variant="title">Revenue Trend</ResponsiveText>
@@ -114,7 +114,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
                 >
                   <div className="relative h-16 w-full">
                     <div
-                      className="absolute bottom-0 w-full rounded-t-sm bg-green-500"
+                      className="absolute bottom-0 w-full rounded-t-sm bg-success"
                       style={{ height: `${height}%`, minHeight: "4px" }}
                     />
                   </div>
@@ -128,7 +128,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
         <ShowAt stage="tiny">
           <div className="flex h-full items-center justify-center">
             <ResponsiveText
-              className="font-bold text-green-500"
+              className="font-bold text-success"
               variant="display"
             >
               {formatCurrency(latestRevenue, "tiny")}

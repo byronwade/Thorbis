@@ -37,7 +37,11 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { archivePurchaseOrder, updatePurchaseOrderVendor } from "@/actions/purchase-orders";
+import { toast as sonnerToast } from "sonner";
+import {
+  archivePurchaseOrder,
+  updatePurchaseOrderVendor,
+} from "@/actions/purchase-orders";
 import { VendorSelect } from "@/components/inventory/vendor-select";
 import { ActivityLogSection } from "@/components/layout/standard-sections/activity-log-section";
 import { AttachmentsSection } from "@/components/layout/standard-sections/attachments-section";
@@ -72,7 +76,6 @@ import {
   UnifiedAccordionContent,
 } from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
-import { toast as sonnerToast } from "sonner";
 
 export type PurchaseOrderData = {
   purchaseOrder: any;
@@ -366,7 +369,7 @@ export function PurchaseOrderPageContent({
             </div>
             <div>
               <Label className="text-xs">Total Amount</Label>
-              <p className="text-sm font-medium">
+              <p className="font-medium text-sm">
                 {new Intl.NumberFormat("en-US", {
                   style: "currency",
                   currency: "USD",
@@ -407,7 +410,7 @@ export function PurchaseOrderPageContent({
             </div>
             <div>
               <Label className="text-xs">Total Amount</Label>
-              <p className="text-sm font-medium">
+              <p className="font-medium text-sm">
                 {new Intl.NumberFormat("en-US", {
                   style: "currency",
                   currency: "USD",
@@ -416,7 +419,9 @@ export function PurchaseOrderPageContent({
             </div>
             <div>
               <Label className="text-xs">Status</Label>
-              <Badge variant={invoice.status === "paid" ? "default" : "outline"}>
+              <Badge
+                variant={invoice.status === "paid" ? "default" : "outline"}
+              >
                 {invoice.status}
               </Badge>
             </div>
@@ -1224,26 +1229,27 @@ export function PurchaseOrderPageContent({
       </Dialog>
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Purchase Order?</DialogTitle>
             <DialogDescription>
-              This will archive the purchase order. You can restore it from the archive within 90 days.
+              This will archive the purchase order. You can restore it from the
+              archive within 90 days.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchivePurchaseOrder}
               disabled={isArchiving}
+              onClick={handleArchivePurchaseOrder}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Purchase Order"}
             </Button>

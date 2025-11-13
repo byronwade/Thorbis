@@ -30,10 +30,10 @@ export function generateArticleMetadata(
     article.excerpt ||
     `${article.title} - ${siteName}`;
   const path = `/kb/${article.category.slug}/${article.slug}`;
-  const image = article.featuredImage
-    ? article.featuredImage.startsWith("http")
-      ? article.featuredImage
-      : `${SEO_URLS.site}${article.featuredImage}`
+  const image = article.featured_image
+    ? article.featured_image.startsWith("http")
+      ? article.featured_image
+      : `${SEO_URLS.site}${article.featured_image}`
     : undefined;
 
   return generateSEOMetadata({
@@ -43,11 +43,11 @@ export function generateArticleMetadata(
     path,
     image,
     type: "article",
-    publishedTime: article.publishedAt
-      ? new Date(article.publishedAt).toISOString()
+    publishedTime: article.published_at
+      ? new Date(article.published_at).toISOString()
       : undefined,
-    modifiedTime: article.updatedAt
-      ? new Date(article.updatedAt).toISOString()
+    modifiedTime: article.updated_at
+      ? new Date(article.updated_at).toISOString()
       : undefined,
     authors: article.author ? [article.author] : undefined,
     tags: article.tags?.map((tag: { name: string }) => tag.name) || [],
@@ -71,14 +71,24 @@ export function generateArticleStructuredData(
     typeof words === "number"
       ? Math.max(1, Math.round(words / 220))
       : undefined;
+  const toISOString = (value?: string | Date | null) => {
+    if (!value) {
+      return undefined;
+    }
+    const date =
+      value instanceof Date ? value : new Date(value as string | number);
+    return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+  };
 
   return createArticleSchema({
     title: article.title,
     description: article.excerpt || article.metaDescription || "",
     url,
-    image: article.featuredImage,
-    publishedTime: article.publishedAt || article.createdAt,
-    modifiedTime: article.updatedAt || article.createdAt,
+    image: article.featured_image,
+    publishedTime:
+      toISOString(article.published_at) ?? toISOString(article.createdAt),
+    modifiedTime:
+      toISOString(article.updated_at) ?? toISOString(article.createdAt),
     authorName: article.author || siteName,
     tags: Array.isArray(article.keywords) ? article.keywords : undefined,
     section: article.category.title,

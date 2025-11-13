@@ -117,18 +117,18 @@ export function ImportExportHistoryClient() {
                     <div
                       className={`flex size-12 items-center justify-center rounded-lg ${
                         item.status === "completed"
-                          ? "bg-green-500/10"
+                          ? "bg-success/10"
                           : item.status === "failed"
-                            ? "bg-red-500/10"
-                            : "bg-blue-500/10"
+                            ? "bg-destructive/10"
+                            : "bg-primary/10"
                       }`}
                     >
                       {item.status === "completed" ? (
-                        <CheckCircle className="size-6 text-green-500" />
+                        <CheckCircle className="size-6 text-success" />
                       ) : item.status === "failed" ? (
-                        <XCircle className="size-6 text-red-500" />
+                        <XCircle className="size-6 text-destructive" />
                       ) : (
-                        <Clock className="size-6 text-blue-500" />
+                        <Clock className="size-6 text-primary" />
                       )}
                     </div>
                     <div className="flex-1">
@@ -137,10 +137,10 @@ export function ImportExportHistoryClient() {
                         <Badge
                           className={
                             item.status === "completed"
-                              ? "bg-green-500"
+                              ? "bg-success"
                               : item.status === "failed"
-                                ? "bg-red-500"
-                                : "bg-blue-500"
+                                ? "bg-destructive"
+                                : "bg-primary"
                           }
                         >
                           {item.status}
@@ -153,11 +153,11 @@ export function ImportExportHistoryClient() {
                         <span>
                           Total: <strong>{item.recordCount}</strong>
                         </span>
-                        <span className="text-green-600">
+                        <span className="text-success">
                           Success: <strong>{item.successCount}</strong>
                         </span>
                         {item.errorCount > 0 && (
-                          <span className="text-red-600">
+                          <span className="text-destructive">
                             Errors: <strong>{item.errorCount}</strong>
                           </span>
                         )}
@@ -187,8 +187,8 @@ export function ImportExportHistoryClient() {
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4">
-                    <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                      <FileSpreadsheet className="size-6 text-blue-500" />
+                    <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                      <FileSpreadsheet className="size-6 text-primary" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">

@@ -14,6 +14,7 @@ import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export default function ReviewRequestEmail({
   customerName,
@@ -156,14 +157,14 @@ const starsText = {
 };
 
 const reviewPrompt = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "22px",
   fontWeight: "600",
   margin: "0 0 12px 0",
 };
 
 const reviewSubtext = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "16px",
   margin: "0",
   opacity: 0.9,

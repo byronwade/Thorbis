@@ -267,23 +267,33 @@ export function BillingInfoBlockComponent({
               Saved Payment Methods ({paymentMethods?.length || 0})
             </h4>
             {paymentMethods && paymentMethods.length > 0 ? (
-              <div className="grid gap-3 md:grid-cols-2">
-                {paymentMethods.map((pm: any) => (
-                  <PaymentMethodCard
-                    card_brand={pm.card_brand}
-                    card_exp_month={pm.card_exp_month}
-                    card_exp_year={pm.card_exp_year}
-                    card_last4={pm.card_last4}
-                    disabled={isUpdating}
-                    id={pm.id}
-                    is_default={pm.is_default}
-                    is_verified={pm.is_verified}
-                    key={pm.id}
-                    nickname={pm.nickname}
-                    onRemove={() => handleRemove(pm.id)}
-                    onSetDefault={() => handleSetDefault(pm.id)}
-                  />
-                ))}
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {paymentMethods.map((pm: any) => {
+                  // Determine payment method type
+                  const type =
+                    pm.type === "ach" || pm.type === "bank" ? pm.type : "card";
+
+                  return (
+                    <PaymentMethodCard
+                      account_type={pm.account_type}
+                      bank_name={pm.bank_name}
+                      card_brand={pm.card_brand || pm.brand}
+                      card_exp_month={pm.card_exp_month || pm.exp_month}
+                      card_exp_year={pm.card_exp_year || pm.exp_year}
+                      card_last4={pm.card_last4 || pm.last4}
+                      cardholder_name={pm.cardholder_name || pm.name}
+                      disabled={isUpdating}
+                      id={pm.id}
+                      is_default={pm.is_default}
+                      is_verified={pm.is_verified}
+                      key={pm.id}
+                      nickname={pm.nickname}
+                      onRemove={() => handleRemove(pm.id)}
+                      onSetDefault={() => handleSetDefault(pm.id)}
+                      type={type}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <div className="rounded-lg border border-dashed bg-muted/30 p-8 text-center">

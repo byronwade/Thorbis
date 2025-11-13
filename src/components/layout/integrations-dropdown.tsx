@@ -99,7 +99,7 @@ export function IntegrationsDropdown() {
                   >
                     {/* Status indicator */}
                     <div className="absolute top-1 right-1">
-                      <div className="size-2 rounded-full bg-green-500 ring-2 ring-background" />
+                      <div className="size-2 rounded-full bg-success ring-2 ring-background" />
                     </div>
 
                     {/* Icon */}

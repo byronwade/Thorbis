@@ -110,7 +110,7 @@ export default function IntegrationsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">Connected</CardTitle>
-            <CheckCircle2 className="size-4 text-green-600" />
+            <CheckCircle2 className="size-4 text-success" />
           </CardHeader>
           <CardContent>
             <div className="font-bold text-2xl">{connectedCount}</div>
@@ -213,8 +213,7 @@ export default function IntegrationsPage() {
             <Card
               className={cn(
                 "overflow-hidden transition-all hover:shadow-md",
-                integration.isConnected &&
-                  "border-green-200 dark:border-green-900"
+                integration.isConnected && "border-success dark:border-success"
               )}
               key={integration.id}
             >
@@ -230,7 +229,7 @@ export default function IntegrationsPage() {
                   </Avatar>
                   <div className="flex gap-2">
                     {integration.isConnected && (
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100">
+                      <Badge className="bg-success text-success hover:bg-success dark:bg-success dark:text-success">
                         <CheckCircle2 className="mr-1 size-3" />
                         Connected
                       </Badge>
@@ -263,7 +262,7 @@ export default function IntegrationsPage() {
                             className="flex items-center gap-2 text-sm"
                             key={feature}
                           >
-                            <CheckCircle2 className="size-3 text-green-600" />
+                            <CheckCircle2 className="size-3 text-success" />
                             {feature}
                           </li>
                         ))}

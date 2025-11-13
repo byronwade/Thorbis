@@ -5,7 +5,6 @@
  */
 
 import type { ActionResult } from "@/lib/errors/with-error-handling";
-import { formatPhone } from "@/lib/utils/format";
 
 /**
  * Convert camelCase to snake_case for database fields

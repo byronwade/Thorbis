@@ -18,8 +18,8 @@ import {
   type Permission,
   type UserRole,
 } from "@/lib/auth/permissions";
-import { createClient } from "@/lib/supabase/server";
 import { withErrorHandling } from "@/lib/errors/with-error-handling";
+import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
 // Validation Schemas
@@ -27,7 +27,14 @@ import { withErrorHandling } from "@/lib/errors/with-error-handling";
 
 const updateRoleSchema = z.object({
   teamMemberId: z.string().uuid(),
-  newRole: z.enum(["owner", "admin", "manager", "dispatcher", "technician", "csr"]),
+  newRole: z.enum([
+    "owner",
+    "admin",
+    "manager",
+    "dispatcher",
+    "technician",
+    "csr",
+  ]),
   reason: z.string().optional(),
 });
 
@@ -111,7 +118,12 @@ export async function checkPermission(permission: Permission) {
       throw new Error("No active company");
     }
 
-    const hasPerm = await hasPermission(supabase, user.id, permission, companyId);
+    const hasPerm = await hasPermission(
+      supabase,
+      user.id,
+      permission,
+      companyId
+    );
 
     return hasPerm;
   });
@@ -206,7 +218,9 @@ export async function checkIsOwner() {
  * });
  * ```
  */
-export async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
+export async function updateTeamMemberRole(
+  input: z.infer<typeof updateRoleSchema>
+) {
   return withErrorHandling(async () => {
     // Validate input
     const validated = updateRoleSchema.parse(input);

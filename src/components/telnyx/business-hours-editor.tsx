@@ -496,7 +496,7 @@ function DayScheduleCard({
                       value={range.startTime}
                     >
                       <SelectTrigger
-                        className={cn("h-9", !isValid && "border-red-500")}
+                        className={cn("h-9", !isValid && "border-destructive")}
                       >
                         <SelectValue />
                       </SelectTrigger>
@@ -520,7 +520,7 @@ function DayScheduleCard({
                       value={range.endTime}
                     >
                       <SelectTrigger
-                        className={cn("h-9", !isValid && "border-red-500")}
+                        className={cn("h-9", !isValid && "border-destructive")}
                       >
                         <SelectValue />
                       </SelectTrigger>
@@ -562,7 +562,7 @@ function DayScheduleCard({
 
           {/* Validation Warning */}
           {day.timeRanges.some((range) => !validateTimeRange(range)) && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
+            <div className="flex items-center gap-2 text-destructive text-sm">
               <AlertCircle className="size-4" />
               End time must be after start time
             </div>

@@ -1,20 +1,20 @@
 /**
  * Generic Row Actions Dropdown Component
- * 
+ *
  * A reusable dropdown menu for table row actions.
  * Consolidates duplicate row action patterns across table components.
- * 
+ *
  * @example
  * const actions = [
  *   { label: "View", icon: Eye, href: `/items/${id}` },
  *   { label: "Edit", icon: Edit, href: `/items/${id}/edit` },
  *   { label: "Delete", icon: Trash2, onClick: handleDelete, variant: "destructive" },
  * ];
- * 
+ *
  * <RowActionsDropdown actions={actions} />
  */
 
-import { MoreHorizontal } from "lucide-react";
+import { type LucideIcon, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type LucideIcon } from "lucide-react";
 
 export type RowAction = {
   /** Action label */
@@ -63,7 +62,7 @@ export function RowActionsDropdown({
     <div data-no-row-click>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="icon" variant="ghost" className={className}>
+          <Button className={className} size="icon" variant="ghost">
             <MoreHorizontal className="size-4" />
             <span className="sr-only">Open menu</span>
           </Button>
@@ -85,8 +84,12 @@ export function RowActionsDropdown({
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
+                className={
+                  action.variant === "destructive"
+                    ? "text-destructive"
+                    : undefined
+                }
                 key={index}
-                className={action.variant === "destructive" ? "text-destructive" : undefined}
                 onClick={action.onClick}
               >
                 {ActionContent}
@@ -95,7 +98,9 @@ export function RowActionsDropdown({
 
             return (
               <div key={index}>
-                {action.separatorBefore && index > 0 && <DropdownMenuSeparator />}
+                {action.separatorBefore && index > 0 && (
+                  <DropdownMenuSeparator />
+                )}
                 {menuItem}
               </div>
             );
@@ -105,8 +110,3 @@ export function RowActionsDropdown({
     </div>
   );
 }
-
-
-
-
-

@@ -16,10 +16,10 @@ export function CustomerDetailBreadcrumbs() {
   return (
     <div className="flex items-center gap-2">
       <Button
-        className="gap-2"
+        className="h-8 gap-1.5"
         onClick={() => router.push("/dashboard/customers")}
         size="sm"
-        variant="ghost"
+        variant="outline"
       >
         <ArrowLeft className="size-4" />
         Customers

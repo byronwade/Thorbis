@@ -55,15 +55,15 @@ export function InlineText({
         "outline-none transition-all duration-150",
         isEditable && [
           "cursor-text",
-          "hover:bg-gray-50",
-          "focus:bg-blue-50/50",
+          "hover:bg-secondary",
+          "focus:bg-primary/50",
           "focus:ring-1",
           "focus:ring-blue-500/20",
           "rounded",
           "px-1",
           "-mx-1",
         ],
-        !value && "text-gray-400 italic",
+        !value && "text-muted-foreground italic",
         className
       )}
       contentEditable={isEditable}

@@ -14,37 +14,47 @@ interface JobDetailsWidgetProps {
 }
 
 export function JobDetailsWidget({ job }: JobDetailsWidgetProps) {
+  const jobNumber =
+    job.jobNumber != null ? String(job.jobNumber) : "Not assigned";
+  const jobStatus = (job.status ?? "unknown").toString().replace(/_/g, " ");
+  const jobType = (job.jobType ?? "service").toString();
+  const jobPriority = (job.priority ?? "medium").toString();
+  const jobDescription =
+    (job.description as string | null | undefined) ??
+    "No description provided.";
+  const jobNotes = (job.notes as string | null | undefined) ?? null;
+
   return (
     <div className="space-y-4">
       {/* Basic Info */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <div className="text-muted-foreground text-xs">Job Number</div>
-          <div className="font-medium text-sm">{job.jobNumber}</div>
+          <div className="font-medium text-sm">{jobNumber}</div>
         </div>
         <div>
           <div className="text-muted-foreground text-xs">Status</div>
           <Badge className="text-xs" variant="outline">
-            {job.status.replace("_", " ")}
+            {jobStatus}
           </Badge>
         </div>
         <div>
           <div className="text-muted-foreground text-xs">Job Type</div>
-          <div className="font-medium text-sm capitalize">{job.jobType}</div>
+          <div className="font-medium text-sm capitalize">{jobType}</div>
         </div>
         <div>
           <div className="text-muted-foreground text-xs">Priority</div>
           <Badge
             className="text-xs"
             variant={
-              job.priority === "high"
+              jobPriority === "high"
                 ? "destructive"
-                : job.priority === "medium"
+                : jobPriority === "medium"
                   ? "secondary"
                   : "outline"
             }
           >
-            {job.priority}
+            {jobPriority}
           </Badge>
         </div>
       </div>
@@ -85,16 +95,16 @@ export function JobDetailsWidget({ job }: JobDetailsWidgetProps) {
       {/* Description */}
       <div>
         <h4 className="mb-2 font-semibold text-xs">Description</h4>
-        <p className="text-muted-foreground text-xs">{job.description}</p>
+        <p className="text-muted-foreground text-xs">{jobDescription}</p>
       </div>
 
       {/* Notes */}
-      {job.notes ? (
+      {jobNotes ? (
         <>
           <Separator />
           <div>
             <h4 className="mb-2 font-semibold text-xs">Notes</h4>
-            <div className="rounded-md bg-muted p-2 text-xs">{job.notes}</div>
+            <div className="rounded-md bg-muted p-2 text-xs">{jobNotes}</div>
           </div>
         </>
       ) : null}

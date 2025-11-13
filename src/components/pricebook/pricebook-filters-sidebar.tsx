@@ -63,21 +63,21 @@ const itemTypes: ItemTypeOption[] = [
     value: "service",
     label: "Services",
     icon: Wrench,
-    color: "text-blue-600 dark:text-blue-400",
+    color: "text-primary dark:text-primary",
     count: 89,
   },
   {
     value: "material",
     label: "Materials",
     icon: Package,
-    color: "text-purple-600 dark:text-purple-400",
+    color: "text-accent-foreground dark:text-accent-foreground",
     count: 73,
   },
   {
     value: "equipment",
     label: "Equipment",
     icon: Box,
-    color: "text-orange-600 dark:text-orange-400",
+    color: "text-warning dark:text-warning",
     count: 44,
   },
 ];
@@ -94,31 +94,31 @@ const categories: CategoryNode[] = [
   {
     name: "HVAC",
     icon: Zap,
-    color: "text-blue-600 dark:text-blue-400",
+    color: "text-primary dark:text-primary",
     count: 67,
     children: [
       {
         name: "Heating",
         icon: Wrench,
-        color: "text-blue-600 dark:text-blue-400",
+        color: "text-primary dark:text-primary",
         count: 23,
         children: [
           {
             name: "Furnaces",
             icon: Wrench,
-            color: "text-blue-600 dark:text-blue-400",
+            color: "text-primary dark:text-primary",
             count: 12,
           },
           {
             name: "Heat Pumps",
             icon: Wrench,
-            color: "text-blue-600 dark:text-blue-400",
+            color: "text-primary dark:text-primary",
             count: 8,
           },
           {
             name: "Boilers",
             icon: Wrench,
-            color: "text-blue-600 dark:text-blue-400",
+            color: "text-primary dark:text-primary",
             count: 3,
           },
         ],
@@ -126,19 +126,19 @@ const categories: CategoryNode[] = [
       {
         name: "Cooling",
         icon: Wrench,
-        color: "text-blue-600 dark:text-blue-400",
+        color: "text-primary dark:text-primary",
         count: 19,
         children: [
           {
             name: "Central AC",
             icon: Wrench,
-            color: "text-blue-600 dark:text-blue-400",
+            color: "text-primary dark:text-primary",
             count: 11,
           },
           {
             name: "Ductless Mini-Split",
             icon: Wrench,
-            color: "text-blue-600 dark:text-blue-400",
+            color: "text-primary dark:text-primary",
             count: 8,
           },
         ],
@@ -146,13 +146,13 @@ const categories: CategoryNode[] = [
       {
         name: "Air Quality",
         icon: Wrench,
-        color: "text-blue-600 dark:text-blue-400",
+        color: "text-primary dark:text-primary",
         count: 15,
       },
       {
         name: "Ductwork",
         icon: Wrench,
-        color: "text-blue-600 dark:text-blue-400",
+        color: "text-primary dark:text-primary",
         count: 10,
       },
     ],
@@ -160,31 +160,31 @@ const categories: CategoryNode[] = [
   {
     name: "Plumbing",
     icon: Wrench,
-    color: "text-green-600 dark:text-green-400",
+    color: "text-success dark:text-success",
     count: 82,
     children: [
       {
         name: "Fixtures",
         icon: Wrench,
-        color: "text-green-600 dark:text-green-400",
+        color: "text-success dark:text-success",
         count: 28,
         children: [
           {
             name: "Faucets",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 12,
           },
           {
             name: "Toilets",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 9,
           },
           {
             name: "Sinks",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 7,
           },
         ],
@@ -192,25 +192,25 @@ const categories: CategoryNode[] = [
       {
         name: "Garbage Disposals",
         icon: Wrench,
-        color: "text-green-600 dark:text-green-400",
+        color: "text-success dark:text-success",
         count: 15,
         children: [
           {
             name: "1/3 HP",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 5,
           },
           {
             name: "1/2 HP",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 6,
           },
           {
             name: "3/4 HP",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 4,
           },
         ],
@@ -218,19 +218,19 @@ const categories: CategoryNode[] = [
       {
         name: "Water Heaters",
         icon: Wrench,
-        color: "text-green-600 dark:text-green-400",
+        color: "text-success dark:text-success",
         count: 22,
         children: [
           {
             name: "Tank",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 14,
           },
           {
             name: "Tankless",
             icon: Wrench,
-            color: "text-green-600 dark:text-green-400",
+            color: "text-success dark:text-success",
             count: 8,
           },
         ],
@@ -238,7 +238,7 @@ const categories: CategoryNode[] = [
       {
         name: "Pipes & Fittings",
         icon: Wrench,
-        color: "text-green-600 dark:text-green-400",
+        color: "text-success dark:text-success",
         count: 17,
       },
     ],
@@ -246,25 +246,25 @@ const categories: CategoryNode[] = [
   {
     name: "Electrical",
     icon: Zap,
-    color: "text-yellow-600 dark:text-yellow-400",
+    color: "text-warning dark:text-warning",
     count: 41,
     children: [
       {
         name: "Panels",
         icon: Zap,
-        color: "text-yellow-600 dark:text-yellow-400",
+        color: "text-warning dark:text-warning",
         count: 12,
       },
       {
         name: "Outlets & Switches",
         icon: Zap,
-        color: "text-yellow-600 dark:text-yellow-400",
+        color: "text-warning dark:text-warning",
         count: 18,
       },
       {
         name: "Lighting",
         icon: Zap,
-        color: "text-yellow-600 dark:text-yellow-400",
+        color: "text-warning dark:text-warning",
         count: 11,
       },
     ],
@@ -272,7 +272,7 @@ const categories: CategoryNode[] = [
   {
     name: "General",
     icon: Package,
-    color: "text-gray-600 dark:text-gray-400",
+    color: "text-muted-foreground dark:text-muted-foreground",
     count: 16,
   },
 ];

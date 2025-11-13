@@ -198,6 +198,31 @@ async function handleCheckoutSessionCompleted(
     }
   }
 
+  // Send team member invitations after payment is complete
+  try {
+    const { sendTeamMemberInvitations } = await import(
+      "@/actions/team-invitations"
+    );
+    const invitationResult = await sendTeamMemberInvitations(companyId);
+
+    if (invitationResult.success && invitationResult.data) {
+      console.log(
+        `Sent ${invitationResult.data.sent} team invitations for company ${companyId}`
+      );
+      if (invitationResult.data.failed > 0) {
+        console.error(
+          `Failed to send ${invitationResult.data.failed} team invitations`
+        );
+      }
+    } else {
+      console.error(
+        `Failed to send team invitations: ${invitationResult.success ? "Unknown error" : invitationResult.error || "Unknown error"}`
+      );
+    }
+  } catch (error) {
+    console.error("Error sending team invitations after payment:", error);
+  }
+
   console.log(
     `Subscription ${subscriptionId} created for company ${companyId}`
   );

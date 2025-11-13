@@ -92,17 +92,19 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
           {/* Category Header */}
           <div className="mb-8">
-            {category.icon && (
-              <span className="mb-4 block text-4xl">{String(category.icon)}</span>
-            )}
+            {category.icon ? (
+              <span className="mb-4 block text-4xl">
+                {String(category.icon)}
+              </span>
+            ) : null}
             <h1 className="mb-2 font-bold text-4xl tracking-tight">
               {String(category.title)}
             </h1>
-            {category.description && (
+            {category.description ? (
               <p className="text-lg text-muted-foreground">
                 {String(category.description)}
               </p>
-            )}
+            ) : null}
           </div>
 
           {/* Articles Grid */}

@@ -108,7 +108,8 @@ export function OwnershipTransferDialog({
   const allAcknowledged = Object.values(acknowledged).every((v) => v);
 
   // Check if email matches
-  const emailMatches = confirmEmail.toLowerCase() === newOwner.email.toLowerCase();
+  const emailMatches =
+    confirmEmail.toLowerCase() === newOwner.email.toLowerCase();
 
   // Handle transfer
   const handleTransfer = async () => {
@@ -131,8 +132,8 @@ export function OwnershipTransferDialog({
           <>
             <DialogHeader>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
-                  <ShieldAlert className="h-6 w-6 text-red-500" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                  <ShieldAlert className="h-6 w-6 text-destructive" />
                 </div>
                 <div>
                   <DialogTitle className="text-2xl">
@@ -159,15 +160,17 @@ export function OwnershipTransferDialog({
 
               {/* Current vs New Owner */}
               <div className="space-y-4">
-                <Label className="text-base font-semibold">Ownership Change</Label>
+                <Label className="font-semibold text-base">
+                  Ownership Change
+                </Label>
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Current Owner */}
-                  <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/30">
+                  <div className="rounded-lg border border-destructive bg-destructive p-4 dark:border-destructive dark:bg-destructive/30">
                     <div className="mb-3 flex items-center gap-2">
-                      <Badge className="bg-red-500" variant="destructive">
+                      <Badge className="bg-destructive" variant="destructive">
                         Current Owner
                       </Badge>
-                      <Crown className="h-4 w-4 text-red-500" />
+                      <Crown className="h-4 w-4 text-destructive" />
                     </div>
                     <div className="flex items-center gap-3">
                       <Avatar>
@@ -189,12 +192,12 @@ export function OwnershipTransferDialog({
                   </div>
 
                   {/* New Owner */}
-                  <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/30">
+                  <div className="rounded-lg border border-success bg-success p-4 dark:border-success dark:bg-success/30">
                     <div className="mb-3 flex items-center gap-2">
-                      <Badge className="bg-green-600" variant="default">
+                      <Badge className="bg-success" variant="default">
                         New Owner
                       </Badge>
-                      <Crown className="h-4 w-4 text-green-600" />
+                      <Crown className="h-4 w-4 text-success" />
                     </div>
                     <div className="flex items-center gap-3">
                       <Avatar>
@@ -219,39 +222,44 @@ export function OwnershipTransferDialog({
 
               {/* What Will Happen */}
               <div className="space-y-3 rounded-lg border bg-muted/50 p-4">
-                <Label className="text-base font-semibold">
+                <Label className="font-semibold text-base">
                   What Will Happen:
                 </Label>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                     <p>
-                      <strong>{newOwner.firstName} {newOwner.lastName}</strong>{" "}
+                      <strong>
+                        {newOwner.firstName} {newOwner.lastName}
+                      </strong>{" "}
                       will become the company owner with full administrative
                       access
                     </p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                     <p>
                       They will have complete control over billing, team
                       management, and all settings
                     </p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
+                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
                     <p>
                       <strong>You</strong> will be automatically changed to{" "}
                       <Badge variant="secondary">Admin</Badge> role
                     </p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
-                    <p>You will lose owner-only privileges (billing, ownership transfer)</p>
+                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+                    <p>
+                      You will lose owner-only privileges (billing, ownership
+                      transfer)
+                    </p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                    <p className="font-semibold text-red-600 dark:text-red-400">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                    <p className="font-semibold text-destructive dark:text-destructive">
                       Only the new owner can transfer ownership back to you
                     </p>
                   </div>
@@ -259,8 +267,8 @@ export function OwnershipTransferDialog({
               </div>
 
               {/* Reasons to Transfer */}
-              <div className="space-y-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/30">
-                <Label className="text-base font-semibold">
+              <div className="space-y-3 rounded-lg border border-primary bg-primary p-4 dark:border-primary dark:bg-primary/30">
+                <Label className="font-semibold text-base">
                   Common Reasons for Transfer:
                 </Label>
                 <ul className="list-inside list-disc space-y-1 text-sm">
@@ -297,8 +305,8 @@ export function OwnershipTransferDialog({
           <>
             <DialogHeader>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10">
-                  <UserCheck className="h-6 w-6 text-orange-500" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-warning/10">
+                  <UserCheck className="h-6 w-6 text-warning" />
                 </div>
                 <div>
                   <DialogTitle className="text-2xl">
@@ -334,9 +342,12 @@ export function OwnershipTransferDialog({
                       }))
                     }
                   />
-                  <Label className="cursor-pointer leading-relaxed" htmlFor="irreversible">
+                  <Label
+                    className="cursor-pointer leading-relaxed"
+                    htmlFor="irreversible"
+                  >
                     I understand this action is{" "}
-                    <strong className="text-red-600 dark:text-red-400">
+                    <strong className="text-destructive dark:text-destructive">
                       IRREVERSIBLE
                     </strong>{" "}
                     and cannot be undone by me
@@ -357,7 +368,10 @@ export function OwnershipTransferDialog({
                       }))
                     }
                   />
-                  <Label className="cursor-pointer leading-relaxed" htmlFor="fullAccess">
+                  <Label
+                    className="cursor-pointer leading-relaxed"
+                    htmlFor="fullAccess"
+                  >
                     I understand{" "}
                     <strong>
                       {newOwner.firstName} {newOwner.lastName}
@@ -381,9 +395,12 @@ export function OwnershipTransferDialog({
                       }))
                     }
                   />
-                  <Label className="cursor-pointer leading-relaxed" htmlFor="loseOwnership">
+                  <Label
+                    className="cursor-pointer leading-relaxed"
+                    htmlFor="loseOwnership"
+                  >
                     I understand I will{" "}
-                    <strong className="text-red-600 dark:text-red-400">
+                    <strong className="text-destructive dark:text-destructive">
                       LOSE ownership
                     </strong>{" "}
                     and owner-only privileges immediately
@@ -404,17 +421,21 @@ export function OwnershipTransferDialog({
                       }))
                     }
                   />
-                  <Label className="cursor-pointer leading-relaxed" htmlFor="becomeAdmin">
-                    I understand I will be changed to <Badge variant="secondary">Admin</Badge> role and
-                    only the new owner can transfer ownership back
+                  <Label
+                    className="cursor-pointer leading-relaxed"
+                    htmlFor="becomeAdmin"
+                  >
+                    I understand I will be changed to{" "}
+                    <Badge variant="secondary">Admin</Badge> role and only the
+                    new owner can transfer ownership back
                   </Label>
                 </div>
               </div>
 
               {/* Progress Indicator */}
               <div className="flex items-center justify-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <div className="h-2 w-2 rounded-full bg-orange-500" />
+                <div className="h-2 w-2 rounded-full bg-success" />
+                <div className="h-2 w-2 rounded-full bg-warning" />
                 <div className="h-2 w-2 rounded-full bg-muted" />
               </div>
             </div>
@@ -445,11 +466,13 @@ export function OwnershipTransferDialog({
           <>
             <DialogHeader>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
-                  <Lock className="h-6 w-6 text-red-500" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                  <Lock className="h-6 w-6 text-destructive" />
                 </div>
                 <div>
-                  <DialogTitle className="text-2xl">Final Confirmation</DialogTitle>
+                  <DialogTitle className="text-2xl">
+                    Final Confirmation
+                  </DialogTitle>
                   <DialogDescription>
                     Enter your password and new owner's email to confirm
                   </DialogDescription>
@@ -510,9 +533,9 @@ export function OwnershipTransferDialog({
               </div>
 
               {/* Final Summary */}
-              <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/30">
+              <div className="rounded-lg border border-destructive bg-destructive p-4 dark:border-destructive dark:bg-destructive/30">
                 <div className="space-y-2 text-sm">
-                  <p className="font-semibold text-red-600 dark:text-red-400">
+                  <p className="font-semibold text-destructive dark:text-destructive">
                     You are about to:
                   </p>
                   <ul className="list-inside list-disc space-y-1">
@@ -531,9 +554,9 @@ export function OwnershipTransferDialog({
 
               {/* Progress Indicator */}
               <div className="flex items-center justify-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <div className="h-2 w-2 rounded-full bg-red-500" />
+                <div className="h-2 w-2 rounded-full bg-success" />
+                <div className="h-2 w-2 rounded-full bg-success" />
+                <div className="h-2 w-2 rounded-full bg-destructive" />
               </div>
             </div>
 
@@ -547,7 +570,7 @@ export function OwnershipTransferDialog({
                 Back
               </Button>
               <Button
-                disabled={!emailMatches || !password || isTransferring}
+                disabled={!(emailMatches && password) || isTransferring}
                 onClick={handleTransfer}
                 type="button"
                 variant="destructive"

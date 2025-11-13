@@ -1,13 +1,14 @@
-import Script from "next/script";
 import Link from "next/link";
+import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
   generateFAQStructuredData,
+  generateMetadata as generateSEOMetadata,
+  siteUrl,
 } from "@/lib/seo/metadata";
 import { createReviewAggregateSchema } from "@/lib/seo/structured-data";
 
@@ -89,19 +90,19 @@ export default function ReviewsPage() {
   return (
     <>
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         id="reviews-breadcrumb-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateLd) }}
         id="reviews-aggregate-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateLd) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
         id="reviews-faq-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
 
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -109,12 +110,13 @@ export default function ReviewsPage() {
           <Badge className="uppercase tracking-wide" variant="secondary">
             Social Proof
           </Badge>
-          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
             Thorbis earns 4.9/5 stars for AI automation and dispatch excellence
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Contractors choose Thorbis for transparent pricing, fast implementation, and AI-powered workflows.
-            Every customer pays the same $100/month base with pay-as-you-go usage—no per-user surprises.
+            Contractors choose Thorbis for transparent pricing, fast
+            implementation, and AI-powered workflows. Every customer pays the
+            same $100/month base with pay-as-you-go usage—no per-user surprises.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
@@ -137,29 +139,38 @@ export default function ReviewsPage() {
               {
                 score: "98%",
                 label: "Support satisfaction",
-                subtext: "Teams praise dedicated success managers and fast responses.",
+                subtext:
+                  "Teams praise dedicated success managers and fast responses.",
               },
               {
                 score: "6 weeks",
                 label: "Average go-live",
-                subtext: "From contract to production across multi-location contractors.",
+                subtext:
+                  "From contract to production across multi-location contractors.",
               },
             ].map((stat) => (
-              <Card key={stat.label} className="bg-primary/5">
+              <Card className="bg-primary/5" key={stat.label}>
                 <CardContent className="flex h-full flex-col items-center justify-center gap-3 py-10 text-center">
-                  <span className="text-5xl font-bold text-primary">{stat.score}</span>
-                  <p className="text-base font-semibold">{stat.label}</p>
-                  <p className="text-muted-foreground text-sm">{stat.subtext}</p>
+                  <span className="font-bold text-5xl text-primary">
+                    {stat.score}
+                  </span>
+                  <p className="font-semibold text-base">{stat.label}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {stat.subtext}
+                  </p>
                 </CardContent>
               </Card>
             ))}
           </section>
 
           <section className="space-y-6">
-            <div className="mx-auto max-w-3xl text-center space-y-3">
-              <h2 className="text-3xl font-semibold">What customers say about Thorbis</h2>
+            <div className="mx-auto max-w-3xl space-y-3 text-center">
+              <h2 className="font-semibold text-3xl">
+                What customers say about Thorbis
+              </h2>
               <p className="text-muted-foreground">
-                A sampling of the feedback we hear from field service operators who replaced legacy tools.
+                A sampling of the feedback we hear from field service operators
+                who replaced legacy tools.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
@@ -170,8 +181,12 @@ export default function ReviewsPage() {
                       “{testimonial.quote}”
                     </p>
                     <div className="space-y-1 text-sm">
-                      <p className="font-semibold text-foreground">{testimonial.name}</p>
-                      <p className="text-muted-foreground">{testimonial.role}</p>
+                      <p className="font-semibold text-foreground">
+                        {testimonial.name}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {testimonial.role}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -180,10 +195,13 @@ export default function ReviewsPage() {
           </section>
 
           <section className="space-y-6">
-            <div className="mx-auto max-w-3xl text-center space-y-3">
-              <h2 className="text-3xl font-semibold">Platform badges & ratings</h2>
+            <div className="mx-auto max-w-3xl space-y-3 text-center">
+              <h2 className="font-semibold text-3xl">
+                Platform badges & ratings
+              </h2>
               <p className="text-muted-foreground">
-                Verified reviews from trusted directories. Thorbis leads in ease of use, support, and ROI.
+                Verified reviews from trusted directories. Thorbis leads in ease
+                of use, support, and ROI.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
@@ -197,7 +215,8 @@ export default function ReviewsPage() {
                 {
                   platform: "Capterra",
                   rating: "4.8 / 5",
-                  description: "Best ease of use award for mid-market contractors.",
+                  description:
+                    "Best ease of use award for mid-market contractors.",
                   href: "https://www.capterra.com/p/Thorbis/",
                 },
                 {
@@ -207,14 +226,14 @@ export default function ReviewsPage() {
                   href: "https://www.google.com/search?q=thorbis+reviews",
                 },
               ].map((listing) => (
-                <Card key={listing.platform} className="text-center">
+                <Card className="text-center" key={listing.platform}>
                   <CardHeader>
                     <Badge className="mx-auto w-fit" variant="secondary">
                       {listing.platform}
                     </Badge>
                     <CardTitle className="text-2xl">{listing.rating}</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                  <CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
                     <p>{listing.description}</p>
                     <Button asChild variant="outline">
                       <Link href={listing.href} rel="noopener" target="_blank">
@@ -228,22 +247,37 @@ export default function ReviewsPage() {
           </section>
 
           <section className="space-y-6">
-            <div className="mx-auto max-w-3xl text-center space-y-3">
-              <h2 className="text-3xl font-semibold">Explore proof by industry</h2>
+            <div className="mx-auto max-w-3xl space-y-3 text-center">
+              <h2 className="font-semibold text-3xl">
+                Explore proof by industry
+              </h2>
               <p className="text-muted-foreground">
-                Dive deeper into stories from contractors like you, complete with KPI improvements and AI adoption stats.
+                Dive deeper into stories from contractors like you, complete
+                with KPI improvements and AI adoption stats.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {[
-                { label: "HVAC success stories", href: "/case-studies?industry=hvac" },
-                { label: "Plumbing upgrades", href: "/case-studies?industry=plumbing" },
-                { label: "Electrical growth playbooks", href: "/case-studies?industry=electrical" },
-                { label: "Cleaning & recurring services", href: "/case-studies?industry=cleaning" },
+                {
+                  label: "HVAC success stories",
+                  href: "/case-studies?industry=hvac",
+                },
+                {
+                  label: "Plumbing upgrades",
+                  href: "/case-studies?industry=plumbing",
+                },
+                {
+                  label: "Electrical growth playbooks",
+                  href: "/case-studies?industry=electrical",
+                },
+                {
+                  label: "Cleaning & recurring services",
+                  href: "/case-studies?industry=cleaning",
+                },
               ].map((item) => (
-                <Card key={item.label} className="bg-muted/40">
+                <Card className="bg-muted/40" key={item.label}>
                   <CardContent className="flex h-full flex-col items-start justify-between gap-4 py-6">
-                    <p className="text-base font-semibold">{item.label}</p>
+                    <p className="font-semibold text-base">{item.label}</p>
                     <Button asChild variant="ghost">
                       <Link href={item.href}>View stories →</Link>
                     </Button>
@@ -254,14 +288,14 @@ export default function ReviewsPage() {
           </section>
 
           <section className="mx-auto max-w-4xl space-y-4 text-center">
-            <h2 className="text-3xl font-semibold">Reviews FAQ</h2>
+            <h2 className="font-semibold text-3xl">Reviews FAQ</h2>
             <div className="grid gap-4 md:grid-cols-3">
               {FAQS.map((faq) => (
                 <Card key={faq.question}>
                   <CardHeader>
                     <CardTitle className="text-base">{faq.question}</CardTitle>
                   </CardHeader>
-                  <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <CardContent className="text-muted-foreground text-sm leading-relaxed">
                     {faq.answer}
                   </CardContent>
                 </Card>
@@ -281,4 +315,3 @@ export default function ReviewsPage() {
     </>
   );
 }
-

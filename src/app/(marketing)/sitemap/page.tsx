@@ -1,9 +1,8 @@
 import Link from "next/link";
 import Script from "next/script";
-
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -94,8 +93,6 @@ export default function SitemapPage() {
   return (
     <>
       <Script
-        id="sitemap-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -104,27 +101,29 @@ export default function SitemapPage() {
             ])
           ),
         }}
+        id="sitemap-breadcrumb-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <header className="mb-10 space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             Thorbis Sitemap
           </h1>
           <p className="text-muted-foreground">
-            Quickly browse major Thorbis pages. For XML sitemaps used by search engines,
-            visit /kb/sitemap.xml and /seo/thorbis-sitemap.xml.
+            Quickly browse major Thorbis pages. For XML sitemaps used by search
+            engines, visit /kb/sitemap.xml and /seo/thorbis-sitemap.xml.
           </p>
         </header>
         <div className="grid gap-8 md:grid-cols-3">
           {LINK_SECTIONS.map((section) => (
-            <section key={section.heading} className="space-y-3">
-              <h2 className="text-lg font-semibold">{section.heading}</h2>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+            <section className="space-y-3" key={section.heading}>
+              <h2 className="font-semibold text-lg">{section.heading}</h2>
+              <ul className="space-y-2 text-muted-foreground text-sm">
                 {section.links.map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
                       className="text-primary underline-offset-4 hover:underline"
+                      href={link.href}
                     >
                       {link.label}
                     </Link>
@@ -138,4 +137,3 @@ export default function SitemapPage() {
     </>
   );
 }
-

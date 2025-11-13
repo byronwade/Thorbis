@@ -13,24 +13,42 @@
  * - Archived items greyed out and hidden by default
  */
 
-import { Archive, ArchiveRestore, Eye, Mail, MoreHorizontal, UserX, Users } from "lucide-react";
+import { Archive, ArchiveRestore, Eye, Mail, Users, UserX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { archiveTeamMember, restoreTeamMember, suspendTeamMember } from "@/actions/team";
+import {
+  archiveTeamMember,
+  restoreTeamMember,
+  suspendTeamMember,
+} from "@/actions/team";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArchiveFilterSelect } from "@/components/ui/archive-filter-select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import {
   type BulkAction,
   type ColumnDef,
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { ArchiveFilterSelect } from "@/components/ui/archive-filter-select";
+import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import { useArchiveStore } from "@/lib/stores/archive-store";
-import { filterByArchiveStatus, getArchivedRowClassName, isItemArchived } from "@/lib/utils/archive";
+import {
+  filterByArchiveStatus,
+  getArchivedRowClassName,
+  isItemArchived,
+} from "@/lib/utils/archive";
 
 type UserStatus = "active" | "invited" | "suspended";
 
@@ -64,18 +82,29 @@ export function TeamsTable({
 }: TeamsTableProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [itemToSuspend, setItemToSuspend] = useState<string | null>(null);
+  const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
   // Archive filter from store
   const archiveFilter = useArchiveStore((state) => state.filters.team_members);
 
   // Filter data based on archive status
-  const filteredTeamMembers = useMemo(() => {
-    return filterByArchiveStatus(teamMembers, archiveFilter);
-  }, [teamMembers, archiveFilter]);
+  const filteredTeamMembers = useMemo(
+    () => filterByArchiveStatus(teamMembers, archiveFilter),
+    [teamMembers, archiveFilter]
+  );
 
   // Calculate counts for filter dropdown
-  const activeCount = useMemo(() => teamMembers.filter(m => !isItemArchived(m.archived_at)).length, [teamMembers]);
-  const archivedCount = useMemo(() => teamMembers.filter(m => isItemArchived(m.archived_at)).length, [teamMembers]);
+  const activeCount = useMemo(
+    () => teamMembers.filter((m) => !isItemArchived(m.archived_at)).length,
+    [teamMembers]
+  );
+  const archivedCount = useMemo(
+    () => teamMembers.filter((m) => isItemArchived(m.archived_at)).length,
+    [teamMembers]
+  );
 
   // Helper functions
   const getInitials = (name: string) =>
@@ -86,10 +115,6 @@ export function TeamsTable({
       .toUpperCase();
 
   const handleSuspendMember = async (memberId: string) => {
-    if (!confirm("Are you sure you want to suspend this team member?")) {
-      return;
-    }
-
     setIsLoading(true);
     const result = await suspendTeamMember(memberId);
     setIsLoading(false);
@@ -103,10 +128,6 @@ export function TeamsTable({
   };
 
   const handleArchiveMember = async (memberId: string) => {
-    if (!confirm("Are you sure you want to archive this team member?")) {
-      return;
-    }
-
     setIsLoading(true);
     const result = await archiveTeamMember(memberId);
     setIsLoading(false);
@@ -161,18 +182,22 @@ export function TeamsTable({
     {
       key: "member",
       header: "Member",
+      sortable: true,
       render: (member) => (
         <Link
-          className="flex items-center gap-3 hover:underline"
+          className="flex items-center gap-3"
           href={`/dashboard/work/team/${member.id}`}
+          onClick={(e) => e.stopPropagation()}
         >
           <Avatar className="size-8">
             <AvatarImage alt={member.name} src={member.avatar} />
             <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium">{member.name}</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="font-medium text-sm leading-tight hover:underline">
+              {member.name}
+            </div>
+            <div className="text-muted-foreground text-xs leading-tight">
               {member.email}
             </div>
           </div>
@@ -183,6 +208,7 @@ export function TeamsTable({
     {
       key: "role",
       header: "Role",
+      sortable: true,
       render: (member) => (
         <Badge
           style={{
@@ -199,8 +225,10 @@ export function TeamsTable({
     {
       key: "department",
       header: "Department",
+      sortable: true,
       render: (member) => {
-        if (!member.departmentName) return <span className="text-muted-foreground">—</span>;
+        if (!member.departmentName)
+          return <span className="text-muted-foreground">—</span>;
         return (
           <Badge
             style={{
@@ -218,23 +246,29 @@ export function TeamsTable({
     {
       key: "jobTitle",
       header: "Job Title",
-      render: (member) => member.jobTitle || <span className="text-muted-foreground">—</span>,
+      sortable: true,
+      render: (member) =>
+        member.jobTitle || <span className="text-muted-foreground">—</span>,
       width: "w-40",
       hideOnMobile: true,
     },
     {
       key: "status",
       header: "Status",
+      sortable: true,
       render: (member) => {
         const isArchived = isItemArchived(member.archived_at);
 
         if (isArchived) {
           return (
             <div className="flex flex-col gap-1">
-              <Badge variant="outline" className="text-orange-600 border-orange-300">
+              <Badge className="border-warning text-warning" variant="outline">
                 Archived
               </Badge>
-              <Badge variant={getStatusBadgeVariant(member.status)} className="text-xs">
+              <Badge
+                className="text-xs"
+                variant={getStatusBadgeVariant(member.status)}
+              >
                 {getStatusLabel(member.status)}
               </Badge>
             </div>
@@ -253,7 +287,7 @@ export function TeamsTable({
       key: "lastActive",
       header: "Last Active",
       render: (member) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-muted-foreground text-sm">
           {member.lastActive}
         </span>
       ),
@@ -274,36 +308,44 @@ export function TeamsTable({
                 icon: Eye,
                 href: `/dashboard/work/team/${member.id}`,
               },
-              ...(!isArchived ? [
-                {
-                  label: "Send Email",
-                  icon: Mail,
-                  onClick: () => {
-                    window.location.href = `mailto:${member.email}`;
-                  },
-                },
-                {
-                  label: "Suspend",
-                  icon: UserX,
-                  variant: "destructive" as const,
-                  separatorBefore: true,
-                  onClick: () => handleSuspendMember(member.id),
-                },
-                {
-                  label: "Archive",
-                  icon: Archive,
-                  variant: "destructive" as const,
-                  onClick: () => handleArchiveMember(member.id),
-                },
-              ] : [
-                {
-                  label: "Restore",
-                  icon: ArchiveRestore,
-                  variant: "default" as const,
-                  separatorBefore: true,
-                  onClick: () => handleRestoreMember(member.id),
-                },
-              ]),
+              ...(isArchived
+                ? [
+                    {
+                      label: "Restore",
+                      icon: ArchiveRestore,
+                      variant: "default" as const,
+                      separatorBefore: true,
+                      onClick: () => handleRestoreMember(member.id),
+                    },
+                  ]
+                : [
+                    {
+                      label: "Send Email",
+                      icon: Mail,
+                      onClick: () => {
+                        window.location.href = `mailto:${member.email}`;
+                      },
+                    },
+                    {
+                      label: "Suspend",
+                      icon: UserX,
+                      variant: "destructive" as const,
+                      separatorBefore: true,
+                      onClick: () => {
+                        setItemToSuspend(member.id);
+                        setIsSuspendDialogOpen(true);
+                      },
+                    },
+                    {
+                      label: "Archive",
+                      icon: Archive,
+                      variant: "destructive" as const,
+                      onClick: () => {
+                        setItemToArchive(member.id);
+                        setIsArchiveDialogOpen(true);
+                      },
+                    },
+                  ]),
             ]}
           />
         );
@@ -325,7 +367,11 @@ export function TeamsTable({
           icon: <ArchiveRestore className="size-4" />,
           variant: "default",
           onClick: async (selectedIds) => {
-            if (!confirm(`Are you sure you want to restore ${selectedIds.size} team member(s)?`)) {
+            if (
+              !confirm(
+                `Are you sure you want to restore ${selectedIds.size} team member(s)?`
+              )
+            ) {
               return;
             }
 
@@ -345,7 +391,9 @@ export function TeamsTable({
             setIsLoading(false);
 
             if (successCount > 0) {
-              toast.success(`${successCount} team member(s) restored successfully`);
+              toast.success(
+                `${successCount} team member(s) restored successfully`
+              );
             }
             if (failCount > 0) {
               toast.error(`Failed to restore ${failCount} team member(s)`);
@@ -364,7 +412,9 @@ export function TeamsTable({
         icon: <Mail className="size-4" />,
         variant: "default",
         onClick: (selectedIds) => {
-          const selectedMembers = filteredTeamMembers.filter((m) => selectedIds.has(m.id));
+          const selectedMembers = filteredTeamMembers.filter((m) =>
+            selectedIds.has(m.id)
+          );
           const emails = selectedMembers.map((m) => m.email).join(",");
           window.location.href = `mailto:${emails}`;
         },
@@ -374,7 +424,11 @@ export function TeamsTable({
         icon: <UserX className="size-4" />,
         variant: "destructive",
         onClick: async (selectedIds) => {
-          if (!confirm(`Are you sure you want to suspend ${selectedIds.size} team member(s)?`)) {
+          if (
+            !confirm(
+              `Are you sure you want to suspend ${selectedIds.size} team member(s)?`
+            )
+          ) {
             return;
           }
 
@@ -394,7 +448,9 @@ export function TeamsTable({
           setIsLoading(false);
 
           if (successCount > 0) {
-            toast.success(`${successCount} team member(s) suspended successfully`);
+            toast.success(
+              `${successCount} team member(s) suspended successfully`
+            );
           }
           if (failCount > 0) {
             toast.error(`Failed to suspend ${failCount} team member(s)`);
@@ -408,7 +464,11 @@ export function TeamsTable({
         icon: <Archive className="size-4" />,
         variant: "destructive",
         onClick: async (selectedIds) => {
-          if (!confirm(`Are you sure you want to archive ${selectedIds.size} team member(s)?`)) {
+          if (
+            !confirm(
+              `Are you sure you want to archive ${selectedIds.size} team member(s)?`
+            )
+          ) {
             return;
           }
 
@@ -428,7 +488,9 @@ export function TeamsTable({
           setIsLoading(false);
 
           if (successCount > 0) {
-            toast.success(`${successCount} team member(s) archived successfully`);
+            toast.success(
+              `${successCount} team member(s) archived successfully`
+            );
           }
           if (failCount > 0) {
             toast.error(`Failed to archive ${failCount} team member(s)`);
@@ -445,44 +507,118 @@ export function TeamsTable({
   };
 
   return (
-    <FullWidthDataTable
-      bulkActions={bulkActions}
-      columns={columns}
-      customToolbarContent={
-        <ArchiveFilterSelect
-          activeCount={activeCount}
-          archivedCount={archivedCount}
-          entity="team_members"
-          totalCount={teamMembers.length}
-        />
-      }
-      data={filteredTeamMembers}
-      emptyAction={
-        <Button onClick={handleInviteMember} size="sm">
-          Invite Team Member
-        </Button>
-      }
-      emptyIcon={<Users className="size-8 text-muted-foreground" />}
-      emptyMessage={
-        archiveFilter === "archived"
-          ? "No archived team members"
-          : "No team members yet"
-      }
-      enableSelection={true}
-      getItemId={(member) => member.id}
-      getRowClassName={(member) => getArchivedRowClassName(isItemArchived(member.archived_at))}
-      itemsPerPage={itemsPerPage}
-      searchFilter={(member, query) => {
-        const searchLower = query.toLowerCase();
-        return (
-          member.name.toLowerCase().includes(searchLower) ||
-          member.email.toLowerCase().includes(searchLower) ||
-          (member.roleName && member.roleName.toLowerCase().includes(searchLower)) ||
-          (member.departmentName && member.departmentName.toLowerCase().includes(searchLower)) ||
-          (member.jobTitle && member.jobTitle.toLowerCase().includes(searchLower))
-        );
-      }}
-      searchPlaceholder="Search by name or email..."
-    />
+    <>
+      <FullWidthDataTable
+        bulkActions={bulkActions}
+        columns={columns}
+        toolbarActions={
+          <ArchiveFilterSelect
+            activeCount={activeCount}
+            archivedCount={archivedCount}
+            entity="team_members"
+            totalCount={teamMembers.length}
+          />
+        }
+        data={filteredTeamMembers}
+        emptyAction={
+          <Button onClick={handleInviteMember} size="sm">
+            Invite Team Member
+          </Button>
+        }
+        emptyIcon={<Users className="size-8 text-muted-foreground" />}
+        emptyMessage={
+          archiveFilter === "archived"
+            ? "No archived team members"
+            : "No team members yet"
+        }
+        enableSelection={true}
+        getItemId={(member) => member.id}
+        getRowClassName={(member) =>
+          getArchivedRowClassName(isItemArchived(member.archived_at))
+        }
+        itemsPerPage={itemsPerPage}
+        searchFilter={(member, query) => {
+          const searchLower = query.toLowerCase();
+          const nameMatch =
+            member.name?.toLowerCase().includes(searchLower) ?? false;
+          const emailMatch =
+            member.email?.toLowerCase().includes(searchLower) ?? false;
+          const roleMatch =
+            member.roleName?.toLowerCase().includes(searchLower) ?? false;
+          const departmentMatch =
+            member.departmentName
+              ?.toLowerCase()
+              .includes(searchLower) ?? false;
+          const jobTitleMatch =
+            member.jobTitle?.toLowerCase().includes(searchLower) ?? false;
+
+          return (
+            nameMatch ||
+            emailMatch ||
+            roleMatch ||
+            departmentMatch ||
+            jobTitleMatch
+          );
+        }}
+        searchPlaceholder="Search by name or email..."
+      />
+
+      {/* Suspend Single Member Dialog */}
+      <AlertDialog
+        onOpenChange={setIsSuspendDialogOpen}
+        open={isSuspendDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Suspend Team Member?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This team member will be suspended and will not be able to access
+              the system until reactivated.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (itemToSuspend) {
+                  await handleSuspendMember(itemToSuspend);
+                }
+              }}
+            >
+              Suspend
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Archive Single Member Dialog */}
+      <AlertDialog
+        onOpenChange={setIsArchiveDialogOpen}
+        open={isArchiveDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Team Member?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This team member will be archived and can be restored later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (itemToArchive) {
+                  await handleArchiveMember(itemToArchive);
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

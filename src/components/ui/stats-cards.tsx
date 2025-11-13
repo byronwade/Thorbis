@@ -13,7 +13,7 @@
  */
 
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
-import { Area, AreaChart } from "recharts";
+import { Area, LazyAreaChart } from "@/components/lazy/chart";
 import { ChartContainer } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
@@ -41,35 +41,40 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
   const isNegative = numericChange < 0;
   const isNeutral = numericChange === 0;
 
+  // Format value if it's a number with commas
+  const formattedValue =
+    typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
+
   return (
     <div
       className={cn(
-        "transition-all duration-300",
-        compact ? "px-3 py-2" : "px-5 py-4"
+        "group cursor-default transition-all duration-200 hover:bg-muted/10 dark:hover:bg-muted/5",
+        compact ? "px-4 py-2" : "px-5 py-3"
       )}
     >
       <div className="flex items-baseline gap-2">
         <div
           className={cn(
-            "font-semibold text-foreground tabular-nums transition-all duration-300",
-            compact ? "text-lg" : "text-xl"
+            "font-semibold text-foreground tabular-nums tracking-tight transition-all duration-200",
+            compact ? "text-base leading-tight" : "text-xl leading-tight"
           )}
         >
-          {stat.value}
+          {formattedValue}
         </div>
         {change !== null && (
           <div
             className={cn(
-              "flex items-center gap-0.5 rounded-sm px-1.5 py-0.5 font-medium text-xs tabular-nums",
-              isPositive &&
-                "bg-green-500/10 text-green-600 dark:text-green-500",
-              isNegative && "bg-red-500/10 text-red-600 dark:text-red-500",
-              isNeutral && "bg-muted text-muted-foreground dark:bg-muted/50"
+              "flex items-center gap-0.5 rounded px-1 py-0.5 font-medium text-[10px] tabular-nums shadow-sm",
+              isPositive && "bg-success/10 text-success ring-1 ring-success/20",
+              isNegative &&
+                "bg-destructive/10 text-destructive ring-1 ring-destructive/20",
+              isNeutral &&
+                "bg-muted/50 text-muted-foreground ring-1 ring-border/50"
             )}
           >
-            {isPositive && <TrendingUp className="h-3 w-3" />}
-            {isNegative && <TrendingDown className="h-3 w-3" />}
-            {isNeutral && <Minus className="h-3 w-3" />}
+            {isPositive && <TrendingUp className="h-2.5 w-2.5" />}
+            {isNegative && <TrendingDown className="h-2.5 w-2.5" />}
+            {isNeutral && <Minus className="h-2.5 w-2.5" />}
             {isPositive && "+"}
             {Math.abs(numericChange)}%
           </div>
@@ -77,14 +82,16 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
       </div>
       <div
         className={cn(
-          "text-muted-foreground transition-all duration-300",
-          compact ? "mt-0.5 text-xs" : "mt-1 text-sm"
+          "font-medium text-muted-foreground/70 uppercase tracking-wide transition-all duration-200",
+          compact
+            ? "mt-0.5 text-[10px] leading-tight"
+            : "mt-1 text-xs leading-tight"
         )}
       >
         {stat.label}
       </div>
       {!compact && stat.changeLabel && (
-        <div className="mt-0.5 text-muted-foreground text-xs">
+        <div className="mt-0.5 text-[10px] text-muted-foreground/60 leading-tight">
           {stat.changeLabel}
         </div>
       )}
@@ -110,10 +117,10 @@ export function StatsCards({
 
   if (variant === "ticker") {
     return (
-      <div className="mx-4 my-3 w-auto rounded-xl border border-border/60 bg-card/80 shadow-sm">
+      <div className="w-full border-border/30 border-b bg-background dark:bg-background">
         {/* Stats Grid - Stock ticker style */}
         <div
-          className={cn("grid w-full divide-x divide-border/60", gridColsClass)}
+          className={cn("grid w-full divide-x divide-border/30", gridColsClass)}
         >
           {stats.map((stat) => (
             <TickerStat compact={compact} key={stat.label} stat={stat} />
@@ -159,7 +166,7 @@ export function StatsCards({
                     },
                   }}
                 >
-                  <AreaChart
+                  <LazyAreaChart
                     data={stat.data}
                     margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
                   >
@@ -191,7 +198,7 @@ export function StatsCards({
                       strokeWidth={2}
                       type="monotone"
                     />
-                  </AreaChart>
+                  </LazyAreaChart>
                 </ChartContainer>
               </div>
             )}

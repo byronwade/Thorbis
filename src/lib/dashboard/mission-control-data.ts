@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
 import { endOfDay, startOfDay } from "@/lib/schedule-utils";
+import { createClient } from "@/lib/supabase/server";
 
 const CENTS_IN_DOLLAR = 100;
 
@@ -137,7 +137,9 @@ function resolveName(
   return combined.length > 0 ? combined : undefined;
 }
 
-export async function getMissionControlData(companyId?: string): Promise<MissionControlData> {
+export async function getMissionControlData(
+  companyId?: string
+): Promise<MissionControlData> {
   try {
     const supabase = await createClient();
 
@@ -377,9 +379,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
     );
 
     const averageTicketCents =
-      completedToday.length > 0
-        ? revenueTodayCents / completedToday.length
-        : 0;
+      completedToday.length > 0 ? revenueTodayCents / completedToday.length : 0;
 
     const outstandingBalanceCents = invoices.reduce(
       (sum, invoice) => sum + formatCurrencyCents(invoice.balance_amount),
@@ -503,8 +503,8 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
       }))
       .slice(0, 8);
 
-    const communicationItems: MissionControlCommunication[] = communications.map(
-      (item: any) => ({
+    const communicationItems: MissionControlCommunication[] =
+      communications.map((item: any) => ({
         id: item.id,
         type: item.type,
         direction: item.direction,
@@ -516,30 +516,33 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
           item.customers?.first_name,
           item.customers?.last_name
         ),
+      }));
+
+    const invoiceItems: MissionControlInvoice[] = invoices.map(
+      (invoice: any) => ({
+        id: invoice.id,
+        invoiceNumber: invoice.invoice_number,
+        status: invoice.status,
+        totalAmountCents: formatCurrencyCents(invoice.total_amount),
+        balanceAmountCents: formatCurrencyCents(invoice.balance_amount),
+        dueDate: invoice.due_date,
+        customerName: resolveName(
+          invoice.customers?.display_name,
+          invoice.customers?.first_name,
+          invoice.customers?.last_name
+        ),
       })
     );
 
-    const invoiceItems: MissionControlInvoice[] = invoices.map((invoice: any) => ({
-      id: invoice.id,
-      invoiceNumber: invoice.invoice_number,
-      status: invoice.status,
-      totalAmountCents: formatCurrencyCents(invoice.total_amount),
-      balanceAmountCents: formatCurrencyCents(invoice.balance_amount),
-      dueDate: invoice.due_date,
-      customerName: resolveName(
-        invoice.customers?.display_name,
-        invoice.customers?.first_name,
-        invoice.customers?.last_name
-      ),
-    }));
-
-    const activityItems: MissionControlActivity[] = activities.map((entry: any) => ({
-      id: entry.id,
-      entityType: entry.entity_type,
-      action: entry.action,
-      createdAt: entry.created_at,
-      actorName: entry.actor_name,
-    }));
+    const activityItems: MissionControlActivity[] = activities.map(
+      (entry: any) => ({
+        id: entry.id,
+        entityType: entry.entity_type,
+        action: entry.action,
+        createdAt: entry.created_at,
+        actorName: entry.actor_name,
+      })
+    );
 
     return {
       metrics,
@@ -557,4 +560,3 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
     return EMPTY_DATA;
   }
 }
-

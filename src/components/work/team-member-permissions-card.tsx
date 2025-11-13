@@ -35,8 +35,16 @@ import {
 const AVAILABLE_ROLES = [
   { value: "owner", label: "Owner", description: "Full system access" },
   { value: "admin", label: "Admin", description: "System administration" },
-  { value: "manager", label: "Manager", description: "Team and operations management" },
-  { value: "dispatcher", label: "Dispatcher", description: "Schedule and dispatch" },
+  {
+    value: "manager",
+    label: "Manager",
+    description: "Team and operations management",
+  },
+  {
+    value: "dispatcher",
+    label: "Dispatcher",
+    description: "Schedule and dispatch",
+  },
   { value: "technician", label: "Technician", description: "Field operations" },
   { value: "csr", label: "CSR", description: "Customer service" },
 ];
@@ -120,14 +128,12 @@ export function TeamMemberPermissionsCard() {
             <Shield className="size-5" />
             Permissions & Access
           </CardTitle>
-          <CardDescription>
-            Current role and permissions
-          </CardDescription>
+          <CardDescription>Current role and permissions</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
-              <p className="mb-2 text-sm font-medium">Current Role</p>
+              <p className="mb-2 font-medium text-sm">Current Role</p>
               <Badge className="capitalize" variant="secondary">
                 {currentRole}
               </Badge>
@@ -157,8 +163,8 @@ export function TeamMemberPermissionsCard() {
       <CardContent className="space-y-6">
         {/* Role Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Role</label>
-          <Select value={selectedRole} onValueChange={setSelectedRole}>
+          <label className="font-medium text-sm">Role</label>
+          <Select onValueChange={setSelectedRole} value={selectedRole}>
             <SelectTrigger>
               <SelectValue placeholder="Select a role" />
             </SelectTrigger>
@@ -179,7 +185,7 @@ export function TeamMemberPermissionsCard() {
 
         {/* Key Permissions Display */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Key Permissions</label>
+          <label className="font-medium text-sm">Key Permissions</label>
           <div className="flex flex-wrap gap-2">
             {Object.entries(permissions).length > 0 ? (
               Object.entries(permissions)
@@ -191,12 +197,18 @@ export function TeamMemberPermissionsCard() {
                   </Badge>
                 ))
             ) : (
-              <p className="text-muted-foreground text-sm">No permissions configured</p>
+              <p className="text-muted-foreground text-sm">
+                No permissions configured
+              </p>
             )}
           </div>
-          {Object.entries(permissions).filter(([, enabled]) => enabled).length > 6 && (
+          {Object.entries(permissions).filter(([, enabled]) => enabled).length >
+            6 && (
             <p className="text-muted-foreground text-xs">
-              +{Object.entries(permissions).filter(([, enabled]) => enabled).length - 6} more permissions
+              +
+              {Object.entries(permissions).filter(([, enabled]) => enabled)
+                .length - 6}{" "}
+              more permissions
             </p>
           )}
         </div>
@@ -205,18 +217,14 @@ export function TeamMemberPermissionsCard() {
         {hasChanges && (
           <div className="flex items-center justify-end gap-2 border-t pt-4">
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedRole(currentRole)}
               disabled={isSaving}
+              onClick={() => setSelectedRole(currentRole)}
+              size="sm"
+              variant="outline"
             >
               Cancel
             </Button>
-            <Button
-              size="sm"
-              onClick={handleSaveRole}
-              disabled={isSaving}
-            >
+            <Button disabled={isSaving} onClick={handleSaveRole} size="sm">
               {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>

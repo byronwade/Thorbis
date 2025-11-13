@@ -18,7 +18,7 @@ import type {
   ProcessPaymentResponse,
   RefundPaymentRequest,
   RefundPaymentResponse,
-} from "../processor";
+} from "../processor-types";
 
 interface PlaidConfig {
   companyId: string;

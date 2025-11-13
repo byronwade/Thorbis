@@ -26,10 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Generate sitemap entries for articles
   const articleEntries: MetadataRoute.Sitemap = articles.map((article) => ({
     url: `${siteUrl}/kb/${article.category.slug}/${article.slug}`,
-    lastModified: article.updatedAt
-      ? new Date(article.updatedAt)
-      : article.publishedAt
-        ? new Date(article.publishedAt)
+    lastModified: article.updated_at
+      ? new Date(String(article.updated_at))
+      : article.published_at
+        ? new Date(String(article.published_at))
         : new Date(),
     changeFrequency: "weekly" as const,
     priority: article.featured ? 0.9 : 0.7,

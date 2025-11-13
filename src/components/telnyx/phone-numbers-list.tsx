@@ -165,13 +165,13 @@ function PhoneNumberCard({ number }: { number: (typeof mockPhoneNumbers)[0] }) {
       <CardContent>
         {/* Porting Status (if applicable) */}
         {number.status === "porting" && (
-          <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/20">
+          <div className="mb-4 rounded-lg border border-primary bg-primary p-4 dark:border-primary dark:bg-primary/20">
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium text-blue-900 dark:text-blue-100">
+                <div className="font-medium text-primary dark:text-primary">
                   Porting {number.portingStatus}
                 </div>
-                <div className="text-blue-700 text-sm dark:text-blue-300">
+                <div className="text-primary text-sm dark:text-primary">
                   Estimated completion: {number.portingEta}
                 </div>
               </div>
@@ -185,25 +185,25 @@ function PhoneNumberCard({ number }: { number: (typeof mockPhoneNumbers)[0] }) {
         {/* Usage Metrics */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <MetricCard
-            color="text-green-600 dark:text-green-400"
+            color="text-success dark:text-success"
             icon={Phone}
             label="Incoming Calls"
             value={number.incomingCallsCount.toLocaleString()}
           />
           <MetricCard
-            color="text-blue-600 dark:text-blue-400"
+            color="text-primary dark:text-primary"
             icon={Phone}
             label="Outgoing Calls"
             value={number.outgoingCallsCount.toLocaleString()}
           />
           <MetricCard
-            color="text-purple-600 dark:text-purple-400"
+            color="text-accent-foreground dark:text-accent-foreground"
             icon={MessageSquare}
             label="SMS Sent"
             value={number.smsSentCount.toLocaleString()}
           />
           <MetricCard
-            color="text-amber-600 dark:text-amber-400"
+            color="text-warning dark:text-warning"
             icon={DollarSign}
             label="Monthly Cost"
             value={`$${number.monthlyCost.toFixed(2)}`}

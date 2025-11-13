@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { createVendor, updateVendor } from "@/actions/vendors";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,8 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Loader2 } from "lucide-react";
 
 type VendorFormData = {
   name: string;
@@ -130,12 +130,10 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
       serverFormData.append("secondary_phone", formData.secondary_phone);
     if (formData.website) serverFormData.append("website", formData.website);
     if (formData.address) serverFormData.append("address", formData.address);
-    if (formData.address2)
-      serverFormData.append("address2", formData.address2);
+    if (formData.address2) serverFormData.append("address2", formData.address2);
     if (formData.city) serverFormData.append("city", formData.city);
     if (formData.state) serverFormData.append("state", formData.state);
-    if (formData.zip_code)
-      serverFormData.append("zip_code", formData.zip_code);
+    if (formData.zip_code) serverFormData.append("zip_code", formData.zip_code);
     if (formData.country) serverFormData.append("country", formData.country);
     if (formData.tax_id) serverFormData.append("tax_id", formData.tax_id);
     if (formData.payment_terms)
@@ -226,8 +224,8 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
           <div className="space-y-2">
             <Label htmlFor="vendor_number">Vendor Number</Label>
             <Input
-              id="vendor_number"
               disabled={mode === "edit"}
+              id="vendor_number"
               onChange={(e) =>
                 setFormData({ ...formData, vendor_number: e.target.value })
               }
@@ -250,7 +248,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
                 <SelectItem value="supplier">Supplier</SelectItem>
                 <SelectItem value="distributor">Distributor</SelectItem>
                 <SelectItem value="manufacturer">Manufacturer</SelectItem>
-                <SelectItem value="service_provider">Service Provider</SelectItem>
+                <SelectItem value="service_provider">
+                  Service Provider
+                </SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
@@ -509,11 +509,7 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 
       {/* Actions */}
       <div className="flex justify-end gap-3">
-        <Button
-          onClick={() => router.back()}
-          type="button"
-          variant="outline"
-        >
+        <Button onClick={() => router.back()} type="button" variant="outline">
           Cancel
         </Button>
         <Button disabled={isLoading} type="submit">
@@ -524,4 +520,3 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
     </form>
   );
 }
-

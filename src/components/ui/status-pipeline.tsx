@@ -28,8 +28,3 @@ export function StatusPipeline({
 }: StatusPipelineProps) {
   return <StatsCards compact={compact} stats={stats} variant={variant} />;
 }
-
-
-
-
-

@@ -10,13 +10,10 @@
  */
 
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
-import {
-  type Equipment,
-  EquipmentTable,
-} from "@/components/work/equipment-table";
 import { EquipmentKanban } from "@/components/work/equipment-kanban";
+import { EquipmentTable } from "@/components/work/equipment-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -45,6 +42,7 @@ export default async function EquipmentPage() {
   }
 
   // Fetch equipment from database (customer property equipment)
+  // Fetch all equipment including archived (filter in UI)
   const { data: equipmentRaw, error } = await supabase
     .from("equipment")
     .select(`
@@ -53,7 +51,6 @@ export default async function EquipmentPage() {
       property:properties!property_id(address, city, state)
     `)
     .eq("company_id", activeCompanyId)
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -111,19 +108,28 @@ export default async function EquipmentPage() {
             year: "numeric",
           })
         : "",
+      archived_at: eq.archived_at,
+      deleted_at: eq.deleted_at,
     };
   });
 
-  // Calculate equipment stats
-  const totalEquipment = equipment.length;
-  const activeCount = equipment.filter((e) => e.status === "active").length;
-  const inactiveCount = equipment.filter((e) => e.status === "inactive").length;
-  const maintenanceCount = equipment.filter((e) => e.condition === "poor" || e.condition === "needs_replacement").length;
-  const needsAttention = equipment.filter((e) => {
+  // Filter to active equipment for stats calculations
+  const activeEquipment = equipment.filter((e) => !e.archived_at && !e.deleted_at);
+
+  // Calculate equipment stats (from active equipment only)
+  const totalEquipment = activeEquipment.length;
+  const activeCount = activeEquipment.filter((e) => e.status === "active").length;
+  const inactiveCount = activeEquipment.filter((e) => e.status === "inactive").length;
+  const maintenanceCount = activeEquipment.filter(
+    (e) => e.condition === "poor" || e.condition === "needs_replacement"
+  ).length;
+  const needsAttention = activeEquipment.filter((e) => {
     if (!e.nextServiceDue) return false;
     const dueDate = new Date(e.nextServiceDue);
     const now = new Date();
-    const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const daysUntilDue = Math.ceil(
+      (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return daysUntilDue <= 30 && daysUntilDue >= 0;
   }).length;
 
@@ -144,7 +150,8 @@ export default async function EquipmentPage() {
       label: "In Maintenance",
       value: maintenanceCount,
       change: maintenanceCount > 0 ? -3.5 : 4.2, // Red if in maintenance, green if none
-      changeLabel: maintenanceCount > 0 ? "requires attention" : "all operational",
+      changeLabel:
+        maintenanceCount > 0 ? "requires attention" : "all operational",
     },
     {
       label: "Service Due Soon",

@@ -41,12 +41,11 @@ export function PasswordResetTemplate({
         <Container style={container}>
           <Heading style={h1}>Password Reset</Heading>
 
-          <Text style={text}>
-            Hi {teamMemberName},
-          </Text>
+          <Text style={text}>Hi {teamMemberName},</Text>
 
           <Text style={text}>
-            {resetByName} from {companyName} has initiated a password reset for your account.
+            {resetByName} from {companyName} has initiated a password reset for
+            your account.
           </Text>
 
           <Text style={text}>
@@ -70,7 +69,9 @@ export function PasswordResetTemplate({
           <Hr style={hr} />
 
           <Text style={footer}>
-            This link will expire in {expiresInHours} hours. If you didn't request this password reset, please contact your administrator immediately.
+            This link will expire in {expiresInHours} hours. If you didn't
+            request this password reset, please contact your administrator
+            immediately.
           </Text>
 
           <Text style={footer}>
@@ -92,7 +93,7 @@ const main = {
 };
 
 const container = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "#f3f7fd",
   margin: "0 auto",
   padding: "20px 0 48px",
   marginBottom: "64px",
@@ -120,9 +121,9 @@ const buttonContainer = {
 };
 
 const button = {
-  backgroundColor: "#000",
+  backgroundColor: "#1f2938",
   borderRadius: "5px",
-  color: "#fff",
+  color: "#f8fafe",
   fontSize: "16px",
   fontWeight: "bold",
   textDecoration: "none",

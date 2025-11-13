@@ -65,7 +65,7 @@ export default function BreakEvenCalculator() {
       </div>
 
       {/* Info Card */}
-      <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+      <Card className="border-primary/20 bg-gradient-to-br from-blue-500/5 to-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <AlertCircle className="size-5" />
@@ -180,7 +180,7 @@ export default function BreakEvenCalculator() {
             </CardContent>
           </Card>
 
-          <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+          <Card className="border-warning/20 bg-gradient-to-br from-amber-500/5 to-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <AlertCircle className="size-4" />
@@ -273,7 +273,7 @@ export default function BreakEvenCalculator() {
           </Card>
 
           {targetNum > 0 && (
-            <Card className="border-green-500/20 bg-gradient-to-br from-green-500/10 to-transparent">
+            <Card className="border-success/20 bg-gradient-to-br from-green-500/10 to-transparent">
               <CardHeader>
                 <CardTitle className="text-lg">
                   To Achieve Target Profit
@@ -360,7 +360,7 @@ export default function BreakEvenCalculator() {
             </CardContent>
           </Card>
 
-          <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+          <Card className="border-primary/20 bg-gradient-to-br from-blue-500/5 to-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <TrendingUp className="size-4" />

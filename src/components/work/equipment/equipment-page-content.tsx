@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { archiveEquipment } from "@/actions/equipment";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,8 +31,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { archiveEquipment } from "@/actions/equipment";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -226,10 +226,10 @@ export function EquipmentPageContent({
               </Link>
               {/* Archive Button */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsArchiveDialogOpen(true)}
                 className="ml-auto"
+                onClick={() => setIsArchiveDialogOpen(true)}
+                size="sm"
+                variant="outline"
               >
                 <Archive className="mr-2 size-4" />
                 Archive
@@ -355,7 +355,10 @@ export function EquipmentPageContent({
                       </p>
                       {installJob.completed_at && (
                         <p className="mt-1 text-muted-foreground text-xs">
-                          Completed: {new Date(installJob.completed_at).toLocaleDateString()}
+                          Completed:{" "}
+                          {new Date(
+                            installJob.completed_at
+                          ).toLocaleDateString()}
                         </p>
                       )}
                       <div className="mt-2">
@@ -389,14 +392,18 @@ export function EquipmentPageContent({
                 <div>
                   <Label className="mb-2 block">Most Recent Service</Label>
                   <h4 className="font-semibold text-lg">
-                    {lastServiceJob.title || `Job #${lastServiceJob.job_number}`}
+                    {lastServiceJob.title ||
+                      `Job #${lastServiceJob.job_number}`}
                   </h4>
                   <p className="text-muted-foreground text-sm">
                     #{lastServiceJob.job_number}
                   </p>
                   {lastServiceJob.completed_at && (
                     <p className="mt-1 text-muted-foreground text-xs">
-                      Completed: {new Date(lastServiceJob.completed_at).toLocaleDateString()}
+                      Completed:{" "}
+                      {new Date(
+                        lastServiceJob.completed_at
+                      ).toLocaleDateString()}
                     </p>
                   )}
                   <div className="mt-2">
@@ -426,26 +433,36 @@ export function EquipmentPageContent({
           <UnifiedAccordionContent>
             <div className="space-y-3">
               {upcomingMaintenance.map((schedule: any) => (
-                <div key={schedule.id} className="rounded-lg border bg-card p-4">
+                <div
+                  className="rounded-lg border bg-card p-4"
+                  key={schedule.id}
+                >
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="font-medium">
-                        {new Date(schedule.scheduled_start).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {new Date(schedule.scheduled_start).toLocaleDateString(
+                          "en-US",
+                          {
+                            weekday: "long",
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )}
                       </p>
                       <p className="text-muted-foreground text-sm">
-                        {new Date(schedule.scheduled_start).toLocaleTimeString("en-US", {
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
+                        {new Date(schedule.scheduled_start).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          }
+                        )}
                       </p>
                       {schedule.job && (
                         <p className="mt-1 text-muted-foreground text-xs">
-                          {schedule.job.title || `Job #${schedule.job.job_number}`}
+                          {schedule.job.title ||
+                            `Job #${schedule.job.job_number}`}
                         </p>
                       )}
                       <div className="mt-2">
@@ -666,7 +683,15 @@ export function EquipmentPageContent({
     }
 
     return sections;
-  }, [equipment, customer, property, installJob, lastServiceJob, upcomingMaintenance, serviceHistory]);
+  }, [
+    equipment,
+    customer,
+    property,
+    installJob,
+    lastServiceJob,
+    upcomingMaintenance,
+    serviceHistory,
+  ]);
 
   const relatedItems = useMemo(() => {
     const items: any[] = [];
@@ -732,26 +757,27 @@ export function EquipmentPageContent({
       />
 
       {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
+      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Archive Equipment?</DialogTitle>
             <DialogDescription>
-              This will archive the equipment. You can restore it from the archive within 90 days.
+              This will archive the equipment. You can restore it from the
+              archive within 90 days.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setIsArchiveDialogOpen(false)}
               disabled={isArchiving}
+              onClick={() => setIsArchiveDialogOpen(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleArchiveEquipment}
               disabled={isArchiving}
+              onClick={handleArchiveEquipment}
+              variant="destructive"
             >
               {isArchiving ? "Archiving..." : "Archive Equipment"}
             </Button>

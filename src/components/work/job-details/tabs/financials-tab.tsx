@@ -39,8 +39,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 
 interface FinancialsTabProps {
   job: any;
@@ -57,7 +57,6 @@ export function FinancialsTab({
   metrics,
   isEditMode,
 }: FinancialsTabProps) {
-
   // Calculate totals
   const totalInvoiced = invoices.reduce(
     (sum, inv) => sum + (inv.total_amount || 0),
@@ -108,11 +107,11 @@ export function FinancialsTab({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-xs">Paid</p>
-                <p className="font-bold text-2xl text-green-600">
+                <p className="font-bold text-2xl text-success">
                   {formatCurrency(totalPaid, { decimals: 2 })}
                 </p>
               </div>
-              <CreditCard className="h-8 w-8 text-green-600" />
+              <CreditCard className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -122,11 +121,11 @@ export function FinancialsTab({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-xs">Outstanding</p>
-                <p className="font-bold text-2xl text-orange-600">
+                <p className="font-bold text-2xl text-warning">
                   {formatCurrency(totalOutstanding, { decimals: 2 })}
                 </p>
               </div>
-              <Receipt className="h-8 w-8 text-orange-600" />
+              <Receipt className="h-8 w-8 text-warning" />
             </div>
           </CardContent>
         </Card>
@@ -136,14 +135,16 @@ export function FinancialsTab({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-xs">Profit</p>
-                <p className="font-bold text-2xl text-blue-600">
-                  {formatCurrency(metrics.totalAmount - metrics.materialsCost, { decimals: 2 })}
+                <p className="font-bold text-2xl text-primary">
+                  {formatCurrency(metrics.totalAmount - metrics.materialsCost, {
+                    decimals: 2,
+                  })}
                 </p>
                 <p className="text-muted-foreground text-xs">
                   {metrics.profitMargin.toFixed(2)}% margin
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-blue-600" />
+              <TrendingUp className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -190,23 +191,28 @@ export function FinancialsTab({
                       {formatDate(invoice.created_at, "short")}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {formatCurrency(invoice.total_amount || 0, { decimals: 2 })}
+                      {formatCurrency(invoice.total_amount || 0, {
+                        decimals: 2,
+                      })}
                     </TableCell>
-                    <TableCell className="text-green-600">
-                      {formatCurrency(invoice.paid_amount || 0, { decimals: 2 })}
+                    <TableCell className="text-success">
+                      {formatCurrency(invoice.paid_amount || 0, {
+                        decimals: 2,
+                      })}
                     </TableCell>
                     <TableCell
                       className={cn(
                         "font-medium",
                         (invoice.total_amount || 0) -
                           (invoice.paid_amount || 0) >
-                        0
-                          ? "text-orange-600"
-                          : "text-green-600"
+                          0
+                          ? "text-warning"
+                          : "text-success"
                       )}
                     >
                       {formatCurrency(
-                        (invoice.total_amount || 0) - (invoice.paid_amount || 0),
+                        (invoice.total_amount || 0) -
+                          (invoice.paid_amount || 0),
                         { decimals: 2 }
                       )}
                     </TableCell>
@@ -285,7 +291,9 @@ export function FinancialsTab({
                       {formatDate(estimate.created_at, "short")}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {formatCurrency(estimate.total_amount || 0, { decimals: 2 })}
+                      {formatCurrency(estimate.total_amount || 0, {
+                        decimals: 2,
+                      })}
                     </TableCell>
                     <TableCell className="text-sm">
                       {estimate.valid_until
@@ -369,14 +377,14 @@ export function FinancialsTab({
 
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-sm">Gross Profit</span>
-                <span className="font-bold text-green-600 text-lg">
+                <span className="font-bold text-lg text-success">
                   {formatCurrency(metrics.totalAmount - metrics.materialsCost)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-sm">Profit Margin</span>
-                <span className="font-bold text-blue-600 text-lg">
+                <span className="font-bold text-lg text-primary">
                   {metrics.profitMargin.toFixed(2)}%
                 </span>
               </div>
@@ -396,9 +404,9 @@ export function FinancialsTab({
                       %
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full bg-orange-500"
+                      className="h-full bg-warning"
                       style={{
                         width: `${
                           (metrics.materialsCost / metrics.totalAmount) * 100
@@ -413,9 +421,9 @@ export function FinancialsTab({
                     <span>Profit</span>
                     <span>{metrics.profitMargin.toFixed(2)}%</span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full bg-green-500"
+                      className="h-full bg-success"
                       style={{ width: `${metrics.profitMargin}%` }}
                     />
                   </div>

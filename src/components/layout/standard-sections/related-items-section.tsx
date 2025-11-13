@@ -2,8 +2,8 @@
 
 import { ChevronRight, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
-import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 import { Badge } from "@/components/ui/badge";
+import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 
 interface RelatedItem {
   id: string;
@@ -30,7 +30,7 @@ export function RelatedItemsSection({
         <div className="flex h-32 items-center justify-center">
           <div className="text-center">
             <LinkIcon className="mx-auto size-8 text-muted-foreground/50" />
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-muted-foreground text-sm">
               No related items
             </p>
           </div>
@@ -44,30 +44,32 @@ export function RelatedItemsSection({
       <div className="space-y-2">
         {relatedItems.map((item) => (
           <Link
-            key={item.id}
+            className="group flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
             href={item.href}
-            className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors group"
+            key={item.id}
           >
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium truncate">{item.title}</p>
+                <p className="truncate font-medium text-sm">{item.title}</p>
                 {item.badge && (
-                  <Badge variant={item.badge.variant || "default"} className="flex-shrink-0">
+                  <Badge
+                    className="flex-shrink-0"
+                    variant={item.badge.variant || "default"}
+                  >
                     {item.badge.label}
                   </Badge>
                 )}
               </div>
               {item.subtitle && (
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="truncate text-muted-foreground text-xs">
                   {item.subtitle}
                 </p>
               )}
             </div>
-            <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
+            <ChevronRight className="size-4 flex-shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
           </Link>
         ))}
       </div>
     </UnifiedAccordionContent>
   );
 }
-

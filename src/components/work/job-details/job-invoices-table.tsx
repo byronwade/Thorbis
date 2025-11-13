@@ -5,7 +5,7 @@ import {
   Download,
   Eye,
   FileText,
-  LinkOff,
+  Link2Off,
   MoreHorizontal,
   Send,
 } from "lucide-react";
@@ -211,7 +211,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
                   className="cursor-pointer text-destructive focus:text-destructive"
                   onClick={() => setUnlinkInvoiceId(invoice.id)}
                 >
-                  <LinkOff className="mr-2 size-4" />
+                  <Link2Off className="mr-2 size-4" />
                   Unlink from Job
                 </DropdownMenuItem>
               </DropdownMenuContent>

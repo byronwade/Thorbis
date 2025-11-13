@@ -6,10 +6,10 @@
 
 import { z } from "zod";
 import {
+  dateSchema,
   emailSchema,
   phoneSchema,
   uuidSchema,
-  dateSchema,
 } from "./shared-schemas";
 
 // Customer Import Schema
@@ -226,8 +226,3 @@ export function validateImportData(dataType: DataType, rows: unknown[]) {
     errors,
   };
 }
-
-
-
-
-

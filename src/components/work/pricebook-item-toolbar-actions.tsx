@@ -8,7 +8,14 @@
  * - More dropdown (duplicate, add to invoice, deactivate, delete)
  */
 
-import { Archive, Copy, Edit, MoreVertical, ShoppingCart, Trash2 } from "lucide-react";
+import {
+  Archive,
+  Copy,
+  Edit,
+  MoreVertical,
+  ShoppingCart,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
@@ -49,7 +56,11 @@ export function PriceBookItemToolbarActions() {
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button className="gap-2 hover:bg-muted" size="sm" variant="ghost">
+                <Button
+                  className="gap-2 hover:bg-muted"
+                  size="sm"
+                  variant="ghost"
+                >
                   <MoreVertical className="size-4" />
                   <span className="hidden sm:inline">More</span>
                 </Button>
@@ -71,7 +82,7 @@ export function PriceBookItemToolbarActions() {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="text-orange-600 dark:text-orange-400"
+            className="text-warning dark:text-warning"
             onClick={() => console.log("Toggle active")}
           >
             <Archive className="mr-2 size-4" />

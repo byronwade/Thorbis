@@ -18,6 +18,16 @@ import {
   getCustomerContacts,
   removeCustomerContact,
 } from "@/actions/customer-contacts";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,6 +60,8 @@ export function CustomerContactsTable({
   const [contacts, setContacts] = useState<CustomerContact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -123,8 +135,6 @@ export function CustomerContactsTable({
   };
 
   const handleRemoveContact = async (contactId: string) => {
-    if (!confirm("Remove this contact?")) return;
-
     const result = await removeCustomerContact(contactId);
     if (result.success) {
       loadContacts();
@@ -224,7 +234,10 @@ export function CustomerContactsTable({
                   <TableCell>
                     <Button
                       className="size-8 p-0"
-                      onClick={() => handleRemoveContact(contact.id)}
+                      onClick={() => {
+                        setItemToArchive(contact.id);
+                        setIsArchiveDialogOpen(true);
+                      }}
                       size="sm"
                       variant="ghost"
                     >
@@ -375,6 +388,35 @@ export function CustomerContactsTable({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Archive Contact Dialog */}
+      <AlertDialog
+        onOpenChange={setIsArchiveDialogOpen}
+        open={isArchiveDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Contact?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This contact will be archived and can be restored within 90 days.
+              After 90 days, it will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (itemToArchive) {
+                  await handleRemoveContact(itemToArchive);
+                }
+              }}
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -73,9 +73,9 @@ export function AIAutofillPreview() {
 
   // Get confidence color
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return "text-green-400 bg-green-900/30";
-    if (confidence >= 60) return "text-amber-400 bg-amber-900/30";
-    return "text-red-400 bg-red-900/30";
+    if (confidence >= 80) return "text-success bg-success/30";
+    if (confidence >= 60) return "text-warning bg-warning/30";
+    return "text-destructive bg-destructive/30";
   };
 
   // Get confidence text
@@ -88,12 +88,12 @@ export function AIAutofillPreview() {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-zinc-700 border-b bg-zinc-800/50 p-4">
+      <div className="flex items-center justify-between border-border border-b bg-foreground/50 p-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-purple-400" />
+          <Sparkles className="size-4 text-accent-foreground" />
           <h3 className="font-semibold text-sm text-white">AI Auto-fill</h3>
           {isExtracting && (
-            <div className="size-2 animate-pulse rounded-full bg-purple-500" />
+            <div className="size-2 animate-pulse rounded-full bg-accent" />
           )}
         </div>
         {showAIConfidence && extractedData.overallConfidence > 0 && (
@@ -109,7 +109,7 @@ export function AIAutofillPreview() {
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {/* Customer Information */}
         <div
-          className={`rounded-lg border p-4 ${customerInfoState === "approved" ? "border-green-700 bg-green-900/10" : customerInfoState === "rejected" ? "border-red-700 bg-red-900/10" : "border-zinc-700 bg-zinc-800/50"}`}
+          className={`rounded-lg border p-4 ${customerInfoState === "approved" ? "border-success bg-success/10" : customerInfoState === "rejected" ? "border-destructive bg-destructive/10" : "border-border bg-foreground/50"}`}
         >
           <div className="mb-3 flex items-center justify-between">
             <h4 className="flex items-center gap-2 font-semibold text-sm text-white">
@@ -119,7 +119,7 @@ export function AIAutofillPreview() {
             {customerInfoState === "pending" && (
               <div className="flex items-center gap-1">
                 <Button
-                  className="h-7 gap-1 bg-green-900/30 px-2 text-green-400 hover:bg-green-900/50 hover:text-green-300"
+                  className="h-7 gap-1 bg-success/30 px-2 text-success hover:bg-success/50 hover:text-success"
                   onClick={handleApproveCustomerInfo}
                   size="sm"
                   variant="ghost"
@@ -128,7 +128,7 @@ export function AIAutofillPreview() {
                   Approve
                 </Button>
                 <Button
-                  className="h-7 gap-1 bg-red-900/30 px-2 text-red-400 hover:bg-red-900/50 hover:text-red-300"
+                  className="h-7 gap-1 bg-destructive/30 px-2 text-destructive hover:bg-destructive/50 hover:text-destructive"
                   onClick={handleRejectCustomerInfo}
                   size="sm"
                   variant="ghost"
@@ -139,10 +139,12 @@ export function AIAutofillPreview() {
               </div>
             )}
             {customerInfoState === "approved" && (
-              <Badge className="bg-green-900/50 text-green-400">Approved</Badge>
+              <Badge className="bg-success/50 text-success">Approved</Badge>
             )}
             {customerInfoState === "rejected" && (
-              <Badge className="bg-red-900/50 text-red-400">Rejected</Badge>
+              <Badge className="bg-destructive/50 text-destructive">
+                Rejected
+              </Badge>
             )}
           </div>
 
@@ -150,7 +152,7 @@ export function AIAutofillPreview() {
             {/* Name */}
             {(extractedData.customerInfo.name || editedCustomerInfo.name) && (
               <div>
-                <label className="mb-1 block font-medium text-[10px] text-zinc-500">
+                <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
                   Name
                 </label>
                 {editingField === "name" ? (
@@ -163,7 +165,7 @@ export function AIAutofillPreview() {
                   />
                 ) : (
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-zinc-300">
+                    <span className="text-muted-foreground text-sm">
                       {editedCustomerInfo.name ||
                         extractedData.customerInfo.name}
                     </span>
@@ -189,7 +191,7 @@ export function AIAutofillPreview() {
             {/* Email */}
             {(extractedData.customerInfo.email || editedCustomerInfo.email) && (
               <div>
-                <label className="mb-1 block font-medium text-[10px] text-zinc-500">
+                <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
                   Email
                 </label>
                 {editingField === "email" ? (
@@ -202,7 +204,7 @@ export function AIAutofillPreview() {
                   />
                 ) : (
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-zinc-300">
+                    <span className="text-muted-foreground text-sm">
                       {editedCustomerInfo.email ||
                         extractedData.customerInfo.email}
                     </span>
@@ -228,7 +230,7 @@ export function AIAutofillPreview() {
             {/* Phone */}
             {(extractedData.customerInfo.phone || editedCustomerInfo.phone) && (
               <div>
-                <label className="mb-1 block font-medium text-[10px] text-zinc-500">
+                <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
                   Phone
                 </label>
                 {editingField === "phone" ? (
@@ -241,7 +243,7 @@ export function AIAutofillPreview() {
                   />
                 ) : (
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-zinc-300">
+                    <span className="text-muted-foreground text-sm">
                       {editedCustomerInfo.phone ||
                         extractedData.customerInfo.phone}
                     </span>
@@ -268,7 +270,7 @@ export function AIAutofillPreview() {
             {(extractedData.customerInfo.company ||
               editedCustomerInfo.company) && (
               <div>
-                <label className="mb-1 block font-medium text-[10px] text-zinc-500">
+                <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
                   Company
                 </label>
                 {editingField === "company" ? (
@@ -281,7 +283,7 @@ export function AIAutofillPreview() {
                   />
                 ) : (
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-zinc-300">
+                    <span className="text-muted-foreground text-sm">
                       {editedCustomerInfo.company ||
                         extractedData.customerInfo.company}
                     </span>
@@ -311,7 +313,7 @@ export function AIAutofillPreview() {
               extractedData.customerInfo.phone ||
               extractedData.customerInfo.company
             ) && (
-              <p className="text-xs text-zinc-500">
+              <p className="text-muted-foreground text-xs">
                 No customer information extracted yet
               </p>
             )}
@@ -320,9 +322,9 @@ export function AIAutofillPreview() {
 
         {/* Issue Categories */}
         {extractedData.issueCategories.length > 0 && (
-          <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+          <div className="rounded-lg border border-border bg-foreground/50 p-4">
             <div className="mb-3 flex items-center gap-2">
-              <Tag className="size-3.5 text-amber-400" />
+              <Tag className="size-3.5 text-warning" />
               <h4 className="font-semibold text-sm text-white">
                 Issue Categories
               </h4>
@@ -330,14 +332,14 @@ export function AIAutofillPreview() {
             <div className="flex flex-wrap gap-2">
               {extractedData.issueCategories.map((category, index) => (
                 <div
-                  className="flex items-center gap-2 rounded-lg border border-amber-700 bg-amber-900/20 px-3 py-1.5"
+                  className="flex items-center gap-2 rounded-lg border border-warning bg-warning/20 px-3 py-1.5"
                   key={index}
                 >
-                  <span className="font-medium text-amber-400 text-xs">
+                  <span className="font-medium text-warning text-xs">
                     {category.category}
                   </span>
                   {showAIConfidence && (
-                    <span className="font-mono text-[10px] text-amber-600">
+                    <span className="font-mono text-[10px] text-warning">
                       {Math.round(category.confidence)}%
                     </span>
                   )}
@@ -349,14 +351,14 @@ export function AIAutofillPreview() {
 
         {/* Action Items */}
         {extractedData.actionItems.length > 0 && (
-          <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+          <div className="rounded-lg border border-border bg-foreground/50 p-4">
             <h4 className="mb-3 font-semibold text-sm text-white">
               Action Items
             </h4>
             <div className="space-y-2">
               {extractedData.actionItems.map((item, index) => (
                 <div
-                  className={`flex items-start gap-2 rounded-lg border p-3 ${approvedActionItems.has(index) ? "border-green-700 bg-green-900/10" : "border-zinc-700 bg-zinc-900/50"}`}
+                  className={`flex items-start gap-2 rounded-lg border p-3 ${approvedActionItems.has(index) ? "border-success bg-success/10" : "border-border bg-foreground/50"}`}
                   key={index}
                 >
                   <div className="flex-1">
@@ -364,25 +366,27 @@ export function AIAutofillPreview() {
                       <span
                         className={`rounded px-1.5 py-0.5 font-semibold text-[10px] ${
                           item.priority === "high"
-                            ? "bg-red-900/50 text-red-400"
+                            ? "bg-destructive/50 text-destructive"
                             : item.priority === "medium"
-                              ? "bg-amber-900/50 text-amber-400"
-                              : "bg-blue-900/50 text-blue-400"
+                              ? "bg-warning/50 text-warning"
+                              : "bg-primary/50 text-primary"
                         }`}
                       >
                         {item.priority.toUpperCase()}
                       </span>
                       {showAIConfidence && (
-                        <span className="font-mono text-[10px] text-zinc-600">
+                        <span className="font-mono text-[10px] text-muted-foreground">
                           {Math.round(item.confidence)}%
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm text-zinc-300">{item.text}</p>
+                    <p className="mt-1 text-muted-foreground text-sm">
+                      {item.text}
+                    </p>
                   </div>
                   {!approvedActionItems.has(index) && (
                     <Button
-                      className="h-7 gap-1 bg-green-900/30 px-2 text-green-400 hover:bg-green-900/50"
+                      className="h-7 gap-1 bg-success/30 px-2 text-success hover:bg-success/50"
                       onClick={() => handleApproveActionItem(index)}
                       size="sm"
                       variant="ghost"
@@ -392,7 +396,7 @@ export function AIAutofillPreview() {
                     </Button>
                   )}
                   {approvedActionItems.has(index) && (
-                    <Check className="size-4 text-green-400" />
+                    <Check className="size-4 text-success" />
                   )}
                 </div>
               ))}
@@ -402,17 +406,17 @@ export function AIAutofillPreview() {
 
         {/* Call Summary */}
         {extractedData.callSummary && (
-          <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
+          <div className="rounded-lg border border-border bg-foreground/50 p-4">
             <h4 className="mb-2 font-semibold text-sm text-white">
               Call Summary
             </h4>
-            <p className="text-sm text-zinc-400 leading-relaxed">
+            <p className="text-muted-foreground text-sm leading-relaxed">
               {extractedData.callSummary}
             </p>
             <div className="mt-3 flex items-center gap-2">
-              <span className="text-xs text-zinc-600">Sentiment:</span>
+              <span className="text-muted-foreground text-xs">Sentiment:</span>
               <Badge
-                className={`${extractedData.sentiment === "positive" ? "bg-green-900/50 text-green-400" : extractedData.sentiment === "negative" ? "bg-red-900/50 text-red-400" : "bg-zinc-700 text-zinc-400"}`}
+                className={`${extractedData.sentiment === "positive" ? "bg-success/50 text-success" : extractedData.sentiment === "negative" ? "bg-destructive/50 text-destructive" : "bg-foreground text-muted-foreground"}`}
               >
                 {extractedData.sentiment}
               </Badge>
@@ -426,13 +430,13 @@ export function AIAutofillPreview() {
           !extractedData.callSummary &&
           extractedData.customerInfo.confidence === 0 && (
             <div className="flex h-full flex-col items-center justify-center py-12 text-center">
-              <div className="rounded-full bg-zinc-800 p-4">
-                <Sparkles className="size-8 text-zinc-600" />
+              <div className="rounded-full bg-foreground p-4">
+                <Sparkles className="size-8 text-muted-foreground" />
               </div>
-              <p className="mt-4 font-medium text-sm text-zinc-500">
+              <p className="mt-4 font-medium text-muted-foreground text-sm">
                 AI is listening...
               </p>
-              <p className="mt-1 text-xs text-zinc-600">
+              <p className="mt-1 text-muted-foreground text-xs">
                 Data will auto-fill as the conversation progresses
               </p>
             </div>

@@ -45,7 +45,7 @@ export function UsageMetricsCards({
       cost: `$${costs.callCost.toFixed(2)}`,
       icon: Phone,
       description: "Total minutes this month",
-      color: "text-blue-500",
+      color: "text-primary",
     },
     {
       title: "SMS Sent",
@@ -53,7 +53,7 @@ export function UsageMetricsCards({
       cost: `$${costs.smsCost.toFixed(2)}`,
       icon: MessageSquare,
       description: `${metrics.smsReceived} received (free)`,
-      color: "text-green-500",
+      color: "text-success",
     },
     {
       title: "Voicemails",
@@ -61,7 +61,7 @@ export function UsageMetricsCards({
       cost: `$${costs.voicemailTranscriptionCost.toFixed(2)}`,
       icon: Voicemail,
       description: `${metrics.voicemailMinutes} minutes total`,
-      color: "text-purple-500",
+      color: "text-accent-foreground",
     },
     {
       title: "Phone Numbers",
@@ -69,7 +69,7 @@ export function UsageMetricsCards({
       cost: `$${costs.phoneNumberCost.toFixed(2)}/mo`,
       icon: Hash,
       description: "Active numbers",
-      color: "text-orange-500",
+      color: "text-warning",
     },
     {
       title: "Total Cost",

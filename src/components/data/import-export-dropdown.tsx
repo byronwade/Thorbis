@@ -55,7 +55,10 @@ export type DataType =
   | "schedule"
   | "maintenance-plans"
   | "service-agreements"
-  | "service-tickets";
+  | "service-tickets"
+  | "payments"
+  | "appointments"
+  | "team";
 
 interface ImportExportDropdownProps {
   /** Type of data for import/export operations */
@@ -84,9 +87,9 @@ export function ImportExportDropdown({
       <DropdownMenuTrigger asChild>
         <Button
           aria-label="Data management options"
-          className="h-9 w-9"
+          className="h-8 w-8"
           size="icon"
-          variant="ghost"
+          variant="outline"
         >
           <MoreVertical className="size-4" />
         </Button>
@@ -144,6 +147,7 @@ export function ImportExportDropdown({
             <span>Bulk Delete</span>
           </DropdownMenuItem>
           <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
             disabled={!hasSelection}
             onClick={() => handleBulkAction("archive")}
           >

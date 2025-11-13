@@ -55,7 +55,11 @@ export function JobPurchaseOrdersTable({
   const [isArchiving, setIsArchiving] = useState(false);
 
   const formatCurrencyCents = useCallback(
-    (cents: number) => formatCurrency(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+    (cents: number) =>
+      formatCurrency(cents, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
     []
   );
 
@@ -87,7 +91,6 @@ export function JobPurchaseOrdersTable({
     }
   }, [selectedIds]);
 
-
   const columns: ColumnDef<PurchaseOrder>[] = useMemo(
     () => [
       {
@@ -97,13 +100,13 @@ export function JobPurchaseOrdersTable({
         shrink: true,
         render: (po) => (
           <div className="flex min-w-0 items-center gap-2">
-          <Link
-            className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
-            href={`/dashboard/work/purchase-orders/${po.id}`}
-            title={po.po_number}
-          >
-            {po.po_number}
-          </Link>
+            <Link
+              className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+              href={`/dashboard/work/purchase-orders/${po.id}`}
+              title={po.po_number}
+            >
+              {po.po_number}
+            </Link>
             {po.auto_generated && (
               <Badge className="shrink-0 text-xs" variant="outline">
                 Auto
@@ -117,12 +120,16 @@ export function JobPurchaseOrdersTable({
         header: "Title",
         width: "flex-1",
         render: (po) => (
-          <span
-            className="block truncate text-foreground text-sm"
+          <Link
+            className="block min-w-0"
+            href={`/dashboard/work/purchase-orders/${po.id}`}
+            onClick={(e) => e.stopPropagation()}
             title={po.title || undefined}
           >
-            {po.title || "—"}
-          </span>
+            <span className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+              {po.title || "—"}
+            </span>
+          </Link>
         ),
       },
       {
@@ -144,7 +151,9 @@ export function JobPurchaseOrdersTable({
         header: "Status",
         width: "w-32",
         shrink: true,
-        render: (po) => <StatusBadge status={po.status} type="purchase_order" />,
+        render: (po) => (
+          <StatusBadge status={po.status} type="purchase_order" />
+        ),
       },
       {
         key: "total_amount",
@@ -212,11 +221,11 @@ export function JobPurchaseOrdersTable({
       {
         label: "Archive Selected",
         icon: <Archive className="h-4 w-4" />,
+        variant: "destructive",
         onClick: (selectedIds: Set<string>) => {
           setSelectedIds(selectedIds);
           setShowArchiveDialog(true);
         },
-        variant: "default",
       },
     ],
     []

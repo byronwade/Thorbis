@@ -1,13 +1,12 @@
 import Script from "next/script";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,9 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import {
   generateBreadcrumbStructuredData,
+  generateMetadata as generateSEOMetadata,
   siteUrl,
 } from "@/lib/seo/metadata";
 
@@ -81,8 +80,6 @@ export default function SecurityPage() {
   return (
     <>
       <Script
-        id="security-breadcrumb-ld"
-        type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             generateBreadcrumbStructuredData([
@@ -91,23 +88,27 @@ export default function SecurityPage() {
             ])
           ),
         }}
+        id="security-breadcrumb-ld"
+        type="application/ld+json"
       />
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <section className="max-w-3xl space-y-6">
-          <Badge variant="secondary" className="uppercase tracking-wide">
+          <Badge className="uppercase tracking-wide" variant="secondary">
             Security & trust
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
             Protecting your business is our highest priority
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Thorbis was designed with security at its core. From encrypted data storage to
-            rigorous compliance programs, we protect sensitive information for contractors
-            of every size.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Thorbis was designed with security at its core. From encrypted data
+            storage to rigorous compliance programs, we protect sensitive
+            information for contractors of every size.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" asChild>
-              <a href="mailto:security@thorbis.com">Request our security packet</a>
+            <Button asChild variant="outline">
+              <a href="mailto:security@thorbis.com">
+                Request our security packet
+              </a>
             </Button>
             <Button asChild>
               <a href="https://status.thorbis.com" rel="noopener">
@@ -118,7 +119,7 @@ export default function SecurityPage() {
         </section>
 
         <section className="mt-16 space-y-6">
-          <h2 className="text-2xl font-semibold">Security pillars</h2>
+          <h2 className="font-semibold text-2xl">Security pillars</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {PILLARS.map((pillar) => (
               <Card key={pillar.title}>
@@ -136,24 +137,33 @@ export default function SecurityPage() {
         </section>
 
         <section className="mt-16 rounded-3xl border bg-muted/20 p-10">
-          <h2 className="text-2xl font-semibold">Certifications & policies</h2>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+          <h2 className="font-semibold text-2xl">Certifications & policies</h2>
+          <ul className="mt-4 space-y-2 text-muted-foreground text-sm">
             <li>• SOC 2 Type II (audit underway, report available Q4 2025).</li>
             <li>• GDPR compliant with EU Standard Contractual Clauses.</li>
-            <li>• Annual third-party penetration testing and continuous bug bounty program.</li>
-            <li>• Role-based access controls, SSO, and MFA required for all employees.</li>
+            <li>
+              • Annual third-party penetration testing and continuous bug bounty
+              program.
+            </li>
+            <li>
+              • Role-based access controls, SSO, and MFA required for all
+              employees.
+            </li>
           </ul>
         </section>
 
         <section className="mt-16 space-y-4">
-          <h2 className="text-2xl font-semibold">Frequently asked questions</h2>
-          <Accordion type="single" collapsible>
+          <h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+          <Accordion collapsible type="single">
             {FAQ.map((item, index) => (
-              <AccordionItem key={item.question} value={`security-faq-${index}`}>
+              <AccordionItem
+                key={item.question}
+                value={`security-faq-${index}`}
+              >
                 <AccordionTrigger className="text-left">
                   {item.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                <AccordionContent className="text-muted-foreground text-sm leading-relaxed">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>
@@ -164,4 +174,3 @@ export default function SecurityPage() {
     </>
   );
 }
-

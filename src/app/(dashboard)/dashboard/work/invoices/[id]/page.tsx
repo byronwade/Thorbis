@@ -15,13 +15,13 @@
  */
 
 import { notFound, redirect } from "next/navigation";
-import { InvoiceEditorWrapper } from "@/components/invoices/invoice-editor-wrapper";
-import { InvoiceStatsBar } from "@/components/invoices/invoice-stats-bar";
-import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
+import { InvoicePageContent } from "@/components/invoices/invoice-page-content";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import {
   getActiveCompanyId,
   isActiveCompanyOnboardingComplete,
 } from "@/lib/auth/company-context";
+import { generateInvoiceStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -93,14 +93,19 @@ export default async function InvoiceDetailsPage({
     return notFound();
   }
 
-  // Fetch related data in parallel
+  // Fetch related data in parallel (including estimate and contract for workflow timeline)
   const [
     { data: customer },
     { data: company },
     { data: job },
     { data: property },
+    { data: estimate },
+    { data: contract },
     { data: paymentMethods },
+    { data: invoicePayments },
     { data: activities },
+    { data: notes },
+    { data: attachments },
   ] = await Promise.all([
     // Fetch customer with full details
     supabase
@@ -144,6 +149,21 @@ export default async function InvoiceDetailsPage({
           })
       : Promise.resolve({ data: null, error: null }),
 
+    // NEW: Fetch estimate that generated this invoice (for workflow timeline)
+    supabase
+      .from("estimates")
+      .select("id, estimate_number, created_at, status")
+      .eq("id", invoice.converted_from_estimate_id || "")
+      .maybeSingle(),
+
+    // NEW: Fetch contract related to this invoice (for workflow timeline)
+    supabase
+      .from("contracts")
+      .select("id, contract_number, created_at, status, signed_at")
+      .eq("invoice_id", invoiceId)
+      .is("deleted_at", null)
+      .maybeSingle(),
+
     // Fetch customer payment methods
     supabase
       .from("customer_payment_methods")
@@ -151,6 +171,40 @@ export default async function InvoiceDetailsPage({
       .eq("customer_id", invoice.customer_id)
       .eq("is_active", true)
       .order("is_default", { ascending: false }),
+
+    // Fetch payments applied to this invoice via invoice_payments junction table
+    supabase
+      .from("invoice_payments")
+      .select(
+        `
+        id,
+        amount_applied,
+        applied_at,
+        notes,
+        payment:payments!payment_id (
+          id,
+          payment_number,
+          amount,
+          payment_method,
+          payment_type,
+          status,
+          card_brand,
+          card_last4,
+          check_number,
+          reference_number,
+          processor_name,
+          receipt_url,
+          receipt_number,
+          refunded_amount,
+          refund_reason,
+          processed_at,
+          completed_at,
+          notes
+        )
+      `
+      )
+      .eq("invoice_id", invoiceId)
+      .order("applied_at", { ascending: false }),
 
     // Fetch activity log for this invoice
     supabase
@@ -170,6 +224,23 @@ export default async function InvoiceDetailsPage({
       .eq("entity_id", invoiceId)
       .order("created_at", { ascending: false })
       .limit(50),
+
+    // Fetch notes for this invoice
+    supabase
+      .from("notes")
+      .select("*")
+      .eq("entity_type", "invoice")
+      .eq("entity_id", invoiceId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false }),
+
+    // Fetch attachments for this invoice
+    supabase
+      .from("attachments")
+      .select("*")
+      .eq("entity_type", "invoice")
+      .eq("entity_id", invoiceId)
+      .order("created_at", { ascending: false }),
   ]);
 
   // Calculate metrics for stats bar
@@ -182,23 +253,31 @@ export default async function InvoiceDetailsPage({
     createdAt: invoice.created_at,
   };
 
-  return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      {/* Sticky Stats Bar - Becomes compact on scroll */}
-      <StickyStatsBar>
-        <InvoiceStatsBar invoice={invoice} />
-      </StickyStatsBar>
+  // Generate stats for toolbar
+  const stats = generateInvoiceStats(metrics);
 
-      {/* Full-Width Content */}
-      <InvoiceEditorWrapper
-        activities={activities || []}
-        company={company}
-        customer={customer}
-        invoice={invoice}
-        job={job}
-        paymentMethods={paymentMethods || []}
-        property={property}
-      />
-    </div>
+  const invoiceData = {
+    invoice,
+    customer,
+    company,
+    job,
+    property,
+    estimate, // NEW: for workflow timeline
+    contract, // NEW: for workflow timeline
+    paymentMethods: paymentMethods || [],
+    invoicePayments: invoicePayments || [],
+    notes: notes || [],
+    activities: activities || [],
+    attachments: attachments || [],
+  };
+
+  return (
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <InvoicePageContent entityData={invoiceData} metrics={metrics} />
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

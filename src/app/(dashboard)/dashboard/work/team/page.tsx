@@ -9,15 +9,15 @@
  * - Matches jobs page structure: stats pipeline + table/kanban views
  */
 
+import { Users } from "lucide-react";
 import { notFound } from "next/navigation";
+import { getTeamMembers } from "@/actions/team";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
 import { TeamsKanban } from "@/components/work/teams-kanban";
 import { type TeamMember, TeamsTable } from "@/components/work/teams-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { getTeamMembers } from "@/actions/team";
 import { ERROR_CODES } from "@/lib/errors/action-error";
-import { Users } from "lucide-react";
 
 export default async function WorkTeamMembersPage() {
   // Fetch team members from database
@@ -34,11 +34,12 @@ export default async function WorkTeamMembersPage() {
                 <Users className="size-8 text-muted-foreground" />
               </div>
             </div>
-            <h2 className="mb-2 text-2xl font-semibold">No Company Access</h2>
+            <h2 className="mb-2 font-semibold text-2xl">No Company Access</h2>
             <p className="mb-6 text-muted-foreground">
-              {result.error || "You must be part of a company to view team members."}
+              {result.error ||
+                "You must be part of a company to view team members."}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Please contact your administrator to be added to a company.
             </p>
           </div>
@@ -91,10 +92,7 @@ export default async function WorkTeamMembersPage() {
 
     return {
       id: member.id,
-      name:
-        member.user?.name ||
-        member.user?.email?.split("@")[0] ||
-        "Unknown",
+      name: member.user?.name || member.user?.email?.split("@")[0] || "Unknown",
       email: member.user?.email || "",
       roleId: member.role_id || "4",
       roleName: member.role?.name || "Team Member",
@@ -102,8 +100,7 @@ export default async function WorkTeamMembersPage() {
       departmentId: member.department_id || "1",
       departmentName: member.department?.name || "General",
       departmentColor:
-        member.department?.color ||
-        getDepartmentColor(member.department?.name),
+        member.department?.color || getDepartmentColor(member.department?.name),
       status: (member.status || "active") as "active" | "invited" | "suspended",
       avatar: member.user?.avatar,
       jobTitle: member.job_title || "Team Member",
@@ -143,7 +140,9 @@ export default async function WorkTeamMembersPage() {
 
   // Get unique roles count (excluding archived members)
   const roles = new Set(
-    activeTeamMembers.map((m) => m.roleName).filter((r): r is string => Boolean(r))
+    activeTeamMembers
+      .map((m) => m.roleName)
+      .filter((r): r is string => Boolean(r))
   );
 
   const teamStats: StatCard[] = [
@@ -185,9 +184,8 @@ export default async function WorkTeamMembersPage() {
       <WorkDataView
         kanban={<TeamsKanban members={teamMembers} />}
         section="teams"
-        table={<TeamsTable teamMembers={teamMembers} itemsPerPage={50} />}
+        table={<TeamsTable itemsPerPage={50} teamMembers={teamMembers} />}
       />
     </>
   );
 }
-

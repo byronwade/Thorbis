@@ -13,6 +13,7 @@ import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
+import { EMAIL_COLORS } from "../../theme";
 
 export interface PortalInvitationProps {
   customerName: string;
@@ -186,14 +187,14 @@ const invitationIcon = {
 };
 
 const invitationTitle = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "24px",
   fontWeight: "600",
   margin: "0 0 12px 0",
 };
 
 const invitationText = {
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   fontSize: "16px",
   lineHeight: "24px",
   margin: "0",
@@ -273,7 +274,7 @@ const stepNumber = {
   width: "40px",
   height: "40px",
   backgroundColor: "hsl(217 91% 60%)",
-  color: "#ffffff",
+  color: EMAIL_COLORS.primaryText,
   borderRadius: "50%",
   display: "inline-flex",
   alignItems: "center",

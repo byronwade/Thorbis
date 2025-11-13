@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/shadcn-io/gantt";
 import { useSchedule } from "@/hooks/use-schedule";
 import { calculateDuration, formatDuration } from "@/lib/schedule-utils";
-import { cn } from "@/lib/utils";
 import { useViewStore } from "@/lib/stores/view-store";
+import { cn } from "@/lib/utils";
 import type { Job } from "./schedule-types";
 
 /**
@@ -40,17 +40,17 @@ const statusColorMap: Record<Job["status"], string> = {
 };
 
 const priorityBorderColors = {
-  low: "border-slate-500",
-  medium: "border-blue-500",
-  high: "border-orange-500",
-  urgent: "border-red-500",
+  low: "border-border",
+  medium: "border-primary",
+  high: "border-warning",
+  urgent: "border-destructive",
 };
 
 const technicianStatusColors = {
-  available: "bg-green-500",
-  "on-job": "bg-amber-500",
-  "on-break": "bg-orange-500",
-  offline: "bg-slate-500",
+  available: "bg-success",
+  "on-job": "bg-warning",
+  "on-break": "bg-warning",
+  offline: "bg-accent",
 };
 
 // Convert Job to GanttFeature

@@ -50,7 +50,7 @@ export default async function MassUpdatePage() {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Filter className="h-5 w-5" />
               </div>
               <h3 className="font-medium">1. Select Items</h3>
@@ -60,7 +60,7 @@ export default async function MassUpdatePage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Calculator className="h-5 w-5" />
               </div>
               <h3 className="font-medium">2. Set Adjustment</h3>
@@ -70,7 +70,7 @@ export default async function MassUpdatePage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <TrendingUp className="h-5 w-5" />
               </div>
               <h3 className="font-medium">3. Preview & Apply</h3>

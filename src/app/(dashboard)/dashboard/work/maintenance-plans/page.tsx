@@ -10,13 +10,10 @@
  */
 
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
-import {
-  type MaintenancePlan,
-  MaintenancePlansTable,
-} from "@/components/work/maintenance-plans-table";
 import { MaintenancePlansKanban } from "@/components/work/maintenance-plans-kanban";
+import { MaintenancePlansTable } from "@/components/work/maintenance-plans-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -45,6 +42,7 @@ export default async function MaintenancePlansPage() {
   }
 
   // Fetch service plans (maintenance plans) from database
+  // Fetch all plans including archived (filter in UI)
   const { data: plansRaw, error } = await supabase
     .from("service_plans")
     .select(`
@@ -53,7 +51,6 @@ export default async function MaintenancePlansPage() {
     `)
     .eq("company_id", activeCompanyId)
     .in("type", ["preventive", "warranty", "subscription"])
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -62,7 +59,9 @@ export default async function MaintenancePlansPage() {
 
   // Transform data for table component
   const plans = (plansRaw || []).map((plan: any) => {
-    const customer = Array.isArray(plan.customer) ? plan.customer[0] : plan.customer;
+    const customer = Array.isArray(plan.customer)
+      ? plan.customer[0]
+      : plan.customer;
 
     return {
       id: plan.id,
@@ -99,23 +98,28 @@ export default async function MaintenancePlansPage() {
             year: "numeric",
           })
         : "",
+      archived_at: plan.archived_at,
+      deleted_at: plan.deleted_at,
     };
   });
 
-  // Calculate maintenance plan stats
-  const totalPlans = plans.length;
-  const activeCount = plans.filter((p) => p.status === "active").length;
-  const pendingCount = plans.filter((p) => p.status === "pending").length;
-  const suspendedCount = plans.filter((p) => p.status === "suspended").length;
-  const uniqueCustomers = new Set(plans.map((p) => p.customer)).size;
-  const monthlyRevenue = plans
+  // Filter to active plans for stats calculations
+  const activePlans = plans.filter((p) => !p.archived_at && !p.deleted_at);
+
+  // Calculate maintenance plan stats (from active plans only)
+  const totalPlans = activePlans.length;
+  const activeCount = activePlans.filter((p) => p.status === "active").length;
+  const pendingCount = activePlans.filter((p) => p.status === "pending").length;
+  const suspendedCount = activePlans.filter((p) => p.status === "suspended").length;
+  const uniqueCustomers = new Set(activePlans.map((p) => p.customer)).size;
+  const monthlyRevenue = activePlans
     .filter((p) => p.status === "active")
     .reduce((sum, p) => {
       // Convert annual to monthly if needed
       const monthly = p.price / 12;
       return sum + monthly;
     }, 0);
-  const visitsThisMonth = plans.filter((p) => {
+  const visitsThisMonth = activePlans.filter((p) => {
     if (!p.nextServiceDue) return false;
     const dueDate = new Date(p.nextServiceDue);
     const now = new Date();
@@ -164,7 +168,7 @@ export default async function MaintenancePlansPage() {
       <WorkDataView
         kanban={<MaintenancePlansKanban plans={plans} />}
         section="maintenancePlans"
-        table={<MaintenancePlansTable plans={plans} itemsPerPage={50} />}
+        table={<MaintenancePlansTable itemsPerPage={50} plans={plans} />}
       />
     </>
   );

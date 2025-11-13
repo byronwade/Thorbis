@@ -1,11 +1,9 @@
 import {
   Activity,
   AlertTriangle,
-  DollarSign,
   Mail,
   Phone,
   TrendingUp,
-  Users,
   Wifi,
 } from "lucide-react";
 import Link from "next/link";
@@ -13,10 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
-import {
-  getMissionControlData,
-  type MissionControlData,
-} from "@/lib/dashboard/mission-control-data";
+import type { MissionControlData } from "@/lib/dashboard/mission-control-data";
 import {
   formatCurrencyFromDollars,
   formatDateTime,
@@ -61,7 +56,10 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
   return [
     {
       label: "Revenue Today",
-      value: formatCurrencyFromDollars(data.metrics.revenueToday, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      value: formatCurrencyFromDollars(data.metrics.revenueToday, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
       change: data.metrics.revenueToday > 0 ? 8.5 : 0, // Green if revenue exists
       changeLabel:
         data.metrics.averageTicket > 0
@@ -82,7 +80,10 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
     },
     {
       label: "Outstanding AR",
-      value: formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      value: formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
       change: data.metrics.overdueInvoicesCount > 0 ? -2.5 : 1.2, // Red if overdue, otherwise green
       changeLabel: `${data.metrics.overdueInvoicesCount} overdue`,
     },
@@ -95,7 +96,11 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
   ];
 }
 
-export default function OwnerDashboard({ data }: { data?: MissionControlData }) {
+export default function OwnerDashboard({
+  data,
+}: {
+  data?: MissionControlData;
+}) {
   if (!data) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -264,7 +269,10 @@ function FinancialCard({ data }: { data: MissionControlData }) {
               Outstanding Balance
             </span>
             <span className="font-semibold text-lg">
-              {formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {formatCurrencyFromDollars(
+                data.metrics.outstandingInvoicesAmount,
+                { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+              )}
             </span>
           </div>
           <div className="mt-2 flex items-center justify-between text-muted-foreground text-xs">
@@ -369,7 +377,7 @@ function JobRow({
               {job.title || `Job ${job.jobNumber}`}
             </p>
             <Badge
-              className={isUnassigned ? "text-yellow-600" : "text-primary"}
+              className={isUnassigned ? "text-warning" : "text-primary"}
               variant="outline"
             >
               {isUnassigned
@@ -394,7 +402,10 @@ function JobRow({
         </div>
         <div className="flex flex-col items-end gap-1 text-right">
           <span className="font-semibold text-sm">
-            {formatCurrencyFromDollars(job.totalAmountCents / 100, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            {formatCurrencyFromDollars(job.totalAmountCents / 100, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
           </span>
           {!isUnassigned && (
             <span className="text-muted-foreground text-xs">On-site team</span>
@@ -466,7 +477,10 @@ function InvoiceRow({
       </div>
       <div className="text-right">
         <p className="font-semibold text-sm">
-          {formatCurrencyFromDollars(invoice.balanceAmountCents / 100, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+          {formatCurrencyFromDollars(invoice.balanceAmountCents / 100, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}
         </p>
         <p className="text-muted-foreground text-xs capitalize">
           {invoice.status}
@@ -543,22 +557,16 @@ function ActivityRow({
   );
 }
 
-function AlertRow({
-  alert,
-}: {
-  alert: MissionControlData["alerts"][number];
-}) {
+function AlertRow({ alert }: { alert: MissionControlData["alerts"][number] }) {
   const tone =
     alert.level === "critical"
       ? "border-destructive bg-destructive/10 text-destructive"
       : alert.level === "warning"
-        ? "border-yellow-500/60 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
+        ? "border-warning/60 bg-warning/10 text-warning dark:text-warning"
         : "border-primary/40 bg-primary/10 text-primary";
 
   return (
-    <div
-      className={`space-y-1 rounded-lg border px-3 py-2 text-sm ${tone}`}
-    >
+    <div className={`space-y-1 rounded-lg border px-3 py-2 text-sm ${tone}`}>
       <div className="flex items-center gap-2 font-medium">
         <AlertTriangle className="size-4" />
         <span>{alert.title}</span>
@@ -569,4 +577,3 @@ function AlertRow({
     </div>
   );
 }
-

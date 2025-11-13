@@ -62,13 +62,13 @@ export function TicketsView({ messages }: TicketsViewProps) {
   const getStatusIcon = (ticketStatus?: TicketStatus) => {
     switch (ticketStatus) {
       case "new":
-        return <AlertCircle className="size-4 text-blue-600" />;
+        return <AlertCircle className="size-4 text-primary" />;
       case "open":
-        return <MessageSquare className="size-4 text-orange-600" />;
+        return <MessageSquare className="size-4 text-warning" />;
       case "pending":
-        return <Clock className="size-4 text-yellow-600" />;
+        return <Clock className="size-4 text-warning" />;
       case "resolved":
-        return <CheckCircle className="size-4 text-green-600" />;
+        return <CheckCircle className="size-4 text-success" />;
       case "closed":
         return <CheckCircle className="size-4 text-muted-foreground" />;
       default:
@@ -159,7 +159,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
               <div
                 className={`group flex cursor-pointer items-start gap-4 px-4 py-3 transition-colors hover:bg-muted/50 ${
                   message.status === "unread"
-                    ? "bg-blue-50/30 dark:bg-blue-950/10"
+                    ? "bg-primary/30 dark:bg-primary/10"
                     : ""
                 }`}
                 key={message.id}

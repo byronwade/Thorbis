@@ -161,19 +161,19 @@ export default function PayRunsPage() {
       </div>
 
       {/* Next Pay Run Card */}
-      <Card className="border-blue-500/50 bg-blue-500/5">
+      <Card className="border-primary/50 bg-primary/5">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-blue-700 dark:text-blue-400">
+              <CardTitle className="text-primary dark:text-primary">
                 Next Pay Run
               </CardTitle>
               <CardDescription>October 16-31, 2024</CardDescription>
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-blue-500/10 px-4 py-2">
-              <Clock className="h-5 w-5 text-blue-500" />
+            <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2">
+              <Clock className="h-5 w-5 text-primary" />
               <div className="text-right">
-                <p className="font-bold text-2xl text-blue-700 dark:text-blue-400">
+                <p className="font-bold text-2xl text-primary dark:text-primary">
                   3
                 </p>
                 <p className="text-muted-foreground text-xs">days until</p>

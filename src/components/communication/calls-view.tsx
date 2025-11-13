@@ -61,13 +61,13 @@ export function CallsView({ messages }: CallsViewProps) {
   const getCallIcon = (callType?: CallType) => {
     switch (callType) {
       case "incoming":
-        return <PhoneIncoming className="size-4 text-green-600" />;
+        return <PhoneIncoming className="size-4 text-success" />;
       case "outgoing":
-        return <PhoneOutgoing className="size-4 text-blue-600" />;
+        return <PhoneOutgoing className="size-4 text-primary" />;
       case "missed":
-        return <PhoneMissed className="size-4 text-red-600" />;
+        return <PhoneMissed className="size-4 text-destructive" />;
       case "voicemail":
-        return <Voicemail className="size-4 text-purple-600" />;
+        return <Voicemail className="size-4 text-accent-foreground" />;
       default:
         return <Phone className="size-4" />;
     }
@@ -142,7 +142,7 @@ export function CallsView({ messages }: CallsViewProps) {
               <div
                 className={`group flex cursor-pointer items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/50 ${
                   message.status === "unread"
-                    ? "bg-blue-50/30 dark:bg-blue-950/10"
+                    ? "bg-primary/30 dark:bg-primary/10"
                     : ""
                 }`}
                 key={message.id}

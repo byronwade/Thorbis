@@ -202,7 +202,7 @@ export default function JobHistoryPage() {
                       <p className="font-medium text-sm leading-none">
                         {job.customer}
                       </p>
-                      <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 font-medium text-green-800 text-xs">
+                      <span className="inline-flex items-center rounded-full bg-success px-2 py-1 font-medium text-success text-xs">
                         ⭐ {job.rating}
                       </span>
                     </div>

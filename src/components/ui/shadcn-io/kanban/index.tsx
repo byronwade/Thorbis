@@ -1,24 +1,24 @@
 "use client";
 
 import {
-  DndContext,
-  DragOverlay,
-  type DragEndEvent,
-  type DragStartEvent,
-  type PointerSensorOptions,
-  PointerSensor,
-  KeyboardSensor,
   closestCorners,
+  DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  type PointerSensorOptions,
+  type UniqueIdentifier,
   useDroppable,
   useSensor,
   useSensors,
-  type UniqueIdentifier,
 } from "@dnd-kit/core";
 import {
-  sortableKeyboardCoordinates,
   SortableContext,
-  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
   useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
@@ -114,10 +114,7 @@ function cloneState<T extends KanbanItemBase>(
   state: Record<string, T[]>
 ): Record<string, T[]> {
   return Object.fromEntries(
-    Object.entries(state).map(([columnId, items]) => [
-      columnId,
-      items.slice(),
-    ])
+    Object.entries(state).map(([columnId, items]) => [columnId, items.slice()])
   );
 }
 
@@ -207,7 +204,10 @@ export function KanbanProvider<T extends KanbanItemBase>({
       let destinationColumnId: string | null = null;
       let destinationIndex: number | null = null;
 
-      if (typeof over.id === "string" && over.id.startsWith(COLUMN_DROPPABLE_PREFIX)) {
+      if (
+        typeof over.id === "string" &&
+        over.id.startsWith(COLUMN_DROPPABLE_PREFIX)
+      ) {
         destinationColumnId = over.id.replace(COLUMN_DROPPABLE_PREFIX, "");
         destinationIndex = (itemsByColumn[destinationColumnId] ?? []).length;
       } else {
@@ -237,7 +237,8 @@ export function KanbanProvider<T extends KanbanItemBase>({
 
       const destinationItems = updatedState[destinationColumnId] ?? [];
       const insertIndex =
-        origin.columnId === destinationColumnId && origin.index < destinationIndex
+        origin.columnId === destinationColumnId &&
+        origin.index < destinationIndex
           ? destinationIndex - 1
           : destinationIndex;
 
@@ -277,13 +278,15 @@ export function KanbanProvider<T extends KanbanItemBase>({
   );
 
   return (
-    <KanbanContext.Provider value={contextValue as KanbanContextValue<KanbanItemBase>}>
+    <KanbanContext.Provider
+      value={contextValue as KanbanContextValue<KanbanItemBase>}
+    >
       <DndContext
-        sensors={sensors}
         collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
         onDragCancel={() => setActiveItem(null)}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        sensors={sensors}
       >
         <div
           className={cn(
@@ -294,17 +297,17 @@ export function KanbanProvider<T extends KanbanItemBase>({
           {children}
         </div>
         <DragOverlay>
-          {activeItem
-            ? renderDragOverlay
-              ? renderDragOverlay(activeItem.item)
-              : (
-                  <Card className="w-[280px] max-w-[320px] border border-border/70 bg-background/95 p-3 shadow-lg">
-                    <p className="font-medium text-sm">
-                      {String(activeItem.item.id)}
-                    </p>
-                  </Card>
-                )
-            : null}
+          {activeItem ? (
+            renderDragOverlay ? (
+              renderDragOverlay(activeItem.item)
+            ) : (
+              <Card className="w-[280px] max-w-[320px] border border-border/70 bg-background/95 p-3 shadow-lg">
+                <p className="font-medium text-sm">
+                  {String(activeItem.item.id)}
+                </p>
+              </Card>
+            )
+          ) : null}
         </DragOverlay>
       </DndContext>
     </KanbanContext.Provider>
@@ -312,9 +315,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 }
 
 export function useKanbanContext<T extends KanbanItemBase>() {
-  const context = useContext(
-    KanbanContext
-  ) as KanbanContextValue<T> | null;
+  const context = useContext(KanbanContext) as KanbanContextValue<T> | null;
 
   if (!context) {
     throw new Error("useKanbanContext must be used within a KanbanProvider");
@@ -391,13 +392,13 @@ export function KanbanCards<T extends KanbanItemBase>({
     >
       <ScrollArea className="kanban-scroll flex-1">
         <div
-          ref={setNodeRef}
-          data-drop-state={isOver ? "active" : "inactive"}
           className={cn(
             "kanban-column-cards flex min-h-[120px] flex-col gap-3 rounded-2xl bg-muted/30 p-3 transition",
             isOver && "ring-2 ring-primary/60 ring-offset-2",
             className
           )}
+          data-drop-state={isOver ? "active" : "inactive"}
+          ref={setNodeRef}
           style={{ minHeight: height }}
         >
           {items.length === 0 && emptyState}
@@ -414,11 +415,7 @@ export type KanbanCardProps = {
   className?: string;
 };
 
-export function KanbanCard({
-  itemId,
-  children,
-  className,
-}: KanbanCardProps) {
+export function KanbanCard({ itemId, children, className }: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -435,14 +432,14 @@ export function KanbanCard({
 
   return (
     <Card
-      ref={setNodeRef}
-      data-dragging={isDragging ? "" : undefined}
-      style={style}
       className={cn(
-        "grid gap-3 rounded-xl border border-border/70 bg-background/95 p-4 text-left shadow-sm outline-none ring-0 transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring",
+        "hover:-translate-y-0.5 grid gap-3 rounded-xl border border-border/70 bg-background/95 p-4 text-left shadow-sm outline-none ring-0 transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring",
         isDragging && "scale-[1.01] border-primary/60 opacity-80 shadow-lg",
         className
       )}
+      data-dragging={isDragging ? "" : undefined}
+      ref={setNodeRef}
+      style={style}
       {...listeners}
       {...attributes}
     >
@@ -459,4 +456,3 @@ export function useKanbanColumn() {
 
   return context;
 }
-

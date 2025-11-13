@@ -39,11 +39,11 @@ export default function CSRDashboard() {
           <h1 className="font-bold text-4xl tracking-tight">
             Customer Service Hub
           </h1>
-          <Badge className="text-pink-600" variant="outline">
+          <Badge className="text-accent-foreground" variant="outline">
             CSR View
           </Badge>
           <div className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-3 py-1">
-            <div className="size-2 animate-pulse rounded-full bg-green-500" />
+            <div className="size-2 animate-pulse rounded-full bg-success" />
             <span className="font-medium text-muted-foreground text-xs">
               Available
             </span>
@@ -53,10 +53,10 @@ export default function CSRDashboard() {
       </div>
 
       {/* Quick Customer Search */}
-      <Card className="border-blue-500 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30">
+      <Card className="border-primary bg-primary dark:border-primary dark:bg-primary/30">
         <CardContent className="pt-6">
           <div className="flex items-center gap-3">
-            <Search className="size-6 text-blue-600" />
+            <Search className="size-6 text-primary" />
             <div className="flex-1">
               <Input
                 className="h-12"
@@ -121,8 +121,8 @@ export default function CSRDashboard() {
           <Card>
             <CardContent className="space-y-3 pt-6">
               {/* Urgent Callback */}
-              <div className="flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/30">
-                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-red-500">
+              <div className="flex items-start gap-3 rounded-lg border-2 border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
+                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-destructive">
                   <Phone className="size-5 text-white" />
                 </div>
                 <div className="flex-1">
@@ -165,8 +165,8 @@ export default function CSRDashboard() {
                   className="flex items-start gap-3 rounded-lg border bg-card p-3"
                   key={index}
                 >
-                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10">
-                    <Phone className="size-5 text-blue-600" />
+                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Phone className="size-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <Badge variant="outline">Pending</Badge>
@@ -197,13 +197,13 @@ export default function CSRDashboard() {
           <Card>
             <CardContent className="space-y-3 pt-6">
               {/* High Value Estimate */}
-              <div className="flex items-start gap-3 rounded-lg border border-green-500 bg-green-50 p-3 dark:border-green-900 dark:bg-green-950/30">
-                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500">
+              <div className="flex items-start gap-3 rounded-lg border border-success bg-success p-3 dark:border-success dark:bg-success/30">
+                <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-success">
                   <DollarSign className="size-5 text-white" />
                 </div>
                 <div className="flex-1">
                   <Badge
-                    className="border-green-600 text-green-600"
+                    className="border-success text-success"
                     variant="outline"
                   >
                     High Value
@@ -214,9 +214,7 @@ export default function CSRDashboard() {
                   <p className="text-muted-foreground text-xs">
                     Bob Anderson • Sent 2 days ago
                   </p>
-                  <p className="mt-1 font-bold text-green-600 text-sm">
-                    $8,500
-                  </p>
+                  <p className="mt-1 font-bold text-sm text-success">$8,500</p>
                 </div>
                 <Button size="sm" variant="outline">
                   Follow Up
@@ -248,8 +246,8 @@ export default function CSRDashboard() {
                   className="flex items-start gap-3 rounded-lg border bg-card p-3"
                   key={index}
                 >
-                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10">
-                    <FileText className="size-5 text-blue-600" />
+                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <FileText className="size-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <Badge variant="outline">Pending</Badge>
@@ -314,8 +312,8 @@ export default function CSRDashboard() {
                   className="flex items-start gap-3 rounded-lg border bg-card p-3"
                   key={index}
                 >
-                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/10">
-                    <Calendar className="size-5 text-blue-600" />
+                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Calendar className="size-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -356,7 +354,7 @@ export default function CSRDashboard() {
               {/* Call Stats */}
               <div className="rounded-lg border bg-muted/50 p-4">
                 <div className="flex items-center gap-2">
-                  <Phone className="size-5 text-blue-600" />
+                  <Phone className="size-5 text-primary" />
                   <p className="font-bold text-sm">Call Statistics</p>
                 </div>
                 <div className="mt-3 space-y-2">
@@ -384,7 +382,7 @@ export default function CSRDashboard() {
               {/* Booking Stats */}
               <div className="rounded-lg border bg-muted/50 p-4">
                 <div className="flex items-center gap-2">
-                  <Calendar className="size-5 text-green-600" />
+                  <Calendar className="size-5 text-success" />
                   <p className="font-bold text-sm">Booking Statistics</p>
                 </div>
                 <div className="mt-3 space-y-2">
@@ -398,7 +396,7 @@ export default function CSRDashboard() {
                     <span className="text-muted-foreground text-sm">
                       Conversion Rate
                     </span>
-                    <span className="font-bold text-green-600">73.9%</span>
+                    <span className="font-bold text-success">73.9%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground text-sm">
@@ -412,7 +410,7 @@ export default function CSRDashboard() {
               {/* Estimates Sent */}
               <div className="rounded-lg border bg-muted/50 p-4">
                 <div className="flex items-center gap-2">
-                  <FileText className="size-5 text-purple-600" />
+                  <FileText className="size-5 text-accent-foreground" />
                   <p className="font-bold text-sm">Estimates</p>
                 </div>
                 <div className="mt-3 space-y-2">
@@ -432,13 +430,13 @@ export default function CSRDashboard() {
                     <span className="text-muted-foreground text-sm">
                       Pending Review
                     </span>
-                    <span className="font-bold text-yellow-600">12</span>
+                    <span className="font-bold text-warning">12</span>
                   </div>
                 </div>
               </div>
 
               {/* Performance Badge */}
-              <div className="rounded-lg border bg-green-50 p-4 dark:bg-green-950/30">
+              <div className="rounded-lg border bg-success p-4 dark:bg-success/30">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-bold text-sm">Today's Achievement</p>
@@ -447,7 +445,7 @@ export default function CSRDashboard() {
                     </p>
                   </div>
                   <Badge
-                    className="border-green-600 text-green-600"
+                    className="border-success text-success"
                     variant="outline"
                   >
                     ⭐ Top Performer
@@ -533,7 +531,7 @@ export default function CSRDashboard() {
                   className="flex items-start gap-3 rounded-lg border bg-card p-3"
                   key={index}
                 >
-                  <MessageSquare className="mt-0.5 size-5 text-blue-600" />
+                  <MessageSquare className="mt-0.5 size-5 text-primary" />
                   <div className="flex-1">
                     <p className="font-bold text-sm">{script.title}</p>
                     <p className="text-muted-foreground text-xs">

@@ -952,7 +952,7 @@ export default function CustomerIntakePage() {
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{field.label}</p>
                       {field.required && (
-                        <span className="text-red-500 text-xs">*</span>
+                        <span className="text-destructive text-xs">*</span>
                       )}
                     </div>
                     <p className="text-muted-foreground text-xs">

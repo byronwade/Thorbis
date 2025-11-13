@@ -1,5 +1,5 @@
-import Script from "next/script";
 import Link from "next/link";
+import Script from "next/script";
 
 import { RoiCalculator } from "@/components/marketing/roi-calculator";
 import { Badge } from "@/components/ui/badge";
@@ -86,19 +86,19 @@ export default function RoiPage() {
   return (
     <>
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         id="roi-breadcrumb-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
         id="roi-howto-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <Script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
         id="roi-faq-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
 
       <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -106,11 +106,14 @@ export default function RoiPage() {
           <Badge className="uppercase tracking-wide" variant="secondary">
             ROI Calculator
           </Badge>
-          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
             Quantify the ROI of switching to Thorbis
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Use your real numbers to project labor savings, net-new revenue, and net ROI after Thorbis replaces your legacy field service stack. Thorbis pricing starts at $100/month with pay-as-you-go usage—no per-user fees and absolutely no lock-in.
+            Use your real numbers to project labor savings, net-new revenue, and
+            net ROI after Thorbis replaces your legacy field service stack.
+            Thorbis pricing starts at $100/month with pay-as-you-go usage—no
+            per-user fees and absolutely no lock-in.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
@@ -149,7 +152,7 @@ export default function RoiPage() {
                 <CardHeader>
                   <CardTitle className="text-lg">{item.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                <CardContent className="text-muted-foreground text-sm leading-relaxed">
                   {item.description}
                 </CardContent>
               </Card>
@@ -157,15 +160,18 @@ export default function RoiPage() {
           </section>
 
           <section className="mx-auto max-w-4xl space-y-4 text-center">
-            <h2 className="text-3xl font-semibold">
+            <h2 className="font-semibold text-3xl">
               Share your ROI analysis with stakeholders
             </h2>
             <p className="text-muted-foreground">
-              Export the numbers and pair them with our migration plan to prove the case for change.
+              Export the numbers and pair them with our migration plan to prove
+              the case for change.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button asChild>
-                <Link href="/templates?tag=migration">Download migration checklist</Link>
+                <Link href="/templates?tag=migration">
+                  Download migration checklist
+                </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/vs">Compare Thorbis with your current system</Link>
@@ -174,14 +180,14 @@ export default function RoiPage() {
           </section>
 
           <section className="mx-auto max-w-4xl space-y-4">
-            <h2 className="text-3xl font-semibold text-center">ROI FAQ</h2>
+            <h2 className="text-center font-semibold text-3xl">ROI FAQ</h2>
             <div className="space-y-4">
               {FAQS.map((faq) => (
                 <Card key={faq.question}>
                   <CardHeader>
                     <CardTitle className="text-lg">{faq.question}</CardTitle>
                   </CardHeader>
-                  <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  <CardContent className="text-muted-foreground text-sm leading-relaxed">
                     {faq.answer}
                   </CardContent>
                 </Card>
@@ -193,4 +199,3 @@ export default function RoiPage() {
     </>
   );
 }
-

@@ -6,8 +6,8 @@
  */
 
 import { Clock } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { calculateDuration, formatDuration } from "@/lib/schedule-utils";
+import { cn } from "@/lib/utils";
 import type { Job } from "./schedule-types";
 
 type GanttJobBlockProps = {
@@ -18,10 +18,10 @@ type GanttJobBlockProps = {
 };
 
 const statusColors = {
-  scheduled: "bg-blue-500/90 hover:bg-blue-500",
-  "in-progress": "bg-amber-500/90 hover:bg-amber-500",
-  completed: "bg-green-500/90 hover:bg-green-500",
-  cancelled: "bg-red-500/90 hover:bg-red-500",
+  scheduled: "bg-primary/90 hover:bg-primary",
+  "in-progress": "bg-warning/90 hover:bg-warning",
+  completed: "bg-success/90 hover:bg-success",
+  cancelled: "bg-destructive/90 hover:bg-destructive",
 };
 
 const priorityBorderColors = {
@@ -58,9 +58,7 @@ export function GanttJobBlock({
       </p>
 
       {/* Customer Name */}
-      <p className="line-clamp-1 text-[10px] opacity-90">
-        {job.customer.name}
-      </p>
+      <p className="line-clamp-1 text-[10px] opacity-90">{job.customer.name}</p>
 
       {/* Duration */}
       <div className="mt-auto flex items-center gap-1 text-[10px] opacity-80">
@@ -71,11 +69,10 @@ export function GanttJobBlock({
       {/* Priority Indicator */}
       <div
         className={cn(
-          "absolute right-1 top-1 size-1.5 rounded-full",
+          "absolute top-1 right-1 size-1.5 rounded-full",
           priorityBorderColors[job.priority].replace("border-l-", "bg-")
         )}
       />
     </div>
   );
 }
-

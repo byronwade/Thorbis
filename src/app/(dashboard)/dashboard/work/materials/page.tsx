@@ -9,13 +9,13 @@
  * - Matches jobs/invoices page structure: stats pipeline + table/kanban views
  */
 
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
+import { MaterialsKanban } from "@/components/work/materials-kanban";
 import {
   type Material,
   MaterialsTable,
 } from "@/components/work/materials-table";
-import { MaterialsKanban } from "@/components/work/materials-kanban";
 import { WorkDataView } from "@/components/work/work-data-view";
 
 export default function MaterialsPage() {
@@ -66,7 +66,7 @@ export default function MaterialsPage() {
       <WorkDataView
         kanban={<MaterialsKanban materials={mockMaterials} />}
         section="materials"
-        table={<MaterialsTable materials={mockMaterials} itemsPerPage={50} />}
+        table={<MaterialsTable itemsPerPage={50} materials={mockMaterials} />}
       />
     </>
   );

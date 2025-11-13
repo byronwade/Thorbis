@@ -25,7 +25,7 @@ import {
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { formatCurrency } from "@/lib/formatters";
-import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 
 export type Material = {
   id: string;
@@ -37,28 +37,43 @@ export type Material = {
   unitCost: number;
   totalValue: number;
   status: "in-stock" | "low-stock" | "out-of-stock" | "on-order";
+  archived_at?: string | null;
+  deleted_at?: string | null;
 };
 
 const MATERIAL_STATUS_CONFIG = {
   "in-stock": {
-    className: "bg-green-500 hover:bg-green-600 text-white",
+    className: "bg-success hover:bg-success text-white",
     label: "In Stock",
   },
   "low-stock": {
-    className:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+    className: "bg-warning text-warning dark:bg-warning/20 dark:text-warning",
     label: "Low Stock",
   },
   "out-of-stock": {
-    className: "bg-red-500 hover:bg-red-600 text-white",
+    className: "bg-destructive hover:bg-destructive text-white",
     label: "Out of Stock",
   },
   "on-order": {
-    className:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+    className: "bg-primary text-primary dark:bg-primary/20 dark:text-primary",
     label: "On Order",
   },
 } as const;
+
+function renderStatusBadge(status: Material["status"]) {
+  const fallback = {
+    className: "bg-muted text-muted-foreground",
+    label: status.replace(/[-_]/g, " "),
+  };
+  const config =
+    MATERIAL_STATUS_CONFIG[status as keyof typeof MATERIAL_STATUS_CONFIG] ??
+    fallback;
+  return (
+    <Badge className={`text-xs ${config.className}`} variant="outline">
+      {config.label}
+    </Badge>
+  );
+}
 
 export function MaterialsTable({
   materials,
@@ -67,15 +82,27 @@ export function MaterialsTable({
   materials: Material[];
   itemsPerPage?: number;
 }) {
+  // Archive filter state
+  const archiveFilter = useArchiveStore((state) => state.filters.materials);
+
+  // Filter materials based on archive status
+  const filteredMaterials = materials.filter((material) => {
+    const isArchived = Boolean(material.archived_at || material.deleted_at);
+    if (archiveFilter === "active") return !isArchived;
+    if (archiveFilter === "archived") return isArchived;
+    return true; // "all"
+  });
+
   const columns: ColumnDef<Material>[] = [
     {
       key: "itemCode",
       header: "Item Code",
       width: "w-32",
+      sortable: true,
       shrink: true,
       render: (material) => (
         <Link
-          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+          className="font-medium text-foreground text-sm leading-tight hover:underline"
           href={`/dashboard/work/materials/${material.id}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -85,17 +112,22 @@ export function MaterialsTable({
     },
     {
       key: "description",
+      sortable: true,
       header: "Description",
       width: "flex-1",
       render: (material) => (
-        <div className="min-w-0">
-          <div className="truncate font-medium text-foreground text-sm leading-tight">
+        <Link
+          className="block min-w-0"
+          href={`/dashboard/work/materials/${material.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
             {material.description}
           </div>
           <div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
             {material.category}
           </div>
-        </div>
+        </Link>
       ),
     },
     {
@@ -141,7 +173,7 @@ export function MaterialsTable({
       header: "Status",
       width: "w-32",
       shrink: true,
-      render: (material) => getStatusBadge(material.status),
+      render: (material) => renderStatusBadge(material.status),
     },
     {
       key: "actions",
@@ -193,6 +225,7 @@ export function MaterialsTable({
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
+      variant: "destructive",
       onClick: (selectedIds) => console.log("Archive:", selectedIds),
     },
     {
@@ -217,14 +250,18 @@ export function MaterialsTable({
     <FullWidthDataTable
       bulkActions={bulkActions}
       columns={columns}
-      data={materials}
+      data={filteredMaterials}
       emptyIcon={
         <Package className="mx-auto h-12 w-12 text-muted-foreground" />
       }
       emptyMessage="No materials found"
       enableSelection={true}
-      getHighlightClass={() => "bg-red-50/30 dark:bg-red-950/10"}
+      entity="materials"
+      getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
       getItemId={(material) => material.id}
+      isArchived={(material) =>
+        Boolean(material.archived_at || material.deleted_at)
+      }
       isHighlighted={(material) => material.status === "out-of-stock"}
       itemsPerPage={itemsPerPage}
       onRefresh={() => window.location.reload()}
@@ -233,6 +270,7 @@ export function MaterialsTable({
       }
       searchFilter={searchFilter}
       searchPlaceholder="Search materials by code, description, category, or status..."
+      showArchived={archiveFilter !== "active"}
       showRefresh={false}
     />
   );

@@ -206,12 +206,12 @@ export default function JobStatusPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                           job.status === "In Progress"
-                            ? "bg-blue-100 text-blue-800"
+                            ? "bg-primary text-primary"
                             : job.status === "Completed"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-success text-success"
                               : job.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-warning text-warning"
+                                : "bg-destructive text-destructive"
                         }`}
                       >
                         {job.status}
@@ -221,9 +221,9 @@ export default function JobStatusPage() {
                       {job.service} • {job.technician}
                     </p>
                     <div className="flex items-center gap-2">
-                      <div className="h-2 flex-1 rounded-full bg-gray-200">
+                      <div className="h-2 flex-1 rounded-full bg-muted">
                         <div
-                          className="h-2 rounded-full bg-blue-600"
+                          className="h-2 rounded-full bg-primary"
                           style={{ width: job.progress }}
                         />
                       </div>

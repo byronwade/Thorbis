@@ -142,7 +142,7 @@ export default function IntegrationSettingsPage() {
               <h1 className="font-bold text-2xl tracking-tight">
                 {integration.name}
               </h1>
-              <Badge className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100">
+              <Badge className="bg-success text-success hover:bg-success dark:bg-success dark:text-success">
                 <CheckCircle2 className="mr-1 size-3" />
                 Connected
               </Badge>
@@ -261,7 +261,7 @@ export default function IntegrationSettingsPage() {
                 Connected and syncing
               </p>
             </div>
-            <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+            <Badge className="bg-success text-success hover:bg-success">
               Active
             </Badge>
           </div>

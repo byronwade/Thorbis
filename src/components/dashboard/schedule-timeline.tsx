@@ -1,6 +1,12 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  CartesianGrid,
+  LazyBarChart,
+  XAxis,
+  YAxis,
+} from "@/components/lazy/chart";
 import {
   Card,
   CardContent,
@@ -61,7 +67,7 @@ export function ScheduleTimeline() {
           className="aspect-auto h-[300px] w-full"
           config={chartConfig}
         >
-          <BarChart
+          <LazyBarChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -101,7 +107,7 @@ export function ScheduleTimeline() {
               radius={[4, 4, 0, 0]}
               stackId="a"
             />
-          </BarChart>
+          </LazyBarChart>
         </ChartContainer>
       </CardContent>
     </Card>

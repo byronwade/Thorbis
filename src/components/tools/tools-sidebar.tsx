@@ -191,7 +191,7 @@ export function ToolsSidebar() {
                     {item.title}
                     {item.badge && (
                       <span
-                        className="ml-auto flex size-2 rounded-full bg-blue-500"
+                        className="ml-auto flex size-2 rounded-full bg-primary"
                         title={item.badge}
                       />
                     )}

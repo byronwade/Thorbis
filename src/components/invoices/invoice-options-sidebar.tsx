@@ -1,28 +1,25 @@
 /**
  * Invoice Options Sidebar - Right Sidebar
  *
- * Integrated with layout config system.
- * Comprehensive options for invoice customization:
- * - PDF layout templates
- * - Line items management
- * - Design/theme options
- * - Customer view settings
- * - Email/sharing options
- *
- * This component is rendered by the layout system and doesn't need props.
+ * Focused on customizing the customer-facing invoice experience.
+ * Matches the design patterns of the left sidebar with cards, buttons, and visual hierarchy.
  */
 
 "use client";
 
 import {
-  ChevronDown,
+  Check,
+  ChevronRight,
+  CreditCard,
+  Download,
   Eye,
   FileText,
+  Globe,
   Mail,
   Palette,
-  Plus,
   Settings,
 } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -47,10 +44,12 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 // PDF Layout Templates
 const PDF_LAYOUTS = [
@@ -58,193 +57,231 @@ const PDF_LAYOUTS = [
     id: "modern",
     name: "Modern Clean",
     description: "Minimalist design with clean lines",
-    preview: "/templates/modern.png",
+    icon: FileText,
   },
   {
     id: "professional",
     name: "Professional",
     description: "Traditional business invoice layout",
-    preview: "/templates/professional.png",
+    icon: FileText,
   },
   {
     id: "contractor",
     name: "Contractor",
     description: "Optimized for construction/trade work",
-    preview: "/templates/contractor.png",
+    icon: FileText,
   },
   {
     id: "service",
     name: "Service-Based",
     description: "Best for service businesses",
-    preview: "/templates/service.png",
+    icon: FileText,
   },
   {
     id: "commercial",
     name: "Commercial",
     description: "Large commercial projects",
-    preview: "/templates/commercial.png",
+    icon: FileText,
   },
   {
     id: "detailed",
     name: "Detailed Breakdown",
     description: "Itemized with material/labor breakdown",
-    preview: "/templates/detailed.png",
+    icon: FileText,
   },
+];
+
+const CUSTOMER_VIEW_OPTIONS = [
+  { id: "line-numbers", label: "Line Numbers", icon: Check },
+  { id: "item-codes", label: "Item Codes", icon: Check },
+  { id: "subtotals", label: "Subtotals", icon: Check },
+  { id: "tax-breakdown", label: "Tax Breakdown", icon: Check },
+  { id: "notes", label: "Notes Section", icon: Check },
+  { id: "terms", label: "Terms & Conditions", icon: Check },
+];
+
+const PAYMENT_OPTIONS = [
+  { id: "online-payment", label: "Online Payment", icon: CreditCard },
+  { id: "payment-methods", label: "Payment Methods", icon: CreditCard },
+  { id: "partial-payments", label: "Partial Payments", icon: CreditCard },
+  { id: "payment-plan", label: "Payment Plan", icon: CreditCard },
 ];
 
 export function InvoiceOptionsSidebar() {
   const pathname = usePathname();
-  const [selectedLayout, setSelectedLayout] = useState("modern");
-  const [showLineNumbers, setShowLineNumbers] = useState(true);
-  const [showItemCodes, setShowItemCodes] = useState(false);
-  const [showSubtotals, setShowSubtotals] = useState(true);
-  const [brandingOpacity, setBrandingOpacity] = useState([80]);
-  const [layoutOpen, setLayoutOpen] = useState(true);
-  const [designOpen, setDesignOpen] = useState(false);
-  const [itemsOpen, setItemsOpen] = useState(false);
-  const [customerOpen, setCustomerOpen] = useState(false);
-
-  // Get invoice ID from pathname
   const invoiceId = pathname.split("/").pop() || "";
 
+  // Design settings state
+  const [selectedLayout, setSelectedLayout] = useState("modern");
+  const [primaryColor, setPrimaryColor] = useState("#3b82f6");
+  const [logoOpacity, setLogoOpacity] = useState([80]);
+  const [fontSize, setFontSize] = useState("medium");
+
+  // Customer view settings
+  const [enabledOptions, setEnabledOptions] = useState([
+    "line-numbers",
+    "subtotals",
+    "tax-breakdown",
+    "notes",
+    "terms",
+  ]);
+
+  // Payment settings
+  const [enabledPaymentOptions, setEnabledPaymentOptions] = useState([
+    "online-payment",
+    "payment-methods",
+  ]);
+
+  // Email settings
+  const [sendEmailOnCreate, setSendEmailOnCreate] = useState(false);
+
+  // Portal settings
+  const [enablePortal, setEnablePortal] = useState(true);
+
+  // Handlers
   const handleLayoutChange = (layoutId: string) => {
     setSelectedLayout(layoutId);
-    toast.success(`Layout changed to ${layoutId}`);
+    toast.success(`Template changed to ${layoutId}`);
   };
 
-  const handleAddLineItem = () => {
-    // TODO: Implement via context or store
-    toast.success("Add line item functionality coming soon");
+  const toggleOption = (optionId: string) => {
+    setEnabledOptions((prev) =>
+      prev.includes(optionId)
+        ? prev.filter((id) => id !== optionId)
+        : [...prev, optionId]
+    );
+  };
+
+  const togglePaymentOption = (optionId: string) => {
+    setEnabledPaymentOptions((prev) =>
+      prev.includes(optionId)
+        ? prev.filter((id) => id !== optionId)
+        : [...prev, optionId]
+    );
+  };
+
+  const handleSave = () => {
+    toast.success("Customer view settings saved");
+  };
+
+  const handlePreview = () => {
+    toast.success("Opening customer preview...");
   };
 
   return (
-    <Sidebar collapsible="offcanvas" side="right" variant="sidebar">
-      {/* Sidebar Header */}
+    <Sidebar collapsible="offcanvas" side="right" variant="inset">
       <SidebarHeader className="border-b">
-        <div className="p-4">
-          <h2 className="font-semibold text-lg">Invoice Options</h2>
-          <p className="text-muted-foreground text-sm">
-            Customize layout and design
-          </p>
+        <div className="flex items-center justify-between p-4">
+          <div>
+            <h2 className="font-semibold text-sm">Customer View</h2>
+            <p className="mt-0.5 text-muted-foreground text-xs">
+              Customize what customers see
+            </p>
+          </div>
+          <Button onClick={handlePreview} size="icon" variant="ghost">
+            <Eye className="size-4" />
+          </Button>
         </div>
       </SidebarHeader>
 
-      {/* Scrollable Content */}
-      <SidebarContent>
-        <SidebarGroup>
-          <div className="space-y-4 p-4">
-            {/* PDF Layout Templates */}
-            <Collapsible onOpenChange={setLayoutOpen} open={layoutOpen}>
-              <CollapsibleTrigger asChild>
-                <Button
-                  className="flex w-full justify-between p-0"
-                  variant="ghost"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    <span className="font-medium">PDF Layout</span>
-                  </div>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${layoutOpen ? "rotate-180" : ""}`}
-                  />
-                </Button>
+      <SidebarContent className="gap-0">
+        {/* PDF Template */}
+        <Collapsible defaultOpen>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                PDF Template
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-3 space-y-3">
-                <Select
-                  onValueChange={handleLayoutChange}
-                  value={selectedLayout}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select template" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PDF_LAYOUTS.map((layout) => (
-                      <SelectItem key={layout.id} value={layout.id}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{layout.name}</span>
-                          <span className="text-muted-foreground text-xs">
-                            {layout.description}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <div className="space-y-2 px-2 pt-2">
+                {PDF_LAYOUTS.map((layout) => (
+                  <Card
+                    className={cn(
+                      "group cursor-pointer rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5",
+                      selectedLayout === layout.id &&
+                        "border-primary bg-primary/5"
+                    )}
+                    key={layout.id}
+                    onClick={() => handleLayoutChange(layout.id)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5">
+                        <layout.icon className="size-4 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-medium text-sm leading-none">
+                          {layout.name}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {layout.description}
+                        </p>
+                      </div>
+                      {selectedLayout === layout.id && (
+                        <Check className="size-4 text-primary" />
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-                {/* Selected Layout Preview */}
-                <Card className="p-3">
-                  <div className="aspect-[8.5/11] rounded-sm border bg-muted" />
-                  <p className="mt-2 text-center text-muted-foreground text-xs">
-                    {
-                      PDF_LAYOUTS.find((l) => l.id === selectedLayout)
-                        ?.description
-                    }
-                  </p>
-                </Card>
-              </CollapsibleContent>
-            </Collapsible>
+        <Separator className="my-2" />
 
-            <Separator />
-
-            {/* Design Options */}
-            <Collapsible onOpenChange={setDesignOpen} open={designOpen}>
-              <CollapsibleTrigger asChild>
-                <Button
-                  className="flex w-full justify-between p-0"
-                  variant="ghost"
-                >
-                  <div className="flex items-center gap-2">
-                    <Palette className="h-4 w-4" />
-                    <span className="font-medium">Design</span>
-                  </div>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${designOpen ? "rotate-180" : ""}`}
-                  />
-                </Button>
+        {/* Design & Branding */}
+        <Collapsible>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                <div className="flex items-center gap-2">
+                  <Palette className="size-3.5" />
+                  Design & Branding
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-3 space-y-4">
-                {/* Color Theme */}
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <div className="space-y-3 px-2 pt-1 pb-2">
                 <div className="space-y-2">
-                  <Label className="text-sm">Color Theme</Label>
-                  <div className="grid grid-cols-6 gap-2">
-                    {[
-                      "bg-blue-500",
-                      "bg-green-500",
-                      "bg-purple-500",
-                      "bg-red-500",
-                      "bg-orange-500",
-                      "bg-gray-500",
-                    ].map((color) => (
-                      <button
-                        className={`h-8 w-8 rounded-md border-2 border-transparent hover:border-primary ${color}`}
-                        key={color}
-                        type="button"
-                      />
-                    ))}
+                  <Label className="text-xs">Primary Color</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      className="h-8 w-16 cursor-pointer rounded border"
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      type="color"
+                      value={primaryColor}
+                    />
+                    <input
+                      className="h-8 flex-1 rounded border bg-background px-2 text-xs"
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      type="text"
+                      value={primaryColor}
+                    />
                   </div>
                 </div>
 
-                {/* Logo/Branding */}
                 <div className="space-y-2">
-                  <Label className="text-sm">Logo Opacity</Label>
+                  <Label className="text-xs">Logo Opacity</Label>
                   <Slider
                     className="w-full"
                     max={100}
                     min={0}
-                    onValueChange={setBrandingOpacity}
+                    onValueChange={setLogoOpacity}
                     step={10}
-                    value={brandingOpacity}
+                    value={logoOpacity}
                   />
                   <p className="text-muted-foreground text-xs">
-                    {brandingOpacity[0]}%
+                    {logoOpacity[0]}%
                   </p>
                 </div>
 
-                {/* Font Size */}
                 <div className="space-y-2">
-                  <Label className="text-sm">Font Size</Label>
-                  <Select defaultValue="medium">
-                    <SelectTrigger>
+                  <Label className="text-xs">Font Size</Label>
+                  <Select onValueChange={setFontSize} value={fontSize}>
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,126 +291,251 @@ export function InvoiceOptionsSidebar() {
                     </SelectContent>
                   </Select>
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
+              </div>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-            <Separator />
+        <Separator className="my-2" />
 
-            {/* Line Items Options */}
-            <Collapsible onOpenChange={setItemsOpen} open={itemsOpen}>
-              <CollapsibleTrigger asChild>
-                <Button
-                  className="flex w-full justify-between p-0"
-                  variant="ghost"
-                >
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    <span className="font-medium">Line Items</span>
-                  </div>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${itemsOpen ? "rotate-180" : ""}`}
-                  />
-                </Button>
+        {/* Customer View Options */}
+        <Collapsible>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                <div className="flex items-center gap-2">
+                  <Eye className="size-3.5" />
+                  What Customers See
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-3 space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Show Line Numbers</Label>
-                  <Switch
-                    checked={showLineNumbers}
-                    onCheckedChange={setShowLineNumbers}
-                  />
-                </div>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <div className="space-y-1 px-2 pt-2">
+                {CUSTOMER_VIEW_OPTIONS.map((option) => {
+                  const isEnabled = enabledOptions.includes(option.id);
+                  return (
+                    <button
+                      className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+                      key={option.id}
+                      onClick={() => toggleOption(option.id)}
+                      type="button"
+                    >
+                      <span className="flex items-center gap-2">
+                        {isEnabled && <Check className="size-3 text-primary" />}
+                        <span
+                          className={cn(
+                            "text-xs",
+                            isEnabled ? "font-medium" : ""
+                          )}
+                        >
+                          {option.label}
+                        </span>
+                      </span>
+                      <Switch
+                        checked={isEnabled}
+                        onCheckedChange={() => toggleOption(option.id)}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Show Item Codes</Label>
-                  <Switch
-                    checked={showItemCodes}
-                    onCheckedChange={setShowItemCodes}
-                  />
-                </div>
+        <Separator className="my-2" />
 
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Show Subtotals</Label>
-                  <Switch
-                    checked={showSubtotals}
-                    onCheckedChange={setShowSubtotals}
-                  />
+        {/* Payment Options */}
+        <Collapsible>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="size-3.5" />
+                  Payment Options
                 </div>
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <div className="space-y-1 px-2 pt-2">
+                {PAYMENT_OPTIONS.map((option) => {
+                  const isEnabled = enabledPaymentOptions.includes(option.id);
+                  return (
+                    <button
+                      className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+                      key={option.id}
+                      onClick={() => togglePaymentOption(option.id)}
+                      type="button"
+                    >
+                      <span className="flex items-center gap-2">
+                        {isEnabled && <Check className="size-3 text-primary" />}
+                        <span
+                          className={cn(
+                            "text-xs",
+                            isEnabled ? "font-medium" : ""
+                          )}
+                        >
+                          {option.label}
+                        </span>
+                      </span>
+                      <Switch
+                        checked={isEnabled}
+                        onCheckedChange={() => togglePaymentOption(option.id)}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-                <Separator />
+        <Separator className="my-2" />
+
+        {/* Email Settings */}
+        <Collapsible>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                <div className="flex items-center gap-2">
+                  <Mail className="size-3.5" />
+                  Email Settings
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <div className="space-y-3 px-2 pt-1 pb-2">
+                <Card className="rounded-lg border p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <p className="font-medium text-xs">Auto-send on Create</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Automatically email invoice to customer
+                      </p>
+                    </div>
+                    <Switch
+                      checked={sendEmailOnCreate}
+                      onCheckedChange={setSendEmailOnCreate}
+                    />
+                  </div>
+                </Card>
 
                 <Button
-                  className="w-full"
-                  onClick={handleAddLineItem}
+                  asChild
+                  className="w-full justify-start gap-2 text-xs"
+                  size="sm"
                   variant="outline"
                 >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Line Item
+                  <Link href="/dashboard/settings/email-templates">
+                    <Mail className="size-3" />
+                    Customize Email Template
+                  </Link>
                 </Button>
-              </CollapsibleContent>
-            </Collapsible>
+              </div>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-            <Separator />
+        <Separator className="my-2" />
 
-            {/* Customer View Options */}
-            <Collapsible onOpenChange={setCustomerOpen} open={customerOpen}>
-              <CollapsibleTrigger asChild>
-                <Button
-                  className="flex w-full justify-between p-0"
-                  variant="ghost"
-                >
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4" />
-                    <span className="font-medium">Customer View</span>
-                  </div>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${customerOpen ? "rotate-180" : ""}`}
-                  />
-                </Button>
+        {/* Customer Portal */}
+        <Collapsible>
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                <div className="flex items-center gap-2">
+                  <Globe className="size-3.5" />
+                  Customer Portal
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-3 space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Allow Online Payment</Label>
-                  <Switch defaultChecked />
-                </div>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <div className="space-y-2 px-2 pt-2">
+                <Card
+                  className={cn(
+                    "group cursor-pointer rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5",
+                    enablePortal && "border-primary bg-primary/5"
+                  )}
+                  onClick={() => setEnablePortal(!enablePortal)}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 space-y-1">
+                      <p className="font-medium text-sm leading-none">
+                        Portal Access
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {enablePortal ? "Enabled" : "Disabled"}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={enablePortal}
+                      onCheckedChange={setEnablePortal}
+                    />
+                  </div>
+                </Card>
 
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Show Payment Methods</Label>
-                  <Switch defaultChecked />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Enable Comments</Label>
-                  <Switch />
-                </div>
-
-                <Separator />
-
-                <Button className="w-full" variant="outline">
-                  <Eye className="mr-2 h-4 w-4" />
-                  Preview Customer View
+                <Button
+                  asChild
+                  className="w-full justify-start gap-2 text-xs"
+                  size="sm"
+                  variant="outline"
+                >
+                  <Link href="/dashboard/settings/customer-portal">
+                    <Settings className="size-3" />
+                    Configure Portal Settings
+                  </Link>
                 </Button>
+              </div>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
 
-                <Button className="w-full" variant="outline">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Send Test Email
-                </Button>
-              </CollapsibleContent>
-            </Collapsible>
+        <Separator className="my-2" />
+
+        {/* Quick Actions */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
+          <div className="space-y-2 px-2">
+            <Button
+              className="w-full justify-start gap-2 text-xs"
+              onClick={() =>
+                window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")
+              }
+              size="sm"
+              variant="outline"
+            >
+              <Download className="size-3" />
+              Download PDF
+            </Button>
+            <Button
+              asChild
+              className="w-full justify-start gap-2 text-xs"
+              size="sm"
+              variant="outline"
+            >
+              <Link href={`/invoices/${invoiceId}/preview`}>
+                <Eye className="size-3" />
+                Preview Customer View
+              </Link>
+            </Button>
           </div>
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Sidebar Footer - Quick Actions */}
-      <SidebarFooter className="border-t">
-        <div className="space-y-2 p-4">
-          <Button className="w-full" size="sm">
-            Apply Changes
-          </Button>
-          <Button className="w-full" size="sm" variant="ghost">
-            Reset to Default
-          </Button>
-        </div>
+      <SidebarFooter className="border-t p-3">
+        <Button
+          className="w-full gap-2"
+          onClick={handleSave}
+          size="sm"
+          variant="default"
+        >
+          <Settings className="size-4" />
+          Save Settings
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );

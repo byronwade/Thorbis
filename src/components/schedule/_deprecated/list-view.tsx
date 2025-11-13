@@ -9,29 +9,28 @@ import { type Job, mockTechnicians } from "./schedule-types";
 const statusConfig = {
   scheduled: {
     label: "Scheduled",
-    color: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20",
+    color: "bg-primary/10 text-primary dark:text-primary border-primary/20",
   },
   "in-progress": {
     label: "In Progress",
-    color:
-      "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20",
+    color: "bg-warning/10 text-warning dark:text-warning border-warning/20",
   },
   completed: {
     label: "Completed",
-    color:
-      "bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/20",
+    color: "bg-success/10 text-success dark:text-success border-success/20",
   },
   cancelled: {
     label: "Cancelled",
-    color: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20",
+    color:
+      "bg-destructive/10 text-destructive dark:text-destructive border-destructive/20",
   },
 };
 
 const priorityConfig = {
-  low: { label: "Low", color: "bg-slate-500" },
-  medium: { label: "Medium", color: "bg-blue-500" },
-  high: { label: "High", color: "bg-orange-500" },
-  urgent: { label: "Urgent", color: "bg-red-500" },
+  low: { label: "Low", color: "bg-accent" },
+  medium: { label: "Medium", color: "bg-primary" },
+  high: { label: "High", color: "bg-warning" },
+  urgent: { label: "Urgent", color: "bg-destructive" },
 };
 
 export function ListView() {
@@ -64,7 +63,7 @@ export function ListView() {
         {groupedByStatus["in-progress"].length > 0 && (
           <div>
             <div className="mb-3 flex items-center gap-2">
-              <div className="size-2 rounded-full bg-amber-500" />
+              <div className="size-2 rounded-full bg-warning" />
               <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
                 In Progress ({groupedByStatus["in-progress"].length})
               </h3>
@@ -81,7 +80,7 @@ export function ListView() {
         {groupedByStatus.scheduled.length > 0 && (
           <div>
             <div className="mb-3 flex items-center gap-2">
-              <div className="size-2 rounded-full bg-blue-500" />
+              <div className="size-2 rounded-full bg-primary" />
               <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
                 Scheduled ({groupedByStatus.scheduled.length})
               </h3>
@@ -98,7 +97,7 @@ export function ListView() {
         {groupedByStatus.completed.length > 0 && (
           <div>
             <div className="mb-3 flex items-center gap-2">
-              <div className="size-2 rounded-full bg-green-500" />
+              <div className="size-2 rounded-full bg-success" />
               <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
                 Completed ({groupedByStatus.completed.length})
               </h3>

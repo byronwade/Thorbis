@@ -45,16 +45,16 @@ export default async function NewPurchaseOrderPage() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">New Purchase Order</h1>
+        <h1 className="font-bold text-3xl">New Purchase Order</h1>
       </div>
 
       <div className="rounded-lg border p-6">
         <p className="text-muted-foreground">
           Purchase order creation form will be implemented here.
         </p>
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="mt-4 text-muted-foreground text-sm">
           This page needs the vendors table relationship configured in Supabase.
         </p>
       </div>

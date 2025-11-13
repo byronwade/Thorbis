@@ -1,13 +1,13 @@
 "use client";
 
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
-import { EntityKanban, type ColumnMeta } from "@/components/ui/entity-kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { type ColumnMeta, EntityKanban } from "@/components/ui/entity-kanban";
+import type { KanbanItemBase } from "@/components/ui/shadcn-io/kanban";
 import type { Material } from "@/components/work/materials-table";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
 
 type MaterialStatus = Material["status"];
 
@@ -26,7 +26,9 @@ const MATERIAL_COLUMNS: Array<{
   { id: "out-of-stock", name: "Out of Stock", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(MATERIAL_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+  MATERIAL_COLUMNS.map((column) => [column.id, column.name])
+);
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -36,19 +38,6 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 export function MaterialsKanban({ materials }: { materials: Material[] }) {
   return (
     <EntityKanban<Material, MaterialStatus>
-      columns={MATERIAL_COLUMNS}
-      data={materials}
-      entityName="items"
-      mapToKanbanItem={(material) => ({
-        id: material.id,
-        columnId: material.status,
-        entity: material,
-        material,
-      })}
-      updateEntityStatus={(material, newStatus) => ({
-        ...material,
-        status: newStatus,
-      })}
       calculateColumnMeta={(columnId, items): ColumnMeta => {
         const columnItems = items.filter((item) => item.columnId === columnId);
         const totalValue = columnItems.reduce(
@@ -57,14 +46,33 @@ export function MaterialsKanban({ materials }: { materials: Material[] }) {
         );
         return { count: columnItems.length, value: totalValue };
       }}
-      showTotals={true}
+      columns={MATERIAL_COLUMNS}
+      data={materials}
+      entityName="items"
       formatTotal={(value) => currencyFormatter.format(value / 100)}
-      renderCard={(item) => <MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />}
+      mapToKanbanItem={(material) => ({
+        id: material.id,
+        columnId: material.status,
+        entity: material,
+        material,
+      })}
+      renderCard={(item) => (
+        <MaterialCard
+          item={{ ...item, material: item.entity } as MaterialsKanbanItem}
+        />
+      )}
       renderDragOverlay={(item) => (
         <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-          <MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />
+          <MaterialCard
+            item={{ ...item, material: item.entity } as MaterialsKanbanItem}
+          />
         </div>
       )}
+      showTotals={true}
+      updateEntityStatus={(material, newStatus) => ({
+        ...material,
+        status: newStatus,
+      })}
     />
   );
 }
@@ -75,14 +83,20 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
             {material.itemCode}
           </p>
-          <h3 className="text-sm font-semibold text-foreground">
+          <h3 className="font-semibold text-foreground text-sm">
             {material.description}
           </h3>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Badge
+              className={cn(
+                "text-xs",
+                columnId === "out-of-stock" &&
+                  "bg-destructive/10 text-destructive",
+                columnId === "in-stock" && "bg-primary/10 text-primary"
+              )}
               variant={
                 columnId === "in-stock"
                   ? "secondary"
@@ -90,23 +104,17 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
                     ? "destructive"
                     : "outline"
               }
-              className={cn(
-                "text-xs",
-                columnId === "out-of-stock" &&
-                  "bg-destructive/10 text-destructive",
-                columnId === "in-stock" && "bg-primary/10 text-primary"
-              )}
             >
               {columnLabel.get(columnId as MaterialStatus) ?? columnId}
             </Badge>
-            <Badge variant="outline" className="text-xs">
+            <Badge className="text-xs" variant="outline">
               {material.category}
             </Badge>
           </div>
         </div>
       </div>
 
-      <div className="space-y-2 text-xs text-muted-foreground">
+      <div className="space-y-2 text-muted-foreground text-xs">
         <div className="flex items-center justify-between">
           <span>Quantity</span>
           <span className="font-medium text-foreground">
@@ -129,9 +137,9 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
 
       <Button
         asChild
+        className="w-full justify-between text-primary text-xs"
         size="sm"
         variant="ghost"
-        className="w-full justify-between text-xs text-primary"
       >
         <Link href={`/dashboard/work/materials/${material.id}`}>
           Manage inventory
@@ -141,4 +149,3 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
     </div>
   );
 }
-

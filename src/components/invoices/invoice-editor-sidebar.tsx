@@ -97,7 +97,7 @@ export function InvoiceEditorSidebar({
   }
 
   return (
-    <div className="fixed top-32 right-4 z-50 w-64 space-y-2 rounded-lg border bg-white p-4 shadow-xl">
+    <div className="fixed top-32 right-4 z-50 w-64 space-y-2 rounded-lg border bg-card p-4 shadow-xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-sm">Edit Invoice</h3>

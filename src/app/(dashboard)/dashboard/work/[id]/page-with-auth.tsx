@@ -21,11 +21,11 @@
 
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
 import { JobHeaderPermanent } from "@/components/work/job-details/job-header-permanent";
-import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
 import { propertyEnrichmentService } from "@/lib/services/property-enrichment";
+import { generateJobStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 // Lazy load the editor to reduce initial bundle size
@@ -448,52 +448,54 @@ export default async function JobDetailsPage({
   // Render
   // ============================================================================
 
+  // Generate stats for toolbar
+  const stats = generateJobStats({
+    ...metrics,
+    status: job.status as string,
+  });
+
   return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      {/* Sticky Stats Bar - Becomes compact on scroll */}
-      <StickyStatsBar>
-        <JobStatsBar
-          jobId={jobId}
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        {/* Container with max-w-7xl */}
+        <div className="mx-auto w-full max-w-7xl">
+          {/* Job Header - Permanent */}
+          <JobHeaderPermanent
+            assignedUser={assignedUser}
+            customer={customer}
+            enrichmentData={propertyEnrichment}
+            job={job}
+            property={property}
+          />
+        </div>
+
+        {/* Main Content - Tabbed Editor */}
+        <JobPageEditor
+          activities={activities || []}
+          assignedUser={assignedUser}
+          communications={communications || []}
+          customer={customer}
+          customerSignature={customerSignature}
+          customers={jobCustomers || []}
+          documents={documents || []}
+          equipment={equipment || []}
+          estimates={estimates || []}
+          invoices={invoices || []}
+          job={job}
+          materials={materials || []}
           metrics={metrics}
-          status={job.status as string}
+          photos={photos || []}
+          photosByCategory={photosByCategory}
+          properties={jobProperties || []}
+          property={property}
+          propertyEnrichment={propertyEnrichment}
+          signatures={signatures || []}
+          teamAssignments={teamAssignments || []}
+          technicianSignature={technicianSignature}
+          timeEntries={timeEntries || []}
+          workflowStages={workflowStages || []}
         />
-      </StickyStatsBar>
-
-      {/* Job Header - Permanent */}
-      <JobHeaderPermanent
-        assignedUser={assignedUser}
-        customer={customer}
-        enrichmentData={propertyEnrichment}
-        job={job}
-        property={property}
-      />
-
-      {/* Main Content - Tabbed Editor */}
-      <JobPageEditor
-        activities={activities || []}
-        assignedUser={assignedUser}
-        communications={communications || []}
-        customer={customer}
-        customerSignature={customerSignature}
-        customers={jobCustomers || []}
-        documents={documents || []}
-        equipment={equipment || []}
-        estimates={estimates || []}
-        invoices={invoices || []}
-        job={job}
-        materials={materials || []}
-        metrics={metrics}
-        photos={photos || []}
-        photosByCategory={photosByCategory}
-        properties={jobProperties || []}
-        property={property}
-        propertyEnrichment={propertyEnrichment}
-        signatures={signatures || []}
-        teamAssignments={teamAssignments || []}
-        technicianSignature={technicianSignature}
-        timeEntries={timeEntries || []}
-        workflowStages={workflowStages || []}
-      />
-    </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

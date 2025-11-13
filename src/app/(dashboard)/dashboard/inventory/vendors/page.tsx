@@ -8,13 +8,13 @@
  * - Reduced JavaScript bundle size
  */
 
-import { Building2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { type Vendor, VendorTable } from "@/components/inventory/vendor-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTablePageHeader } from "@/components/ui/datatable-page-header";
-import { VendorTable, type Vendor } from "@/components/inventory/vendor-table";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
@@ -93,7 +93,9 @@ export default async function VendorManagementPage() {
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="font-medium text-sm">Total Vendors</CardTitle>
+                <CardTitle className="font-medium text-sm">
+                  Total Vendors
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="font-bold text-2xl">{totalVendors}</div>
@@ -105,10 +107,12 @@ export default async function VendorManagementPage() {
                 <CardTitle className="font-medium text-sm">Active</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl text-green-600">
+                <div className="font-bold text-2xl text-success">
                   {activeVendors}
                 </div>
-                <p className="text-muted-foreground text-xs">Currently active</p>
+                <p className="text-muted-foreground text-xs">
+                  Currently active
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -116,10 +120,12 @@ export default async function VendorManagementPage() {
                 <CardTitle className="font-medium text-sm">Inactive</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl text-gray-600">
+                <div className="font-bold text-2xl text-muted-foreground">
                   {inactiveVendors}
                 </div>
-                <p className="text-muted-foreground text-xs">Inactive vendors</p>
+                <p className="text-muted-foreground text-xs">
+                  Inactive vendors
+                </p>
               </CardContent>
             </Card>
           </div>

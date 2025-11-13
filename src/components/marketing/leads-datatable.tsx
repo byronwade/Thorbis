@@ -82,17 +82,18 @@ function getSourceLabel(source: LeadSource): string {
 function getScoreBadge(score: LeadScore) {
   const config = {
     hot: {
-      className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
+      className:
+        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
       label: "HOT",
     },
     warm: {
       className:
-        "border-orange-200/50 bg-orange-50/50 text-orange-700 dark:border-orange-900/50 dark:bg-orange-950/30 dark:text-orange-400",
+        "border-warning/50 bg-warning/50 text-warning dark:border-warning/50 dark:bg-warning/30 dark:text-warning",
       label: "WARM",
     },
     cold: {
       className:
-        "border-blue-200/50 bg-blue-50/50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400",
+        "border-primary/50 bg-primary/50 text-primary dark:border-primary/50 dark:bg-primary/30 dark:text-primary",
       label: "COLD",
     },
   };
@@ -113,22 +114,21 @@ function getScoreBadge(score: LeadScore) {
 function getStageBadge(stage: LeadStage) {
   const config = {
     new: {
-      className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
+      className: "border-primary/50 bg-primary text-white hover:bg-primary",
       label: "New",
     },
     contacted: {
       className:
-        "border-purple-200/50 bg-purple-50/50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-400",
+        "border-border/50 bg-accent/50 text-accent-foreground dark:border-border/50 dark:bg-accent/30 dark:text-accent-foreground",
       label: "Contacted",
     },
     qualified: {
       className:
-        "border-green-200/50 bg-green-50/50 text-green-700 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400",
+        "border-success/50 bg-success/50 text-success dark:border-success/50 dark:bg-success/30 dark:text-success",
       label: "Qualified",
     },
     customer: {
-      className:
-        "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+      className: "border-success/50 bg-success text-white hover:bg-success",
       label: "Customer",
     },
     lost: {

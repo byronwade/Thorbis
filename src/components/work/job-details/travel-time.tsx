@@ -10,13 +10,18 @@
 import {
   AlertCircle,
   ArrowRight,
-  Building2,
   Clock,
+  Loader2,
   MapPin,
   RefreshCw,
   Route,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 
 type TravelTimeData = {
@@ -30,12 +35,12 @@ type TravelTimeData = {
 
 type TravelTimeProps = {
   property?: {
-    address: string;
-    address2?: string;
-    city: string;
-    state: string;
-    zipCode?: string;
-    zip_code?: string;
+    address?: string | null;
+    address2?: string | null;
+    city?: string | null;
+    state?: string | null;
+    zipCode?: string | null;
+    zip_code?: string | null;
     lat?: number | null;
     lon?: number | null;
   };
@@ -66,9 +71,24 @@ const splitAddress = (address: string | null | undefined) => {
 const buildDestinationAddress = (
   property: NonNullable<TravelTimeProps["property"]>
 ) => {
-  const address2Part = property.address2 ? `, ${property.address2}` : "";
-  const zipCode = property.zipCode || property.zip_code || "";
-  return `${property.address}${address2Part}, ${property.city}, ${property.state} ${zipCode}`.trim();
+  const cityState = [property.city, property.state]
+    .filter(
+      (value): value is string =>
+        typeof value === "string" && value.trim().length > 0
+    )
+    .join(", ");
+
+  const segments = [
+    property.address,
+    property.address2,
+    cityState || undefined,
+    property.zipCode ?? property.zip_code ?? undefined,
+  ].filter(
+    (segment): segment is string =>
+      typeof segment === "string" && segment.trim().length > 0
+  );
+
+  return segments.map((segment) => segment.trim()).join(", ");
 };
 
 const buildApiParams = (property: NonNullable<TravelTimeProps["property"]>) => {
@@ -162,9 +182,11 @@ export function TravelTime({ property, className }: TravelTimeProps) {
     // Always return cleanup function
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps - only run once on mount, never re-run
+  }, []);
 
   if (!property?.address) {
+    // Empty deps - only run once on mount, never re-run
+
     return null;
   }
 
@@ -205,152 +227,156 @@ export function TravelTime({ property, className }: TravelTimeProps) {
   const origin = travelTime ? splitAddress(travelTime.origin) : null;
   const destination = travelTime ? splitAddress(travelTime.destination) : null;
 
+  if (isLoading || error || !travelTime) {
+    // If loading, error, or no data - show simple state without hover
+    return (
+      <div
+        className={cn(
+          "flex h-7 items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs",
+          className
+        )}
+      >
+        {isLoading && (
+          <>
+            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+            <span className="text-muted-foreground">Calculating...</span>
+          </>
+        )}
+
+        {error && (
+          <>
+            <AlertCircle className="h-3 w-3 text-destructive" />
+            <span className="text-destructive">Travel time unavailable</span>
+          </>
+        )}
+
+        {!(error || travelTime || isLoading) && (
+          <span className="text-muted-foreground">No travel data</span>
+        )}
+      </div>
+    );
+  }
+
+  // Show detailed hover card when data is available
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 text-slate-50 shadow-[0_18px_40px_-20px_rgba(15,23,42,0.55)]",
-        className
-      )}
-    >
-      <div className="relative p-5 sm:p-6">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.25),transparent_55%)]" />
-        <div className="relative">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 font-semibold text-[11px] text-slate-200/60 uppercase tracking-[0.24em]">
-                <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                Live Route Intelligence
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-emerald-300" />
-                <h3 className="font-semibold text-lg text-white">
-                  Travel time from company HQ
-                </h3>
-              </div>
-              <p className="text-slate-300/80 text-xs">
-                Real-time traffic conditions via Google Distance Matrix
-              </p>
+    <HoverCard openDelay={200}>
+      <HoverCardTrigger asChild>
+        <div
+          className={cn(
+            "flex h-7 cursor-help items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs transition-colors hover:bg-muted",
+            className
+          )}
+        >
+          <Clock className="h-3 w-3 text-muted-foreground" />
+          <span className="font-medium tabular-nums">
+            {formatDuration(travelTime.duration)}
+          </span>
+          <span className="text-muted-foreground">•</span>
+          <Route className="h-3 w-3 text-muted-foreground" />
+          <span className="text-muted-foreground">
+            {travelTime.distance.toFixed(1)} mi
+          </span>
+          <button
+            aria-label="Refresh travel time"
+            className="ml-auto flex items-center gap-1 text-muted-foreground transition hover:text-foreground"
+            onClick={fetchTravelTime}
+            type="button"
+          >
+            <RefreshCw className="h-3 w-3" />
+          </button>
+        </div>
+      </HoverCardTrigger>
+      <HoverCardContent align="start" className="w-80">
+        <div className="space-y-3">
+          {/* Header */}
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+              <Clock className="h-4 w-4 text-primary" />
             </div>
-            {travelTime && !isLoading && (
-              <button
-                aria-label="Refresh travel time"
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-medium text-slate-100 text-xs transition hover:border-white/20 hover:bg-white/10"
-                onClick={fetchTravelTime}
-                type="button"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Refresh
-              </button>
-            )}
+            <div>
+              <div className="font-semibold text-sm">Travel Time</div>
+              <div className="text-muted-foreground text-xs">
+                From company HQ
+              </div>
+            </div>
           </div>
 
-          {error && (
-            <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-rose-200 text-xs">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {!error && travelTime && (
-            <div className="mt-6 space-y-5 sm:space-y-6">
-              <div className="flex flex-wrap items-end gap-6">
-                <div>
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-semibold text-4xl text-white tracking-tight sm:text-5xl">
-                      {formatDuration(travelTime.duration)}
-                    </span>
-                    <span className="text-slate-300/80 text-sm">
-                      {travelTime.durationText}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-3 text-slate-300/80 text-xs">
-                    <div className="flex items-center gap-1.5">
-                      <Route className="h-3.5 w-3.5 text-slate-300" />
-                      {travelTime.distance.toFixed(1)} miles
-                      {travelTime.distanceText
-                        ? ` (${travelTime.distanceText})`
-                        : ""}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                      Live with traffic
-                    </div>
-                  </div>
-                </div>
+          {/* Main Stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+              <div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+                Duration
               </div>
-
-              <div className="grid gap-4 rounded-2xl border border-white/10 bg-black/20 p-4 backdrop-blur sm:grid-cols-2">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">
-                    <Building2 className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 space-y-1.5">
-                    <div className="font-semibold text-[11px] text-slate-300/70 uppercase tracking-[0.18em]">
-                      Origin — Company HQ
-                    </div>
-                    <div className="font-medium text-sm text-white">
-                      {origin?.primary}
-                    </div>
-                    {origin?.secondary && (
-                      <div className="text-slate-300/75 text-xs">
-                        {origin.secondary}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 text-sky-300">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 space-y-1.5">
-                    <div className="flex items-center gap-2 font-semibold text-[11px] text-slate-300/70 uppercase tracking-[0.18em]">
-                      Destination — Job Site
-                      <ArrowRight className="h-3 w-3 text-slate-400/80" />
-                    </div>
-                    <div className="font-medium text-sm text-white">
-                      {destination?.primary}
-                    </div>
-                    {destination?.secondary && (
-                      <div className="text-slate-300/75 text-xs">
-                        {destination.secondary}
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="mt-1 font-bold text-2xl text-foreground tabular-nums">
+                {formatDuration(travelTime.duration)}
               </div>
+              <div className="mt-0.5 text-muted-foreground text-xs">
+                {travelTime.durationText}
+              </div>
+            </div>
+            <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+              <div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+                Distance
+              </div>
+              <div className="mt-1 font-bold text-2xl text-foreground tabular-nums">
+                {travelTime.distance.toFixed(1)} mi
+              </div>
+              <div className="mt-0.5 text-muted-foreground text-xs">
+                {travelTime.distanceText}
+              </div>
+            </div>
+          </div>
 
-              {lastUpdated && (
-                <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400/80">
-                  <span>
-                    Updated{" "}
-                    {lastUpdated.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                  <span>•</span>
-                  <span>{formatRelativeTime(lastUpdated)}</span>
+          {/* Route */}
+          <div className="space-y-1.5 rounded-lg border border-border/50 bg-muted/20 p-3">
+            <div className="flex items-center gap-1.5 font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+              <Route className="h-3 w-3" />
+              Route
+            </div>
+            <div className="flex items-start gap-2 text-sm">
+              <ArrowRight className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-foreground">
+                  {origin?.primary}
                 </div>
-              )}
+                {origin?.secondary && (
+                  <div className="text-muted-foreground text-xs">
+                    {origin.secondary}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+            <div className="flex items-start gap-2 text-sm">
+              <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-foreground">
+                  {destination?.primary}
+                </div>
+                {destination?.secondary && (
+                  <div className="text-muted-foreground text-xs">
+                    {destination.secondary}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
-          {!(error || travelTime || isLoading) && (
-            <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200/80 text-xs">
-              Travel time unavailable for this address. Please verify the
-              service location.
+          {/* Live Traffic Badge */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 rounded-md bg-emerald-500/10 px-2 py-1">
+              <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              <span className="font-medium text-emerald-700 text-xs dark:text-emerald-400">
+                Live traffic data
+              </span>
             </div>
-          )}
-
-          {isLoading && (
-            <div className="mt-6 flex items-center gap-2 text-slate-200/70 text-xs">
-              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-              Fetching live route…
-            </div>
-          )}
+            {lastUpdated && (
+              <div className="text-muted-foreground text-xs">
+                Updated {formatRelativeTime(lastUpdated)}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </HoverCardContent>
+    </HoverCard>
   );
 }

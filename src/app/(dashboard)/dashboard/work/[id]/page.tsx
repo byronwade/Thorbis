@@ -5,10 +5,10 @@
 
 import { notFound, redirect } from "next/navigation";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
+import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
+import { JobPageModern } from "@/components/work/job-details/job-page-modern";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
-import { StickyStatsBar } from "@/components/ui/sticky-stats-bar";
-import { JobPageContent } from "@/components/work/job-details/job-page-content";
-import { JobStatsBar } from "@/components/work/job-details/job-stats-bar";
+import { generateJobStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function JobDetailsPage({
@@ -330,6 +330,7 @@ export default async function JobDetailsPage({
     materialsCost,
     profitMargin,
     completionPercentage,
+    status: job.status as string,
   };
 
   // Enrichment is now loaded client-side for optimistic rendering
@@ -373,19 +374,16 @@ export default async function JobDetailsPage({
     enrichmentData: null, // Loaded client-side for optimistic rendering
   };
 
-  return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      {/* Sticky Stats Bar - Becomes compact on scroll */}
-      <StickyStatsBar>
-        <JobStatsBar
-          jobId={jobId}
-          metrics={metrics}
-          status={job.status as string}
-        />
-      </StickyStatsBar>
+  // Generate stats for toolbar
+  const stats = generateJobStats(metrics);
 
-      {/* Full-Width Content - No Padding */}
-      <JobPageContent jobData={jobData} metrics={metrics} />
-    </div>
+  return (
+    <ToolbarStatsProvider stats={stats}>
+      <div className="flex h-full w-full flex-col overflow-auto">
+        <div className="mx-auto w-full max-w-7xl">
+          <JobPageModern entityData={jobData} metrics={metrics} />
+        </div>
+      </div>
+    </ToolbarStatsProvider>
   );
 }

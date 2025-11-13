@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
+import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
-import { type StatCard } from "@/components/ui/stats-cards";
+import { ContractsKanban } from "@/components/work/contracts-kanban";
 import {
   type Contract,
   ContractsTable,
 } from "@/components/work/contracts-table";
-import { ContractsKanban } from "@/components/work/contracts-kanban";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -45,11 +45,11 @@ export default async function ContractsPage() {
   }
 
   // Fetch contracts from database - simplified query to test
+  // Fetch all contracts including archived (filter in UI)
   const { data: contractsRaw, error } = await supabase
     .from("contracts")
     .select("*")
     .eq("company_id", activeCompanyId)
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -66,14 +66,10 @@ export default async function ContractsPage() {
   if (!error && contractsRaw) {
     // Fetch customers separately if we have customer IDs
     const customerIds = Array.from(
-      new Set(
-        contractsRaw
-          .map((c: any) => c.customer_id)
-          .filter(Boolean)
-      )
+      new Set(contractsRaw.map((c: any) => c.customer_id).filter(Boolean))
     );
 
-    let customersMap = new Map<string, any>();
+    const customersMap = new Map<string, any>();
     if (customerIds.length > 0) {
       const { data: customersData } = await supabase
         .from("customers")
@@ -124,18 +120,23 @@ export default async function ContractsPage() {
           | "expired",
         contractType: contract.contract_type || "custom",
         signerName: contract.signer_name || null,
+        archived_at: contract.archived_at,
+        deleted_at: contract.deleted_at,
       };
     });
   }
 
-  // Calculate contract stats
-  const totalContracts = contracts.length;
-  const signedCount = contracts.filter((c) => c.status === "signed").length;
-  const pendingCount = contracts.filter(
+  // Filter to active contracts for stats calculations
+  const activeContracts = contracts.filter((c) => !c.archived_at && !c.deleted_at);
+
+  // Calculate contract stats (from active contracts only)
+  const totalContracts = activeContracts.length;
+  const signedCount = activeContracts.filter((c) => c.status === "signed").length;
+  const pendingCount = activeContracts.filter(
     (c) => c.status === "sent" || c.status === "viewed"
   ).length;
-  const draftCount = contracts.filter((c) => c.status === "draft").length;
-  const expiredCount = contracts.filter((c) => c.status === "expired").length;
+  const draftCount = activeContracts.filter((c) => c.status === "draft").length;
+  const expiredCount = activeContracts.filter((c) => c.status === "expired").length;
 
   const contractStats: StatCard[] = [
     {
@@ -160,7 +161,8 @@ export default async function ContractsPage() {
       label: "Expired",
       value: expiredCount,
       change: expiredCount > 0 ? -4.3 : 2.7, // Red if expired, green if none
-      changeLabel: expiredCount > 0 ? `${expiredCount} expired` : "none expired",
+      changeLabel:
+        expiredCount > 0 ? `${expiredCount} expired` : "none expired",
     },
     {
       label: "Total Contracts",
