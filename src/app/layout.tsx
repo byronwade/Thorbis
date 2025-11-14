@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
+import { BotIdProvider } from "@/components/security/botid-provider";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import "./globals.css";
 
@@ -111,6 +112,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
+          <BotIdProvider />
           {children}
           <ToastProvider />
         </ThemeProvider>

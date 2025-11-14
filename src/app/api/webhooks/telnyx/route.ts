@@ -17,6 +17,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhoneNumber } from "@/lib/telnyx/messaging";
+import { lookupCallerInfo } from "@/lib/telnyx/number-lookup";
 import {
   type CallAnsweredPayload,
   type CallHangupPayload,
@@ -167,6 +168,22 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
             )
           : undefined;
 
+      let fromName: string | null = null;
+      if (customerId) {
+        fromName = await getCustomerDisplayName(supabase, customerId);
+      }
+
+      let callerLookup: Record<string, unknown> | undefined;
+      if (!fromName) {
+        const lookupResult = await lookupCallerInfo(fromAddress);
+        if (lookupResult.success && lookupResult.data) {
+          fromName = lookupResult.data.caller_name || null;
+          callerLookup = lookupResult.data;
+        } else if (lookupResult.error) {
+          callerLookup = { error: lookupResult.error };
+        }
+      }
+
       const communicationPayload: Record<string, unknown> = {
         company_id: phoneContext.companyId,
         type: "phone",
@@ -175,6 +192,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
           callData.direction === "incoming" ? "inbound" : "outbound",
         from_address: fromAddress,
         to_address: toAddress,
+        from_name: fromName,
         body: "",
         status: "queued",
         priority: "normal",
@@ -186,6 +204,12 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         telnyx_call_control_id: callData.call_control_id,
         telnyx_call_session_id: callData.call_session_id,
       };
+
+      if (callerLookup) {
+        communicationPayload.provider_metadata = {
+          caller_lookup: callerLookup,
+        };
+      }
 
       if (customerId) {
         communicationPayload.customer_id = customerId;
@@ -482,4 +506,23 @@ async function findCustomerIdByPhone(
     .maybeSingle();
 
   return data?.id ?? null;
+}
+
+async function getCustomerDisplayName(
+  supabase: TypedSupabaseClient,
+  customerId: string
+) {
+  const { data } = await supabase
+    .from("customers")
+    .select("first_name, last_name, company_name")
+    .eq("id", customerId)
+    .maybeSingle();
+
+  if (!data) return null;
+
+  const first = data.first_name?.trim();
+  const last = data.last_name?.trim();
+  const fullName = [first, last].filter(Boolean).join(" ").trim();
+
+  return fullName || data.company_name || null;
 }
