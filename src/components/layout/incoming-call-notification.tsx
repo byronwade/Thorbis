@@ -1879,17 +1879,29 @@ export function IncomingCallNotification() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (user) {
-        const { data: teamMember } = await supabase
-          .from("team_members")
-          .select("company_id")
-          .eq("user_id", user.id)
-          .single();
-
-        if (teamMember?.company_id) {
-          setCompanyId(teamMember.company_id);
-        }
+    try {
+      if (!user) {
+        return;
       }
+
+      const { data: teamMember, error } = await supabase
+        .from("team_members")
+        .select("company_id")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .maybeSingle();
+
+      if (error) {
+        console.warn("Failed to load team member company:", error.message);
+        return;
+      }
+
+      if (teamMember?.company_id) {
+        setCompanyId(teamMember.company_id);
+      }
+    } catch (error) {
+      console.error("Error fetching company ID:", error);
+    }
     }
     fetchCompanyId();
   }, []);
