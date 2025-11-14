@@ -1879,45 +1879,32 @@ export function IncomingCallNotification() {
         data: { user },
       } = await supabase.auth.getUser();
 
-    try {
-      if (!user) {
-        return;
+      try {
+        if (!user) {
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("team_members")
+          .select("company_id")
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .order("updated_at", { ascending: false })
+          .limit(1);
+
+        if (error) {
+          console.warn("Failed to load team member company:", error.message);
+          return;
+        }
+
+        const firstRow = Array.isArray(data) ? data[0] : data;
+
+        if (firstRow?.company_id) {
+          setCompanyId(firstRow.company_id);
+        }
+      } catch (error) {
+        console.error("Error fetching company ID:", error);
       }
-
-      const { data: teamMember, error } = await supabase
-        .from("team_members")
-        .select("company_id")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.warn("Failed to load team member company:", error.message);
-        return;
-      }
-
-      if (teamMember?.company_id) {
-        setCompanyId(teamMember.company_id);
-        return;
-      }
-
-      // Fallback: pick the most recent active company even if PostgREST complained
-      const { data: fallbackRows } = await supabase
-        .from("team_members")
-        .select("company_id")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .order("updated_at", { ascending: false })
-        .limit(1);
-
-      if (fallbackRows?.[0]?.company_id) {
-        setCompanyId(fallbackRows[0].company_id);
-      }
-    } catch (error) {
-      console.error("Error fetching company ID:", error);
-    }
     }
     fetchCompanyId();
   }, []);
