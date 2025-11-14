@@ -35,6 +35,8 @@ import {
 import type { Database } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
+type CommunicationInsert =
+  Database["public"]["Tables"]["communications"]["Insert"];
 
 /**
  * POST /api/webhooks/telnyx
@@ -181,7 +183,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         }
       }
 
-      const communicationPayload: Record<string, unknown> = {
+      const communicationPayload: CommunicationInsert = {
         company_id: phoneContext.companyId,
         type: "phone",
         channel: "telnyx",
@@ -204,7 +206,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
       if (callerLookup) {
         communicationPayload.provider_metadata = {
           caller_lookup: callerLookup,
-        };
+        } as CommunicationInsert["provider_metadata"];
       }
 
       if (customerId) {
