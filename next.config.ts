@@ -175,6 +175,11 @@ const nextConfig: NextConfig = {
   // Build output optimizations
   poweredByHeader: false, // Remove X-Powered-By header
   compress: true, // Enable gzip compression
+  webpack: (config) => {
+    // Keep webpack running to display all errors instead of bailing on the first failure
+    config.bail = false;
+    return config;
+  },
 };
 
 // Conditionally wrap configs only when needed

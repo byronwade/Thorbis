@@ -32,7 +32,7 @@ import {
   releaseNumber,
   searchAvailableNumbers,
 } from "@/lib/telnyx/numbers";
-import type { Database } from "@/types/supabase";
+import type { Database, Json } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -80,7 +80,7 @@ async function getPhoneNumberId(
 async function mergeProviderMetadata(
   supabase: TypedSupabaseClient,
   communicationId: string,
-  patch: Record<string, unknown>
+  patch: Record<string, Json>
 ): Promise<void> {
   const { data } = await supabase
     .from("communications")
@@ -89,12 +89,16 @@ async function mergeProviderMetadata(
     .maybeSingle();
 
   const currentMetadata =
-    (data?.provider_metadata as Record<string, unknown>) ?? {};
+    (data?.provider_metadata as Record<string, Json> | null) ?? {};
+  const mergedMetadata: Record<string, Json> = {
+    ...currentMetadata,
+    ...patch,
+  };
 
   await supabase
     .from("communications")
     .update({
-      provider_metadata: { ...currentMetadata, ...patch },
+      provider_metadata: mergedMetadata,
     })
     .eq("id", communicationId);
 }

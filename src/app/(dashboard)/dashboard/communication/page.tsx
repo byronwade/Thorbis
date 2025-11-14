@@ -2,8 +2,12 @@ import {
   CommunicationPageClient,
   type CommunicationRecord,
 } from "@/components/communication/communication-page-client";
-import { createClient } from "@/lib/supabase/server";
 import { requireActiveCompany } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
+
+type CommunicationQueryResult = Omit<CommunicationRecord, "customer"> & {
+  customer: Array<NonNullable<CommunicationRecord["customer"]>> | null;
+};
 
 export default async function CommunicationPage() {
   const companyId = await requireActiveCompany();
@@ -37,9 +41,20 @@ export default async function CommunicationPage() {
     .order("created_at", { ascending: false })
     .limit(200);
 
+  const normalizedCommunications: CommunicationRecord[] = (
+    communications as CommunicationQueryResult[]
+  ).map((communication) => {
+    const customer = Array.isArray(communication.customer)
+      ? communication.customer[0] ?? null
+      : communication.customer ?? null;
+
+    return {
+      ...communication,
+      customer,
+    };
+  });
+
   return (
-    <CommunicationPageClient
-      communications={communications as CommunicationRecord[]}
-            />
+    <CommunicationPageClient communications={normalizedCommunications} />
   );
 }

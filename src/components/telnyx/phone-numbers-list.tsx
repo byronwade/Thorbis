@@ -239,7 +239,7 @@ function EmptyState() {
 }
 
 function getStatusVariant(
-  status: string
+  status: string | null
 ): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
     case "active":
@@ -253,7 +253,10 @@ function getStatusVariant(
   }
 }
 
-function getStatusLabel(status: string): string {
+function getStatusLabel(status: string | null): string {
+  if (!status) {
+    return "Unknown";
+  }
   switch (status) {
     case "active":
       return "Active";
@@ -261,6 +264,8 @@ function getStatusLabel(status: string): string {
       return "Pending Setup";
     case "porting":
       return "Porting";
+    case "suspended":
+      return "Suspended";
     case "suspended":
       return "Suspended";
     default:

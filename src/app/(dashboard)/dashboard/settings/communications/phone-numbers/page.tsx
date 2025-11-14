@@ -60,7 +60,7 @@ export default async function PhoneNumbersPage() {
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  const phoneNumbers = phoneNumbersRaw.map(mapPhoneNumberRow);
+  const phoneNumbers = (phoneNumbersRaw ?? []).map(mapPhoneNumberRow);
 
   return (
     <div className="flex h-full flex-col">

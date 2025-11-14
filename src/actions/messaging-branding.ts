@@ -11,7 +11,7 @@ import {
 } from "@/lib/telnyx/ten-dlc";
 import type { Database } from "@/types/supabase";
 
-type SupabaseClient = ReturnType<typeof createClient>;
+type SupabaseClient = NonNullable<Awaited<ReturnType<typeof createClient>>>;
 
 const DEFAULT_MESSAGING_PROFILE_ID =
   process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID ||
@@ -76,7 +76,9 @@ async function upsertBrandRecord(
 
 async function upsertCampaignRecord(
   supabase: SupabaseClient,
-  data: Partial<Database["public"]["Tables"]["messaging_campaigns"]["Insert"]> & {
+  data: Partial<
+    Database["public"]["Tables"]["messaging_campaigns"]["Insert"]
+  > & {
     messaging_brand_id: string;
     usecase: string;
   }
@@ -192,7 +194,7 @@ export async function ensureMessagingBranding(companyId: string) {
     };
 
     const brandResult = await createTenDlcBrand(brandPayload);
-    if (!brandResult.success || !brandResult.data) {
+    if (!(brandResult.success && brandResult.data)) {
       return {
         success: false,
         error: brandResult.error || "Failed to create 10DLC brand",
@@ -253,7 +255,9 @@ export async function ensureMessagingCampaign(
     .maybeSingle();
 
   if (campaignRow?.telnyx_campaign_id) {
-    const campaignStatus = await getTenDlcCampaign(campaignRow.telnyx_campaign_id);
+    const campaignStatus = await getTenDlcCampaign(
+      campaignRow.telnyx_campaign_id
+    );
     if (campaignStatus.success && campaignStatus.data) {
       await supabase
         .from("messaging_campaigns")
@@ -307,7 +311,7 @@ export async function ensureMessagingCampaign(
     };
 
     const campaignResult = await createTenDlcCampaign(campaignPayload);
-    if (!campaignResult.success || !campaignResult.data) {
+    if (!(campaignResult.success && campaignResult.data)) {
       return {
         success: false,
         error: campaignResult.error || "Failed to create 10DLC campaign",
@@ -323,7 +327,9 @@ export async function ensureMessagingCampaign(
         description,
         sample_messages: campaignPayload.sample_messages,
         messaging_profile_id: DEFAULT_MESSAGING_PROFILE_ID,
-      })) || campaignRow?.id || null;
+      })) ||
+      campaignRow?.id ||
+      null;
     telnyxCampaignId = campaignResult.data.id;
   }
 
@@ -346,7 +352,7 @@ export async function ensureMessagingCampaign(
       telnyxCampaignId,
       phoneNumber.e164
     );
-    if (!attachResult.success || !attachResult.data) {
+    if (!(attachResult.success && attachResult.data)) {
       return {
         success: false,
         error: attachResult.error || "Failed to link number to campaign",
@@ -384,4 +390,3 @@ export async function ensureMessagingCampaign(
   revalidatePath("/dashboard/settings/communications/phone-numbers");
   return { success: true };
 }
-
