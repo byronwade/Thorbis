@@ -21,7 +21,13 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
+import {
+  createServiceSupabaseClient,
+  type ServiceSupabaseClient,
+} from "@/lib/supabase/service-client";
 import { initiatePorting } from "@/lib/telnyx/numbers";
+import { formatPhoneNumber } from "@/lib/telnyx/messaging";
+import { ensureMessagingBranding } from "./messaging-branding";
 import { updateNotificationSettings } from "./settings/communications";
 import { purchasePhoneNumber } from "./telnyx";
 
@@ -67,24 +73,6 @@ type ProgressUpdate = {
   patch?: Record<string, unknown>;
 };
 
-async function createServiceSupabaseClient() {
-  const { createClient: createServiceClient } = await import(
-    "@supabase/supabase-js"
-  );
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!(url && serviceRoleKey)) {
-    throw new Error("Supabase service role is not configured");
-  }
-
-  return createServiceClient(url, serviceRoleKey);
-}
-
-type ServiceSupabaseClient = Awaited<
-  ReturnType<typeof createServiceSupabaseClient>
->;
-
 function normalizeCompanyName(name: string): string {
   return name.trim().toLowerCase();
 }
@@ -98,6 +86,19 @@ function buildFullAddress(data: {
   return [data.orgAddress, data.orgCity, data.orgState, data.orgZip]
     .filter(Boolean)
     .join(", ");
+}
+
+function formatDisplayPhoneNumber(phoneNumber: string): string {
+  const digits = phoneNumber.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(
+      7
+    )}`;
+  }
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  return phoneNumber;
 }
 
 async function uploadCompanyLogo(
@@ -702,6 +703,24 @@ export async function saveOnboardingProgress(
 
     await uploadCompanyLogo(serviceSupabase, companyId, logoFile);
 
+    try {
+      const brandingResult = await ensureMessagingBranding(companyId, {
+        supabase: serviceSupabase,
+      });
+
+      if (!brandingResult.success) {
+        console.error(
+          `Failed to provision Telnyx branding for company ${companyId}:`,
+          brandingResult.error
+        );
+      }
+    } catch (brandingError) {
+      console.error(
+        `Error ensuring Telnyx branding for company ${companyId}:`,
+        brandingError
+      );
+    }
+
     const progressStep = typeof step === "number" ? step : 1;
     const progressData = stepData ?? (progressStep === 1 ? step1Snapshot : {});
 
@@ -1029,6 +1048,77 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
     });
 
     if (result.success) {
+      const formattedE164 = formatPhoneNumber(phoneNumber);
+      const formattedDisplay = formatDisplayPhoneNumber(formattedE164);
+
+      const { data: portRecord, error: portRecordError } = await supabase
+        .from("phone_porting_requests")
+        .insert({
+          company_id: activeCompanyId,
+          user_id: user.id,
+          current_phone_number: formattedE164,
+          current_carrier: currentCarrier,
+          account_number: accountNumber,
+          account_pin: accountPin,
+          porting_type: "standard",
+          status: "submitted",
+          telnyx_order_id: result.portingOrderId || null,
+          telnyx_status: (result.data as any)?.status || null,
+          service_address: {
+            address_line_1: addressLine1,
+            city,
+            state,
+            postal_code: zipCode,
+          },
+          metadata: {
+            authorized_email: authorizedEmail,
+          },
+        })
+        .select("id")
+        .single();
+
+      if (portRecordError) {
+        console.error("Failed to persist porting request:", portRecordError);
+      }
+
+      const portingRequestId = portRecord?.id ?? null;
+
+      const { data: existingPhone } = await supabase
+        .from("phone_numbers")
+        .select("id")
+        .eq("company_id", activeCompanyId)
+        .eq("phone_number", formattedE164)
+        .maybeSingle();
+
+      if (existingPhone?.id) {
+        await supabase
+          .from("phone_numbers")
+          .update({
+            status: "porting",
+            porting_request_id: portingRequestId,
+          })
+          .eq("id", existingPhone.id);
+      } else if (portingRequestId) {
+        const { error: insertPhoneError } = await supabase
+          .from("phone_numbers")
+          .insert({
+            company_id: activeCompanyId,
+            phone_number: formattedE164,
+            formatted_number: formattedDisplay,
+            country_code: "US",
+            number_type: "local",
+            status: "porting",
+            porting_request_id: portingRequestId,
+            metadata: {
+              source: "porting",
+            },
+          });
+
+        if (insertPhoneError) {
+          console.error("Failed to create placeholder phone record:", insertPhoneError);
+        }
+      }
+
       revalidatePath("/dashboard/welcome");
     }
 

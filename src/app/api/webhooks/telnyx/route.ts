@@ -12,9 +12,9 @@
  * - Rate limited to prevent abuse
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhoneNumber } from "@/lib/telnyx/messaging";
 import { lookupCallerInfo } from "@/lib/telnyx/number-lookup";
@@ -188,8 +188,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         company_id: phoneContext.companyId,
         type: "phone",
         channel: "telnyx",
-        direction:
-          callData.direction === "incoming" ? "inbound" : "outbound",
+        direction: callData.direction === "incoming" ? "inbound" : "outbound",
         from_address: fromAddress,
         to_address: toAddress,
         from_name: fromName,
@@ -215,11 +214,16 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         communicationPayload.customer_id = customerId;
       }
 
-      await supabase
+      const { error: upsertError } = await supabase
         .from("communications")
         .upsert(communicationPayload, {
           onConflict: "telnyx_call_control_id",
-      });
+        });
+
+      if (upsertError) {
+        console.error("❌ Failed to save call to database:", upsertError);
+        throw upsertError;
+      }
 
       console.log("✅ Call saved to database");
       break;
@@ -230,7 +234,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
       const callData = event.data.payload;
 
       // Update communication record
-      await supabase
+      const { error: updateError } = await supabase
         .from("communications")
         .update({
           status: "delivered",
@@ -238,7 +242,11 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         })
         .eq("telnyx_call_control_id", callData.call_control_id);
 
-      console.log(`Call answered: ${callData.call_control_id}`);
+      if (updateError) {
+        console.error("❌ Failed to update call answered status:", updateError);
+      } else {
+        console.log(`✅ Call answered: ${callData.call_control_id}`);
+      }
       break;
     }
 
@@ -252,7 +260,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
       const duration = Math.round((endTime - startTime) / 1000); // seconds
 
       // Update communication record
-      await supabase
+      const { error: hangupError } = await supabase
         .from("communications")
         .update({
           status: "sent",
@@ -263,9 +271,13 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         })
         .eq("telnyx_call_control_id", callData.call_control_id);
 
-      console.log(
-        `Call ended: ${callData.call_control_id}, duration: ${duration}s`
-      );
+      if (hangupError) {
+        console.error("❌ Failed to update call hangup:", hangupError);
+      } else {
+        console.log(
+          `✅ Call ended: ${callData.call_control_id}, duration: ${duration}s`
+        );
+      }
       break;
     }
 

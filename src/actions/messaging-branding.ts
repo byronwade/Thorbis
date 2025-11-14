@@ -1,5 +1,6 @@
 "use server";
 
+import type { SupabaseClient as SupabaseJsClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -11,21 +12,35 @@ import {
 } from "@/lib/telnyx/ten-dlc";
 import type { Database } from "@/types/supabase";
 
-type SupabaseClient = NonNullable<Awaited<ReturnType<typeof createClient>>>;
+type TypedSupabaseClient = SupabaseJsClient<Database>;
+
+type OwnerContactRow = {
+  full_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+};
 
 const DEFAULT_MESSAGING_PROFILE_ID =
   process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID ||
   process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID ||
   "";
 
+const NANP_WITH_COUNTRY_DIGITS = 11;
+const NANP_LOCAL_DIGITS = 10;
+const WHITESPACE_SPLIT_REGEX = /\s+/;
+
 function formatPhone(phone?: string | null): string | null {
-  if (!phone) return null;
+  if (!phone) {
+    return null;
+  }
   const digits = phone.replace(/\D/g, "");
-  if (!digits) return null;
-  if (digits.length === 11 && digits.startsWith("1")) {
+  if (!digits) {
+    return null;
+  }
+  if (digits.length === NANP_WITH_COUNTRY_DIGITS && digits.startsWith("1")) {
     return `+${digits}`;
   }
-  if (digits.length === 10) {
+  if (digits.length === NANP_LOCAL_DIGITS) {
     return `+1${digits}`;
   }
   return phone.startsWith("+") ? phone : `+${digits}`;
@@ -35,7 +50,7 @@ function splitName(fullName?: string | null) {
   if (!fullName) {
     return { first: "Support", last: "Team" };
   }
-  const parts = fullName.trim().split(/\s+/);
+  const parts = fullName.trim().split(WHITESPACE_SPLIT_REGEX);
   if (parts.length === 1) {
     return { first: parts[0], last: "Team" };
   }
@@ -43,17 +58,27 @@ function splitName(fullName?: string | null) {
 }
 
 function mapIndustryToVertical(industry?: string | null) {
-  if (!industry) return "PROFESSIONAL";
+  if (!industry) {
+    return "PROFESSIONAL";
+  }
   const normalized = industry.toLowerCase();
-  if (normalized.includes("plumb")) return "HOME_SERVICES";
-  if (normalized.includes("hvac")) return "HOME_SERVICES";
-  if (normalized.includes("electric")) return "HOME_SERVICES";
-  if (normalized.includes("clean")) return "PROFESSIONAL";
+  if (normalized.includes("plumb")) {
+    return "HOME_SERVICES";
+  }
+  if (normalized.includes("hvac")) {
+    return "HOME_SERVICES";
+  }
+  if (normalized.includes("electric")) {
+    return "HOME_SERVICES";
+  }
+  if (normalized.includes("clean")) {
+    return "PROFESSIONAL";
+  }
   return "PROFESSIONAL";
 }
 
 async function upsertBrandRecord(
-  supabase: SupabaseClient,
+  supabase: TypedSupabaseClient,
   data: Partial<Database["public"]["Tables"]["messaging_brands"]["Insert"]> & {
     company_id: string;
   }
@@ -70,12 +95,16 @@ async function upsertBrandRecord(
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq("id", existing.id);
   } else {
-    await supabase.from("messaging_brands").insert(data);
+    await supabase
+      .from("messaging_brands")
+      .insert(
+        data as Database["public"]["Tables"]["messaging_brands"]["Insert"]
+      );
   }
 }
 
 async function upsertCampaignRecord(
-  supabase: SupabaseClient,
+  supabase: TypedSupabaseClient,
   data: Partial<
     Database["public"]["Tables"]["messaging_campaigns"]["Insert"]
   > & {
@@ -107,8 +136,12 @@ async function upsertCampaignRecord(
   return inserted?.id ?? null;
 }
 
-export async function ensureMessagingBranding(companyId: string) {
-  const supabase = await createClient();
+// biome-ignore lint: Telnyx onboarding requires multiple guarded steps
+export async function ensureMessagingBranding(
+  companyId: string,
+  options?: { supabase?: TypedSupabaseClient | null }
+) {
+  const supabase = options?.supabase ?? (await createClient());
   if (!supabase) {
     return { success: false, error: "Supabase unavailable" };
   }
@@ -128,17 +161,17 @@ export async function ensureMessagingBranding(companyId: string) {
     };
   }
 
-  const contactResult = await supabase
+  const { data: ownerContact } = await supabase
     .from("users")
     .select("full_name, email, phone")
     .eq("id", company.owner_id)
-    .maybeSingle();
+    .maybeSingle<OwnerContactRow>();
 
-  const contactName = splitName(contactResult.data?.full_name);
+  const contactName = splitName(ownerContact?.full_name);
   const contactEmail =
-    contactResult.data?.email || company.support_email || "support@example.com";
+    ownerContact?.email || company.support_email || "support@example.com";
   const contactPhone =
-    formatPhone(contactResult.data?.phone) ||
+    formatPhone(ownerContact?.phone) ||
     formatPhone(company.support_phone) ||
     formatPhone(company.phone) ||
     "+18314280176";
@@ -224,11 +257,13 @@ export async function ensureMessagingBranding(companyId: string) {
   return { success: true };
 }
 
+// biome-ignore lint: Linking campaigns touches several Telnyx APIs sequentially
 export async function ensureMessagingCampaign(
   companyId: string,
-  phoneNumber: { id: string; e164: string }
+  phoneNumber: { id: string; e164: string },
+  options?: { supabase?: TypedSupabaseClient | null }
 ) {
-  const supabase = await createClient();
+  const supabase = options?.supabase ?? (await createClient());
   if (!supabase) {
     return { success: false, error: "Supabase unavailable" };
   }
@@ -239,9 +274,13 @@ export async function ensureMessagingCampaign(
     .eq("company_id", companyId)
     .maybeSingle();
 
-  if (!(brand && brand.telnyx_brand_id)) {
-    const brandResult = await ensureMessagingBranding(companyId);
-    if (!brandResult.success) return brandResult;
+  if (!brand?.telnyx_brand_id) {
+    const brandResult = await ensureMessagingBranding(companyId, {
+      supabase,
+    });
+    if (!brandResult.success) {
+      return brandResult;
+    }
     return ensureMessagingCampaign(companyId, phoneNumber);
   }
 

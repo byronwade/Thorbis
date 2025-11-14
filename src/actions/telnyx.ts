@@ -15,6 +15,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { ensureMessagingCampaign } from "./messaging-branding";
 import {
   answerCall,
   hangupCall,
@@ -52,6 +53,10 @@ function extractAreaCode(phoneNumber: string): string | null {
 }
 
 function formatDisplayPhoneNumber(phoneNumber: string): string {
+const DEFAULT_MESSAGING_PROFILE_ID =
+  process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID ||
+  process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID ||
+  "";
   const digits = phoneNumber.replace(/\D/g, "");
   if (digits.length === 11 && digits.startsWith("1")) {
     return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
@@ -157,9 +162,13 @@ export async function purchasePhoneNumber(params: {
     const areaCode = extractAreaCode(normalizedPhoneNumber);
 
     // Purchase number from Telnyx
+    const messagingProfileId =
+      DEFAULT_MESSAGING_PROFILE_ID || undefined;
+
     const result = await purchaseNumber({
       phoneNumber: normalizedPhoneNumber,
       connectionId: TELNYX_CONFIG.connectionId,
+      messagingProfileId,
       billingGroupId: params.billingGroupId,
       customerReference: `company_${params.companyId}`,
     });
@@ -189,6 +198,19 @@ export async function purchasePhoneNumber(params: {
     if (error) throw error;
 
     revalidatePath("/dashboard/settings/communications/phone-numbers");
+
+    try {
+      await ensureMessagingCampaign(
+        params.companyId,
+        { id: data.id, e164: normalizedPhoneNumber },
+        { supabase }
+      );
+    } catch (campaignError) {
+      console.error(
+        "Failed to ensure messaging campaign for phone number:",
+        campaignError
+      );
+    }
 
     return {
       success: true,
