@@ -13,7 +13,7 @@
 
 import { z } from "zod";
 
-const USER_AGENT = "Stratos-FMS/1.0 (support@stratos.app)";
+const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
 // Overpass API instances (fallback if one is rate-limited)
 const OVERPASS_INSTANCES = [

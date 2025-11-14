@@ -309,14 +309,14 @@ const stats = calculateStats(activeItems); // Use activeItems, not items
 ## Reference Files (Use as Templates)
 
 **Perfect reference implementation**:
-- Datatable: `/Users/byronwade/Stratos/src/components/work/appointments-table.tsx`
-- Toolbar: `/Users/byronwade/Stratos/src/components/work/appointments-toolbar-actions.tsx`
+- Datatable: `/Users/byronwade/Thorbis/src/components/work/appointments-table.tsx`
+- Toolbar: `/Users/byronwade/Thorbis/src/components/work/appointments-toolbar-actions.tsx`
 
 **Recently completed (95% done)**:
-- `/Users/byronwade/Stratos/src/components/work/estimates-table.tsx`
+- `/Users/byronwade/Thorbis/src/components/work/estimates-table.tsx`
 
 **In progress (15% done)**:
-- `/Users/byronwade/Stratos/src/components/work/payments-table.tsx`
+- `/Users/byronwade/Thorbis/src/components/work/payments-table.tsx`
 
 ---
 

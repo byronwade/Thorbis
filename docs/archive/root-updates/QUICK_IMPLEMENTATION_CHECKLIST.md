@@ -6,7 +6,7 @@
 
 ## Step 1: Update Archive Store (CRITICAL - DO THIS FIRST!)
 
-File: `/Users/byronwade/Stratos/src/lib/stores/archive-store.ts`
+File: `/Users/byronwade/Thorbis/src/lib/stores/archive-store.ts`
 
 Add these lines:
 

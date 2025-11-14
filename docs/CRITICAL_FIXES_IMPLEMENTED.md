@@ -179,7 +179,7 @@ try {
 ### Option 1: Supabase CLI (Recommended)
 ```bash
 # Make sure you're in the project directory
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 
 # Push migration to Supabase
 supabase db push

@@ -32,22 +32,22 @@
 ## 📋 Remaining Table Components to Update
 
 ### Work Tables (9 files)
-1. `/Users/byronwade/Stratos/src/components/work/estimates-table.tsx`
-2. `/Users/byronwade/Stratos/src/components/work/payments-table.tsx`
-3. `/Users/byronwade/Stratos/src/components/work/contracts-table.tsx`
-4. `/Users/byronwade/Stratos/src/components/work/equipment-table.tsx`
-5. `/Users/byronwade/Stratos/src/components/work/materials-table.tsx`
-6. `/Users/byronwade/Stratos/src/components/work/maintenance-plans-table.tsx`
-7. `/Users/byronwade/Stratos/src/components/work/service-agreements-table.tsx`
-8. `/Users/byronwade/Stratos/src/components/work/purchase-orders-table.tsx`
-9. `/Users/byronwade/Stratos/src/components/work/teams-table.tsx`
+1. `/Users/byronwade/Thorbis/src/components/work/estimates-table.tsx`
+2. `/Users/byronwade/Thorbis/src/components/work/payments-table.tsx`
+3. `/Users/byronwade/Thorbis/src/components/work/contracts-table.tsx`
+4. `/Users/byronwade/Thorbis/src/components/work/equipment-table.tsx`
+5. `/Users/byronwade/Thorbis/src/components/work/materials-table.tsx`
+6. `/Users/byronwade/Thorbis/src/components/work/maintenance-plans-table.tsx`
+7. `/Users/byronwade/Thorbis/src/components/work/service-agreements-table.tsx`
+8. `/Users/byronwade/Thorbis/src/components/work/purchase-orders-table.tsx`
+9. `/Users/byronwade/Thorbis/src/components/work/teams-table.tsx`
 
 ### Customer Tables (2 files)
-10. `/Users/byronwade/Stratos/src/components/customers/customers-table.tsx`
-11. `/Users/byronwade/Stratos/src/components/customers/properties-table.tsx`
+10. `/Users/byronwade/Thorbis/src/components/customers/customers-table.tsx`
+11. `/Users/byronwade/Thorbis/src/components/customers/properties-table.tsx`
 
 ### Additional Consideration
-- `/Users/byronwade/Stratos/src/components/work/price-book-table.tsx` - May need archive pattern
+- `/Users/byronwade/Thorbis/src/components/work/price-book-table.tsx` - May need archive pattern
 
 ---
 
@@ -123,7 +123,7 @@ Use these exact entity names for the `entity` prop and archive store filters:
 
 ## 🛠️ Archive Store Updates Needed
 
-The following entities need to be added to `/Users/byronwade/Stratos/src/lib/stores/archive-store.ts`:
+The following entities need to be added to `/Users/byronwade/Thorbis/src/lib/stores/archive-store.ts`:
 
 ### Update ArchivableEntity Type
 ```typescript
@@ -161,17 +161,17 @@ const defaultFilters: Record<ArchivableEntity, ArchiveFilter> = {
 ## 🎨 Toolbar Actions Pattern
 
 ### Files to Update (11 files)
-1. `/Users/byronwade/Stratos/src/components/work/estimate-toolbar-actions.tsx`
-2. `/Users/byronwade/Stratos/src/components/work/invoice-toolbar-actions.tsx`
-3. `/Users/byronwade/Stratos/src/components/work/contract-toolbar-actions.tsx`
-4. `/Users/byronwade/Stratos/src/components/work/equipment-toolbar-actions.tsx`
-5. `/Users/byronwade/Stratos/src/components/work/payments-toolbar-actions.tsx`
-6. `/Users/byronwade/Stratos/src/components/work/service-agreement-toolbar-actions.tsx`
-7. `/Users/byronwade/Stratos/src/components/work/maintenance-plan-toolbar-actions.tsx`
-8. `/Users/byronwade/Stratos/src/components/work/purchase-order-toolbar-actions.tsx`
-9. `/Users/byronwade/Stratos/src/components/work/team-toolbar-actions.tsx`
-10. `/Users/byronwade/Stratos/src/components/customers/customers-toolbar-actions.tsx`
-11. `/Users/byronwade/Stratos/src/components/inventory/materials-toolbar-actions.tsx` (if exists)
+1. `/Users/byronwade/Thorbis/src/components/work/estimate-toolbar-actions.tsx`
+2. `/Users/byronwade/Thorbis/src/components/work/invoice-toolbar-actions.tsx`
+3. `/Users/byronwade/Thorbis/src/components/work/contract-toolbar-actions.tsx`
+4. `/Users/byronwade/Thorbis/src/components/work/equipment-toolbar-actions.tsx`
+5. `/Users/byronwade/Thorbis/src/components/work/payments-toolbar-actions.tsx`
+6. `/Users/byronwade/Thorbis/src/components/work/service-agreement-toolbar-actions.tsx`
+7. `/Users/byronwade/Thorbis/src/components/work/maintenance-plan-toolbar-actions.tsx`
+8. `/Users/byronwade/Thorbis/src/components/work/purchase-order-toolbar-actions.tsx`
+9. `/Users/byronwade/Thorbis/src/components/work/team-toolbar-actions.tsx`
+10. `/Users/byronwade/Thorbis/src/components/customers/customers-toolbar-actions.tsx`
+11. `/Users/byronwade/Thorbis/src/components/inventory/materials-toolbar-actions.tsx` (if exists)
 
 ### Pattern for Each Toolbar
 ```typescript
@@ -370,17 +370,17 @@ const activeItems = items.filter(item => !item.archived_at && !item.deleted_at);
 ```
 
 ### Pages to Update (10+ files)
-1. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/invoices/page.tsx`
-2. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/estimates/page.tsx`
-3. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/payments/page.tsx`
-4. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/contracts/page.tsx`
-5. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/equipment/page.tsx`
-6. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/materials/page.tsx`
-7. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/maintenance-plans/page.tsx`
-8. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/service-agreements/page.tsx`
-9. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/purchase-orders/page.tsx`
-10. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/team/page.tsx`
-11. `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/customers/page.tsx`
+1. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/invoices/page.tsx`
+2. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/estimates/page.tsx`
+3. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/payments/page.tsx`
+4. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/contracts/page.tsx`
+5. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/equipment/page.tsx`
+6. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/materials/page.tsx`
+7. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/maintenance-plans/page.tsx`
+8. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/service-agreements/page.tsx`
+9. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/purchase-orders/page.tsx`
+10. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/team/page.tsx`
+11. `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/customers/page.tsx`
 
 ---
 
@@ -426,7 +426,7 @@ After implementation, verify each entity:
 - [x] appointments-table.tsx (reference)
 
 ### Phase 2: Archive Store Updates (DO THIS FIRST)
-- [ ] Update `/Users/byronwade/Stratos/src/lib/stores/archive-store.ts`
+- [ ] Update `/Users/byronwade/Thorbis/src/lib/stores/archive-store.ts`
   - Add `payments`, `materials`, `properties` to types
   - Add default filters for new entities
 

@@ -18,7 +18,7 @@ brew install ngrok
 
 #### Step 2: Start Your Dev Server
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 pnpm dev
 # Server running at http://localhost:3000
 ```
@@ -203,7 +203,7 @@ brew install cloudflare/cloudflare/cloudflared
 cloudflared tunnel login
 
 # Create tunnel
-cloudflared tunnel create stratos-local
+cloudflared tunnel create thorbis-local
 
 # Note the tunnel ID from output
 ```
@@ -222,7 +222,7 @@ EOF
 ### Setup DNS (One-Time)
 ```bash
 # If you have a domain (e.g., yourdomain.com)
-cloudflared tunnel route dns stratos-local dev.yourdomain.com
+cloudflared tunnel route dns thorbis-local dev.yourdomain.com
 
 # Now you have permanent URL: https://dev.yourdomain.com
 ```
@@ -233,7 +233,7 @@ cloudflared tunnel route dns stratos-local dev.yourdomain.com
 pnpm dev
 
 # Terminal 2: Start tunnel
-cloudflared tunnel run stratos-local
+cloudflared tunnel run thorbis-local
 
 # Configure Telnyx webhook to:
 # https://dev.yourdomain.com/api/webhooks/telnyx

@@ -1,7 +1,7 @@
 # Authentication System Architecture - Comprehensive Security Audit
 
 **Generated:** 2025-10-31
-**Project:** Thorbis (Stratos)
+**Project:** Thorbis (Thorbis)
 **Auditor:** Senior Backend Security Specialist
 
 ---
@@ -478,13 +478,13 @@ export const getSession = cache(async (): Promise<Session | null> => {
 **Evidence:**
 ```bash
 # Search result shows NO middleware.ts in project root
-$ find /Users/byronwade/Stratos -name "middleware.ts" -o -name "middleware.js" | grep -v node_modules
+$ find /Users/byronwade/Thorbis -name "middleware.ts" -o -name "middleware.js" | grep -v node_modules
 # No results - CRITICAL SECURITY GAP
 ```
 
 **Required Implementation:**
 
-Create: `/Users/byronwade/Stratos/middleware.ts`
+Create: `/Users/byronwade/Thorbis/middleware.ts`
 
 ```typescript
 import { createServerClient } from "@supabase/ssr";

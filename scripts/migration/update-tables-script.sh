@@ -4,17 +4,17 @@
 # This adds the useArchiveStore import to each table component
 
 FILES=(
-  "/Users/byronwade/Stratos/src/components/work/estimates-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/payments-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/contracts-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/equipment-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/materials-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/maintenance-plans-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/service-agreements-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/purchase-orders-table.tsx"
-  "/Users/byronwade/Stratos/src/components/work/teams-table.tsx"
-  "/Users/byronwade/Stratos/src/components/customers/customers-table.tsx"
-  "/Users/byronwade/Stratos/src/components/customers/properties-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/estimates-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/payments-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/contracts-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/equipment-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/materials-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/maintenance-plans-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/service-agreements-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/purchase-orders-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/work/teams-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/customers/customers-table.tsx"
+  "/Users/byronwade/Thorbis/src/components/customers/properties-table.tsx"
 )
 
 for file in "${FILES[@]}"; do

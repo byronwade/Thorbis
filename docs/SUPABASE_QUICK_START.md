@@ -1,4 +1,4 @@
-# Stratos Project - Supabase & Drizzle Configuration Summary
+# Thorbis Project - Supabase & Drizzle Configuration Summary
 
 ## Current Status Overview
 
@@ -88,7 +88,7 @@ All tables:
 ## Files & Directory Structure
 
 ```
-/Users/byronwade/Stratos/
+/Users/byronwade/Thorbis/
 ├── drizzle.config.ts                    # Drizzle configuration ✓
 ├── middleware.ts                         # Basic pathname tracking
 ├── next.config.ts                        # Next.js 16 config ✓

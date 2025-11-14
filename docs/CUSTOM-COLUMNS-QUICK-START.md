@@ -48,7 +48,7 @@ import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 
 ### 3. Adding More Fields for an Entity
 
-Edit `/Users/byronwade/Stratos/src/lib/datatable/field-introspection.ts`:
+Edit `/Users/byronwade/Thorbis/src/lib/datatable/field-introspection.ts`:
 
 ```typescript
 appointments: [

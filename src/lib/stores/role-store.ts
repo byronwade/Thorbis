@@ -92,7 +92,7 @@ export const useRoleStore = create<RoleStore>()(
         reset: () => set(initialState),
       }),
       {
-        name: "stratos_dev_role", // localStorage key
+        name: "thorbis_dev_role", // localStorage key
         partialize: (state) => ({
           // Only persist in development mode
           role: isDevelopment ? state.role : undefined,

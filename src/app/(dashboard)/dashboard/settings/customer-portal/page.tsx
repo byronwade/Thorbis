@@ -1016,7 +1016,7 @@ export default function CustomerPortalPage() {
                   <TooltipContent>
                     <p className="max-w-xs">
                       Use your own domain like portal.yourcompany.com instead of
-                      stratos.com
+                      thorbis.com
                     </p>
                   </TooltipContent>
                 </Tooltip>

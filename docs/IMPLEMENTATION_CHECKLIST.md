@@ -1,7 +1,7 @@
-# Stratos Project - Implementation Checklist for Production Ready
+# Thorbis Project - Implementation Checklist for Production Ready
 
 ## Overview
-This checklist tracks what needs to be implemented to make the Stratos project production-ready for Supabase and Drizzle ORM.
+This checklist tracks what needs to be implemented to make the Thorbis project production-ready for Supabase and Drizzle ORM.
 
 **Total Estimated Time**: 45 hours
 **Current Readiness**: 35% (Database layer: 100%, Auth/Security: 0%)
@@ -44,7 +44,7 @@ This checklist tracks what needs to be implemented to make the Stratos project p
 - [ ] Insert user profile in `users` table via Drizzle
 - [ ] Handle errors and validation failures
 - [ ] Return success/error response
-- [ ] File: `/Users/byronwade/Stratos/src/actions/auth.ts`
+- [ ] File: `/Users/byronwade/Thorbis/src/actions/auth.ts`
 
 #### Sign In Action
 - [ ] Create `signIn` Server Action in same file
@@ -194,7 +194,7 @@ Execute these SQL policies in Supabase SQL Editor:
 ## Phase 4: Session Management & Protected Routes (5 hours)
 
 ### Middleware Enhancement
-- [ ] Update `/Users/byronwade/Stratos/middleware.ts`
+- [ ] Update `/Users/byronwade/Thorbis/middleware.ts`
   - [ ] Add authentication middleware
   - [ ] Verify session on every request
   - [ ] Check authorization for protected routes

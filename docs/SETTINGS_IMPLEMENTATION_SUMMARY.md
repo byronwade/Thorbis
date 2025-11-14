@@ -269,7 +269,7 @@ export default function XxxSettingsPage() {
 ## 📁 File Structure
 
 ```
-/Users/byronwade/Stratos/
+/Users/byronwade/Thorbis/
 ├── supabase/migrations/
 │   └── 20251102000000_comprehensive_settings_tables.sql  ← All settings tables
 │

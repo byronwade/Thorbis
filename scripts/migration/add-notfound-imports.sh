@@ -3,11 +3,11 @@
 # Add notFound import to files that need it
 
 FILES=(
-  "/Users/byronwade/Stratos/src/app/portal/setup/page.tsx"
-  "/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/pricebook/page.tsx"
-  "/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/new/page.tsx"
-  "/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/jobs/new/page.tsx"
-  "/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/page.tsx"
+  "/Users/byronwade/Thorbis/src/app/portal/setup/page.tsx"
+  "/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/pricebook/page.tsx"
+  "/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/new/page.tsx"
+  "/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/jobs/new/page.tsx"
+  "/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/page.tsx"
 )
 
 for file in "${FILES[@]}"; do

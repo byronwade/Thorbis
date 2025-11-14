@@ -1,6 +1,6 @@
 # WORK DETAIL PAGES INTERCONNECTION VERIFICATION REPORT
 **Generated**: November 11, 2025
-**Project**: Stratos
+**Project**: Thorbis
 **Scope**: All 13 work entity detail pages with bidirectional navigation verification
 
 ---

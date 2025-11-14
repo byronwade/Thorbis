@@ -496,7 +496,7 @@ Proper handling of many-to-many relationships:
 
 ## 📚 DOCUMENTATION INDEX
 
-All documentation in `/Users/byronwade/Stratos/`:
+All documentation in `/Users/byronwade/Thorbis/`:
 
 **Quick Summaries** (Start here):
 1. SESSION_COMPLETE_ARCHIVE_AND_LINKS.md

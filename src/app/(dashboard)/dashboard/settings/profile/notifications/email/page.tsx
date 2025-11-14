@@ -480,7 +480,7 @@ export default function EmailPreferencesPage() {
                     details and confirm your availability.
                   </div>
                   <div className="text-muted-foreground text-xs">
-                    2 minutes ago • noreply@stratos.com
+                    2 minutes ago • noreply@thorbis.com
                   </div>
                 </div>
               </div>

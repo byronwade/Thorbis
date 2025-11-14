@@ -57,9 +57,9 @@ Write-Host ""
 
 Write-Host "=== Additional Recommendations ===" -ForegroundColor Cyan
 Write-Host "For best performance, consider moving your project outside OneDrive:" -ForegroundColor Yellow
-Write-Host "  * C:\dev\Stratos" -ForegroundColor White
-Write-Host "  * C:\projects\Stratos" -ForegroundColor White
-Write-Host "  * D:\development\Stratos" -ForegroundColor White
+Write-Host "  * C:\dev\Thorbis" -ForegroundColor White
+Write-Host "  * C:\projects\Thorbis" -ForegroundColor White
+Write-Host "  * D:\development\Thorbis" -ForegroundColor White
 Write-Host ""
 Write-Host "=== Setup Complete ===" -ForegroundColor Green
 Write-Host "You can now run: pnpm run dev" -ForegroundColor Cyan

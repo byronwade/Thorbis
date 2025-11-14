@@ -141,7 +141,7 @@ export function RoleSwitcher() {
         </div>
         <Button
           onClick={() => {
-            localStorage.removeItem("stratos_dev_role");
+            localStorage.removeItem("thorbis_dev_role");
             setRole("owner");
           }}
           size="sm"

@@ -76,7 +76,7 @@
 
 ### Step 3: Update Environment Variables
 
-Create `/Users/byronwade/Stratos/.env.local`:
+Create `/Users/byronwade/Thorbis/.env.local`:
 
 ```env
 # Supabase Configuration (Production)
@@ -94,7 +94,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ### Step 4: Run Migrations
 
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 
 # Apply RLS policies and storage configuration
 # Option 1: Using Supabase CLI (recommended)
@@ -242,7 +242,7 @@ open http://localhost:3000/login
 ### Authentication Files Created/Modified
 
 ```
-Stratos/
+Thorbis/
 ├── src/
 │   ├── actions/
 │   │   └── auth.ts                          # ✨ NEW: Auth server actions

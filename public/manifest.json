@@ -1,6 +1,6 @@
 {
-  "name": "Stratos - Field Service Management",
-  "short_name": "Stratos",
+  "name": "Thorbis - Field Service Management",
+  "short_name": "Thorbis",
   "description": "Professional field service management platform for home service businesses",
   "start_url": "/dashboard",
   "display": "standalone",

@@ -52,7 +52,7 @@ You need to apply the RLS policies to your Supabase database:
 
 **Option B: Using Supabase CLI**
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 ./run-migrations.sh
 # Enter project ref: togejqdwggezkxahomeh
 ```
@@ -61,7 +61,7 @@ cd /Users/byronwade/Stratos
 
 ```bash
 # Start dev server
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 pnpm dev
 
 # Open browser

@@ -1,7 +1,7 @@
 # Clean Next.js build artifacts
 # Use this when experiencing EPERM errors
 
-$projectPath = "C:\Users\bcw19\OneDrive\Desktop\Stratos"
+$projectPath = "C:\Users\bcw19\OneDrive\Desktop\Thorbis"
 
 Write-Host "Cleaning Next.js build artifacts..." -ForegroundColor Yellow
 

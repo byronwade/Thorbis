@@ -450,13 +450,13 @@ After completing each datatable:
 ## Files Reference
 
 ### Completed Examples (use as templates):
-- **Datatable**: `/Users/byronwade/Stratos/src/components/work/appointments-table.tsx`
-- **Toolbar**: `/Users/byronwade/Stratos/src/components/work/appointments-toolbar-actions.tsx`
-- **Page**: `/Users/byronwade/Stratos/src/app/(dashboard)/dashboard/work/appointments/page.tsx`
+- **Datatable**: `/Users/byronwade/Thorbis/src/components/work/appointments-table.tsx`
+- **Toolbar**: `/Users/byronwade/Thorbis/src/components/work/appointments-toolbar-actions.tsx`
+- **Page**: `/Users/byronwade/Thorbis/src/app/(dashboard)/dashboard/work/appointments/page.tsx`
 
 ### In Progress:
-- `/Users/byronwade/Stratos/src/components/work/estimates-table.tsx` (95%)
-- `/Users/byronwade/Stratos/src/components/work/payments-table.tsx` (15%)
+- `/Users/byronwade/Thorbis/src/components/work/estimates-table.tsx` (95%)
+- `/Users/byronwade/Thorbis/src/components/work/payments-table.tsx` (15%)
 
 ---
 

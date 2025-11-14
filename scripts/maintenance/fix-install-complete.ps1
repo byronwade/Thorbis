@@ -19,7 +19,7 @@ if (-not $isAdmin) {
     Write-Host "1. Close this window" -ForegroundColor Yellow
     Write-Host "2. Right-click PowerShell" -ForegroundColor Yellow
     Write-Host "3. Select 'Run as Administrator'" -ForegroundColor Yellow
-    Write-Host "4. Navigate to: cd C:\dev\Stratos" -ForegroundColor Yellow
+    Write-Host "4. Navigate to: cd C:\dev\Thorbis" -ForegroundColor Yellow
     Write-Host "5. Run: .\fix-install-complete.ps1`n" -ForegroundColor Yellow
     exit 1
 }
@@ -191,7 +191,7 @@ if ($installSuccess) {
     Write-Host "   See INSTALLATION_FIX.md for instructions" -ForegroundColor Gray
     Write-Host "`n3. Add permanent Windows Defender exclusion:" -ForegroundColor White
     Write-Host "   Windows Security - Virus and threat protection - Exclusions" -ForegroundColor Gray
-    Write-Host "   Add folder: C:\dev\Stratos" -ForegroundColor Gray
+    Write-Host "   Add folder: C:\dev\Thorbis" -ForegroundColor Gray
     Write-Host "`n4. Disable real-time protection temporarily during install" -ForegroundColor White
     Write-Host "`nFor more help, see: INSTALLATION_FIX.md`n" -ForegroundColor White
 

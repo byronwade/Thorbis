@@ -12,7 +12,7 @@
 
 import { z } from "zod";
 
-const USER_AGENT = "StratosFieldService/1.0";
+const USER_AGENT = "ThorbisFieldService/1.0";
 
 // ============================================================================
 // Types and Schemas

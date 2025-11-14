@@ -1,8 +1,8 @@
 # Move project out of OneDrive to fix EPERM errors permanently
 # This is the ONLY reliable solution for Next.js + OneDrive on Windows
 
-$sourceDir = "C:\Users\bcw19\OneDrive\Desktop\Stratos"
-$targetDir = "C:\dev\Stratos"
+$sourceDir = "C:\Users\bcw19\OneDrive\Desktop\Thorbis"
+$targetDir = "C:\dev\Thorbis"
 
 Write-Host "=======================================" -ForegroundColor Cyan
 Write-Host " Move Project Out of OneDrive" -ForegroundColor Cyan

@@ -58,7 +58,7 @@ workbox.routing.registerRoute(
 
 **Schema**:
 ```typescript
-// Database: stratos-offline
+// Database: thorbis-offline
 // Version: 1
 
 // Store: jobs

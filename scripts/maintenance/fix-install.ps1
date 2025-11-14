@@ -65,7 +65,7 @@ if (-not $success) {
     Write-Host "`nInstallation failed. Manual steps:" -ForegroundColor Red
     Write-Host "1. Close all editors (Cursor, VS Code, etc.)" -ForegroundColor Yellow
     Write-Host "2. Open PowerShell as Administrator" -ForegroundColor Yellow
-    Write-Host "3. Navigate to: cd C:\dev\Stratos" -ForegroundColor Yellow
+    Write-Host "3. Navigate to: cd C:\dev\Thorbis" -ForegroundColor Yellow
     Write-Host "4. Run: Remove-Item -Recurse -Force node_modules" -ForegroundColor Yellow
     Write-Host "5. Run: pnpm install" -ForegroundColor Yellow
     Write-Host "`nOr try excluding the project folder from Windows Defender real-time protection." -ForegroundColor Yellow

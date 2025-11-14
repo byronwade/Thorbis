@@ -273,8 +273,8 @@ WHERE query LIKE '%team_members%'
 ## Support Information
 
 ### Documentation References
-- **Full Audit Report**: `/Users/byronwade/Stratos/DATABASE_SECURITY_AUDIT_REPORT.md`
-- **Security Migration**: `/Users/byronwade/Stratos/supabase/migrations/20251101120000_fix_critical_security_issues.sql`
+- **Full Audit Report**: `/Users/byronwade/Thorbis/DATABASE_SECURITY_AUDIT_REPORT.md`
+- **Security Migration**: `/Users/byronwade/Thorbis/supabase/migrations/20251101120000_fix_critical_security_issues.sql`
 - **Supabase RLS Docs**: https://supabase.com/docs/guides/auth/row-level-security
 - **PostgreSQL RLS Docs**: https://www.postgresql.org/docs/current/ddl-rowsecurity.html
 

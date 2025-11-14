@@ -509,7 +509,7 @@ export function TeamMemberPageContent({
             value={displayName}
           />
           <p className="text-muted-foreground text-xs">
-            Update how this team member appears across Stratos. Changes are
+            Update how this team member appears across Thorbis. Changes are
             saved when you select Save changes.
           </p>
         </div>

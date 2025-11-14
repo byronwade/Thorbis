@@ -6,7 +6,7 @@
 
 ## 📋 Prerequisites
 
-- ✅ Project ready at `/Users/byronwade/Stratos`
+- ✅ Project ready at `/Users/byronwade/Thorbis`
 - ✅ All auth code already implemented
 - ⏳ Need: Supabase account (free)
 
@@ -40,7 +40,7 @@
 
 ### 3. Add to .env.local (1 min)
 
-Create `/Users/byronwade/Stratos/.env.local`:
+Create `/Users/byronwade/Thorbis/.env.local`:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
@@ -56,16 +56,16 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 1. In Supabase dashboard:
    SQL Editor → New Query
 2. Copy/paste contents of:
-   /Users/byronwade/Stratos/supabase/migrations/20250129000000_enable_rls_policies.sql
+   /Users/byronwade/Thorbis/supabase/migrations/20250129000000_enable_rls_policies.sql
 3. Click "Run"
 4. Repeat for:
-   /Users/byronwade/Stratos/supabase/migrations/20250129000001_storage_buckets.sql
+   /Users/byronwade/Thorbis/supabase/migrations/20250129000001_storage_buckets.sql
 ```
 
 ### 5. Test (30 sec)
 
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 pnpm dev
 open http://localhost:3000/register
 ```

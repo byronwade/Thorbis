@@ -141,7 +141,7 @@ const initialState: UIState = {
     reactions: [],
     chatMessages: [],
     participants: [],
-    meetingLink: "https://meet.stratos.app/abc-defg-hij",
+    meetingLink: "https://meet.thorbis.app/abc-defg-hij",
   },
 };
 

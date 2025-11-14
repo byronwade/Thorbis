@@ -1,4 +1,4 @@
-# Stratos VoIP System - Quick Reference Guide
+# Thorbis VoIP System - Quick Reference Guide
 
 ## What Exists (Ready to Use)
 

@@ -14,7 +14,7 @@
 
 import { z } from "zod";
 
-const USER_AGENT = "Stratos-FMS/1.0 (support@stratos.app)";
+const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
 export const TimeZoneSchema = z.object({
   timeZoneId: z.string(), // e.g., "America/New_York"

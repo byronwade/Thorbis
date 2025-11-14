@@ -1,6 +1,6 @@
 # Role-Based Access Control (RBAC) System
 
-**Comprehensive guide to the Stratos RBAC implementation**
+**Comprehensive guide to the Thorbis RBAC implementation**
 
 ## Overview
 
@@ -304,7 +304,7 @@ Navigate to **Settings → Development** to test different roles:
 3. Page reloads with new role's dashboard
 
 ### Development Override
-- In development mode, role is stored in `localStorage` under key `stratos_dev_role`
+- In development mode, role is stored in `localStorage` under key `thorbis_dev_role`
 - Clear localStorage to reset to actual database role
 - Production mode ignores localStorage and always uses database role
 
@@ -439,7 +439,7 @@ console.log(canDelete);
 
 ### Development override not working
 1. Check `NODE_ENV === 'development'`
-2. Clear localStorage: `localStorage.removeItem('stratos_dev_role')`
+2. Clear localStorage: `localStorage.removeItem('thorbis_dev_role')`
 3. Verify role store initialization
 
 ## Future Enhancements

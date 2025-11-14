@@ -1,5 +1,5 @@
 ================================================================================
-STRATOS PROJECT - SUPABASE & DRIZZLE ORM CONFIGURATION ASSESSMENT
+THORBIS PROJECT - SUPABASE & DRIZZLE ORM CONFIGURATION ASSESSMENT
 ================================================================================
 
 Assessment Date: October 29, 2025
@@ -157,27 +157,27 @@ KEY FILE LOCATIONS
 ================================================================================
 
 Configuration:
-  /Users/byronwade/Stratos/drizzle.config.ts ✓ Ready
+  /Users/byronwade/Thorbis/drizzle.config.ts ✓ Ready
 
 Database:
-  /Users/byronwade/Stratos/src/lib/db/
+  /Users/byronwade/Thorbis/src/lib/db/
     ├── index.ts ✓ Drizzle client
     ├── schema.ts ✓ 997 lines, 19 tables
     ├── seed.ts ⚠ Basic (needs enhancement)
     └── README.md ✓ Database documentation
 
 Supabase:
-  /Users/byronwade/Stratos/src/lib/supabase/
+  /Users/byronwade/Thorbis/src/lib/supabase/
     ├── client.ts ✓ Browser client
     └── server.ts ✓ Server client
 
 Authentication (UI Only):
-  /Users/byronwade/Stratos/src/app/(marketing)/
+  /Users/byronwade/Thorbis/src/app/(marketing)/
     ├── login/page.tsx ❌ No backend
     └── register/page.tsx ❌ Needs creation
 
 Migrations:
-  /Users/byronwade/Stratos/drizzle/
+  /Users/byronwade/Thorbis/drizzle/
     ├── 0000_parched_lenny_balinger.sql ✓ Initial
     └── 0001_mean_sunspot.sql ✓ Extended
 
@@ -294,10 +294,10 @@ CONTACT & REFERENCES
 ================================================================================
 
 For Database Questions:
-  → /Users/byronwade/Stratos/src/lib/db/README.md
+  → /Users/byronwade/Thorbis/src/lib/db/README.md
 
 For Schema Questions:
-  → /Users/byronwade/Stratos/src/lib/db/schema.ts (fully commented)
+  → /Users/byronwade/Thorbis/src/lib/db/schema.ts (fully commented)
 
 For Implementation Help:
   → IMPLEMENTATION_CHECKLIST.md (relevant phase)

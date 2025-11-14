@@ -220,7 +220,7 @@ export function StripeSettings() {
           <div className="space-y-2">
             <Label htmlFor="receipt-email">Receipt Email Address</Label>
             <Input
-              defaultValue="receipts@stratos.com"
+              defaultValue="receipts@thorbis.com"
               id="receipt-email"
               placeholder="email@example.com"
               type="email"
@@ -241,7 +241,7 @@ export function StripeSettings() {
           <div className="space-y-2">
             <Label htmlFor="webhook-url">Webhook URL</Label>
             <Input
-              defaultValue="https://api.stratos.com/webhooks/stripe"
+              defaultValue="https://api.thorbis.com/webhooks/stripe"
               disabled
               id="webhook-url"
               type="url"

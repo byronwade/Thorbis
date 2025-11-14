@@ -1,4 +1,4 @@
-# Stratos - Field Service Management Platform
+# Thorbis - Field Service Management Platform
 
 Enterprise-grade field service management platform built with Next.js 16, React 19, and Supabase.
 
@@ -36,7 +36,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the application.
 ## 🏗️ Project Structure
 
 ```
-stratos/
+thorbis/
 ├── src/
 │   ├── app/              # Next.js App Router pages
 │   │   ├── (dashboard)/  # Protected dashboard routes
@@ -125,7 +125,7 @@ pnpm dev:clean
 
    ```bash
    # Move to C:\Projects or another non-OneDrive location
-   move C:\Users\YourName\OneDrive\Desktop\Stratos C:\Projects\Stratos
+   move C:\Users\YourName\OneDrive\Desktop\Thorbis C:\Projects\Thorbis
    ```
 
 3. **Use PowerShell script**:

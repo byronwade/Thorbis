@@ -8,7 +8,7 @@ Quick testing checklist for your new auth system.
 
 ### 1. Start Server
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 pnpm dev
 ```
 

@@ -11,7 +11,7 @@
 
 ### Step 3: Run Fix Script
 ```powershell
-cd C:\dev\Stratos
+cd C:\dev\Thorbis
 .\scripts\maintenance\fix-install-complete.ps1
 ```
 
@@ -56,7 +56,7 @@ Add Windows Defender exclusion manually:
 2. Go to **Virus & threat protection** → **Manage settings**
 3. Under **Exclusions**, click **"Add or remove exclusions"**
 4. Click **"Add an exclusion"** → **"Folder"**
-5. Select: `C:\dev\Stratos`
+5. Select: `C:\dev\Thorbis`
 6. Retry installation
 
 ### Need more help?

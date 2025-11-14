@@ -500,7 +500,7 @@ But built **specifically for your business** with:
 
 ---
 
-**Built with ❤️ for Stratos**
+**Built with ❤️ for Thorbis**
 **Implementation Time:** ~4 hours
 **Total Lines of Code:** ~6,000+
 **Files Created:** 15

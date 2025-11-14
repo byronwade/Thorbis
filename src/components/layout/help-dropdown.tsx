@@ -130,9 +130,9 @@ export function HelpDropdown() {
                 Email us at{" "}
                 <a
                   className="text-primary hover:underline"
-                  href="mailto:support@stratos.com"
+                  href="mailto:support@thorbis.com"
                 >
-                  support@stratos.com
+                  support@thorbis.com
                 </a>
               </p>
             </div>

@@ -570,7 +570,7 @@ export function CustomerPageContent({
             value={displayName}
           />
           <p className="text-muted-foreground text-xs">
-            Update how this customer appears across Stratos. Changes are saved
+            Update how this customer appears across Thorbis. Changes are saved
             when you select Save changes.
           </p>
         </div>

@@ -4,7 +4,7 @@
  * Provides a type-safe interface for storing and retrieving data offline.
  * Critical for field workers with spotty internet connections.
  *
- * Database: stratos-offline
+ * Database: thorbis-offline
  * Version: 2 (Updated with comprehensive offline support)
  *
  * Stores:
@@ -20,7 +20,7 @@
  * - sync-queue: Pending sync operations
  */
 
-const DB_NAME = "stratos-offline";
+const DB_NAME = "thorbis-offline";
 const DB_VERSION = 2;
 
 // Type definitions

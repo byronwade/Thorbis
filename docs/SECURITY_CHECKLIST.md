@@ -54,7 +54,7 @@ Supabase Auth integrates with HaveIBeenPwned.org to prevent users from creating 
 
 1. **Navigate to Supabase Dashboard**
    - Go to https://supabase.com/dashboard
-   - Select your project: `Stratos (Thorbis)`
+   - Select your project: `Thorbis (Thorbis)`
 
 2. **Open Authentication Settings**
    - In the left sidebar, click **Authentication**

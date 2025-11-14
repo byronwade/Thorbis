@@ -415,7 +415,7 @@ All available from: `import { ... } from "@/actions/settings";`
 ## 📁 Complete File Structure
 
 ```
-/Users/byronwade/Stratos/
+/Users/byronwade/Thorbis/
 │
 ├── supabase/migrations/
 │   └── 20251102000000_comprehensive_settings_tables.sql  ✅ Applied

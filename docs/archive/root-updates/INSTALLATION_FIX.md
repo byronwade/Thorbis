@@ -21,7 +21,7 @@ This PowerShell script handles everything automatically:
 
 3. **Run the automated fix**:
    ```powershell
-   cd C:\dev\Stratos
+   cd C:\dev\Thorbis
    .\scripts\maintenance\fix-install-complete.ps1
    ```
 
@@ -46,7 +46,7 @@ This PowerShell script handles everything automatically:
 2. Right-click PowerShell → "Run as Administrator"
 3. Navigate to project:
    ```powershell
-   cd C:\dev\Stratos
+   cd C:\dev\Thorbis
    ```
 4. Remove node_modules:
    ```powershell
@@ -62,7 +62,7 @@ This PowerShell script handles everything automatically:
 1. Open Windows Security (Windows Defender)
 2. Go to Virus & threat protection → Manage settings
 3. Under Exclusions, click "Add or remove exclusions"
-4. Add folder exclusion: `C:\dev\Stratos`
+4. Add folder exclusion: `C:\dev\Thorbis`
 5. Retry installation:
    ```powershell
    Remove-Item -Recurse -Force node_modules
@@ -86,7 +86,7 @@ Note: You'll need to ensure Node.js is in your PATH for npm's postinstall script
 1. Close all editors and terminals
 2. Open File Explorer and navigate to:
    ```
-   C:\dev\Stratos\node_modules\@tailwindcss\oxide-win32-x64-msvc\
+   C:\dev\Thorbis\node_modules\@tailwindcss\oxide-win32-x64-msvc\
    ```
 3. Delete `tailwindcss-oxide.win32-x64-msvc.node` manually
 4. Run `pnpm install` again
@@ -96,7 +96,7 @@ Note: You'll need to ensure Node.js is in your PATH for npm's postinstall script
 If you have WSL installed:
 
 ```bash
-cd /mnt/c/dev/Stratos
+cd /mnt/c/dev/Thorbis
 pnpm install
 ```
 

@@ -614,7 +614,7 @@ export default function DevelopmentSettingsPage() {
 
       {/* Additional Dev Tools Info */}
       <SettingsInfoBanner
-        description="Role changes are persisted in localStorage under the key 'stratos_dev_role'. Communication simulations trigger real notifications and will sync across all open tabs. Clear your browser storage to reset to defaults."
+        description="Role changes are persisted in localStorage under the key 'thorbis_dev_role'. Communication simulations trigger real notifications and will sync across all open tabs. Clear your browser storage to reset to defaults."
         icon={Code}
         title="Technical Details"
         variant="blue"

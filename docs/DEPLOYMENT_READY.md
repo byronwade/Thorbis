@@ -120,7 +120,7 @@ curl -I http://localhost:3000/dashboard
 
 ### Option 1: Supabase CLI (Recommended - Safest)
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 
 # Apply migration
 supabase db push

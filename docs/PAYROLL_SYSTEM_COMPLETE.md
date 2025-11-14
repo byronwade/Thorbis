@@ -104,7 +104,7 @@ All actions exported from `/src/actions/settings/index.ts` ✅
 ---
 
 ### 4. Templates for Remaining 5 Pages ✅
-**File**: `/Users/byronwade/Stratos/PAYROLL_SETTINGS_IMPLEMENTATION.md`
+**File**: `/Users/byronwade/Thorbis/PAYROLL_SETTINGS_IMPLEMENTATION.md`
 
 **Complete specifications provided for**:
 

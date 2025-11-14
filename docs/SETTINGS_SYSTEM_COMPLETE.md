@@ -133,7 +133,7 @@ Updated `/src/app/(dashboard)/dashboard/settings/communications/email/page.tsx`:
 ## 📁 File Structure
 
 ```
-/Users/byronwade/Stratos/
+/Users/byronwade/Thorbis/
 ├── supabase/
 │   └── migrations/
 │       └── 20251102000000_comprehensive_settings_tables.sql  ← Database schema

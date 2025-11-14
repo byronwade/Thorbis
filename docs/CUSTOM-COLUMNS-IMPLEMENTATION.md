@@ -10,7 +10,7 @@ Implemented an **Advanced Column Builder** feature for datatables that allows us
 
 ### 1. Custom Columns Store
 
-**File**: `/Users/byronwade/Stratos/src/lib/stores/custom-columns-store.ts`
+**File**: `/Users/byronwade/Thorbis/src/lib/stores/custom-columns-store.ts`
 
 Zustand store with localStorage persistence that manages custom column definitions.
 
@@ -45,7 +45,7 @@ type CustomColumn = {
 
 ### 2. Field Introspection Utility
 
-**File**: `/Users/byronwade/Stratos/src/lib/datatable/field-introspection.ts`
+**File**: `/Users/byronwade/Thorbis/src/lib/datatable/field-introspection.ts`
 
 Provides available database fields for each entity type with metadata.
 
@@ -83,7 +83,7 @@ type FieldDefinition = {
 
 ### 3. Custom Column Renderer
 
-**File**: `/Users/byronwade/Stratos/src/lib/datatable/custom-column-renderer.tsx`
+**File**: `/Users/byronwade/Thorbis/src/lib/datatable/custom-column-renderer.tsx`
 
 Renders custom column values based on format type with proper styling.
 
@@ -112,7 +112,7 @@ Renders custom column values based on format type with proper styling.
 
 ### 4. Column Builder Dialog
 
-**File**: `/Users/byronwade/Stratos/src/components/ui/column-builder-dialog.tsx`
+**File**: `/Users/byronwade/Thorbis/src/components/ui/column-builder-dialog.tsx`
 
 Client component dialog for adding custom columns.
 
@@ -141,7 +141,7 @@ Client component dialog for adding custom columns.
 
 ### 5. Updated Column Visibility Menu
 
-**File**: `/Users/byronwade/Stratos/src/components/ui/column-visibility-menu.tsx`
+**File**: `/Users/byronwade/Thorbis/src/components/ui/column-visibility-menu.tsx`
 
 Enhanced with custom column management.
 
@@ -167,7 +167,7 @@ Column Visibility Menu
 
 ### 6. Updated FullWidthDataTable
 
-**File**: `/Users/byronwade/Stratos/src/components/ui/full-width-datatable.tsx`
+**File**: `/Users/byronwade/Thorbis/src/components/ui/full-width-datatable.tsx`
 
 Enhanced to support custom columns seamlessly.
 
@@ -345,14 +345,14 @@ import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 ## Files Created/Modified
 
 ### Created Files
-1. `/Users/byronwade/Stratos/src/lib/stores/custom-columns-store.ts` - Custom columns store
-2. `/Users/byronwade/Stratos/src/lib/datatable/field-introspection.ts` - Field definitions
-3. `/Users/byronwade/Stratos/src/lib/datatable/custom-column-renderer.tsx` - Column renderer
-4. `/Users/byronwade/Stratos/src/components/ui/column-builder-dialog.tsx` - Column builder dialog
+1. `/Users/byronwade/Thorbis/src/lib/stores/custom-columns-store.ts` - Custom columns store
+2. `/Users/byronwade/Thorbis/src/lib/datatable/field-introspection.ts` - Field definitions
+3. `/Users/byronwade/Thorbis/src/lib/datatable/custom-column-renderer.tsx` - Column renderer
+4. `/Users/byronwade/Thorbis/src/components/ui/column-builder-dialog.tsx` - Column builder dialog
 
 ### Modified Files
-1. `/Users/byronwade/Stratos/src/components/ui/column-visibility-menu.tsx` - Added custom column support
-2. `/Users/byronwade/Stratos/src/components/ui/full-width-datatable.tsx` - Integrated custom columns
+1. `/Users/byronwade/Thorbis/src/components/ui/column-visibility-menu.tsx` - Added custom column support
+2. `/Users/byronwade/Thorbis/src/components/ui/full-width-datatable.tsx` - Integrated custom columns
 
 ---
 

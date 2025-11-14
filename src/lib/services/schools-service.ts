@@ -15,7 +15,7 @@
 
 import { z } from "zod";
 
-const USER_AGENT = "Stratos-FMS/1.0 (support@stratos.app)";
+const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
 export const SchoolSchema = z.object({
   name: z.string(),

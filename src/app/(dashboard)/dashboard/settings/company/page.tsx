@@ -176,9 +176,9 @@ export default function CompanyProfilePage() {
       companyName: "Thorbis Field Services",
       legalName: "Thorbis Field Services LLC",
       industry: "Field Service Management",
-      email: "contact@stratos.com",
+      email: "contact@thorbis.com",
       phone: "+1 (555) 123-4567",
-      website: "https://stratos.com",
+      website: "https://thorbis.com",
       taxId: "12-3456789",
       description:
         "Leading provider of field service management solutions for HVAC, plumbing, and electrical contractors.",

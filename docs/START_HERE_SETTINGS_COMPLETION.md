@@ -167,7 +167,7 @@ Your platform can go live with these fully functional features:
 
 ```bash
 # Navigate to project
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 
 # Review the migrations
 cat supabase/migrations/20251102120000_add_finance_settings.sql
@@ -505,7 +505,7 @@ Focus on critical flows:
 
 ### Start Testing
 ```bash
-cd /Users/byronwade/Stratos
+cd /Users/byronwade/Thorbis
 npx supabase db push  # Apply new migrations
 pnpm dev              # Start development server
 ```

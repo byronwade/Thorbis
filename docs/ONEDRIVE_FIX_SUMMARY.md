@@ -8,7 +8,7 @@
 The Next.js dev server was experiencing persistent EPERM (operation not permitted) errors when running in a folder synced by OneDrive:
 
 ```
-Error: EPERM: operation not permitted, rename 'C:\Users\bcw19\OneDrive\Desktop\Stratos\.next\dev\server\server-reference-manifest.js.tmp.xxx' -> '...\server-reference-manifest.js'
+Error: EPERM: operation not permitted, rename 'C:\Users\bcw19\OneDrive\Desktop\Thorbis\.next\dev\server\server-reference-manifest.js.tmp.xxx' -> '...\server-reference-manifest.js'
 ```
 
 These errors occurred because:
@@ -64,8 +64,8 @@ Move your project to a non-synced location:
 
 ```powershell
 # Example: Move to C:\dev\
-xcopy "C:\Users\bcw19\OneDrive\Desktop\Stratos" "C:\dev\Stratos" /E /I /H
-cd C:\dev\Stratos
+xcopy "C:\Users\bcw19\OneDrive\Desktop\Thorbis" "C:\dev\Thorbis" /E /I /H
+cd C:\dev\Thorbis
 pnpm install
 pnpm run dev
 ```
@@ -77,9 +77,9 @@ pnpm run dev
 - No need to re-run fix scripts
 
 **Recommended paths**:
-- `C:\dev\Stratos`
-- `C:\projects\Stratos`
-- `D:\development\Stratos` (if you have a second drive)
+- `C:\dev\Thorbis`
+- `C:\projects\Thorbis`
+- `D:\development\Thorbis` (if you have a second drive)
 
 ## Additional Notes
 

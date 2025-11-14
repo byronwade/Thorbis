@@ -10,7 +10,7 @@ All code has been implemented and integrated into your job and customer detail p
 
 ### Step 1: Add Essential API Keys (FREE)
 
-Create or update `/Users/byronwade/Stratos/.env.local`:
+Create or update `/Users/byronwade/Thorbis/.env.local`:
 
 ```bash
 # Essential APIs (100% FREE - Get these first!)

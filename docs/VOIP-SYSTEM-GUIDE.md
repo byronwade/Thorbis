@@ -1,4 +1,4 @@
-# 📞 Stratos VoIP System - Complete Guide
+# 📞 Thorbis VoIP System - Complete Guide
 
 **Version:** 1.0
 **Last Updated:** 2025-11-11
@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-The Stratos VoIP system is an enterprise-grade phone management platform powered by Telnyx, featuring:
+The Thorbis VoIP system is an enterprise-grade phone management platform powered by Telnyx, featuring:
 
 - ✅ Team member extensions with direct dial
 - ✅ Advanced call routing with 6 strategies
@@ -561,4 +561,4 @@ You now have a **world-class VoIP system** powering your business communications
 
 ---
 
-**Built with ❤️ for Stratos by the Engineering Team**
+**Built with ❤️ for Thorbis by the Engineering Team**
