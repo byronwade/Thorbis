@@ -282,9 +282,26 @@ export function isWebhookTimestampValid(
   maxAgeSeconds = 300
 ): boolean {
   try {
-    const webhookTime = new Date(timestamp).getTime();
+    let webhookTimeMs: number;
+
+    if (!timestamp) {
+      return false;
+    }
+
+    const numericTimestamp = Number(timestamp);
+    if (Number.isFinite(numericTimestamp)) {
+      // Telnyx sends UNIX seconds as the timestamp header
+      webhookTimeMs = numericTimestamp * 1000;
+    } else {
+      const parsed = new Date(timestamp).getTime();
+      if (Number.isNaN(parsed)) {
+        return false;
+      }
+      webhookTimeMs = parsed;
+    }
+
     const now = Date.now();
-    const age = (now - webhookTime) / 1000; // Age in seconds
+    const age = (now - webhookTimeMs) / 1000; // Age in seconds
 
     return age <= maxAgeSeconds;
   } catch (error) {
