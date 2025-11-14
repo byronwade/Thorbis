@@ -109,7 +109,7 @@ const PAYMENT_OPTIONS = [
 
 export function InvoiceOptionsSidebar() {
   const pathname = usePathname();
-  const invoiceId = pathname.split("/").pop() || "";
+  const invoiceId = pathname?.split("/").pop() || "";
 
   // Design settings state
   const [selectedLayout, setSelectedLayout] = useState("modern");

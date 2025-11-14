@@ -19,10 +19,10 @@ import { Input } from "@/components/ui/input";
 export function SettingsSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentSearch = searchParams.get("q") || "";
+  const currentSearch = searchParams?.get("q") || "";
 
   const handleSearchChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     if (value) {
       params.set("q", value);
     } else {

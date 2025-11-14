@@ -26,6 +26,7 @@ const IncomingCallNotification = dynamic(
     ),
   {
     loading: () => null, // No loading UI needed, it's invisible until there's a call
+    ssr: false, // Prevent server rendering to avoid hydration mismatches
   }
 );
 

@@ -6,8 +6,14 @@ import { createClient } from "@/lib/supabase/server";
  *
  * This route is called by Supabase after:
  * - OAuth provider authentication (Google, Facebook, etc.)
+ *   - Handles both NEW signups and EXISTING user logins
+ *   - Supabase automatically determines if user exists
  * - Email verification link clicks
  * - Password reset link clicks
+ *
+ * After successful authentication, checks if user profile is complete:
+ * - If missing phone or name → Redirect to /complete-profile
+ * - If complete → Redirect to dashboard
  *
  * Next.js 16+ compliant with async request APIs
  */
@@ -37,7 +43,7 @@ export async function GET(request: Request) {
         );
       }
 
-      const { error: exchangeError } =
+      const { data, error: exchangeError } =
         await supabase.auth.exchangeCodeForSession(code);
 
       if (exchangeError) {
@@ -47,8 +53,51 @@ export async function GET(request: Request) {
         );
       }
 
-      // Successfully authenticated - redirect directly to dashboard
-      return NextResponse.redirect(`${requestUrl.origin}${next}`);
+      if (data.user) {
+        // Check if user profile is complete
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("phone, name")
+          .eq("id", data.user.id)
+          .single();
+
+        console.log("📋 OAuth Callback - Profile check:", {
+          userId: data.user.id,
+          email: data.user.email,
+          hasProfile: !!profile,
+          profileError: profileError?.message,
+          phone: profile?.phone || "MISSING",
+          name: profile?.name || "MISSING",
+          isComplete: !!(profile?.phone && profile?.name),
+        });
+
+        // If missing required fields, redirect to complete profile
+        if (!(profile?.phone && profile?.name)) {
+          console.log(
+            "⚠️ Profile incomplete - redirecting to /complete-profile"
+          );
+          return NextResponse.redirect(`${requestUrl.origin}/complete-profile`);
+        }
+
+        console.log("✅ Profile complete - redirecting to dashboard");
+      }
+
+      // Successfully authenticated with complete profile
+      // Check if user has an active company to determine redirect
+      const { data: hasCompany } = await supabase
+        .from("team_members")
+        .select("company_id")
+        .eq("user_id", data.user.id)
+        .eq("status", "active")
+        .limit(1)
+        .maybeSingle();
+
+      const redirectPath = hasCompany ? "/dashboard" : "/dashboard/welcome";
+      console.log(
+        `✅ Redirecting to ${redirectPath} (hasCompany: ${!!hasCompany})`
+      );
+
+      return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
     } catch (error) {
       console.error("Unexpected error in auth callback:", error);
       return NextResponse.redirect(

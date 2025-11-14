@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { togglePurchaseOrderSystem } from "@/actions/settings";
+import { trackCustomEvent } from "@/lib/analytics/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +32,9 @@ export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) 
       try {
         const result = await togglePurchaseOrderSystem(nextValue);
         setIsEnabled(result.enabled);
+        trackCustomEvent("settings.po_system_toggle", {
+          enabled: result.enabled,
+        });
         toast.success(
           result.enabled ? "Purchase orders enabled" : "Purchase orders disabled"
         );

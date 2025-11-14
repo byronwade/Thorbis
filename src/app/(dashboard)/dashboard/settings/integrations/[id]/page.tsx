@@ -64,7 +64,7 @@ const DISCONNECT_TIMEOUT_MS = 1500;
 export default function IntegrationSettingsPage() {
   const params = useParams();
   const router = useRouter();
-  const integrationId = params.id as string;
+  const integrationId = params?.id as string;
 
   const integration = integrations.find((i) => i.id === integrationId);
   const [isDisconnecting, setIsDisconnecting] = useState(false);

@@ -39,7 +39,7 @@ export function PurchaseOrderDetailToolbarActions() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const poId = pathname.split("/").pop();
+  const poId = pathname?.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 

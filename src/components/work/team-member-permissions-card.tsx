@@ -52,7 +52,7 @@ const AVAILABLE_ROLES = [
 export function TeamMemberPermissionsCard() {
   const params = useParams();
   const router = useRouter();
-  const memberId = params.id as string;
+  const memberId = params?.id as string;
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

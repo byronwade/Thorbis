@@ -50,6 +50,9 @@ type CustomerPortalSettingsRow = Tables["customer_portal_settings"]["Row"];
 type CustomerIntakeSettingsRow = Tables["customer_intake_settings"]["Row"];
 type CustomerLoyaltySettingsRow = Tables["customer_loyalty_settings"]["Row"];
 type ProfilesRow = Tables["profiles"]["Row"];
+type MessagingBrandRow = Tables["messaging_brands"]["Row"];
+type MessagingCampaignRow = Tables["messaging_campaigns"]["Row"];
+type WebhookRow = Tables["webhooks"]["Row"];
 
 export type SettingsMetricDatum = {
   key: string;
@@ -131,10 +134,15 @@ type RawSettingsData = {
   portalSettings: CustomerPortalSettingsRow | null;
   intakeSettings: CustomerIntakeSettingsRow | null;
   loyaltySettings: CustomerLoyaltySettingsRow | null;
+  messagingBrand: MessagingBrandRow | null;
+  messagingCampaign: MessagingCampaignRow | null;
   teamCounts: { active: number; pendingInvites: number };
   customRolesCount: number;
   apiKeysCount: number;
   phoneNumbersCount: number;
+  departmentsCount: number;
+  leadSourcesCount: number;
+  tagsCount: number;
   debitCardsCount: number;
   giftCardsActiveCount: number;
   virtualBucketsCount: number;
@@ -149,6 +157,11 @@ type RawSettingsData = {
   automationWeekCount: number;
   notificationsWeekCount: number;
   callLogsWeekCount: number;
+  portingPendingCount: number;
+  notificationQueuePendingCount: number;
+  notificationQueueFailedCount: number;
+  webhooksCount: number;
+  webhookFailuresWeekCount: number;
 };
 
 const DEFAULT_RAW_DATA: RawSettingsData = {
@@ -175,10 +188,15 @@ const DEFAULT_RAW_DATA: RawSettingsData = {
   portalSettings: null,
   intakeSettings: null,
   loyaltySettings: null,
+  messagingBrand: null,
+  messagingCampaign: null,
   teamCounts: { active: 0, pendingInvites: 0 },
   customRolesCount: 0,
   apiKeysCount: 0,
   phoneNumbersCount: 0,
+  departmentsCount: 0,
+  leadSourcesCount: 0,
+  tagsCount: 0,
   debitCardsCount: 0,
   giftCardsActiveCount: 0,
   virtualBucketsCount: 0,
@@ -193,6 +211,11 @@ const DEFAULT_RAW_DATA: RawSettingsData = {
   automationWeekCount: 0,
   notificationsWeekCount: 0,
   callLogsWeekCount: 0,
+  portingPendingCount: 0,
+  notificationQueuePendingCount: 0,
+  notificationQueueFailedCount: 0,
+  webhooksCount: 0,
+  webhookFailuresWeekCount: 0,
 };
 
 export const getSettingsOverviewData = cache(
@@ -222,28 +245,28 @@ async function fetchRawSettingsData(
     const sevenDaysAgoIso = sevenDaysAgo.toISOString();
 
     const [
-      company,
-      companySettings,
-      profile,
-      userPreferences,
-      userNotificationPreferences,
-      communicationEmailSettings,
-      communicationSmsSettings,
-      communicationPhoneSettings,
-      communicationNotificationSettings,
-      jobSettings,
-      scheduleAvailabilitySettings,
-      scheduleCalendarSettings,
-      accountingSettings,
-      bookkeepingSettings,
-      bankAccountsData,
-      virtualBucketSettings,
-      businessFinancingSettings,
-      consumerFinancingSettings,
-      giftCardSettings,
-      portalSettings,
-      intakeSettings,
-      loyaltySettings,
+      companyRes,
+      companySettingsRes,
+      profileRes,
+      userPreferencesRes,
+      userNotificationPreferencesRes,
+      communicationEmailSettingsRes,
+      communicationSmsSettingsRes,
+      communicationPhoneSettingsRes,
+      communicationNotificationSettingsRes,
+      jobSettingsRes,
+      scheduleAvailabilitySettingsRes,
+      scheduleCalendarSettingsRes,
+      accountingSettingsRes,
+      bookkeepingSettingsRes,
+      bankAccountsRes,
+      virtualBucketSettingsRes,
+      businessFinancingSettingsRes,
+      consumerFinancingSettingsRes,
+      giftCardSettingsRes,
+      portalSettingsRes,
+      intakeSettingsRes,
+      loyaltySettingsRes,
       teamActiveCount,
       teamInviteCount,
       customRolesCount,
@@ -252,6 +275,7 @@ async function fetchRawSettingsData(
       debitCardsCount,
       giftCardsActiveCount,
       virtualBucketsCount,
+      supplierIntegrationsCount,
       scheduleDispatchRulesCount,
       scheduleTeamRulesCount,
       jobsTotalCount,
@@ -262,6 +286,14 @@ async function fetchRawSettingsData(
       automationWeekCount,
       notificationsWeekCount,
       callLogsWeekCount,
+      messagingBrandRes,
+      webhooksRes,
+      portingPendingCount,
+      notificationQueuePendingCount,
+      notificationQueueFailedCount,
+      departmentsCount,
+      leadSourcesCount,
+      tagsCount,
     ] = await Promise.all([
       supabase
         .from("companies")
@@ -361,9 +393,7 @@ async function fetchRawSettingsData(
         .maybeSingle<FinanceBookkeepingSettingsRow>(),
       supabase
         .from("finance_bank_accounts")
-        .select(
-          "id,company_id,account_name,bank_name,account_type,current_balance,available_balance,auto_import_transactions,is_primary,is_active"
-        )
+        .select("*")
         .eq("company_id", companyId)
         .eq("is_active", true),
       supabase
@@ -468,7 +498,82 @@ async function fetchRawSettingsData(
       getExactCount(supabase, "call_logs", (query) =>
         query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso)
       ),
+      supabase
+        .from("messaging_brands")
+        .select(
+          "id,company_id,status,telnyx_brand_id,legal_name,vertical,created_at,updated_at"
+        )
+        .eq("company_id", companyId)
+        .maybeSingle<MessagingBrandRow>(),
+      supabase
+        .from("webhooks")
+        .select("id,active,created_at")
+        .eq("company_id", companyId),
+      getExactCount(supabase, "phone_porting_requests", (query) =>
+        query.eq("company_id", companyId).is("completed_at", null).is("cancelled_at", null)
+      ),
+      getExactCount(supabase, "notification_queue", (query) =>
+        query.eq("company_id", companyId).is("sent_at", null)
+      ),
+      getExactCount(supabase, "notification_queue", (query) =>
+        query.eq("company_id", companyId).eq("status", "failed")
+      ),
+      getExactCount(supabase, "departments", (query) => query.eq("company_id", companyId)),
+      getExactCount(supabase, "lead_sources", (query) => query.eq("company_id", companyId)),
+      getExactCount(supabase, "tags", (query) => query.eq("company_id", companyId)),
     ]);
+
+    const company = companyRes.data;
+    const companySettings = companySettingsRes.data;
+    const profile = profileRes.data;
+    const userPreferences = userPreferencesRes.data;
+    const userNotificationPreferences = userNotificationPreferencesRes.data;
+    const communicationEmailSettings = communicationEmailSettingsRes.data;
+    const communicationSmsSettings = communicationSmsSettingsRes.data;
+    const communicationPhoneSettings = communicationPhoneSettingsRes.data;
+    const communicationNotificationSettings = communicationNotificationSettingsRes.data;
+    const jobSettings = jobSettingsRes.data;
+    const scheduleAvailabilitySettings = scheduleAvailabilitySettingsRes.data;
+    const scheduleCalendarSettings = scheduleCalendarSettingsRes.data;
+    const accountingSettings = accountingSettingsRes.data;
+    const bookkeepingSettings = bookkeepingSettingsRes.data;
+    const bankAccountsData = bankAccountsRes.data ?? [];
+    const virtualBucketSettings = virtualBucketSettingsRes.data;
+    const businessFinancingSettings = businessFinancingSettingsRes.data;
+    const consumerFinancingSettings = consumerFinancingSettingsRes.data;
+    const giftCardSettings = giftCardSettingsRes.data;
+    const portalSettings = portalSettingsRes.data;
+    const intakeSettings = intakeSettingsRes.data;
+    const loyaltySettings = loyaltySettingsRes.data;
+    const messagingBrand = messagingBrandRes.data;
+
+    let messagingCampaign: MessagingCampaignRow | null = null;
+    if (messagingBrand?.id) {
+      const { data: latestCampaign } = await supabase
+        .from("messaging_campaigns")
+        .select(
+          "id,status,usecase,telnyx_campaign_id,messaging_brand_id,created_at,updated_at"
+        )
+        .eq("messaging_brand_id", messagingBrand.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle<MessagingCampaignRow>();
+      messagingCampaign = latestCampaign ?? null;
+    }
+
+    const webhooksData = webhooksRes.data ?? [];
+    const webhooksCount = webhooksData.filter((webhook) => webhook.active).length;
+    let webhookFailuresWeekCount = 0;
+    if (webhooksData.length > 0) {
+      const webhookIds = webhooksData.map((webhook) => webhook.id);
+      const { count: failureCount } = await supabase
+        .from("webhook_logs")
+        .select("id", { count: "exact", head: true })
+        .in("webhook_id", webhookIds)
+        .gte("created_at", sevenDaysAgoIso)
+        .or("response_status.gte.400,delivered_at.is.null");
+      webhookFailuresWeekCount = failureCount ?? 0;
+    }
 
     return {
       generatedAt: nowIso,
@@ -494,6 +599,8 @@ async function fetchRawSettingsData(
       portalSettings: portalSettings ?? null,
       intakeSettings: intakeSettings ?? null,
       loyaltySettings: loyaltySettings ?? null,
+      messagingBrand: messagingBrand ?? null,
+      messagingCampaign,
       teamCounts: {
         active: teamActiveCount ?? 0,
         pendingInvites: teamInviteCount ?? 0,
@@ -501,6 +608,9 @@ async function fetchRawSettingsData(
       customRolesCount: customRolesCount ?? 0,
       apiKeysCount: apiKeysCount ?? 0,
       phoneNumbersCount: phoneNumbersCount ?? 0,
+      departmentsCount: departmentsCount ?? 0,
+      leadSourcesCount: leadSourcesCount ?? 0,
+      tagsCount: tagsCount ?? 0,
       debitCardsCount: debitCardsCount ?? 0,
       giftCardsActiveCount: giftCardsActiveCount ?? 0,
       virtualBucketsCount: virtualBucketsCount ?? 0,
@@ -515,6 +625,11 @@ async function fetchRawSettingsData(
       automationWeekCount: automationWeekCount ?? 0,
       notificationsWeekCount: notificationsWeekCount ?? 0,
       callLogsWeekCount: callLogsWeekCount ?? 0,
+      portingPendingCount: portingPendingCount ?? 0,
+      notificationQueuePendingCount: notificationQueuePendingCount ?? 0,
+      notificationQueueFailedCount: notificationQueueFailedCount ?? 0,
+      webhooksCount,
+      webhookFailuresWeekCount,
     };
   } catch {
     return {
@@ -689,10 +804,24 @@ function buildWorkspaceSection(
   const billingReady =
     raw.company?.stripe_subscription_status === "active" ||
     raw.company?.stripe_subscription_status === "trialing";
-  const progress = Math.round((profileProgress * 0.6 + (billingReady ? 100 : 40) * 0.4));
+  const hasDepartments = raw.departmentsCount > 0;
+  const taxonomyConfigured = raw.tagsCount > 0 && raw.leadSourcesCount > 0;
+  const readinessSteps = [
+    profileProgress >= 85,
+    billingReady,
+    raw.teamCounts.active > 0,
+    hasDepartments,
+    taxonomyConfigured,
+  ];
+  const progress = progressFromSteps(
+    readinessSteps.filter(Boolean).length,
+    readinessSteps.length
+  );
   const status = deriveHealthStatus(progress);
   const summary = billingReady
-    ? "Workspace billing and profile are in good standing."
+    ? taxonomyConfigured
+      ? "Workspace billing, team, and taxonomy are in good standing."
+      : "Define tags and lead sources to improve attribution."
     : "Add a payment method to keep automations running.";
 
   const metrics: SettingsMetricDatum[] = [
@@ -717,6 +846,20 @@ function buildWorkspaceSection(
       helper: "Machine integrations",
       status: raw.apiKeysCount ? "ready" : "warning",
     },
+    {
+      key: "departments",
+      label: "Departments",
+      value: raw.departmentsCount.toString(),
+      helper: hasDepartments ? "Org chart structured" : "No departments",
+      status: hasDepartments ? "ready" : "warning",
+    },
+    {
+      key: "taxonomy",
+      label: "Tags / lead sources",
+      value: `${raw.tagsCount}/${raw.leadSourcesCount}`,
+      helper: "Tags / sources",
+      status: taxonomyConfigured ? "ready" : "warning",
+    },
   ];
 
   const checklist: SettingsChecklistItem[] = [
@@ -735,6 +878,22 @@ function buildWorkspaceSection(
       completed: billingReady,
       helper: raw.company?.stripe_subscription_status ?? "unknown",
       supabaseSources: ["companies", "invoices"],
+    },
+    {
+      key: "departments",
+      label: "Map departments",
+      href: "/dashboard/settings/team/departments",
+      completed: hasDepartments,
+      helper: hasDepartments ? "Org chart defined" : "No departments yet",
+      supabaseSources: ["departments"],
+    },
+    {
+      key: "taxonomy",
+      label: "Define tags & lead sources",
+      href: "/dashboard/settings/tags",
+      completed: taxonomyConfigured,
+      helper: `${raw.tagsCount} tags / ${raw.leadSourcesCount} sources`,
+      supabaseSources: ["tags", "lead_sources"],
     },
   ];
 
@@ -784,17 +943,61 @@ function buildCommunicationsSection(
   const phoneConfigured = Boolean(
     raw.communicationPhoneSettings?.routing_strategy && raw.phoneNumbersCount > 0
   );
+  const readyStatuses = ["approved", "active", "verified", "running"];
+  const normalizeStatusLabel = (value?: string | null, fallback = "Not configured") =>
+    value ? value.replace(/_/g, " ") : fallback;
+  const brandStatus = raw.messagingBrand?.status ?? "";
+  const campaignStatus = raw.messagingCampaign?.status ?? "";
+  const brandHealth = readyStatuses.includes(brandStatus.toLowerCase())
+    ? "ready"
+    : raw.messagingBrand
+    ? "warning"
+    : "danger";
+  const campaignHealth = readyStatuses.includes(campaignStatus.toLowerCase())
+    ? "ready"
+    : raw.messagingCampaign
+    ? "warning"
+    : "danger";
+  const readinessSteps = [
+    emailConfigured,
+    smsConfigured,
+    phoneConfigured,
+    brandHealth === "ready",
+    campaignHealth === "ready",
+  ];
   const progress = progressFromSteps(
-    [emailConfigured, smsConfigured, phoneConfigured].filter(Boolean).length,
-    3
+    readinessSteps.filter(Boolean).length,
+    readinessSteps.length
   );
   const status = deriveHealthStatus(progress);
   const summary =
-    progress >= 85
-      ? "Every channel is configured and redundant."
-      : "Configure all channels to maximize deliverability.";
+    brandHealth === "ready" && campaignHealth === "ready" && progress >= 85
+      ? "Messaging compliance and channels are fully configured."
+      : "Finish 10DLC registration and clear communication backlogs.";
+  const notificationBacklogStatus =
+    raw.notificationQueueFailedCount > 0
+      ? "warning"
+      : raw.notificationQueuePendingCount > 10
+        ? "warning"
+        : "ready";
 
   const metrics: SettingsMetricDatum[] = [
+    {
+      key: "brand-status",
+      label: "Messaging brand",
+      value: normalizeStatusLabel(raw.messagingBrand?.status, "Not registered"),
+      helper: raw.messagingBrand?.telnyx_brand_id
+        ? `Telnyx ${raw.messagingBrand.telnyx_brand_id}`
+        : "10DLC verification required",
+      status: brandHealth,
+    },
+    {
+      key: "campaign-status",
+      label: "Campaign status",
+      value: normalizeStatusLabel(raw.messagingCampaign?.status, "No campaign"),
+      helper: raw.messagingCampaign?.usecase ?? "No use case assigned",
+      status: campaignHealth,
+    },
     {
       key: "phone-numbers",
       label: "Active numbers",
@@ -803,23 +1006,29 @@ function buildCommunicationsSection(
       status: raw.phoneNumbersCount ? "ready" : "warning",
     },
     {
-      key: "notifications-sent",
-      label: "Notifications sent",
-      value: raw.notificationsWeekCount.toString(),
-      helper: "Last 7 days",
+      key: "notification-backlog",
+      label: "Notification queue",
+      value: raw.notificationQueuePendingCount.toString(),
+      helper: `${raw.notificationQueueFailedCount} failed`,
+      status: notificationBacklogStatus,
     },
     {
-      key: "tracking",
-      label: "Email tracking",
-      value: raw.communicationEmailSettings?.track_opens ? "Enabled" : "Disabled",
-      helper: raw.communicationEmailSettings?.track_clicks
-        ? "Click tracking on"
-        : "Click tracking off",
-      status: raw.communicationEmailSettings?.track_opens ? "ready" : "warning",
+      key: "porting-backlog",
+      label: "Porting backlog",
+      value: raw.portingPendingCount.toString(),
+      helper: "Open requests",
+      status: raw.portingPendingCount ? "warning" : "ready",
     },
   ];
 
   const checklist: SettingsChecklistItem[] = [
+    {
+      key: "a2p-registration",
+      label: "Complete 10DLC brand + campaign",
+      href: "/dashboard/settings/communications/phone-numbers",
+      completed: brandHealth === "ready" && campaignHealth === "ready",
+      supabaseSources: ["messaging_brands", "messaging_campaigns"],
+    },
     {
       key: "smtp",
       label: "Connect SMTP or branded email",
@@ -835,20 +1044,33 @@ function buildCommunicationsSection(
       supabaseSources: ["communication_sms_settings"],
     },
     {
-      key: "phone",
-      label: "Define routing + voicemail",
-      href: "/dashboard/settings/communications/phone",
-      completed: phoneConfigured,
-      supabaseSources: ["communication_phone_settings", "phone_numbers"],
+      key: "notification-queue",
+      label: "Resolve notification failures",
+      href: "/dashboard/settings/communications/notifications",
+      completed: raw.notificationQueueFailedCount === 0,
+      supabaseSources: ["notification_queue"],
+    },
+    {
+      key: "porting",
+      label: "Clear porting backlog",
+      href: "/dashboard/settings/communications/porting-status",
+      completed: raw.portingPendingCount === 0,
+      supabaseSources: ["phone_porting_requests"],
     },
   ];
 
   const quickActions: SettingsQuickAction[] = [
     {
-      key: "buy-number",
-      label: "Buy phone number",
-      href: "/dashboard/settings/communications/phone-numbers",
-      analyticsEvent: "settings.quick_action.buy_number",
+      key: "review-10dlc",
+      label: "Review 10DLC status",
+      href: "/dashboard/settings/communications/usage",
+      analyticsEvent: "settings.quick_action.review_10dlc",
+    },
+    {
+      key: "porting",
+      label: "Open porting queue",
+      href: "/dashboard/settings/communications/porting-status",
+      analyticsEvent: "settings.quick_action.porting_queue",
     },
     {
       key: "email-template",
@@ -882,9 +1104,17 @@ function buildOperationsSection(
   const bookingConfigured = Boolean(raw.scheduleAvailabilitySettings);
   const dispatchConfigured = raw.scheduleDispatchRulesCount > 0;
   const portalConfigured = Boolean(raw.portalSettings?.portal_enabled);
+  const intakeConfigured = Boolean(raw.intakeSettings);
+  const loyaltyEnabled = Boolean(raw.loyaltySettings?.loyalty_enabled);
+  const readinessSteps = [
+    bookingConfigured,
+    dispatchConfigured,
+    portalConfigured,
+    intakeConfigured,
+  ];
   const progress = progressFromSteps(
-    [bookingConfigured, dispatchConfigured, portalConfigured].filter(Boolean).length,
-    3
+    readinessSteps.filter(Boolean).length,
+    readinessSteps.length
   );
   const status = deriveHealthStatus(progress);
   const summary =
@@ -915,6 +1145,20 @@ function buildOperationsSection(
       helper: raw.portalSettings?.welcome_message ? "Custom welcome" : "Default copy",
       status: raw.portalSettings?.portal_enabled ? "ready" : "warning",
     },
+    {
+      key: "intake",
+      label: "Intake form",
+      value: intakeConfigured ? "Customized" : "Defaults",
+      helper: raw.intakeSettings?.auto_assign_technician ? "Auto-assign on" : "Manual triage",
+      status: intakeConfigured ? "ready" : "warning",
+    },
+    {
+      key: "loyalty",
+      label: "Loyalty program",
+      value: loyaltyEnabled ? "Enabled" : "Disabled",
+      helper: raw.loyaltySettings?.program_name ?? "No program",
+      status: loyaltyEnabled ? "ready" : "warning",
+    },
   ];
 
   const checklist: SettingsChecklistItem[] = [
@@ -938,6 +1182,20 @@ function buildOperationsSection(
       href: "/dashboard/settings/customer-portal",
       completed: portalConfigured,
       supabaseSources: ["customer_portal_settings"],
+    },
+    {
+      key: "intake",
+      label: "Customize intake form",
+      href: "/dashboard/settings/customer-intake",
+      completed: intakeConfigured,
+      supabaseSources: ["customer_intake_settings"],
+    },
+    {
+      key: "loyalty",
+      label: "Enable loyalty program",
+      href: "/dashboard/settings/customers/loyalty",
+      completed: loyaltyEnabled,
+      supabaseSources: ["customer_loyalty_settings"],
     },
   ];
 
@@ -1016,6 +1274,20 @@ function buildFinanceSection(
         : "Automation off",
       status: raw.virtualBucketSettings?.virtual_buckets_enabled ? "ready" : "warning",
     },
+    {
+      key: "debit-cards",
+      label: "Debit cards",
+      value: raw.debitCardsCount.toString(),
+      helper: raw.debitCardsCount ? "Spend controls enabled" : "No cards issued",
+      status: raw.debitCardsCount ? "ready" : "warning",
+    },
+    {
+      key: "gift-cards",
+      label: "Gift cards",
+      value: raw.giftCardsActiveCount.toString(),
+      helper: raw.giftCardSettings?.gift_cards_enabled ? "Program live" : "Program disabled",
+      status: raw.giftCardSettings?.gift_cards_enabled ? "ready" : "warning",
+    },
   ];
 
   const checklist: SettingsChecklistItem[] = [
@@ -1087,11 +1359,14 @@ function buildIntegrationsSection(
     raw.supplierIntegrationsCount > 0 ||
     raw.apiKeysCount > 0 ||
     Boolean(raw.accountingSettings?.provider_enabled) ||
-    raw.phoneNumbersCount > 0;
+    raw.phoneNumbersCount > 0 ||
+    raw.webhooksCount > 0;
   const progress = hasIntegrations ? 90 : 45;
   const status = deriveHealthStatus(progress);
   const summary = hasIntegrations
-    ? "Key integrations are active."
+    ? raw.webhookFailuresWeekCount > 0
+      ? "Investigate webhook failures to keep automations reliable."
+      : "Key integrations are active."
     : "Connect at least one system to unlock automation.";
 
   const metrics: SettingsMetricDatum[] = [
@@ -1127,6 +1402,18 @@ function buildIntegrationsSection(
       helper: `${raw.callLogsWeekCount} calls last 7d`,
       status: raw.phoneNumbersCount ? "ready" : "warning",
     },
+    {
+      key: "webhooks",
+      label: "Active webhooks",
+      value: raw.webhooksCount.toString(),
+      helper: `${raw.webhookFailuresWeekCount} failures last 7d`,
+      status:
+        raw.webhooksCount === 0
+          ? "warning"
+          : raw.webhookFailuresWeekCount > 0
+            ? "warning"
+            : "ready",
+    },
   ];
 
   const checklist: SettingsChecklistItem[] = [
@@ -1143,6 +1430,13 @@ function buildIntegrationsSection(
       href: "/dashboard/settings/integrations",
       completed: raw.apiKeysCount > 0,
       supabaseSources: ["api_keys"],
+    },
+    {
+      key: "webhook-monitoring",
+      label: "Monitor webhook failures",
+      href: "/dashboard/settings/development",
+      completed: raw.webhookFailuresWeekCount === 0,
+      supabaseSources: ["webhooks", "webhook_logs"],
     },
   ];
 
@@ -1273,7 +1567,7 @@ async function getExactCount(
   table: keyof Tables,
   build?: (query: any) => any
 ): Promise<number> {
-  let query = supabase.from(table as string).select("id", { count: "exact", head: true });
+  let query = supabase.from(table).select("id", { count: "exact", head: true });
 
   if (build) {
     query = build(query);

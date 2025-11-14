@@ -39,7 +39,7 @@ export function ContractDetailToolbarActions() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const contractId = pathname.split("/").pop();
+  const contractId = pathname?.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 

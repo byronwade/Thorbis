@@ -285,7 +285,7 @@ export function AppHeaderClient({
             const isActive =
               item.href === "/dashboard"
                 ? pathname === "/dashboard"
-                : pathname.startsWith(item.href);
+                : pathname?.startsWith(item.href);
 
             if (item.isSpecial) {
               return (
@@ -373,7 +373,7 @@ export function AppHeaderClient({
                         const isActive =
                           item.href === "/dashboard"
                             ? pathname === "/dashboard"
-                            : pathname.startsWith(item.href);
+                            : pathname?.startsWith(item.href);
                         return (
                           <Link
                             className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 ${
@@ -414,7 +414,7 @@ export function AppHeaderClient({
                         const isActive =
                           item.href === "/dashboard"
                             ? pathname === "/dashboard"
-                            : pathname.startsWith(item.href);
+                            : pathname?.startsWith(item.href);
                         return (
                           <Link
                             className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 ${

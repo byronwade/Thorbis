@@ -11,7 +11,6 @@
 
 import {
   AlertCircle,
-  ArrowLeft,
   CheckCircle,
   Copy,
   Download,
@@ -21,8 +20,8 @@ import {
   Shield,
   Smartphone,
 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +38,30 @@ export default function TwoFactorAuthPage() {
     "setup"
   );
   const [verificationCode, setVerificationCode] = useState("");
+  const [isPending, setIsPending] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const canFinalize = setupStep === "verify" && verificationCode.length === 6;
+
+  const handleCancel = () => {
+    setSetupStep("setup");
+    setVerificationCode("");
+    setHasChanges(false);
+    setIsPending(false);
+  };
+
+  const handleSave = () => {
+    if (!canFinalize) {
+      return;
+    }
+    setIsPending(true);
+    setTimeout(() => {
+      setSetupStep("complete");
+      setVerificationCode("");
+      setHasChanges(false);
+      setIsPending(false);
+    }, 600);
+  };
 
   const backupCodes = [
     "A1B2C3D4",
@@ -52,25 +75,16 @@ export default function TwoFactorAuthPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button asChild size="icon" variant="outline">
-          <Link href="/dashboard/settings/profile/security">
-            <ArrowLeft className="size-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="font-bold text-4xl tracking-tight">
-            Two-Factor Authentication
-          </h1>
-          <p className="text-muted-foreground">
-            Add an extra layer of security to your account
-          </p>
-        </div>
-      </div>
-
-      {/* Setup Progress */}
+    <SettingsPageLayout
+      description="Add an extra layer of security to your account."
+      hasChanges={hasChanges}
+      helpText="Scan the QR code with an authenticator app, enter the 6-digit code, and store backup codes safely."
+      isPending={isPending}
+      onCancel={handleCancel}
+      onSave={handleSave}
+      saveButtonText="Enable 2FA"
+      title="Two-Factor Authentication"
+    >
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -272,7 +286,12 @@ export default function TwoFactorAuthPage() {
                 </Button>
               </div>
 
-              <Button onClick={() => setSetupStep("verify")}>
+              <Button
+                onClick={() => {
+                  setSetupStep("verify");
+                  setHasChanges(true);
+                }}
+              >
                 I've Scanned the Code
               </Button>
             </CardContent>
@@ -312,9 +331,10 @@ export default function TwoFactorAuthPage() {
               </p>
               <Button
                 className="w-full"
-                onClick={() => setSetupStep("complete")}
+                disabled={!canFinalize || isPending}
+                onClick={handleSave}
               >
-                Verify Code
+                {isPending ? "Verifying..." : "Verify Code"}
               </Button>
             </div>
           </CardContent>
@@ -437,6 +457,6 @@ export default function TwoFactorAuthPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </SettingsPageLayout>
   );
 }

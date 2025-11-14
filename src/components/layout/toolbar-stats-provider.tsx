@@ -22,6 +22,7 @@ export function ToolbarStatsProvider({
   children,
 }: ToolbarStatsProviderProps) {
   const pathname = usePathname();
+  const safePathname = pathname || "/dashboard";
   const setStats = useToolbarStatsStore((state) => state.setStats);
   const clearStats = useToolbarStatsStore((state) => state.clearStats);
 
@@ -29,16 +30,16 @@ export function ToolbarStatsProvider({
   // This ensures stats are available when LayoutWrapper reads them
   useLayoutEffect(() => {
     if (stats) {
-      setStats(pathname, stats);
+      setStats(safePathname, stats);
     } else {
-      clearStats(pathname);
+      clearStats(safePathname);
     }
 
     // Cleanup: clear stats when component unmounts or pathname changes
     return () => {
-      clearStats(pathname);
+      clearStats(safePathname);
     };
-  }, [pathname, stats, setStats, clearStats]);
+  }, [safePathname, stats, setStats, clearStats]);
 
   return <>{children}</>;
 }

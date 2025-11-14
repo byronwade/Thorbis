@@ -36,7 +36,7 @@ import {
 export function TeamMemberDetailToolbar() {
   const params = useParams();
   const router = useRouter();
-  const memberId = params.id as string;
+  const memberId = params?.id as string;
   const [isLoading, setIsLoading] = useState(false);
   const [canManage, setCanManage] = useState(false);
 

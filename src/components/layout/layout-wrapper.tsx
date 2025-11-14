@@ -49,16 +49,17 @@ const RIGHT_SIDEBAR_COMPONENTS = {
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const pathname = usePathname();
+  const safePathname = pathname || "/dashboard";
 
   // Get unified configuration for this route
-  const config = getUnifiedLayoutConfig(pathname);
+  const config = getUnifiedLayoutConfig(safePathname);
 
   // Get dynamic stats from store - subscribe to changes by accessing the pathname key directly
-  const dynamicStats = useToolbarStatsStore((state) => state.stats[pathname]);
+  const dynamicStats = useToolbarStatsStore((state) => state.stats[safePathname]);
 
   // Get dynamic actions from store
   const dynamicActions = useToolbarActionsStore(
-    (state) => state.actions[pathname]
+    (state) => state.actions[safePathname]
   );
 
   // Extract configuration sections and merge dynamic stats and actions
@@ -84,7 +85,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
 
   // Left sidebar state (per-route)
   const sidebarOpen = useSidebarStateStore((state) =>
-    state.getSidebarState(pathname)
+    state.getSidebarState(safePathname)
   );
   const setSidebarOpen = useSidebarStateStore((state) => state.setSidebarState);
 
@@ -133,7 +134,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
 
   // Right sidebar rendering - calculate from subscribed state
   const isRightSidebarOpen = rightSidebar?.show
-    ? (rightSidebarStates[pathname] ?? rightSidebar.defaultOpen ?? true)
+    ? (rightSidebarStates[safePathname] ?? rightSidebar.defaultOpen ?? true)
     : false;
 
   const renderRightSidebar = () => {
@@ -157,7 +158,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     return (
       <SidebarProvider
         className="!w-auto flex-shrink-0"
-        onOpenChange={(open) => setRightSidebarState(pathname, open)}
+        onOpenChange={(open) => setRightSidebarState(safePathname, open)}
         open={isRightSidebarOpen}
       >
         <SidebarComponent />
@@ -169,7 +170,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     <>
       {/* Main Layout Container */}
       <SidebarProvider
-        onOpenChange={(open) => setSidebarOpen(pathname, open)}
+        onOpenChange={(open) => setSidebarOpen(safePathname, open)}
         open={sidebarOpen}
         style={
           sidebar.customConfig?.width
@@ -199,7 +200,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
                 isRightSidebarOpen={isRightSidebarOpen}
                 onToggleRightSidebar={
                   rightSidebar?.show
-                    ? () => toggleRightSidebarState(pathname)
+                    ? () => toggleRightSidebarState(safePathname)
                     : undefined
                 }
                 showLeftSidebar={sidebar.show}

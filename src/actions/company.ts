@@ -6,6 +6,7 @@
 
 "use server";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
@@ -24,21 +25,165 @@ import {
   getOrCreateStripeCustomer,
 } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  DEFAULT_HOURS,
+  DAYS_OF_WEEK,
+  convertHoursToSettings,
+  normalizeHoursFromSettings,
+  type HoursOfOperation,
+} from "@/lib/company/hours";
+import type { Database } from "@/types/supabase";
+
+type TypedSupabaseClient = SupabaseClient<Database>;
 
 // Schema for company information
+const hoursEntrySchema = z.object({
+  enabled: z.boolean(),
+  openTime: z.string(),
+  closeTime: z.string(),
+});
+
+const hoursOfOperationSchema = z.object(
+  DAYS_OF_WEEK.reduce(
+    (acc, day) => ({
+      ...acc,
+      [day]: hoursEntrySchema,
+    }),
+    {} as Record<(typeof DAYS_OF_WEEK)[number], typeof hoursEntrySchema>
+  )
+);
+
 const companyInfoSchema = z.object({
   name: z.string().min(1, "Company name is required"),
   legalName: z.string().optional(),
+  industry: z.string().min(1, "Industry is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
   website: z.string().url("Invalid URL").optional().or(z.literal("")),
   address: z.string().min(1, "Address is required"),
+  address2: z.string().optional(),
   city: z.string().min(1, "City is required"),
   state: z.string().min(2, "State is required"),
   zipCode: z.string().min(5, "ZIP code is required"),
+  country: z.string().min(1, "Country is required"),
   taxId: z.string().optional(),
   licenseNumber: z.string().optional(),
+  serviceAreaType: z.enum(["radius", "locations"]),
+  serviceRadius: z.number().min(1).max(500),
+  serviceAreas: z.array(z.string()),
+  hoursOfOperation: hoursOfOperationSchema,
+  description: z.string().max(1000).optional(),
 });
+
+const cloneDefaultHours = (): HoursOfOperation =>
+  DAYS_OF_WEEK.reduce(
+    (acc, day) => ({
+      ...acc,
+      [day]: { ...DEFAULT_HOURS[day] },
+    }),
+    {} as HoursOfOperation
+  );
+
+const parseServiceAreas = (value: FormDataEntryValue | null): string[] => {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.filter(
+      (entry): entry is string => typeof entry === "string" && entry.trim().length > 0
+    );
+  } catch {
+    return [];
+  }
+};
+
+const parseHoursPayload = (
+  value: FormDataEntryValue | null
+): HoursOfOperation => {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return cloneDefaultHours();
+  }
+
+  try {
+    const parsed = JSON.parse(value) as Partial<HoursOfOperation>;
+    return DAYS_OF_WEEK.reduce(
+      (acc, day) => ({
+        ...acc,
+        [day]: {
+          enabled: Boolean(parsed?.[day]?.enabled),
+          openTime:
+            typeof parsed?.[day]?.openTime === "string"
+              ? parsed[day]!.openTime
+              : DEFAULT_HOURS[day].openTime,
+          closeTime:
+            typeof parsed?.[day]?.closeTime === "string"
+              ? parsed[day]!.closeTime
+              : DEFAULT_HOURS[day].closeTime,
+        },
+      }),
+      {} as HoursOfOperation
+    );
+  } catch {
+    return cloneDefaultHours();
+  }
+};
+
+async function getActiveTeamMember(
+  supabase: TypedSupabaseClient,
+  userId: string
+): Promise<Database["public"]["Tables"]["team_members"]["Row"]> {
+  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+  const preferredCompanyId = await getActiveCompanyId();
+
+  if (preferredCompanyId) {
+    const { data: membership } = await supabase
+      .from("team_members")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("company_id", preferredCompanyId)
+      .maybeSingle();
+
+    if (membership?.company_id) {
+      return membership;
+    }
+  }
+
+  const { data: fallbackMembership } = await supabase
+    .from("team_members")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (fallbackMembership?.company_id) {
+    return fallbackMembership;
+  }
+
+  const { data: anyStatusMembership } = await supabase
+    .from("team_members")
+    .select("*")
+    .eq("user_id", userId)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (anyStatusMembership?.company_id) {
+    return anyStatusMembership;
+  }
+
+  throw new ActionError(
+    "You must be part of a company",
+    ERROR_CODES.AUTH_FORBIDDEN,
+    403
+  );
+}
 
 // Schema for billing information
 const billingInfoSchema = z.object({
@@ -90,15 +235,21 @@ export async function getCompanyInfo(): Promise<ActionResult<any>> {
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .single();
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const activeCompanyId =
+      (await getActiveCompanyId()) ??
+      (
+        await supabase
+          .from("team_members")
+          .select("company_id")
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .order("updated_at", { ascending: false })
+          .limit(1)
+      ).data?.[0]?.company_id ??
+      null;
 
-    if (!teamMember?.company_id) {
+    if (!activeCompanyId) {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
@@ -109,8 +260,10 @@ export async function getCompanyInfo(): Promise<ActionResult<any>> {
     // Fetch company data
     const { data: company, error: companyError } = await supabase
       .from("companies")
-      .select("*")
-      .eq("id", teamMember.company_id)
+      .select(
+        "id,name,legal_name,email,phone,website,website_url,tax_id,license_number,industry"
+      )
+      .eq("id", activeCompanyId)
       .single();
 
     if (companyError) {
@@ -123,33 +276,47 @@ export async function getCompanyInfo(): Promise<ActionResult<any>> {
     // Fetch company settings
     const { data: settings } = await supabase
       .from("company_settings")
-      .select("*")
-      .eq("company_id", teamMember.company_id)
+      .select(
+        "address,address2,city,state,zip_code,country,service_area_type,service_radius,service_areas,hours_of_operation,portal_settings"
+      )
+      .eq("company_id", activeCompanyId)
       .single();
+
+    const hoursOfOperation = normalizeHoursFromSettings(
+      (settings?.hours_of_operation as Record<string, { open?: string | null; close?: string | null }>) ??
+        null
+    );
+    const portalSettings = settings?.portal_settings as
+      | Record<string, unknown>
+      | undefined;
 
     // Return combined data
     return {
       id: company.id,
-      name: company.name,
-      slug: company.slug,
-      logo: company.logo,
-      // From company_settings table
-      address: settings?.address || "",
-      city: settings?.city || "",
-      state: settings?.state || "",
-      zipCode: settings?.zip_code || "",
-      hoursOfOperation: settings?.hours_of_operation || null,
-      serviceAreaType: settings?.service_area_type || "locations",
-      serviceRadius: settings?.service_radius || 25,
-      serviceAreas: settings?.service_areas || [],
-      // Note: These fields don't exist in schema yet
-      // Will return empty strings until schema is updated
-      legalName: "",
-      email: "",
-      phone: "",
-      website: "",
-      taxId: "",
-      licenseNumber: "",
+      name: company.name ?? "",
+      legalName: company.legal_name ?? "",
+      email: company.email ?? "",
+      phone: company.phone ?? "",
+      website: company.website ?? company.website_url ?? "",
+      taxId: company.tax_id ?? "",
+      licenseNumber: company.license_number ?? "",
+      industry: company.industry ?? "",
+      description:
+        (portalSettings?.profile_description as string | undefined) ?? "",
+      address: settings?.address ?? "",
+      address2: settings?.address2 ?? "",
+      city: settings?.city ?? "",
+      state: settings?.state ?? "",
+      zipCode: settings?.zip_code ?? "",
+      country: settings?.country ?? "",
+      hoursOfOperation,
+      serviceAreaType: settings?.service_area_type ?? "locations",
+      serviceRadius: settings?.service_radius ?? 25,
+      serviceAreas: Array.isArray(settings?.service_areas)
+        ? (settings?.service_areas as unknown[]).filter(
+            (entry): entry is string => typeof entry === "string"
+          )
+        : [],
     };
   });
 }
@@ -196,18 +363,31 @@ export async function updateCompanyInfo(
       );
     }
 
+    const serviceAreas = parseServiceAreas(formData.get("serviceAreas"));
+    const hoursOfOperation = parseHoursPayload(
+      formData.get("hoursOfOperation")
+    );
+
     const data = companyInfoSchema.parse({
       name: formData.get("name"),
       legalName: formData.get("legalName") || undefined,
+      industry: formData.get("industry"),
       email: formData.get("email"),
       phone: formData.get("phone"),
       website: formData.get("website") || undefined,
       address: formData.get("address"),
+      address2: formData.get("address2") || undefined,
       city: formData.get("city"),
       state: formData.get("state"),
       zipCode: formData.get("zipCode"),
+      country: formData.get("country"),
       taxId: formData.get("taxId") || undefined,
       licenseNumber: formData.get("licenseNumber") || undefined,
+      serviceAreaType: formData.get("serviceAreaType"),
+      serviceRadius: Number(formData.get("serviceRadius")),
+      serviceAreas,
+      hoursOfOperation,
+      description: formData.get("description") || "",
     });
 
     // Update companies table (only name is available in current schema)
@@ -215,13 +395,14 @@ export async function updateCompanyInfo(
       .from("companies")
       .update({
         name: data.name,
-        // TODO: Add these fields to companies table schema:
-        // legal_name: data.legalName,
-        // email: data.email,
-        // phone: data.phone,
-        // website: data.website,
-        // tax_id: data.taxId,
-        // license_number: data.licenseNumber,
+        legal_name: data.legalName ?? null,
+        industry: data.industry,
+        email: data.email,
+        phone: data.phone,
+        website: data.website || null,
+        website_url: data.website || null,
+        tax_id: data.taxId ?? null,
+        license_number: data.licenseNumber ?? null,
       })
       .eq("id", teamMember.company_id);
 
@@ -235,9 +416,15 @@ export async function updateCompanyInfo(
     // Update or create companySettings (address fields are available)
     const { data: existingSettings } = await supabase
       .from("company_settings")
-      .select("id")
+      .select("id, portal_settings")
       .eq("company_id", teamMember.company_id)
       .single();
+
+    const portalSettingsPayload = {
+      ...((existingSettings?.portal_settings as Record<string, unknown>) ??
+        {}),
+      profile_description: data.description ?? "",
+    };
 
     if (existingSettings) {
       // Update existing settings
@@ -245,9 +432,16 @@ export async function updateCompanyInfo(
         .from("company_settings")
         .update({
           address: data.address,
+          address2: data.address2 ?? null,
           city: data.city,
           state: data.state,
           zip_code: data.zipCode,
+          country: data.country,
+          service_area_type: data.serviceAreaType,
+          service_radius: data.serviceRadius,
+          service_areas: data.serviceAreas,
+          hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
+          portal_settings: portalSettingsPayload,
         })
         .eq("company_id", teamMember.company_id);
 
@@ -258,26 +452,21 @@ export async function updateCompanyInfo(
         );
       }
     } else {
-      // Create new settings (need default hoursOfOperation)
-      const defaultHours = {
-        monday: { open: "09:00", close: "17:00" },
-        tuesday: { open: "09:00", close: "17:00" },
-        wednesday: { open: "09:00", close: "17:00" },
-        thursday: { open: "09:00", close: "17:00" },
-        friday: { open: "09:00", close: "17:00" },
-        saturday: { open: null, close: null },
-        sunday: { open: null, close: null },
-      };
-
       const { error: createError } = await supabase
         .from("company_settings")
         .insert({
           company_id: teamMember.company_id,
           address: data.address,
+          address2: data.address2 ?? null,
           city: data.city,
           state: data.state,
           zip_code: data.zipCode,
-          hours_of_operation: defaultHours,
+          country: data.country,
+          service_area_type: data.serviceAreaType,
+          service_radius: data.serviceRadius,
+          service_areas: data.serviceAreas,
+          hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
+          portal_settings: portalSettingsPayload,
         });
 
       if (createError) {

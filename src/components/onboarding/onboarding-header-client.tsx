@@ -175,7 +175,7 @@ export function OnboardingHeaderClient({
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem asChild className="gap-2 p-2">
-                <Link href="/dashboard/welcome">
+                <Link href="/dashboard/welcome?new=true">
                   <div className="flex size-6 items-center justify-center rounded-md border">
                     <Building2 className="size-4" />
                   </div>

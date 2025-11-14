@@ -37,7 +37,7 @@ import {
 
 export function PriceBookItemToolbarActions() {
   const pathname = usePathname();
-  const segments = pathname.split("/");
+  const segments = pathname?.split("/") || [];
   const itemId = segments[segments.length - 1];
 
   return (

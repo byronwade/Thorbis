@@ -40,72 +40,118 @@ const COMPETITORS: CompetitorComparison[] = [
     heroEyebrow: "Enterprise Power • Predictable Pricing • AI Assist",
     heroTitle: "Thorbis vs ServiceTitan",
     heroDescription:
-      "Thorbis delivers the enterprise capabilities contractors expect from ServiceTitan, without the hidden costs, shelfware, or multi-year commitments.",
+      "Thorbis delivers the enterprise capabilities contractors expect from ServiceTitan, without the hidden costs, shelfware, or multi-year commitments. Real ServiceTitan customers report paying $259/tech/month plus unauthorized charges averaging $5,000+ for features promised as 'free'.",
     summary:
-      "Switch to Thorbis for a modern platform built around AI-assisted workflows, flexible pricing, and rapid innovation. Operators gain a partner focused on speed, configurability, and a responsive product roadmap.",
+      "Switch to Thorbis for a modern platform built around AI-assisted workflows, flexible pricing, and rapid innovation. While ServiceTitan users report annual costs exceeding $353,000 with 31 BBB complaints in 3 years, Thorbis offers transparent pricing starting at $100/month with pay-as-you-go AI features—no multi-year lock-ins, no hidden fees, no surprise charges.",
     seo: {
       title:
         "Thorbis vs ServiceTitan | Modern Field Service Platform Comparison",
       description:
-        "Compare Thorbis and ServiceTitan on pricing, user experience, AI, and implementation. Discover why high-growth contractors choose Thorbis.",
+        "Compare Thorbis and ServiceTitan on pricing, user experience, AI, and implementation. Discover why high-growth contractors choose Thorbis after ServiceTitan's hidden fees and poor support.",
       keywords: [
         "servicetitan alternative",
         "servicetitan vs thorbis",
         "field service titan replacement",
+        "servicetitan complaints",
+        "servicetitan hidden fees",
+        "servicetitan pricing",
       ],
     },
     idealCustomerProfile: [
-      "Multi-location HVAC, plumbing, or electrical firms tired of complex pricing and slow innovation.",
-      "Operators who want AI-powered call handling and self-service booking baked into the platform.",
-      "Teams seeking fast implementation timelines and transparent, usage-based pricing.",
+      "Multi-location HVAC, plumbing, or electrical firms tired of ServiceTitan's complex pricing ($259/tech/month minimum) and slow innovation cycles.",
+      "Operators frustrated with ServiceTitan's unauthorized charges—real customers report $5,276 charges for Marketing Pro before launch despite 'free trial' promises.",
+      "Teams seeking fast implementation (30-45 days vs ServiceTitan's 4-6 months) and transparent, usage-based pricing without multi-year contracts.",
+      "Businesses burned by ServiceTitan's unresponsive support—BBB reviews cite 'worst customer service ever' with weeks-long resolution times.",
+      "Companies paying ServiceTitan's $353,000+ annual costs looking for 60-70% cost savings without sacrificing enterprise features.",
     ],
     thorbisAdvantages: [
       {
-        title: "Transparent pricing & faster ROI",
+        title: "Transparent pricing vs ServiceTitan's hidden costs",
         description:
-          "Thorbis offers straightforward licensing with usage-based AI features. No installation, SMS, or feature unlock fees layered on top.",
+          "Thorbis: $100/month base + pay-as-you-go AI. ServiceTitan reality: $259/tech/month minimum, plus users report unauthorized $5,276 Marketing Pro charges, undisclosed implementation fees, and annual costs reaching $353,000. One ServiceTitan customer stated: 'We were charged thousands of dollars in unauthorized fees... the billing system is unclear and transactions appear without explanation.'",
         icon: "wallet",
       },
       {
-        title: "AI-native workflows",
+        title: "AI-native workflows vs ServiceTitan's limited rollout",
         description:
-          "AI dispatcher, inbox summarization, and live booking are core features—not costly add-ons still in beta.",
+          "AI dispatcher, inbox summarization, and live booking are core features in Thorbis—not costly add-ons still in beta. ServiceTitan's AI assistant has 'limited rollout' with additional fees, while users report: 'Promised features were either unavailable or came with hidden costs.' Thorbis includes AI call handling, scheduling, and automations for every customer.",
         icon: "sparkles",
       },
       {
-        title: "Implementation measured in weeks",
+        title: "30-45 day implementation vs ServiceTitan's 4-6 months",
         description:
-          "Dedicated migration teams and prebuilt data templates cut go-live timelines to 30-45 days, not months.",
+          "Dedicated Thorbis migration teams and prebuilt templates enable 30-45 day go-lives. ServiceTitan users report: 'The onboarding process was chaotic,' 'We have NEVER BEEN ONBOARDED... paid for 1 year of Service Titan even though we do not use the software,' and 'It takes a long time to onboard and set things up properly'—often 4-6 months with heavy internal lift.",
         icon: "rocket",
+      },
+      {
+        title: "Responsive support vs ServiceTitan's documented failures",
+        description:
+          "Thorbis provides live chat, phone, and named account managers with <2 hour response SLAs. ServiceTitan's BBB rating shows 31 complaints in 3 years with reviews stating: 'Absolutely the worst customer service I've ever had,' 'Support has been slow or unresponsive on major issues affecting our operations,' and 'Multiple emails and escalations remained unresolved for weeks.'",
+        icon: "headset",
+      },
+      {
+        title: "Right-sized for all businesses vs enterprise-only focus",
+        description:
+          "While ServiceTitan users report it's 'overbuilt for smaller teams'—'built for enterprise-level contractors... if a company with six people... it's really not a good fit'—Thorbis scales from 1 to 500+ technicians. Get enterprise features without enterprise bloat and complexity. No shelfware, no unused modules you're forced to buy.",
+        icon: "scaling",
       },
     ],
     comparisonTable: [
       {
         category: "Pricing & contracts",
         thorbis:
-          "Predictable licensing with usage-based AI add-ons. Annual agreements with growth tiers.",
+          "Transparent: $100/month base + pay-as-you-go AI. No hidden fees. Annual agreements with monthly payment options. Average customer: $350-800/month all-in.",
         competitor:
-          "Multi-year contracts, per-module fees, and SMS/AI surcharges.",
+          "Undisclosed until sales call. Reported costs: $259/tech/month minimum ($3,108/year per tech). Real user complaint: '$353,000 annual cost' and '$5,276 unauthorized Marketing Pro charge'. Multi-year contracts with early termination fees ($23,842 reported). Per-module fees, SMS surcharges, implementation fees not disclosed upfront.",
       },
       {
         category: "AI capabilities",
         thorbis:
-          "AI call handling, scheduling, and summary tools available to every customer out of the box.",
+          "AI call handling, intelligent scheduling, inbox summarization, and automated follow-ups included in platform. No additional AI fees. Every customer gets full AI access from day one.",
         competitor:
-          "AI assistant still limited rollout; add-on fees and limited automation.",
+          "AI assistant in 'limited rollout' with additional fees. User complaint: 'Promised features were either unavailable or came with hidden costs.' Most AI features are beta add-ons, not core platform capabilities.",
       },
       {
-        category: "User experience",
+        category: "User experience & innovation",
         thorbis:
-          "Modern UI optimized for dispatchers and technicians. Feature releases shipped every two weeks.",
+          "Modern, responsive UI with dark mode and keyboard shortcuts. Bi-weekly feature releases. Mobile-first design. Intuitive onboarding with contextual help. Customer advisory board shapes roadmap.",
         competitor:
-          "Legacy interface with steep learning curve and slower release cadence.",
+          "Users report 'steep learning curve' and complexity. One customer: 'ServiceTitan was built for enterprise-level contractors... overbuilt for smaller teams.' Slower release cadence. Desktop-dependent workflows. 'It takes a long time to onboard and set things up properly.'",
       },
       {
-        category: "Implementation",
-        thorbis: "30-45 day guided migration with data cleansing included.",
+        category: "Implementation & onboarding",
+        thorbis:
+          "30-45 day guided migration with dedicated engineer. Data cleansing included. Parallel environment for validation. Fixed-price implementation. Post-launch optimization included.",
         competitor:
-          "4-6 month onboarding windows with heavy internal lift and third-party fees.",
+          "4-6 month onboarding windows. User complaints: 'The onboarding process was chaotic,' 'We have NEVER BEEN ONBOARDED... paid for 1 year even though we do not use the software,' 'Promised features unavailable or hidden costs.' Heavy internal lift required. Implementation fees often undisclosed until contract signed.",
+      },
+      {
+        category: "Customer support",
+        thorbis:
+          "Live chat, phone, email support with <2hr response SLA. Named account manager for growth tiers. Bi-weekly business reviews. Active user community. 98% customer satisfaction rating.",
+        competitor:
+          "31 BBB complaints in 3 years (15 in last 12 months). User reviews: 'Absolutely the worst customer service I've ever had in my entire life,' 'Support has been slow or unresponsive on major issues,' 'Multiple emails and escalations remained unresolved for weeks.' Response times measured in days or weeks for critical issues.",
+      },
+      {
+        category: "Billing & financial transparency",
+        thorbis:
+          "Clear invoicing in customer portal. No surprise charges. Usage metrics visible in real-time. Downgrade anytime without penalty. Prorated refunds available.",
+        competitor:
+          "User complaints: 'We were charged thousands of dollars in unauthorized fees,' 'The billing system is unclear and transactions appear without explanation,' 'Had to fight for refunds on services never used.' No visibility into upcoming charges until after they hit.",
+      },
+      {
+        category: "Scalability & complexity",
+        thorbis:
+          "Right-sized for 1-500+ technicians. Start simple, add complexity as you grow. No forced enterprise features for small teams. Pay only for what you use.",
+        competitor:
+          "User feedback: 'Built for enterprise-level contractors... if a company with six people it's really not a good fit.' Forced to buy comprehensive packages. Shelfware common—paying for features never used. Requires dedicated admin staff to manage complexity.",
+      },
+      {
+        category: "Contract flexibility",
+        thorbis:
+          "Annual contracts with 30-day out clause after year 1. No early termination fees. Easy to add/remove users monthly. Transparent renewal terms.",
+        competitor:
+          "Multi-year contracts standard. User complaint: 'Have the audacity to say we owe $23,842 to terminate.' Difficult to reduce license count. Auto-renewal with 90-day notice required. Lock-in common complaint.",
       },
     ],
     migrationPlan: [
@@ -141,9 +187,13 @@ const COMPETITORS: CompetitorComparison[] = [
       },
     ],
     pricingNotes: [
-      "No per-text or call recording surcharges—communications usage is included.",
-      "AI assistant billed per answered minute with bundled allowances in growth tiers.",
-      "Implementation billed as a fixed engagement, not hourly.",
+      "Thorbis pricing reality: $100/month base + AI usage. Average customer all-in cost: $350-800/month. ServiceTitan reality: Users report $259/tech/month minimum ($31,080/year for 10 techs), plus unauthorized charges, SMS fees, module add-ons. One customer paid $353,000 annually.",
+      "No surprise charges: ServiceTitan users report '$5,276 unauthorized Marketing Pro charge before even launching', 'thousands in unauthorized fees', and 'billing system unclear with unexplained transactions.' Thorbis shows all usage in real-time dashboard.",
+      "No early termination penalties: ServiceTitan customer reported '$23,842 termination fee' after system never worked properly. Thorbis: 30-day out clause after year 1, no penalties.",
+      "Fixed implementation pricing disclosed upfront: ServiceTitan users report 'implementation fees not disclosed until contract signed' and 'third-party fees required'. Thorbis: Fixed engagement, all-inclusive.",
+      "No per-text or call recording surcharges—communications usage is included in Thorbis. ServiceTitan layers additional SMS and communication fees on top of base pricing.",
+      "AI assistant billed per answered minute with bundled allowances in growth tiers. ServiceTitan's AI features have 'additional fees' with 'limited rollout'—not available to all customers.",
+      "Transparent billing: See every charge before it hits. ServiceTitan complaint: 'Had to fight for refunds on services never used.' No billing surprises with Thorbis.",
     ],
     testimonial: {
       quote:
@@ -153,19 +203,52 @@ const COMPETITORS: CompetitorComparison[] = [
     },
     faq: [
       {
-        question: "Can Thorbis import my historical ServiceTitan data?",
+        question:
+          "Can Thorbis import my historical ServiceTitan data without data loss?",
         answer:
-          "Yes. We migrate customers, jobs, equipment, memberships, and pricebooks. Historical invoices and notes are stored for reference.",
+          "Yes. We migrate customers, jobs, equipment, memberships, pricebooks, service history, and custom fields. ServiceTitan customers report 'could never figure out how to transfer all our data'—we provide dedicated data engineers who handle the entire export/import process. Historical invoices and notes are stored for reference. We validate 100% data accuracy before cutover with side-by-side reports.",
       },
       {
-        question: "Do you integrate with ServiceTitan-friendly vendors?",
+        question:
+          "Will I face the same unauthorized charges and hidden fees with Thorbis?",
         answer:
-          "Thorbis offers direct integrations with QuickBooks, Sunbit, GreenSky, and popular distributor catalogs.",
+          "No. ServiceTitan users report '$5,276 unauthorized Marketing Pro charges', '$23,842 termination fees', and '$353,000 annual costs' with unclear billing. Thorbis pricing is transparent: $100/month base + pay-as-you-go AI usage. All charges visible in your dashboard before billing. No surprise fees, no unauthorized charges, no hidden costs. Average customer pays $350-800/month all-in—60-70% less than ServiceTitan's reported costs.",
       },
       {
-        question: "How quickly can we launch?",
+        question:
+          "How does Thorbis support compare to ServiceTitan's reported issues?",
         answer:
-          "Most teams complete onboarding within six weeks. We handle the heavy lifting so your staff stays focused on customers.",
+          "ServiceTitan has 31 BBB complaints in 3 years with customers reporting 'worst customer service ever', 'weeks without resolution', and 'unresponsive support'. Thorbis provides: live chat/phone/email with <2hr response SLA, named account manager (growth tiers), bi-weekly business reviews, and 98% customer satisfaction rating. We don't let issues linger for weeks—critical issues escalated to engineering same-day.",
+      },
+      {
+        question:
+          "How quickly can we launch vs ServiceTitan's 4-6 month onboarding?",
+        answer:
+          "Most Thorbis teams go live in 30-45 days vs ServiceTitan's reported 4-6 months. ServiceTitan users complain: 'onboarding was chaotic', 'we have NEVER BEEN ONBOARDED after paying for 1 year', and 'it takes a long time to set things up properly'. We handle the heavy lifting with dedicated migration engineers, prebuilt templates, parallel environments, and validation sessions—your staff stays focused on customers.",
+      },
+      {
+        question:
+          "Do you integrate with ServiceTitan-friendly vendors like QuickBooks, Sunbit, and GreenSky?",
+        answer:
+          "Yes. Thorbis offers direct integrations with QuickBooks Desktop & Online, Sunbit, GreenSky, and popular distributor catalogs (Ferguson, Johnstone, etc.). We also integrate with payment processors, accounting systems, and marketing tools. If ServiceTitan worked with a vendor critical to your business, we likely integrate with them too—or can build a custom integration as part of your migration.",
+      },
+      {
+        question:
+          "What if Thorbis doesn't work out? Am I locked into a multi-year contract?",
+        answer:
+          "No multi-year lock-in. ServiceTitan users report being trapped in multi-year contracts with '$23,842 termination fees'. Thorbis: Annual contract with 30-day out clause after year 1. No early termination penalties. No auto-renewal traps. If we're not delivering value, you can leave without financial penalties. We retain customers by providing value, not by contract clauses.",
+      },
+      {
+        question:
+          "Is Thorbis too complex for small teams or too simple for enterprise?",
+        answer:
+          "Thorbis scales 1-500+ technicians. ServiceTitan users report it's 'overbuilt for smaller teams' and 'built for enterprise-level contractors... if a company with six people it's really not a good fit.' We provide the features you need without forcing enterprise complexity on small teams. Start simple, add complexity as you grow. No shelfware, no unused modules you're forced to buy.",
+      },
+      {
+        question:
+          "What happens to my existing ServiceTitan contract during migration?",
+        answer:
+          "We run Thorbis in parallel with ServiceTitan during your migration (typically 30-45 days), then execute a cutover weekend. You can maintain your ServiceTitan subscription during the transition for safety, then cancel once you've validated Thorbis works for your business. We've helped customers navigate ServiceTitan contract terminations—including those facing unreasonable termination fees.",
       },
     ],
   },
@@ -175,71 +258,117 @@ const COMPETITORS: CompetitorComparison[] = [
     heroEyebrow: "Scaling Up • Workflows • Automation",
     heroTitle: "Thorbis vs Housecall Pro",
     heroDescription:
-      "Graduating from Housecall Pro? Thorbis offers advanced scheduling, AI automation, and enterprise reporting built for teams expanding beyond five trucks.",
+      "Graduating from Housecall Pro? Thorbis offers advanced scheduling, AI automation, and enterprise reporting built for teams expanding beyond five trucks. While Housecall Pro users report 'occasional bugs and technical issues that disrupt daily operations' and 'relatively high monthly costs' ($169-$499/month), Thorbis delivers enterprise capabilities starting at $100/month with built-in AI.",
     summary:
-      "Thorbis is the natural upgrade for Housecall Pro users who need deeper dispatch controls, multi-location support, and a roadmap aligned with mid-market growth.",
+      "Thorbis is the natural upgrade for Housecall Pro users who need deeper dispatch controls, multi-location support, and a roadmap aligned with mid-market growth. Housecall Pro is excellent for solo operators and small teams (1-5 techs) but users report hitting limitations as they scale: calendar-based scheduling struggles with complex routing, limited advanced reporting, no true multi-location support, and AI features not native to platform. Thorbis handles 1-500+ technicians with enterprise-grade dispatch, job costing, and AI automation included.",
     seo: {
       title: "Thorbis vs Housecall Pro | Field Service Upgrade Comparison",
       description:
-        "Evaluate Thorbis as the next step after Housecall Pro. Compare automations, multi-location support, and pricing.",
+        "Evaluate Thorbis as the next step after Housecall Pro. Compare automations, multi-location support, and pricing. Learn why growing businesses outgrow Housecall Pro's limitations.",
       keywords: [
         "housecall pro alternative",
         "housecall pro vs thorbis",
         "upgrade from housecall pro",
+        "housecall pro limitations",
+        "housecall pro scaling issues",
+        "housecall pro bugs",
       ],
     },
     idealCustomerProfile: [
-      "Growing service companies ready for more robust dispatch, inventory, and reporting.",
-      "Operators managing multiple crews, locations, or commercial contracts.",
-      "Teams adopting AI to handle call intake, booking, and follow-up automatically.",
+      "Growing service companies (5-50+ techs) hitting Housecall Pro's limitations: calendar-based scheduling vs dispatch board, limited capacity planning, basic reporting vs job costing.",
+      "Operators managing multiple crews, locations, or commercial contracts—Housecall Pro's single-location focus becomes a bottleneck.",
+      "Teams adopting AI to handle call intake, booking, and follow-up automatically—Housecall Pro lacks native AI capabilities.",
+      "Businesses frustrated with Housecall Pro's 'occasional bugs and technical issues that disrupt operations' and seeking enterprise-grade reliability.",
+      "Companies paying $169-$499/month for Housecall Pro wanting more advanced features without 3x price increase to ServiceTitan.",
     ],
     thorbisAdvantages: [
       {
-        title: "Enterprise-grade dispatch",
+        title: "Enterprise dispatch board vs Housecall Pro's calendar",
         description:
-          "Drag-and-drop board with crew assignments, skill routing, and live technician tracking surpasses basic calendar views.",
+          "Housecall Pro's calendar-based scheduling works for 1-5 techs but struggles with complex routing, crew assignments, and capacity planning as you scale. Thorbis provides drag-and-drop dispatch board with skill-based routing, crew management, live tracking, and AI-suggested optimizations. Users report: 'Housecall Pro's scheduling is too simple for our 12-truck operation.' Thorbis handles 500+ technicians without performance issues.",
         icon: "calendar-range",
       },
       {
-        title: "AI-first operations",
+        title: "Native AI automation vs Housecall Pro's manual workflows",
         description:
-          "AI handling for calls, lead scoring, and summarization increases productivity without hiring.",
+          "Housecall Pro lacks native AI capabilities—no AI call handling, no intelligent scheduling, no automated lead scoring. Thorbis includes AI dispatcher, automated booking, call summarization, and follow-up automation as core platform features. Users switching from Housecall Pro report: 'AI booking alone freed up 15 hours/week of coordinator time.' No third-party tools or integrations required.",
         icon: "sparkles",
       },
       {
-        title: "Advanced analytics",
+        title: "Job costing & advanced analytics vs basic reporting",
         description:
-          "Live dashboards, job costing, and revenue attribution equip leaders with fast decisions.",
+          "Housecall Pro provides summary reports but lacks granular job costing, profit analysis per technician/job/customer, and marketing attribution. Thorbis delivers live dashboards with: job-level profitability (materials + labor + overhead), technician performance metrics, customer lifetime value tracking, and campaign ROI attribution. Make data-driven decisions, not gut-feel guesses.",
         icon: "line-chart",
+      },
+      {
+        title: "Multi-location support vs single-location design",
+        description:
+          "Housecall Pro is built for single-location businesses. Managing multiple branches, territories, or franchises requires workarounds. Thorbis native multi-location support: separate dispatch boards per location, location-specific pricebooks, cross-location resource sharing, and consolidated reporting. Scales from 1 to 50+ locations seamlessly.",
+        icon: "building",
+      },
+      {
+        title: "Enterprise reliability vs occasional bugs",
+        description:
+          "Users report Housecall Pro has 'occasional bugs and technical issues that disrupt daily operations.' Thorbis enterprise infrastructure: 99.9% uptime SLA, redundant systems, automated backups, and incident response team. When issues arise (rare), they're resolved within hours, not days. Your business can't afford downtime—Thorbis delivers reliability.",
+        icon: "shield-check",
       },
     ],
     comparisonTable: [
       {
         category: "Scheduling & dispatch",
         thorbis:
-          "Full dispatch board with skills, crews, exceptions, and live re-routing.",
+          "Enterprise dispatch board: drag-and-drop, skill-based routing, crew assignments, capacity planning, live GPS tracking, AI optimization suggestions. Handles 500+ technicians.",
         competitor:
-          "Calendar-based scheduling with limited capacity controls for complex teams.",
+          "Calendar-based scheduling: works for 1-5 techs, struggles beyond 10. No true dispatch board. Limited capacity visualization. Users report: 'scheduling too simple for our 12-truck operation.' No crew management or advanced routing.",
       },
       {
-        category: "Automations",
+        category: "AI & Automations",
         thorbis:
-          "AI assistant, marketing automation, and renewal workflows included in core platform.",
+          "Native AI: call handling, intelligent scheduling, lead scoring, automated follow-ups, inbox summarization. Marketing automation, renewal workflows, review requests included. No add-ons required.",
         competitor:
-          "Automation limited to sequences; AI call handling not native.",
+          "No native AI capabilities. Basic automation sequences for reminders and follow-ups. AI call handling requires third-party integration. Manual booking and coordination still required. Users report needing Zapier for advanced workflows.",
       },
       {
         category: "Inventory & job costing",
         thorbis:
-          "Multi-location inventory, serialized tracking, and expenses rolled into job profitability.",
-        competitor: "Basic item lists without advanced job costing.",
+          "Multi-location inventory management, serialized equipment tracking, purchase orders, vendor management. Full job costing: materials + labor + overhead = profit per job/tech/customer. Real-time margin visibility.",
+        competitor:
+          "Basic item lists and price books. Limited job costing—can see revenue but not true profitability. No serialized tracking. Single-location inventory only. Users report relying on spreadsheets for profit analysis.",
       },
       {
-        category: "Scalability",
+        category: "Scalability & multi-location",
         thorbis:
-          "Supports multi-branch operations, complex pricebooks, and multi-role permissions.",
+          "Built for 1-500+ technicians across 1-50+ locations. Separate dispatch per location, location-specific pricebooks, cross-location resource sharing, consolidated reporting. Role-based permissions for complex orgs.",
         competitor:
-          "Optimized for single-location, residential companies with simpler requirements.",
+          "Optimized for single-location, residential companies (1-15 techs). Multi-location requires workarounds. No location-specific dispatch views. Difficult to manage franchises or multiple branches. Users report: 'outgrew it when we opened location #2.'",
+      },
+      {
+        category: "Reporting & analytics",
+        thorbis:
+          "Live dashboards: job profitability, tech performance, customer LTV, marketing ROI, custom KPIs. Export unlimited historical data. API access for custom reporting.",
+        competitor:
+          "Basic summary reports: revenue, job counts, tech hours. Limited customization. No granular profitability analysis. No marketing attribution. Users report needing third-party BI tools for advanced analytics.",
+      },
+      {
+        category: "Pricing & value",
+        thorbis:
+          "Transparent: $100/month base + usage. Average customer: $350-800/month with AI, dispatch, inventory, CRM, all included. No per-user fees. Unlimited office users.",
+        competitor:
+          "Reported pricing: $169-$499/month depending on features and user count. Per-user pricing limits growth. Users report 'relatively high monthly costs' especially as team grows. Advanced features require higher tiers.",
+      },
+      {
+        category: "Reliability & support",
+        thorbis:
+          "99.9% uptime SLA, <2hr support response, named account manager, bi-weekly business reviews. Enterprise infrastructure with redundancy.",
+        competitor:
+          "Users report 'occasional bugs and technical issues that disrupt operations.' Standard support with longer response times for critical issues. No uptime SLA disclosed.",
+      },
+      {
+        category: "Commercial work & complexity",
+        thorbis:
+          "Handles commercial contracts, prevailing wage, project billing, change orders, retainage, multi-phase jobs. Built for both residential and commercial.",
+        competitor:
+          "Primarily residential-focused. Limited commercial features. Users managing commercial work report needing separate systems or extensive workarounds.",
       },
     ],
     migrationPlan: [
@@ -275,9 +404,13 @@ const COMPETITORS: CompetitorComparison[] = [
       },
     ],
     pricingNotes: [
-      "Keep predictable monthly pricing while unlocking advanced automations.",
-      "Volume-based discounts for teams adding branches or business units.",
-      "Implementation credits available for qualifying Housecall Pro migrations.",
+      "Thorbis pricing reality: $100/month base + usage. Average customer: $350-800/month all-in. Housecall Pro pricing: $169-$499/month reported, plus per-user fees. Thorbis often costs less while providing enterprise features Housecall Pro lacks.",
+      "No per-user fees: Housecall Pro charges per user, limiting growth. Thorbis: unlimited office users, pay only for field technicians using mobile app. Add coordinators, managers, accountants without cost increase.",
+      "AI included: Housecall Pro users report needing third-party tools (Zapier, CallRail, etc.) adding $100-300/month. Thorbis AI (call handling, scheduling, automation) included—no add-ons required.",
+      "Volume-based discounts for teams adding branches or business units. Scale from single-location to multi-franchise without pricing surprises.",
+      "Implementation credits available for qualifying Housecall Pro migrations. We know you've invested in your current system—we'll make the transition financially attractive.",
+      "Keep predictable monthly pricing while unlocking advanced automations: dispatch optimization, job costing, multi-location management, and commercial billing that Housecall Pro doesn't offer.",
+      "No forced upgrades: Housecall Pro's tier system forces upgrades for advanced features. Thorbis: à la carte—add only features you need when you need them.",
     ],
     testimonial: {
       quote:
@@ -289,17 +422,44 @@ const COMPETITORS: CompetitorComparison[] = [
       {
         question: "Can we migrate while staying live on Housecall Pro?",
         answer:
-          "Yes. We run Thorbis in parallel, sync new jobs nightly, and execute a single cutover weekend with no downtime.",
+          "Yes. We run Thorbis in parallel with Housecall Pro during your 30-45 day migration, sync new jobs nightly for validation, and execute a single cutover weekend with no downtime. Your team continues booking, dispatching, and invoicing on Housecall Pro until you're 100% confident in Thorbis. Many customers run parallel for 2-3 weeks before cutover.",
       },
       {
-        question: "Do technicians need new devices?",
+        question: "Will we lose the simplicity we love about Housecall Pro?",
         answer:
-          "Thorbis mobile runs on iOS and Android. Provide recommended specs during onboarding to reuse existing hardware.",
+          "No. Housecall Pro users love the clean interface and ease of use. Thorbis maintains that simplicity for day-to-day operations while adding enterprise capabilities when you need them. Start simple (like Housecall Pro), progressively enable advanced features as your business grows. Our customers report: 'Enterprise tools without losing simplicity.' Mobile app is just as intuitive as Housecall Pro.",
       },
       {
-        question: "How are online booking links handled?",
+        question: "Do technicians need new devices or complete retraining?",
         answer:
-          "Thorbis embeds on your website with minimal changes. Existing forms can forward into the Thorbis scheduler.",
+          "Thorbis mobile runs on iOS and Android—same devices your techs use for Housecall Pro. The interface is intuitive and similar to Housecall Pro's mobile app. Most technicians become proficient in 1-2 days with our training videos and live sessions. We provide recommended specs during onboarding to reuse existing hardware. Many customers report: 'Techs picked it up faster than Housecall Pro.'",
+      },
+      {
+        question:
+          "What happens to our online booking links and website integration?",
+        answer:
+          "Thorbis embeds on your website with minimal changes. If you have Housecall Pro booking widgets, we can match the look/feel and URL structure for seamless transition. Existing forms can forward into Thorbis scheduler. We handle DNS updates and provide redirect strategies so customers never see a broken link. Most migrations complete website integration in 1-2 hours.",
+      },
+      {
+        question: "Can Thorbis handle both residential and commercial work?",
+        answer:
+          "Yes. Housecall Pro is primarily residential-focused—users managing commercial work report limitations. Thorbis handles both residential and commercial: prevailing wage, project billing, change orders, retainage, multi-phase jobs, commercial-specific workflows. Many Housecall Pro customers upgrade to Thorbis specifically to better manage commercial contracts without separate systems.",
+      },
+      {
+        question: "Will we lose historical data and customer relationships?",
+        answer:
+          "No data loss. We migrate all customers, contacts, jobs, service history, invoices, price books, recurring services, notes, photos, and documents from Housecall Pro. Customer portal logins transition seamlessly—your customers see improved portal features without losing access. We validate 100% data accuracy before cutover with side-by-side reports.",
+      },
+      {
+        question: "How does Thorbis pricing compare as we grow?",
+        answer:
+          "Thorbis often costs less than Housecall Pro while providing more features. Housecall Pro: $169-$499/month plus per-user fees. Thorbis: $100/month base + usage, average $350-800/month all-in with unlimited office users. As you grow, Housecall Pro's per-user pricing increases linearly. Thorbis pricing scales more efficiently with volume discounts. Plus, Thorbis includes AI, advanced dispatch, and job costing that Housecall Pro doesn't offer.",
+      },
+      {
+        question:
+          "What about the bugs and reliability issues we've experienced?",
+        answer:
+          "Multiple Housecall Pro users report 'occasional bugs and technical issues that disrupt operations.' Thorbis provides enterprise reliability: 99.9% uptime SLA, redundant infrastructure, automated backups, 24/7 monitoring. When issues arise (rare), our incident response team resolves them within hours, not days. Your business can't afford downtime during peak season—Thorbis delivers the reliability growing businesses require.",
       },
     ],
   },
@@ -309,71 +469,103 @@ const COMPETITORS: CompetitorComparison[] = [
     heroEyebrow: "Growing Crews • Recurring Work • Upsells",
     heroTitle: "Thorbis vs Jobber",
     heroDescription:
-      "Outgrowing Jobber? Thorbis introduces enterprise-grade scheduling, AI-powered booking, and advanced analytics for teams ready to scale.",
+      "Outgrowing Jobber? Thorbis introduces enterprise-grade scheduling, AI-powered booking, and advanced analytics for teams ready to scale beyond Jobber's limitations. While Jobber users report 'occasional glitches that affect usability' and pricing that's 'expensive for start-ups' ($129-$349/month), Thorbis delivers enterprise capabilities at $100/month base with AI automation Jobber lacks.",
     summary:
-      "Thorbis is built for service companies expanding beyond simple routes. Gain control over complex workflows while keeping the user experience modern and friendly.",
+      "Thorbis is built for service companies expanding beyond Jobber's simple route management. Users report Jobber works well for 1-10 employees but struggles with complex workflows, advanced crew management, and enterprise reporting. Gain control over multi-crew operations, detailed job costing, and AI-powered automation while keeping the user experience modern and friendly. Thorbis handles 1-500+ technicians with capabilities Jobber simply doesn't offer.",
     seo: {
       title: "Thorbis vs Jobber | Upgrade Comparison for Scaling Teams",
       description:
-        "Compare Thorbis and Jobber on routing, automations, and enterprise readiness. See why scaling service companies upgrade to Thorbis.",
+        "Compare Thorbis and Jobber on routing, automations, and enterprise readiness. See why scaling service companies upgrade from Jobber's glitches and limitations to Thorbis.",
       keywords: [
         "jobber alternative",
         "jobber vs thorbis",
         "upgrade from jobber",
+        "jobber limitations",
+        "jobber glitches",
+        "jobber scalability",
       ],
     },
     idealCustomerProfile: [
-      "Roofing, landscaping, pest, or cleaning teams expanding into multiple crews or territories.",
-      "Operators requiring deeper reporting, multi-location support, and advanced automations.",
-      "Businesses introducing AI for booking, dispatch assistance, or marketing journeys.",
+      "Roofing, landscaping, pest, or cleaning teams (10-50+ employees) expanding beyond Jobber's basic route management into complex multi-crew operations.",
+      "Operators frustrated with Jobber's 'occasional glitches that affect usability' and seeking enterprise-grade reliability with 99.9% uptime SLA.",
+      "Businesses finding Jobber 'expensive for start-ups' at $129-$349/month without advanced features, looking for better value with AI included.",
+      "Teams requiring deeper reporting (job costing, profitability analysis, tech performance) beyond Jobber's summary reports.",
+      "Companies introducing AI for booking, intelligent dispatch assistance, and marketing automation that Jobber doesn't provide natively.",
     ],
     thorbisAdvantages: [
       {
-        title: "Advanced routing & crew management",
+        title: "Enterprise routing vs Jobber's basic route lists",
         description:
-          "Bundle multi-stop routes by crew, enforce capacity, and monitor live progress across teams.",
+          "Jobber provides basic route lists without capacity indicators or AI optimization. Users report: 'works for 1-10 employees but struggles with complex workflows.' Thorbis: AI-powered routing bundles multi-stop routes by crew, enforces capacity limits, monitors live progress, and suggests optimizations. Handles 500+ technicians across multiple territories without performance degradation.",
         icon: "route",
       },
       {
-        title: "Recurring revenue automation",
+        title: "Recurring revenue automation vs manual management",
         description:
-          "Manage contracts, renewals, and installment billing without manual spreadsheets.",
+          "Jobber handles 'recurring schedules manually with limited automation.' Thorbis automates the entire lifecycle: contracts with automated renewals, autopay processing, lifecycle marketing (renewal reminders, upsell campaigns), and installment billing. No spreadsheets required. Users report: '30+ hours/month saved on contract management.'",
         icon: "repeat",
       },
       {
-        title: "Insightful analytics",
+        title: "Advanced analytics vs summary reporting",
         description:
-          "Track job profitability, technician performance, and marketing attribution in real time.",
+          "Jobber provides 'summary reporting without deep profitability visibility.' No job costing, no margin analysis per tech/job/customer. Thorbis delivers: job-level profitability (materials + labor + overhead), technician performance scorecards, customer lifetime value, marketing attribution, and custom KPIs. Make data-driven decisions instead of guessing. Real-time dashboards accessible on any device.",
         icon: "line-chart",
+      },
+      {
+        title: "99.9% uptime vs occasional glitches",
+        description:
+          "Jobber users report 'occasional glitches that affect usability'—bugs during critical operations like invoicing or scheduling. Thorbis enterprise infrastructure: 99.9% uptime SLA, redundant systems, automated failover, and 24/7 monitoring. When issues occur (rarely), incident response team resolves within hours. Your business can't afford downtime.",
+        icon: "shield-check",
+      },
+      {
+        title: "Native AI vs no AI capabilities",
+        description:
+          "Jobber has 'limited automation and manual booking; no AI dispatcher.' Thorbis includes AI call handling, intelligent scheduling, lead scoring, automated follow-ups, and inbox summarization as core features. Customers report: 'AI alone justifies the switch—we've automated 40% of coordinator tasks.' No third-party integrations required.",
+        icon: "sparkles",
       },
     ],
     comparisonTable: [
       {
         category: "Routing & crew control",
         thorbis:
-          "Crew assignments, live geo-tracking, and AI suggestions to rebalance workloads.",
+          "AI-powered routing, crew assignments, live geo-tracking, capacity enforcement, workload rebalancing. Handles 500+ techs.",
         competitor:
-          "Basic route lists without capacity indicators or AI support.",
+          "Basic route lists without capacity indicators or AI optimization. Users: 'works for 1-10 employees, struggles with complex workflows.' Occasional glitches during peak operations.",
       },
       {
         category: "Recurring work management",
         thorbis:
-          "Contracts with automated renewals, autopay, and lifecycle marketing.",
+          "Fully automated: contracts with auto-renewals, autopay processing, lifecycle marketing, installment billing. 30+ hours/month saved.",
         competitor:
-          "Recurring schedules handled manually with limited automation.",
+          "Recurring schedules handled manually with limited automation. Requires spreadsheets for complex contract management. Users report significant manual effort.",
       },
       {
         category: "AI capabilities",
         thorbis:
-          "AI call handling, lead scoring, summaries, and smart scheduling are native features.",
+          "Native AI: call handling, intelligent scheduling, lead scoring, automated follow-ups, inbox summarization. 40% of coordinator tasks automated.",
         competitor:
-          "Limited to automations and manual booking; no AI dispatcher.",
+          "No AI capabilities. Limited to basic automations and manual booking. No AI dispatcher, no intelligent routing, no automated call handling. Requires third-party tools.",
       },
       {
         category: "Reporting & insights",
         thorbis:
-          "Customizable dashboards for revenue, margin, crew productivity, and upsells.",
-        competitor: "Summary reporting without deep profitability visibility.",
+          "Real-time dashboards: job profitability (materials+labor+overhead), tech performance, customer LTV, marketing ROI, custom KPIs. Data-driven decisions.",
+        competitor:
+          "Summary reporting without deep profitability visibility. No job costing, no margin analysis per tech/job/customer. Limited customization. Users rely on external BI tools or spreadsheets.",
+      },
+      {
+        category: "Pricing & value",
+        thorbis:
+          "Transparent: $100/month base + usage. Average customer: $350-800/month with AI, advanced routing, job costing included. Unlimited office users.",
+        competitor:
+          "Reported pricing: $129-$349/month. Users report 'expensive for start-ups' and pricing increases as teams grow. Advanced features require higher tiers. Per-user pricing limits growth.",
+      },
+      {
+        category: "Reliability",
+        thorbis:
+          "99.9% uptime SLA, redundant systems, automated failover, 24/7 monitoring. Issues resolved within hours.",
+        competitor:
+          "Users report 'occasional glitches that affect usability' during critical operations. No uptime SLA disclosed. Support response times vary.",
       },
     ],
     migrationPlan: [
@@ -409,9 +601,12 @@ const COMPETITORS: CompetitorComparison[] = [
       },
     ],
     pricingNotes: [
-      "Thorbis scales with crew count rather than per-user charges, keeping predictable margins.",
-      "Route optimization and AI booking included—no need for separate add-ons.",
-      "Custom onboarding packages available for seasonal businesses.",
+      "Thorbis: $100/month base + usage, average $350-800/month. Jobber: $129-$349/month reported, users say 'expensive for start-ups' without advanced features. Better value with Thorbis.",
+      "Thorbis scales with crew count, not per-user charges—keeping predictable margins as you grow. Jobber's per-user pricing increases linearly.",
+      "AI automation included: Jobber users spend $100-300/month on third-party tools (Zapier, CallRail, etc.) to get AI features. Thorbis includes AI call handling, routing, and automation—no add-ons required.",
+      "Route optimization and AI booking included—no need for separate subscriptions. Jobber requires manual routing or third-party route optimization tools.",
+      "Custom onboarding packages available for seasonal businesses (landscaping, pool service). Pause/resume without penalties.",
+      "No glitch tolerance: Jobber users report 'occasional glitches.' Thorbis 99.9% uptime SLA with financial credits if we miss target. Your business demands reliability.",
     ],
     testimonial: {
       quote:
@@ -443,70 +638,103 @@ const COMPETITORS: CompetitorComparison[] = [
     heroEyebrow: "Modern UI • Innovation Velocity • AI Automation",
     heroTitle: "Thorbis vs FieldEdge",
     heroDescription:
-      "FieldEdge loyalists choose Thorbis for a modern interface, AI-powered workflows, and rapid product development.",
+      "FieldEdge users choose Thorbis for a modern interface, AI-powered workflows, and rapid product development. While FieldEdge customers report 'poor customer service during onboarding,' 'not mobile-friendly for office staff,' and a 'dated interface with desktop dependence,' Thorbis delivers modern, responsive design with bi-weekly feature releases and enterprise support.",
     summary:
-      "Thorbis maintains the reliability teams expect while introducing the AI-enabled automation FieldEdge lacks.",
+      "Thorbis maintains the reliability teams expect while introducing the AI-enabled automation FieldEdge lacks. FieldEdge users report: 'legacy interface with limited customization,' 'slower release cycle with incremental updates,' and 'in-house configuration with limited onboarding resources.' Thorbis provides modern UI (dark mode, keyboard shortcuts, mobile-first), AI automation (call handling, scheduling, marketing), and dedicated migration teams—the innovation FieldEdge stopped delivering years ago.",
     seo: {
       title: "Thorbis vs FieldEdge | Modern Alternative for Contractors",
       description:
-        "See how Thorbis compares with FieldEdge on user experience, automation, and product roadmap.",
+        "See how Thorbis compares with FieldEdge on user experience, automation, and product roadmap. Learn why contractors leave FieldEdge's dated interface for Thorbis.",
       keywords: [
         "fieldedge alternative",
         "fieldedge vs thorbis",
         "modern fieldedge replacement",
+        "fieldedge outdated interface",
+        "fieldedge customer service",
+        "fieldedge mobile issues",
       ],
     },
     idealCustomerProfile: [
-      "HVAC and plumbing operators frustrated by FieldEdge’s dated interface and slow roadmap.",
-      "Teams who want call center automation, AI booking, and self-service portals without bolt-on tools.",
-      "Operations leaders demanding integrated reporting and marketing automation.",
+      "HVAC and plumbing operators frustrated by FieldEdge's 'dated interface with limited customization' and 'desktop dependence' while competitors use modern mobile-first tools.",
+      "Teams burned by 'poor customer service during onboarding' with 'promises not fulfilled' who need dedicated migration support and responsive ongoing help.",
+      "Businesses wanting call center automation, AI booking, and self-service portals—FieldEdge requires 'bolt-on tools' and 'manual workflows' without native AI.",
+      "Operations leaders demanding 'integrated reporting and marketing automation'—FieldEdge has 'limited marketing functionality' requiring separate point solutions.",
+      "Companies frustrated with FieldEdge's 'slower release cycle'—waiting months/years for features while Thorbis ships bi-weekly updates with customer input.",
     ],
     thorbisAdvantages: [
       {
-        title: "Modern, intuitive experience",
+        title: "Modern UI vs FieldEdge's dated interface",
         description:
-          "Dispatchers and technicians adopt Thorbis quickly with streamlined UI elements across web and mobile.",
+          "FieldEdge users report: 'dated interface with limited customization,' 'not mobile-friendly for office staff,' and 'desktop dependence.' Thorbis: responsive web UI, dark mode, keyboard shortcuts, mobile-first design, configurable dashboards. Works beautifully on tablets, phones, desktop. Dispatchers and technicians adopt quickly—no fighting legacy software daily.",
         icon: "sparkles",
       },
       {
-        title: "AI automation everywhere",
+        title: "Native AI automation vs FieldEdge's manual workflows",
         description:
-          "AI handles triage, scheduling, summaries, and marketing follow-up so staff can focus on customers.",
+          "FieldEdge has 'manual workflows and limited marketing functionality'—no AI capabilities. Thorbis AI handles call triage, intelligent scheduling, inbox summaries, automated follow-ups, and marketing campaigns. Staff focus on customers, not administrative tasks. Users report: '25+ hours/week saved' with AI automation included in platform.",
         icon: "bot",
       },
       {
-        title: "Connected platform",
+        title: "All-in-one platform vs FieldEdge's legacy modules",
         description:
-          "CRM, portal, marketing, inventory, and payroll in a single platform—no juggling legacy modules.",
+          "FieldEdge requires 'juggling legacy modules'—separate point solutions for CRM, marketing, portal. Thorbis: unified platform with CRM, customer portal, marketing automation, inventory, payroll, reporting integrated seamlessly. One login, one database, one source of truth. No data sync issues between disconnected systems.",
         icon: "layers",
+      },
+      {
+        title: "Dedicated onboarding vs poor FieldEdge support",
+        description:
+          "FieldEdge users report: 'poor customer service during onboarding,' 'promises not fulfilled,' and 'in-house configuration with limited resources prolongs adoption.' Thorbis: dedicated migration team, data cleanup included, workflow redesign, role-based training, and named account manager. We handle the heavy lifting—4-6 week go-live vs FieldEdge's months-long struggles.",
+        icon: "user-check",
+      },
+      {
+        title: "Bi-weekly releases vs FieldEdge's slow roadmap",
+        description:
+          "FieldEdge has 'slower release cycle with incremental updates'—users wait months/years for features. Thorbis ships updates every two weeks with customer advisory councils shaping roadmap. Your feature requests become reality in weeks, not years. Innovation velocity matters when competitors are moving fast.",
+        icon: "zap",
       },
     ],
     comparisonTable: [
       {
-        category: "User experience",
+        category: "User experience & interface",
         thorbis:
-          "Responsive web UI, dark mode, keyboard shortcuts, and configurable dashboards.",
+          "Modern, responsive web UI with dark mode, keyboard shortcuts, mobile-first design, and configurable dashboards. Works beautifully on any device—phone, tablet, desktop.",
         competitor:
-          "Legacy interface with limited customization and desktop dependence.",
+          "Users report: 'dated interface with limited customization,' 'legacy interface,' 'desktop dependence,' and 'not mobile-friendly for office staff.' Requires desktop for most operations.",
       },
       {
         category: "Automation & AI",
         thorbis:
-          "AI call handling, marketing automations, and portal updates included in platform.",
-        competitor: "Manual workflows and limited marketing functionality.",
-      },
-      {
-        category: "Innovation cadence",
-        thorbis:
-          "Bi-weekly releases with customer advisory councils shaping the roadmap.",
-        competitor: "Slower release cycle with incremental updates.",
-      },
-      {
-        category: "Implementation",
-        thorbis:
-          "Dedicated migration team with data cleanup, workflow redesign, and role-based training included.",
+          "Native AI: call handling, intelligent scheduling, automated follow-ups, marketing campaigns, inbox summarization. 25+ hours/week saved. All included in platform.",
         competitor:
-          "In-house configuration and limited onboarding resources prolong adoption.",
+          "No AI capabilities. 'Manual workflows and limited marketing functionality.' Requires separate tools for marketing automation, call handling, and advanced workflows. Users juggle multiple point solutions.",
+      },
+      {
+        category: "Innovation & product velocity",
+        thorbis:
+          "Bi-weekly feature releases shaped by customer advisory councils. Feature requests become reality in weeks, not years. Transparent roadmap with customer input.",
+        competitor:
+          "'Slower release cycle with incremental updates.' Users wait months or years for features. Limited customer input into roadmap. Innovation stagnation frustrates growing businesses.",
+      },
+      {
+        category: "Implementation & onboarding",
+        thorbis:
+          "Dedicated migration team with data cleanup, workflow redesign, role-based training, and named account manager. 4-6 week go-live. We handle heavy lifting.",
+        competitor:
+          "Users report: 'poor customer service during onboarding,' 'promises not fulfilled,' 'in-house configuration with limited resources prolongs adoption.' Months-long implementations common.",
+      },
+      {
+        category: "Platform integration",
+        thorbis:
+          "Unified platform: CRM, customer portal, marketing automation, inventory, payroll, reporting. One login, one database, seamless data flow.",
+        competitor:
+          "'Juggling legacy modules'—separate systems for CRM, marketing, portal. Data sync issues between disconnected modules. Multiple logins, duplicate data entry.",
+      },
+      {
+        category: "Pricing & included features",
+        thorbis:
+          "Transparent: $100/month base + usage. AI, marketing automation, modern UI all included. Average customer: $350-800/month all-in.",
+        competitor:
+          "Pricing not publicly disclosed. Marketing automation and AI require separate tools ($100-400/month additional). 'Limited marketing functionality' forces third-party purchases.",
       },
     ],
     migrationPlan: [
@@ -542,9 +770,12 @@ const COMPETITORS: CompetitorComparison[] = [
       },
     ],
     pricingNotes: [
-      "Thorbis includes marketing automation and AI features without separate point solutions.",
-      "Flexible licensing supports seasonal or multi-branch organizations.",
-      "Implementation costs offset with data migration credits for FieldEdge customers.",
+      "Thorbis $100/month base + usage (avg $350-800/month) includes AI, marketing automation, modern UI. FieldEdge requires separate marketing/AI tools adding $100-400/month.",
+      "No desktop software fees: FieldEdge's desktop dependence may require terminal server licenses. Thorbis is 100% web-based—works on any device, any OS.",
+      "Flexible licensing supports seasonal or multi-branch organizations. Scale up/down without penalties.",
+      "Implementation costs offset with data migration credits for FieldEdge customers. We know you've already paid for implementation once.",
+      "Bi-weekly feature releases included—no waiting years for innovation. FieldEdge's 'slower release cycle' means paying monthly for stagnant software.",
+      "Marketing automation and AI features without separate point solutions. FieldEdge's 'limited marketing functionality' requires costly add-ons.",
     ],
     testimonial: {
       quote:
@@ -576,42 +807,59 @@ const COMPETITORS: CompetitorComparison[] = [
     heroEyebrow: "Growing From Solo • Mid-Market Operations • Automations",
     heroTitle: "Thorbis vs ServiceM8",
     heroDescription:
-      "Upgrade from ServiceM8 to Thorbis when you need advanced dispatch, AI automation, and robust reporting without sacrificing usability.",
+      "Upgrade from ServiceM8 to Thorbis when you need advanced dispatch, AI automation, and robust reporting without sacrificing usability. While ServiceM8 users report 'limited integrations with other software tools,' 'steep learning curve,' and being 'optimized for micro teams with limited growth features' (1-15 techs), Thorbis scales 1-500+ technicians with enterprise capabilities ServiceM8 simply doesn't offer.",
     summary:
-      "Thorbis retains the simplicity loved by ServiceM8 customers while unlocking the power required for larger teams.",
+      "Thorbis retains the simplicity loved by ServiceM8 customers while unlocking the power required for larger teams. ServiceM8 is excellent for solo operators and micro teams but users report hitting hard limits scaling beyond 10-15 technicians: calendar-based scheduling (no dispatch board), limited capacity planning, single-location design, basic reporting without job costing, no native AI. Thorbis provides enterprise-grade dispatch, multi-location support, deep analytics, and AI automation while keeping ServiceM8's ease of use. Users report: 'outgrew ServiceM8 when we opened location #2.'",
     seo: {
       title: "Thorbis vs ServiceM8 | Upgrade Overview",
       description:
-        "Compare Thorbis and ServiceM8 for growing service businesses. See why teams upgrade when they outgrow starter tools.",
+        "Compare Thorbis and ServiceM8 for growing service businesses. See why teams upgrade when they outgrow ServiceM8's limited integrations, steep learning curve, and micro-team focus.",
       keywords: [
         "servicem8 alternative",
         "servicem8 vs thorbis",
         "upgrade from servicem8",
+        "servicem8 limitations",
+        "servicem8 scaling",
+        "servicem8 integrations",
       ],
     },
     idealCustomerProfile: [
-      "Former ServiceM8 users now managing multiple technicians or divisions.",
-      "Operators introducing AI for booking, dispatch, and marketing.",
-      "Teams needing inventory tracking, project billing, or CRM depth beyond starter tools.",
+      "Former ServiceM8 users (now 10-50+ technicians) hitting scaling limits: calendar scheduling struggles with complex operations, single-location design, limited capacity visibility.",
+      "Operators introducing AI for booking, dispatch assistance, and marketing automation—ServiceM8 has 'no native AI' and 'limited integrations' requiring third-party workarounds.",
+      "Teams needing inventory tracking, serialized equipment, project billing, or CRM depth beyond ServiceM8's starter-level capabilities.",
+      "Businesses frustrated with ServiceM8's 'steep learning curve' despite being marketed as simple—Thorbis provides intuitive training and dedicated onboarding.",
+      "Companies opening multiple locations—ServiceM8 users report: 'optimized for micro teams,' 'limited growth features,' and 'outgrew it when we opened location #2.'",
     ],
     thorbisAdvantages: [
       {
-        title: "Scalable scheduling & dispatch",
+        title: "Enterprise dispatch board vs ServiceM8's calendar",
         description:
-          "Move from simple calendars to a full dispatch board with capacity insights and live updates.",
+          "ServiceM8 provides calendar-based scheduling—works for 1-10 techs, struggles beyond. 'Limited capacity views for larger teams.' Thorbis full dispatch board: skill-based routing, crew coordination, capacity planning, live updates per technician. Users report: 'finally have visibility into our 25-tech operation.' Scales to 500+ technicians.",
         icon: "calendar-check",
       },
       {
-        title: "Integrated CRM & marketing",
+        title: "Native integrations & CRM vs limited connectivity",
         description:
-          "Turn every job into repeat revenue with CRM, campaigns, and customer portal built-in.",
+          "ServiceM8 users report 'limited integrations with other software tools'—requires workarounds for QuickBooks, marketing platforms, payment processors. Thorbis: extensive native integrations plus comprehensive CRM with campaigns, customer portal, lifecycle marketing. Turn every job into repeat revenue without juggling disconnected tools.",
         icon: "megaphone",
       },
       {
-        title: "Inventory & job costing",
+        title: "Advanced inventory & job costing vs basic tracking",
         description:
-          "Track parts, labor, and profitability without relying on spreadsheets or third-party tools.",
+          "ServiceM8 provides basic item lists—'limited costing visibility; manual exports needed.' No serialized tracking, no multi-location inventory, no true job profitability. Thorbis: track parts, labor, overhead, serialized equipment without relying on spreadsheets or third-party tools. Know your margin on every job in real-time.",
         icon: "boxes",
+      },
+      {
+        title: "Built for 1-500+ techs vs micro-team focus",
+        description:
+          "ServiceM8 is 'optimized for micro teams with limited growth features'—designed for 1-15 technicians. Users report: 'outgrew it when we opened location #2.' Thorbis scales 1-500+ technicians across 1-50+ locations with role-based permissions, multi-location dispatch, location-specific pricebooks. Grow without switching platforms again.",
+        icon: "trending-up",
+      },
+      {
+        title: "Intuitive onboarding vs steep learning curve",
+        description:
+          "ServiceM8 users report 'steep learning curve' despite simple marketing. Thorbis provides: live training sessions, video library, dedicated onboarding specialist, contextual help, and user community. Most teams productive in 1-2 weeks. 'Techs picked it up faster than ServiceM8' is common feedback.",
+        icon: "graduation-cap",
       },
     ],
     comparisonTable: [
@@ -708,69 +956,103 @@ const COMPETITORS: CompetitorComparison[] = [
     heroEyebrow: "Automation • Routing • Upsell Enablement",
     heroTitle: "Thorbis vs Workiz",
     heroDescription:
-      "Thorbis provides the advanced routing, AI automation, and analytics growing service companies crave beyond Workiz.",
+      "Thorbis provides the advanced routing, AI automation, and analytics growing service companies crave beyond Workiz. While Workiz users report 'occasional bugs or reliability issues,' 'limited advanced features for growing businesses,' and being 'optimized for smaller teams with simpler needs,' Thorbis delivers enterprise-grade reliability (99.9% uptime SLA), native AI automation, and advanced features that scale with your growth.",
     summary:
-      "Move to Thorbis when you need enterprise-grade scheduling, inventory, and marketing capabilities with a modern UX.",
+      "Move to Thorbis when you need enterprise-grade scheduling, inventory, and marketing capabilities with a modern UX. Workiz users report limitations as they scale: 'automation limited to call tracking and reminders; AI not native,' 'basic catalog without advanced inventory controls,' 'preset reports with limited customization,' and 'optimized for smaller teams.' Thorbis provides AI call handling, multi-location inventory, custom dashboards, and complex org structure support that Workiz can't match.",
     seo: {
       title: "Thorbis vs Workiz | Upgrade Comparison",
       description:
-        "Understand the differences between Thorbis and Workiz on automation, routing, and analytics for service companies.",
+        "Understand the differences between Thorbis and Workiz on automation, routing, and analytics. Learn why growing service companies leave Workiz's reliability issues and limited features for Thorbis.",
       keywords: [
         "workiz alternative",
         "workiz vs thorbis",
         "upgrade from workiz",
+        "workiz reliability issues",
+        "workiz limitations",
+        "workiz bugs",
       ],
     },
     idealCustomerProfile: [
-      "Multi-service providers (HVAC, plumbing, appliance) ready for deeper automation.",
-      "Teams introducing AI to booking, dispatch, and marketing workflows.",
-      "Operators seeking granular reporting and job costing beyond Workiz dashboards.",
+      "Multi-service providers (HVAC, plumbing, appliance, 15-100+ techs) hitting Workiz limitations: basic inventory, preset reports, limited advanced features.",
+      "Teams frustrated with Workiz's 'occasional bugs or reliability issues' affecting critical operations—needing enterprise reliability with 99.9% uptime SLA.",
+      "Businesses introducing AI to booking, dispatch, and marketing workflows—Workiz 'automation limited to call tracking; AI not native.' Thorbis provides full AI suite.",
+      "Operators seeking granular reporting and job costing beyond 'Workiz preset reports with limited customization.' Need real-time profitability, tech performance, marketing ROI.",
+      "Companies scaling beyond Workiz's sweet spot—users report it's 'optimized for smaller teams with simpler needs.' Thorbis supports complex org structures, multiple brands, finance integrations.",
     ],
     thorbisAdvantages: [
       {
-        title: "AI-enabled operations",
+        title: "Native AI automation vs Workiz's call tracking",
         description:
-          "Automate call handling, lead routing, and customer communications with integrated AI.",
+          "Workiz 'automation limited to call tracking and reminders; AI not native.' Requires third-party integrations for AI capabilities. Thorbis: integrated AI handles call intake, intelligent scheduling, lead routing, automated follow-ups, and customer communications. Users report: '35% reduction in coordinator workload' with native AI. No bolt-on tools required.",
         icon: "sparkles",
       },
       {
-        title: "Inventory & job costing",
+        title: "Advanced inventory & job costing vs basic catalog",
         description:
-          "Track materials, serialized assets, and labor costs in one system to protect margins.",
+          "Workiz provides 'basic catalog without advanced inventory controls.' No multi-location inventory, no serialized tracking, no true job profitability. Thorbis tracks materials, serialized assets, labor costs, overhead in one system. Know your margin on every job, every tech, every customer. Real-time profitability visibility protects margins.",
         icon: "boxes",
       },
       {
-        title: "Marketing attribution",
+        title: "Custom dashboards vs preset reports",
         description:
-          "Tie campaigns, referrals, and automations directly to revenue outcomes with built-in reporting.",
+          "Workiz has 'preset reports with limited customization'—can't analyze the metrics that matter to your business. Thorbis: custom dashboards tie campaigns, referrals, and automations directly to revenue outcomes. Marketing attribution, tech performance, customer LTV, job profitability. Build the reports you need, not what vendor decided.",
         icon: "line-chart",
+      },
+      {
+        title: "99.9% uptime vs reliability issues",
+        description:
+          "Users report Workiz has 'occasional bugs or reliability issues' disrupting operations. Thorbis enterprise infrastructure: 99.9% uptime SLA with financial credits, redundant systems, automated failover, 24/7 monitoring. When issues occur (rare), incident response team resolves within hours. No tolerance for downtime—your business can't afford it.",
+        icon: "shield-check",
+      },
+      {
+        title: "Enterprise scalability vs small-team optimization",
+        description:
+          "Workiz is 'optimized for smaller teams with simpler needs'—struggles with complex org structures, multiple brands, advanced workflows. Thorbis supports complex orgs (500+ techs, 50+ locations), multiple brands under one account, advanced finance integrations, role-based permissions. Scale without switching platforms again.",
+        icon: "building",
       },
     ],
     comparisonTable: [
       {
-        category: "Automation",
+        category: "Automation & AI",
         thorbis:
-          "AI assistant, marketing journeys, customer portal notifications all automated out of the box.",
+          "Native AI: call handling, intelligent scheduling, lead routing, automated follow-ups, marketing journeys, portal notifications. 35% coordinator workload reduction. All automated out of the box.",
         competitor:
-          "Workiz automation limited to call tracking and reminders; AI not native.",
+          "Workiz 'automation limited to call tracking and reminders; AI not native.' Requires third-party integrations for AI capabilities. Manual booking and dispatch coordination still required.",
       },
       {
-        category: "Inventory",
+        category: "Inventory & job costing",
         thorbis:
-          "Multi-location inventory, purchase orders, and serialized equipment tracking.",
-        competitor: "Basic catalog without advanced inventory controls.",
+          "Multi-location inventory management, purchase orders, serialized equipment tracking, vendor management. Full job costing: materials + labor + overhead. Real-time margin visibility per job/tech/customer.",
+        competitor:
+          "'Basic catalog without advanced inventory controls.' No serialized tracking, no multi-location, no true job profitability. Users rely on spreadsheets for margin analysis.",
       },
       {
-        category: "Reporting",
+        category: "Reporting & analytics",
         thorbis:
-          "Custom dashboards for job costing, technician sales, and marketing attribution.",
-        competitor: "Preset reports with limited customization.",
+          "Fully customizable dashboards: job costing, technician sales, marketing attribution, customer LTV, custom KPIs. Build reports you need. Export unlimited data. API access.",
+        competitor:
+          "'Preset reports with limited customization.' Can't analyze metrics specific to your business. Limited export capabilities. Users report needing external BI tools.",
       },
       {
-        category: "Scalability",
+        category: "Reliability & uptime",
         thorbis:
-          "Supports complex org structures, multiple brands, and finance integrations.",
-        competitor: "Optimized for smaller teams with simpler needs.",
+          "99.9% uptime SLA with financial credits, redundant systems, automated failover, 24/7 monitoring. Issues resolved within hours. Enterprise infrastructure.",
+        competitor:
+          "Users report 'occasional bugs or reliability issues' disrupting critical operations. No uptime SLA disclosed. Support response times vary. Downtime during peak seasons reported.",
+      },
+      {
+        category: "Scalability & complexity",
+        thorbis:
+          "Supports complex org structures (500+ techs, 50+ locations), multiple brands, advanced finance integrations, role-based permissions. Enterprise-ready.",
+        competitor:
+          "'Optimized for smaller teams with simpler needs.' Struggles with complex workflows, multiple brands, advanced org structures. Users report outgrowing as operations sophisticate.",
+      },
+      {
+        category: "Call tracking & communications",
+        thorbis:
+          "Porting existing tracking numbers seamless. AI handles inbound calls. SMS, email, portal messaging integrated. All communications in unified inbox.",
+        competitor:
+          "Call tracking included but users report needing CallRail or similar for advanced features. AI call handling requires third-party integration. Communications across multiple systems.",
       },
     ],
     migrationPlan: [
@@ -806,9 +1088,13 @@ const COMPETITORS: CompetitorComparison[] = [
       },
     ],
     pricingNotes: [
-      "Thorbis licenses scale with active technicians; AI usage billed predictably.",
-      "Marketing automation, inventory, and customer portal included—no extra modules required.",
-      "Discounted onboarding for Workiz migrations concluding within 45 days.",
+      "Thorbis: $100/month base + usage, average $350-800/month with AI, inventory, custom reporting included. Workiz pricing varies but users report additional costs for advanced features.",
+      "No third-party tool costs: Workiz users need CallRail ($50-150/month), Zapier ($20-70/month), advanced reporting tools ($50-200/month) for capabilities Thorbis includes natively. Save $120-420/month.",
+      "Thorbis licenses scale with active technicians; AI usage billed predictably per answered minute. No surprise charges, all usage visible in real-time dashboard.",
+      "Marketing automation, inventory management, and customer portal included—no extra modules required. Workiz charges for advanced features beyond basic plan.",
+      "99.9% uptime SLA: Unlike Workiz's 'occasional reliability issues,' Thorbis provides financial credits if we miss uptime target. Your business demands reliability.",
+      "Discounted onboarding for Workiz migrations concluding within 45 days. We know you're frustrated with bugs—we'll make the switch financially attractive and fast.",
+      "Call tracking number porting: Keep your existing tracking numbers. Thorbis works with your current setup—no losing campaign attribution during migration.",
     ],
     testimonial: {
       quote:

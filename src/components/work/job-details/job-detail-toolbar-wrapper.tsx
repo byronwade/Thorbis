@@ -13,7 +13,7 @@ import { JobDetailToolbar } from "./job-detail-toolbar";
 
 export function JobDetailToolbarWrapper() {
   const params = useParams();
-  const jobId = params.id as string;
+  const jobId = params?.id as string;
   const [jobData, setJobData] = useState<any>(null);
 
   useEffect(() => {

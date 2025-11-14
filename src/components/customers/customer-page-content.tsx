@@ -408,7 +408,9 @@ export function CustomerPageContent({
 
   // Update toolbar actions when hasChanges or isSaving changes
   useEffect(() => {
-    setToolbarActions(pathname, getToolbarActions());
+    if (pathname) {
+      setToolbarActions(pathname, getToolbarActions());
+    }
   }, [hasChanges, isSaving, pathname, setToolbarActions]);
 
   const metadataItems: DetailPageHeaderConfig["metadata"] = [

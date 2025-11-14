@@ -1,5 +1,7 @@
 "use server";
 
+import { Buffer } from "node:buffer";
+import { extname } from "node:path";
 import { checkBotId } from "botid/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -18,6 +20,10 @@ import {
   RateLimitError,
 } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+import {
+  createServiceSupabaseClient,
+  type ServiceSupabaseClient,
+} from "@/lib/supabase/service-client";
 import {
   sendEmailVerification,
   sendPasswordChanged,
@@ -39,9 +45,18 @@ import {
 const signUpSchema = z.object({
   name: z
     .string()
+    .trim()
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name is too long"),
   email: z.string().email("Invalid email address"),
+  phone: z
+    .string()
+    .trim()
+    .min(10, "Phone number is required")
+    .refine(
+      (value) => value.replace(/\D/g, "").length >= 10,
+      "Enter a valid phone number"
+    ),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -50,6 +65,12 @@ const signUpSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Password must contain uppercase, lowercase, and number"
     ),
+  companyName: z
+    .string()
+    .trim()
+    .min(2, "Company name must be at least 2 characters")
+    .max(200, "Company name is too long")
+    .optional(),
   terms: z
     .boolean()
     .refine((val) => val === true, "You must accept the terms and conditions"),
@@ -81,6 +102,68 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const AVATAR_STORAGE_BUCKET = "avatars";
+
+function normalizePhoneNumber(input: string): string {
+  const trimmed = input.trim();
+  const digitsOnly = trimmed.replace(/\D/g, "");
+
+  if (!digitsOnly) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith("+")) {
+    return `+${digitsOnly}`;
+  }
+
+  if (digitsOnly.length === 11 && digitsOnly.startsWith("1")) {
+    return `+${digitsOnly}`;
+  }
+
+  if (digitsOnly.length === 10) {
+    return `+1${digitsOnly}`;
+  }
+
+  return `+${digitsOnly}`;
+}
+
+async function uploadAvatarForNewUser(
+  supabase: ServiceSupabaseClient,
+  file: File,
+  userId: string
+): Promise<string | null> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Avatar must be an image");
+  }
+
+  if (file.size > MAX_AVATAR_FILE_SIZE) {
+    throw new Error("Avatar must be smaller than 5MB");
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const extension = extname(file.name) || ".jpg";
+  const filePath = `${userId}/profile${extension}`;
+
+  const { error } = await supabase.storage
+    .from(AVATAR_STORAGE_BUCKET)
+    .upload(filePath, Buffer.from(arrayBuffer), {
+      cacheControl: "3600",
+      contentType: file.type || "image/jpeg",
+      upsert: true,
+    });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(AVATAR_STORAGE_BUCKET).getPublicUrl(filePath);
+
+  return publicUrl;
+}
+
 // Internal return type (not exported - Next.js 16 "use server" restriction)
 type AuthActionResult = {
   success: boolean;
@@ -110,14 +193,27 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
     }
 
     // Parse and validate form data
+    const companyNameEntry = formData.get("companyName");
+    const normalizedCompanyName =
+      typeof companyNameEntry === "string" && companyNameEntry.trim().length > 0
+        ? companyNameEntry
+        : undefined;
+
     const rawData = {
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
+      name: (formData.get("name") as string) ?? "",
+      email: (formData.get("email") as string) ?? "",
+      phone: (formData.get("phone") as string) ?? "",
+      password: (formData.get("password") as string) ?? "",
+      companyName: normalizedCompanyName,
       terms: formData.get("terms") === "on" || formData.get("terms") === "true",
     };
 
     const validatedData = signUpSchema.parse(rawData);
+    const normalizedPhone = normalizePhoneNumber(validatedData.phone);
+    const companyName = validatedData.companyName?.trim() || undefined;
+    const avatarEntry = formData.get("avatar");
+    const avatarFile =
+      avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
 
     // Rate limit sign-up attempts by email
     try {
@@ -152,6 +248,8 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
       options: {
         data: {
           name: validatedData.name,
+          phone: normalizedPhone,
+          companyName: companyName ?? null,
         },
         // Skip Supabase's email confirmation - we'll handle it ourselves
         emailRedirectTo: `${emailConfig.siteUrl}/auth/callback`,
@@ -170,6 +268,60 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
         success: false,
         error: "Failed to create user account",
       };
+    }
+
+    const userId = data.user.id;
+    let serviceSupabase: ServiceSupabaseClient | null = null;
+    const ensureServiceSupabase = async () => {
+      if (serviceSupabase) {
+        return serviceSupabase;
+      }
+      serviceSupabase = await createServiceSupabaseClient();
+      return serviceSupabase;
+    };
+
+    let avatarUrl: string | null = null;
+
+    if (avatarFile) {
+      try {
+        const adminClient = await ensureServiceSupabase();
+        avatarUrl = await uploadAvatarForNewUser(
+          adminClient,
+          avatarFile,
+          userId
+        );
+      } catch (avatarUploadError) {
+        console.error("Avatar upload failed:", avatarUploadError);
+      }
+    }
+
+    try {
+      const adminClient = await ensureServiceSupabase();
+      const updatePayload: Record<string, string | null> = {
+        phone: normalizedPhone,
+      };
+      if (avatarUrl) {
+        updatePayload.avatar = avatarUrl;
+      }
+      await adminClient.from("users").update(updatePayload).eq("id", userId);
+    } catch (profileUpdateError) {
+      console.error("Failed to update user profile:", profileUpdateError);
+    }
+
+    if (avatarUrl) {
+      try {
+        const adminClient = await ensureServiceSupabase();
+        await adminClient.auth.admin.updateUserById(userId, {
+          user_metadata: {
+            name: validatedData.name,
+            phone: normalizedPhone,
+            companyName: companyName ?? null,
+            avatarUrl,
+          },
+        });
+      } catch (metadataError) {
+        console.error("Failed to sync avatar metadata:", metadataError);
+      }
     }
 
     // Check if email confirmation is required (based on Supabase settings)
@@ -227,6 +379,200 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
     // Revalidate and redirect to onboarding
     revalidatePath("/", "layout");
     redirect("/dashboard/welcome");
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.issues[0]?.message || "Validation error",
+      };
+    }
+
+    // Don't redirect on errors, just return them
+    if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    // Re-throw redirect errors
+    throw error;
+  }
+}
+
+/**
+ * Complete Profile - Update missing user information after OAuth signup
+ *
+ * Features:
+ * - Collects missing required fields (phone, name)
+ * - Optional avatar upload
+ * - Updates both auth metadata and public.users table
+ * - Company name is collected during onboarding, not here
+ */
+export async function completeProfile(
+  formData: FormData
+): Promise<AuthActionResult> {
+  try {
+    // Create Supabase client
+    const supabase = await createClient();
+
+    if (!supabase) {
+      return {
+        success: false,
+        error: "Authentication service is not configured.",
+      };
+    }
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: "You must be signed in to complete your profile.",
+      };
+    }
+
+    // Parse form data
+    const name = formData.get("name") as string | null;
+    const phone = formData.get("phone") as string | null;
+    const avatarFile = formData.get("avatar") as File | null;
+
+    // Validate phone if provided
+    let normalizedPhone: string | null = null;
+    if (phone) {
+      normalizedPhone = phone.replace(/\D/g, "");
+      if (normalizedPhone.length < 10) {
+        return {
+          success: false,
+          error: "Please enter a valid phone number with at least 10 digits.",
+        };
+      }
+    }
+
+    const userId = user.id;
+    let serviceSupabase: ServiceSupabaseClient | null = null;
+    const ensureServiceSupabase = async () => {
+      if (serviceSupabase) {
+        return serviceSupabase;
+      }
+      serviceSupabase = await createServiceSupabaseClient();
+      return serviceSupabase;
+    };
+
+    // Get existing avatar from user metadata (OAuth avatar)
+    const existingOAuthAvatar =
+      user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
+    // Upload new avatar if provided, otherwise keep OAuth avatar
+    let avatarUrl: string | null = existingOAuthAvatar;
+    if (avatarFile && avatarFile.size > 0) {
+      try {
+        const adminClient = await ensureServiceSupabase();
+        avatarUrl = await uploadAvatarForNewUser(
+          adminClient,
+          avatarFile,
+          userId
+        );
+      } catch (avatarUploadError) {
+        console.error("Avatar upload failed:", avatarUploadError);
+        // Keep OAuth avatar if upload fails
+        avatarUrl = existingOAuthAvatar;
+      }
+    }
+
+    // Update public.users table
+    try {
+      const adminClient = await ensureServiceSupabase();
+      const updatePayload: Record<string, string | null> = {};
+
+      if (name) {
+        updatePayload.name = name;
+      }
+      if (normalizedPhone) {
+        updatePayload.phone = normalizedPhone;
+      }
+      // Always update avatar (either new upload or OAuth avatar)
+      if (avatarUrl) {
+        updatePayload.avatar = avatarUrl;
+      }
+
+      const { error: updateError } = await adminClient
+        .from("users")
+        .update(updatePayload)
+        .eq("id", userId);
+
+      if (updateError) {
+        console.error("Failed to update user profile:", updateError);
+        return {
+          success: false,
+          error: `Failed to update your profile: ${updateError.message}`,
+        };
+      }
+
+      console.log(
+        `✅ Profile updated for user ${userId}:`,
+        JSON.stringify(updatePayload)
+      );
+    } catch (profileUpdateError) {
+      console.error("Failed to update user profile:", profileUpdateError);
+      return {
+        success: false,
+        error: "Failed to update your profile. Please try again.",
+      };
+    }
+
+    // Update auth metadata
+    try {
+      const adminClient = await ensureServiceSupabase();
+      const metadata: Record<string, string | null> = {
+        ...user.user_metadata,
+      };
+
+      if (name) {
+        metadata.name = name;
+      }
+      if (normalizedPhone) {
+        metadata.phone = normalizedPhone;
+      }
+      if (avatarUrl) {
+        metadata.avatarUrl = avatarUrl;
+      }
+
+      await adminClient.auth.admin.updateUserById(userId, {
+        user_metadata: metadata,
+      });
+    } catch (metadataError) {
+      console.error("Failed to sync user metadata:", metadataError);
+    }
+
+    // Check if user has an active company to determine redirect
+    try {
+      const adminClient = await ensureServiceSupabase();
+      const { data: hasCompany } = await adminClient
+        .from("team_members")
+        .select("company_id")
+        .eq("user_id", userId)
+        .eq("status", "active")
+        .limit(1)
+        .maybeSingle();
+
+      const redirectPath = hasCompany ? "/dashboard" : "/dashboard/welcome";
+      console.log(
+        `✅ Profile complete - redirecting to ${redirectPath} (hasCompany: ${!!hasCompany})`
+      );
+
+      // Revalidate and redirect
+      revalidatePath("/", "layout");
+      redirect(redirectPath);
+    } catch (redirectError) {
+      console.error("Error checking company status:", redirectError);
+      // Fallback to welcome page
+      revalidatePath("/", "layout");
+      redirect("/dashboard/welcome");
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
@@ -405,8 +751,10 @@ export async function signOut(): Promise<AuthActionResult> {
  *
  * Features:
  * - OAuth provider authentication
- * - Automatic user profile creation
+ * - Handles both new signups and existing user logins automatically
+ * - Supabase determines if user exists and signs them in or creates new account
  * - Redirects to provider login page
+ * - After callback, checks if profile is complete (phone, name)
  */
 export async function signInWithOAuth(
   provider: "google" | "facebook"

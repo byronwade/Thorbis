@@ -182,7 +182,7 @@ type EmployeeProfile = {
 
 export default function EmployeeProfilePage() {
   const params = useParams();
-  const employeeId = params.id as string;
+  const employeeId = params?.id as string;
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSavingPermissions, setIsSavingPermissions] = useState(false);

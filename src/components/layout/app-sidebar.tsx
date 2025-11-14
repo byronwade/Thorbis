@@ -2281,7 +2281,7 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const currentSection = getCurrentSection(pathname);
+  const currentSection = getCurrentSection(pathname || "/dashboard");
   const navItems = navigationSections[currentSection];
   const [showWhatsNew, setShowWhatsNew] = useState(true);
 
@@ -2297,7 +2297,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isReportingSection = currentSection === "reporting";
   const isJobDetailsSection = currentSection === "jobDetails";
   const isCommunicationDetail =
-    pathname.match(COMMUNICATION_DETAIL_PATTERN) !== null;
+    pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
 
   // Use grouped navigation for settings, ai, work, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
   const useGroupedNav =

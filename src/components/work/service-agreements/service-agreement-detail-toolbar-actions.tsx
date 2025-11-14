@@ -39,7 +39,7 @@ export function ServiceAgreementDetailToolbarActions() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const agreementId = pathname.split("/").pop();
+  const agreementId = pathname?.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 

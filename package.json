@@ -170,6 +170,7 @@
     "concurrently": "^9.2.1",
     "depcheck": "^1.4.7",
     "dotenv": "^17.2.3",
+    "@next/eslint-plugin-next": "^16.0.3",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.3",
     "eslint-plugin-react-hooks": "^7.0.1",

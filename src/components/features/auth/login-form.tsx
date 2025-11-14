@@ -15,13 +15,13 @@ import { Separator } from "@/components/ui/separator";
 
 export function LoginForm() {
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo");
-  const errorParam = searchParams.get("error");
+  const redirectTo = searchParams?.get("redirectTo");
+  const errorParam = searchParams?.get("error");
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // Preserve querystring errors for user-friendly messaging
-  const [error, setError] = useState<string | null>(errorParam);
+  const [error, setError] = useState<string | null>(errorParam || null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +43,14 @@ export function LoginForm() {
         setIsLoading(false);
       }
       // If successful, the server action will redirect
-    } catch {
+    } catch (caughtError) {
+      if (
+        caughtError instanceof Error &&
+        caughtError.message === "NEXT_REDIRECT"
+      ) {
+        return;
+      }
+
       setError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }

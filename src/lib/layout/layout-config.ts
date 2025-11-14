@@ -90,6 +90,18 @@ const LAYOUT_RULES: LayoutRule[] = [
     priority: 80,
   },
   {
+    pattern: /^\/dashboard\/settings(?:\/.*)?$/,
+    config: {
+      maxWidth: "7xl",
+      padding: "md",
+      gap: "md",
+      showToolbar: true,
+      showSidebar: false,
+      showHeader: true,
+    },
+    priority: 79,
+  },
+  {
     pattern: /^\/dashboard\/work\/schedule/,
     config: {
       maxWidth: "full",

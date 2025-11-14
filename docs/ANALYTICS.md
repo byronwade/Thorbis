@@ -181,6 +181,44 @@ trackEvent({ name: "search.performed", properties: {
 }});
 ```
 
+## Settings Telemetry
+
+The settings overview page emits analytics so we can understand which clusters admins
+touch most frequently and when sensitive toggles change.
+
+### Quick Actions
+
+Client-side buttons across each section emit `settings.quick_action` with the
+cluster slug and action identifier:
+
+```typescript
+trackEvent({
+  name: "settings.quick_action",
+  properties: {
+    section: "finance",
+    action: "settings.quick_action.gift_cards"
+  }
+});
+```
+
+### Purchase Order System Toggle
+
+When an admin enables or disables the purchase order system we log the state with
+`settings.po_system_toggle`:
+
+```typescript
+trackEvent({
+  name: "settings.po_system_toggle",
+  properties: {
+    enabled: true
+  }
+});
+```
+
+These events complement the Supabase-backed health metrics rendered on the page so the
+telemetry cards always reflect reality while still letting Product measure feature
+adoption without querying production tables.
+
 ## Integration Patterns
 
 ### Server Actions

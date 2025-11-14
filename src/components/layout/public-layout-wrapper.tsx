@@ -44,9 +44,10 @@ interface PublicLayoutWrapperProps {
 
 export function PublicLayoutWrapper({ children }: PublicLayoutWrapperProps) {
   const pathname = usePathname();
+  const safePathname = pathname || "/";
 
   // Get unified configuration for this route
-  const config = getPublicLayoutConfig(pathname);
+  const config = getPublicLayoutConfig(safePathname);
 
   // Extract configuration sections
   const { variant, header, footer, sidebar, content } = config;

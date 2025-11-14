@@ -33,17 +33,18 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname();
+  const safePathname = pathname || "/dashboard";
 
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
           // Check if current path matches this item or its detail pages
-          const isExactMatch = pathname === item.url;
-          const isDetailPage = pathname.startsWith(`${item.url}/`);
+          const isExactMatch = safePathname === item.url;
+          const isDetailPage = safePathname.startsWith(`${item.url}/`);
           const hasActiveSubItem = item.items?.some(
             (subItem) =>
-              pathname === subItem.url || pathname.startsWith(`${subItem.url}/`)
+              safePathname === subItem.url || safePathname.startsWith(`${subItem.url}/`)
           );
           const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
 
@@ -71,8 +72,8 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items.map((subItem) => {
                         const isSubActive =
-                          pathname === subItem.url ||
-                          pathname.startsWith(`${subItem.url}/`);
+                          safePathname === subItem.url ||
+                          safePathname.startsWith(`${subItem.url}/`);
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton

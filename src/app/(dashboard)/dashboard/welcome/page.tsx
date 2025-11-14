@@ -23,7 +23,11 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function WelcomePage() {
+export default async function WelcomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ new?: string }>;
+}) {
   // Server-side authentication check
   const user = await getCurrentUser();
 
@@ -46,6 +50,10 @@ export default async function WelcomePage() {
     );
   }
 
+  // Check if user is explicitly creating a new company
+  const params = await searchParams;
+  const isCreatingNewCompany = params.new === "true";
+
   // Get the active company ID (if any)
   const activeCompanyId = await getActiveCompanyId();
 
@@ -64,6 +72,15 @@ export default async function WelcomePage() {
     const status = companies?.stripe_subscription_status;
     return status === "active" || status === "trialing";
   });
+
+  // If user has an active company and is NOT explicitly creating a new one,
+  // redirect them to the main dashboard
+  if (hasActiveCompany && !isCreatingNewCompany) {
+    console.log(
+      `✅ User has active company - redirecting to dashboard (company: ${activeCompanyId})`
+    );
+    redirect("/dashboard");
+  }
 
   // Fetch incomplete company data if exists
   let incompleteCompany = null;
@@ -116,15 +133,17 @@ export default async function WelcomePage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  const userProps = {
+    id: user.id,
+    email: user.email || userData?.email || "",
+    name: user.user_metadata?.full_name || userData?.name || "",
+  };
+
   return (
     <WelcomePageClientAdvanced
       hasActiveCompany={hasActiveCompany ?? false}
       incompleteCompany={incompleteCompany}
-      user={{
-        id: user.id,
-        email: user.email || userData?.email || "",
-        name: user.user_metadata?.full_name || userData?.name || "",
-      }}
+      user={userProps}
     />
   );
 }

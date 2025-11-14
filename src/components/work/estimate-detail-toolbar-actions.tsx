@@ -39,7 +39,7 @@ export function EstimateDetailToolbarActions() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const estimateId = pathname.split("/").pop();
+  const estimateId = pathname?.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 

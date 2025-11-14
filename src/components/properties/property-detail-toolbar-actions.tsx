@@ -25,7 +25,7 @@ import {
 
 export function PropertyDetailToolbarActions() {
   const pathname = usePathname();
-  const propertyId = pathname.split("/").pop();
+  const propertyId = pathname?.split("/").pop();
 
   return (
     <div className="flex items-center gap-1.5">

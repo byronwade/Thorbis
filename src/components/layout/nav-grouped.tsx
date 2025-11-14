@@ -33,6 +33,7 @@ type NavGroup = {
 
 export function NavGrouped({ groups }: { groups: NavGroup[] }) {
   const pathname = usePathname();
+  const safePathname = pathname || "/dashboard";
 
   // Guard against undefined or null groups
   if (!Array.isArray(groups)) {
@@ -72,13 +73,13 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
             <SidebarMenu>
               {group.items.map((item) => {
                 // Check if current path matches this item or its detail pages
-                const isExactMatch = pathname === item.url;
+                const isExactMatch = safePathname === item.url;
 
                 // Special handling for Jobs (/dashboard/work) to exclude known work subpaths
-                let isDetailPage = pathname.startsWith(`${item.url}/`);
+                let isDetailPage = safePathname.startsWith(`${item.url}/`);
                 if (item.url === "/dashboard/work" && isDetailPage) {
                   // Check if pathname matches any known work subpath
-                  const pathAfterWork = pathname.replace("/dashboard/work", "");
+                  const pathAfterWork = safePathname.replace("/dashboard/work", "");
                   const isKnownSubpath = workSubpaths.some((subpath) =>
                     pathAfterWork.startsWith(subpath)
                   );
@@ -88,7 +89,7 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                 }
 
                 const hasActiveSubItem = item.items?.some(
-                  (subItem) => pathname === subItem.url
+                  (subItem) => safePathname === subItem.url
                 );
                 const isActive =
                   isExactMatch || isDetailPage || hasActiveSubItem;
@@ -110,8 +111,8 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                       <SidebarMenuSub>
                         {item.items.map((subItem) => {
                           const isSubActive =
-                            pathname === subItem.url ||
-                            pathname.startsWith(`${subItem.url}/`);
+                            safePathname === subItem.url ||
+                            safePathname.startsWith(`${subItem.url}/`);
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton

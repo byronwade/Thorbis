@@ -78,7 +78,7 @@ export function JobDetailToolbar({
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const jobId = pathname.split("/").pop();
+  const jobId = pathname?.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
   const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);

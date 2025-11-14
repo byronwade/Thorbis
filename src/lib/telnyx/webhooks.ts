@@ -165,28 +165,35 @@ export function verifyWebhookSignature(params: {
   payload: string | Buffer;
   signature: string;
   timestamp: string;
-  secret?: string;
 }): boolean {
   try {
-    const secret = params.secret || TELNYX_CONFIG.webhookSecret;
+    const publicKeyBase64 = TELNYX_CONFIG.publicKey;
 
-    if (!secret) {
-      console.warn("Webhook secret not configured - skipping verification");
-      return true; // Allow in development, but log warning
+    if (!publicKeyBase64) {
+      console.warn("Telnyx public key not configured - skipping verification");
+      return true;
     }
 
-    // Telnyx uses timestamp + payload for signature
-    const signedPayload = `${params.timestamp}|${params.payload}`;
+    const payloadBuffer = Buffer.isBuffer(params.payload)
+      ? params.payload
+      : Buffer.from(params.payload);
+    const signedPayload = Buffer.concat([
+      Buffer.from(params.timestamp),
+      Buffer.from("|"),
+      payloadBuffer,
+    ]);
 
-    // Create HMAC hash
-    const hmac = crypto.createHmac("sha256", secret);
-    hmac.update(signedPayload);
-    const computedSignature = hmac.digest("hex");
+    const publicKey = crypto.createPublicKey({
+      key: Buffer.from(publicKeyBase64, "base64"),
+      format: "der",
+      type: "spki",
+    });
 
-    // Compare signatures (constant-time comparison to prevent timing attacks)
-    return crypto.timingSafeEqual(
-      Buffer.from(params.signature),
-      Buffer.from(computedSignature)
+    return crypto.verify(
+      null,
+      signedPayload,
+      publicKey,
+      Buffer.from(params.signature, "base64")
     );
   } catch (error) {
     console.error("Error verifying webhook signature:", error);

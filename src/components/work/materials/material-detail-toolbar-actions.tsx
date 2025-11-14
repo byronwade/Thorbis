@@ -32,7 +32,7 @@ export function MaterialDetailToolbarActions() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const materialId = pathname.split("/").pop();
+  const materialId = pathname?.split("/").pop();
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 

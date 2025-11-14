@@ -111,6 +111,9 @@
   --footer-height: 0rem; /* Footer height for KB sidebar calculations */
   --sidebar-width: 12rem;
   --top-spacing: 1rem;
+  --font-geist-sans: "Inter", "SF Pro Display", "Segoe UI", system-ui,
+    -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
 
   /* Shadcn Neutral – clean minimalistic palette with electric blue accent */
   --header-bg: 0 0% 100%;

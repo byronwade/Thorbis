@@ -23,7 +23,7 @@ export function AppHeaderWrapper({ children }: AppHeaderWrapperProps) {
 
   // Check if current route should have no header
   const shouldShowHeader = !NO_HEADER_ROUTES.some((route) =>
-    pathname.startsWith(route)
+    pathname?.startsWith(route)
   );
 
   if (!shouldShowHeader) {

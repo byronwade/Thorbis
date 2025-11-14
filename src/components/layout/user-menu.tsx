@@ -200,7 +200,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
           );
         })}
         <DropdownMenuItem asChild className="gap-2 p-2">
-          <Link href="/dashboard/welcome">
+          <Link href="/dashboard/welcome?new=true">
             <div className="flex size-6 items-center justify-center rounded-md border">
               <Plus className="size-4" />
             </div>

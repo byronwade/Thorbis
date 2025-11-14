@@ -41,10 +41,10 @@ export function CustomerDetailToolbar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const isEditMode = searchParams.get("mode") === "edit";
+  const isEditMode = searchParams?.get("mode") === "edit";
 
   const toggleEditMode = () => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     if (isEditMode) {
       params.delete("mode");
     } else {
@@ -53,7 +53,7 @@ export function CustomerDetailToolbar() {
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const customerId = pathname.split("/").pop();
+  const customerId = pathname?.split("/").pop();
 
   return (
     <div className="flex items-center gap-2">

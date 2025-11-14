@@ -181,7 +181,7 @@ export default async function SubscriptionsPage() {
       {/* Add Organization Button */}
       <div className="flex justify-center pt-4">
         <Button asChild size="lg">
-          <Link href="/dashboard/welcome">
+          <Link href="/dashboard/welcome?new=true">
             <Plus className="mr-2 size-5" />
             Add New Organization
           </Link>

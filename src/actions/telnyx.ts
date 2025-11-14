@@ -610,8 +610,8 @@ export async function transcribeCallRecording(params: {
 
     // Store transcription job ID in database
     await mergeProviderMetadata(supabase, params.communicationId, {
-      assemblyai_transcription_id: result.data.id,
-      assemblyai_status: result.data.status,
+          assemblyai_transcription_id: result.data.id,
+          assemblyai_status: result.data.status,
     });
 
     console.log(

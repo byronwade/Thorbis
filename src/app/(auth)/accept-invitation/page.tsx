@@ -95,7 +95,7 @@ function AcceptInvitationContent() {
     },
   });
 
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
 
   // Verify token on mount
   useEffect(() => {

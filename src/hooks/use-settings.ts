@@ -17,7 +17,7 @@
 
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { ActionResult } from "@/lib/errors/with-error-handling";
 
@@ -34,6 +34,8 @@ interface UseSettingsOptions<T> {
   transformLoad?: (data: any) => Partial<T>;
   /** Optional: Transform UI state to FormData */
   transformSave?: (settings: T) => FormData;
+  /** Optional: Prefetched settings to avoid client-side re-fetch */
+  prefetchedData?: Partial<T>;
 }
 
 interface UseSettingsReturn<T> {
@@ -64,12 +66,19 @@ export function useSettings<T extends Record<string, any>>({
   settingsName,
   transformLoad,
   transformSave,
+  prefetchedData,
 }: UseSettingsOptions<T>): UseSettingsReturn<T> {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
-  const [isLoading, setIsLoading] = useState(true);
+  const hasPrefetchedDataRef = useRef(Boolean(prefetchedData));
+  const mergedInitialStateRef = useRef<T>({
+    ...initialState,
+    ...(prefetchedData ?? {}),
+  });
+  const [settings, setSettings] = useState<T>(mergedInitialStateRef.current);
+  const [baseline, setBaseline] = useState<T>(mergedInitialStateRef.current);
+  const [isLoading, setIsLoading] = useState(!prefetchedData);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [settings, setSettings] = useState<T>(initialState);
 
   // Load settings from database on mount
   async function loadSettings() {
@@ -78,12 +87,13 @@ export function useSettings<T extends Record<string, any>>({
       const result = await getter();
 
       if (result.success && result.data) {
-        if (transformLoad) {
-          const transformed = transformLoad(result.data);
-          setSettings((prev) => ({ ...prev, ...transformed }));
-        } else {
-          setSettings((prev) => ({ ...prev, ...result.data }));
-        }
+        const transformed = transformLoad
+          ? transformLoad(result.data)
+          : (result.data as Partial<T>);
+        const merged = { ...initialState, ...transformed } as T;
+        setSettings(merged);
+        setBaseline(merged);
+        setHasUnsavedChanges(false);
       }
     } catch (error) {
       toast.error(`Failed to load ${settingsName} settings`);
@@ -93,7 +103,11 @@ export function useSettings<T extends Record<string, any>>({
   }
 
   useEffect(() => {
-    loadSettings();
+    if (hasPrefetchedDataRef.current) {
+      hasPrefetchedDataRef.current = false;
+      return;
+    }
+    void loadSettings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -120,6 +134,7 @@ export function useSettings<T extends Record<string, any>>({
         const result = await setter(formData);
 
         if (result.success) {
+          setBaseline(settings);
           setHasUnsavedChanges(false);
           toast.success(
             `${settingsName.charAt(0).toUpperCase() + settingsName.slice(1)} settings saved successfully`
@@ -139,13 +154,12 @@ export function useSettings<T extends Record<string, any>>({
 
   // Reset to initial state
   const reset = () => {
-    setSettings(initialState);
+    setSettings(baseline);
     setHasUnsavedChanges(false);
   };
 
   // Reload from database
   const reload = async () => {
-    setHasUnsavedChanges(false);
     await loadSettings();
   };
 

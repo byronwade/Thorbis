@@ -72,8 +72,11 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
       "company_settings",
       "team_members",
       "team_invitations",
+      "departments",
       "custom_roles",
       "api_keys",
+      "tags",
+      "lead_sources",
     ],
     links: [
       {
@@ -92,13 +95,19 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
         title: "Team & Permissions",
         description: "Members, invites, departments, and roles",
         href: "/dashboard/settings/team",
-        supabaseSources: ["team_members", "team_invitations", "custom_roles"],
+        supabaseSources: ["team_members", "team_invitations", "custom_roles", "departments"],
       },
       {
         title: "API Keys",
         description: "Machine-to-machine access and rate limits",
         href: "/dashboard/settings/integrations",
         supabaseSources: ["api_keys"],
+      },
+      {
+        title: "Tags & Lead Sources",
+        description: "Taxonomy for routing, reporting, and attribution",
+        href: "/dashboard/settings/tags",
+        supabaseSources: ["tags", "lead_sources"],
       },
     ],
   },
@@ -114,6 +123,10 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
       "communication_notification_settings",
       "phone_numbers",
       "call_logs",
+      "messaging_brands",
+      "messaging_campaigns",
+      "notification_queue",
+      "phone_porting_requests",
     ],
     links: [
       {
@@ -136,9 +149,21 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
       },
       {
         title: "Notification Defaults",
-        description: "Job, customer, invoice, and schedule alerts",
+        description: "Job, customer, invoice, and queue health",
         href: "/dashboard/settings/communications/notifications",
-        supabaseSources: ["communication_notification_settings"],
+        supabaseSources: ["communication_notification_settings", "notification_queue"],
+      },
+      {
+        title: "10DLC & Compliance",
+        description: "Messaging brand and campaign registration",
+        href: "/dashboard/settings/communications/usage",
+        supabaseSources: ["messaging_brands", "messaging_campaigns"],
+      },
+      {
+        title: "Porting Status",
+        description: "Track number port requests and SLAs",
+        href: "/dashboard/settings/communications/porting-status",
+        supabaseSources: ["phone_porting_requests"],
       },
     ],
   },
@@ -155,6 +180,7 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
       "schedule_team_rules",
       "customer_portal_settings",
       "customer_intake_settings",
+      "customer_loyalty_settings",
     ],
     links: [
       {
@@ -186,6 +212,12 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
         description: "Team rules, dispatch policies, calendar defaults",
         href: "/dashboard/settings/schedule",
         supabaseSources: ["schedule_calendar_settings", "schedule_dispatch_rules", "schedule_team_rules"],
+      },
+      {
+        title: "Loyalty & Rewards",
+        description: "Points, rewards, and program notifications",
+        href: "/dashboard/settings/customers/loyalty",
+        supabaseSources: ["customer_loyalty_settings"],
       },
     ],
   },
@@ -255,6 +287,8 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
       "communication_sms_settings",
       "finance_accounting_settings",
       "finance_bank_accounts",
+      "webhooks",
+      "webhook_logs",
     ],
     links: [
       {
@@ -280,6 +314,12 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
         description: "Automated pricebook imports and refreshes",
         href: "/dashboard/settings/pricebook/integrations",
         supabaseSources: ["supplier_integrations"],
+      },
+      {
+        title: "Webhooks & API access",
+        description: "Keys, secrets, and delivery monitoring",
+        href: "/dashboard/settings/development",
+        supabaseSources: ["api_keys", "webhooks", "webhook_logs"],
       },
     ],
   },

@@ -41,7 +41,7 @@ import {
 
 function CallWindowContent() {
   const searchParams = useSearchParams();
-  const callId = searchParams.get("callId") || getCallIdFromUrl();
+  const callId = searchParams?.get("callId") || getCallIdFromUrl();
 
   const { call, answerCall, endCall, toggleMute, toggleHold, toggleRecording } =
     useUIStore();

@@ -47,6 +47,14 @@ export const signUpSchema = z.object({
     .max(100, "Name is too long")
     .trim(),
   email: emailSchema,
+  phone: z
+    .string()
+    .trim()
+    .min(10, "Phone number is required")
+    .refine(
+      (value) => value.replace(/\D/g, "").length >= 10,
+      "Enter a valid phone number"
+    ),
   password: passwordSchema,
   terms: z
     .boolean()

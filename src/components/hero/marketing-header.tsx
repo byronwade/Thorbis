@@ -1,52 +1,322 @@
 "use client";
 
-import { LayoutDashboard, Menu, Wrench } from "lucide-react";
+import { ChevronDown, LayoutDashboard, Menu, Plus, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { UserMenu } from "@/components/layout/user-menu";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetFooter,
-  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-const PRIMARY_LINKS = [
-  { label: "Platform", href: "/features" },
-  { label: "Integrations", href: "/integrations" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Resources", href: "/free-tools" },
-  { label: "Company", href: "/about" },
-] as const;
+const CTA_LINK = { label: "Get Started", href: "/register" } as const;
 
-const DISCOVER_LINKS = [
-  { label: "Switch to Thorbis", href: "/switch" },
-  { label: "Implementation", href: "/implementation" },
-  { label: "Reviews", href: "/reviews" },
-  { label: "ROI Calculator", href: "/roi" },
-] as const;
+type NavItem = {
+  label: string;
+  href: string;
+  description: string;
+  badge?: string;
+};
 
-const SUPPORT_LINKS = [
-  { label: "Help Center", href: "/kb" },
-  { label: "Integrations", href: "/integrations" },
-  { label: "Community", href: "/community" },
-  { label: "Blog", href: "/blog" },
-] as const;
+type NavSection = {
+  label: string;
+  href: string;
+  description?: string;
+  items?: NavItem[];
+};
 
-const CTA_LINK = { label: "Create account", href: "/register" } as const;
+const NAV_SECTIONS: NavSection[] = [
+  {
+    label: "Solutions",
+    href: "/solutions",
+    description:
+      "Complete automation suite for modern service businesses",
+    items: [
+      {
+        label: "AI Assistant",
+        href: "/features/ai-assistant",
+        description: "24/7 intelligent call handling and booking automation",
+        badge: "AI",
+      },
+      {
+        label: "Scheduling & Dispatch",
+        href: "/features/scheduling",
+        description: "Smart routing and real-time crew coordination",
+      },
+      {
+        label: "Mobile Field App",
+        href: "/features/mobile-app",
+        description: "Offline-first mobile experience for technicians",
+      },
+      {
+        label: "CRM & Sales",
+        href: "/features/crm",
+        description: "Customer intelligence and pipeline management",
+      },
+      {
+        label: "Invoicing & Payments",
+        href: "/features/invoicing",
+        description: "Zero-fee payment processing with instant deposits",
+        badge: "0% Fees",
+      },
+      {
+        label: "QuickBooks Sync",
+        href: "/features/quickbooks",
+        description: "Bidirectional accounting integration",
+      },
+      {
+        label: "Marketing Automation",
+        href: "/features/marketing",
+        description: "Automated campaigns and review generation",
+      },
+      {
+        label: "Customer Portal",
+        href: "/features/customer-portal",
+        description: "Branded self-service booking and payments",
+      },
+    ],
+  },
+  {
+    label: "Industries",
+    href: "/industries",
+    description: "Industry-specific workflows and best practices",
+    items: [
+      {
+        label: "HVAC",
+        href: "/industries/hvac",
+        description: "Seasonal operations and maintenance contracts",
+      },
+      {
+        label: "Plumbing",
+        href: "/industries/plumbing",
+        description: "Emergency dispatch and service routing",
+      },
+      {
+        label: "Electrical",
+        href: "/industries/electrical",
+        description: "Project management and compliance tracking",
+      },
+      {
+        label: "Landscaping",
+        href: "/industries/landscaping",
+        description: "Route optimization and recurring services",
+      },
+      {
+        label: "Pool Service",
+        href: "/industries/pool-service",
+        description: "Chemical tracking and maintenance schedules",
+      },
+      {
+        label: "Pest Control",
+        href: "/industries/pest-control",
+        description: "Treatment plans and renewal automation",
+      },
+      {
+        label: "Cleaning Services",
+        href: "/industries/cleaning",
+        description: "Quality checklists and team coordination",
+      },
+      {
+        label: "Roofing",
+        href: "/industries/roofing",
+        description: "Project tracking and progress documentation",
+      },
+    ],
+  },
+  {
+    label: "Resources",
+    href: "/free-tools",
+    description: "Tools, guides, and community resources",
+    items: [
+      { label: "Blog", href: "/blog", description: "Industry insights and growth strategies" },
+      {
+        label: "Case Studies",
+        href: "/case-studies",
+        description: "Real results from service businesses",
+      },
+      {
+        label: "Free Tools",
+        href: "/tools/calculators",
+        description: "Business calculators and planning tools",
+        badge: "Free",
+      },
+      {
+        label: "ROI Calculator",
+        href: "/roi",
+        description: "Calculate your potential savings",
+        badge: "Popular",
+      },
+      {
+        label: "Help Center",
+        href: "/help",
+        description: "Guides, tutorials, and documentation",
+      },
+      {
+        label: "API Docs",
+        href: "/api-docs",
+        description: "Developer documentation and webhooks",
+      },
+      {
+        label: "Community",
+        href: "/community",
+        description: "Connect with other operators",
+      },
+    ],
+  },
+  {
+    label: "Company",
+    href: "/about",
+    description: "About Thorbis and our mission",
+    items: [
+      { label: "About Us", href: "/about", description: "Our story and values" },
+      {
+        label: "Careers",
+        href: "/careers",
+        description: "Join our growing team",
+        badge: "Hiring",
+      },
+      {
+        label: "Contact Sales",
+        href: "/contact",
+        description: "Schedule a personalized demo",
+      },
+      {
+        label: "Security",
+        href: "/security",
+        description: "Enterprise-grade data protection",
+      },
+    ],
+  },
+];
+
+function DesktopNavItem({ section }: { section: NavSection }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!section.items || section.items.length === 0) {
+    return (
+      <Link
+        className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-foreground/70 transition-all hover:bg-accent/50 hover:text-foreground"
+        href={section.href}
+      >
+        {section.label}
+        <span className="absolute inset-x-0 -bottom-px h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <button
+        className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-foreground/70 transition-all hover:bg-accent/50 hover:text-foreground"
+        type="button"
+      >
+        {section.label}
+        <ChevronDown
+          className={cn(
+            "size-3.5 transition-transform duration-200",
+            isOpen && "rotate-180"
+          )}
+        />
+        <span className="absolute inset-x-0 -bottom-px h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 top-full z-50 pt-3">
+          <div className="w-[680px] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl duration-200">
+            {section.description && (
+              <div className="border-b border-border/50 bg-gradient-to-br from-primary/5 via-primary/3 to-transparent p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                      {section.label}
+                    </p>
+                    <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted-foreground">
+                      {section.description}
+                    </p>
+                  </div>
+                  <Link
+                    className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+                    href={section.href}
+                  >
+                    View all
+                    <ChevronDown className="-rotate-90 size-3 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-1 p-2">
+              {section.items.map((item) => (
+                <Link
+                  className="group relative overflow-hidden rounded-xl p-3.5 transition-all hover:bg-accent/60"
+                  href={item.href}
+                  key={item.href}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="mb-1 flex items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                          {item.label}
+                        </span>
+                        {item.badge && (
+                          <Badge
+                            className="h-5 px-1.5 text-[10px] font-semibold"
+                            variant="secondary"
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </div>
+                    <ChevronDown className="-rotate-90 size-3.5 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
+                  </div>
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+type UserCompany = {
+  id: string;
+  name: string;
+  plan: string;
+  onboardingComplete?: boolean;
+  hasPayment?: boolean;
+};
 
 export function MarketingHeader() {
   const [scrolled, setScrolled] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [userCompanies, setUserCompanies] = useState<UserCompany[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -99,6 +369,57 @@ export function MarketingHeader() {
           emailVerified: !!user.email_confirmed_at || profile?.emailVerified,
           createdAt: new Date(profile?.createdAt || user.created_at),
         });
+
+        // Fetch user's companies
+        const { data: memberships } = await supabase
+          .from("team_members")
+          .select(
+            `
+            company_id,
+            companies!inner (
+              id,
+              name,
+              stripe_subscription_status,
+              deleted_at
+            )
+          `
+          )
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .is("companies.deleted_at", null);
+
+        if (memberships && !cancelled) {
+          const companyMap = new Map<string, UserCompany>();
+          memberships.forEach((m: any) => {
+            const companyId = m.companies.id;
+            if (!companyMap.has(companyId)) {
+              const subscriptionStatus = m.companies.stripe_subscription_status;
+              const hasPayment =
+                subscriptionStatus === "active" ||
+                subscriptionStatus === "trialing";
+              const onboardingComplete = hasPayment;
+
+              let planLabel = "Active";
+              if (!hasPayment) {
+                planLabel =
+                  subscriptionStatus === "incomplete"
+                    ? "Incomplete"
+                    : "Setup Required";
+              }
+
+              companyMap.set(companyId, {
+                id: companyId,
+                name: m.companies.name,
+                plan: planLabel,
+                onboardingComplete,
+                hasPayment,
+              });
+            }
+          });
+
+          setUserCompanies(Array.from(companyMap.values()));
+        }
+
         setLoading(false);
       } catch (error) {
         console.error("Error loading profile", error);
@@ -129,10 +450,6 @@ export function MarketingHeader() {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 10);
     };
@@ -142,65 +459,116 @@ export function MarketingHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const desktopNav = useMemo(
+  const mobileNavSections = useMemo(
     () =>
-      PRIMARY_LINKS.map((item) => (
-        <Link
-          className="text-muted-foreground text-sm transition hover:text-foreground"
-          href={item.href}
-          key={item.href}
-        >
-          {item.label}
-        </Link>
-      )),
+      NAV_SECTIONS.map((section) => ({
+        ...section,
+        items: section.items ?? [],
+      })),
     []
   );
+
+  const toggleSection = (sectionLabel: string) => {
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(sectionLabel)) {
+        next.delete(sectionLabel);
+      } else {
+        next.add(sectionLabel);
+      }
+      return next;
+    });
+  };
+
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <Link
+            className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight"
+            href="/"
+          >
+            <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
+              <Image
+                alt="Thorbis"
+                className="size-5"
+                height={20}
+                src="/ThorbisLogo.webp"
+                width={20}
+              />
+            </div>
+            <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Thorbis
+            </span>
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b transition-colors duration-200",
-        scrolled
-          ? "bg-background/90 backdrop-blur supports-[backdrop-filter]:backdrop-blur"
-          : "bg-background/60 backdrop-blur supports-[backdrop-filter]:backdrop-blur-0"
+        "sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl transition-all duration-300 supports-[backdrop-filter]:bg-background/60",
+        scrolled && "border-border/60 shadow-lg shadow-black/5"
       )}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        {/* Logo */}
         <Link
-          className="flex items-center gap-2 font-semibold text-foreground text-sm tracking-tight transition hover:text-primary"
+          className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight transition-opacity hover:opacity-80"
           href="/"
         >
-          <Image
-            alt="Thorbis"
-            className="size-6 rounded-sm"
-            height={24}
-            src="/ThorbisLogo.webp"
-            width={24}
-          />
-          <span>Thorbis</span>
+          <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50 transition-all hover:scale-105 hover:ring-border">
+            <Image
+              alt="Thorbis"
+              className="size-5"
+              height={20}
+              src="/ThorbisLogo.webp"
+              width={20}
+            />
+          </div>
+          <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Thorbis
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">{desktopNav}</nav>
+        {/* Desktop Navigation */}
+        <nav className="hidden flex-1 justify-center lg:flex">
+          <div className="flex items-center gap-0.5">
+            {NAV_SECTIONS.map((section) => (
+              <DesktopNavItem key={section.label} section={section} />
+            ))}
+            <Link
+              className="group relative ml-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3.5 py-2 text-sm font-semibold text-primary transition-all hover:bg-primary/15"
+              href="/pricing"
+            >
+              Pricing
+              <Badge className="h-4 bg-primary px-1.5 text-[9px] font-bold text-primary-foreground">
+                $100/mo
+              </Badge>
+            </Link>
+          </div>
+        </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        {/* Desktop Actions */}
+        <div className="hidden items-center gap-2 lg:flex">
           {!loading && userProfile ? (
             <>
-              <Button asChild size="sm" variant="outline">
-                <Link href="/dashboard">
+              <Button asChild size="sm" variant="ghost">
+                <Link className="font-medium" href="/dashboard">
                   <LayoutDashboard className="mr-2 size-4" />
                   Dashboard
                 </Link>
               </Button>
               <UserMenu
-                activeCompanyId={null}
-                teams={[
-                  {
-                    id: "thorbis-default",
-                    name: "Thorbis",
-                    logo: Wrench,
-                    plan: "growth",
-                  },
-                ]}
+                activeCompanyId={userCompanies[0]?.id || null}
+                teams={userCompanies.map((company) => ({
+                  id: company.id,
+                  name: company.name,
+                  logo: Wrench,
+                  plan: company.plan.toLowerCase(),
+                }))}
                 user={{
                   name: userProfile.name,
                   email: userProfile.email ?? "",
@@ -210,134 +578,183 @@ export function MarketingHeader() {
             </>
           ) : (
             <>
-              <Link
-                className="text-muted-foreground text-sm transition hover:text-foreground"
-                href="/login"
-              >
-                Sign in
-              </Link>
-              <Button asChild size="sm">
-                <Link href={CTA_LINK.href}>{CTA_LINK.label}</Link>
+              <Button asChild size="sm" variant="ghost">
+                <Link className="font-medium" href="/login">
+                  Sign in
+                </Link>
+              </Button>
+              <Button asChild className="shadow-lg shadow-primary/20" size="sm">
+                <Link href={CTA_LINK.href}>
+                  {CTA_LINK.label}
+                  <ChevronDown className="-rotate-90 ml-1.5 size-3.5" />
+                </Link>
               </Button>
             </>
           )}
         </div>
 
-        <Sheet>
+        {/* Mobile Menu */}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <Button
               aria-label="Open navigation"
-              className="md:hidden"
+              className="lg:hidden"
               size="icon"
               variant="ghost"
             >
               <Menu className="size-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent className="w-full max-w-xs overflow-y-auto px-0 pb-0">
-            <SheetHeader className="border-b px-4 pb-4">
-              <Link
-                className="flex items-center gap-2 font-semibold text-base"
-                href="/"
-              >
+          <SheetContent
+            className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm"
+            side="right"
+          >
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            
+            {/* Mobile Header */}
+            <div className="sticky top-0 z-10 flex items-center gap-2.5 border-b border-border/50 bg-background/95 px-5 py-4 backdrop-blur-sm">
+              <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
                 <Image
                   alt="Thorbis"
-                  className="size-6 rounded-sm"
-                  height={24}
+                  className="size-4"
+                  height={16}
                   src="/ThorbisLogo.webp"
-                  width={24}
+                  width={16}
                 />
+              </div>
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-base text-transparent">
                 Thorbis
+              </span>
+            </div>
+
+            {/* Mobile Navigation */}
+            <div className="space-y-2 p-4">
+              {mobileNavSections.map((section) => {
+                const isExpanded = expandedSections.has(section.label);
+                const hasItems = section.items.length > 0;
+
+                return (
+                  <div className="overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-muted/30 to-muted/10" key={section.label}>
+                    <div className="flex items-stretch">
+                      {hasItems && (
+                        <button
+                          className="flex items-center justify-center border-r border-border/50 px-3 transition-colors hover:bg-accent"
+                          onClick={() => toggleSection(section.label)}
+                          type="button"
+                        >
+                          <ChevronDown
+                            className={cn(
+                              "size-4 text-muted-foreground transition-transform duration-200",
+                              isExpanded && "rotate-180"
+                            )}
+                          />
+                        </button>
+                      )}
+                      <Link
+                        className="flex flex-1 items-center justify-between px-4 py-3 transition-colors hover:bg-accent"
+                        href={section.href}
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <span className="font-semibold text-foreground text-sm">
+                          {section.label}
+                        </span>
+                        <ChevronDown className="-rotate-90 size-4 text-muted-foreground" />
+                      </Link>
+                    </div>
+
+                    {hasItems && isExpanded && (
+                      <div className="space-y-1 border-t border-border/50 bg-background/50 p-2">
+                        {section.items.map((item) => (
+                          <Link
+                            className="group block rounded-lg p-3 transition-all hover:bg-accent"
+                            href={item.href}
+                            key={item.href}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            <div className="mb-1 flex items-center gap-2">
+                              <span className="font-semibold text-foreground text-xs transition-colors group-hover:text-primary">
+                                {item.label}
+                              </span>
+                              {item.badge && (
+                                <Badge
+                                  className="h-4 px-1.5 text-[9px] font-semibold"
+                                  variant="secondary"
+                                >
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                              {item.description}
+                            </p>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Pricing Card */}
+              <Link
+                className="flex items-center justify-between overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+                href="/pricing"
+                onClick={() => setMobileOpen(false)}
+              >
+                <div>
+                  <span className="font-semibold text-foreground text-sm">
+                    Pricing
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">
+                    Flat $100/mo base plus usage
+                  </p>
+                </div>
+                <Badge className="bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">
+                  $100/mo
+                </Badge>
               </Link>
-            </SheetHeader>
-            <div className="space-y-6 px-4 py-6">
-              <div className="space-y-2">
-                {PRIMARY_LINKS.map((item) => (
-                  <Link
-                    className="block font-medium text-base text-foreground transition hover:text-primary"
-                    href={item.href}
-                    key={item.href}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+            </div>
 
-              <div>
-                <p className="text-muted-foreground text-xs uppercase tracking-wide">
-                  Discover
-                </p>
-                <div className="mt-2 space-y-2">
-                  {DISCOVER_LINKS.map((item) => (
-                    <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
-                      href={item.href}
-                      key={item.href}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground text-xs uppercase tracking-wide">
-                  Support
-                </p>
-                <div className="mt-2 space-y-2">
-                  {SUPPORT_LINKS.map((item) => (
-                    <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
-                      href={item.href}
-                      key={item.href}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {!loading && userProfile ? (
-                  <div className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2 text-sm">
-                    <p className="font-medium text-foreground">
+            {/* Mobile Footer */}
+            <div className="sticky bottom-0 border-t border-border/50 bg-gradient-to-t from-background via-background to-background/95 p-4 backdrop-blur-sm">
+              {!loading && userProfile ? (
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-border/50 bg-gradient-to-br from-muted/50 to-muted/20 p-3">
+                    <p className="font-semibold text-foreground text-xs">
                       {userProfile.name}
                     </p>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-[11px] text-muted-foreground">
                       {userProfile.email}
                     </p>
-                    <Link
-                      className="mt-2 inline-flex font-medium text-primary text-xs underline underline-offset-4"
-                      href="/dashboard"
-                    >
-                      Go to dashboard
-                    </Link>
                   </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
-                      href="/login"
-                    >
+                  <Button asChild className="w-full shadow-lg shadow-primary/20" size="default">
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                      <LayoutDashboard className="mr-2 size-4" />
+                      Go to Dashboard
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    asChild
+                    className="w-full"
+                    size="default"
+                    variant="outline"
+                  >
+                    <Link href="/login" onClick={() => setMobileOpen(false)}>
                       Sign in
                     </Link>
-                    <Link
-                      className="block rounded-md border border-transparent px-3 py-2 text-muted-foreground text-sm transition hover:border-border hover:text-foreground"
-                      href="/register"
-                    >
-                      Create account
+                  </Button>
+                  <Button asChild className="w-full shadow-lg shadow-primary/20" size="default">
+                    <Link href={CTA_LINK.href} onClick={() => setMobileOpen(false)}>
+                      <Plus className="mr-2 size-4" />
+                      {CTA_LINK.label}
                     </Link>
-                  </div>
-                )}
-              </div>
+                  </Button>
+                </div>
+              )}
             </div>
-            {!(loading || userProfile) && (
-              <SheetFooter className="border-t bg-muted/30">
-                <Button asChild className="w-full" size="lg">
-                  <Link href={CTA_LINK.href}>{CTA_LINK.label}</Link>
-                </Button>
-              </SheetFooter>
-            )}
           </SheetContent>
         </Sheet>
       </div>

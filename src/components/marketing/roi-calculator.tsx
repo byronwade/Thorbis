@@ -1,12 +1,36 @@
 "use client";
 
+import { BarChart3, Calculator, DollarSign, Info, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAnalytics, useFeatureTracking } from "@/lib/analytics";
+
+const CALCULATION_TRACKING_DEBOUNCE_MS = 1000;
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+const numberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 1,
+});
+
+function formatCurrency(value: number) {
+  if (!Number.isFinite(value)) return "-";
+  return currencyFormatter.format(value);
+}
+
+function formatNumber(value: number) {
+  if (!Number.isFinite(value)) return "-";
+  return numberFormatter.format(value);
+}
 
 type RoiInputs = {
   technicianCount: number;
@@ -32,8 +56,59 @@ const DEFAULT_VALUES: RoiInputs = {
 
 export function RoiCalculator() {
   const [inputs, setInputs] = useState<RoiInputs>(DEFAULT_VALUES);
+  const { track } = useAnalytics();
+  const { trackFeatureUse } = useFeatureTracking();
 
   const results = useMemo(() => calculateROI(inputs), [inputs]);
+
+  // Track tool opened on mount
+  useEffect(() => {
+    track({
+      name: "tool.opened",
+      properties: {
+        toolName: "roi-calculator",
+        toolCategory: "calculator",
+      },
+    });
+    trackFeatureUse("roi_calculator", { firstTime: true });
+  }, [track, trackFeatureUse]);
+
+  // Track calculator completion when a valid calculation is made
+  useEffect(() => {
+    if (
+      Number.isFinite(results.netMonthlyImpact) &&
+      results.netMonthlyImpact > 0
+    ) {
+      const timeoutId = setTimeout(() => {
+        track({
+          name: "calculator.used",
+          properties: {
+            calculatorType: "roi",
+            inputs: {
+              technicianCount: inputs.technicianCount,
+              jobsPerTechPerDay: inputs.jobsPerTechPerDay,
+              averageTicket: inputs.averageTicket,
+            },
+            result: {
+              netMonthlyImpact: results.netMonthlyImpact,
+              roiMultiple: results.roiMultiple,
+              laborSavingsMonthly: results.laborSavingsMonthly,
+            },
+          },
+        });
+      }, CALCULATION_TRACKING_DEBOUNCE_MS);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    results.netMonthlyImpact,
+    results.roiMultiple,
+    results.laborSavingsMonthly,
+    inputs.technicianCount,
+    inputs.jobsPerTechPerDay,
+    inputs.averageTicket,
+    track,
+  ]);
 
   const handleChange =
     (field: keyof RoiInputs) =>
@@ -98,204 +173,513 @@ export function RoiCalculator() {
     URL.revokeObjectURL(url);
   };
 
+  const LabelWithTooltip = ({ htmlFor, label, tooltip }: { htmlFor: string; label: string; tooltip: string }) => (
+    <div className="flex items-center gap-1.5">
+      <Label htmlFor={htmlFor} className="font-medium text-sm">
+        {label}
+      </Label>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Info className="size-3.5 cursor-help text-muted-foreground" />
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs">
+          <p className="text-xs leading-relaxed">{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  );
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-      <form className="space-y-6 rounded-3xl border bg-card p-6 shadow-sm">
-        <div>
-          <h3 className="font-semibold text-lg">Your baseline metrics</h3>
-          <p className="text-muted-foreground text-sm">
-            Update the inputs to match your team. We&apos;ll estimate savings
-            and revenue impact after switching to Thorbis.
-          </p>
+    <TooltipProvider>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="bg-background">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 font-medium text-muted-foreground text-xs">
+                <Calculator className="size-3.5" />
+                ROI Calculator
+              </div>
+              <h1 className="mb-3 text-balance font-bold text-3xl tracking-tight sm:text-4xl lg:text-5xl">
+                Calculate Your Thorbis ROI
+              </h1>
+              <p className="mx-auto max-w-2xl text-pretty text-base text-muted-foreground leading-relaxed">
+                See how much you can save and earn by switching to Thorbis. Use your real numbers to project labor savings, 
+                revenue lift, and net ROI after replacing your legacy field service stack.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field
-            label="Technicians on the road"
-            min={1}
-            onChange={handleChange("technicianCount")}
-            step={1}
-            value={inputs.technicianCount}
-          />
-          <Field
-            label="Jobs per tech per day"
-            min={1}
-            onChange={handleChange("jobsPerTechPerDay")}
-            step={0.5}
-            value={inputs.jobsPerTechPerDay}
-          />
-          <Field
-            label="Average job ticket ($)"
-            min={100}
-            onChange={handleChange("averageTicket")}
-            step={25}
-            value={inputs.averageTicket}
-          />
-          <Field
-            label="Close rate lift with Thorbis (%)"
-            min={0}
-            onChange={handleChange("closeRateLift")}
-            step={1}
-            value={inputs.closeRateLift}
-          />
-          <Field
-            label="Minutes saved per job"
-            min={0}
-            onChange={handleChange("minutesSavedPerJob")}
-            step={1}
-            value={inputs.minutesSavedPerJob}
-          />
-          <Field
-            label="Loaded labor cost per hour ($)"
-            min={10}
-            onChange={handleChange("hourlyLaborCost")}
-            step={1}
-            value={inputs.hourlyLaborCost}
-          />
-          <Field
-            label="Current software spend / month ($)"
-            min={0}
-            onChange={handleChange("currentSoftwareSpend")}
-            step={50}
-            value={inputs.currentSoftwareSpend}
-          />
-          <Field
-            label="Thorbis plan estimate / month ($)"
-            min={500}
-            onChange={handleChange("thorbisPlanCost")}
-            step={50}
-            value={inputs.thorbisPlanCost}
-          />
-        </div>
+        {/* Main Content */}
+        <main className="px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl space-y-12">
+            {/* Inputs Section */}
+            <section id="inputs" className="scroll-mt-24">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <DollarSign className="size-5" />
+                  </div>
+                  Your Business Metrics
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Enter your current operations data to calculate potential savings
+                </p>
+              </div>
 
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={handleExport} type="button" variant="outline">
-            Export results (CSV)
-          </Button>
-          <Button onClick={handleReset} type="button" variant="ghost">
-            Reset to recommended defaults
-          </Button>
-        </div>
-      </form>
+              <div className="space-y-6 rounded-lg bg-background p-6">
+                {/* Team & Operations */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-foreground text-sm">Team & Operations</h3>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="technicianCount"
+                        label="Technicians on the road"
+                        tooltip="Number of field technicians actively running jobs. This includes all techs who bill hours to customers."
+                      />
+                      <Input
+                        id="technicianCount"
+                        type="number"
+                        value={inputs.technicianCount}
+                        onChange={handleChange("technicianCount")}
+                        className="bg-input"
+                        min={1}
+                        step={1}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="jobsPerTechPerDay"
+                        label="Jobs per tech per day"
+                        tooltip="Average number of jobs each technician completes daily. Industry standard: 2-4 jobs per day."
+                      />
+                      <Input
+                        id="jobsPerTechPerDay"
+                        type="number"
+                        value={inputs.jobsPerTechPerDay}
+                        onChange={handleChange("jobsPerTechPerDay")}
+                        className="bg-input"
+                        min={1}
+                        step={0.5}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="averageTicket"
+                        label="Average job ticket ($)"
+                        tooltip="Average revenue per completed job. Include parts, labor, and any service fees."
+                      />
+                      <Input
+                        id="averageTicket"
+                        type="number"
+                        value={inputs.averageTicket}
+                        onChange={handleChange("averageTicket")}
+                        className="bg-input"
+                        min={100}
+                        step={25}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-      <div className="space-y-6 rounded-3xl border bg-primary/5 p-6 shadow-sm">
-        <header>
-          <h3 className="font-semibold text-lg">Estimated impact</h3>
-          <p className="text-muted-foreground text-sm">
-            Conservative savings and revenue gains when Thorbis streamlines
-            dispatch, automations, and AI booking.
-          </p>
-        </header>
+                {/* Efficiency Gains */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-foreground text-sm">Expected Efficiency Gains with Thorbis</h3>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="closeRateLift"
+                        label="Close rate lift (%)"
+                        tooltip="Expected improvement in conversion rate from AI booking, automated follow-ups, and better lead management. Conservative estimate: 5-10%."
+                      />
+                      <Input
+                        id="closeRateLift"
+                        type="number"
+                        value={inputs.closeRateLift}
+                        onChange={handleChange("closeRateLift")}
+                        className="bg-input"
+                        min={0}
+                        step={1}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="minutesSavedPerJob"
+                        label="Minutes saved per job"
+                        tooltip="Time saved per job through streamlined dispatch, mobile workflows, and digital paperwork. Typical savings: 15-25 minutes per job."
+                      />
+                      <Input
+                        id="minutesSavedPerJob"
+                        type="number"
+                        value={inputs.minutesSavedPerJob}
+                        onChange={handleChange("minutesSavedPerJob")}
+                        className="bg-input"
+                        min={0}
+                        step={1}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="hourlyLaborCost"
+                        label="Loaded labor cost per hour ($)"
+                        tooltip="Fully loaded cost per technician hour including wages, benefits, taxes, and overhead. Calculate using our Hourly Rate Calculator."
+                      />
+                      <Input
+                        id="hourlyLaborCost"
+                        type="number"
+                        value={inputs.hourlyLaborCost}
+                        onChange={handleChange("hourlyLaborCost")}
+                        className="bg-input"
+                        min={10}
+                        step={1}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-        <ResultBlock
-          description={`${results.minutesSavedPerJobHours.toFixed(1)} hours saved per technician each month.`}
-          primary={`$${results.laborSavingsMonthly.toLocaleString(undefined, {
-            maximumFractionDigits: 0,
-          })}`}
-          title="Monthly labor savings"
-        />
+                {/* Software Costs */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-foreground text-sm">Software Costs</h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="currentSoftwareSpend"
+                        label="Current software spend / month ($)"
+                        tooltip="Total monthly spend on current FSM platform, add-ons, payment processing, marketing tools, and other subscriptions Thorbis will replace."
+                      />
+                      <Input
+                        id="currentSoftwareSpend"
+                        type="number"
+                        value={inputs.currentSoftwareSpend}
+                        onChange={handleChange("currentSoftwareSpend")}
+                        className="bg-input"
+                        min={0}
+                        step={50}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <LabelWithTooltip
+                        htmlFor="thorbisPlanCost"
+                        label="Thorbis plan estimate / month ($)"
+                        tooltip="Estimated monthly Thorbis cost based on your team size and usage. Starts at $100/month with pay-as-you-go pricing. No per-user fees."
+                      />
+                      <Input
+                        id="thorbisPlanCost"
+                        type="number"
+                        value={inputs.thorbisPlanCost}
+                        onChange={handleChange("thorbisPlanCost")}
+                        className="bg-input"
+                        min={100}
+                        step={50}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-        <ResultBlock
-          description="Incremental revenue closed thanks to higher win rates and automated follow-ups."
-          primary={`$${results.additionalRevenueMonthly.toLocaleString(
-            undefined,
-            {
-              maximumFractionDigits: 0,
-            }
-          )}`}
-          title="Monthly revenue lift"
-        />
+                {/* Quick Stats */}
+                <div className="mt-6 grid gap-4 rounded-lg bg-muted/30 p-4 sm:grid-cols-3">
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Monthly Jobs
+                            <Info className="size-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatNumber(results.monthlyJobs)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Technicians × Jobs/Day × 22 Working Days
+                          <br />= {inputs.technicianCount} × {inputs.jobsPerTechPerDay} × 22
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Hours Saved / Month
+                            <Info className="size-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatNumber(results.hoursSavedMonthly)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: (Minutes Saved × Monthly Jobs) ÷ 60
+                          <br />= ({inputs.minutesSavedPerJob} × {formatNumber(results.monthlyJobs)}) ÷ 60
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Additional Jobs / Month
+                            <Info className="size-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl text-green-600 dark:text-green-500">
+                            {formatNumber(results.monthlyJobs * (inputs.closeRateLift / 100))}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Monthly Jobs × (Close Rate Lift ÷ 100)
+                          <br />= {formatNumber(results.monthlyJobs)} × ({inputs.closeRateLift}% ÷ 100)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
 
-        <Separator />
+                <div className="flex flex-wrap gap-3">
+                  <Button onClick={handleExport} type="button" variant="outline">
+                    Export results (CSV)
+                  </Button>
+                  <Button onClick={handleReset} type="button" variant="ghost">
+                    Reset to defaults
+                  </Button>
+                  <Button asChild type="button" variant="ghost">
+                    <Link href="/tools/calculators/hourly-rate">
+                      Calculate hourly rate →
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </section>
 
-        <ResultBlock
-          description={`ROI multiple: ${results.roiMultiple.toFixed(1)}x`}
-          highlight
-          primary={`$${results.netMonthlyImpact.toLocaleString(undefined, {
-            maximumFractionDigits: 0,
-          })}`}
-          title="Net monthly impact after platform cost"
-        />
+            {/* Results Section */}
+            <section id="results" className="scroll-mt-24">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <TrendingUp className="size-5" />
+                  </div>
+                  Your ROI Breakdown
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Conservative estimates based on Thorbis customer averages
+                </p>
+              </div>
 
-        <div className="rounded-2xl bg-card/80 p-4 text-muted-foreground text-sm shadow-sm">
-          <p>
-            Thorbis replaces your current stack, saving{" "}
-            <strong>
-              $
-              {(
-                inputs.thorbisPlanCost - inputs.currentSoftwareSpend
-              ).toLocaleString()}
-            </strong>{" "}
-            per month in overlapping subscriptions.
-          </p>
-          <p className="mt-2">
-            Looking for a custom financial model?{" "}
-            <Button asChild className="inline-flex h-8 px-3" size="sm">
-              <Link href="/register">Create your account</Link>
-            </Button>
-          </p>
+              <div className="space-y-6">
+                {/* Impact Cards */}
+                <div className="grid gap-6 lg:grid-cols-2">
+                  {/* Labor Savings */}
+                  <div className="rounded-lg bg-background p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="rounded-lg bg-blue-500/10 p-2">
+                        <DollarSign className="size-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">Labor Time Savings</h3>
+                        <p className="text-muted-foreground text-sm">Efficiency gains from streamlined workflows</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="rounded-lg border bg-muted/30 p-4">
+                        <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                          Monthly Savings
+                        </p>
+                        <p className="font-bold text-3xl text-blue-600 dark:text-blue-500">
+                          {formatCurrency(results.laborSavingsMonthly)}
+                        </p>
+                        <p className="mt-2 text-muted-foreground text-sm">
+                          {formatNumber(results.hoursSavedMonthly)} hours saved × {formatCurrency(inputs.hourlyLaborCost)}/hr
+                        </p>
+                      </div>
+                      <div className="rounded-lg border bg-muted/30 p-4">
+                        <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                          Annual Savings
+                        </p>
+                        <p className="font-bold text-3xl text-blue-600 dark:text-blue-500">
+                          {formatCurrency(results.laborSavingsAnnual)}
+                        </p>
+                        <p className="mt-2 text-muted-foreground text-sm">
+                          {formatNumber(results.hoursSavedMonthly * 12)} hours saved annually
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Revenue Lift */}
+                  <div className="rounded-lg bg-background p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="rounded-lg bg-green-500/10 p-2">
+                        <TrendingUp className="size-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">Additional Revenue</h3>
+                        <p className="text-muted-foreground text-sm">From higher close rates and automation</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="rounded-lg border bg-muted/30 p-4">
+                        <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                          Monthly Revenue Lift
+                        </p>
+                        <p className="font-bold text-3xl text-green-600 dark:text-green-500">
+                          {formatCurrency(results.additionalRevenueMonthly)}
+                        </p>
+                        <p className="mt-2 text-muted-foreground text-sm">
+                          {formatNumber(results.monthlyJobs * (inputs.closeRateLift / 100))} additional jobs × {formatCurrency(inputs.averageTicket)}
+                        </p>
+                      </div>
+                      <div className="rounded-lg border bg-muted/30 p-4">
+                        <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                          Annual Revenue Lift
+                        </p>
+                        <p className="font-bold text-3xl text-green-600 dark:text-green-500">
+                          {formatCurrency(results.additionalRevenueAnnual)}
+                        </p>
+                        <p className="mt-2 text-muted-foreground text-sm">
+                          {formatNumber(results.monthlyJobs * (inputs.closeRateLift / 100) * 12)} additional jobs annually
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Net Impact */}
+                <div className="rounded-lg border-2 border-primary bg-primary/5 p-6">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="rounded-lg bg-primary/10 p-2">
+                      <BarChart3 className="size-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Net Monthly Impact</h3>
+                      <p className="text-muted-foreground text-sm">After platform cost</p>
+                    </div>
+                  </div>
+                  <div className="grid gap-6 lg:grid-cols-3">
+                    <div className="rounded-lg bg-background/80 p-4">
+                      <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                        Total Monthly Impact
+                      </p>
+                      <p className="font-bold text-3xl">
+                        {formatCurrency(results.totalMonthlyImpact)}
+                      </p>
+                      <p className="mt-2 text-muted-foreground text-sm">
+                        Savings + Revenue Lift
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-background/80 p-4">
+                      <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                        Platform Cost Difference
+                      </p>
+                      <p className="font-bold text-3xl">
+                        {formatCurrency(inputs.thorbisPlanCost - inputs.currentSoftwareSpend)}
+                      </p>
+                      <p className="mt-2 text-muted-foreground text-sm">
+                        Thorbis vs. Current Stack
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-primary/10 p-4">
+                      <p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                        Net Monthly ROI
+                      </p>
+                      <p className="font-bold text-4xl text-primary">
+                        {formatCurrency(results.netMonthlyImpact)}
+                      </p>
+                      <p className="mt-2 text-muted-foreground text-sm">
+                        {results.roiMultiple.toFixed(1)}x ROI multiple
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Annual Projections */}
+                <div className="rounded-lg bg-background p-6">
+                  <div className="mb-4">
+                    <h3 className="font-semibold text-lg">12-Month Projections</h3>
+                    <p className="text-muted-foreground text-sm">Full year impact at current rates</p>
+                  </div>
+                  <div className="overflow-hidden rounded-lg bg-muted/30">
+                    <table className="w-full">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-medium text-sm">Metric</th>
+                          <th className="px-4 py-3 text-right font-medium text-sm">Monthly</th>
+                          <th className="px-4 py-3 text-right font-medium text-sm">Annual</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/30">
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">Labor Savings</td>
+                          <td className="px-4 py-3 text-right text-sm">{formatCurrency(results.laborSavingsMonthly)}</td>
+                          <td className="px-4 py-3 text-right text-sm">{formatCurrency(results.laborSavingsAnnual)}</td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">Additional Revenue</td>
+                          <td className="px-4 py-3 text-right text-sm">{formatCurrency(results.additionalRevenueMonthly)}</td>
+                          <td className="px-4 py-3 text-right text-sm">{formatCurrency(results.additionalRevenueAnnual)}</td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">Total Impact</td>
+                          <td className="px-4 py-3 text-right font-semibold text-sm">{formatCurrency(results.totalMonthlyImpact)}</td>
+                          <td className="px-4 py-3 text-right font-semibold text-sm">{formatCurrency(results.totalAnnualImpact)}</td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">Platform Cost Difference</td>
+                          <td className="px-4 py-3 text-right text-sm">{formatCurrency(inputs.thorbisPlanCost - inputs.currentSoftwareSpend)}</td>
+                          <td className="px-4 py-3 text-right text-sm">{formatCurrency((inputs.thorbisPlanCost - inputs.currentSoftwareSpend) * 12)}</td>
+                        </tr>
+                        <tr className="bg-muted/50 font-semibold">
+                          <td className="px-4 py-3 text-sm">Net ROI</td>
+                          <td className="px-4 py-3 text-right font-bold text-primary text-sm">{formatCurrency(results.netMonthlyImpact)}</td>
+                          <td className="px-4 py-3 text-right font-bold text-primary text-sm">{formatCurrency(results.netAnnualImpact)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="rounded-lg bg-gradient-to-br from-primary/10 to-transparent p-6 text-center">
+                  <div className="mx-auto max-w-2xl">
+                    <h3 className="mb-2 font-semibold text-xl">Ready to achieve these results?</h3>
+                    <p className="mb-6 text-muted-foreground">
+                      Join service businesses saving an average of {formatCurrency(results.netMonthlyImpact)} per month with Thorbis.
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <Button asChild size="lg">
+                        <Link href="/register">
+                          Start Free Trial
+                          <Zap className="ml-2 size-4" />
+                        </Link>
+                      </Button>
+                      <Button asChild size="lg" variant="outline">
+                        <Link href="/contact">
+                          Talk to Sales
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <div className="mt-12 py-8 text-center text-muted-foreground text-sm">
+          Copyright © 2025 - Thorbis. All Rights Reserved.
         </div>
       </div>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  min,
-  step,
-}: {
-  label: string;
-  value: number;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  min?: number;
-  step?: number;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label className="font-medium text-sm">{label}</Label>
-      <Input
-        aria-label={label}
-        inputMode="numeric"
-        min={min}
-        onChange={onChange}
-        step={step}
-        type="number"
-        value={Number.isFinite(value) ? value : ""}
-      />
-    </div>
-  );
-}
-
-function ResultBlock({
-  title,
-  primary,
-  description,
-  highlight = false,
-}: {
-  title: string;
-  primary: string;
-  description?: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-2xl border p-4 ${
-        highlight
-          ? "border-primary bg-primary/10"
-          : "border-border/50 bg-background/90"
-      }`}
-    >
-      <p className="text-muted-foreground text-xs uppercase tracking-wide">
-        {title}
-      </p>
-      <p className="mt-2 font-semibold text-3xl text-foreground">{primary}</p>
-      {description ? (
-        <p className="mt-2 text-muted-foreground text-sm">{description}</p>
-      ) : null}
-    </div>
+    </TooltipProvider>
   );
 }
 
@@ -311,7 +695,6 @@ function calculateROI({
 }: RoiInputs) {
   const workingDaysPerMonth = 22;
   const monthlyJobs = technicianCount * jobsPerTechPerDay * workingDaysPerMonth;
-  const minutesSavedPerTechMonthly = minutesSavedPerJob * monthlyJobs;
   const minutesSavedPerJobHours = minutesSavedPerJob / 60;
   const hoursSavedMonthly = (minutesSavedPerJob * monthlyJobs) / 60;
   const laborSavingsMonthly = hoursSavedMonthly * hourlyLaborCost;
