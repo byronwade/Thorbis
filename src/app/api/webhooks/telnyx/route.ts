@@ -12,10 +12,10 @@
  * - Rate limited to prevent abuse
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { formatPhoneNumber } from "@/lib/telnyx/messaging";
 import { lookupCallerInfo } from "@/lib/telnyx/number-lookup";
 import {
@@ -134,10 +134,7 @@ export async function POST(request: NextRequest) {
  * Handle call-related webhook events
  */
 async function handleCallEvent(payload: WebhookPayload, eventType: string) {
-  const supabase = await createClient();
-  if (!supabase) {
-    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-  }
+  const supabase = await createServiceSupabaseClient();
 
   switch (eventType) {
     case "call.initiated": {
@@ -351,10 +348,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
  * Handle message-related webhook events
  */
 async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
-  const supabase = await createClient();
-  if (!supabase) {
-    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
-  }
+  const supabase = await createServiceSupabaseClient();
 
   switch (eventType) {
     case "message.received": {
