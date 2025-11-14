@@ -19,6 +19,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import type { Json } from "@/types/supabase";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -412,7 +413,7 @@ async function updateOnboardingProgressRecord(
 
   const { error: updateError } = await serviceSupabase
     .from("companies")
-    .update({ onboarding_progress: next })
+    .update({ onboarding_progress: next as Json })
     .eq("id", companyId);
 
   if (updateError) {

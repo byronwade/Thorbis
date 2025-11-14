@@ -52,11 +52,12 @@ function extractAreaCode(phoneNumber: string): string | null {
   return null;
 }
 
-function formatDisplayPhoneNumber(phoneNumber: string): string {
 const DEFAULT_MESSAGING_PROFILE_ID =
   process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID ||
   process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID ||
   "";
+
+function formatDisplayPhoneNumber(phoneNumber: string): string {
   const digits = phoneNumber.replace(/\D/g, "");
   if (digits.length === 11 && digits.startsWith("1")) {
     return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;

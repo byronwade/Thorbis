@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { BotIdProvider } from "@/components/security/botid-provider";
@@ -113,9 +116,13 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <BotIdProvider />
-          {children}
+          <AnalyticsProvider>
+            {children}
+          </AnalyticsProvider>
           <ToastProvider />
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

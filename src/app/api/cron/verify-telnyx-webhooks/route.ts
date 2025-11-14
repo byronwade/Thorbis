@@ -1,5 +1,3 @@
-"use server";
-
 /**
  * Cron Job: Verify Telnyx Webhooks & Messaging Links
  *

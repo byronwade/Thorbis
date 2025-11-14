@@ -41,18 +41,19 @@ const calculators: CalculatorTool[] = [
   {
     title: "Hourly Rate Calculator",
     description:
-      "Calculate what to charge per hour based on your costs and target profit",
+      "Comprehensive calculator to determine your honest hourly rate for trades businesses",
     detailedDescription:
-      "Determine your ideal hourly rate by factoring in labor costs, overhead expenses, materials, and desired profit margin. Perfect for service-based businesses.",
+      "Calculate your honest hourly rate by factoring in all expenses, capacity constraints, and profit margins. Includes work schedule, operating expenses, growth investments, and daily break-even analysis. Perfect for plumbers, HVAC technicians, electricians, and all service trades.",
     href: "/tools/calculators/hourly-rate",
     icon: DollarSign,
     badge: "Popular",
     popular: true,
     features: [
-      "Calculate based on annual revenue goals",
-      "Factor in billable hours vs total hours",
-      "Include overhead and operating costs",
-      "Adjust for profit margin targets",
+      "Work schedule & capacity planning",
+      "Comprehensive expense tracking (personnel, vehicles, insurance, etc.)",
+      "Growth expense calculations",
+      "Daily break-even analysis",
+      "Profit margin projections",
     ],
   },
   {
