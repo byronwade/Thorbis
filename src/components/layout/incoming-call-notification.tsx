@@ -1889,6 +1889,8 @@ export function IncomingCallNotification() {
         .select("company_id")
         .eq("user_id", user.id)
         .eq("status", "active")
+        .order("updated_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) {
@@ -1898,6 +1900,20 @@ export function IncomingCallNotification() {
 
       if (teamMember?.company_id) {
         setCompanyId(teamMember.company_id);
+        return;
+      }
+
+      // Fallback: pick the most recent active company even if PostgREST complained
+      const { data: fallbackRows } = await supabase
+        .from("team_members")
+        .select("company_id")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .order("updated_at", { ascending: false })
+        .limit(1);
+
+      if (fallbackRows?.[0]?.company_id) {
+        setCompanyId(fallbackRows[0].company_id);
       }
     } catch (error) {
       console.error("Error fetching company ID:", error);
