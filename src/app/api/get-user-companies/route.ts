@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,8 @@ export async function GET() {
 					id,
 					name,
 					stripe_subscription_status,
+					onboarding_progress,
+					onboarding_completed_at,
 					deleted_at
 				)
 			`
@@ -50,40 +53,45 @@ export async function GET() {
     // Deduplicate by company ID in case of multiple team_member records
     const companyMap = new Map<
       string,
-      {
-        id: string;
-        name: string;
-        plan: string;
-        onboardingComplete: boolean;
-        hasPayment: boolean;
-      }
+        {
+          id: string;
+          name: string;
+          plan: string;
+          onboardingComplete: boolean;
+          hasPayment: boolean;
+        }
     >();
 
     memberships?.forEach((m: any) => {
       const companyId = m.companies.id;
-      if (!companyMap.has(companyId)) {
-        const subscriptionStatus = m.companies.stripe_subscription_status;
-        const hasPayment =
-          subscriptionStatus === "active" || subscriptionStatus === "trialing";
-        const onboardingComplete = hasPayment;
+        if (!companyMap.has(companyId)) {
+          const subscriptionStatus = m.companies.stripe_subscription_status;
+          const onboardingProgress =
+            (m.companies.onboarding_progress as Record<string, unknown>) ||
+            null;
+          const onboardingComplete = isOnboardingComplete({
+            progress: onboardingProgress,
+            completedAt: m.companies.onboarding_completed_at ?? null,
+          });
+          const hasPayment =
+            subscriptionStatus === "active" || subscriptionStatus === "trialing";
 
-        // Determine plan/status label
-        let planLabel = "Active";
-        if (!hasPayment) {
-          planLabel =
-            subscriptionStatus === "incomplete"
-              ? "Incomplete Onboarding"
-              : "Not Complete";
+          let planLabel = "Active";
+          if (!(hasPayment && onboardingComplete)) {
+            planLabel =
+              subscriptionStatus === "incomplete"
+                ? "Incomplete Onboarding"
+                : "Setup Required";
+          }
+
+          companyMap.set(companyId, {
+            id: companyId,
+            name: m.companies.name,
+            plan: planLabel,
+            onboardingComplete,
+            hasPayment,
+          });
         }
-
-        companyMap.set(companyId, {
-          id: companyId,
-          name: m.companies.name,
-          plan: planLabel,
-          onboardingComplete,
-          hasPayment,
-        });
-      }
     });
 
     const companies = Array.from(companyMap.values());

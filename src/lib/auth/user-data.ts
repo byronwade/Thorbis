@@ -10,7 +10,10 @@
 
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { getCurrentUser } from "./session";
+
+export type UserStatus = "online" | "available" | "busy";
 
 export type UserProfile = {
   id: string;
@@ -19,6 +22,7 @@ export type UserProfile = {
   avatar: string;
   bio?: string;
   phone?: string;
+  status?: UserStatus;
   emailVerified: boolean;
   createdAt: Date;
 };
@@ -82,6 +86,7 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
         generateAvatar(user.email || profile?.email),
       bio: profile?.bio || undefined,
       phone: profile?.phone || undefined,
+      status: (profile?.status as UserStatus) || "online",
       emailVerified: !!user.email_confirmed_at || profile?.emailVerified,
       createdAt: new Date(profile?.createdAt || user.created_at),
     };
@@ -201,6 +206,8 @@ export const getUserCompanies = cache(
           id,
           name,
           stripe_subscription_status,
+          onboarding_progress,
+          onboarding_completed_at,
           deleted_at
         )
       `
@@ -231,18 +238,23 @@ export const getUserCompanies = cache(
         const companyId = m.companies.id;
         if (!companyMap.has(companyId)) {
           const subscriptionStatus = m.companies.stripe_subscription_status;
+          const onboardingProgress =
+            (m.companies.onboarding_progress as Record<string, unknown>) ||
+            null;
+          const onboardingComplete = isOnboardingComplete({
+            progress: onboardingProgress,
+            completedAt: m.companies.onboarding_completed_at ?? null,
+          });
           const hasPayment =
             subscriptionStatus === "active" ||
             subscriptionStatus === "trialing";
-          const onboardingComplete = hasPayment;
 
-          // Determine plan/status label
           let planLabel = "Active";
-          if (!hasPayment) {
+          if (!(hasPayment && onboardingComplete)) {
             planLabel =
               subscriptionStatus === "incomplete"
                 ? "Incomplete Onboarding"
-                : "Not Complete";
+                : "Setup Required";
           }
 
           companyMap.set(companyId, {

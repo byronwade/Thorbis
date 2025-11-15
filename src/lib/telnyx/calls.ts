@@ -9,7 +9,7 @@
  * - Hangup operations
  */
 
-import { telnyxClient } from "./client";
+const TELNYX_API_BASE = "https://api.telnyx.com/v2";
 
 /**
  * Call control command types
@@ -42,6 +42,50 @@ export type CallStatus =
   | "machine_greeting_ended";
 
 /**
+ * Make a direct HTTP request to Telnyx REST API
+ */
+async function telnyxCallRequest<T>(
+  endpoint: string,
+  body: Record<string, unknown>
+): Promise<{ success: boolean; data?: T; error?: string }> {
+  const apiKey = process.env.TELNYX_API_KEY;
+  if (!apiKey) {
+    return { success: false, error: "TELNYX_API_KEY is not configured" };
+  }
+
+  try {
+    const response = await fetch(`${TELNYX_API_BASE}${endpoint}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const errorMessage =
+        result?.errors?.[0]?.detail ||
+        result?.errors?.[0] ||
+        response.statusText;
+      return {
+        success: false,
+        error: `Telnyx ${response.status}: ${errorMessage}`,
+      };
+    }
+
+    return { success: true, data: result.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Request failed",
+    };
+  }
+}
+
+/**
  * Initiate an outbound call
  */
 export async function initiateCall(params: {
@@ -53,7 +97,10 @@ export async function initiateCall(params: {
   customHeaders?: Array<{ name: string; value: string }>;
 }) {
   try {
-    const call = await (telnyxClient.calls as any).create({
+    const result = await telnyxCallRequest<{
+      call_control_id: string;
+      call_session_id: string;
+    }>("/calls", {
       to: params.to,
       from: params.from,
       connection_id: params.connectionId,
@@ -63,11 +110,18 @@ export async function initiateCall(params: {
       custom_headers: params.customHeaders,
     });
 
+    if (!result.success || !result.data) {
+      return {
+        success: false,
+        error: result.error || "Failed to initiate call",
+      };
+    }
+
     return {
       success: true,
-      callControlId: call.data.call_control_id,
-      callSessionId: call.data.call_session_id,
-      data: call.data,
+      callControlId: result.data.call_control_id,
+      callSessionId: result.data.call_session_id,
+      data: result.data,
     };
   } catch (error) {
     console.error("Error initiating call:", error);
@@ -87,15 +141,18 @@ export async function answerCall(params: {
   clientState?: string;
 }) {
   try {
-    const response = await (telnyxClient.calls as any).answer({
-      call_control_id: params.callControlId,
-      webhook_url: params.webhookUrl,
-      client_state: params.clientState,
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/answer`,
+      {
+        webhook_url: params.webhookUrl,
+        client_state: params.clientState,
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error answering call:", error);
@@ -114,14 +171,17 @@ export async function rejectCall(params: {
   cause?: "CALL_REJECTED" | "USER_BUSY";
 }) {
   try {
-    const response = await (telnyxClient.calls as any).reject({
-      call_control_id: params.callControlId,
-      cause: params.cause || "CALL_REJECTED",
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/reject`,
+      {
+        cause: params.cause || "CALL_REJECTED",
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error rejecting call:", error);
@@ -137,13 +197,15 @@ export async function rejectCall(params: {
  */
 export async function hangupCall(params: { callControlId: string }) {
   try {
-    const response = await (telnyxClient.calls as any).hangup({
-      call_control_id: params.callControlId,
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/hangup`,
+      {}
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error hanging up call:", error);
@@ -163,15 +225,18 @@ export async function startRecording(params: {
   channels?: "single" | "dual";
 }) {
   try {
-    const response = await (telnyxClient.calls as any).record_start({
-      call_control_id: params.callControlId,
-      format: params.format || "mp3",
-      channels: params.channels || "single",
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/record_start`,
+      {
+        format: params.format || "mp3",
+        channels: params.channels || "single",
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error starting recording:", error);
@@ -188,13 +253,15 @@ export async function startRecording(params: {
  */
 export async function stopRecording(params: { callControlId: string }) {
   try {
-    const response = await (telnyxClient.calls as any).record_stop({
-      call_control_id: params.callControlId,
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/record_stop`,
+      {}
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error stopping recording:", error);
@@ -215,15 +282,18 @@ export async function playAudio(params: {
   loop?: number;
 }) {
   try {
-    const response = await (telnyxClient.calls as any).playback_start({
-      call_control_id: params.callControlId,
-      audio_url: params.audioUrl,
-      loop: params.loop,
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/playback_start`,
+      {
+        audio_url: params.audioUrl,
+        loop: params.loop,
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error playing audio:", error);
@@ -244,16 +314,19 @@ export async function speakText(params: {
   language?: string;
 }) {
   try {
-    const response = await (telnyxClient.calls as any).speak({
-      call_control_id: params.callControlId,
-      payload: params.text,
-      voice: params.voice || "female",
-      language: params.language || "en-US",
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/speak`,
+      {
+        payload: params.text,
+        voice: params.voice || "female",
+        language: params.language || "en-US",
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error speaking text:", error);
@@ -273,15 +346,18 @@ export async function transferCall(params: {
   from: string;
 }) {
   try {
-    const response = await (telnyxClient.calls as any).transfer({
-      call_control_id: params.callControlId,
-      to: params.to,
-      from: params.from,
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/transfer`,
+      {
+        to: params.to,
+        from: params.from,
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error transferring call:", error);
@@ -300,14 +376,17 @@ export async function sendDTMF(params: {
   digits: string;
 }) {
   try {
-    const response = await (telnyxClient.calls as any).send_dtmf({
-      call_control_id: params.callControlId,
-      digits: params.digits,
-    });
+    const result = await telnyxCallRequest(
+      `/calls/${params.callControlId}/actions/send_dtmf`,
+      {
+        digits: params.digits,
+      }
+    );
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error sending DTMF:", error);
@@ -332,29 +411,34 @@ export async function gatherInput(params: {
   terminatingDigit?: string;
 }) {
   try {
-    const response = params.audioUrl
-      ? await (telnyxClient.calls as any).gather_using_audio({
-          call_control_id: params.callControlId,
+    const endpoint = params.audioUrl
+      ? `/calls/${params.callControlId}/actions/gather_using_audio`
+      : `/calls/${params.callControlId}/actions/gather_using_speak`;
+
+    const body = params.audioUrl
+      ? {
           audio_url: params.audioUrl,
           valid_digits: params.validDigits,
           max: params.maxDigits,
           min: params.minDigits,
           timeout_millis: params.timeout,
           terminating_digit: params.terminatingDigit || "#",
-        })
-      : await (telnyxClient.calls as any).gather_using_speak({
-          call_control_id: params.callControlId,
+        }
+      : {
           payload: params.speakText || "",
           valid_digits: params.validDigits,
           max: params.maxDigits,
           min: params.minDigits,
           timeout_millis: params.timeout,
           terminating_digit: params.terminatingDigit || "#",
-        });
+        };
+
+    const result = await telnyxCallRequest(endpoint, body);
 
     return {
-      success: true,
-      data: response.data,
+      success: result.success,
+      data: result.data,
+      error: result.error,
     };
   } catch (error) {
     console.error("Error gathering input:", error);

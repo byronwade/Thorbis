@@ -2,9 +2,9 @@
  * Check for duplicate team_member records that could cause duplicate companies
  */
 
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { resolve } from "path";
 
 // Load environment variables
 config({ path: resolve(process.cwd(), ".env.local") });
@@ -19,20 +19,25 @@ if (!(supabaseUrl && supabaseServiceKey)) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+type CompanyRecord = {
+  id: string;
+  name: string;
+  stripe_subscription_status: string | null;
+  deleted_at: string | null;
+};
+
+type MembershipRecord = {
+  id: string;
+  company_id: string;
+  status: string;
+  created_at: string;
+  companies: CompanyRecord;
+};
+
 async function checkDuplicateMemberships() {
   try {
     const userEmail = "bcw1995@gmail.com";
-
-    // Find user by email
-    const { data: authUsers, error: userError } =
-      await supabase.auth.admin.listUsers();
-
-    if (userError) {
-      console.error("Error fetching users:", userError);
-      return;
-    }
-
-    const user = authUsers.users.find((u) => u.email === userEmail);
+    const user = await findUserByEmail(userEmail);
 
     if (!user) {
       console.error(`User with email ${userEmail} not found`);
@@ -41,100 +46,128 @@ async function checkDuplicateMemberships() {
 
     console.log(`Found user: ${user.id} (${user.email})\n`);
 
-    // Get ALL team_members (including archived) for this user
-    const { data: allMemberships, error: membershipError } = await supabase
-      .from("team_members")
-      .select(`
-				id,
-				company_id,
-				status,
-				created_at,
-				companies!inner (
-					id,
-					name,
-					stripe_subscription_status,
-					deleted_at
-				)
-			`)
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+    const memberships = await fetchUserMemberships(user.id);
 
-    if (membershipError) {
-      console.error("Error fetching memberships:", membershipError);
+    if (memberships.length === 0) {
+      console.log("No team_member records found for this user.");
       return;
     }
 
-    console.log(`Total team_member records: ${allMemberships?.length || 0}\n`);
+    console.log(`Total team_member records: ${memberships.length}\n`);
 
-    // Group by company_id and check for duplicates
-    const companyMap = new Map<string, any[]>();
-    allMemberships?.forEach((m: any) => {
-      const companyId = m.companies.id;
-      if (!companyMap.has(companyId)) {
-        companyMap.set(companyId, []);
-      }
-      companyMap.get(companyId)!.push(m);
-    });
-
-    console.log("\n=== Companies with multiple team_member records ===\n");
-
-    let hasDuplicates = false;
-    companyMap.forEach((memberships, companyId) => {
-      if (memberships.length > 1) {
-        hasDuplicates = true;
-        const company = memberships[0].companies;
-        console.log(`Company: ${company.name} (${companyId})`);
-        console.log(
-          `  Status: ${company.stripe_subscription_status || "null"}`
-        );
-        console.log(`  Deleted: ${company.deleted_at || "no"}`);
-        console.log(`  Team member records: ${memberships.length}`);
-        memberships.forEach((m, idx) => {
-          console.log(`    ${idx + 1}. team_member_id: ${m.id}`);
-          console.log(`       status: ${m.status}`);
-          console.log(`       created_at: ${m.created_at}`);
-        });
-        console.log("");
-      }
-    });
-
-    if (!hasDuplicates) {
-      console.log("No duplicate team_member records found.\n");
-    }
-
-    // Check active companies
-    const activeMemberships =
-      allMemberships?.filter(
-        (m: any) => m.status === "active" && !m.companies.deleted_at
-      ) || [];
-
-    console.log("\n=== Active companies (status=active, not archived) ===\n");
-    console.log(`Total active memberships: ${activeMemberships.length}`);
-
-    const activeCompanyMap = new Map<string, any[]>();
-    activeMemberships.forEach((m: any) => {
-      const companyId = m.companies.id;
-      if (!activeCompanyMap.has(companyId)) {
-        activeCompanyMap.set(companyId, []);
-      }
-      activeCompanyMap.get(companyId)!.push(m);
-    });
-
-    console.log(`Unique active companies: ${activeCompanyMap.size}\n`);
-
-    activeCompanyMap.forEach((memberships, companyId) => {
-      const company = memberships[0].companies;
-      console.log(`  - ${company.name} (${companyId})`);
-      console.log(
-        `    Status: ${company.stripe_subscription_status || "null"}`
-      );
-      console.log(`    Team member records: ${memberships.length}`);
-      if (memberships.length > 1) {
-        console.log("    ⚠️  WARNING: Multiple active team_member records!");
-      }
-    });
+    const companyMap = buildMembershipMap(memberships);
+    logDuplicateSummary(companyMap);
+    logActiveCompanies(memberships);
   } catch (error) {
     console.error("Unexpected error:", error);
+  }
+}
+
+function buildMembershipMap(memberships: MembershipRecord[]) {
+  const map = new Map<string, MembershipRecord[]>();
+
+  for (const membership of memberships) {
+    const companyId = membership.companies.id;
+    const records = map.get(companyId);
+    if (!records) {
+      map.set(companyId, [membership]);
+      continue;
+    }
+    records.push(membership);
+  }
+
+  return map;
+}
+
+async function findUserByEmail(email: string) {
+  const { data, error } = await supabase.auth.admin.listUsers();
+
+  if (error) {
+    throw new Error(`Error fetching users: ${error.message}`);
+  }
+
+  return data.users.find((userRecord) => userRecord.email === email) ?? null;
+}
+
+async function fetchUserMemberships(
+  userId: string
+): Promise<MembershipRecord[]> {
+  const { data, error } = await supabase
+    .from("team_members")
+    .select(
+      `
+        id,
+        company_id,
+        status,
+        created_at,
+        companies!inner (
+          id,
+          name,
+          stripe_subscription_status,
+          deleted_at
+        )
+      `
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Error fetching memberships: ${error.message}`);
+  }
+
+  return (data ?? []) as MembershipRecord[];
+}
+
+function logDuplicateSummary(companyMap: Map<string, MembershipRecord[]>) {
+  console.log("\n=== Companies with multiple team_member records ===\n");
+
+  let hasDuplicates = false;
+
+  for (const [companyId, memberships] of companyMap) {
+    if (memberships.length <= 1) {
+      continue;
+    }
+
+    hasDuplicates = true;
+    const company = memberships[0].companies;
+    console.log(`Company: ${company.name} (${companyId})`);
+    console.log(`  Status: ${company.stripe_subscription_status || "null"}`);
+    console.log(`  Deleted: ${company.deleted_at || "no"}`);
+    console.log(`  Team member records: ${memberships.length}`);
+
+    for (const [index, membership] of memberships.entries()) {
+      console.log(`    ${index + 1}. team_member_id: ${membership.id}`);
+      console.log(`       status: ${membership.status}`);
+      console.log(`       created_at: ${membership.created_at}`);
+    }
+    console.log("");
+  }
+
+  if (!hasDuplicates) {
+    console.log("No duplicate team_member records found.\n");
+  }
+}
+
+function logActiveCompanies(memberships: MembershipRecord[]) {
+  const activeMemberships = memberships.filter(
+    (membership) =>
+      membership.status === "active" && !membership.companies.deleted_at
+  );
+
+  console.log("\n=== Active companies (status=active, not archived) ===\n");
+  console.log(`Total active memberships: ${activeMemberships.length}`);
+
+  const activeCompanyMap = buildMembershipMap(activeMemberships);
+  console.log(`Unique active companies: ${activeCompanyMap.size}\n`);
+
+  for (const [companyId, activeRecords] of activeCompanyMap) {
+    const company = activeRecords[0].companies;
+    console.log(`  - ${company.name} (${companyId})`);
+    console.log(`    Status: ${company.stripe_subscription_status || "null"}`);
+    console.log(`    Team member records: ${activeRecords.length}`);
+    if (activeRecords.length > 1) {
+      console.log("    ⚠️  WARNING: Multiple active team_member records!");
+    }
   }
 }
 

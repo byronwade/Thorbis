@@ -47,12 +47,15 @@ export default function EstimateSentEmail({
         <Divider style={{ margin: "20px 0" }} />
 
         <div style={itemsSection}>
-          {items.map((item, index) => (
-            <div key={index} style={itemRow}>
-              <Text style={itemDescription}>{item.description}</Text>
-              <Text style={itemAmount}>{item.amount}</Text>
-            </div>
-          ))}
+          {items.map((item) => {
+            const key = `${item.description}-${item.amount}`;
+            return (
+              <div key={key} style={itemRow}>
+                <Text style={itemDescription}>{item.description}</Text>
+                <Text style={itemAmount}>{item.amount}</Text>
+              </div>
+            );
+          })}
         </div>
 
         <Divider style={{ margin: "20px 0" }} />

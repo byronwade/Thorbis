@@ -8,91 +8,135 @@ const SITE_URL =
   "https://thorbis.com";
 
 const KB_ROOT = path.join(process.cwd(), "content/kb");
+const KB_CATEGORY_FILENAME = "_category.json";
+const MARKDOWN_EXTENSION_REGEX = /\.md$/;
+const SLUG_SEPARATOR_REGEX = /-/g;
+const CHANGEFREQ_DAILY = "daily";
+const CHANGEFREQ_WEEKLY = "weekly";
+const PRIORITY_HOME = 1;
+const PRIORITY_PRICING = 0.9;
+const PRIORITY_KB_CATEGORY = 0.85;
+const PRIORITY_KB_ARTICLE_FEATURED = 0.9;
+const PRIORITY_KB_ARTICLE_STANDARD = 0.8;
+const PRIORITY_KB_ROOT = 0.9;
+const PRIORITY_MARKETING_DEFAULT = 0.8;
+const PRIORITY_MARKETING_FEATURES = 0.85;
+const PRIORITY_MARKETING_COMPARISON = 0.75;
+const PRIORITY_DEFAULT_SITEMAP = 0.7;
 
 async function walkKnowledgeBase(dir, segments = []) {
   const entries = [];
-  let dirEntries = [];
-
-  try {
-    dirEntries = await readdir(dir, { withFileTypes: true });
-  } catch (error) {
-    return entries;
-  }
+  const dirEntries = await safeReadDir(dir);
 
   for (const entry of dirEntries) {
     const entryPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
       const childSegments = [...segments, entry.name];
-      entries.push(...(await walkKnowledgeBase(entryPath, childSegments)));
+      const childEntries = await walkKnowledgeBase(entryPath, childSegments);
+      entries.push(...childEntries);
       continue;
     }
 
-    if (entry.isFile() && entry.name === "_category.json") {
-      if (segments.length === 0) {
-        continue;
-      }
-
-      const categoryPath = `/kb/${segments.join("/")}`;
-      const fileStat = await stat(entryPath);
-
-      entries.push({
-        loc: `${SITE_URL}${categoryPath}`,
-        lastmod: fileStat.mtime.toISOString(),
-        changefreq: "daily",
-        priority: 0.85,
-      });
+    if (!entry.isFile()) {
       continue;
     }
 
-    if (entry.isFile() && entry.name.endsWith(".md")) {
-      const slug = entry.name.replace(/\.md$/, "");
-      const articleSegments = [...segments, slug];
-      const articlePath = `/kb/${articleSegments.join("/")}`;
-
-      const fileContents = await readFile(entryPath, "utf8");
-      const { data } = matter(fileContents);
-      const isDraft = data?.published === false;
-
-      if (isDraft) {
-        continue;
+    if (entry.name === KB_CATEGORY_FILENAME) {
+      const categoryEntry = await createCategoryEntry(entryPath, segments);
+      if (categoryEntry) {
+        entries.push(categoryEntry);
       }
+      continue;
+    }
 
-      const publishedOrUpdated =
-        data?.updatedAt ?? data?.publishedAt ?? (await stat(entryPath)).mtime;
-      const lastmod =
-        publishedOrUpdated instanceof Date
-          ? publishedOrUpdated.toISOString()
-          : new Date(publishedOrUpdated).toISOString();
-
-      const featuredImage = data?.featuredImage
-        ? data.featuredImage.startsWith("http")
-          ? data.featuredImage
-          : `${SITE_URL}${data.featuredImage}`
-        : undefined;
-
-      entries.push({
-        loc: `${SITE_URL}${articlePath}`,
-        lastmod,
-        changefreq: "weekly",
-        priority: data?.featured ? 0.9 : 0.8,
-        img: featuredImage
-          ? [
-              {
-                url: featuredImage,
-                caption: data?.title ?? slug.replace(/-/g, " "),
-              },
-            ]
-          : undefined,
-      });
+    if (MARKDOWN_EXTENSION_REGEX.test(entry.name)) {
+      const slug = entry.name.replace(MARKDOWN_EXTENSION_REGEX, "");
+      const articleEntry = await createArticleEntry(entryPath, segments, slug);
+      if (articleEntry) {
+        entries.push(articleEntry);
+      }
     }
   }
 
   return entries;
 }
 
-async function collectKnowledgeBaseEntries() {
+function collectKnowledgeBaseEntries() {
   return walkKnowledgeBase(KB_ROOT);
+}
+
+async function safeReadDir(dir) {
+  try {
+    return await readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+}
+
+async function createCategoryEntry(entryPath, segments) {
+  if (segments.length === 0) {
+    return null;
+  }
+
+  const categoryPath = `/kb/${segments.join("/")}`;
+  const fileStat = await stat(entryPath);
+
+  return {
+    loc: `${SITE_URL}${categoryPath}`,
+    lastmod: fileStat.mtime.toISOString(),
+    changefreq: CHANGEFREQ_DAILY,
+    priority: PRIORITY_KB_CATEGORY,
+  };
+}
+
+async function createArticleEntry(entryPath, segments, slug) {
+  const fileContents = await readFile(entryPath, "utf8");
+  const { data } = matter(fileContents);
+
+  if (data?.published === false) {
+    return null;
+  }
+
+  const lastmod = await getArticleLastModifiedDate(data, entryPath);
+  const featuredImage = resolveFeaturedImage(data?.featuredImage);
+  const priority = data?.featured
+    ? PRIORITY_KB_ARTICLE_FEATURED
+    : PRIORITY_KB_ARTICLE_STANDARD;
+
+  return {
+    loc: `${SITE_URL}/kb/${[...segments, slug].join("/")}`,
+    lastmod,
+    changefreq: CHANGEFREQ_WEEKLY,
+    priority,
+    img: featuredImage
+      ? [
+          {
+            url: featuredImage,
+            caption: data?.title ?? slug.replace(SLUG_SEPARATOR_REGEX, " "),
+          },
+        ]
+      : undefined,
+  };
+}
+
+async function getArticleLastModifiedDate(data, entryPath) {
+  const publishedOrUpdated =
+    data?.updatedAt ?? data?.publishedAt ?? (await stat(entryPath)).mtime;
+
+  return publishedOrUpdated instanceof Date
+    ? publishedOrUpdated.toISOString()
+    : new Date(publishedOrUpdated).toISOString();
+}
+
+function resolveFeaturedImage(featuredImage) {
+  if (!featuredImage) {
+    return;
+  }
+
+  return featuredImage.startsWith("http")
+    ? featuredImage
+    : `${SITE_URL}${featuredImage}`;
 }
 
 const FEATURES_PATHS = [
@@ -176,10 +220,14 @@ const COMPANY_PATHS = [
   "/help",
 ];
 
-function buildMarketingEntries(paths, changefreq = "weekly", priority = 0.8) {
+function buildMarketingEntries(
+  paths,
+  changefreq = CHANGEFREQ_WEEKLY,
+  priority = PRIORITY_MARKETING_DEFAULT
+) {
   const lastmod = new Date().toISOString();
-  return paths.map((path) => ({
-    loc: `${SITE_URL}${path}`,
+  return paths.map((targetPath) => ({
+    loc: `${SITE_URL}${targetPath}`,
     changefreq,
     priority,
     lastmod,
@@ -194,14 +242,14 @@ export default {
   outDir: "./public/seo",
   exclude: ["/contracts/sign/*", "/contracts/download/*"],
   autoLastmod: true,
-  changefreq: "daily",
-  priority: 0.7,
-  transform: async (config, pathname) => {
+  changefreq: CHANGEFREQ_DAILY,
+  priority: PRIORITY_DEFAULT_SITEMAP,
+  transform: (config, pathname) => {
     if (pathname === "/") {
       return {
         loc: pathname,
-        changefreq: "daily",
-        priority: 1.0,
+        changefreq: CHANGEFREQ_DAILY,
+        priority: PRIORITY_HOME,
         lastmod: new Date().toISOString(),
       };
     }
@@ -209,8 +257,8 @@ export default {
     if (pathname === "/pricing") {
       return {
         loc: pathname,
-        changefreq: "weekly",
-        priority: 0.9,
+        changefreq: CHANGEFREQ_WEEKLY,
+        priority: PRIORITY_PRICING,
         lastmod: new Date().toISOString(),
       };
     }
@@ -218,8 +266,8 @@ export default {
     if (pathname.startsWith("/kb")) {
       return {
         loc: pathname,
-        changefreq: "daily",
-        priority: 0.85,
+        changefreq: CHANGEFREQ_DAILY,
+        priority: PRIORITY_KB_CATEGORY,
         lastmod: new Date().toISOString(),
       };
     }
@@ -232,15 +280,35 @@ export default {
     return [
       {
         loc: `${SITE_URL}/kb`,
-        changefreq: "daily",
-        priority: 0.9,
+        changefreq: CHANGEFREQ_DAILY,
+        priority: PRIORITY_KB_ROOT,
         lastmod: new Date().toISOString(),
       },
-      ...buildMarketingEntries(INTEGRATION_PATHS, "weekly", 0.8),
-      ...buildMarketingEntries(FEATURES_PATHS, "weekly", 0.85),
-      ...buildMarketingEntries(INDUSTRY_PATHS, "weekly", 0.8),
-      ...buildMarketingEntries(COMPARISON_PATHS, "weekly", 0.75),
-      ...buildMarketingEntries(COMPANY_PATHS, "weekly", 0.8),
+      ...buildMarketingEntries(
+        INTEGRATION_PATHS,
+        CHANGEFREQ_WEEKLY,
+        PRIORITY_MARKETING_DEFAULT
+      ),
+      ...buildMarketingEntries(
+        FEATURES_PATHS,
+        CHANGEFREQ_WEEKLY,
+        PRIORITY_MARKETING_FEATURES
+      ),
+      ...buildMarketingEntries(
+        INDUSTRY_PATHS,
+        CHANGEFREQ_WEEKLY,
+        PRIORITY_MARKETING_DEFAULT
+      ),
+      ...buildMarketingEntries(
+        COMPARISON_PATHS,
+        CHANGEFREQ_WEEKLY,
+        PRIORITY_MARKETING_COMPARISON
+      ),
+      ...buildMarketingEntries(
+        COMPANY_PATHS,
+        CHANGEFREQ_WEEKLY,
+        PRIORITY_MARKETING_DEFAULT
+      ),
       ...knowledgeBaseEntries,
     ];
   },

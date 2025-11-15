@@ -1,3 +1,6 @@
+/// <reference lib="deno.ns" />
+declare const Deno: typeof globalThis.Deno;
+
 /**
  * Virus Scan Edge Function
  *
@@ -6,19 +9,49 @@
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  createClient,
+  type SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2";
 
-interface ScanRequest {
+type ScanRequest = {
   attachmentId: string;
   bucket: string;
   path: string;
-}
+};
 
-interface ScanResult {
+type ScanResult = {
   status: "clean" | "infected" | "failed" | "skipped";
   threats?: string[];
   scanEngine?: string;
   metadata?: Record<string, unknown>;
+};
+
+const DEFAULT_MAX_SCAN_SIZE = 104_857_600;
+const VIRUSTOTAL_POLL_INTERVAL_MS = 3000;
+const VIRUSTOTAL_MAX_ATTEMPTS = 10;
+const MOCK_SCAN_DELAY_MS = 500;
+
+const logInfo = (...args: unknown[]) => {
+  // biome-ignore lint/suspicious/noConsole: Edge function logging for monitoring
+  console.log(...args);
+};
+
+const logError = (...args: unknown[]) => {
+  // biome-ignore lint/suspicious/noConsole: Edge function logging for monitoring
+  console.error(...args);
+};
+
+function getEnvVar(name: string): string {
+  const value = Deno.env.get(name);
+  if (!value) {
+    throw new Error(`${name} is not configured`);
+  }
+  return value;
+}
+
+async function delay(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 serve(async (req) => {
@@ -43,8 +76,8 @@ serve(async (req) => {
     }
 
     // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = getEnvVar("SUPABASE_URL");
+    const supabaseServiceKey = getEnvVar("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Update status to scanning
@@ -85,7 +118,7 @@ serve(async (req) => {
       await quarantineFile(supabase, attachmentId, bucket, path);
 
       // Notify administrators (optional - implement notification system)
-      console.log(`SECURITY ALERT: Infected file detected - ${attachmentId}`);
+      logInfo(`SECURITY ALERT: Infected file detected - ${attachmentId}`);
     }
 
     return new Response(JSON.stringify({ success: true, result }), {
@@ -93,7 +126,7 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Virus scan error:", error);
+    logError("Virus scan error:", error);
 
     return new Response(
       JSON.stringify({
@@ -120,7 +153,8 @@ async function scanFile(fileData: Blob, fileName: string): Promise<ScanResult> {
 
   // Check file size
   const maxSize = Number.parseInt(
-    Deno.env.get("VIRUS_SCAN_MAX_SIZE") || "104857600"
+    Deno.env.get("VIRUS_SCAN_MAX_SIZE") || `${DEFAULT_MAX_SCAN_SIZE}`,
+    10
   );
   if (fileData.size > maxSize) {
     return {
@@ -134,7 +168,6 @@ async function scanFile(fileData: Blob, fileName: string): Promise<ScanResult> {
       return await scanWithClamAV(fileData, fileName);
     case "virustotal":
       return await scanWithVirusTotal(fileData, fileName);
-    case "mock":
     default:
       return await mockScan(fileData, fileName);
   }
@@ -181,10 +214,7 @@ async function scanWithVirusTotal(
   fileData: Blob,
   fileName: string
 ): Promise<ScanResult> {
-  const apiKey = Deno.env.get("VIRUSTOTAL_API_KEY");
-  if (!apiKey) {
-    throw new Error("VirusTotal API key not configured");
-  }
+  const apiKey = getEnvVar("VIRUSTOTAL_API_KEY");
 
   // Upload file
   const formData = new FormData();
@@ -209,50 +239,22 @@ async function scanWithVirusTotal(
   const analysisId = uploadResult.data.id;
 
   // Poll for results
-  let attempts = 0;
-  const maxAttempts = 10;
-  const pollInterval = 3000;
+  return pollVirusTotalAnalysis(apiKey, analysisId);
+}
 
-  while (attempts < maxAttempts) {
-    await new Promise((resolve) => setTimeout(resolve, pollInterval));
+async function pollVirusTotalAnalysis(
+  apiKey: string,
+  analysisId: string
+): Promise<ScanResult> {
+  for (let attempts = 0; attempts < VIRUSTOTAL_MAX_ATTEMPTS; attempts++) {
+    await delay(VIRUSTOTAL_POLL_INTERVAL_MS);
 
-    const analysisResponse = await fetch(
-      `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
-      {
-        headers: {
-          "x-apikey": apiKey,
-        },
-      }
-    );
-
-    if (!analysisResponse.ok) {
-      throw new Error(
-        `VirusTotal analysis failed: ${analysisResponse.statusText}`
-      );
-    }
-
-    const analysisResult = await analysisResponse.json();
+    const analysisResult = await fetchVirusTotalAnalysis(apiKey, analysisId);
     const status = analysisResult.data.attributes.status;
 
     if (status === "completed") {
-      const stats = analysisResult.data.attributes.stats;
-      const malicious = stats.malicious || 0;
-      const suspicious = stats.suspicious || 0;
-
-      return {
-        status: malicious > 0 || suspicious > 0 ? "infected" : "clean",
-        threats:
-          malicious > 0 || suspicious > 0 ? ["Detected by VirusTotal"] : [],
-        scanEngine: "VirusTotal",
-        metadata: {
-          malicious,
-          suspicious,
-          undetected: stats.undetected || 0,
-        },
-      };
+      return buildVirusTotalScanResult(analysisResult.data.attributes.stats);
     }
-
-    attempts++;
   }
 
   return {
@@ -261,12 +263,54 @@ async function scanWithVirusTotal(
   };
 }
 
+async function fetchVirusTotalAnalysis(apiKey: string, analysisId: string) {
+  const analysisResponse = await fetch(
+    `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
+    {
+      headers: {
+        "x-apikey": apiKey,
+      },
+    }
+  );
+
+  if (!analysisResponse.ok) {
+    throw new Error(
+      `VirusTotal analysis failed: ${analysisResponse.statusText}`
+    );
+  }
+
+  return analysisResponse.json();
+}
+
+function buildVirusTotalScanResult(stats: {
+  malicious?: number;
+  suspicious?: number;
+  undetected?: number;
+}): ScanResult {
+  const malicious = stats.malicious ?? 0;
+  const suspicious = stats.suspicious ?? 0;
+
+  return {
+    status: malicious > 0 || suspicious > 0 ? "infected" : "clean",
+    threats: malicious > 0 || suspicious > 0 ? ["Detected by VirusTotal"] : [],
+    scanEngine: "VirusTotal",
+    metadata: {
+      malicious,
+      suspicious,
+      undetected: stats.undetected ?? 0,
+    },
+  };
+}
+
 /**
  * Mock scanner for development
  */
-async function mockScan(fileData: Blob, fileName: string): Promise<ScanResult> {
+async function mockScan(
+  fileData: Blob,
+  _fileName: string
+): Promise<ScanResult> {
   // Simulate scanning delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await delay(MOCK_SCAN_DELAY_MS);
 
   // Check for EICAR test signature
   const text = await fileData.text();
@@ -290,7 +334,7 @@ async function mockScan(fileData: Blob, fileName: string): Promise<ScanResult> {
  * Quarantine infected file
  */
 async function quarantineFile(
-  supabase: any,
+  supabase: SupabaseClient,
   attachmentId: string,
   bucket: string,
   path: string
@@ -334,7 +378,7 @@ async function quarantineFile(
       })
       .eq("id", attachmentId);
   } catch (error) {
-    console.error("Quarantine failed:", error);
+    logError("Quarantine failed:", error);
     throw error;
   }
 }

@@ -6,8 +6,8 @@
 
 "use client";
 
-import { useCallback, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useCallback, useEffect } from "react";
 import { trackEvent, trackPageView } from "./client";
 import type { AnalyticsEvent } from "./types";
 
@@ -62,12 +62,9 @@ export function usePageView(): void {
  * };
  */
 export function useFormTracking(formType: string) {
-  const track = useCallback(
-    (event: AnalyticsEvent) => {
-      trackEvent(event);
-    },
-    []
-  );
+  const track = useCallback((event: AnalyticsEvent) => {
+    trackEvent(event);
+  }, []);
 
   const trackFormStart = useCallback(() => {
     track({
@@ -255,4 +252,3 @@ export function useUITracking() {
     trackTabSwitch,
   };
 }
-

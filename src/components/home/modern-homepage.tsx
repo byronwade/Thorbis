@@ -244,17 +244,20 @@ export function ModernHomepage() {
     },
     {
       claim: "After-hours coverage",
-      thorbis: "Dispatch AI books no-heat calls overnight with scripts you control.",
+      thorbis:
+        "Dispatch AI books no-heat calls overnight with scripts you control.",
       others: "Forwarding to voicemail and hoping for the best.",
     },
     {
       claim: "Implementation",
-      thorbis: "Trade operators build your board, imports, and automations in 24 hours.",
+      thorbis:
+        "Trade operators build your board, imports, and automations in 24 hours.",
       others: "Self-serve onboarding videos and weeks of DIY cleanup.",
     },
     {
       claim: "Data ownership",
-      thorbis: "Export everything anytime—customers, jobs, invoices—no penalty.",
+      thorbis:
+        "Export everything anytime—customers, jobs, invoices—no penalty.",
       others: "Lock-in contracts and paywalls around your own data.",
     },
   ] as const;
@@ -262,7 +265,8 @@ export function ModernHomepage() {
   const incumbentIntel = [
     {
       name: "ServiceTitan",
-      summary: "Enterprise-first bundles like Marketing Pro add heavy overhead.",
+      summary:
+        "Enterprise-first bundles like Marketing Pro add heavy overhead.",
       takeaway:
         "Thorbis includes lifecycle marketing, review boosts, and advanced reporting in the flat base so you are not upsold feature-by-feature.",
       source: {
@@ -272,7 +276,8 @@ export function ModernHomepage() {
     },
     {
       name: "Housecall Pro",
-      summary: "Highlights 100M+ jobs and a 35% average revenue lift after year one.",
+      summary:
+        "Highlights 100M+ jobs and a 35% average revenue lift after year one.",
       takeaway:
         "Thorbis matches the growth focus but layers on 0% processing, Dispatch AI, and multi-division controls built for bigger crews.",
       source: {
@@ -282,7 +287,8 @@ export function ModernHomepage() {
     },
     {
       name: "Status quo tools",
-      summary: "Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
+      summary:
+        "Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
       takeaway:
         "Thorbis unifies quoting, dispatch, cash flow, and customer comms so information moves once and mirrors the field.",
       source: {
@@ -308,7 +314,8 @@ export function ModernHomepage() {
     {
       metric: "3x",
       label: "Faster cash collection",
-      description: "Instant payouts with 0% processing fees and auto reminders.",
+      description:
+        "Instant payouts with 0% processing fees and auto reminders.",
       icon: DollarSign,
     },
     {
@@ -361,7 +368,8 @@ export function ModernHomepage() {
     },
     {
       title: "Explore industries",
-      description: "Find HVAC, plumbing, electrical, roofing, and more playbooks.",
+      description:
+        "Find HVAC, plumbing, electrical, roofing, and more playbooks.",
       icon: Globe,
       href: "/industries",
     },
@@ -416,7 +424,7 @@ export function ModernHomepage() {
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.45),_transparent_55%)]" />
           <div className="absolute inset-0 bg-gradient-to-br from-background via-background/80 to-background" />
-          <div className="pointer-events-none absolute left-1/4 top-0 size-[600px] animate-pulse rounded-full bg-primary/25 opacity-50 blur-3xl" />
+          <div className="pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full bg-primary/25 opacity-50 blur-3xl" />
           <div className="pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full bg-primary/20 opacity-40 blur-3xl delay-1000" />
         </div>
 
@@ -498,7 +506,7 @@ export function ModernHomepage() {
                 size="lg"
               >
                 <Link href="/register">
-                  Start Free Trial
+                  Start 14-day Free Trial
                   <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
@@ -528,12 +536,16 @@ export function ModernHomepage() {
                     className="rounded-2xl border border-border/50 bg-background/80 p-5 shadow-sm backdrop-blur"
                     key={stat.label}
                   >
-                    <p className="text-muted-foreground text-xs">{stat.label}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {stat.label}
+                    </p>
                     <p className="font-bold text-3xl">{stat.value}</p>
                     <p className="text-success text-xs dark:text-success">
                       {stat.change}
                     </p>
-                    <p className="text-muted-foreground text-xs">{stat.detail}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {stat.detail}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -549,7 +561,7 @@ export function ModernHomepage() {
                     width={1400}
                   />
                   <div className="absolute inset-x-6 bottom-6 grid gap-3 rounded-2xl border border-border/50 bg-background/90 p-4 shadow-lg backdrop-blur">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    <div className="font-semibold text-primary text-xs uppercase tracking-wider">
                       Control tower insights
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -633,7 +645,7 @@ export function ModernHomepage() {
                     {destination.description}
                   </p>
                 </div>
-                <p className="mt-6 text-primary text-sm font-semibold">
+                <p className="mt-6 font-semibold text-primary text-sm">
                   Explore &rarr;
                 </p>
               </Link>
@@ -662,10 +674,10 @@ export function ModernHomepage() {
                 className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
                 key={intel.name}
               >
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                <p className="font-semibold text-primary text-xs uppercase tracking-wide">
                   {intel.name}
                 </p>
-                <h3 className="mb-2 mt-3 font-semibold text-xl">
+                <h3 className="mt-3 mb-2 font-semibold text-xl">
                   {intel.summary}
                 </h3>
                 <p className="mb-4 text-muted-foreground text-sm leading-relaxed">
@@ -675,7 +687,9 @@ export function ModernHomepage() {
                   className="text-primary text-sm underline underline-offset-2"
                   href={intel.source.href}
                   rel="noopener noreferrer"
-                  target={intel.source.href.startsWith("http") ? "_blank" : undefined}
+                  target={
+                    intel.source.href.startsWith("http") ? "_blank" : undefined
+                  }
                 >
                   {intel.source.label}
                 </Link>
@@ -702,7 +716,7 @@ export function ModernHomepage() {
                     into the base platform so every shop, not just enterprise,
                     gets dispatch, marketing, and cash flow copilots on day one.
                   </p>
-                  <div className="space-y-3 text-sm text-muted-foreground">
+                  <div className="space-y-3 text-muted-foreground text-sm">
                     <p className="flex items-start gap-3">
                       <Sparkles className="mt-0.5 size-4 text-primary" />
                       Dispatch AI books urgent calls in the same board your
@@ -715,8 +729,8 @@ export function ModernHomepage() {
                     </p>
                     <p className="flex items-start gap-3">
                       <TrendingUp className="mt-0.5 size-4 text-primary" />
-                      Revenue insights flag idle crews, low conversion zones, and
-                      cash delays so you can course-correct live.
+                      Revenue insights flag idle crews, low conversion zones,
+                      and cash delays so you can course-correct live.
                     </p>
                   </div>
                 </div>
@@ -744,7 +758,7 @@ export function ModernHomepage() {
         </div>
       </section>
 
-      <section className="relative border-b border-border/40 bg-gradient-to-b from-background via-background to-muted/30 py-24">
+      <section className="relative border-border/40 border-b bg-gradient-to-b from-background via-background to-muted/30 py-24">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.15),_transparent_60%)]" />
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl text-center">
@@ -769,14 +783,14 @@ export function ModernHomepage() {
                 <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
                   <driver.icon className="size-6 text-primary" />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                <p className="font-semibold text-primary text-xs uppercase tracking-wide">
                   {driver.label}
                 </p>
                 <h3 className="mb-2 font-semibold text-2xl">{driver.title}</h3>
                 <p className="mb-4 text-muted-foreground text-sm leading-relaxed">
                   {driver.description}
                 </p>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
                   {driver.proof}
                 </p>
               </div>
@@ -801,15 +815,15 @@ export function ModernHomepage() {
                   the product in action—then show how those moments tie back to
                   revenue and peace of mind.
                 </p>
-                <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-6 text-sm leading-relaxed text-muted-foreground">
+                <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-6 text-muted-foreground text-sm leading-relaxed">
                   <p className="flex items-start gap-3">
                     <Crown className="mt-1 size-4 text-primary" />
                     Own the narrative with high-end visuals and concrete stats.
                   </p>
                   <p className="flex items-start gap-3">
                     <LineChart className="mt-1 size-4 text-primary" />
-                    Tie every scene to growth: faster calls, tighter routes,
-                    and cash collected.
+                    Tie every scene to growth: faster calls, tighter routes, and
+                    cash collected.
                   </p>
                   <p className="flex items-start gap-3">
                     <Handshake className="mt-1 size-4 text-primary" />
@@ -831,9 +845,9 @@ export function ModernHomepage() {
                       src={visual.src}
                       width={900}
                     />
-                    <div className="space-y-2 border-t border-border/60 bg-background/90 p-6 backdrop-blur">
+                    <div className="space-y-2 border-border/60 border-t bg-background/90 p-6 backdrop-blur">
                       <Badge variant="secondary">{visual.badge}</Badge>
-                      <p className="text-foreground font-semibold">
+                      <p className="font-semibold text-foreground">
                         {visual.caption}
                       </p>
                     </div>
@@ -911,16 +925,14 @@ export function ModernHomepage() {
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
                   <stage.icon className="size-6 text-primary" />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                <p className="font-semibold text-primary text-xs uppercase tracking-wide">
                   {stage.stage}
                 </p>
-                <h3 className="mb-4 font-semibold text-2xl">
-                  {stage.title}
-                </h3>
+                <h3 className="mb-4 font-semibold text-2xl">{stage.title}</h3>
                 <ul className="space-y-3">
                   {stage.bullets.map((bullet) => (
                     <li
-                      className="flex items-start gap-3 text-sm text-muted-foreground"
+                      className="flex items-start gap-3 text-muted-foreground text-sm"
                       key={bullet}
                     >
                       <CheckCircle2 className="mt-0.5 size-4 text-success" />
@@ -955,21 +967,23 @@ export function ModernHomepage() {
                   className="border-border/60 border-t p-6 text-sm md:border-l"
                   key={point.claim}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                  <p className="font-semibold text-primary text-xs uppercase tracking-wide">
                     {point.claim}
                   </p>
                   <div className="mt-4 flex flex-col gap-4">
                     <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                      <p className="font-semibold text-primary text-xs uppercase tracking-wide">
                         Thorbis
                       </p>
-                      <p className="text-foreground text-base">{point.thorbis}</p>
+                      <p className="text-base text-foreground">
+                        {point.thorbis}
+                      </p>
                     </div>
                     <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
                         Other tools
                       </p>
-                      <p className="text-muted-foreground text-base">
+                      <p className="text-base text-muted-foreground">
                         {point.others}
                       </p>
                     </div>
@@ -1011,9 +1025,7 @@ export function ModernHomepage() {
                   <div className="mb-2 font-bold text-4xl text-primary">
                     {win.metric}
                   </div>
-                  <div className="mb-1 font-semibold text-lg">
-                    {win.label}
-                  </div>
+                  <div className="mb-1 font-semibold text-lg">{win.label}</div>
                   <div className="text-muted-foreground text-sm">
                     {win.description}
                   </div>
@@ -1080,7 +1092,7 @@ export function ModernHomepage() {
               trust Thorbis to keep phones answered, trucks dispatched, and cash
               collected without babysitting software.
             </p>
-            <div className="mb-10 space-y-3 text-left text-sm text-muted-foreground sm:text-base">
+            <div className="mb-10 space-y-3 text-left text-muted-foreground text-sm sm:text-base">
               {guaranteeHighlights.map((highlight) => (
                 <p className="flex items-start gap-3" key={highlight}>
                   <CheckCircle2 className="mt-0.5 size-4 text-success" />
@@ -1095,7 +1107,7 @@ export function ModernHomepage() {
                 size="lg"
               >
                 <Link href="/register">
-                  Start Free Trial
+                  Start 14-day Free Trial
                   <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
@@ -1118,5 +1130,3 @@ export function ModernHomepage() {
     </div>
   );
 }
-
-

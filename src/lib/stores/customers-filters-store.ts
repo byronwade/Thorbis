@@ -1,6 +1,6 @@
 /**
  * Customers Filters Store
- * 
+ *
  * Global state management for customer filtering
  */
 
@@ -35,18 +35,16 @@ export const useCustomersFiltersStore = create<CustomersFiltersStore>()(
   persist(
     (set) => ({
       filters: DEFAULT_FILTERS,
-      
+
       setFilters: (newFilters) =>
         set((state) => ({
           filters: { ...state.filters, ...newFilters },
         })),
-      
-      resetFilters: () =>
-        set({ filters: DEFAULT_FILTERS }),
+
+      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
     }),
     {
       name: "customers-filters",
     }
   )
 );
-

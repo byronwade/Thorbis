@@ -1,7 +1,12 @@
 // Script to generate TypeScript types from Supabase database
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { execSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const BYTES_PER_KILOBYTE = 1024;
+const KILOBYTES_PER_MEGABYTE = 1024;
+const BYTES_PER_MEGABYTE = BYTES_PER_KILOBYTE * KILOBYTES_PER_MEGABYTE;
+const MAX_BUFFER_SIZE_MB = 10;
+const MAX_BUFFER_SIZE_BYTES = MAX_BUFFER_SIZE_MB * BYTES_PER_MEGABYTE;
 
 const connectionString =
   "postgres://postgres.togejqdwggezkxahomeh:uepQ7vz5dwvvucOG@aws-1-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require";
@@ -12,7 +17,7 @@ try {
   // Use Supabase CLI to generate types
   const output = execSync(
     `npx supabase@latest gen types typescript --db-url "${connectionString}"`,
-    { encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 }
+    { encoding: "utf-8", maxBuffer: MAX_BUFFER_SIZE_BYTES }
   );
 
   // Write to types file

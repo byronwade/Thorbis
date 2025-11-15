@@ -1,15 +1,13 @@
 "use client";
 
-import { endOfWeek, format, startOfWeek } from "date-fns";
+import { format } from "date-fns";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
-  Plus,
-  SlidersHorizontal,
+  HelpCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -17,80 +15,78 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useSchedule } from "@/hooks/use-schedule";
-import { useGanttSchedulerStore } from "@/lib/stores/gantt-scheduler-store";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
-import { useViewStore } from "@/lib/stores/view-store";
 import { cn } from "@/lib/utils";
-import { GanttViewSwitcher } from "./gantt-view-switcher";
-import { ScheduleViewToggle } from "./schedule-view-toggle";
-import { ZoomControls } from "./zoom-controls";
+
+const jobTypeLegend = [
+  {
+    label: "Emergency / Urgent",
+    classes: "border-red-400 bg-red-50 text-red-700 dark:bg-red-950",
+  },
+  {
+    label: "Callback / Follow Up",
+    classes: "border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950",
+  },
+  {
+    label: "Meetings / Events",
+    classes: "border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-950",
+  },
+  {
+    label: "Install / New Work",
+    classes: "border-green-400 bg-green-50 text-green-700 dark:bg-green-950",
+  },
+  {
+    label: "Service / Maintenance",
+    classes: "border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950",
+  },
+  {
+    label: "Standard / Other",
+    classes: "border-slate-300 bg-slate-50 text-slate-700 dark:bg-slate-900",
+  },
+];
+
+const statusLegend = [
+  { label: "Scheduled", classes: "bg-blue-500" },
+  { label: "Dispatched", classes: "bg-sky-500" },
+  { label: "Arrived", classes: "bg-emerald-400" },
+  { label: "In Progress", classes: "bg-amber-500 animate-pulse" },
+  { label: "Closed", classes: "bg-emerald-600" },
+  { label: "Cancelled", classes: "bg-slate-400" },
+];
 
 export function ScheduleToolbarActions() {
   const [mounted, setMounted] = useState(false);
-  const scheduleView = useScheduleViewStore((state) => state.view);
-  const setScheduleView = useScheduleViewStore((state) => state.setView);
-
-  // Gantt scheduler state (only used when view is "gantt")
   const {
     currentDate,
-    view: ganttView,
-    selectedTechnicianId,
-    statusFilter,
     setCurrentDate,
-    setView: setGanttView,
-    setSelectedTechnicianId,
-    setStatusFilter,
-    handlePrevious,
-    handleNext,
-    handleToday,
-  } = useGanttSchedulerStore();
+    goToToday,
+    navigatePrevious,
+    navigateNext,
+  } = useScheduleViewStore();
 
-  const { technicians } = useSchedule();
-
-  // Timeline view state (only used when view is "timeline")
-  const { goToToday } = useViewStore();
-
-  // Prevent hydration mismatch by only rendering selects after mount
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const isGanttView = scheduleView === "gantt";
-  const isTimelineView = scheduleView === "timeline";
+  const dateObj =
+    currentDate instanceof Date ? currentDate : new Date(currentDate);
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2">
+        <div className="h-9 w-9 rounded-md border bg-muted" />
+        <div className="h-9 w-[160px] rounded-md border bg-muted" />
+        <div className="h-9 w-9 rounded-md border bg-muted" />
+        <div className="h-9 w-16 rounded-md border bg-muted" />
+        <div className="h-9 w-9 rounded-md border bg-muted" />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-3">
-      {/* Left Group: View Toggle */}
-      <ScheduleViewToggle onViewChange={setScheduleView} view={scheduleView} />
-
-      {/* Timeline-specific controls */}
-      {isTimelineView && (
-        <>
-          <ZoomControls />
-          <Button onClick={goToToday} size="default" variant="outline">
-            <CalendarIcon className="mr-2 size-4" />
-            Today
-          </Button>
-        </>
-      )}
-
-      {/* Gantt-specific controls */}
-      {isGanttView && (
-        <>
-          {/* Gantt View Switcher (Day/Week/Month) */}
-          <GanttViewSwitcher onViewChange={setGanttView} view={ganttView} />
-
+    <div className="flex items-center gap-2">
           {/* Date Navigation */}
-          <div className="flex items-center gap-2">
-            <Button onClick={handlePrevious} size="default" variant="outline">
+      <Button onClick={navigatePrevious} size="sm" variant="outline">
               <ChevronLeft className="size-4" />
             </Button>
 
@@ -105,11 +101,7 @@ export function ScheduleToolbarActions() {
                 >
                   <CalendarIcon className="size-4" />
                   <span className="font-medium">
-                    {ganttView === "day"
-                      ? format(currentDate, "MMM dd, yyyy")
-                      : ganttView === "week"
-                        ? `${format(startOfWeek(currentDate, { weekStartsOn: 0 }), "MMM dd")} - ${format(endOfWeek(currentDate, { weekStartsOn: 0 }), "MMM dd, yyyy")}`
-                        : format(currentDate, "MMMM yyyy")}
+              {format(dateObj, "MMM dd, yyyy")}
                   </span>
                 </button>
               </PopoverTrigger>
@@ -122,121 +114,62 @@ export function ScheduleToolbarActions() {
                       setCurrentDate(newDate);
                     }
                   }}
-                  selected={currentDate}
+            selected={dateObj}
                 />
               </PopoverContent>
             </Popover>
 
-            <Button onClick={handleNext} size="default" variant="outline">
+      <Button onClick={navigateNext} size="sm" variant="outline">
               <ChevronRight className="size-4" />
             </Button>
 
-            <Button onClick={handleToday} size="default" variant="outline">
+      <Button onClick={goToToday} size="sm" variant="default">
               Today
             </Button>
-          </div>
-        </>
-      )}
 
-      {/* Right Group: Filters in Popover + New Job */}
-      <div className="ml-auto flex items-center gap-1">
-        {/* Condensed Filters Popover */}
-        {mounted && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="default" variant="ghost">
-                <SlidersHorizontal className="mr-2 size-4" />
-                Filters
+          <Button
+            aria-label="Show schedule legend"
+            size="icon"
+            variant="ghost"
+          >
+            <HelpCircle className="size-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-[280px] p-4">
-              <div className="space-y-4">
-                {isGanttView && (
+        <PopoverContent align="end" className="w-64 space-y-4 text-sm">
                   <div>
-                    <label className="mb-2 block font-medium text-sm">
-                      Technician
-                    </label>
-                    <Select
-                      onValueChange={(id) =>
-                        setSelectedTechnicianId(id === "all" ? "" : id)
-                      }
-                      value={selectedTechnicianId || "all"}
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Job Type Colors
+            </p>
+            <div className="space-y-1.5">
+              {jobTypeLegend.map((item) => (
+                <div
+                  className="flex items-center gap-2 rounded-md border bg-card/70 px-2.5 py-1.5 text-xs"
+                  key={item.label}
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Technicians</SelectItem>
-                        {technicians.map((tech) => (
-                          <SelectItem key={tech.id} value={tech.id}>
-                            {tech.name}
-                          </SelectItem>
+                  <span className={cn("h-4 w-4 rounded-full border", item.classes)} />
+                  <span className="text-foreground">{item.label}</span>
+                </div>
                         ))}
-                      </SelectContent>
-                    </Select>
+            </div>
                   </div>
-                )}
 
                 <div>
-                  <label className="mb-2 block font-medium text-sm">
-                    Status
-                  </label>
-                  <Select
-                    onValueChange={(status) => {
-                      if (isGanttView) {
-                        setStatusFilter(status === "all" ? "" : status);
-                      }
-                      // TODO: Apply status filter to other views
-                    }}
-                    value={isGanttView ? statusFilter || "all" : "all"}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="scheduled">Scheduled</SelectItem>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Status Dot Legend
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              {statusLegend.map((item) => (
+                <div className="flex items-center gap-2" key={item.label}>
+                  <span className={cn("h-2.5 w-2.5 rounded-full", item.classes)} />
+                  <span>{item.label}</span>
                 </div>
-
-                {isGanttView && (
-                  <div className="flex items-center justify-between pt-2">
-                    <button
-                      className="text-muted-foreground text-sm hover:text-foreground"
-                      onClick={() => {
-                        setSelectedTechnicianId("");
-                        setStatusFilter("");
-                      }}
-                      type="button"
-                    >
-                      Clear all
-                    </button>
+              ))}
                   </div>
-                )}
               </div>
             </PopoverContent>
           </Popover>
-        )}
-
-        {/* Primary Action: New Job */}
-        <Button
-          onClick={() => {
-            // TODO: Open new job dialog
-          }}
-          size="default"
-          variant="default"
-        >
-          <Plus className="mr-2 size-4" />
-          New Job
-        </Button>
-
-        {/* Only render ImportExportDropdown after mount to avoid hydration mismatch */}
-        {mounted && <ImportExportDropdown dataType="schedule" />}
-      </div>
     </div>
   );
 }

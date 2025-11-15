@@ -89,7 +89,10 @@ export default async function PaymentDetailsPage({
     teamMemberError.message;
 
   if (hasRealError) {
-    console.error("[Payment Details] Error fetching team member:", teamMemberError);
+    console.error(
+      "[Payment Details] Error fetching team member:",
+      teamMemberError
+    );
     return notFound();
   }
 

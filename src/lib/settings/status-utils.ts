@@ -15,7 +15,7 @@ export function normalizeProgress(value?: number | null): number {
     return 0;
   }
 
-  if (value === Infinity) {
+  if (value === Number.POSITIVE_INFINITY) {
     return 100;
   }
 
@@ -94,10 +94,7 @@ export function getStatusColorClasses(status: HealthStatus): {
 /**
  * Helper to calculate a progress percentage from completed + total steps.
  */
-export function progressFromSteps(
-  completed: number,
-  total: number
-): number {
+export function progressFromSteps(completed: number, total: number): number {
   if (total <= 0) {
     return 0;
   }
@@ -116,4 +113,3 @@ export function formatTrendDelta(value?: number | null): string {
   const prefix = value > 0 ? "+" : "-";
   return `${prefix}${rounded}%`;
 }
-

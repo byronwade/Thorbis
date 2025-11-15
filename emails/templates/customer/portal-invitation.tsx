@@ -15,7 +15,7 @@ import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
 import { EMAIL_COLORS } from "../../theme";
 
-export interface PortalInvitationProps {
+export type PortalInvitationProps = {
   customerName: string;
   portalUrl: string;
   expiresInHours?: number;
@@ -23,7 +23,7 @@ export interface PortalInvitationProps {
   supportEmail?: string;
   supportPhone?: string;
   previewText?: string;
-}
+};
 
 export default function PortalInvitationEmail({
   customerName,

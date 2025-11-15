@@ -17,6 +17,7 @@ import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 export function CommunicationToolbarActions() {
   const activeFilter = useCommunicationStore((state) => state.activeFilter);
+  const openComposer = useCommunicationStore((state) => state.openComposer);
 
   // Return appropriate button based on active filter
   let buttonContent;
@@ -24,7 +25,16 @@ export function CommunicationToolbarActions() {
   switch (activeFilter) {
     case "email":
       buttonContent = (
-        <Button size="sm" variant="default">
+        <Button
+          onClick={() =>
+            openComposer("email", {
+              customerName: "Customer",
+              email: "",
+            })
+          }
+          size="sm"
+          variant="default"
+        >
           <Pencil className="mr-2 size-4" />
           <span className="hidden sm:inline">Compose</span>
           <span className="sm:hidden">New</span>
@@ -33,7 +43,16 @@ export function CommunicationToolbarActions() {
       break;
     case "sms":
       buttonContent = (
-        <Button size="sm" variant="default">
+        <Button
+          onClick={() =>
+            openComposer("sms", {
+              customerName: "Customer",
+              phone: "",
+            })
+          }
+          size="sm"
+          variant="default"
+        >
           <MessageSquare className="mr-2 size-4" />
           <span className="hidden sm:inline">New Text</span>
           <span className="sm:hidden">New</span>
@@ -42,7 +61,11 @@ export function CommunicationToolbarActions() {
       break;
     case "phone":
       buttonContent = (
-        <Button size="sm" variant="default">
+        <Button
+          onClick={() => openComposer("call")}
+          size="sm"
+          variant="default"
+        >
           <Phone className="mr-2 size-4" />
           <span className="hidden sm:inline">New Call</span>
           <span className="sm:hidden">Call</span>
@@ -60,7 +83,11 @@ export function CommunicationToolbarActions() {
       break;
     default:
       buttonContent = (
-        <Button size="sm" variant="default">
+        <Button
+          onClick={() => openComposer("email")}
+          size="sm"
+          variant="default"
+        >
           <Plus className="mr-2 size-4" />
           <span className="hidden sm:inline">New Message</span>
           <span className="sm:hidden">New</span>

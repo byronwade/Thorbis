@@ -699,6 +699,7 @@ export function TeamMemberPageContent({
       {/* Email Dialog */}
       {mounted && user?.email && (
         <EmailDialog
+          companyId={member.company_id}
           customerEmail={user.email}
           customerId={member.id}
           customerName={user.name || "Team Member"}

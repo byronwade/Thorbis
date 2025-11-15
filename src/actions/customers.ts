@@ -1190,6 +1190,7 @@ type CustomerRecord = {
   first_name: string;
   last_name: string;
   display_name: string;
+  company_name?: string | null;
   email: string;
   phone: string;
   secondary_phone?: string;

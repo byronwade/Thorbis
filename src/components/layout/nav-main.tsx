@@ -44,7 +44,8 @@ export function NavMain({
           const isDetailPage = safePathname.startsWith(`${item.url}/`);
           const hasActiveSubItem = item.items?.some(
             (subItem) =>
-              safePathname === subItem.url || safePathname.startsWith(`${subItem.url}/`)
+              safePathname === subItem.url ||
+              safePathname.startsWith(`${subItem.url}/`)
           );
           const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
 

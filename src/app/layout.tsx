@@ -1,6 +1,6 @@
-import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata, Viewport } from "next";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
@@ -100,14 +100,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className="font-sans antialiased"
-      >
+      <body className="font-sans antialiased">
         <ThemeProvider>
           <BotIdProvider />
-          <AnalyticsProvider>
-            {children}
-          </AnalyticsProvider>
+          <AnalyticsProvider>{children}</AnalyticsProvider>
           <ToastProvider />
         </ThemeProvider>
         <Analytics />

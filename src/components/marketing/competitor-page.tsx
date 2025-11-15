@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowRight, Check, TrendingDown } from "lucide-react";
+import Link from "next/link";
 
 import {
   Accordion,
@@ -22,12 +22,15 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
     <div className="space-y-20">
       {/* Hero Section - Enhanced */}
       <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-primary/5 p-8 sm:p-12 lg:p-16">
-        <div className="absolute top-0 right-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute bottom-0 left-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
-        
+        <div className="-z-10 absolute top-0 right-0 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="-z-10 absolute bottom-0 left-0 size-96 rounded-full bg-primary/5 blur-3xl" />
+
         <div className="relative mx-auto max-w-4xl space-y-8">
           <div className="flex items-center gap-3">
-            <Badge className="px-4 py-1.5 font-medium uppercase tracking-wide" variant="secondary">
+            <Badge
+              className="px-4 py-1.5 font-medium uppercase tracking-wide"
+              variant="secondary"
+            >
               {competitor.heroEyebrow}
             </Badge>
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
@@ -40,14 +43,14 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
             {competitor.heroTitle}
           </h1>
 
-          <p className="text-balance text-lg leading-relaxed text-muted-foreground sm:text-xl">
+          <p className="text-balance text-lg text-muted-foreground leading-relaxed sm:text-xl">
             {competitor.heroDescription}
           </p>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <Button asChild className="group" size="lg">
               <Link href="/register">
-                Start free trial
+                Start 14-day free trial
                 <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -59,23 +62,30 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
           <div className="flex flex-wrap items-center gap-6 border-border/50 border-t pt-6">
             <div className="flex items-center gap-2">
               <Check className="size-5 text-green-600 dark:text-green-400" />
-              <span className="text-muted-foreground text-sm">No multi-year contracts</span>
+              <span className="text-muted-foreground text-sm">
+                No multi-year contracts
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="size-5 text-green-600 dark:text-green-400" />
-              <span className="text-muted-foreground text-sm">Unlimited office users</span>
+              <span className="text-muted-foreground text-sm">
+                Unlimited office users
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="size-5 text-green-600 dark:text-green-400" />
-              <span className="text-muted-foreground text-sm">30-45 day migration</span>
+              <span className="text-muted-foreground text-sm">
+                30-45 day migration
+              </span>
             </div>
           </div>
 
           <div className="rounded-xl border bg-background/60 p-4 backdrop-blur-sm">
             <p className="font-medium text-sm">
               <span className="text-primary">Transparent pricing:</span>{" "}
-              <span className="text-foreground">$100/month base</span> + pay-as-you-go AI usage. 
-              Average customer: <span className="text-foreground">$350-800/month all-in</span>.
+              <span className="text-foreground">$100/month base</span> +
+              pay-as-you-go AI usage. Average customer:{" "}
+              <span className="text-foreground">$350-800/month all-in</span>.
             </p>
           </div>
         </div>
@@ -95,15 +105,20 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
               {competitor.summary}
             </p>
             <div className="mt-8 space-y-4">
-              <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
+              <h3 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
                 Perfect for teams who:
               </h3>
               {competitor.idealCustomerProfile.map((profile, index) => (
-                <div className="group flex gap-4 rounded-lg border border-transparent p-3 transition-colors hover:border-primary/20 hover:bg-primary/5" key={profile}>
+                <div
+                  className="group flex gap-4 rounded-lg border border-transparent p-3 transition-colors hover:border-primary/20 hover:bg-primary/5"
+                  key={profile}
+                >
                   <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                     <span className="font-bold text-xs">{index + 1}</span>
                   </div>
-                  <span className="text-foreground text-sm leading-relaxed">{profile}</span>
+                  <span className="text-foreground text-sm leading-relaxed">
+                    {profile}
+                  </span>
                 </div>
               ))}
             </div>
@@ -113,14 +128,19 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
         <div className="space-y-4">
           <div className="rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-6">
             <h3 className="font-bold text-xl">Thorbis advantages</h3>
-            <p className="mt-2 text-muted-foreground text-sm">Real benefits backed by data</p>
+            <p className="mt-2 text-muted-foreground text-sm">
+              Real benefits backed by data
+            </p>
           </div>
-          
+
           <div className="space-y-3">
             {competitor.thorbisAdvantages.slice(0, 3).map((prop) => {
               const Icon = getMarketingIcon(prop.icon);
               return (
-                <Card className="group transition-all hover:shadow-md hover:border-primary/30" key={prop.title}>
+                <Card
+                  className="group transition-all hover:border-primary/30 hover:shadow-md"
+                  key={prop.title}
+                >
                   <CardContent className="p-5">
                     <div className="flex gap-4">
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
@@ -130,8 +150,10 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
                         />
                       </div>
                       <div className="space-y-1">
-                        <p className="font-semibold text-sm leading-tight">{prop.title}</p>
-                        <p className="text-muted-foreground text-xs leading-relaxed line-clamp-3">
+                        <p className="font-semibold text-sm leading-tight">
+                          {prop.title}
+                        </p>
+                        <p className="line-clamp-3 text-muted-foreground text-xs leading-relaxed">
                           {prop.description}
                         </p>
                       </div>
@@ -173,8 +195,8 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
               </thead>
               <tbody className="divide-y divide-border bg-background">
                 {competitor.comparisonTable.map((row, index) => (
-                  <tr 
-                    className="group transition-colors hover:bg-muted/30" 
+                  <tr
+                    className="group transition-colors hover:bg-muted/30"
                     key={row.category}
                   >
                     <td className="px-6 py-5 font-semibold text-foreground text-sm">
@@ -203,8 +225,10 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 
         <div className="rounded-xl border-2 border-green-500/20 bg-green-500/5 p-6 text-center">
           <p className="font-semibold text-foreground">
-            <span className="text-green-600 dark:text-green-400">Save 60-70%</span> on total cost 
-            while getting more features and better support
+            <span className="text-green-600 dark:text-green-400">
+              Save 60-70%
+            </span>{" "}
+            on total cost while getting more features and better support
           </p>
         </div>
       </section>
@@ -223,18 +247,22 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {competitor.migrationPlan.map((phase, index) => (
             <Card
-              className="group relative overflow-hidden border-2 transition-all hover:shadow-xl hover:border-primary/30"
+              className="group relative overflow-hidden border-2 transition-all hover:border-primary/30 hover:shadow-xl"
               key={phase.title}
             >
-              <div className="absolute top-0 right-0 -z-10 size-32 rounded-full bg-primary/5 blur-2xl transition-all group-hover:bg-primary/10" />
-              
+              <div className="-z-10 absolute top-0 right-0 size-32 rounded-full bg-primary/5 blur-2xl transition-all group-hover:bg-primary/10" />
+
               <CardContent className="p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary text-xl transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                     {index + 1}
                   </div>
-                  <Badge variant="secondary" className="font-medium">
-                    {index === 0 ? 'Week 1-2' : index === 1 ? 'Week 3-4' : 'Week 5-6'}
+                  <Badge className="font-medium" variant="secondary">
+                    {index === 0
+                      ? "Week 1-2"
+                      : index === 1
+                        ? "Week 3-4"
+                        : "Week 5-6"}
                   </Badge>
                 </div>
 
@@ -247,7 +275,9 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
                   {phase.steps.map((step) => (
                     <div className="flex gap-2.5" key={step}>
                       <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                      <span className="text-foreground text-sm leading-relaxed">{step}</span>
+                      <span className="text-foreground text-sm leading-relaxed">
+                        {step}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -258,7 +288,8 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 
         <div className="rounded-xl bg-primary/5 p-6 text-center">
           <p className="font-medium text-foreground">
-            Most migrations complete in <span className="text-primary">30-45 days</span> with zero downtime
+            Most migrations complete in{" "}
+            <span className="text-primary">30-45 days</span> with zero downtime
           </p>
         </div>
       </section>
@@ -274,17 +305,19 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
             <p className="mt-2 text-muted-foreground text-sm">
               Transparent pricing with no surprises
             </p>
-            
+
             <div className="mt-6 space-y-4">
               {competitor.pricingNotes.map((note, index) => (
-                <div 
-                  className="group flex gap-3 rounded-lg border border-transparent p-3 transition-colors hover:border-green-500/20 hover:bg-green-500/5" 
+                <div
+                  className="group flex gap-3 rounded-lg border border-transparent p-3 transition-colors hover:border-green-500/20 hover:bg-green-500/5"
                   key={note}
                 >
                   <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-green-500/10 text-green-600 dark:text-green-400">
                     <Check className="size-4" />
                   </div>
-                  <span className="text-foreground text-sm leading-relaxed">{note}</span>
+                  <span className="text-foreground text-sm leading-relaxed">
+                    {note}
+                  </span>
                 </div>
               ))}
             </div>
@@ -293,16 +326,16 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 
         {competitor.testimonial ? (
           <Card className="relative overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-            <div className="absolute top-0 right-0 -z-10 size-64 rounded-full bg-primary/10 blur-3xl" />
-            
+            <div className="-z-10 absolute top-0 right-0 size-64 rounded-full bg-primary/10 blur-3xl" />
+
             <CardContent className="flex flex-col justify-center p-8 text-center lg:p-12">
-              <div className="mb-6 text-primary text-6xl leading-none">"</div>
-              
+              <div className="mb-6 text-6xl text-primary leading-none">"</div>
+
               <blockquote className="space-y-6">
                 <p className="font-semibold text-foreground text-xl leading-relaxed sm:text-2xl">
                   {competitor.testimonial.quote}
                 </p>
-                
+
                 <footer className="space-y-2">
                   <div className="mx-auto h-0.5 w-12 bg-primary/20" />
                   <p className="font-semibold text-foreground">
@@ -370,7 +403,10 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
         <div className="rounded-xl border bg-muted/30 p-6 text-center">
           <p className="text-muted-foreground">
             Still have questions?{" "}
-            <Link className="font-semibold text-primary underline-offset-4 hover:underline" href="/contact">
+            <Link
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+              href="/contact"
+            >
               Talk to our migrations team
             </Link>
           </p>
@@ -379,22 +415,23 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 
       {/* Final CTA - New */}
       <section className="relative overflow-hidden rounded-3xl border-2 bg-gradient-to-br from-primary/10 via-background to-primary/5 p-8 text-center sm:p-12 lg:p-16">
-        <div className="absolute top-0 right-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute bottom-0 left-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
-        
+        <div className="-z-10 absolute top-0 right-0 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="-z-10 absolute bottom-0 left-0 size-96 rounded-full bg-primary/5 blur-3xl" />
+
         <div className="relative mx-auto max-w-3xl space-y-6">
           <h2 className="font-bold text-3xl tracking-tight sm:text-4xl lg:text-5xl">
             Ready to make the switch?
           </h2>
           <p className="text-balance text-lg text-muted-foreground">
-            Join hundreds of service companies who've upgraded from {competitor.competitorName} to Thorbis. 
-            Get enterprise features, transparent pricing, and dedicated support—without the hassle.
+            Join hundreds of service companies who've upgraded from{" "}
+            {competitor.competitorName} to Thorbis. Get enterprise features,
+            transparent pricing, and dedicated support—without the hassle.
           </p>
-          
+
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
             <Button asChild className="group" size="lg">
               <Link href="/register">
-                Start your free trial
+                Start your 14-day free trial
                 <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -406,15 +443,21 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
           <div className="flex flex-wrap items-center justify-center gap-6 border-border/50 border-t pt-6">
             <div className="flex items-center gap-2">
               <Check className="size-5 text-green-600 dark:text-green-400" />
-              <span className="text-muted-foreground text-sm">30-45 day migration</span>
+              <span className="text-muted-foreground text-sm">
+                30-45 day migration
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="size-5 text-green-600 dark:text-green-400" />
-              <span className="text-muted-foreground text-sm">Zero downtime</span>
+              <span className="text-muted-foreground text-sm">
+                Zero downtime
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="size-5 text-green-600 dark:text-green-400" />
-              <span className="text-muted-foreground text-sm">No risk, cancel anytime</span>
+              <span className="text-muted-foreground text-sm">
+                No risk, cancel anytime
+              </span>
             </div>
           </div>
         </div>

@@ -8,9 +8,9 @@
  * - Import/Export
  */
 
-import { PaymentsFilterDropdown } from "@/components/work/payments-filter-dropdown";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
+import { PaymentsFilterDropdown } from "@/components/work/payments-filter-dropdown";
 
 // Critical columns (always visible - shown for reference)
 const PAYMENTS_CRITICAL_COLUMNS = [

@@ -1,6 +1,6 @@
 const { createClient } = require("@supabase/supabase-js");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const projectRoot = path.resolve(__dirname, "../../..");
 
@@ -10,7 +10,7 @@ const supabaseKey =
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function applyMigration(filePath) {
+async function _applyMigration(filePath) {
   console.log(`\n📁 Reading migration: ${path.basename(filePath)}`);
 
   const sql = fs.readFileSync(filePath, "utf8");
@@ -18,7 +18,7 @@ async function applyMigration(filePath) {
   console.log(`📝 Applying migration (${sql.length} characters)...`);
 
   // Execute the SQL
-  const { data, error } = await supabase.rpc("exec_sql", { sql_query: sql });
+  const { error } = await supabase.rpc("exec_sql", { sql_query: sql });
 
   if (error) {
     // Try alternative method - direct query
@@ -56,7 +56,7 @@ async function applyMigration(filePath) {
   console.log(`✅ Migration applied: ${path.basename(filePath)}`);
 }
 
-async function main() {
+function main() {
   console.log("🚀 Starting migration application...\n");
   console.log(
     "⚠️  NOTE: Supabase hosted instances require manual migration application."
@@ -100,7 +100,9 @@ async function main() {
   );
 }
 
-main().catch((error) => {
+try {
+  main();
+} catch (error) {
   console.error("❌ Error:", error);
   process.exit(1);
-});
+}

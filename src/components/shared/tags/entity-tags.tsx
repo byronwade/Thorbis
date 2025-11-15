@@ -7,9 +7,19 @@
 "use client";
 
 import { Plus, Tag, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,16 +35,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import type { ActionResult } from "@/lib/errors/with-error-handling";
 
 export type TagWithColor = {
@@ -64,18 +64,78 @@ type EntityTagsProps = {
 };
 
 const PRESET_COLORS = [
-  { name: "Red", value: "red", class: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30" },
-  { name: "Orange", value: "orange", class: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-900/30" },
-  { name: "Amber", value: "amber", class: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30" },
-  { name: "Yellow", value: "yellow", class: "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900/30" },
-  { name: "Green", value: "green", class: "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30" },
-  { name: "Emerald", value: "emerald", class: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/30" },
-  { name: "Teal", value: "teal", class: "bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/30" },
-  { name: "Blue", value: "blue", class: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30" },
-  { name: "Indigo", value: "indigo", class: "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/30" },
-  { name: "Purple", value: "purple", class: "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-900/30" },
-  { name: "Pink", value: "pink", class: "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-900/30" },
-  { name: "Gray", value: "gray", class: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30" },
+  {
+    name: "Red",
+    value: "red",
+    class:
+      "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
+  },
+  {
+    name: "Orange",
+    value: "orange",
+    class:
+      "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-900/30",
+  },
+  {
+    name: "Amber",
+    value: "amber",
+    class:
+      "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30",
+  },
+  {
+    name: "Yellow",
+    value: "yellow",
+    class:
+      "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900/30",
+  },
+  {
+    name: "Green",
+    value: "green",
+    class:
+      "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30",
+  },
+  {
+    name: "Emerald",
+    value: "emerald",
+    class:
+      "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/30",
+  },
+  {
+    name: "Teal",
+    value: "teal",
+    class:
+      "bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/30",
+  },
+  {
+    name: "Blue",
+    value: "blue",
+    class:
+      "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30",
+  },
+  {
+    name: "Indigo",
+    value: "indigo",
+    class:
+      "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/30",
+  },
+  {
+    name: "Purple",
+    value: "purple",
+    class:
+      "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-900/30",
+  },
+  {
+    name: "Pink",
+    value: "pink",
+    class:
+      "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-900/30",
+  },
+  {
+    name: "Gray",
+    value: "gray",
+    class:
+      "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30",
+  },
 ];
 
 const COLOR_CLASSES: Record<string, string> = PRESET_COLORS.reduce(
@@ -97,13 +157,11 @@ export function EntityTags({
   const [isSaving, setIsSaving] = useState(false);
   const [tagToRemove, setTagToRemove] = useState<EntityTag | null>(null);
 
-  const getTagLabel = (tag: EntityTag): string => {
-    return typeof tag === "string" ? tag : tag.label;
-  };
+  const getTagLabel = (tag: EntityTag): string =>
+    typeof tag === "string" ? tag : tag.label;
 
-  const getTagColor = (tag: EntityTag): string | undefined => {
-    return typeof tag === "string" ? undefined : tag.color;
-  };
+  const getTagColor = (tag: EntityTag): string | undefined =>
+    typeof tag === "string" ? undefined : tag.color;
 
   const handleAddTag = async () => {
     if (!tagLabel.trim()) {
@@ -169,13 +227,14 @@ export function EntityTags({
         {tags.map((tag, index) => {
           const label = getTagLabel(tag);
           const color = getTagColor(tag);
-          const colorClass = color && COLOR_CLASSES[color] 
-            ? COLOR_CLASSES[color]
-            : COLOR_CLASSES.blue;
+          const colorClass =
+            color && COLOR_CLASSES[color]
+              ? COLOR_CLASSES[color]
+              : COLOR_CLASSES.blue;
 
           return (
             <div
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${colorClass}`}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium text-sm transition-colors ${colorClass}`}
               key={`${label}-${index}`}
             >
               <Tag className="size-3" />
@@ -196,9 +255,9 @@ export function EntityTags({
 
         {/* Add Tag Button */}
         {!readOnly && (
-          <Popover open={isAddOpen} onOpenChange={setIsAddOpen}>
+          <Popover onOpenChange={setIsAddOpen} open={isAddOpen}>
             <PopoverTrigger asChild>
-              <button className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border/60 bg-background px-3 py-1.5 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5">
+              <button className="inline-flex items-center gap-1.5 rounded-full border border-border/60 border-dashed bg-background px-3 py-1.5 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
                 <Plus className="size-3" />
                 <span>Add Tag</span>
               </button>
@@ -248,7 +307,9 @@ export function EntityTags({
                       {PRESET_COLORS.map((color) => (
                         <SelectItem key={color.value} value={color.value}>
                           <div className="flex items-center gap-2">
-                            <div className={`h-4 w-4 rounded-full ${color.class}`} />
+                            <div
+                              className={`h-4 w-4 rounded-full ${color.class}`}
+                            />
                             <span>{color.name}</span>
                           </div>
                         </SelectItem>
@@ -262,7 +323,7 @@ export function EntityTags({
                   <div className="space-y-2">
                     <Label>Preview</Label>
                     <div
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium ${selectedColor?.class}`}
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium text-sm ${selectedColor?.class}`}
                     >
                       <Tag className="size-3" />
                       <span>{tagLabel}</span>
@@ -294,12 +355,17 @@ export function EntityTags({
       </div>
 
       {/* Remove Confirmation Dialog */}
-      <AlertDialog open={!!tagToRemove} onOpenChange={() => setTagToRemove(null)}>
+      <AlertDialog
+        onOpenChange={() => setTagToRemove(null)}
+        open={!!tagToRemove}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Tag</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove the tag "{tagToRemove ? getTagLabel(tagToRemove) : ""}"? This action cannot be undone.
+              Are you sure you want to remove the tag "
+              {tagToRemove ? getTagLabel(tagToRemove) : ""}"? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -316,4 +382,3 @@ export function EntityTags({
     </>
   );
 }
-

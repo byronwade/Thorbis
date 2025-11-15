@@ -5,12 +5,12 @@
  * Runs all seed SQL files in order
  */
 
-import { exec } from "child_process";
+import { exec } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import { config } from "dotenv";
-import { existsSync, readFileSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-import { promisify } from "util";
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -60,26 +60,12 @@ const seedFiles = [
   "supabase/seeds/15_inventory.sql",
 ];
 
-async function runSQL(sql) {
-  try {
-    const { stdout, stderr } = await execAsync(
-      `psql "${DATABASE_URL}" -c "${sql.replace(/"/g, '\\"')}"`
-    );
-    if (stderr && !stderr.includes("NOTICE")) {
-      console.error("  ⚠️  Warning:", stderr);
-    }
-    return stdout;
-  } catch (error) {
-    throw new Error(`SQL execution failed: ${error.message}`);
-  }
-}
-
 async function runSQLFile(filepath) {
   try {
     const { stdout, stderr } = await execAsync(
       `psql "${DATABASE_URL}" -f "${filepath}"`
     );
-    if (stderr && stderr.includes("ERROR")) {
+    if (stderr?.includes("ERROR")) {
       console.error("  ❌ Error:", stderr);
       throw new Error(stderr);
     }
@@ -145,7 +131,7 @@ async function seed() {
 
     // Write to temp file
     const tempFile = join(rootDir, "temp_combined_seed.sql");
-    const fs = await import("fs");
+    const fs = await import("node:fs");
     fs.writeFileSync(tempFile, combinedSQL);
 
     console.log("\n========================================");

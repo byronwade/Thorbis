@@ -12,6 +12,8 @@
 
 import { Mail, Send } from "lucide-react";
 import { useState, useTransition } from "react";
+import { sendCustomerEmailAction } from "@/actions/communications";
+import type { CommunicationRecord } from "@/components/communication/communication-page-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,19 +25,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { GenericEmail } from "@/emails/generic-email";
 import { useToast } from "@/hooks/use-toast";
-import { sendEmail } from "@/lib/email/email-sender";
-import { EmailTemplate } from "@/lib/email/email-types";
 
 interface EmailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customerName: string;
   customerEmail: string;
+  companyId: string;
   customerId?: string;
+  jobId?: string;
+  propertyId?: string;
+  invoiceId?: string;
+  estimateId?: string;
   defaultSubject?: string;
   defaultBody?: string;
+  onCommunicationCreated?: (record: CommunicationRecord) => void;
 }
 
 export function EmailDialog({
@@ -43,9 +48,15 @@ export function EmailDialog({
   onOpenChange,
   customerName,
   customerEmail,
+  companyId,
   customerId,
+  jobId,
+  propertyId,
+  invoiceId,
+  estimateId,
   defaultSubject = "",
   defaultBody = "",
+  onCommunicationCreated,
 }: EmailDialogProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -64,20 +75,26 @@ export function EmailDialog({
     }
 
     startTransition(async () => {
-      const result = await sendEmail({
+      const result = await sendCustomerEmailAction({
         to: customerEmail,
         subject,
-        template: GenericEmail({
-          recipientName: customerName,
-          message: body,
-        }),
-        templateType: EmailTemplate.GENERIC,
+        body,
+        customerName,
+        companyId,
+        customerId,
+        jobId,
+        propertyId,
+        invoiceId,
+        estimateId,
       });
 
       if (result.success) {
         toast.success(`Email sent to ${customerName}`);
         setSubject("");
         setBody("");
+        if (result.data) {
+          onCommunicationCreated?.(result.data as CommunicationRecord);
+        }
         onOpenChange(false);
       } else {
         toast.error(result.error || "Failed to send email");

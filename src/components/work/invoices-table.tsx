@@ -65,9 +65,7 @@ export function InvoicesTable({
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
     new Set()
   );
-  const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(
-    new Set()
-  );
+  const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(new Set());
 
   // Apply filters from store
   const filteredInvoices = useMemo(() => {
@@ -481,7 +479,8 @@ export function InvoicesTable({
             </AlertDialogTitle>
             <AlertDialogDescription>
               This will send {pendingSendIds.size} invoice
-              {pendingSendIds.size !== 1 ? "s" : ""} via email to your customers.
+              {pendingSendIds.size !== 1 ? "s" : ""} via email to your
+              customers.
               <br />
               <br />
               <strong>Estimated time:</strong>{" "}
@@ -500,7 +499,9 @@ export function InvoicesTable({
                 setIsBulkSending(true);
 
                 // Import sync store
-                const { useSyncStore } = await import("@/lib/stores/sync-store");
+                const { useSyncStore } = await import(
+                  "@/lib/stores/sync-store"
+                );
                 const { startOperation, updateOperation, completeOperation } =
                   useSyncStore.getState();
 

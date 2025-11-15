@@ -61,7 +61,8 @@ export function TagManagerDialog({
   jobTags = [],
   onUpdate,
 }: TagManagerDialogProps) {
-  const [localCustomerTags, setLocalCustomerTags] = useState<string[]>(customerTags);
+  const [localCustomerTags, setLocalCustomerTags] =
+    useState<string[]>(customerTags);
   const [localJobTags, setLocalJobTags] = useState<string[]>(jobTags);
   const [newCustomerTag, setNewCustomerTag] = useState("");
   const [newJobTag, setNewJobTag] = useState("");
@@ -94,7 +95,10 @@ export function TagManagerDialog({
     try {
       const promises = [];
 
-      if (customerId && JSON.stringify(localCustomerTags) !== JSON.stringify(customerTags)) {
+      if (
+        customerId &&
+        JSON.stringify(localCustomerTags) !== JSON.stringify(customerTags)
+      ) {
         promises.push(updateCustomerTags(customerId, localCustomerTags));
       }
 
@@ -103,7 +107,7 @@ export function TagManagerDialog({
       }
 
       const results = await Promise.all(promises);
-      
+
       if (results.every((r) => r.success)) {
         toast.success("Tags updated successfully");
         onUpdate?.();
@@ -120,7 +124,7 @@ export function TagManagerDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Manage Tags</DialogTitle>
@@ -164,8 +168,8 @@ export function TagManagerDialog({
                     (tag) => !localCustomerTags.includes(tag)
                   ).map((tag) => (
                     <Button
-                      key={tag}
                       className="h-7 gap-1 text-xs"
+                      key={tag}
                       onClick={() => handleAddCustomerTag(tag)}
                       size="sm"
                       variant="outline"
@@ -180,12 +184,12 @@ export function TagManagerDialog({
               {/* Custom Customer Tag Input */}
               <div className="flex gap-2">
                 <Input
+                  onChange={(e) => setNewCustomerTag(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleAddCustomerTag(newCustomerTag);
                     }
                   }}
-                  onChange={(e) => setNewCustomerTag(e.target.value)}
                   placeholder="Add custom customer tag..."
                   value={newCustomerTag}
                 />
@@ -236,8 +240,8 @@ export function TagManagerDialog({
                     (tag) => !localJobTags.includes(tag)
                   ).map((tag) => (
                     <Button
-                      key={tag}
                       className="h-7 gap-1 text-xs"
+                      key={tag}
                       onClick={() => handleAddJobTag(tag)}
                       size="sm"
                       variant="outline"
@@ -252,12 +256,12 @@ export function TagManagerDialog({
               {/* Custom Job Tag Input */}
               <div className="flex gap-2">
                 <Input
+                  onChange={(e) => setNewJobTag(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleAddJobTag(newJobTag);
                     }
                   }}
-                  onChange={(e) => setNewJobTag(e.target.value)}
                   placeholder="Add custom job tag..."
                   value={newJobTag}
                 />
@@ -285,4 +289,3 @@ export function TagManagerDialog({
     </Dialog>
   );
 }
-

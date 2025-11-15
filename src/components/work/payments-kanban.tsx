@@ -164,7 +164,7 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
             fullDateFormatter.format(new Date(payment.processed_at))}
         </span>
         <span className="uppercase">
-          {columnId ? COLUMN_LABEL.get(columnId) ?? columnId : "—"}
+          {columnId ? (COLUMN_LABEL.get(columnId) ?? columnId) : "—"}
         </span>
       </div>
 

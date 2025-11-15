@@ -155,7 +155,7 @@ export function NumberPortingWizard({
 
       if (result.success) {
         setSubmitting(false);
-        
+
         // Call onSuccess callback if provided
         if (onSuccess) {
           onSuccess(portingData.phoneNumber);

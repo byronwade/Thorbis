@@ -14,10 +14,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { validatePaymentToken, markTokenAsUsed } from "@/lib/payments/payment-tokens";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
+import {
+  markTokenAsUsed,
+  validatePaymentToken,
+} from "@/lib/payments/payment-tokens";
+import { createClient } from "@/lib/supabase/server";
 
 interface PaymentResult {
   success: boolean;
@@ -41,7 +44,9 @@ interface ProcessPaymentParams {
   };
 }
 
-export async function processInvoicePayment(params: ProcessPaymentParams): Promise<PaymentResult> {
+export async function processInvoicePayment(
+  params: ProcessPaymentParams
+): Promise<PaymentResult> {
   try {
     const { invoiceId, token, paymentMethod, amount, paymentDetails } = params;
 
@@ -56,7 +61,7 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
     }
 
     const supabase = await createClient();
-    
+
     if (!supabase) {
       return {
         success: false,
@@ -136,7 +141,8 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
       // This would call Adyen/Plaid APIs based on paymentMethod
       return {
         success: false,
-        error: "Payment processing is not yet fully implemented. Please contact support.",
+        error:
+          "Payment processing is not yet fully implemented. Please contact support.",
       };
     }
 
@@ -155,7 +161,8 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
       console.error("Error updating invoice:", updateError);
       return {
         success: false,
-        error: "Payment processed but failed to update invoice. Please contact support.",
+        error:
+          "Payment processed but failed to update invoice. Please contact support.",
       };
     }
 
@@ -165,7 +172,7 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
       invoice_id: invoiceId,
       processor_type: paymentMethod === "card" ? "adyen" : "plaid",
       transaction_id: transactionId,
-      amount: amount,
+      amount,
       currency: "USD",
       status: "success",
       channel: "online",
@@ -179,8 +186,12 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
     await markTokenAsUsed(token);
 
     // Send payment confirmation email to customer
-    const customer = Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer;
-    const company = Array.isArray(invoice.company) ? invoice.company[0] : invoice.company;
+    const customer = Array.isArray(invoice.customer)
+      ? invoice.customer[0]
+      : invoice.customer;
+    const company = Array.isArray(invoice.company)
+      ? invoice.company[0]
+      : invoice.company;
 
     if (customer?.email) {
       try {
@@ -202,7 +213,8 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
               {
                 type: "p",
                 props: {
-                  children: "Your payment has been received and processed successfully.",
+                  children:
+                    "Your payment has been received and processed successfully.",
                 },
               },
               {
@@ -243,8 +255,8 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
     console.error("Payment processing error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Payment processing failed",
+      error:
+        error instanceof Error ? error.message : "Payment processing failed",
     };
   }
 }
-

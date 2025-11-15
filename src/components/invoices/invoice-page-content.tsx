@@ -29,6 +29,7 @@ import {
   FileCheck,
   FileText,
   Link2Off,
+  MessageSquare,
   Receipt,
   TrendingUp,
   User,
@@ -77,6 +78,7 @@ export type InvoiceData = {
   notes?: any[];
   activities?: any[];
   attachments?: any[];
+  communications?: any[];
 };
 
 export type InvoicePageContentProps = {
@@ -116,6 +118,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
     notes = [],
     activities = [],
     attachments = [],
+    communications = [],
   } = entityData;
 
   // Update invoice field
@@ -293,6 +296,52 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  const renderInvoiceCommunicationEntries = (items: any[]) => (
+    <div className="space-y-3">
+      {items.slice(0, 25).map((communication: any) => {
+        const contactName =
+          communication.customer?.first_name ||
+          communication.customer?.last_name
+            ? `${communication.customer?.first_name ?? ""} ${communication.customer?.last_name ?? ""}`.trim()
+            : communication.direction === "inbound"
+              ? communication.from_address
+              : communication.to_address;
+        const preview =
+          communication.subject ||
+          communication.body?.slice(0, 160) ||
+          "No additional details";
+        const timestamp = new Date(communication.created_at).toLocaleString();
+
+        return (
+          <div className="rounded-lg border p-3" key={communication.id}>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline">
+                {communication.type?.toUpperCase()}
+              </Badge>
+              <Badge
+                variant={
+                  communication.direction === "inbound"
+                    ? "secondary"
+                    : "default"
+                }
+              >
+                {communication.direction === "inbound" ? "Inbound" : "Outbound"}
+              </Badge>
+              {communication.status && (
+                <Badge variant="outline">{communication.status}</Badge>
+              )}
+              <span className="text-muted-foreground text-xs">{timestamp}</span>
+            </div>
+            <div className="mt-2">
+              <p className="font-medium text-sm">{contactName || "Contact"}</p>
+              <p className="text-muted-foreground text-sm">{preview}</p>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 
@@ -506,11 +555,31 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
       });
     }
 
+    sections.push({
+      id: "communications",
+      title: "Communications",
+      icon: <MessageSquare className="size-4" />,
+      count: communications.length,
+      content: (
+        <UnifiedAccordionContent>
+          {communications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground text-sm">
+              <MessageSquare className="mb-4 size-10 text-muted-foreground" />
+              No communications logged for this invoice yet.
+            </div>
+          ) : (
+            renderInvoiceCommunicationEntries(communications)
+          )}
+        </UnifiedAccordionContent>
+      ),
+    });
+
     return sections;
   }, [
     invoice,
     company,
     customer,
+    communications,
     job,
     property,
     estimate, // NEW

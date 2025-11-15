@@ -5,9 +5,8 @@
  * Updates JSDoc and adds appropriate revalidation times
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const { execSync } = require("node:child_process");
 
 // Get all page.tsx files without "use client" or "revalidate"
 const findCommand = `find ${process.cwd()}/src/app -name "page.tsx" -type f -exec grep -L "use client\\|revalidate" {} \\;`;
@@ -18,7 +17,7 @@ try {
     .trim()
     .split("\n")
     .filter(Boolean);
-} catch (error) {
+} catch (_error) {
   console.log("No files found to update");
   process.exit(0);
 }
@@ -26,30 +25,34 @@ try {
 console.log(`Found ${files.length} Server Components without ISR\n`);
 
 // Configure revalidation times by route pattern
+const FIVE_MINUTES_SECONDS = 300;
+const FIFTEEN_MINUTES_SECONDS = 900;
+const ONE_HOUR_SECONDS = 3600;
+
 const REVALIDATION_CONFIG = {
   // Real-time data - 5 minutes
-  "/schedule": 300,
-  "/customers": 300,
-  "/jobs": 300,
-  "/invoices": 300,
-  "/work": 300,
+  "/schedule": FIVE_MINUTES_SECONDS,
+  "/customers": FIVE_MINUTES_SECONDS,
+  "/jobs": FIVE_MINUTES_SECONDS,
+  "/invoices": FIVE_MINUTES_SECONDS,
+  "/work": FIVE_MINUTES_SECONDS,
 
   // Analytics and reports - 15 minutes
-  "/analytics": 900,
-  "/reports": 900,
-  "/technicians": 900,
+  "/analytics": FIFTEEN_MINUTES_SECONDS,
+  "/reports": FIFTEEN_MINUTES_SECONDS,
+  "/technicians": FIFTEEN_MINUTES_SECONDS,
 
   // Settings - 1 hour (rarely changes)
-  "/settings": 3600,
-  "/pricebook": 3600,
+  "/settings": ONE_HOUR_SECONDS,
+  "/pricebook": ONE_HOUR_SECONDS,
 
   // Training and marketing - 1 hour
-  "/training": 3600,
-  "/marketing": 3600,
-  "/inventory": 3600,
+  "/training": ONE_HOUR_SECONDS,
+  "/marketing": ONE_HOUR_SECONDS,
+  "/inventory": ONE_HOUR_SECONDS,
 
   // Default - 15 minutes
-  default: 900,
+  default: FIFTEEN_MINUTES_SECONDS,
 };
 
 function getRevalidationTime(filePath) {
@@ -62,26 +65,32 @@ function getRevalidationTime(filePath) {
 }
 
 function getRevalidationComment(seconds) {
-  if (seconds === 300) return "// Revalidate every 5 minutes";
-  if (seconds === 900) return "// Revalidate every 15 minutes";
-  if (seconds === 3600) return "// Revalidate every 1 hour";
+  if (seconds === FIVE_MINUTES_SECONDS) {
+    return "// Revalidate every 5 minutes";
+  }
+  if (seconds === FIFTEEN_MINUTES_SECONDS) {
+    return "// Revalidate every 15 minutes";
+  }
+  if (seconds === ONE_HOUR_SECONDS) {
+    return "// Revalidate every 1 hour";
+  }
   return `// Revalidate every ${seconds} seconds`;
 }
 
 let updatedCount = 0;
 
-files.forEach((filePath) => {
+for (const filePath of files) {
   try {
     let content = fs.readFileSync(filePath, "utf8");
 
     // Check if it's really a Server Component (no "use client")
     if (content.includes('"use client"') || content.includes("'use client'")) {
-      return;
+      continue;
     }
 
     // Check if already has revalidate
     if (content.includes("export const revalidate")) {
-      return;
+      continue;
     }
 
     const revalidateTime = getRevalidationTime(filePath);
@@ -133,7 +142,7 @@ files.forEach((filePath) => {
   } catch (error) {
     console.error(`✗ Error updating ${filePath}:`, error.message);
   }
-});
+}
 
 console.log(`\n✓ Updated ${updatedCount} files`);
 console.log("✓ All Server Components now have ISR configured");

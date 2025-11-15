@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getCurrentUser } from "@/lib/auth/session";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -48,8 +49,14 @@ export async function GET() {
     const subscriptionStatus = company.stripe_subscription_status;
     const hasPayment =
       subscriptionStatus === "active" || subscriptionStatus === "trialing";
+    const onboardingProgress =
+      (company.onboarding_progress as Record<string, unknown>) || {};
+    const onboardingComplete = isOnboardingComplete({
+      progress: onboardingProgress,
+      completedAt: company.onboarding_completed_at ?? null,
+    });
 
-    if (hasPayment) {
+    if (hasPayment && onboardingComplete) {
       return NextResponse.json({ company: null });
     }
 
@@ -63,9 +70,6 @@ export async function GET() {
     const zipCode = addressParts[3] || "";
 
     // Get onboarding progress
-    const onboardingProgress =
-      (company.onboarding_progress as Record<string, unknown>) || {};
-
     return NextResponse.json({
       company: {
         id: company.id,
@@ -73,6 +77,13 @@ export async function GET() {
         industry: company.industry || "",
         size: company.company_size || "",
         phone: company.phone || "",
+        email: company.email || "",
+        support_email: company.support_email || "",
+        support_phone: company.support_phone || "",
+        legal_name: company.legal_name || company.name || "",
+        doing_business_as: company.doing_business_as || company.name || "",
+        brand_color: company.brand_color || null,
+        ein: company.ein || null,
         address,
         city,
         state,
@@ -82,11 +93,14 @@ export async function GET() {
         logo: company.logo || null,
         onboardingProgress: {
           currentStep: onboardingProgress.currentStep || 1,
-          step2: onboardingProgress.step2 || null, // Team members
-          step3: onboardingProgress.step3 || null, // Phone number
-          step4: onboardingProgress.step4 || null, // Notifications
-          step5: onboardingProgress.step5 || null, // Billing (usually empty until payment)
+          step2: onboardingProgress.step2 || null,
+          step3: onboardingProgress.step3 || null,
+          step4: onboardingProgress.step4 || null,
+          step5: onboardingProgress.step5 || null,
         },
+        trialEndsAt: company.trial_ends_at || null,
+        subscriptionStatus,
+        hasPayment,
       },
     });
   } catch (error) {

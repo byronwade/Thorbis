@@ -5,6 +5,7 @@ import { IncomingCallNotificationWrapper } from "@/components/layout/incoming-ca
 import { LayoutWrapper } from "@/components/layout/layout-wrapper";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { getCurrentUser } from "@/lib/auth/session";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -62,14 +63,15 @@ export default async function DashboardLayout({
   const { getActiveCompanyId } = await import("@/lib/auth/company-context");
   const activeCompanyId = await getActiveCompanyId();
 
-  let hasActivePayment = false;
-  let isOnboardingComplete = false;
+  let isCompanyOnboardingComplete = false;
 
   if (activeCompanyId) {
     // Check the ACTIVE company's payment status
     const { data: teamMember } = await supabase
       .from("team_members")
-      .select("company_id, companies!inner(stripe_subscription_status)")
+      .select(
+        "company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)"
+      )
       .eq("user_id", user.id)
       .eq("company_id", activeCompanyId)
       .eq("status", "active")
@@ -79,12 +81,19 @@ export default async function DashboardLayout({
       ? teamMember.companies[0]
       : teamMember?.companies;
     const subscriptionStatus = companies?.stripe_subscription_status;
-    hasActivePayment =
-      subscriptionStatus === "active" ||
-      subscriptionStatus === "trialing" ||
-      process.env.NODE_ENV === "development"; // Allow in dev mode
+    const subscriptionActive =
+      subscriptionStatus === "active" || subscriptionStatus === "trialing";
+    const onboardingProgress =
+      (companies?.onboarding_progress as Record<string, unknown>) || null;
+    const onboardingFinished = isOnboardingComplete({
+      progress: onboardingProgress,
+      completedAt: companies?.onboarding_completed_at ?? null,
+    });
 
-    isOnboardingComplete = !!teamMember && hasActivePayment;
+    isCompanyOnboardingComplete =
+      !!teamMember &&
+      ((subscriptionActive && onboardingFinished) ||
+        process.env.NODE_ENV === "development");
   }
   // If no active company, isOnboardingComplete stays false (will redirect to welcome)
 
@@ -93,8 +102,8 @@ export default async function DashboardLayout({
   // OnboardingGuard will allow welcome page to render, and redirect other pages if needed
   // Pass isOnboardingComplete to skip unnecessary checks when company is fully set up
   return (
-    <OnboardingGuard isOnboardingComplete={isOnboardingComplete}>
-      {isOnboardingComplete ? (
+    <OnboardingGuard isOnboardingComplete={isCompanyOnboardingComplete}>
+      {isCompanyOnboardingComplete ? (
         <>
           {/* Header - wrapped in client component that checks route */}
           <AppHeaderWrapper>

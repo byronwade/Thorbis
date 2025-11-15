@@ -5,8 +5,10 @@
 
 "use client";
 
-import { FileText, ChevronRight } from "lucide-react";
+import { ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type JobEstimatesProps = {
   estimates: any[];
@@ -46,7 +46,10 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
   };
 
   const getStatusVariant = (status: string) => {
-    const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+    const statusMap: Record<
+      string,
+      "default" | "secondary" | "outline" | "destructive"
+    > = {
       draft: "outline",
       sent: "secondary",
       accepted: "default",
@@ -160,4 +163,3 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
     </div>
   );
 }
-

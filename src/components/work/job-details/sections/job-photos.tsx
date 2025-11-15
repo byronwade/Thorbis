@@ -25,14 +25,17 @@ export function JobPhotos({ photos }: JobPhotosProps) {
   };
 
   // Group photos by category
-  const groupedPhotos: Record<string, any[]> = photos.reduce((acc, photo) => {
-    const category = photo.category || "Other";
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(photo);
-    return acc;
-  }, {} as Record<string, any[]>);
+  const groupedPhotos: Record<string, any[]> = photos.reduce(
+    (acc, photo) => {
+      const category = photo.category || "Other";
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(photo);
+      return acc;
+    },
+    {} as Record<string, any[]>
+  );
 
   if (photos.length === 0) {
     return (
@@ -48,50 +51,52 @@ export function JobPhotos({ photos }: JobPhotosProps) {
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedPhotos).map(([category, categoryPhotos]: [string, any[]]) => (
-        <div key={category}>
-          <div className="mb-3 flex items-center gap-2">
-            <Label className="capitalize">{category}</Label>
-            <Badge variant="secondary">{categoryPhotos.length}</Badge>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {categoryPhotos.map((photo) => (
-              <div
-                key={photo.id}
-                className="group relative overflow-hidden rounded-lg border"
-              >
-                <div className="relative aspect-video bg-muted">
-                  {photo.url || photo.photo_url ? (
-                    <Image
-                      alt={photo.description || photo.title || "Job photo"}
-                      className="object-cover transition-transform group-hover:scale-105"
-                      fill
-                      src={photo.url || photo.photo_url}
-                    />
-                  ) : (
-                    <div className="flex size-full items-center justify-center">
-                      <ImageIcon className="size-12 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-3">
-                  {photo.title && (
-                    <p className="mb-1 font-medium text-sm">{photo.title}</p>
-                  )}
-                  {photo.description && (
-                    <p className="mb-2 text-muted-foreground text-xs">
-                      {photo.description}
+      {Object.entries(groupedPhotos).map(
+        ([category, categoryPhotos]: [string, any[]]) => (
+          <div key={category}>
+            <div className="mb-3 flex items-center gap-2">
+              <Label className="capitalize">{category}</Label>
+              <Badge variant="secondary">{categoryPhotos.length}</Badge>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {categoryPhotos.map((photo) => (
+                <div
+                  className="group relative overflow-hidden rounded-lg border"
+                  key={photo.id}
+                >
+                  <div className="relative aspect-video bg-muted">
+                    {photo.url || photo.photo_url ? (
+                      <Image
+                        alt={photo.description || photo.title || "Job photo"}
+                        className="object-cover transition-transform group-hover:scale-105"
+                        fill
+                        src={photo.url || photo.photo_url}
+                      />
+                    ) : (
+                      <div className="flex size-full items-center justify-center">
+                        <ImageIcon className="size-12 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    {photo.title && (
+                      <p className="mb-1 font-medium text-sm">{photo.title}</p>
+                    )}
+                    {photo.description && (
+                      <p className="mb-2 text-muted-foreground text-xs">
+                        {photo.description}
+                      </p>
+                    )}
+                    <p className="text-muted-foreground text-xs">
+                      {formatDate(photo.created_at)}
                     </p>
-                  )}
-                  <p className="text-muted-foreground text-xs">
-                    {formatDate(photo.created_at)}
-                  </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      )}
 
       {/* Summary */}
       <div className="rounded-md bg-muted/50 p-4">
@@ -105,4 +110,3 @@ export function JobPhotos({ photos }: JobPhotosProps) {
     </div>
   );
 }
-

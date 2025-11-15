@@ -31,7 +31,7 @@ async function testMigration() {
 
   // Test 2: Check if user_role enum exists
   console.log("\n2. Checking if user_role enum type exists...");
-  const { data: enumData, error: enumError } = await supabase.rpc("has_role", {
+  const { error: enumError } = await supabase.rpc("has_role", {
     user_uuid: "00000000-0000-0000-0000-000000000000",
     required_role: "owner",
     company_uuid: "00000000-0000-0000-0000-000000000000",
@@ -47,7 +47,7 @@ async function testMigration() {
 
   // Test 3: Check if ownership_transfers table exists
   console.log("\n3. Checking if ownership_transfers table exists...");
-  const { data: transfers, error: transferError } = await supabase
+  const { error: transferError } = await supabase
     .from("ownership_transfers")
     .select("id")
     .limit(1);

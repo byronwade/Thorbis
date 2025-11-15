@@ -87,6 +87,8 @@ export {
   updateOvertimeSettings,
   updatePayrollSchedule,
 } from "./payroll";
+// Procurement / Feature Toggles
+export { togglePurchaseOrderSystem } from "./procurement";
 // Profile/User Settings
 export {
   getNotificationPreferences,
@@ -99,14 +101,19 @@ export {
 } from "./profile";
 // Schedule Settings
 export {
+  createDispatchRule,
   createServiceArea,
+  deleteDispatchRule,
   deleteServiceArea,
   getAvailabilitySettings,
   getCalendarSettings,
+  getDispatchRules,
+  getScheduleOverview,
   getServiceAreas,
   getTeamSchedulingRules,
   updateAvailabilitySettings,
   updateCalendarSettings,
+  updateDispatchRule,
   updateServiceArea,
   updateTeamSchedulingRules,
 } from "./schedule";
@@ -125,6 +132,3 @@ export {
   updatePricebookSettings,
   updateServicePlanSettings,
 } from "./work";
-
-// Procurement / Feature Toggles
-export { togglePurchaseOrderSystem } from "./procurement";

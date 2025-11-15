@@ -89,7 +89,7 @@ export function SlideCarousel({
   }
 
   return (
-    <div className="h-full overflow-hidden" ref={emblaRef}>
+    <div className="h-full" ref={emblaRef}>
       <div className="flex h-full">
         {slides.map((slide, index) => (
           <div className="relative min-w-0 flex-[0_0_100%]" key={slide.id}>

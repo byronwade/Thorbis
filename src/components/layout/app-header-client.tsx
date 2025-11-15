@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { HelpDropdown } from "./help-dropdown";
 import { NotificationsDropdown } from "./notifications-dropdown";
+import { PhoneDropdown } from "./phone-dropdown";
 import { QuickAddDropdown } from "./quick-add-dropdown";
 import { UserMenu } from "./user-menu";
 
@@ -36,6 +37,19 @@ interface AppHeaderClientProps {
     hasPayment?: boolean;
   }>;
   activeCompanyId?: string | null;
+  customers?: Array<{
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    company_name?: string;
+  }>;
+  companyPhones?: Array<{
+    id: string;
+    number: string;
+    label?: string;
+  }>;
 }
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
@@ -200,6 +214,8 @@ export function AppHeaderClient({
   userProfile,
   companies,
   activeCompanyId,
+  customers = [],
+  companyPhones = [],
 }: AppHeaderClientProps) {
   const pathname = usePathname();
 
@@ -451,18 +467,26 @@ export function AppHeaderClient({
 
         {/* Right side controls */}
         <div className="ml-auto flex items-center gap-2 overflow-visible md:flex-1 md:justify-end">
-          {/* TV Display */}
-          <Link
-            className="touch-target no-select native-transition hover-gradient flex items-center justify-center rounded-md border border-transparent outline-none hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
-            href="/dashboard/tv"
-            title="TV Display"
-          >
-            <Tv className="size-4" />
-            <span className="sr-only">TV Display</span>
-          </Link>
-
           {/* Quick Add Menu */}
           <QuickAddDropdown />
+
+          {/* Phone/Calls */}
+          <PhoneDropdown
+            companyId={activeCompanyId || ""}
+            customers={customers}
+            companyPhones={companyPhones}
+          />
+
+          {/* TV Display */}
+          <Link href="/dashboard/tv" title="TV Display">
+            <button
+              className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+              type="button"
+            >
+              <Tv className="size-4" />
+              <span className="sr-only">TV Display</span>
+            </button>
+          </Link>
 
           {/* Notifications */}
           <NotificationsDropdown />
@@ -493,6 +517,7 @@ export function AppHeaderClient({
               name: userProfile.name,
               email: userProfile.email,
               avatar: userProfile.avatar,
+              status: userProfile.status,
             }}
           />
         </div>

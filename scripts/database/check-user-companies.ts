@@ -2,9 +2,9 @@
  * Check what companies exist for the user
  */
 
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { resolve } from "path";
 
 // Load environment variables
 config({ path: resolve(process.cwd(), ".env.local") });
@@ -18,6 +18,20 @@ if (!(supabaseUrl && supabaseServiceKey)) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+type CompanyRecord = {
+  id: string;
+  name: string;
+  stripe_subscription_status: string | null;
+  deleted_at: string | null;
+};
+
+type MembershipRecord = {
+  id: string;
+  company_id: string;
+  status: string;
+  companies: CompanyRecord;
+};
 
 async function checkUserCompanies() {
   try {
@@ -62,17 +76,20 @@ async function checkUserCompanies() {
       return;
     }
 
-    console.log(`Total team_member records: ${allMemberships?.length || 0}\n`);
+    const typedMemberships = (allMemberships ?? []) as MembershipRecord[];
+    console.log(`Total team_member records: ${typedMemberships.length}\n`);
 
     // Group by company_id
-    const companyMap = new Map<string, any[]>();
-    allMemberships?.forEach((m: any) => {
-      const companyId = m.companies.id;
-      if (!companyMap.has(companyId)) {
-        companyMap.set(companyId, []);
+    const companyMap = new Map<string, MembershipRecord[]>();
+    for (const membership of typedMemberships) {
+      const companyId = membership.companies.id;
+      const companyMemberships = companyMap.get(companyId);
+      if (!companyMemberships) {
+        companyMap.set(companyId, [membership]);
+        continue;
       }
-      companyMap.get(companyId)!.push(m);
-    });
+      companyMemberships.push(membership);
+    }
 
     console.log(`Unique companies: ${companyMap.size}\n`);
 
@@ -90,21 +107,21 @@ async function checkUserCompanies() {
     });
 
     // Check active companies (not archived)
-    const activeMemberships =
-      allMemberships?.filter(
-        (m: any) => m.status === "active" && !m.companies.deleted_at
-      ) || [];
+    const activeMemberships = typedMemberships.filter(
+      (membership) =>
+        membership.status === "active" && !membership.companies.deleted_at
+    );
 
     console.log(
       `\n\nActive companies (not archived): ${activeMemberships.length}`
     );
-    const activeCompanyMap = new Map<string, any>();
-    activeMemberships.forEach((m: any) => {
-      const companyId = m.companies.id;
+    const activeCompanyMap = new Map<string, CompanyRecord>();
+    for (const membership of activeMemberships) {
+      const companyId = membership.companies.id;
       if (!activeCompanyMap.has(companyId)) {
-        activeCompanyMap.set(companyId, m.companies);
+        activeCompanyMap.set(companyId, membership.companies);
       }
-    });
+    }
 
     console.log(`Unique active companies: ${activeCompanyMap.size}`);
     activeCompanyMap.forEach((company, companyId) => {

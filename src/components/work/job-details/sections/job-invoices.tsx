@@ -5,8 +5,10 @@
 
 "use client";
 
-import { Receipt, ChevronRight } from "lucide-react";
+import { ChevronRight, Receipt } from "lucide-react";
 import Link from "next/link";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type JobInvoicesProps = {
   invoices: any[];
@@ -48,7 +48,10 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
   };
 
   const getStatusVariant = (status: string) => {
-    const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+    const statusMap: Record<
+      string,
+      "default" | "secondary" | "outline" | "destructive"
+    > = {
       draft: "outline",
       sent: "secondary",
       paid: "default",
@@ -106,7 +109,9 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
                   {formatCurrency(invoice.total_amount || invoice.total)}
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(invoice.balance_amount || invoice.balance || 0)}
+                  {formatCurrency(
+                    invoice.balance_amount || invoice.balance || 0
+                  )}
                 </TableCell>
                 <TableCell>{formatDate(invoice.due_date)}</TableCell>
                 <TableCell className="max-w-[280px] align-top">
@@ -154,10 +159,7 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
           <p className="font-medium text-sm">Paid</p>
           <p className="mt-1 font-bold text-2xl">
             {formatCurrency(
-              invoices.reduce(
-                (sum, inv) => sum + (inv.paid_amount || 0),
-                0
-              )
+              invoices.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0)
             )}
           </p>
         </div>
@@ -183,4 +185,3 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
     </div>
   );
 }
-

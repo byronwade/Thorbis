@@ -6,8 +6,8 @@
  */
 
 const { createClient } = require("@supabase/supabase-js");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 async function runMigration() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

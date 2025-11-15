@@ -15,6 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { UserProfile } from "@/lib/auth/user-data";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -38,8 +39,7 @@ const NAV_SECTIONS: NavSection[] = [
   {
     label: "Solutions",
     href: "/solutions",
-    description:
-      "Complete automation suite for modern service businesses",
+    description: "Complete automation suite for modern service businesses",
     items: [
       {
         label: "AI Assistant",
@@ -137,7 +137,11 @@ const NAV_SECTIONS: NavSection[] = [
     href: "/free-tools",
     description: "Tools, guides, and community resources",
     items: [
-      { label: "Blog", href: "/blog", description: "Industry insights and growth strategies" },
+      {
+        label: "Blog",
+        href: "/blog",
+        description: "Industry insights and growth strategies",
+      },
       {
         label: "Case Studies",
         href: "/case-studies",
@@ -177,7 +181,11 @@ const NAV_SECTIONS: NavSection[] = [
     href: "/about",
     description: "About Thorbis and our mission",
     items: [
-      { label: "About Us", href: "/about", description: "Our story and values" },
+      {
+        label: "About Us",
+        href: "/about",
+        description: "Our story and values",
+      },
       {
         label: "Careers",
         href: "/careers",
@@ -204,11 +212,11 @@ function DesktopNavItem({ section }: { section: NavSection }) {
   if (!section.items || section.items.length === 0) {
     return (
       <Link
-        className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-foreground/70 transition-all hover:bg-accent/50 hover:text-foreground"
+        className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 font-medium text-foreground/70 text-sm transition-all hover:bg-accent/50 hover:text-foreground"
         href={section.href}
       >
         {section.label}
-        <span className="absolute inset-x-0 -bottom-px h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
+        <span className="-bottom-px absolute inset-x-0 h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
       </Link>
     );
   }
@@ -220,7 +228,7 @@ function DesktopNavItem({ section }: { section: NavSection }) {
       onMouseLeave={() => setIsOpen(false)}
     >
       <button
-        className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-foreground/70 transition-all hover:bg-accent/50 hover:text-foreground"
+        className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 font-medium text-foreground/70 text-sm transition-all hover:bg-accent/50 hover:text-foreground"
         type="button"
       >
         {section.label}
@@ -230,25 +238,25 @@ function DesktopNavItem({ section }: { section: NavSection }) {
             isOpen && "rotate-180"
           )}
         />
-        <span className="absolute inset-x-0 -bottom-px h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
+        <span className="-bottom-px absolute inset-x-0 h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 pt-3">
-          <div className="w-[680px] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl duration-200">
+        <div className="absolute top-full left-0 z-50 pt-3">
+          <div className="fade-in-0 zoom-in-95 slide-in-from-top-2 w-[680px] animate-in overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl duration-200">
             {section.description && (
-              <div className="border-b border-border/50 bg-gradient-to-br from-primary/5 via-primary/3 to-transparent p-5">
+              <div className="border-border/50 border-b bg-gradient-to-br from-primary/5 via-primary/3 to-transparent p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    <p className="font-semibold text-primary text-xs uppercase tracking-wider">
                       {section.label}
                     </p>
-                    <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted-foreground">
+                    <p className="mt-1.5 max-w-md text-muted-foreground text-sm leading-relaxed">
                       {section.description}
                     </p>
                   </div>
                   <Link
-                    className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+                    className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border/60 bg-background px-3 py-1.5 font-semibold text-foreground text-xs shadow-sm transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
                     href={section.href}
                   >
                     View all
@@ -268,25 +276,25 @@ function DesktopNavItem({ section }: { section: NavSection }) {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                        <span className="font-semibold text-foreground text-sm transition-colors group-hover:text-primary">
                           {item.label}
                         </span>
                         {item.badge && (
                           <Badge
-                            className="h-5 px-1.5 text-[10px] font-semibold"
+                            className="h-5 px-1.5 font-semibold text-[10px]"
                             variant="secondary"
                           >
                             {item.badge}
                           </Badge>
                         )}
                       </div>
-                      <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                      <p className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">
                         {item.description}
                       </p>
                     </div>
                     <ChevronDown className="-rotate-90 size-3.5 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
                   </div>
-                  <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="-z-10 absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 transition-opacity group-hover:opacity-100" />
                 </Link>
               ))}
             </div>
@@ -311,7 +319,9 @@ export function MarketingHeader() {
   const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set()
+  );
   const [userCompanies, setUserCompanies] = useState<UserCompany[]>([]);
 
   useEffect(() => {
@@ -380,6 +390,8 @@ export function MarketingHeader() {
               id,
               name,
               stripe_subscription_status,
+              onboarding_progress,
+              onboarding_completed_at,
               deleted_at
             )
           `
@@ -397,10 +409,18 @@ export function MarketingHeader() {
               const hasPayment =
                 subscriptionStatus === "active" ||
                 subscriptionStatus === "trialing";
-              const onboardingComplete = hasPayment;
+              const onboardingProgress =
+                (m.companies.onboarding_progress as Record<
+                  string,
+                  unknown
+                >) || null;
+              const onboardingComplete = isOnboardingComplete({
+                progress: onboardingProgress,
+                completedAt: m.companies.onboarding_completed_at ?? null,
+              });
 
               let planLabel = "Active";
-              if (!hasPayment) {
+              if (!(hasPayment && onboardingComplete)) {
                 planLabel =
                   subscriptionStatus === "incomplete"
                     ? "Incomplete"
@@ -482,7 +502,7 @@ export function MarketingHeader() {
 
   if (!mounted) {
     return (
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-border/40 border-b bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <Link
             className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight"
@@ -509,8 +529,8 @@ export function MarketingHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl transition-all duration-300 supports-[backdrop-filter]:bg-background/60",
-        scrolled && "border-border/60 shadow-lg shadow-black/5"
+        "sticky top-0 z-50 border-border/40 border-b bg-background/80 backdrop-blur-xl transition-all duration-300 supports-[backdrop-filter]:bg-background/60",
+        scrolled && "border-border/60 shadow-black/5 shadow-lg"
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -540,11 +560,11 @@ export function MarketingHeader() {
               <DesktopNavItem key={section.label} section={section} />
             ))}
             <Link
-              className="group relative ml-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3.5 py-2 text-sm font-semibold text-primary transition-all hover:bg-primary/15"
+              className="group relative ml-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3.5 py-2 font-semibold text-primary text-sm transition-all hover:bg-primary/15"
               href="/pricing"
             >
               Pricing
-              <Badge className="h-4 bg-primary px-1.5 text-[9px] font-bold text-primary-foreground">
+              <Badge className="h-4 bg-primary px-1.5 font-bold text-[9px] text-primary-foreground">
                 $100/mo
               </Badge>
             </Link>
@@ -594,7 +614,7 @@ export function MarketingHeader() {
         </div>
 
         {/* Mobile Menu */}
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <Sheet onOpenChange={setMobileOpen} open={mobileOpen}>
           <SheetTrigger asChild>
             <Button
               aria-label="Open navigation"
@@ -610,9 +630,9 @@ export function MarketingHeader() {
             side="right"
           >
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-            
+
             {/* Mobile Header */}
-            <div className="sticky top-0 z-10 flex items-center gap-2.5 border-b border-border/50 bg-background/95 px-5 py-4 backdrop-blur-sm">
+            <div className="sticky top-0 z-10 flex items-center gap-2.5 border-border/50 border-b bg-background/95 px-5 py-4 backdrop-blur-sm">
               <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
                 <Image
                   alt="Thorbis"
@@ -634,11 +654,14 @@ export function MarketingHeader() {
                 const hasItems = section.items.length > 0;
 
                 return (
-                  <div className="overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-muted/30 to-muted/10" key={section.label}>
+                  <div
+                    className="overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-muted/30 to-muted/10"
+                    key={section.label}
+                  >
                     <div className="flex items-stretch">
                       {hasItems && (
                         <button
-                          className="flex items-center justify-center border-r border-border/50 px-3 transition-colors hover:bg-accent"
+                          className="flex items-center justify-center border-border/50 border-r px-3 transition-colors hover:bg-accent"
                           onClick={() => toggleSection(section.label)}
                           type="button"
                         >
@@ -663,7 +686,7 @@ export function MarketingHeader() {
                     </div>
 
                     {hasItems && isExpanded && (
-                      <div className="space-y-1 border-t border-border/50 bg-background/50 p-2">
+                      <div className="space-y-1 border-border/50 border-t bg-background/50 p-2">
                         {section.items.map((item) => (
                           <Link
                             className="group block rounded-lg p-3 transition-all hover:bg-accent"
@@ -677,14 +700,14 @@ export function MarketingHeader() {
                               </span>
                               {item.badge && (
                                 <Badge
-                                  className="h-4 px-1.5 text-[9px] font-semibold"
+                                  className="h-4 px-1.5 font-semibold text-[9px]"
                                   variant="secondary"
                                 >
                                   {item.badge}
                                 </Badge>
                               )}
                             </div>
-                            <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                            <p className="line-clamp-2 text-[11px] text-muted-foreground leading-relaxed">
                               {item.description}
                             </p>
                           </Link>
@@ -709,14 +732,14 @@ export function MarketingHeader() {
                     Flat $100/mo base plus usage
                   </p>
                 </div>
-                <Badge className="bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">
+                <Badge className="bg-primary px-2 py-1 font-bold text-primary-foreground text-xs">
                   $100/mo
                 </Badge>
               </Link>
             </div>
 
             {/* Mobile Footer */}
-            <div className="sticky bottom-0 border-t border-border/50 bg-gradient-to-t from-background via-background to-background/95 p-4 backdrop-blur-sm">
+            <div className="sticky bottom-0 border-border/50 border-t bg-gradient-to-t from-background via-background to-background/95 p-4 backdrop-blur-sm">
               {!loading && userProfile ? (
                 <div className="space-y-3">
                   <div className="rounded-xl border border-border/50 bg-gradient-to-br from-muted/50 to-muted/20 p-3">
@@ -727,8 +750,15 @@ export function MarketingHeader() {
                       {userProfile.email}
                     </p>
                   </div>
-                  <Button asChild className="w-full shadow-lg shadow-primary/20" size="default">
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                  <Button
+                    asChild
+                    className="w-full shadow-lg shadow-primary/20"
+                    size="default"
+                  >
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                    >
                       <LayoutDashboard className="mr-2 size-4" />
                       Go to Dashboard
                     </Link>
@@ -746,8 +776,15 @@ export function MarketingHeader() {
                       Sign in
                     </Link>
                   </Button>
-                  <Button asChild className="w-full shadow-lg shadow-primary/20" size="default">
-                    <Link href={CTA_LINK.href} onClick={() => setMobileOpen(false)}>
+                  <Button
+                    asChild
+                    className="w-full shadow-lg shadow-primary/20"
+                    size="default"
+                  >
+                    <Link
+                      href={CTA_LINK.href}
+                      onClick={() => setMobileOpen(false)}
+                    >
                       <Plus className="mr-2 size-4" />
                       {CTA_LINK.label}
                     </Link>

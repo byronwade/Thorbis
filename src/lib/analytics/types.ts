@@ -829,4 +829,3 @@ export type AnalyticsEvent =
  * Event category for filtering
  */
 export type EventCategory = "dashboard" | "marketing" | "user" | "all";
-

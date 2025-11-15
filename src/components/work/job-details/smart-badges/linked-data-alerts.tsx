@@ -6,13 +6,13 @@
 "use client";
 
 import { AlertCircle, Clock, DollarSign, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 
 type LinkedDataAlertsProps = {
   job: {
@@ -44,21 +44,20 @@ export function LinkedDataAlerts({
   invoices = [],
   estimates = [],
 }: LinkedDataAlertsProps) {
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(cents / 100);
-  };
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   // Calculate past due invoices
   const pastDueInvoices = invoices.filter((inv) => {
-    if (!inv.due_date || !inv.balance_amount || inv.balance_amount <= 0) {
+    if (!(inv.due_date && inv.balance_amount) || inv.balance_amount <= 0) {
       return false;
     }
     const dueDate = new Date(inv.due_date);
@@ -101,7 +100,7 @@ export function LinkedDataAlerts({
     alerts.push(
       <HoverCard key="past-due" openDelay={200}>
         <HoverCardTrigger asChild>
-          <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-sm text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+          <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
             <AlertCircle className="size-4" />
             {pastDueInvoices.length} Past Due • {formatCurrency(totalPastDue)}
           </button>
@@ -134,7 +133,7 @@ export function LinkedDataAlerts({
                         {daysPastDue} day{daysPastDue !== 1 ? "s" : ""} overdue
                       </span>
                     </div>
-                    <span className="font-semibold text-sm text-red-600 dark:text-red-400">
+                    <span className="font-semibold text-red-600 text-sm dark:text-red-400">
                       {formatCurrency(inv.balance_amount || 0)}
                     </span>
                   </div>
@@ -159,9 +158,10 @@ export function LinkedDataAlerts({
     alerts.push(
       <HoverCard key="estimates" openDelay={200}>
         <HoverCardTrigger asChild>
-          <button className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 font-medium text-sm text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400">
+          <button className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 font-medium text-amber-700 text-sm transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400">
             <FileText className="size-4" />
-            {outstandingEstimates.length} Pending • {formatCurrency(totalEstimated)}
+            {outstandingEstimates.length} Pending •{" "}
+            {formatCurrency(totalEstimated)}
           </button>
         </HoverCardTrigger>
         <HoverCardContent align="start" className="w-96" side="bottom">
@@ -196,7 +196,7 @@ export function LinkedDataAlerts({
             <Separator />
             <div className="flex items-center justify-between">
               <span className="font-semibold text-sm">Total Estimated</span>
-              <span className="font-bold text-base text-amber-600 dark:text-amber-400">
+              <span className="font-bold text-amber-600 text-base dark:text-amber-400">
                 {formatCurrency(totalEstimated)}
               </span>
             </div>
@@ -210,7 +210,7 @@ export function LinkedDataAlerts({
   if (hasUnpaidDeposit) {
     alerts.push(
       <button
-        className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-sm text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400"
+        className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400"
         key="deposit"
       >
         <DollarSign className="size-4" />
@@ -227,7 +227,7 @@ export function LinkedDataAlerts({
     );
     alerts.push(
       <button
-        className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 font-medium text-sm text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400"
+        className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 font-medium text-amber-700 text-sm transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400"
         key="overdue"
       >
         <Clock className="size-4" />
@@ -242,4 +242,3 @@ export function LinkedDataAlerts({
 
   return <>{alerts}</>;
 }
-

@@ -19,7 +19,12 @@ export type SyncOperationType =
   | "file_upload"
   | "export";
 
-export type SyncOperationStatus = "pending" | "in_progress" | "completed" | "failed" | "queued";
+export type SyncOperationStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "failed"
+  | "queued";
 
 export interface SyncOperation {
   id: string;
@@ -48,27 +53,31 @@ export interface OfflineOperation {
 interface SyncState {
   // Active operations
   operations: SyncOperation[];
-  
+
   // Offline queue
   offlineQueue: OfflineOperation[];
   isOnline: boolean;
-  
+
   // UI state
   isPanelOpen: boolean;
-  
+
   // Actions
-  startOperation: (operation: Omit<SyncOperation, "id" | "startedAt" | "progress" | "status">) => string;
+  startOperation: (
+    operation: Omit<SyncOperation, "id" | "startedAt" | "progress" | "status">
+  ) => string;
   updateOperation: (id: string, updates: Partial<SyncOperation>) => void;
   completeOperation: (id: string, success: boolean, error?: string) => void;
   removeOperation: (id: string) => void;
   clearCompleted: () => void;
-  
+
   // Offline queue actions
-  queueOperation: (operation: Omit<OfflineOperation, "id" | "createdAt" | "retryCount">) => void;
+  queueOperation: (
+    operation: Omit<OfflineOperation, "id" | "createdAt" | "retryCount">
+  ) => void;
   removeFromQueue: (id: string) => void;
   clearQueue: () => void;
   setOnlineStatus: (isOnline: boolean) => void;
-  
+
   // UI actions
   togglePanel: () => void;
   openPanel: () => void;
@@ -127,7 +136,7 @@ export const useSyncStore = create<SyncState>()(
         if (success) {
           setTimeout(() => {
             get().removeOperation(id);
-          }, 10000);
+          }, 10_000);
         }
       },
 
@@ -196,21 +205,18 @@ export const useSyncStore = create<SyncState>()(
 );
 
 // Hook to get active operations count
-export const useActiveOperationsCount = () => {
-  return useSyncStore(
-    (state) => state.operations.filter((op) => op.status === "in_progress").length
+export const useActiveOperationsCount = () =>
+  useSyncStore(
+    (state) =>
+      state.operations.filter((op) => op.status === "in_progress").length
   );
-};
 
 // Hook to get queued operations count
-export const useQueuedOperationsCount = () => {
-  return useSyncStore((state) => state.offlineQueue.length);
-};
+export const useQueuedOperationsCount = () =>
+  useSyncStore((state) => state.offlineQueue.length);
 
 // Hook to get if syncing
-export const useIsSyncing = () => {
-  return useSyncStore(
-    (state) => state.operations.some((op) => op.status === "in_progress")
+export const useIsSyncing = () =>
+  useSyncStore((state) =>
+    state.operations.some((op) => op.status === "in_progress")
   );
-};
-

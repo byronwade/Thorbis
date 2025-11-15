@@ -2,7 +2,7 @@
 
 /**
  * Advanced Welcome Page Client Component
- * 
+ *
  * Complete onboarding experience with:
  * - 4-step wizard (Company, Team, Phone, Banking)
  * - Phone number purchase/porting
@@ -21,16 +21,17 @@ import {
   CreditCard,
   Edit,
   FileSpreadsheet,
+  Globe,
   Loader2,
   Phone,
+  PhoneCall,
+  PhoneIncoming,
+  PhoneOff,
   Shield,
   Sparkles,
   Trash2,
   UserPlus,
   Users,
-  PhoneCall,
-  PhoneIncoming,
-  PhoneOff,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -45,11 +46,11 @@ import {
 import { SmartAddressInput } from "@/components/customers/smart-address-input";
 import { PlaidLinkButton } from "@/components/finance/plaid-link-button";
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header";
-import { TeamMemberEditDialog } from "@/components/onboarding/team-member-edit-dialog";
 import { TeamBulkUploadDialog } from "@/components/onboarding/team-bulk-upload-dialog";
-import { PhoneNumberSearchModal } from "@/components/telnyx/phone-number-search-modal";
+import { TeamMemberEditDialog } from "@/components/onboarding/team-member-edit-dialog";
 import { NumberPortingWizard } from "@/components/telnyx/number-porting-wizard";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PhoneNumberSearchModal } from "@/components/telnyx/phone-number-search-modal";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,7 +63,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -90,8 +97,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import type { TeamMemberRow } from "@/lib/onboarding/team-bulk-upload";
+import { cn } from "@/lib/utils";
 
 // Constants
 const INDUSTRIES = [
@@ -141,9 +148,7 @@ const formSchema = z.object({
     .regex(/^#([0-9A-Fa-f]{6})$/, "Use a valid hex color (e.g. #3366FF)")
     .optional()
     .or(z.literal("")),
-  orgEIN: z
-    .string()
-    .regex(/^\d{2}-?\d{7}$/, "Enter EIN in 00-0000000 format"),
+  orgEIN: z.string().regex(/^\d{2}-?\d{7}$/, "Enter EIN in 00-0000000 format"),
   orgAddress: z.string().min(5, "Address must be at least 5 characters"),
   orgCity: z.string().min(2, "City must be at least 2 characters"),
   orgState: z.string().min(2, "State must be at least 2 characters"),
@@ -153,6 +158,33 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+type IncompleteCompany = {
+  id: string;
+  name: string;
+  industry: string;
+  size: string;
+  phone: string;
+  email?: string | null;
+  support_email?: string | null;
+  support_phone?: string | null;
+  legal_name?: string | null;
+  doing_business_as?: string | null;
+  brand_color?: string | null;
+  ein?: string | null;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  website: string;
+  taxId: string;
+  logo: string | null;
+  onboardingProgress: Record<string, any>;
+  currentStep: number;
+  trialEndsAt?: string | null;
+  subscriptionStatus?: string | null;
+  hasPayment?: boolean;
+};
 
 // Advanced Step configuration
 const STEPS = [
@@ -180,18 +212,25 @@ interface WelcomePageClientProps {
     email: string;
     name: string;
   };
-  incompleteCompany: any | null;
+  incompleteCompany: IncompleteCompany | null;
   hasActiveCompany: boolean;
+  emailInfrastructure?: {
+    domain: Record<string, unknown> | null;
+    inboundRoute: Record<string, unknown> | null;
+  } | null;
 }
 
 export function WelcomePageClientAdvanced({
   user,
   incompleteCompany,
   hasActiveCompany,
+  emailInfrastructure,
 }: WelcomePageClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(incompleteCompany?.currentStep || 1);
+  const [currentStep, setCurrentStep] = useState(
+    incompleteCompany?.currentStep || 1
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(
     incompleteCompany?.id || null
@@ -207,9 +246,9 @@ export function WelcomePageClientAdvanced({
   const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
 
   // Phone number state
-  const [phoneOption, setPhoneOption] = useState<"purchase" | "port" | "existing" | null>(
-    incompleteCompany?.onboardingProgress?.step3?.phoneOption || null
-  );
+  const [phoneOption, setPhoneOption] = useState<
+    "purchase" | "port" | "existing" | null
+  >(incompleteCompany?.onboardingProgress?.step3?.phoneOption || null);
   const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
     incompleteCompany?.onboardingProgress?.step3?.phoneNumber || null
   );
@@ -221,17 +260,36 @@ export function WelcomePageClientAdvanced({
     incompleteCompany?.onboardingProgress?.step4?.bankAccounts || 0
   );
 
+  const trialActive = Boolean(incompleteCompany?.hasPayment);
+  const trialEndsAt = incompleteCompany?.trialEndsAt
+    ? new Date(incompleteCompany.trialEndsAt)
+    : null;
+  const formattedTrialEndsAt = trialEndsAt
+    ? trialEndsAt.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+      })
+    : null;
+  const trialBannerTitle = trialActive ? "Trial Active" : "14-day free trial";
+  const trialBannerDescription = trialActive
+    ? `Your team has full Thorbis access${formattedTrialEndsAt ? ` through ${formattedTrialEndsAt}` : ""}. Finish onboarding to unlock every workflow—no credit card required until you upgrade.`
+    : "Finish the steps below to activate your 14-day free trial. We'll unlock the entire system immediately—no credit card required until you're ready.";
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       orgName: incompleteCompany?.name || "",
-      orgLegalName: incompleteCompany?.legal_name || incompleteCompany?.name || "",
-      orgDoingBusinessAs: incompleteCompany?.doing_business_as || incompleteCompany?.name || "",
+      orgLegalName:
+        incompleteCompany?.legal_name || incompleteCompany?.name || "",
+      orgDoingBusinessAs:
+        incompleteCompany?.doing_business_as || incompleteCompany?.name || "",
       orgIndustry: incompleteCompany?.industry || "",
       orgSize: incompleteCompany?.size || "",
       orgPhone: incompleteCompany?.phone || "",
-      orgSupportEmail: incompleteCompany?.support_email || incompleteCompany?.email || "",
-      orgSupportPhone: incompleteCompany?.support_phone || incompleteCompany?.phone || "",
+      orgSupportEmail:
+        incompleteCompany?.support_email || incompleteCompany?.email || "",
+      orgSupportPhone:
+        incompleteCompany?.support_phone || incompleteCompany?.phone || "",
       orgBrandColor: incompleteCompany?.brand_color || "",
       orgEIN: incompleteCompany?.ein || incompleteCompany?.taxId || "",
       orgAddress: incompleteCompany?.address || "",
@@ -262,12 +320,16 @@ export function WelcomePageClientAdvanced({
       // Load phone setup
       if (incompleteCompany.onboardingProgress?.step3) {
         setPhoneOption(incompleteCompany.onboardingProgress.step3.phoneOption);
-        setSelectedPhoneNumber(incompleteCompany.onboardingProgress.step3.phoneNumber);
+        setSelectedPhoneNumber(
+          incompleteCompany.onboardingProgress.step3.phoneNumber
+        );
       }
 
       // Load bank accounts
       if (incompleteCompany.onboardingProgress?.step4?.bankAccounts) {
-        setLinkedBankAccounts(incompleteCompany.onboardingProgress.step4.bankAccounts);
+        setLinkedBankAccounts(
+          incompleteCompany.onboardingProgress.step4.bankAccounts
+        );
       }
     }
   }, [incompleteCompany]);
@@ -294,7 +356,10 @@ export function WelcomePageClientAdvanced({
   }, [currentStep, teamMembers, user]);
 
   // Save progress helper
-  const saveStepProgress = async (step: number, data: Record<string, unknown>) => {
+  const saveStepProgress = async (
+    step: number,
+    data: Record<string, unknown>
+  ) => {
     if (!companyId) return;
 
     try {
@@ -440,9 +505,7 @@ export function WelcomePageClientAdvanced({
         toast.error(result.error || "Failed to create payment session");
       }
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Payment setup failed"
-      );
+      toast.error(err instanceof Error ? err.message : "Payment setup failed");
     } finally {
       setIsLoading(false);
     }
@@ -465,6 +528,11 @@ export function WelcomePageClientAdvanced({
     }
   };
 
+  const emailInfra = emailInfrastructure ?? {
+    domain: null,
+    inboundRoute: null,
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
@@ -483,7 +551,8 @@ export function WelcomePageClientAdvanced({
                 <div className="flex-1">
                   <CardTitle className="mb-2">Welcome to Thorbis!</CardTitle>
                   <CardDescription className="text-base">
-                    Let's get your business set up in just a few steps. This will only take a few minutes.
+                    Let's get your business set up in just a few steps. This
+                    will only take a few minutes.
                   </CardDescription>
                 </div>
               </div>
@@ -495,7 +564,7 @@ export function WelcomePageClientAdvanced({
         {hasActiveCompany && (
           <div className="mb-6">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
+              <Button size="sm" variant="ghost">
                 <ArrowLeft className="mr-2 size-4" />
                 Back to Dashboard
               </Button>
@@ -503,18 +572,32 @@ export function WelcomePageClientAdvanced({
           </div>
         )}
 
+        <Alert className="mb-8 border-primary/30 bg-primary/5">
+          <div className="flex items-start gap-3">
+            <div className="mt-1 rounded-full bg-primary/10 p-2 text-primary">
+              <Sparkles className="size-4" />
+            </div>
+            <div className="space-y-1">
+              <AlertTitle className="font-semibold">{trialBannerTitle}</AlertTitle>
+              <AlertDescription className="text-sm text-muted-foreground">
+                {trialBannerDescription}
+              </AlertDescription>
+            </div>
+          </div>
+        </Alert>
+
         {/* Centered Progress Timeline */}
         <div className="mb-12">
           <div className="mx-auto max-w-4xl">
             <div className="relative flex items-center justify-center">
               {STEPS.map((step, index) => (
-                <div key={step.id} className="flex flex-1 items-center">
+                <div className="flex flex-1 items-center" key={step.id}>
                   <div className="flex w-full flex-col items-center">
                     <div
                       className={cn(
                         "relative z-10 flex size-16 items-center justify-center rounded-full border-2 transition-all duration-300",
                         currentStep >= step.id
-                          ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-110"
+                          ? "scale-110 border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30"
                           : "border-muted-foreground/30 bg-background text-muted-foreground hover:border-muted-foreground/50"
                       )}
                     >
@@ -558,17 +641,71 @@ export function WelcomePageClientAdvanced({
           </div>
         </div>
 
+        <Card className="mx-auto mb-10 max-w-4xl border border-primary/20 bg-primary/5 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Globe className="size-5 text-primary" />
+              Email Automation
+            </CardTitle>
+            <CardDescription className="text-sm">
+              Thorbis provisions Resend for both outbound sending and inbound
+              routing automatically.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-lg border border-primary/10 bg-background/80 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold text-sm">Sending Domain</p>
+                  <p className="text-muted-foreground text-xs">
+                    {String(
+                      emailInfra.domain?.domain ?? "Pending provisioning"
+                    )}
+                  </p>
+                </div>
+                <Badge className="capitalize" variant="secondary">
+                  {String(emailInfra.domain?.status ?? "pending")}
+                </Badge>
+              </div>
+              <p className="mt-2 text-muted-foreground text-xs">
+                We’ll share DNS instructions once the domain is ready.
+              </p>
+            </div>
+            <div className="rounded-lg border border-primary/10 bg-background/80 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold text-sm">Inbound Routing</p>
+                  <p className="text-muted-foreground text-xs">
+                    {String(
+                      emailInfra.inboundRoute?.route_address ??
+                        "Automatic reply capture pending"
+                    )}
+                  </p>
+                </div>
+                <Badge className="capitalize" variant="secondary">
+                  {String(emailInfra.inboundRoute?.status ?? "pending")}
+                </Badge>
+              </div>
+              <p className="mt-2 text-muted-foreground text-xs">
+                Customer replies will flow back into the Communications hub
+                automatically.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Content Card */}
         <Card className="mx-auto max-w-4xl shadow-2xl">
           <CardContent className="p-8 lg:p-12">
             <Form {...form}>
               {/* Step 1: Company Info */}
               {currentStep === 1 && (
-                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                <div className="fade-in-50 animate-in space-y-8 duration-300">
                   <div>
                     <h2 className="font-bold text-3xl">Company Information</h2>
-                    <p className="mt-3 text-muted-foreground text-lg">
-                      Tell us about your business so we can tailor the experience for you.
+                    <p className="mt-3 text-lg text-muted-foreground">
+                      Tell us about your business so we can tailor the
+                      experience for you.
                     </p>
                   </div>
 
@@ -580,11 +717,13 @@ export function WelcomePageClientAdvanced({
                       name="orgName"
                       render={({ field }) => (
                         <FormItem className="sm:col-span-2">
-                          <FormLabel className="text-base">Company Name *</FormLabel>
+                          <FormLabel className="text-base">
+                            Company Name *
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Acme HVAC Services"
                               className="h-12 text-base"
+                              placeholder="Acme HVAC Services"
                               {...field}
                             />
                           </FormControl>
@@ -597,11 +736,13 @@ export function WelcomePageClientAdvanced({
                       name="orgLegalName"
                       render={({ field }) => (
                         <FormItem className="sm:col-span-2">
-                          <FormLabel className="text-base">Legal Entity Name *</FormLabel>
+                          <FormLabel className="text-base">
+                            Legal Entity Name *
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Legal name on EIN / IRS documents"
                               className="h-12 text-base"
+                              placeholder="Legal name on EIN / IRS documents"
                               {...field}
                             />
                           </FormControl>
@@ -614,11 +755,13 @@ export function WelcomePageClientAdvanced({
                       name="orgDoingBusinessAs"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Doing Business As</FormLabel>
+                          <FormLabel className="text-base">
+                            Doing Business As
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Brand name customers know"
                               className="h-12 text-base"
+                              placeholder="Brand name customers know"
                               {...field}
                             />
                           </FormControl>
@@ -634,8 +777,8 @@ export function WelcomePageClientAdvanced({
                           <FormLabel className="text-base">EIN *</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="87-1234567"
                               className="h-12 text-base"
+                              placeholder="87-1234567"
                               {...field}
                             />
                           </FormControl>
@@ -649,8 +792,13 @@ export function WelcomePageClientAdvanced({
                       name="orgIndustry"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Industry *</FormLabel>
-                          <Select value={field.value} onValueChange={field.onChange}>
+                          <FormLabel className="text-base">
+                            Industry *
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger className="h-12 text-base">
                                 <SelectValue placeholder="Select industry" />
@@ -658,7 +806,10 @@ export function WelcomePageClientAdvanced({
                             </FormControl>
                             <SelectContent>
                               {INDUSTRIES.map((industry) => (
-                                <SelectItem key={industry.value} value={industry.value}>
+                                <SelectItem
+                                  key={industry.value}
+                                  value={industry.value}
+                                >
                                   {industry.label}
                                 </SelectItem>
                               ))}
@@ -673,11 +824,13 @@ export function WelcomePageClientAdvanced({
                       name="orgSupportEmail"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Support Email *</FormLabel>
+                          <FormLabel className="text-base">
+                            Support Email *
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="support@yourcompany.com"
                               className="h-12 text-base"
+                              placeholder="support@yourcompany.com"
                               {...field}
                             />
                           </FormControl>
@@ -690,11 +843,13 @@ export function WelcomePageClientAdvanced({
                       name="orgSupportPhone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Support Phone *</FormLabel>
+                          <FormLabel className="text-base">
+                            Support Phone *
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="(831) 555-1234"
                               className="h-12 text-base"
+                              placeholder="(831) 555-1234"
                               {...field}
                             />
                           </FormControl>
@@ -708,8 +863,13 @@ export function WelcomePageClientAdvanced({
                       name="orgSize"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Company Size *</FormLabel>
-                          <Select value={field.value} onValueChange={field.onChange}>
+                          <FormLabel className="text-base">
+                            Company Size *
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger className="h-12 text-base">
                                 <SelectValue placeholder="Select size" />
@@ -732,20 +892,26 @@ export function WelcomePageClientAdvanced({
                       name="orgBrandColor"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Brand Color</FormLabel>
+                          <FormLabel className="text-base">
+                            Brand Color
+                          </FormLabel>
                           <FormControl>
                             <div className="flex items-center gap-3">
                               <Input
+                                className="h-12 w-20 cursor-pointer rounded-md border"
+                                onChange={(event) =>
+                                  field.onChange(event.target.value)
+                                }
                                 type="color"
                                 value={field.value || "#3b82f6"}
-                                className="h-12 w-20 cursor-pointer rounded-md border"
-                                onChange={(event) => field.onChange(event.target.value)}
                               />
                               <Input
-                                placeholder="#3B82F6"
                                 className="h-12 flex-1 text-base"
+                                onChange={(event) =>
+                                  field.onChange(event.target.value)
+                                }
+                                placeholder="#3B82F6"
                                 value={field.value || ""}
-                                onChange={(event) => field.onChange(event.target.value)}
                               />
                             </div>
                           </FormControl>
@@ -759,11 +925,13 @@ export function WelcomePageClientAdvanced({
                       name="orgPhone"
                       render={({ field }) => (
                         <FormItem className="sm:col-span-2">
-                          <FormLabel className="text-base">Main Phone Number *</FormLabel>
+                          <FormLabel className="text-base">
+                            Main Phone Number *
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="(555) 123-4567"
                               className="h-12 text-base"
+                              placeholder="(555) 123-4567"
                               {...field}
                             />
                           </FormControl>
@@ -794,8 +962,8 @@ export function WelcomePageClientAdvanced({
                           <FormLabel className="text-base">Website</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="https://example.com"
                               className="h-12 text-base"
+                              placeholder="https://example.com"
                               {...field}
                             />
                           </FormControl>
@@ -809,11 +977,13 @@ export function WelcomePageClientAdvanced({
                       name="orgTaxId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Tax ID / EIN</FormLabel>
+                          <FormLabel className="text-base">
+                            Tax ID / EIN
+                          </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="12-3456789"
                               className="h-12 text-base"
+                              placeholder="12-3456789"
                               {...field}
                             />
                           </FormControl>
@@ -827,27 +997,26 @@ export function WelcomePageClientAdvanced({
 
               {/* Step 2: Team Members */}
               {currentStep === 2 && (
-                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                <div className="fade-in-50 animate-in space-y-8 duration-300">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h2 className="font-bold text-3xl">Team Members</h2>
-                      <p className="mt-3 text-muted-foreground text-lg">
-                        Add your team members. You're already included as the owner.
+                      <p className="mt-3 text-lg text-muted-foreground">
+                        Add your team members. You're already included as the
+                        owner.
                       </p>
                     </div>
                     <div className="flex gap-2">
                       <Button
+                        onClick={() => setBulkUploadOpen(true)}
+                        size="sm"
                         type="button"
                         variant="outline"
-                        size="sm"
-                        onClick={() => setBulkUploadOpen(true)}
                       >
                         <FileSpreadsheet className="mr-2 size-4" />
                         Bulk Upload
                       </Button>
                       <Button
-                        type="button"
-                        size="sm"
                         onClick={() => {
                           const newMember: ExtendedTeamMember = {
                             id: crypto.randomUUID(),
@@ -857,9 +1026,14 @@ export function WelcomePageClientAdvanced({
                             role: "technician",
                             phone: "",
                           };
-                          setTeamMembers((prev: ExtendedTeamMember[]) => [...prev, newMember]);
+                          setTeamMembers((prev: ExtendedTeamMember[]) => [
+                            ...prev,
+                            newMember,
+                          ]);
                           setEditingMember(newMember);
                         }}
+                        size="sm"
+                        type="button"
                       >
                         <UserPlus className="mr-2 size-4" />
                         Add Member
@@ -875,13 +1049,14 @@ export function WelcomePageClientAdvanced({
                         <div className="mb-4 rounded-full bg-primary/10 p-6">
                           <Users className="size-12 text-primary" />
                         </div>
-                        <h3 className="mb-2 font-semibold text-xl">No Team Members Yet</h3>
+                        <h3 className="mb-2 font-semibold text-xl">
+                          No Team Members Yet
+                        </h3>
                         <p className="mb-6 max-w-md text-muted-foreground">
-                          Add your first team member to get started. You can always add more later.
+                          Add your first team member to get started. You can
+                          always add more later.
                         </p>
                         <Button
-                          type="button"
-                          size="lg"
                           onClick={() => {
                             const newMember: ExtendedTeamMember = {
                               id: crypto.randomUUID(),
@@ -894,6 +1069,8 @@ export function WelcomePageClientAdvanced({
                             setTeamMembers([newMember]);
                             setEditingMember(newMember);
                           }}
+                          size="lg"
+                          type="button"
                         >
                           <UserPlus className="mr-2 size-4" />
                           Add First Member
@@ -908,7 +1085,9 @@ export function WelcomePageClientAdvanced({
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Role</TableHead>
-                            <TableHead className="w-[100px] text-right">Actions</TableHead>
+                            <TableHead className="w-[100px] text-right">
+                              Actions
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -917,7 +1096,7 @@ export function WelcomePageClientAdvanced({
                               <TableCell className="font-medium">
                                 {member.firstName} {member.lastName}
                                 {member.isCurrentUser && (
-                                  <Badge variant="outline" className="ml-2">
+                                  <Badge className="ml-2" variant="outline">
                                     You
                                   </Badge>
                                 )}
@@ -926,7 +1105,9 @@ export function WelcomePageClientAdvanced({
                               <TableCell>
                                 <Badge
                                   variant={
-                                    member.role === "owner" ? "default" : "secondary"
+                                    member.role === "owner"
+                                      ? "default"
+                                      : "secondary"
                                   }
                                 >
                                   {member.role}
@@ -935,27 +1116,31 @@ export function WelcomePageClientAdvanced({
                               <TableCell className="text-right">
                                 <div className="flex justify-end gap-2">
                                   <Button
+                                    onClick={() => setEditingMember(member)}
+                                    size="icon"
                                     type="button"
                                     variant="ghost"
-                                    size="icon"
-                                    onClick={() => setEditingMember(member)}
                                   >
                                     <Edit className="size-4" />
                                   </Button>
-                                  {member.role !== "owner" && !member.isCurrentUser && (
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => {
-                                        setTeamMembers((prev: ExtendedTeamMember[]) =>
-                                          prev.filter((m) => m.id !== member.id)
-                                        );
-                                      }}
-                                    >
-                                      <Trash2 className="size-4 text-destructive" />
-                                    </Button>
-                                  )}
+                                  {member.role !== "owner" &&
+                                    !member.isCurrentUser && (
+                                      <Button
+                                        onClick={() => {
+                                          setTeamMembers(
+                                            (prev: ExtendedTeamMember[]) =>
+                                              prev.filter(
+                                                (m) => m.id !== member.id
+                                              )
+                                          );
+                                        }}
+                                        size="icon"
+                                        type="button"
+                                        variant="ghost"
+                                      >
+                                        <Trash2 className="size-4 text-destructive" />
+                                      </Button>
+                                    )}
                                 </div>
                               </TableCell>
                             </TableRow>
@@ -969,11 +1154,12 @@ export function WelcomePageClientAdvanced({
 
               {/* Step 3: Phone Number Setup */}
               {currentStep === 3 && (
-                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                <div className="fade-in-50 animate-in space-y-8 duration-300">
                   <div>
                     <h2 className="font-bold text-3xl">Phone Number Setup</h2>
-                    <p className="mt-3 text-muted-foreground text-lg">
-                      Set up your business phone number for calls, SMS, and VoIP.
+                    <p className="mt-3 text-lg text-muted-foreground">
+                      Set up your business phone number for calls, SMS, and
+                      VoIP.
                     </p>
                   </div>
 
@@ -983,7 +1169,8 @@ export function WelcomePageClientAdvanced({
                     <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
                       <CheckCircle className="size-5 text-green-600 dark:text-green-400" />
                       <AlertDescription className="text-green-900 dark:text-green-100">
-                        <span className="font-semibold">Success!</span> Phone number {selectedPhoneNumber} is configured
+                        <span className="font-semibold">Success!</span> Phone
+                        number {selectedPhoneNumber} is configured
                       </AlertDescription>
                     </Alert>
                   )}
@@ -993,7 +1180,8 @@ export function WelcomePageClientAdvanced({
                     <Card
                       className={cn(
                         "cursor-pointer transition-all hover:shadow-lg",
-                        phoneOption === "purchase" && "border-primary border-2 ring-2 ring-primary/20"
+                        phoneOption === "purchase" &&
+                          "border-2 border-primary ring-2 ring-primary/20"
                       )}
                       onClick={() => {
                         setPhoneOption("purchase");
@@ -1004,7 +1192,9 @@ export function WelcomePageClientAdvanced({
                         <div className="mb-4 rounded-full bg-primary/10 p-4">
                           <PhoneCall className="size-8 text-primary" />
                         </div>
-                        <h3 className="mb-2 font-semibold text-lg">Purchase New</h3>
+                        <h3 className="mb-2 font-semibold text-lg">
+                          Purchase New
+                        </h3>
                         <p className="text-muted-foreground text-sm">
                           Get a new phone number with your preferred area code
                         </p>
@@ -1020,7 +1210,8 @@ export function WelcomePageClientAdvanced({
                     <Card
                       className={cn(
                         "cursor-pointer transition-all hover:shadow-lg",
-                        phoneOption === "port" && "border-primary border-2 ring-2 ring-primary/20"
+                        phoneOption === "port" &&
+                          "border-2 border-primary ring-2 ring-primary/20"
                       )}
                       onClick={() => {
                         setPhoneOption("port");
@@ -1031,9 +1222,12 @@ export function WelcomePageClientAdvanced({
                         <div className="mb-4 rounded-full bg-primary/10 p-4">
                           <PhoneIncoming className="size-8 text-primary" />
                         </div>
-                        <h3 className="mb-2 font-semibold text-lg">Port Existing</h3>
+                        <h3 className="mb-2 font-semibold text-lg">
+                          Port Existing
+                        </h3>
                         <p className="text-muted-foreground text-sm">
-                          Transfer your current phone number from another carrier
+                          Transfer your current phone number from another
+                          carrier
                         </p>
                         {phoneOption === "port" && (
                           <Badge className="mt-4" variant="outline">
@@ -1047,18 +1241,23 @@ export function WelcomePageClientAdvanced({
                     <Card
                       className={cn(
                         "cursor-pointer transition-all hover:shadow-lg",
-                        phoneOption === "existing" && "border-primary border-2 ring-2 ring-primary/20"
+                        phoneOption === "existing" &&
+                          "border-2 border-primary ring-2 ring-primary/20"
                       )}
                       onClick={() => {
                         setPhoneOption("existing");
-                        toast.success("You can configure your existing phone system later in settings");
+                        toast.success(
+                          "You can configure your existing phone system later in settings"
+                        );
                       }}
                     >
                       <CardContent className="flex flex-col items-center justify-center p-8 text-center">
                         <div className="mb-4 rounded-full bg-primary/10 p-4">
                           <PhoneOff className="size-8 text-primary" />
                         </div>
-                        <h3 className="mb-2 font-semibold text-lg">Use Existing</h3>
+                        <h3 className="mb-2 font-semibold text-lg">
+                          Use Existing
+                        </h3>
                         <p className="text-muted-foreground text-sm">
                           Continue using your current phone system
                         </p>
@@ -1077,7 +1276,9 @@ export function WelcomePageClientAdvanced({
                       <div className="space-y-2">
                         <h4 className="font-semibold">Optional Step</h4>
                         <p className="text-muted-foreground text-sm">
-                          You can skip this step and set up your phone number later in Settings → Communications. Phone features include calls, SMS, and VoIP capabilities.
+                          You can skip this step and set up your phone number
+                          later in Settings → Communications. Phone features
+                          include calls, SMS, and VoIP capabilities.
                         </p>
                       </div>
                     </CardContent>
@@ -1087,11 +1288,12 @@ export function WelcomePageClientAdvanced({
 
               {/* Step 4: Bank Account */}
               {currentStep === 4 && (
-                <div className="space-y-8 animate-in fade-in-50 duration-300">
+                <div className="fade-in-50 animate-in space-y-8 duration-300">
                   <div>
                     <h2 className="font-bold text-3xl">Connect Your Bank</h2>
-                    <p className="mt-3 text-muted-foreground text-lg">
-                      Connect your business bank account to receive payments and manage finances.
+                    <p className="mt-3 text-lg text-muted-foreground">
+                      Connect your business bank account to receive payments and
+                      manage finances.
                     </p>
                   </div>
 
@@ -1101,24 +1303,32 @@ export function WelcomePageClientAdvanced({
                     <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
                       <CheckCircle className="size-5 text-green-600 dark:text-green-400" />
                       <AlertDescription className="text-green-900 dark:text-green-100">
-                        <span className="font-semibold">Success!</span> {linkedBankAccounts} bank account{linkedBankAccounts > 1 ? "s" : ""} connected
+                        <span className="font-semibold">Success!</span>{" "}
+                        {linkedBankAccounts} bank account
+                        {linkedBankAccounts > 1 ? "s" : ""} connected
                       </AlertDescription>
                     </Alert>
                   ) : null}
 
-                  <Card className={cn(
-                    "border-2 transition-all",
-                    linkedBankAccounts === 0 ? "border-dashed" : ""
-                  )}>
+                  <Card
+                    className={cn(
+                      "border-2 transition-all",
+                      linkedBankAccounts === 0 ? "border-dashed" : ""
+                    )}
+                  >
                     <CardContent className="flex flex-col items-center justify-center py-16 text-center">
                       <div className="mb-6 rounded-full bg-primary/10 p-8">
                         <CreditCard className="size-16 text-primary" />
                       </div>
                       <h3 className="mb-3 font-bold text-2xl">
-                        {linkedBankAccounts > 0 ? "Add Another Account" : "Connect Your Bank"}
+                        {linkedBankAccounts > 0
+                          ? "Add Another Account"
+                          : "Connect Your Bank"}
                       </h3>
-                      <p className="mb-8 max-w-md text-muted-foreground text-lg">
-                        Securely link your business bank account with Plaid. Your credentials are encrypted and never stored on our servers.
+                      <p className="mb-8 max-w-md text-lg text-muted-foreground">
+                        Securely link your business bank account with Plaid.
+                        Your credentials are encrypted and never stored on our
+                        servers.
                       </p>
                       {companyId && (
                         <PlaidLinkButton
@@ -1131,7 +1341,9 @@ export function WelcomePageClientAdvanced({
                           }}
                           size="lg"
                         >
-                          {linkedBankAccounts > 0 ? "Add Another Account" : "Connect Bank Account"}
+                          {linkedBankAccounts > 0
+                            ? "Add Another Account"
+                            : "Connect Bank Account"}
                         </PlaidLinkButton>
                       )}
                     </CardContent>
@@ -1143,7 +1355,10 @@ export function WelcomePageClientAdvanced({
                       <div className="space-y-2">
                         <h4 className="font-semibold">Bank-Level Security</h4>
                         <p className="text-muted-foreground text-sm">
-                          We use Plaid, the same technology trusted by companies like Venmo, Robinhood, and Coinbase. Your data is encrypted with 256-bit encryption and never stored on our servers.
+                          We use Plaid, the same technology trusted by companies
+                          like Venmo, Robinhood, and Coinbase. Your data is
+                          encrypted with 256-bit encryption and never stored on
+                          our servers.
                         </p>
                       </div>
                     </CardContent>
@@ -1156,9 +1371,9 @@ export function WelcomePageClientAdvanced({
                 <div>
                   {companyId && currentStep === 1 && !hasActiveCompany && (
                     <Button
+                      onClick={() => setArchiveDialogOpen(true)}
                       type="button"
                       variant="ghost"
-                      onClick={() => setArchiveDialogOpen(true)}
                     >
                       Cancel Setup
                     </Button>
@@ -1167,22 +1382,25 @@ export function WelcomePageClientAdvanced({
                 <div className="flex gap-3">
                   {currentStep > 1 && (
                     <Button
+                      disabled={isLoading}
+                      onClick={() => setCurrentStep((prev: number) => prev - 1)}
+                      size="lg"
                       type="button"
                       variant="outline"
-                      onClick={() => setCurrentStep((prev: number) => prev - 1)}
-                      disabled={isLoading}
-                      size="lg"
                     >
                       <ArrowLeft className="mr-2 size-4" />
                       Back
                     </Button>
                   )}
                   <Button
-                    type="button"
-                    onClick={handleNext}
-                    disabled={isLoading || (currentStep === 4 && linkedBankAccounts === 0)}
-                    size="lg"
                     className="min-w-[180px]"
+                    disabled={
+                      isLoading ||
+                      (currentStep === 4 && linkedBankAccounts === 0)
+                    }
+                    onClick={handleNext}
+                    size="lg"
+                    type="button"
                   >
                     {isLoading ? (
                       <>
@@ -1216,8 +1434,8 @@ export function WelcomePageClientAdvanced({
         <p className="mt-8 text-center text-muted-foreground">
           Need help? Contact us at{" "}
           <a
-            href="mailto:support@thorbis.com"
             className="font-medium text-primary hover:underline"
+            href="mailto:support@thorbis.com"
           >
             support@thorbis.com
           </a>
@@ -1228,52 +1446,54 @@ export function WelcomePageClientAdvanced({
       {editingMember && (
         <TeamMemberEditDialog
           member={editingMember}
-          open={true}
           onOpenChange={(open) => {
             if (!open) setEditingMember(null);
           }}
           onSave={(updatedMember) => {
             setTeamMembers((prev: ExtendedTeamMember[]) =>
               prev.map((m) =>
-                m.email === updatedMember.email
-                  ? updatedMember
-                  : m
+                m.email === updatedMember.email ? updatedMember : m
               )
             );
             setEditingMember(null);
           }}
+          open={true}
         />
       )}
 
       <TeamBulkUploadDialog
-        open={bulkUploadOpen}
-        onOpenChange={setBulkUploadOpen}
         onImport={(members: TeamMemberRow[]) => {
           const membersWithIds = members.map((member) => ({
             ...member,
             id: crypto.randomUUID(),
           }));
-          setTeamMembers((prev: ExtendedTeamMember[]) => [...prev, ...membersWithIds]);
+          setTeamMembers((prev: ExtendedTeamMember[]) => [
+            ...prev,
+            ...membersWithIds,
+          ]);
           setBulkUploadOpen(false);
         }}
+        onOpenChange={setBulkUploadOpen}
+        open={bulkUploadOpen}
       />
 
       {companyId && (
         <>
           <PhoneNumberSearchModal
             companyId={companyId}
-            open={purchaseModalOpen}
             onOpenChange={setPurchaseModalOpen}
             onSuccess={(phoneNumber) => {
               setSelectedPhoneNumber(phoneNumber);
               setPhoneOption("purchase");
               setPurchaseModalOpen(false);
-              toast.success(`Phone number ${phoneNumber} purchased successfully!`);
+              toast.success(
+                `Phone number ${phoneNumber} purchased successfully!`
+              );
             }}
+            open={purchaseModalOpen}
           />
 
           <NumberPortingWizard
-            open={portingWizardOpen}
             onOpenChange={setPortingWizardOpen}
             onSuccess={(phoneNumber) => {
               setSelectedPhoneNumber(phoneNumber);
@@ -1281,23 +1501,25 @@ export function WelcomePageClientAdvanced({
               setPortingWizardOpen(false);
               toast.success(`Porting request submitted for ${phoneNumber}`);
             }}
+            open={portingWizardOpen}
           />
         </>
       )}
 
-      <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
+      <AlertDialog onOpenChange={setArchiveDialogOpen} open={archiveDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Cancel Company Setup?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will cancel your company setup. Your progress will be saved and you can resume later from where you left off.
+              This will cancel your company setup. Your progress will be saved
+              and you can resume later from where you left off.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Continue Setup</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleArchive}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleArchive}
             >
               Cancel Setup
             </AlertDialogAction>
@@ -1307,4 +1529,3 @@ export function WelcomePageClientAdvanced({
     </div>
   );
 }
-

@@ -13,6 +13,8 @@ import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
 import { EMAIL_COLORS } from "../../theme";
 
+const CENTS_IN_DOLLAR = 100;
+
 export default function InvoiceNotificationEmail({
   customerName,
   invoiceNumber,
@@ -36,19 +38,24 @@ export default function InvoiceNotificationEmail({
 
       {customBody ? (
         <div>
-          {customBody.split("\n").map((line, index) => (
-            <Text key={index} style={paragraph}>
-              {line}
-            </Text>
-          ))}
+          {customBody.split("\n").map((line, index) => {
+            const trimmedLine = line.trim();
+            const key = `${index}-${trimmedLine || "empty-line"}`;
+            return (
+              <Text key={key} style={paragraph}>
+                {line}
+              </Text>
+            );
+          })}
         </div>
       ) : (
         <>
           <Text style={paragraph}>Hi {customerName},</Text>
 
           <Text style={paragraph}>
-            We've prepared invoice <strong>#{invoiceNumber}</strong> for you. Please
-            review the details below and click the button to view or pay online.
+            We've prepared invoice <strong>#{invoiceNumber}</strong> for you.
+            Please review the details below and click the button to view or pay
+            online.
           </Text>
         </>
       )}
@@ -81,17 +88,20 @@ export default function InvoiceNotificationEmail({
       {Array.isArray(items) && items.length > 0 && (
         <Card style={itemsCard}>
           <Heading level={3}>Invoice Items</Heading>
-          {items.map((item, index) => (
-            <div key={`${item.description}-${index}`} style={itemRow}>
-              <div style={itemDetails}>
-                <Text style={itemDescription}>{item.description}</Text>
-                <Text style={itemQuantity}>Qty: {item.quantity}</Text>
+          {items.map((item) => {
+            const key = `${item.description}-${item.quantity}-${item.amount}`;
+            return (
+              <div key={key} style={itemRow}>
+                <div style={itemDetails}>
+                  <Text style={itemDescription}>{item.description}</Text>
+                  <Text style={itemQuantity}>Qty: {item.quantity}</Text>
+                </div>
+                <Text style={itemAmount}>
+                  {formatCurrency(item.amount, currency)}
+                </Text>
               </div>
-              <Text style={itemAmount}>
-                {formatCurrency(item.amount, currency)}
-              </Text>
-            </div>
-          ))}
+            );
+          })}
         </Card>
       )}
 
@@ -253,5 +263,5 @@ function formatCurrency(amountInCents: number, currency = "USD") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
-  }).format(amountInCents / 100);
+  }).format(amountInCents / CENTS_IN_DOLLAR);
 }

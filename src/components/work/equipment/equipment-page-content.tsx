@@ -20,8 +20,8 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   DetailPageContentLayout,
   type DetailPageHeaderConfig,
@@ -201,12 +201,14 @@ export function EquipmentPageContent({
   }, []);
 
   const rawClassification =
-    (equipment.classification as keyof typeof classificationLabelMap | undefined) ??
-    "equipment";
+    (equipment.classification as
+      | keyof typeof classificationLabelMap
+      | undefined) ?? "equipment";
   const classificationKey: keyof typeof classificationLabelMap =
     classificationLabelMap[rawClassification] ? rawClassification : "equipment";
   const classificationLabel =
-    classificationLabelMap[classificationKey] || formatLabel(equipment.classification);
+    classificationLabelMap[classificationKey] ||
+    formatLabel(equipment.classification);
   const typeLabel = formatLabel(equipment.type);
   const assetCategoryLabel = equipment.asset_category
     ? formatLabel(equipment.asset_category)
@@ -227,7 +229,11 @@ export function EquipmentPageContent({
   const headerBadges = [
     getStatusBadge(equipment.status || "active", "status"),
     getConditionBadge(equipment.condition || "good", "condition"),
-    <Badge className="bg-primary/10 text-primary" key="classification" variant="outline">
+    <Badge
+      className="bg-primary/10 text-primary"
+      key="classification"
+      variant="outline"
+    >
       {classificationLabel}
     </Badge>,
   ];
@@ -250,8 +256,7 @@ export function EquipmentPageContent({
   const headerSubtitle =
     subtitleSegments.length > 0 ? subtitleSegments.join(" • ") : undefined;
 
-  const metadataItems =
-    [] as NonNullable<DetailPageHeaderConfig["metadata"]>;
+  const metadataItems = [] as NonNullable<DetailPageHeaderConfig["metadata"]>;
 
   metadataItems.push({
     label: "Equipment #",
@@ -271,7 +276,9 @@ export function EquipmentPageContent({
     label: "Installed",
     icon: <Calendar className="h-3.5 w-3.5 text-muted-foreground" />,
     value: formatDate(equipment.install_date),
-    helperText: equipment.installed_by ? `By ${equipment.installed_by}` : undefined,
+    helperText: equipment.installed_by
+      ? `By ${equipment.installed_by}`
+      : undefined,
   });
 
   if (equipment.serial_number) {
@@ -305,7 +312,8 @@ export function EquipmentPageContent({
       label: "Location",
       icon: <MapPin className="h-3.5 w-3.5 text-muted-foreground" />,
       value: property.address || property.name || "Not assigned",
-      helperText: `${property.city || ""}, ${property.state || ""} ${property.zip_code || ""}`.trim(),
+      helperText:
+        `${property.city || ""}, ${property.state || ""} ${property.zip_code || ""}`.trim(),
     });
   }
 
@@ -330,7 +338,7 @@ export function EquipmentPageContent({
 
   if (customer) {
     secondaryActions.push(
-      <Button asChild size="sm" variant="outline" key="view-customer">
+      <Button asChild key="view-customer" size="sm" variant="outline">
         <Link href={`/dashboard/customers/${customer.id}`}>View Customer</Link>
       </Button>
     );
@@ -338,8 +346,10 @@ export function EquipmentPageContent({
 
   if (property) {
     secondaryActions.push(
-      <Button asChild size="sm" variant="outline" key="view-property">
-        <Link href={`/dashboard/work/properties/${property.id}`}>View Property</Link>
+      <Button asChild key="view-property" size="sm" variant="outline">
+        <Link href={`/dashboard/work/properties/${property.id}`}>
+          View Property
+        </Link>
       </Button>
     );
   }
@@ -349,205 +359,199 @@ export function EquipmentPageContent({
     subtitle: headerSubtitle,
     badges: headerBadges,
     metadata: metadataItems,
-    secondaryActions: secondaryActions.length > 0 ? secondaryActions : undefined,
+    secondaryActions:
+      secondaryActions.length > 0 ? secondaryActions : undefined,
   };
 
-  const smartInsights = useMemo(
-    () => {
-      const insights: Array<{
-        tone: "positive" | "warning" | "critical" | "info";
-        title: string;
-        description: string;
-        icon?: ReactNode;
-      }> = [];
+  const smartInsights = useMemo(() => {
+    const insights: Array<{
+      tone: "positive" | "warning" | "critical" | "info";
+      title: string;
+      description: string;
+      icon?: ReactNode;
+    }> = [];
 
-      if (isVehicle) {
-        if (
-          typeof equipment.vehicle_odometer === "number" &&
-          typeof equipment.vehicle_next_service_mileage === "number"
-        ) {
-          const milesRemaining =
-            equipment.vehicle_next_service_mileage - equipment.vehicle_odometer;
-          if (Number.isFinite(milesRemaining)) {
-            const tone =
+    if (isVehicle) {
+      if (
+        typeof equipment.vehicle_odometer === "number" &&
+        typeof equipment.vehicle_next_service_mileage === "number"
+      ) {
+        const milesRemaining =
+          equipment.vehicle_next_service_mileage - equipment.vehicle_odometer;
+        if (Number.isFinite(milesRemaining)) {
+          const tone =
+            milesRemaining < 0
+              ? "critical"
+              : milesRemaining <= 500
+                ? "warning"
+                : "info";
+          insights.push({
+            tone,
+            title:
               milesRemaining < 0
-                ? "critical"
-                : milesRemaining <= 500
-                  ? "warning"
-                  : "info";
-            insights.push({
-              tone,
-              title:
-                milesRemaining < 0
-                  ? `Service overdue by ${formatNumber(Math.abs(milesRemaining), "mi")}`
-                  : `Service due in ${formatNumber(milesRemaining, "mi")}`,
-              description: `Next service at ${formatNumber(
-                equipment.vehicle_next_service_mileage,
-                "mi"
-              )}${equipment.next_service_due ? ` • ${formatDate(equipment.next_service_due)}` : ""}`,
-              icon: <Gauge className="size-4" />,
-            });
-          }
-        }
-
-        const inspectionDays = getDaysUntil(equipment.vehicle_inspection_due);
-        if (inspectionDays !== null) {
-          const tone =
-            inspectionDays < 0
-              ? "critical"
-              : inspectionDays <= 14
-                ? "warning"
-                : "info";
-          insights.push({
-            tone,
-            title:
-              inspectionDays < 0
-                ? `Inspection overdue by ${Math.abs(inspectionDays)} days`
-                : `Inspection due in ${inspectionDays} days`,
-            description: `Due ${formatDate(equipment.vehicle_inspection_due)}`,
-            icon: <AlertTriangle className="size-4" />,
-          });
-        }
-
-        const registrationDays = getDaysUntil(
-          equipment.vehicle_registration_expiration
-        );
-        if (registrationDays !== null) {
-          const tone =
-            registrationDays < 0
-              ? "critical"
-              : registrationDays <= 30
-                ? "warning"
-                : "info";
-          insights.push({
-            tone,
-            title:
-              registrationDays < 0
-                ? `Registration expired ${Math.abs(registrationDays)} days ago`
-                : `Registration expires in ${registrationDays} days`,
-            description: `Renew by ${formatDate(
-              equipment.vehicle_registration_expiration
-            )}`,
-            icon: <Truck className="size-4" />,
-          });
-        }
-
-        if (equipment.vehicle_fuel_type) {
-          insights.push({
-            tone: "info",
-            title: `${formatLabel(equipment.vehicle_fuel_type)} fuel`,
-            description: "Fuel type captured for compliance and routing.",
-            icon: <Fuel className="size-4" />,
-          });
-        }
-      } else if (isTool) {
-        const calibrationDays = getDaysUntil(equipment.tool_calibration_due);
-        if (calibrationDays !== null) {
-          const tone =
-            calibrationDays < 0
-              ? "critical"
-              : calibrationDays <= 14
-                ? "warning"
-                : "info";
-          insights.push({
-            tone,
-            title:
-              calibrationDays < 0
-                ? `Calibration overdue by ${Math.abs(calibrationDays)} days`
-                : `Calibration due in ${calibrationDays} days`,
-            description: `Scheduled for ${formatDate(
-              equipment.tool_calibration_due
-            )}`,
+                ? `Service overdue by ${formatNumber(Math.abs(milesRemaining), "mi")}`
+                : `Service due in ${formatNumber(milesRemaining, "mi")}`,
+            description: `Next service at ${formatNumber(
+              equipment.vehicle_next_service_mileage,
+              "mi"
+            )}${equipment.next_service_due ? ` • ${formatDate(equipment.next_service_due)}` : ""}`,
             icon: <Gauge className="size-4" />,
           });
-        }
-
-        if (equipment.condition) {
-          const tone =
-            equipment.condition === "needs_replacement" ||
-            equipment.condition === "poor"
-              ? "warning"
-              : "info";
-          insights.push({
-            tone,
-            title: `Condition: ${formatLabel(equipment.condition)}`,
-            description:
-              equipment.condition === "needs_replacement"
-                ? "Plan replacement to avoid downtime."
-                : "Equipment ready for deployment.",
-            icon: <Wrench className="size-4" />,
-          });
-        }
-
-        if (equipment.tool_serial) {
-          insights.push({
-            tone: "info",
-            title: `Serial ${equipment.tool_serial}`,
-            description: "Tracked for warranty and service history.",
-          });
-        }
-      } else {
-        const serviceDays = getDaysUntil(equipment.next_service_due);
-        if (serviceDays !== null) {
-          const tone =
-            serviceDays < 0
-              ? "critical"
-              : serviceDays <= 30
-                ? "warning"
-                : "info";
-          insights.push({
-            tone,
-            title:
-              serviceDays < 0
-                ? `Service overdue by ${Math.abs(serviceDays)} days`
-                : `Service due in ${serviceDays} days`,
-            description: `Next scheduled for ${formatDate(equipment.next_service_due)}`,
-            icon: <Gauge className="size-4" />,
-          });
-        }
-
-        if (equipment.is_under_warranty && equipment.warranty_expiration) {
-          const warrantyDays = getDaysUntil(equipment.warranty_expiration);
-          if (warrantyDays !== null) {
-            const tone =
-              warrantyDays < 0
-                ? "warning"
-                : warrantyDays <= 60
-                  ? "warning"
-                  : "positive";
-            insights.push({
-              tone,
-              title:
-                warrantyDays < 0
-                  ? "Warranty expired"
-                  : `Warranty active (${warrantyDays} days remaining)`,
-              description: `Covers until ${formatDate(equipment.warranty_expiration)}`,
-              icon: <ShieldCheck className="size-4" />,
-            });
-          }
         }
       }
 
-      return insights;
-    },
-    [
-      equipment.condition,
-      equipment.is_under_warranty,
-      equipment.next_service_due,
-      equipment.tool_calibration_due,
-      equipment.tool_serial,
-      equipment.vehicle_fuel_type,
-      equipment.vehicle_inspection_due,
-      equipment.vehicle_last_service_mileage,
-      equipment.vehicle_next_service_mileage,
-      equipment.vehicle_odometer,
-      equipment.vehicle_registration_expiration,
-      classificationKey,
-      isTool,
-      isVehicle,
-      equipment.warranty_expiration,
-    ]
-  );
+      const inspectionDays = getDaysUntil(equipment.vehicle_inspection_due);
+      if (inspectionDays !== null) {
+        const tone =
+          inspectionDays < 0
+            ? "critical"
+            : inspectionDays <= 14
+              ? "warning"
+              : "info";
+        insights.push({
+          tone,
+          title:
+            inspectionDays < 0
+              ? `Inspection overdue by ${Math.abs(inspectionDays)} days`
+              : `Inspection due in ${inspectionDays} days`,
+          description: `Due ${formatDate(equipment.vehicle_inspection_due)}`,
+          icon: <AlertTriangle className="size-4" />,
+        });
+      }
+
+      const registrationDays = getDaysUntil(
+        equipment.vehicle_registration_expiration
+      );
+      if (registrationDays !== null) {
+        const tone =
+          registrationDays < 0
+            ? "critical"
+            : registrationDays <= 30
+              ? "warning"
+              : "info";
+        insights.push({
+          tone,
+          title:
+            registrationDays < 0
+              ? `Registration expired ${Math.abs(registrationDays)} days ago`
+              : `Registration expires in ${registrationDays} days`,
+          description: `Renew by ${formatDate(
+            equipment.vehicle_registration_expiration
+          )}`,
+          icon: <Truck className="size-4" />,
+        });
+      }
+
+      if (equipment.vehicle_fuel_type) {
+        insights.push({
+          tone: "info",
+          title: `${formatLabel(equipment.vehicle_fuel_type)} fuel`,
+          description: "Fuel type captured for compliance and routing.",
+          icon: <Fuel className="size-4" />,
+        });
+      }
+    } else if (isTool) {
+      const calibrationDays = getDaysUntil(equipment.tool_calibration_due);
+      if (calibrationDays !== null) {
+        const tone =
+          calibrationDays < 0
+            ? "critical"
+            : calibrationDays <= 14
+              ? "warning"
+              : "info";
+        insights.push({
+          tone,
+          title:
+            calibrationDays < 0
+              ? `Calibration overdue by ${Math.abs(calibrationDays)} days`
+              : `Calibration due in ${calibrationDays} days`,
+          description: `Scheduled for ${formatDate(
+            equipment.tool_calibration_due
+          )}`,
+          icon: <Gauge className="size-4" />,
+        });
+      }
+
+      if (equipment.condition) {
+        const tone =
+          equipment.condition === "needs_replacement" ||
+          equipment.condition === "poor"
+            ? "warning"
+            : "info";
+        insights.push({
+          tone,
+          title: `Condition: ${formatLabel(equipment.condition)}`,
+          description:
+            equipment.condition === "needs_replacement"
+              ? "Plan replacement to avoid downtime."
+              : "Equipment ready for deployment.",
+          icon: <Wrench className="size-4" />,
+        });
+      }
+
+      if (equipment.tool_serial) {
+        insights.push({
+          tone: "info",
+          title: `Serial ${equipment.tool_serial}`,
+          description: "Tracked for warranty and service history.",
+        });
+      }
+    } else {
+      const serviceDays = getDaysUntil(equipment.next_service_due);
+      if (serviceDays !== null) {
+        const tone =
+          serviceDays < 0 ? "critical" : serviceDays <= 30 ? "warning" : "info";
+        insights.push({
+          tone,
+          title:
+            serviceDays < 0
+              ? `Service overdue by ${Math.abs(serviceDays)} days`
+              : `Service due in ${serviceDays} days`,
+          description: `Next scheduled for ${formatDate(equipment.next_service_due)}`,
+          icon: <Gauge className="size-4" />,
+        });
+      }
+
+      if (equipment.is_under_warranty && equipment.warranty_expiration) {
+        const warrantyDays = getDaysUntil(equipment.warranty_expiration);
+        if (warrantyDays !== null) {
+          const tone =
+            warrantyDays < 0
+              ? "warning"
+              : warrantyDays <= 60
+                ? "warning"
+                : "positive";
+          insights.push({
+            tone,
+            title:
+              warrantyDays < 0
+                ? "Warranty expired"
+                : `Warranty active (${warrantyDays} days remaining)`,
+            description: `Covers until ${formatDate(equipment.warranty_expiration)}`,
+            icon: <ShieldCheck className="size-4" />,
+          });
+        }
+      }
+    }
+
+    return insights;
+  }, [
+    equipment.condition,
+    equipment.is_under_warranty,
+    equipment.next_service_due,
+    equipment.tool_calibration_due,
+    equipment.tool_serial,
+    equipment.vehicle_fuel_type,
+    equipment.vehicle_inspection_due,
+    equipment.vehicle_last_service_mileage,
+    equipment.vehicle_next_service_mileage,
+    equipment.vehicle_odometer,
+    equipment.vehicle_registration_expiration,
+    classificationKey,
+    isTool,
+    isVehicle,
+    equipment.warranty_expiration,
+  ]);
 
   const nextServiceDays = getDaysUntil(equipment.next_service_due);
   const warrantyDays = getDaysUntil(equipment.warranty_expiration);
@@ -557,14 +561,18 @@ export function EquipmentPageContent({
       key: "install",
       label: "Install Date",
       value: formatDate(equipment.install_date),
-      helperText: equipment.installed_by ? `Installed by ${equipment.installed_by}` : undefined,
+      helperText: equipment.installed_by
+        ? `Installed by ${equipment.installed_by}`
+        : undefined,
       icon: <Calendar className="h-4 w-4 text-muted-foreground" />,
     },
     {
       key: "last-service",
       label: "Last Service",
       value: formatDate(equipment.last_service_date),
-      helperText: equipment.last_service_job_id ? "Linked job on record" : undefined,
+      helperText: equipment.last_service_job_id
+        ? "Linked job on record"
+        : undefined,
       icon: <Wrench className="h-4 w-4 text-muted-foreground" />,
     },
     {
@@ -599,7 +607,9 @@ export function EquipmentPageContent({
     lifecycleTiles.length > 0 ? (
       <DetailPageSurface className="w-full" padding="lg" variant="muted">
         <div className="flex flex-col gap-4">
-          <h3 className="font-semibold text-base text-foreground">Lifecycle Overview</h3>
+          <h3 className="font-semibold text-base text-foreground">
+            Lifecycle Overview
+          </h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {lifecycleTiles.map(({ key, label, value, helperText, icon }) => (
               <div
@@ -614,7 +624,9 @@ export function EquipmentPageContent({
                     </span>
                     <span className="font-semibold text-sm">{value}</span>
                     {helperText ? (
-                      <span className="text-muted-foreground text-xs">{helperText}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {helperText}
+                      </span>
                     ) : null}
                   </div>
                 </div>
@@ -629,7 +641,9 @@ export function EquipmentPageContent({
     smartInsights.length > 0 ? (
       <DetailPageSurface className="w-full" padding="lg" variant="muted">
         <div className="flex flex-col gap-3">
-          <h3 className="font-semibold text-base text-foreground">Smart Insights</h3>
+          <h3 className="font-semibold text-base text-foreground">
+            Smart Insights
+          </h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {smartInsights.map((insight) => (
               <div
@@ -638,11 +652,17 @@ export function EquipmentPageContent({
               >
                 <div className="flex items-start gap-3">
                   {insight.icon && (
-                    <div className="mt-0.5 text-muted-foreground">{insight.icon}</div>
+                    <div className="mt-0.5 text-muted-foreground">
+                      {insight.icon}
+                    </div>
                   )}
                   <div className="space-y-1">
-                    <p className="font-medium text-foreground">{insight.title}</p>
-                    <p className="text-muted-foreground text-xs">{insight.description}</p>
+                    <p className="font-medium text-foreground">
+                      {insight.title}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {insight.description}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -659,7 +679,6 @@ export function EquipmentPageContent({
         {summarySurface}
       </div>
     ) : null;
-
 
   const customSections = useMemo<UnifiedAccordionSection[]>(() => {
     const sections: UnifiedAccordionSection[] = [
@@ -684,7 +703,10 @@ export function EquipmentPageContent({
               </div>
               <div>
                 <Label>Type</Label>
-                <Input readOnly value={typeLabel !== "N/A" ? typeLabel : "Unspecified"} />
+                <Input
+                  readOnly
+                  value={typeLabel !== "N/A" ? typeLabel : "Unspecified"}
+                />
               </div>
               <div>
                 <Label>Manufacturer</Label>
@@ -787,7 +809,10 @@ export function EquipmentPageContent({
               </div>
               <div>
                 <Label>License / Unit</Label>
-                <Input readOnly value={equipment.vehicle_license_plate || "N/A"} />
+                <Input
+                  readOnly
+                  value={equipment.vehicle_license_plate || "N/A"}
+                />
               </div>
               <div>
                 <Label>Fuel Type</Label>
@@ -823,14 +848,20 @@ export function EquipmentPageContent({
                 <Label>Last Service Mileage</Label>
                 <Input
                   readOnly
-                  value={formatNumber(equipment.vehicle_last_service_mileage, "mi")}
+                  value={formatNumber(
+                    equipment.vehicle_last_service_mileage,
+                    "mi"
+                  )}
                 />
               </div>
               <div>
                 <Label>Next Service Mileage</Label>
                 <Input
                   readOnly
-                  value={formatNumber(equipment.vehicle_next_service_mileage, "mi")}
+                  value={formatNumber(
+                    equipment.vehicle_next_service_mileage,
+                    "mi"
+                  )}
                 />
               </div>
               <div>
@@ -911,11 +942,17 @@ export function EquipmentPageContent({
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <Label>Calibration Due</Label>
-                <Input readOnly value={formatDate(equipment.tool_calibration_due)} />
+                <Input
+                  readOnly
+                  value={formatDate(equipment.tool_calibration_due)}
+                />
               </div>
               <div>
                 <Label>Warranty Expires</Label>
-                <Input readOnly value={formatDate(equipment.warranty_expiration)} />
+                <Input
+                  readOnly
+                  value={formatDate(equipment.warranty_expiration)}
+                />
               </div>
               <div>
                 <Label>Condition</Label>
@@ -1382,7 +1419,6 @@ export function EquipmentPageContent({
         }}
         storageKey="equipment-details"
       />
-
     </>
   );
 }

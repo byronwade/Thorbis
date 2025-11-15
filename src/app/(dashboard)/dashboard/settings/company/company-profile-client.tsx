@@ -29,7 +29,6 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { updateCompanyInfo } from "@/actions/company";
-import { DEFAULT_HOURS, DAYS_OF_WEEK } from "@/lib/company/hours";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,6 +61,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { DAYS_OF_WEEK, DEFAULT_HOURS } from "@/lib/company/hours";
 
 // Constants
 const MIN_NAME_LENGTH = 2;
@@ -160,9 +160,7 @@ const cloneDefaultHours = () =>
     {} as CompanyProfileFormData["hoursOfOperation"]
   );
 
-const cloneHours = (
-  hours?: CompanyProfileFormData["hoursOfOperation"]
-) =>
+const cloneHours = (hours?: CompanyProfileFormData["hoursOfOperation"]) =>
   hours
     ? DAYS_OF_WEEK.reduce(
         (acc, day) => ({
@@ -198,7 +196,9 @@ export function CompanyProfileClient({
     () => cloneFormValues(initialData),
     [initialData]
   );
-  const initialValuesRef = useRef<CompanyProfileFormData>(memoizedInitialValues);
+  const initialValuesRef = useRef<CompanyProfileFormData>(
+    memoizedInitialValues
+  );
 
   const form = useForm<CompanyProfileFormData>({
     resolver: zodResolver(companyProfileSchema),
@@ -320,653 +320,83 @@ export function CompanyProfileClient({
               }}
               onSubmit={form.handleSubmit(onSubmit)}
             >
-            {/* Company Logo Section */}
-            <div className="rounded-xl border bg-card p-8 shadow-sm">
-              <div className="flex items-start gap-8">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="relative">
-                    <div className="flex h-32 w-32 items-center justify-center rounded-lg border-4 border-background bg-muted shadow-lg">
-                      <Building2 className="h-16 w-16 text-muted-foreground" />
-                    </div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          className="absolute right-0 bottom-0 h-10 w-10 rounded-full shadow-md"
-                          size="icon"
-                          type="button"
-                        >
-                          <Upload className="size-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Upload logo</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
-
-                <div className="flex-1 space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-semibold text-xl">Company Logo</h2>
+              {/* Company Logo Section */}
+              <div className="rounded-xl border bg-card p-8 shadow-sm">
+                <div className="flex items-start gap-8">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="relative">
+                      <div className="flex h-32 w-32 items-center justify-center rounded-lg border-4 border-background bg-muted shadow-lg">
+                        <Building2 className="h-16 w-16 text-muted-foreground" />
+                      </div>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
-                            className="flex items-center justify-center"
+                          <Button
+                            className="absolute right-0 bottom-0 h-10 w-10 rounded-full shadow-md"
+                            size="icon"
                             type="button"
                           >
-                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                          </button>
+                            <Upload className="size-4" />
+                          </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-sm">
-                            Your company logo appears on invoices, estimates,
-                            customer portal, and email communications.
-                          </p>
+                        <TooltipContent>
+                          <p>Upload logo</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
-                    <p className="text-muted-foreground text-sm">
-                      Upload your company logo for professional branding
-                    </p>
                   </div>
 
-                  <div className="flex gap-3">
-                    <Button type="button" variant="outline">
-                      <Upload className="mr-2 size-4" />
-                      Upload New Logo
-                    </Button>
-                    <Button type="button" variant="ghost">
-                      <Trash2 className="mr-2 size-4" />
-                      Remove
-                    </Button>
-                  </div>
-
-                  <p className="text-muted-foreground text-xs">
-                    Recommended: PNG or SVG format, max 2MB, at least 400x400
-                    pixels for crisp display
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Company Information */}
-            <div className="rounded-xl border bg-card p-8 shadow-sm">
-              <div className="mb-6 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="font-semibold text-xl">Company Information</h2>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="flex items-center justify-center"
-                        type="button"
-                      >
-                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p className="text-sm">
-                        Essential business information for legal documents and
-                        customer communications.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <p className="text-muted-foreground text-sm">
-                  Basic details about your business
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                {/* Company Names */}
-                <div className="grid gap-6 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="companyName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Company Name
-                          <span className="text-destructive">*</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button type="button">
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">
-                                Business name as customers see it
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="ABC Services" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="legalName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Legal Name
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button type="button">
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">
-                                Official registered business name (LLC, Inc,
-                                etc.)
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="ABC Services LLC" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Industry */}
-                <FormField
-                  control={form.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Industry
-                        <span className="text-destructive">*</span>
+                  <div className="flex-1 space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-semibold text-xl">Company Logo</h2>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button type="button">
+                            <button
+                              className="flex items-center justify-center"
+                              type="button"
+                            >
                               <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs text-sm">
-                              Your primary industry or service type
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">
+                              Your company logo appears on invoices, estimates,
+                              customer portal, and email communications.
                             </p>
                           </TooltipContent>
                         </Tooltip>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Field Service Management"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Contact Information */}
-                <div className="grid gap-6 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Mail className="h-3.5 w-3.5" />
-                          Company Email
-                          <span className="text-destructive">*</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button type="button">
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">
-                                Main email for customer communications and
-                                invoices
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="contact@company.com"
-                            type="email"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Appears on all customer communications
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Phone className="h-3.5 w-3.5" />
-                          Company Phone
-                          <span className="text-destructive">*</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button type="button">
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">
-                                Main phone number for customer inquiries
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="+1 (555) 123-4567"
-                            type="tel"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Include country code for international
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Website and Tax ID */}
-                <div className="grid gap-6 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="website"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Globe className="h-3.5 w-3.5" />
-                          Website
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button type="button">
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">
-                                Your company website URL
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="https://yourcompany.com"
-                            type="url"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="taxId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          Tax ID / EIN
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button type="button">
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">
-                                Tax identification number for invoices and legal
-                                documents
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="12-3456789" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Description */}
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Company Description
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button type="button">
-                              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs text-sm">
-                              Brief description of your business and services
-                              offered
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="min-h-[120px] resize-y"
-                          placeholder="Tell customers about your business and services..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {field.value?.length || 0} / {MAX_DESCRIPTION_LENGTH}{" "}
-                        characters
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Service Areas with Map */}
-            <div className="rounded-xl border bg-card p-8 shadow-sm">
-              <div className="mb-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <h2 className="font-semibold text-xl">Service Areas</h2>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className="flex items-center justify-center"
-                          type="button"
-                        >
-                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p className="text-sm">
-                          Define the geographic areas where you provide
-                          services. This helps customers know if you service
-                          their location.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
-                <p className="text-muted-foreground text-sm">
-                  Define your service coverage area
-                </p>
-
-                {/* Service Area Type Toggle */}
-                <FormField
-                  control={form.control}
-                  name="serviceAreaType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <RadioGroup
-                          className="grid grid-cols-2 gap-4"
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <Label
-                            className="flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
-                            htmlFor="radius"
-                          >
-                            <RadioGroupItem
-                              className="sr-only"
-                              id="radius"
-                              value="radius"
-                            />
-                            <Radius className="mb-3 h-6 w-6" />
-                            <div className="space-y-1 text-center">
-                              <p className="font-medium text-sm">
-                                Radius Coverage
-                              </p>
-                              <p className="text-muted-foreground text-xs">
-                                Service area around your location
-                              </p>
-                            </div>
-                          </Label>
-                          <Label
-                            className="flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
-                            htmlFor="locations"
-                          >
-                            <RadioGroupItem
-                              className="sr-only"
-                              id="locations"
-                              value="locations"
-                            />
-                            <MapPin className="mb-3 h-6 w-6" />
-                            <div className="space-y-1 text-center">
-                              <p className="font-medium text-sm">
-                                Specific Locations
-                              </p>
-                              <p className="text-muted-foreground text-xs">
-                                List cities, counties, or ZIP codes
-                              </p>
-                            </div>
-                          </Label>
-                        </RadioGroup>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {serviceAreaType === "radius" ? (
-                <div className="space-y-6">
-                  <div className="rounded-lg border bg-muted/30 p-6">
-                    <FormField
-                      control={form.control}
-                      name="serviceRadius"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex items-center justify-between">
-                            <FormLabel className="font-semibold text-base">
-                              Service Radius
-                            </FormLabel>
-                            <div className="rounded-md bg-primary px-3 py-1 font-bold text-primary-foreground text-sm">
-                              {field.value} miles
-                            </div>
-                          </div>
-                          <FormControl>
-                            <Slider
-                              className="mt-6"
-                              max={500}
-                              min={1}
-                              onValueChange={(vals) => {
-                                field.onChange(vals[0]);
-                              }}
-                              step={5}
-                              value={[field.value]}
-                            />
-                          </FormControl>
-                          <FormDescription className="mt-4">
-                            We will service customers within {field.value} miles
-                            of your business address
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Visual radius indicator */}
-                  <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-indigo-100 p-6 dark:from-blue-950 dark:to-indigo-950">
-                    <div className="flex items-center justify-center gap-4">
-                      <div className="text-center">
-                        <div className="relative mx-auto h-32 w-32">
-                          <div className="absolute inset-0 animate-pulse rounded-full border-4 border-primary opacity-30" />
-                          <div
-                            className="absolute inset-0 rounded-full border-2 border-primary border-dashed opacity-50"
-                            style={{
-                              animation:
-                                "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
-                            }}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <MapPin className="h-8 w-8 text-primary dark:text-primary" />
-                          </div>
-                        </div>
-                        <p className="mt-4 font-semibold">Your Location</p>
-                        <p className="text-muted-foreground text-sm">
-                          {form.watch("city")}, {form.watch("state")}
-                        </p>
                       </div>
+                      <p className="text-muted-foreground text-sm">
+                        Upload your company logo for professional branding
+                      </p>
                     </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid gap-6 lg:grid-cols-2">
-                  {/* Service Area Input */}
-                  <div className="space-y-4">
-                    <div className="flex gap-2">
-                      <Input
-                        onChange={(e) => {
-                          setServiceAreaInput(e.target.value);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            addServiceArea();
-                          }
-                        }}
-                        placeholder="Enter city, county, or ZIP code"
-                        value={serviceAreaInput}
-                      />
-                      <Button onClick={addServiceArea} type="button">
-                        <Plus className="mr-2 size-4" />
-                        Add
+
+                    <div className="flex gap-3">
+                      <Button type="button" variant="outline">
+                        <Upload className="mr-2 size-4" />
+                        Upload New Logo
+                      </Button>
+                      <Button type="button" variant="ghost">
+                        <Trash2 className="mr-2 size-4" />
+                        Remove
                       </Button>
                     </div>
 
-                    {serviceAreas.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="font-medium text-sm">
-                          Current Service Areas
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {serviceAreas.map((area) => (
-                            <Badge
-                              className="gap-2 px-3 py-1.5"
-                              key={`service-area-${area}`}
-                              variant="secondary"
-                            >
-                              {area}
-                              <button
-                                className="rounded-full hover:bg-destructive/20"
-                                onClick={() => {
-                                  const currentAreas =
-                                    form.getValues("serviceAreas") || [];
-                                  const index = currentAreas.indexOf(area);
-                                  if (index > -1) {
-                                    removeServiceArea(index);
-                                  }
-                                }}
-                                type="button"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     <p className="text-muted-foreground text-xs">
-                      Add cities, counties, or ZIP codes where you provide
-                      services
+                      Recommended: PNG or SVG format, max 2MB, at least 400x400
+                      pixels for crisp display
                     </p>
                   </div>
-
-                  {/* Interactive Map Preview */}
-                  <div className="rounded-lg border bg-muted/30 p-4">
-                    <div className="aspect-video w-full overflow-hidden rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-950">
-                      {serviceAreas.length > 0 ? (
-                        <div className="flex h-full flex-col items-center justify-center gap-4 p-6">
-                          <MapPin className="h-12 w-12 text-primary dark:text-primary" />
-                          <div className="text-center">
-                            <p className="font-semibold text-lg">
-                              {serviceAreas.length} Service{" "}
-                              {serviceAreas.length === 1 ? "Area" : "Areas"}
-                            </p>
-                            <p className="text-muted-foreground text-sm">
-                              Map integration available with Google Maps API
-                            </p>
-                          </div>
-                          <div className="mt-4 grid max-w-xs gap-2">
-                            {serviceAreas
-                              .slice(0, MAX_PREVIEW_AREAS)
-                              .map((area) => (
-                                <div
-                                  className="flex items-center gap-2 rounded-md bg-card/50 px-3 py-2 text-sm dark:bg-black/20"
-                                  key={`map-area-${area}`}
-                                >
-                                  <div className="h-2 w-2 rounded-full bg-primary dark:bg-primary" />
-                                  {area}
-                                </div>
-                              ))}
-                            {serviceAreas.length > MAX_PREVIEW_AREAS && (
-                              <p className="text-center text-muted-foreground text-xs">
-                                +{serviceAreas.length - MAX_PREVIEW_AREAS} more
-                                locations
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <div className="text-center">
-                            <MapPin className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-                            <p className="text-muted-foreground text-sm">
-                              Add service areas to see map preview
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Hours of Operation */}
-            <div className="rounded-xl border bg-card p-8 shadow-sm">
-              <div className="mb-6 space-y-4">
-                <div className="flex items-center justify-between">
+              {/* Company Information */}
+              <div className="rounded-xl border bg-card p-8 shadow-sm">
+                <div className="mb-6 space-y-2">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    <Building2 className="h-5 w-5 text-muted-foreground" />
                     <h2 className="font-semibold text-xl">
-                      Hours of Operation
+                      Company Information
                     </h2>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -979,381 +409,955 @@ export function CompanyProfileClient({
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <p className="text-sm">
-                          Set your business hours so customers know when you are
-                          available for service calls and inquiries.
+                          Essential business information for legal documents and
+                          customer communications.
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={copyWeekdaysToWeekend}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      <Copy className="mr-2 h-3 w-3" />
-                      Copy to Weekend
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setBulkHoursMode(!bulkHoursMode);
-                      }}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      <Clock className="mr-2 h-3 w-3" />
-                      Bulk Edit
-                    </Button>
-                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Basic details about your business
+                  </p>
                 </div>
-                <p className="text-muted-foreground text-sm">
-                  When your business is available for service
-                </p>
 
-                {/* Bulk Edit Mode */}
-                {bulkHoursMode && (
-                  <div className="rounded-lg border bg-muted/30 p-4">
-                    <div className="space-y-4">
-                      <p className="font-medium text-sm">
-                        Apply hours to all enabled days
-                      </p>
-                      <div className="flex items-center gap-4">
-                        <Select
-                          onValueChange={(val) => {
-                            setBulkHours({ ...bulkHours, openTime: val });
-                          }}
-                          value={bulkHours.openTime}
-                        >
-                          <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Open time" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {TIME_OPTIONS.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <span className="text-muted-foreground">to</span>
-                        <Select
-                          onValueChange={(val) => {
-                            setBulkHours({ ...bulkHours, closeTime: val });
-                          }}
-                          value={bulkHours.closeTime}
-                        >
-                          <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Close time" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {TIME_OPTIONS.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                <div className="space-y-6">
+                  {/* Company Names */}
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="companyName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Company Name
+                            <span className="text-destructive">*</span>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button type="button">
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">
+                                  Business name as customers see it
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="ABC Services" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="legalName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Legal Name
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button type="button">
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">
+                                  Official registered business name (LLC, Inc,
+                                  etc.)
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="ABC Services LLC" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Industry */}
+                  <FormField
+                    control={form.control}
+                    name="industry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          Industry
+                          <span className="text-destructive">*</span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button type="button">
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs text-sm">
+                                Your primary industry or service type
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Field Service Management"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Contact Information */}
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Mail className="h-3.5 w-3.5" />
+                            Company Email
+                            <span className="text-destructive">*</span>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button type="button">
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">
+                                  Main email for customer communications and
+                                  invoices
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="contact@company.com"
+                              type="email"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Appears on all customer communications
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Phone className="h-3.5 w-3.5" />
+                            Company Phone
+                            <span className="text-destructive">*</span>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button type="button">
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">
+                                  Main phone number for customer inquiries
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="+1 (555) 123-4567"
+                              type="tel"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Include country code for international
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Website and Tax ID */}
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="website"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Globe className="h-3.5 w-3.5" />
+                            Website
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button type="button">
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">
+                                  Your company website URL
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="https://yourcompany.com"
+                              type="url"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="taxId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Tax ID / EIN
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button type="button">
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">
+                                  Tax identification number for invoices and
+                                  legal documents
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="12-3456789" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          Company Description
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button type="button">
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs text-sm">
+                                Brief description of your business and services
+                                offered
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="min-h-[120px] resize-y"
+                            placeholder="Tell customers about your business and services..."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {field.value?.length || 0} / {MAX_DESCRIPTION_LENGTH}{" "}
+                          characters
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Service Areas with Map */}
+              <div className="rounded-xl border bg-card p-8 shadow-sm">
+                <div className="mb-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-muted-foreground" />
+                      <h2 className="font-semibold text-xl">Service Areas</h2>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className="flex items-center justify-center"
+                            type="button"
+                          >
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Define the geographic areas where you provide
+                            services. This helps customers know if you service
+                            their location.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Define your service coverage area
+                  </p>
+
+                  {/* Service Area Type Toggle */}
+                  <FormField
+                    control={form.control}
+                    name="serviceAreaType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RadioGroup
+                            className="grid grid-cols-2 gap-4"
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <Label
+                              className="flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                              htmlFor="radius"
+                            >
+                              <RadioGroupItem
+                                className="sr-only"
+                                id="radius"
+                                value="radius"
+                              />
+                              <Radius className="mb-3 h-6 w-6" />
+                              <div className="space-y-1 text-center">
+                                <p className="font-medium text-sm">
+                                  Radius Coverage
+                                </p>
+                                <p className="text-muted-foreground text-xs">
+                                  Service area around your location
+                                </p>
+                              </div>
+                            </Label>
+                            <Label
+                              className="flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                              htmlFor="locations"
+                            >
+                              <RadioGroupItem
+                                className="sr-only"
+                                id="locations"
+                                value="locations"
+                              />
+                              <MapPin className="mb-3 h-6 w-6" />
+                              <div className="space-y-1 text-center">
+                                <p className="font-medium text-sm">
+                                  Specific Locations
+                                </p>
+                                <p className="text-muted-foreground text-xs">
+                                  List cities, counties, or ZIP codes
+                                </p>
+                              </div>
+                            </Label>
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {serviceAreaType === "radius" ? (
+                  <div className="space-y-6">
+                    <div className="rounded-lg border bg-muted/30 p-6">
+                      <FormField
+                        control={form.control}
+                        name="serviceRadius"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="font-semibold text-base">
+                                Service Radius
+                              </FormLabel>
+                              <div className="rounded-md bg-primary px-3 py-1 font-bold text-primary-foreground text-sm">
+                                {field.value} miles
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Slider
+                                className="mt-6"
+                                max={500}
+                                min={1}
+                                onValueChange={(vals) => {
+                                  field.onChange(vals[0]);
+                                }}
+                                step={5}
+                                value={[field.value]}
+                              />
+                            </FormControl>
+                            <FormDescription className="mt-4">
+                              We will service customers within {field.value}{" "}
+                              miles of your business address
+                            </FormDescription>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Visual radius indicator */}
+                    <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-indigo-100 p-6 dark:from-blue-950 dark:to-indigo-950">
+                      <div className="flex items-center justify-center gap-4">
+                        <div className="text-center">
+                          <div className="relative mx-auto h-32 w-32">
+                            <div className="absolute inset-0 animate-pulse rounded-full border-4 border-primary opacity-30" />
+                            <div
+                              className="absolute inset-0 rounded-full border-2 border-primary border-dashed opacity-50"
+                              style={{
+                                animation:
+                                  "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
+                              }}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <MapPin className="h-8 w-8 text-primary dark:text-primary" />
+                            </div>
+                          </div>
+                          <p className="mt-4 font-semibold">Your Location</p>
+                          <p className="text-muted-foreground text-sm">
+                            {form.watch("city")}, {form.watch("state")}
+                          </p>
+                        </div>
                       </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid gap-6 lg:grid-cols-2">
+                    {/* Service Area Input */}
+                    <div className="space-y-4">
                       <div className="flex gap-2">
-                        <Button
-                          className="flex-1"
-                          onClick={applyBulkHours}
-                          type="button"
-                        >
-                          Apply to Enabled Days
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setBulkHoursMode(false);
+                        <Input
+                          onChange={(e) => {
+                            setServiceAreaInput(e.target.value);
                           }}
-                          type="button"
-                          variant="outline"
-                        >
-                          Cancel
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addServiceArea();
+                            }
+                          }}
+                          placeholder="Enter city, county, or ZIP code"
+                          value={serviceAreaInput}
+                        />
+                        <Button onClick={addServiceArea} type="button">
+                          <Plus className="mr-2 size-4" />
+                          Add
                         </Button>
+                      </div>
+
+                      {serviceAreas.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="font-medium text-sm">
+                            Current Service Areas
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {serviceAreas.map((area) => (
+                              <Badge
+                                className="gap-2 px-3 py-1.5"
+                                key={`service-area-${area}`}
+                                variant="secondary"
+                              >
+                                {area}
+                                <button
+                                  className="rounded-full hover:bg-destructive/20"
+                                  onClick={() => {
+                                    const currentAreas =
+                                      form.getValues("serviceAreas") || [];
+                                    const index = currentAreas.indexOf(area);
+                                    if (index > -1) {
+                                      removeServiceArea(index);
+                                    }
+                                  }}
+                                  type="button"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <p className="text-muted-foreground text-xs">
+                        Add cities, counties, or ZIP codes where you provide
+                        services
+                      </p>
+                    </div>
+
+                    {/* Interactive Map Preview */}
+                    <div className="rounded-lg border bg-muted/30 p-4">
+                      <div className="aspect-video w-full overflow-hidden rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-950">
+                        {serviceAreas.length > 0 ? (
+                          <div className="flex h-full flex-col items-center justify-center gap-4 p-6">
+                            <MapPin className="h-12 w-12 text-primary dark:text-primary" />
+                            <div className="text-center">
+                              <p className="font-semibold text-lg">
+                                {serviceAreas.length} Service{" "}
+                                {serviceAreas.length === 1 ? "Area" : "Areas"}
+                              </p>
+                              <p className="text-muted-foreground text-sm">
+                                Map integration available with Google Maps API
+                              </p>
+                            </div>
+                            <div className="mt-4 grid max-w-xs gap-2">
+                              {serviceAreas
+                                .slice(0, MAX_PREVIEW_AREAS)
+                                .map((area) => (
+                                  <div
+                                    className="flex items-center gap-2 rounded-md bg-card/50 px-3 py-2 text-sm dark:bg-black/20"
+                                    key={`map-area-${area}`}
+                                  >
+                                    <div className="h-2 w-2 rounded-full bg-primary dark:bg-primary" />
+                                    {area}
+                                  </div>
+                                ))}
+                              {serviceAreas.length > MAX_PREVIEW_AREAS && (
+                                <p className="text-center text-muted-foreground text-xs">
+                                  +{serviceAreas.length - MAX_PREVIEW_AREAS}{" "}
+                                  more locations
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex h-full items-center justify-center">
+                            <div className="text-center">
+                              <MapPin className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                              <p className="text-muted-foreground text-sm">
+                                Add service areas to see map preview
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="space-y-3">
-                {DAYS_OF_WEEK.map((day) => {
-                  const isEnabled = form.watch(
-                    `hoursOfOperation.${day}.enabled`
-                  );
-                  const openTime = form.watch(
-                    `hoursOfOperation.${day}.openTime`
-                  );
-                  const closeTime = form.watch(
-                    `hoursOfOperation.${day}.closeTime`
-                  );
-                  return (
-                    <div
-                      className={`flex items-center gap-4 rounded-lg border p-4 transition-colors ${isEnabled ? "bg-muted/30" : "bg-background"}`}
-                      key={day}
-                    >
-                      <div className="flex w-36 items-center gap-3">
-                        <FormField
-                          control={form.control}
-                          name={`hoursOfOperation.${day}.enabled`}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0">
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <FormLabel className="cursor-pointer font-semibold text-base">
-                          {capitalizeDay(day)}
-                        </FormLabel>
-                      </div>
+              {/* Hours of Operation */}
+              <div className="rounded-xl border bg-card p-8 shadow-sm">
+                <div className="mb-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                      <h2 className="font-semibold text-xl">
+                        Hours of Operation
+                      </h2>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className="flex items-center justify-center"
+                            type="button"
+                          >
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Set your business hours so customers know when you
+                            are available for service calls and inquiries.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={copyWeekdaysToWeekend}
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                      >
+                        <Copy className="mr-2 h-3 w-3" />
+                        Copy to Weekend
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setBulkHoursMode(!bulkHoursMode);
+                        }}
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                      >
+                        <Clock className="mr-2 h-3 w-3" />
+                        Bulk Edit
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    When your business is available for service
+                  </p>
 
-                      {isEnabled ? (
-                        <div className="flex flex-1 items-center gap-3">
+                  {/* Bulk Edit Mode */}
+                  {bulkHoursMode && (
+                    <div className="rounded-lg border bg-muted/30 p-4">
+                      <div className="space-y-4">
+                        <p className="font-medium text-sm">
+                          Apply hours to all enabled days
+                        </p>
+                        <div className="flex items-center gap-4">
+                          <Select
+                            onValueChange={(val) => {
+                              setBulkHours({ ...bulkHours, openTime: val });
+                            }}
+                            value={bulkHours.openTime}
+                          >
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Open time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map((option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <span className="text-muted-foreground">to</span>
+                          <Select
+                            onValueChange={(val) => {
+                              setBulkHours({ ...bulkHours, closeTime: val });
+                            }}
+                            value={bulkHours.closeTime}
+                          >
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Close time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map((option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            className="flex-1"
+                            onClick={applyBulkHours}
+                            type="button"
+                          >
+                            Apply to Enabled Days
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setBulkHoursMode(false);
+                            }}
+                            type="button"
+                            variant="outline"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  {DAYS_OF_WEEK.map((day) => {
+                    const isEnabled = form.watch(
+                      `hoursOfOperation.${day}.enabled`
+                    );
+                    const openTime = form.watch(
+                      `hoursOfOperation.${day}.openTime`
+                    );
+                    const closeTime = form.watch(
+                      `hoursOfOperation.${day}.closeTime`
+                    );
+                    return (
+                      <div
+                        className={`flex items-center gap-4 rounded-lg border p-4 transition-colors ${isEnabled ? "bg-muted/30" : "bg-background"}`}
+                        key={day}
+                      >
+                        <div className="flex w-36 items-center gap-3">
                           <FormField
                             control={form.control}
-                            name={`hoursOfOperation.${day}.openTime`}
+                            name={`hoursOfOperation.${day}.enabled`}
                             render={({ field }) => (
-                              <FormItem className="flex-1 space-y-0">
-                                <Select
-                                  onValueChange={field.onChange}
-                                  value={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Open" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {TIME_OPTIONS.map((option) => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
+                              <FormItem className="space-y-0">
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
-                          <span className="text-muted-foreground text-sm">
-                            -
-                          </span>
-                          <FormField
-                            control={form.control}
-                            name={`hoursOfOperation.${day}.closeTime`}
-                            render={({ field }) => (
-                              <FormItem className="flex-1 space-y-0">
-                                <Select
-                                  onValueChange={field.onChange}
-                                  value={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Close" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {TIME_OPTIONS.map((option) => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <div className="w-32 text-right">
-                            <Badge variant="secondary">
-                              {openTime && closeTime ? (
-                                <>
-                                  {
-                                    TIME_OPTIONS.find(
-                                      (t) => t.value === openTime
-                                    )?.label.split(" ")[0]
-                                  }{" "}
-                                  -{" "}
-                                  {
-                                    TIME_OPTIONS.find(
-                                      (t) => t.value === closeTime
-                                    )?.label.split(" ")[0]
-                                  }
-                                </>
-                              ) : (
-                                "Set hours"
+                          <FormLabel className="cursor-pointer font-semibold text-base">
+                            {capitalizeDay(day)}
+                          </FormLabel>
+                        </div>
+
+                        {isEnabled ? (
+                          <div className="flex flex-1 items-center gap-3">
+                            <FormField
+                              control={form.control}
+                              name={`hoursOfOperation.${day}.openTime`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1 space-y-0">
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Open" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {TIME_OPTIONS.map((option) => (
+                                        <SelectItem
+                                          key={option.value}
+                                          value={option.value}
+                                        >
+                                          {option.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
                               )}
+                            />
+                            <span className="text-muted-foreground text-sm">
+                              -
+                            </span>
+                            <FormField
+                              control={form.control}
+                              name={`hoursOfOperation.${day}.closeTime`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1 space-y-0">
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Close" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {TIME_OPTIONS.map((option) => (
+                                        <SelectItem
+                                          key={option.value}
+                                          value={option.value}
+                                        >
+                                          {option.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="w-32 text-right">
+                              <Badge variant="secondary">
+                                {openTime && closeTime ? (
+                                  <>
+                                    {
+                                      TIME_OPTIONS.find(
+                                        (t) => t.value === openTime
+                                      )?.label.split(" ")[0]
+                                    }{" "}
+                                    -{" "}
+                                    {
+                                      TIME_OPTIONS.find(
+                                        (t) => t.value === closeTime
+                                      )?.label.split(" ")[0]
+                                    }
+                                  </>
+                                ) : (
+                                  "Set hours"
+                                )}
+                              </Badge>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-1 items-center">
+                            <Badge className="bg-muted" variant="outline">
+                              Closed
                             </Badge>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-1 items-center">
-                          <Badge className="bg-muted" variant="outline">
-                            Closed
-                          </Badge>
-                        </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Business Address */}
+              <div className="rounded-xl border bg-card p-8 shadow-sm">
+                <div className="mb-6 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-muted-foreground" />
+                    <h2 className="font-semibold text-xl">Business Address</h2>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="flex items-center justify-center"
+                          type="button"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="text-sm">
+                          Physical location of your business. Required for
+                          invoices and legal documents.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Your business location information
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          Street Address
+                          <span className="text-destructive">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="123 Main Street" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="address2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address Line 2</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Suite, Unit, Building"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Optional: Suite, unit, or building number
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            City
+                            <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="San Francisco" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                    />
 
-            {/* Business Address */}
-            <div className="rounded-xl border bg-card p-8 shadow-sm">
-              <div className="mb-6 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="font-semibold text-xl">Business Address</h2>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="flex items-center justify-center"
-                        type="button"
-                      >
-                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p className="text-sm">
-                        Physical location of your business. Required for
-                        invoices and legal documents.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <p className="text-muted-foreground text-sm">
-                  Your business location information
-                </p>
-              </div>
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            State / Province
+                            <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="CA" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              <div className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Street Address
-                        <span className="text-destructive">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="123 Main Street" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="address2"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address Line 2</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Suite, Unit, Building" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Optional: Suite, unit, or building number
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid gap-6 md:grid-cols-3">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          City
-                          <span className="text-destructive">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="San Francisco" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            ZIP / Postal Code
+                            <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="94102" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
-                    name="state"
+                    name="country"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          State / Province
+                          Country
                           <span className="text-destructive">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="CA" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="zipCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          ZIP / Postal Code
-                          <span className="text-destructive">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="94102" {...field} />
+                          <Input placeholder="United States" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Country
-                        <span className="text-destructive">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="United States" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
-            </div>
-
             </form>
           </Form>
         </div>

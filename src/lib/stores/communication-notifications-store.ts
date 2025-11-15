@@ -17,6 +17,10 @@
 import { toast } from "sonner";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import {
+  COMMUNICATION_MARK_AS_READ_EVENT,
+  type CommunicationMarkAsReadDetail,
+} from "./notification-events";
 import type { Notification } from "./notifications-types";
 
 // =====================================================================================
@@ -183,16 +187,17 @@ export const useCommunicationNotificationsStore =
               ? {
                   label: notification.action_label || "View",
                   onClick: () => {
-                    // Mark notification as read when action is clicked (dynamic import to avoid circular dependency)
-                    import("./notifications-store").then(
-                      ({ useNotificationsStore }) => {
-                        useNotificationsStore
-                          .getState()
-                          .optimisticMarkAsRead(notification.id);
-                      }
-                    );
+                    if (typeof window !== "undefined") {
+                      const detail: CommunicationMarkAsReadDetail = {
+                        notificationId: notification.id,
+                      };
+                      window.dispatchEvent(
+                        new CustomEvent(COMMUNICATION_MARK_AS_READ_EVENT, {
+                          detail,
+                        })
+                      );
+                    }
 
-                    // Navigate to action URL
                     if (notification.action_url) {
                       window.location.href = notification.action_url;
                     }

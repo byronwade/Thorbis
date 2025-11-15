@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -32,15 +34,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  getAvailableFields,
-  type FieldDefinition,
-} from "@/lib/datatable/field-introspection";
-import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
-import type { CustomColumn } from "@/lib/stores/custom-columns-store";
 import { renderCustomColumn } from "@/lib/datatable/custom-column-renderer";
+import {
+  type FieldDefinition,
+  getAvailableFields,
+} from "@/lib/datatable/field-introspection";
+import type { CustomColumn } from "@/lib/stores/custom-columns-store";
+import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
 
 type ColumnBuilderDialogProps = {
   open: boolean;
@@ -107,20 +107,20 @@ export function ColumnBuilderDialog({
   const previewData = {
     // Sample data for preview
     string: "Sample Text",
-    number: 12345,
+    number: 12_345,
     date: new Date().toISOString(),
     boolean: true,
     relation: "Related Value",
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Add Custom Column</DialogTitle>
           <DialogDescription>
-            Select a database field to add as a custom column to your table.
-            The column will appear after existing columns.
+            Select a database field to add as a custom column to your table. The
+            column will appear after existing columns.
           </DialogDescription>
         </DialogHeader>
 
@@ -129,10 +129,10 @@ export function ColumnBuilderDialog({
           <div className="space-y-2">
             <Label htmlFor="field">Database Field</Label>
             <Select
-              value={selectedField?.path || ""}
               onValueChange={handleFieldSelect}
+              value={selectedField?.path || ""}
             >
-              <SelectTrigger id="field" className="w-full">
+              <SelectTrigger className="w-full" id="field">
                 <SelectValue placeholder="Select a field..." />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
@@ -153,16 +153,16 @@ export function ColumnBuilderDialog({
             <Label htmlFor="label">Column Label</Label>
             <Input
               id="label"
+              onChange={(e) => setLabel(e.target.value)}
               placeholder="Enter column label..."
               value={label}
-              onChange={(e) => setLabel(e.target.value)}
             />
           </div>
 
           {/* Width Select */}
           <div className="space-y-2">
             <Label htmlFor="width">Column Width</Label>
-            <Select value={width} onValueChange={setWidth}>
+            <Select onValueChange={setWidth} value={width}>
               <SelectTrigger id="width">
                 <SelectValue />
               </SelectTrigger>
@@ -180,10 +180,10 @@ export function ColumnBuilderDialog({
           <div className="space-y-2">
             <Label htmlFor="format">Format</Label>
             <Select
-              value={format}
               onValueChange={(value) =>
                 setFormat(value as CustomColumn["format"])
               }
+              value={format}
             >
               <SelectTrigger id="format">
                 <SelectValue />
@@ -201,13 +201,13 @@ export function ColumnBuilderDialog({
           {/* Sortable Toggle */}
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="sortable"
               checked={sortable}
+              id="sortable"
               onCheckedChange={(checked) => setSortable(checked === true)}
             />
             <Label
+              className="cursor-pointer font-normal text-sm"
               htmlFor="sortable"
-              className="cursor-pointer text-sm font-normal"
             >
               Enable sorting for this column
             </Label>
@@ -218,15 +218,11 @@ export function ColumnBuilderDialog({
             <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
               <Label>Preview</Label>
               <div className="flex items-center gap-4">
-                <div className="text-muted-foreground text-xs font-semibold">
+                <div className="font-semibold text-muted-foreground text-xs">
                   {label || selectedField.label}:
                 </div>
                 <div>
-                  {renderCustomColumn(
-                    previewData,
-                    selectedField.type,
-                    format
-                  )}
+                  {renderCustomColumn(previewData, selectedField.type, format)}
                 </div>
               </div>
             </div>
@@ -234,12 +230,12 @@ export function ColumnBuilderDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button onClick={() => onOpenChange(false)} variant="outline">
             Cancel
           </Button>
           <Button
+            disabled={!(selectedField && label.trim())}
             onClick={handleSubmit}
-            disabled={!selectedField || !label.trim()}
           >
             Add Column
           </Button>

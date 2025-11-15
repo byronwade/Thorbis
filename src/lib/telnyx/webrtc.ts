@@ -9,6 +9,7 @@
  * Compatible with both web browsers and React Native apps.
  */
 
+import { Buffer } from "node:buffer";
 import { telnyxClient } from "./client";
 
 /**
@@ -38,6 +39,8 @@ export interface WebRTCCredential {
   }>;
 }
 
+const TELNYX_CREDENTIAL_NAME_MAX_LENGTH = 64;
+
 /**
  * Generate WebRTC credentials for a user
  *
@@ -52,22 +55,147 @@ export async function generateWebRTCToken(params: {
   credential?: WebRTCCredential;
   error?: string;
 }> {
-  try {
-    const credentialConnections = (telnyxClient as any)?.credential_connections;
+  console.log("[generateWebRTCToken] Starting credential generation for:", params.username);
 
-    if (
-      !credentialConnections ||
-      typeof credentialConnections.create !== "function"
-    ) {
-      console.warn(
-        "Telnyx credential_connections API unavailable – returning fallback WebRTC credential"
+  try {
+    const apiKey = process.env.TELNYX_API_KEY;
+
+    if (!apiKey) {
+      console.error("[generateWebRTCToken] ❌ TELNYX_API_KEY is not configured");
+      return {
+        success: false,
+        error: "TELNYX_API_KEY is not configured",
+      };
+    }
+
+    // Sanitize username - Telnyx requires only letters and numbers
+    // Remove all special characters (@, ., -, _, etc.) and replace with empty string
+    const sanitizedUsername = params.username.replace(/[^a-zA-Z0-9]/g, "");
+
+    console.log("[generateWebRTCToken] Sanitized username:", {
+      original: params.username,
+      sanitized: sanitizedUsername,
+    });
+
+    const baseName =
+      sanitizedUsername.length > 0
+        ? sanitizedUsername
+        : Buffer.from(params.username || "user").toString("hex");
+    const uniqueSuffix = Date.now().toString(36);
+    const prefixLength = Math.max(
+      1,
+      TELNYX_CREDENTIAL_NAME_MAX_LENGTH - uniqueSuffix.length
+    );
+    const credentialPrefix = baseName.slice(0, prefixLength);
+    const staticName = `${credentialPrefix}${uniqueSuffix}`;
+
+    // STEP 1: List existing credentials and delete old ones for this user
+    console.log("[generateWebRTCToken] Checking for existing credentials...");
+    const listResponse = await fetch(
+      "https://api.telnyx.com/v2/credential_connections",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+      }
+    );
+
+    if (listResponse.ok) {
+      const listData = await listResponse.json();
+      console.log("[generateWebRTCToken] Found credentials:", listData.data?.length || 0);
+
+      // Delete old credentials that match this user's sanitized username
+      if (listData.data && Array.isArray(listData.data)) {
+        const userCredentials = listData.data.filter((cred: any) =>
+          cred.connection_name?.startsWith(credentialPrefix)
+        );
+
+        console.log("[generateWebRTCToken] Found user credentials to clean up:", userCredentials.length);
+
+        for (const cred of userCredentials) {
+          try {
+            console.log("[generateWebRTCToken] Deleting old credential:", cred.id);
+            await fetch(
+              `https://api.telnyx.com/v2/credential_connections/${cred.id}`,
+              {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${apiKey}`,
+                },
+              }
+            );
+          } catch (error) {
+            console.warn("[generateWebRTCToken] Failed to delete old credential:", error);
+            // Continue anyway - deletion errors shouldn't block new credential creation
+          }
+        }
+      }
+    }
+
+    console.log("[generateWebRTCToken] Creating new credential with name:", staticName);
+
+    // Use Telnyx REST API to create WebRTC credentials
+    // Documentation: https://developers.telnyx.com/api/v2/webrtc/credentials
+    const response = await fetch(
+      "https://api.telnyx.com/v2/credential_connections",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          connection_name: staticName,
+          user_name: staticName,
+          password: generateRandomPassword(32),
+          ttl: params.ttl || 86_400,
+        }),
+      }
+    );
+
+    console.log("[generateWebRTCToken] API response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("[generateWebRTCToken] ❌ Primary endpoint failed:", errorText);
+      console.log("[generateWebRTCToken] Trying alternative endpoint...");
+      
+      // If the API endpoint isn't available, try the simpler credentials endpoint
+      const altResponse = await fetch(
+        "https://api.telnyx.com/v2/texml_credentials",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            connection_name: staticName,
+            user_name: staticName, // Both must be unique!
+            password: generateRandomPassword(32),
+          }),
+        }
       );
-      const fallbackCredential: WebRTCCredential = {
-        username: params.username,
-        password: generateRandomPassword(),
+
+      console.log("[generateWebRTCToken] Alternative endpoint response:", altResponse.status);
+
+      if (!altResponse.ok) {
+        const altErrorText = await altResponse.text();
+        console.error("[generateWebRTCToken] ❌ Alternative endpoint also failed:", altErrorText);
+        throw new Error(`Telnyx API error: ${response.status} - ${errorText}`);
+      }
+
+      const altData = await altResponse.json();
+      console.log("[generateWebRTCToken] ✅ Alternative endpoint succeeded");
+      
+      const credential: WebRTCCredential = {
+        username: altData.data?.user_name || staticName,
+        password: altData.data?.password || generateRandomPassword(32),
         expires_at: Date.now() + (params.ttl || 86_400) * 1000,
         realm: "sip.telnyx.com",
-        sip_uri: `sip:${params.username}@sip.telnyx.com`,
+        sip_uri: `sip:${staticName}@sip.telnyx.com`,
         stun_servers: [
           "stun:stun.telnyx.com:3478",
           "stun:stun.telnyx.com:3479",
@@ -78,61 +206,54 @@ export async function generateWebRTCToken(params: {
               "turn:turn.telnyx.com:3478?transport=udp",
               "turn:turn.telnyx.com:3478?transport=tcp",
             ],
-            username: params.username,
-            credential: generateRandomPassword(24),
+            username: altData.data?.user_name || staticName,
+            credential: altData.data?.password || generateRandomPassword(24),
           },
         ],
       };
 
+      console.log("[generateWebRTCToken] Generated credential for:", credential.username);
       return {
         success: true,
-        credential: fallbackCredential,
+        credential,
       };
     }
 
-    // Generate real WebRTC credentials from Telnyx API
-    const response = await credentialConnections.create({
-      connection_name: params.username,
-      ttl: params.ttl || 86_400,
-    });
-
-    if (!(response && response.data)) {
-      throw new Error("Invalid response from Telnyx API");
-    }
-
-    const data = response.data;
+    console.log("[generateWebRTCToken] ✅ Primary endpoint succeeded");
+    const data = await response.json();
 
     // Map Telnyx API response to our credential format
     const credential: WebRTCCredential = {
-      username: data.username || params.username,
-      password: data.password,
-      expires_at: data.expires_at
-        ? new Date(data.expires_at).getTime()
+      username: data.data?.user_name || staticName,
+      password: data.data?.password,
+      expires_at: data.data?.expires_at
+        ? new Date(data.data.expires_at).getTime()
         : Date.now() + (params.ttl || 86_400) * 1000,
-      realm: data.realm || "sip.telnyx.com",
-      sip_uri: data.sip_uri || `sip:${params.username}@sip.telnyx.com`,
-      stun_servers: data.stun_servers || [
+      realm: data.data?.realm || "sip.telnyx.com",
+      sip_uri: data.data?.sip_uri || `sip:${staticName}@sip.telnyx.com`,
+      stun_servers: data.data?.ice_servers?.stun || [
         "stun:stun.telnyx.com:3478",
         "stun:stun.telnyx.com:3479",
       ],
-      turn_servers: data.turn_servers || [
+      turn_servers: data.data?.ice_servers?.turn || [
         {
           urls: [
             "turn:turn.telnyx.com:3478?transport=udp",
             "turn:turn.telnyx.com:3478?transport=tcp",
           ],
-          username: data.username || params.username,
-          credential: data.password,
+          username: data.data?.user_name || staticName,
+          credential: data.data?.password,
         },
       ],
     };
 
+    console.log("[generateWebRTCToken] Generated credential for:", credential.username);
     return {
       success: true,
       credential,
     };
   } catch (error) {
-    console.error("Error generating WebRTC token:", error);
+    console.error("[generateWebRTCToken] ❌ Error generating WebRTC token:", error);
     return {
       success: false,
       error:

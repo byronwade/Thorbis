@@ -1,6 +1,6 @@
 /**
  * Payments Filters Store
- * 
+ *
  * Global state management for payment filtering
  */
 
@@ -37,18 +37,16 @@ export const usePaymentsFiltersStore = create<PaymentsFiltersStore>()(
   persist(
     (set) => ({
       filters: DEFAULT_FILTERS,
-      
+
       setFilters: (newFilters) =>
         set((state) => ({
           filters: { ...state.filters, ...newFilters },
         })),
-      
-      resetFilters: () =>
-        set({ filters: DEFAULT_FILTERS }),
+
+      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
     }),
     {
       name: "payments-filters",
     }
   )
 );
-

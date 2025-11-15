@@ -23,8 +23,8 @@
 import {
   closestCenter,
   DndContext,
-  DragOverlay,
   type DragEndEvent,
+  DragOverlay,
   type DragStartEvent,
   KeyboardSensor,
   MouseSensor,
@@ -627,7 +627,7 @@ export function FullWidthDataTable<T>({
 
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
-    console.log('🚀 Drag started:', event.active.id);
+    console.log("🚀 Drag started:", event.active.id);
     const column = orderedColumns.find((col) => col.key === event.active.id);
     if (column) {
       // Get the actual width of the column being dragged
@@ -639,9 +639,9 @@ export function FullWidthDataTable<T>({
           width = element.width;
         }
       } catch (error) {
-        console.warn('Could not get drag element width, using default');
+        console.warn("Could not get drag element width, using default");
       }
-      
+
       const align = column.align || "left";
       setActiveColumn({ column, width, align });
     } else {
@@ -653,26 +653,26 @@ export function FullWidthDataTable<T>({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    console.log('🔄 Drag ended:', {
+    console.log("🔄 Drag ended:", {
       activeId: active.id,
       overId: over?.id,
       entity,
       hasOver: !!over,
-      sameId: active.id === over?.id
+      sameId: active.id === over?.id,
     });
 
     if (!(entity && over) || active.id === over.id) {
-      console.log('❌ Drag cancelled or no valid drop target');
+      console.log("❌ Drag cancelled or no valid drop target");
       setActiveColumn(null);
       return;
     }
 
     // Get current order from store
     const currentOrder = getColumnOrder(entity);
-    console.log('📋 Current order:', currentOrder);
-    
+    console.log("📋 Current order:", currentOrder);
+
     if (!currentOrder) {
-      console.log('❌ No current order found');
+      console.log("❌ No current order found");
       setActiveColumn(null);
       return;
     }
@@ -680,10 +680,10 @@ export function FullWidthDataTable<T>({
     const oldIndex = currentOrder.indexOf(active.id as string);
     const newIndex = currentOrder.indexOf(over.id as string);
 
-    console.log('📍 Indices:', { oldIndex, newIndex });
+    console.log("📍 Indices:", { oldIndex, newIndex });
 
     if (oldIndex === -1 || newIndex === -1) {
-      console.log('❌ Invalid indices');
+      console.log("❌ Invalid indices");
       setActiveColumn(null);
       return;
     }
@@ -693,7 +693,7 @@ export function FullWidthDataTable<T>({
     const [removed] = newOrder.splice(oldIndex, 1);
     newOrder.splice(newIndex, 0, removed);
 
-    console.log('✅ New order:', newOrder);
+    console.log("✅ New order:", newOrder);
 
     // Save to store - this will trigger a re-render via columnOrderState subscription
     setColumnOrder(entity, newOrder);
@@ -828,8 +828,8 @@ export function FullWidthDataTable<T>({
             {isClient && entity ? (
               <DndContext
                 collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
+                onDragStart={handleDragStart}
                 sensors={sensors}
               >
                 <div
@@ -863,7 +863,7 @@ export function FullWidthDataTable<T>({
                 </div>
                 <DragOverlay dropAnimation={null}>
                   {activeColumn ? (
-                    <div 
+                    <div
                       className={`flex cursor-grabbing items-center gap-1.5 overflow-hidden border border-primary/40 bg-background/95 px-2 py-2 font-medium text-foreground text-xs shadow-2xl ring-2 ring-primary/30 backdrop-blur-sm ${
                         activeColumn.align === "right"
                           ? "justify-end text-right"
@@ -873,7 +873,9 @@ export function FullWidthDataTable<T>({
                       }`}
                       style={{ width: `${activeColumn.width}px` }}
                     >
-                      <span className="truncate">{activeColumn.column.header}</span>
+                      <span className="truncate">
+                        {activeColumn.column.header}
+                      </span>
                       {activeColumn.column.sortable && (
                         <ArrowUpDown className="size-3 shrink-0 opacity-50" />
                       )}

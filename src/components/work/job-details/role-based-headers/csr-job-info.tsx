@@ -6,11 +6,11 @@
 "use client";
 
 import {
+  AlertCircle,
   Calendar,
+  CheckCircle,
   Clock,
   MessageSquare,
-  AlertCircle,
-  CheckCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -129,13 +129,13 @@ export function CSRJobInfo({
                         </span>
                       </div>
                       {schedule.appointment_type && (
-                        <span className="ml-5 capitalize text-muted-foreground text-xs">
+                        <span className="ml-5 text-muted-foreground text-xs capitalize">
                           {schedule.appointment_type}
                         </span>
                       )}
                     </div>
                     <Badge
-                      className="capitalize shrink-0"
+                      className="shrink-0 capitalize"
                       variant={
                         schedule.status === "confirmed"
                           ? "default"
@@ -172,10 +172,7 @@ export function CSRJobInfo({
               <Separator />
               <div className="space-y-2">
                 {recentCommunications.map((comm) => (
-                  <div
-                    className="rounded-md border p-2"
-                    key={comm.id}
-                  >
+                  <div className="rounded-md border p-2" key={comm.id}>
                     <div className="flex items-center justify-between">
                       <Badge className="capitalize" variant="secondary">
                         {comm.type}
@@ -185,7 +182,7 @@ export function CSRJobInfo({
                       </span>
                     </div>
                     {comm.content && (
-                      <p className="mt-1 text-sm line-clamp-2">
+                      <p className="mt-1 line-clamp-2 text-sm">
                         {comm.content}
                       </p>
                     )}
@@ -219,7 +216,7 @@ export function CSRJobInfo({
       {lastContact &&
         new Date().getTime() - new Date(lastContact).getTime() >
           7 * 24 * 60 * 60 * 1000 && (
-          <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-sm text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+          <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
             <AlertCircle className="size-4" />
             Follow-up Needed
           </button>
@@ -227,4 +224,3 @@ export function CSRJobInfo({
     </div>
   );
 }
-

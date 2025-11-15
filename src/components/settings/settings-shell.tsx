@@ -2,7 +2,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { SettingsOverviewSection } from "@/lib/settings/overview-data";
-import { describeHealthStatus, getStatusColorClasses } from "@/lib/settings/status-utils";
+import {
+  describeHealthStatus,
+  getStatusColorClasses,
+} from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
 interface SettingsShellProps {
@@ -20,10 +23,10 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
       <div className="rounded-2xl border bg-card/90 p-4 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
               Settings clusters
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Jump between areas without leaving the page
             </p>
           </div>
@@ -36,9 +39,9 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
             const statusColors = getStatusColorClasses(section.status);
             return (
               <Link
-                key={section.slug}
-                href={`#${section.slug}`}
                 className="group min-w-[180px] flex-1 rounded-2xl border px-4 py-3 transition hover:border-primary/60 hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                href={`#${section.slug}`}
+                key={section.slug}
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
@@ -46,15 +49,15 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
                       <section.icon className="size-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{section.title}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-medium text-sm">{section.title}</p>
+                      <p className="text-muted-foreground text-xs">
                         {describeHealthStatus(section.status)}
                       </p>
                     </div>
                   </div>
                   <Badge
                     className={cn(
-                      "text-xs font-semibold",
+                      "font-semibold text-xs",
                       statusColors.text,
                       statusColors.background,
                       statusColors.border
@@ -74,4 +77,3 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
     </div>
   );
 }
-

@@ -19,11 +19,8 @@ import {
   ensureMessagingBranding,
   ensureMessagingCampaign,
 } from "@/actions/messaging-branding";
-import {
-  TELNYX_CONFIG,
-  telnyxClient,
-} from "@/lib/telnyx/client";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { TELNYX_CONFIG, telnyxClient } from "@/lib/telnyx/client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -137,14 +134,15 @@ export async function GET(request: Request) {
       .limit(50);
 
     if (phoneError) {
-      console.error("Failed to load phone numbers for Telnyx audit:", phoneError);
+      console.error(
+        "Failed to load phone numbers for Telnyx audit:",
+        phoneError
+      );
     } else if (phoneNumbers?.length) {
       summary.numbersChecked = phoneNumbers.length;
 
       // Get unique company IDs to ensure branding first
-      const companyIds = [
-        ...new Set(phoneNumbers.map((p) => p.company_id)),
-      ];
+      const companyIds = [...new Set(phoneNumbers.map((p) => p.company_id))];
 
       for (const companyId of companyIds) {
         try {
@@ -194,4 +192,3 @@ export async function GET(request: Request) {
     );
   }
 }
-

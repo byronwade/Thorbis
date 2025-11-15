@@ -85,5 +85,3 @@ const footer = {
   lineHeight: "24px",
   marginTop: "32px",
 };
-
-export default GenericEmail;

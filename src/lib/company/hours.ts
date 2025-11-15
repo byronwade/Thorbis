@@ -14,7 +14,10 @@ export type HoursEntry = {
   closeTime: string;
 };
 
-export type HoursOfOperation = Record<(typeof DAYS_OF_WEEK)[number], HoursEntry>;
+export type HoursOfOperation = Record<
+  (typeof DAYS_OF_WEEK)[number],
+  HoursEntry
+>;
 
 export const DEFAULT_HOURS: HoursOfOperation = DAYS_OF_WEEK.reduce(
   (acc, day) => {
@@ -63,4 +66,3 @@ export function convertHoursToSettings(
     return acc;
   }, {} as StoredHoursOfOperation);
 }
-

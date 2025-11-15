@@ -7,11 +7,11 @@
 
 import { Building2, MapPin } from "lucide-react";
 import Link from "next/link";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type JobPropertyProps = {
   property: any;
@@ -45,9 +45,7 @@ export function JobProperty({ property }: JobPropertyProps) {
 
       {/* Property Tags */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-muted-foreground text-xs font-medium">
-          Tags:
-        </span>
+        <span className="font-medium text-muted-foreground text-xs">Tags:</span>
         <EntityTags
           entityId={property.id}
           entityType="property"
@@ -74,7 +72,9 @@ export function JobProperty({ property }: JobPropertyProps) {
       </div>
 
       {/* Property Details */}
-      {(property.square_footage || property.year_built || property.lot_size) && (
+      {(property.square_footage ||
+        property.year_built ||
+        property.lot_size) && (
         <>
           <Separator />
           <div className="grid gap-4 md:grid-cols-3">
@@ -139,4 +139,3 @@ export function JobProperty({ property }: JobPropertyProps) {
     </div>
   );
 }
-

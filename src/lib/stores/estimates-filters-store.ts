@@ -1,6 +1,6 @@
 /**
  * Estimates Filters Store
- * 
+ *
  * Global state management for estimate filtering
  */
 
@@ -35,18 +35,16 @@ export const useEstimatesFiltersStore = create<EstimatesFiltersStore>()(
   persist(
     (set) => ({
       filters: DEFAULT_FILTERS,
-      
+
       setFilters: (newFilters) =>
         set((state) => ({
           filters: { ...state.filters, ...newFilters },
         })),
-      
-      resetFilters: () =>
-        set({ filters: DEFAULT_FILTERS }),
+
+      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
     }),
     {
       name: "estimates-filters",
     }
   )
 );
-

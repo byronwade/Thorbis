@@ -5,7 +5,8 @@
 
 "use client";
 
-import { FileText, Download } from "lucide-react";
+import { Download, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -15,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 type JobDocumentsProps = {
   documents: any[];
@@ -83,15 +83,19 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
                 </TableCell>
                 <TableCell>
                   {doc.file_type || doc.type ? (
-                    <Badge variant="outline" className="uppercase">
+                    <Badge className="uppercase" variant="outline">
                       {(doc.file_type || doc.type).split("/").pop()}
                     </Badge>
                   ) : (
                     "—"
                   )}
                 </TableCell>
-                <TableCell>{formatFileSize(doc.file_size || doc.size)}</TableCell>
-                <TableCell>{formatDate(doc.created_at || doc.uploaded_at)}</TableCell>
+                <TableCell>
+                  {formatFileSize(doc.file_size || doc.size)}
+                </TableCell>
+                <TableCell>
+                  {formatDate(doc.created_at || doc.uploaded_at)}
+                </TableCell>
                 <TableCell className="text-right">
                   {(doc.url || doc.file_url) && (
                     <Button asChild size="sm" variant="ghost">
@@ -138,4 +142,3 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
     </div>
   );
 }
-

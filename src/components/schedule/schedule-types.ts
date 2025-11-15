@@ -52,9 +52,24 @@ export interface JobMetadata {
   customFields?: Record<string, any>;
 }
 
+export type JobAssignmentRole = "primary" | "assistant" | "crew" | "supervisor";
+
+export interface JobAssignment {
+  technicianId: string | null;
+  teamMemberId?: string | null;
+  displayName: string;
+  avatar?: string | null;
+  role: JobAssignmentRole;
+  status?: Technician["status"];
+  isActive: boolean;
+}
+
 export interface Job {
-  id: string;
-  technicianId: string; // Which technician is assigned
+  id: string; // Schedule ID
+  jobId?: string; // Actual job ID (for linking to job details)
+  technicianId: string; // Primary technician id (falls back to first assignment or empty string)
+  assignments: JobAssignment[];
+  isUnassigned: boolean;
 
   // Job details
   title: string;
@@ -68,7 +83,14 @@ export interface Job {
   allDay?: boolean; // For meetings, events
 
   // Status
-  status: "scheduled" | "in-progress" | "completed" | "cancelled";
+  status:
+    | "scheduled"
+    | "dispatched"
+    | "arrived"
+    | "in-progress"
+    | "closed"
+    | "completed"
+    | "cancelled";
   priority: "low" | "medium" | "high" | "urgent";
 
   // Recurrence
@@ -99,10 +121,13 @@ export interface TechnicianSchedule {
 
 export interface Technician {
   id: string;
+  userId?: string;
+  teamMemberId?: string;
   name: string;
   email?: string;
   phone?: string;
   avatar?: string;
+  color?: string;
 
   // Employment
   role: string;
@@ -112,6 +137,7 @@ export interface Technician {
 
   // Status
   status: "available" | "on-job" | "on-break" | "offline";
+  isActive?: boolean;
   currentLocation?: Location;
 
   // Schedule

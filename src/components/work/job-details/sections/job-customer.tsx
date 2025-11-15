@@ -5,14 +5,14 @@
 
 "use client";
 
-import { Mail, Phone, User } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type JobCustomerProps = {
   customer: any;
@@ -29,10 +29,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
       {/* Customer Header */}
       <div className="flex items-center gap-4">
         <Avatar className="size-16">
-          <AvatarImage
-            alt={customerName}
-            src={customer.avatar_url}
-          />
+          <AvatarImage alt={customerName} src={customer.avatar_url} />
           <AvatarFallback>
             {customer.first_name?.[0]}
             {customer.last_name?.[0]}
@@ -40,7 +37,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
         </Avatar>
         <div className="flex-1">
           <Link
-            className="font-medium text-lg text-foreground hover:text-primary"
+            className="font-medium text-foreground text-lg hover:text-primary"
             href={`/dashboard/customers/${customer.id}`}
           >
             {customerName}
@@ -57,9 +54,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 
       {/* Customer Tags */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-muted-foreground text-xs font-medium">
-          Tags:
-        </span>
+        <span className="font-medium text-muted-foreground text-xs">Tags:</span>
         <EntityTags
           entityId={customer.id}
           entityType="customer"
@@ -76,7 +71,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
             <div className="flex-1">
               <Label>Email</Label>
               <a
-                className="text-sm text-primary hover:underline"
+                className="text-primary text-sm hover:underline"
                 href={`mailto:${customer.email}`}
               >
                 {customer.email}
@@ -90,7 +85,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
             <div className="flex-1">
               <Label>Phone</Label>
               <a
-                className="text-sm text-primary hover:underline"
+                className="text-primary text-sm hover:underline"
                 href={`tel:${customer.phone}`}
               >
                 {customer.phone}
@@ -121,4 +116,3 @@ export function JobCustomer({ customer }: JobCustomerProps) {
     </div>
   );
 }
-

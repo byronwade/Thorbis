@@ -448,9 +448,7 @@ export function JobPageContent({
       } else {
         // Rollback on error
         setProperty(originalProperty);
-        toast.error(
-          "error" in result ? result.error : "Failed to create property"
-        );
+        toast.error(result.error ?? "Failed to create property");
       }
     } catch (error) {
       // Rollback on error
@@ -500,9 +498,7 @@ export function JobPageContent({
           toast.error(updateResult.error || "Failed to assign property to job");
         }
       } else {
-        toast.error(
-          "error" in result ? result.error : "Failed to create property"
-        );
+        toast.error(result.error ?? "Failed to create property");
       }
     } catch (error) {
       toast.error("Failed to create property");
@@ -2901,11 +2897,14 @@ export function JobPageContent({
 
       {customer && customer.email && (
         <EmailDialog
+          companyId={job.company_id}
           customerEmail={customer.email}
           customerId={customer.id}
           customerName={`${customer.first_name} ${customer.last_name}`}
+          jobId={job.id}
           onOpenChange={setIsEmailDialogOpen}
           open={isEmailDialogOpen}
+          propertyId={property?.id}
         />
       )}
 
@@ -2916,8 +2915,10 @@ export function JobPageContent({
           customerId={customer.id}
           customerName={`${customer.first_name} ${customer.last_name}`}
           customerPhone={customer.phone}
+          jobId={job.id}
           onOpenChange={setIsSMSDialogOpen}
           open={isSMSDialogOpen}
+          propertyId={property?.id}
         />
       )}
 

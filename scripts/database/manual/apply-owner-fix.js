@@ -2,14 +2,14 @@
 
 /**
  * Apply Owner Permissions Fix Migration
- * 
+ *
  * This script applies the migration to fix owner permissions in the database.
  * Owners should ALWAYS have full access regardless of team_members status.
  */
 
 const { createClient } = require("@supabase/supabase-js");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const projectRoot = path.resolve(__dirname, "../../..");
 
@@ -19,13 +19,17 @@ require("dotenv").config({ path: ".env.local" });
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
+if (!(supabaseUrl && supabaseServiceKey)) {
   console.error("❌ Error: Missing Supabase credentials");
-  console.error("Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local");
+  console.error(
+    "Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local"
+  );
   process.exit(1);
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const STATEMENT_SPLIT_REGEX = /;\s*$\n/m;
+const SQL_COMMENT_REGEX = /--[^\n]*\n/g;
 
 async function applyMigration() {
   console.log("🚀 Applying Owner Permissions Fix Migration...\n");
@@ -46,12 +50,14 @@ async function applyMigration() {
 
   // Split into individual statements
   const statements = sql
-    .split(/;\s*$\n/m)
-    .map((s) => s.trim())
-    .filter((s) => {
+    .split(STATEMENT_SPLIT_REGEX)
+    .map((statement) => statement.trim())
+    .filter((statement) => {
       // Filter out empty statements and comments-only lines
-      if (!s) return false;
-      const withoutComments = s.replace(/--[^\n]*\n/g, "").trim();
+      if (!statement) {
+        return false;
+      }
+      const withoutComments = statement.replace(SQL_COMMENT_REGEX, "").trim();
       return withoutComments.length > 0;
     });
 
@@ -62,21 +68,20 @@ async function applyMigration() {
 
   for (let i = 0; i < statements.length; i++) {
     const stmt = statements[i];
-    const stmtPreview =
-      stmt.length > 60 ? stmt.substring(0, 60) + "..." : stmt;
+    const stmtPreview = stmt.length > 60 ? `${stmt.substring(0, 60)}...` : stmt;
 
     console.log(`[${i + 1}/${statements.length}] Executing: ${stmtPreview}`);
 
     try {
       const { error } = await supabase.rpc("exec_sql", {
-        sql_query: stmt + ";",
+        sql_query: `${stmt};`,
       });
 
       if (error) {
         console.log(`   ⚠️  Error: ${error.message}`);
         errorCount++;
       } else {
-        console.log(`   ✅ Success`);
+        console.log("   ✅ Success");
         successCount++;
       }
     } catch (err) {
@@ -87,20 +92,22 @@ async function applyMigration() {
     console.log("");
   }
 
-  console.log("\n" + "=".repeat(60));
+  console.log(`\n${"=".repeat(60)}`);
   console.log("📊 MIGRATION SUMMARY");
   console.log("=".repeat(60));
   console.log(`✅ Successful: ${successCount}`);
   console.log(`❌ Failed: ${errorCount}`);
   console.log(`📝 Total: ${statements.length}`);
-  console.log("=".repeat(60) + "\n");
+  console.log(`${"=".repeat(60)}\n`);
 
   if (errorCount === 0) {
     console.log("🎉 Migration applied successfully!");
     console.log("\n✨ Company owners now have full access to all operations.");
   } else {
     console.log("⚠️  Migration completed with some errors.");
-    console.log("You may need to apply this migration manually through the Supabase SQL Editor:");
+    console.log(
+      "You may need to apply this migration manually through the Supabase SQL Editor:"
+    );
     console.log(
       `   ${supabaseUrl.replace("https://", "https://supabase.com/dashboard/project/")}/sql/new`
     );
@@ -111,4 +118,3 @@ applyMigration().catch((error) => {
   console.error("❌ Fatal error:", error);
   process.exit(1);
 });
-

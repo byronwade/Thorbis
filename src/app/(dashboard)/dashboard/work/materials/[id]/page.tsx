@@ -1,11 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { MaterialPageContent } from "@/components/work/materials/material-page-content";
-import { generateMaterialStats } from "@/lib/stats/utils";
 import {
   getActiveCompanyId,
   isActiveCompanyOnboardingComplete,
 } from "@/lib/auth/company-context";
+import { generateMaterialStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 type MaterialStatus =
@@ -268,7 +268,7 @@ export default async function MaterialDetailPage({
 
   const activities = rawActivities.map((activity) => {
     const resolvedUser = Array.isArray(activity.user)
-      ? activity.user[0] ?? null
+      ? (activity.user[0] ?? null)
       : activity.user;
 
     return {
@@ -344,4 +344,3 @@ export default async function MaterialDetailPage({
     </ToolbarStatsProvider>
   );
 }
-

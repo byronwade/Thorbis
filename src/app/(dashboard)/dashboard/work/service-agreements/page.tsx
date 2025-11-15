@@ -95,13 +95,21 @@ export default async function ServiceAgreementsPage() {
   });
 
   // Filter to active agreements for stats calculations
-  const activeAgreements = agreements.filter((a) => !a.archived_at && !a.deleted_at);
+  const activeAgreements = agreements.filter(
+    (a) => !(a.archived_at || a.deleted_at)
+  );
 
   // Calculate service agreement stats (from active agreements only)
   const totalAgreements = activeAgreements.length;
-  const activeCount = activeAgreements.filter((a) => a.status === "active").length;
-  const draftCount = activeAgreements.filter((a) => a.status === "draft").length;
-  const expiredCount = activeAgreements.filter((a) => a.status === "expired").length;
+  const activeCount = activeAgreements.filter(
+    (a) => a.status === "active"
+  ).length;
+  const draftCount = activeAgreements.filter(
+    (a) => a.status === "draft"
+  ).length;
+  const expiredCount = activeAgreements.filter(
+    (a) => a.status === "expired"
+  ).length;
   const totalValue = activeAgreements
     .filter((a) => a.status === "active")
     .reduce((sum, a) => sum + (a.contractValue || 0), 0);

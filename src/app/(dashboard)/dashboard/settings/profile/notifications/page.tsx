@@ -19,4 +19,3 @@ export default async function NotificationsPage() {
 
   return <NotificationsClient initialSettings={initialSettings} />;
 }
-

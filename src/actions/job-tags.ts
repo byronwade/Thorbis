@@ -152,4 +152,3 @@ export async function getCommonTags(companyId: string) {
     return commonTags;
   });
 }
-

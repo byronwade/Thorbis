@@ -531,7 +531,6 @@ export function AppointmentPageContent({
           relatedItems: true,
         }}
       />
-
     </>
   );
 }

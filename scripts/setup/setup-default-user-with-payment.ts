@@ -11,12 +11,25 @@
  * Usage: pnpm tsx scripts/setup-default-user-with-payment.ts
  */
 
+import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import * as dotenv from "dotenv";
-import { join } from "path";
+import { config as loadEnvConfig } from "dotenv";
 
 // Load environment variables
-dotenv.config({ path: join(process.cwd(), ".env.local") });
+loadEnvConfig({ path: join(process.cwd(), ".env.local") });
+
+const DAY_COUNT_PER_SUBSCRIPTION_PERIOD = 30;
+const HOURS_PER_DAY = 24;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_MINUTE = 60;
+const MILLISECONDS_PER_SECOND = 1000;
+const MILLISECONDS_PER_DAY =
+  HOURS_PER_DAY *
+  MINUTES_PER_HOUR *
+  SECONDS_PER_MINUTE *
+  MILLISECONDS_PER_SECOND;
+const SUBSCRIPTION_PERIOD_MS =
+  DAY_COUNT_PER_SUBSCRIPTION_PERIOD * MILLISECONDS_PER_DAY;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -139,7 +152,7 @@ async function setupDefaultUserWithPayment() {
         stripe_subscription_status: "active",
         subscription_current_period_start: new Date().toISOString(),
         subscription_current_period_end: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000
+          Date.now() + SUBSCRIPTION_PERIOD_MS
         ).toISOString(), // 30 days from now
       })
       .eq("id", companyId);

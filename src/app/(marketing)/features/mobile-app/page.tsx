@@ -1,11 +1,26 @@
-import { Camera, CheckCircle2, Cloud, FileText, MapPin, Smartphone, Wifi, WifiOff, Zap } from "lucide-react";
-import Image from "next/image";
+import {
+  Camera,
+  CheckCircle2,
+  Cloud,
+  FileText,
+  MapPin,
+  Smartphone,
+  Wifi,
+  WifiOff,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   generateBreadcrumbStructuredData,
   generateMetadata as generateSEOMetadata,
@@ -33,8 +48,7 @@ export const metadata = generateSEOMetadata({
 export default function MobileAppPage() {
   const serviceStructuredData = generateServiceStructuredData({
     name: "Mobile Field App",
-    description:
-      "Offline-first mobile experience for field technicians",
+    description: "Offline-first mobile experience for field technicians",
     offers: [
       {
         price: "100",
@@ -83,20 +97,23 @@ export default function MobileAppPage() {
                 Your office in every technician's pocket
               </h1>
               <p className="mb-8 text-lg text-muted-foreground sm:text-xl">
-                Everything your field team needs to complete jobs, capture data, and get paid—even without internet. 
-                Works offline, syncs automatically.
+                Everything your field team needs to complete jobs, capture data,
+                and get paid—even without internet. Works offline, syncs
+                automatically.
               </p>
               <div className="flex flex-wrap items-center gap-4">
-                <Button asChild className="shadow-lg shadow-primary/20" size="lg">
+                <Button
+                  asChild
+                  className="shadow-lg shadow-primary/20"
+                  size="lg"
+                >
                   <Link href="/register">
-                    Start Free Trial
+                    Start 14-day Free Trial
                     <Zap className="ml-2 size-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/contact">
-                    Request Demo
-                  </Link>
+                  <Link href="/contact">Request Demo</Link>
                 </Button>
               </div>
 
@@ -138,8 +155,13 @@ export default function MobileAppPage() {
                       <div className="mb-4 overflow-hidden rounded-2xl border bg-background shadow-lg">
                         <div className="border-b bg-primary/5 px-4 py-3">
                           <div className="mb-1 flex items-center justify-between">
-                            <span className="font-semibold text-sm">AC Repair</span>
-                            <Badge className="h-5 text-[10px]" variant="secondary">
+                            <span className="font-semibold text-sm">
+                              AC Repair
+                            </span>
+                            <Badge
+                              className="h-5 text-[10px]"
+                              variant="secondary"
+                            >
                               In Progress
                             </Badge>
                           </div>
@@ -184,18 +206,24 @@ export default function MobileAppPage() {
                           <div className="grid grid-cols-3 gap-2">
                             <div className="aspect-square rounded-lg bg-muted" />
                             <div className="aspect-square rounded-lg bg-muted" />
-                            <div className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-border">
+                            <div className="flex aspect-square items-center justify-center rounded-lg border-2 border-border border-dashed">
                               <Camera className="size-4 text-muted-foreground" />
                             </div>
                           </div>
 
                           {/* Action Buttons */}
                           <div className="grid grid-cols-2 gap-2 pt-2">
-                            <button className="rounded-lg border bg-background px-3 py-2 text-xs font-medium transition-colors hover:bg-accent" type="button">
+                            <button
+                              className="rounded-lg border bg-background px-3 py-2 font-medium text-xs transition-colors hover:bg-accent"
+                              type="button"
+                            >
                               <Camera className="mx-auto mb-1 size-4" />
                               Add Photo
                             </button>
-                            <button className="rounded-lg border bg-background px-3 py-2 text-xs font-medium transition-colors hover:bg-accent" type="button">
+                            <button
+                              className="rounded-lg border bg-background px-3 py-2 font-medium text-xs transition-colors hover:bg-accent"
+                              type="button"
+                            >
                               <FileText className="mx-auto mb-1 size-4" />
                               Get Signature
                             </button>
@@ -204,7 +232,10 @@ export default function MobileAppPage() {
                       </div>
 
                       {/* Complete Button */}
-                      <button className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground text-sm shadow-lg" type="button">
+                      <button
+                        className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground text-sm shadow-lg"
+                        type="button"
+                      >
                         Complete Job
                       </button>
                     </div>
@@ -212,7 +243,7 @@ export default function MobileAppPage() {
                 </div>
 
                 {/* Offline Indicator */}
-                <div className="absolute -right-4 top-20 flex items-center gap-2 rounded-full border border-orange-500/50 bg-orange-500/10 px-4 py-2 backdrop-blur-sm">
+                <div className="-right-4 absolute top-20 flex items-center gap-2 rounded-full border border-orange-500/50 bg-orange-500/10 px-4 py-2 backdrop-blur-sm">
                   <WifiOff className="size-4 text-orange-600 dark:text-orange-400" />
                   <span className="font-semibold text-orange-700 text-xs dark:text-orange-400">
                     Offline Mode
@@ -264,7 +295,8 @@ export default function MobileAppPage() {
               Built for the field, not the office
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              Every feature designed for technicians working in basements, on rooftops, and everywhere in between
+              Every feature designed for technicians working in basements, on
+              rooftops, and everywhere in between
             </p>
           </div>
 
@@ -276,7 +308,8 @@ export default function MobileAppPage() {
                 </div>
                 <CardTitle>True Offline Mode</CardTitle>
                 <CardDescription>
-                  Complete jobs, capture data, and process payments without internet connectivity
+                  Complete jobs, capture data, and process payments without
+                  internet connectivity
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -304,7 +337,8 @@ export default function MobileAppPage() {
                 </div>
                 <CardTitle>Photo Documentation</CardTitle>
                 <CardDescription>
-                  Capture before/after photos with automatic organization and cloud backup
+                  Capture before/after photos with automatic organization and
+                  cloud backup
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -332,7 +366,8 @@ export default function MobileAppPage() {
                 </div>
                 <CardTitle>Digital Signatures</CardTitle>
                 <CardDescription>
-                  Get customer approval instantly with legally binding digital signatures
+                  Get customer approval instantly with legally binding digital
+                  signatures
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -360,7 +395,8 @@ export default function MobileAppPage() {
                 </div>
                 <CardTitle>Smart Checklists</CardTitle>
                 <CardDescription>
-                  Customizable checklists that ensure nothing gets missed on every job
+                  Customizable checklists that ensure nothing gets missed on
+                  every job
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -416,7 +452,8 @@ export default function MobileAppPage() {
                 </div>
                 <CardTitle>Mobile Payments</CardTitle>
                 <CardDescription>
-                  Accept credit cards, checks, and cash right from the mobile app
+                  Accept credit cards, checks, and cash right from the mobile
+                  app
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -447,19 +484,27 @@ export default function MobileAppPage() {
             Empower your field team today
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/90">
-            Give your technicians the tools they need to work faster, smarter, and more professionally.
+            Give your technicians the tools they need to work faster, smarter,
+            and more professionally.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Button asChild className="bg-background text-foreground shadow-lg hover:bg-background/90" size="lg">
+            <Button
+              asChild
+              className="bg-background text-foreground shadow-lg hover:bg-background/90"
+              size="lg"
+            >
               <Link href="/register">
-                Start Free Trial
+                Start 14-day Free Trial
                 <Zap className="ml-2 size-4" />
               </Link>
             </Button>
-            <Button asChild className="border-primary-foreground/20 bg-primary-foreground/10 hover:bg-primary-foreground/20" size="lg" variant="outline">
-              <Link href="/contact">
-                See Mobile Demo
-              </Link>
+            <Button
+              asChild
+              className="border-primary-foreground/20 bg-primary-foreground/10 hover:bg-primary-foreground/20"
+              size="lg"
+              variant="outline"
+            >
+              <Link href="/contact">See Mobile Demo</Link>
             </Button>
           </div>
         </div>
@@ -467,4 +512,3 @@ export default function MobileAppPage() {
     </>
   );
 }
-

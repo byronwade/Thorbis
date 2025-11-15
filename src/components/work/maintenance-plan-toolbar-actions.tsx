@@ -10,10 +10,10 @@
  * - Import/Export
  */
 
-import { useArchiveStore } from "@/lib/stores/archive-store";
 import { ArchiveFilterSelect } from "@/components/ui/archive-filter-select";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
+import { useArchiveStore } from "@/lib/stores/archive-store";
 
 // Define hideable columns for maintenance plans
 const MAINTENANCE_PLANS_COLUMNS = [
@@ -29,7 +29,9 @@ export function MaintenancePlanToolbarActions({
 }: {
   totalCount?: number;
 }) {
-  const archiveFilter = useArchiveStore((state) => state.filters.maintenance_plans);
+  const archiveFilter = useArchiveStore(
+    (state) => state.filters.maintenance_plans
+  );
 
   // Calculate counts (will be passed from page)
   const activeCount = totalCount; // TODO: Get actual counts from page

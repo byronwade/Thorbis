@@ -64,7 +64,8 @@ export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
       label: "Unpaid",
     },
     overdue: {
-      className: "border-red-500/30 bg-red-500 text-white hover:bg-red-600 shadow-sm ring-1 ring-red-500/20",
+      className:
+        "border-red-500/30 bg-red-500 text-white hover:bg-red-600 shadow-sm ring-1 ring-red-500/20",
       label: "Overdue",
     },
     draft: {
@@ -86,7 +87,8 @@ export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 
   return (
     configs[status] || {
-      className: "border-border/50 bg-background text-muted-foreground shadow-sm",
+      className:
+        "border-border/50 bg-background text-muted-foreground shadow-sm",
       label: status.replace(/_/g, " "),
     }
   );

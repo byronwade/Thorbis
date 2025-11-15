@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getCurrentUser } from "@/lib/auth/session";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -38,7 +39,9 @@ export async function GET() {
     // Check the ACTIVE company's payment status
     const { data: teamMember } = await supabase
       .from("team_members")
-      .select("company_id, companies!inner(stripe_subscription_status)")
+      .select(
+        "company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)"
+      )
       .eq("user_id", user.id)
       .eq("company_id", activeCompanyId)
       .eq("status", "active")
@@ -57,14 +60,21 @@ export async function GET() {
       ? teamMember.companies[0]
       : teamMember.companies;
     const subscriptionStatus = companies?.stripe_subscription_status;
-    const hasPayment =
+    const subscriptionActive =
       subscriptionStatus === "active" || subscriptionStatus === "trialing";
+    const onboardingProgress =
+      (companies?.onboarding_progress as Record<string, unknown>) || null;
+    const onboardingComplete = isOnboardingComplete({
+      progress: onboardingProgress,
+      completedAt: companies?.onboarding_completed_at ?? null,
+    });
+    const hasPayment = subscriptionActive && onboardingComplete;
 
     return NextResponse.json({
       companyId: teamMember.company_id,
       hasPayment,
       subscriptionStatus,
-      needsOnboarding: !hasPayment,
+      needsOnboarding: !onboardingComplete,
     });
   } catch (error) {
     console.error("Error checking onboarding status:", error);

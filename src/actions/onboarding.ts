@@ -19,15 +19,25 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import type { Json } from "@/types/supabase";
+import { start as startWorkflow } from "workflow/api";
+import {
+  ensureCompanyTrialStatus,
+  DEFAULT_TRIAL_LENGTH_DAYS,
+} from "@/lib/billing/trial-management";
+import {
+  createResendDomain,
+  createInboundRoute as createResendInboundRoute,
+} from "@/lib/email/resend-domains";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
 import {
   createServiceSupabaseClient,
   type ServiceSupabaseClient,
 } from "@/lib/supabase/service-client";
-import { initiatePorting } from "@/lib/telnyx/numbers";
 import { formatPhoneNumber } from "@/lib/telnyx/messaging";
+import { initiatePorting } from "@/lib/telnyx/numbers";
+import type { Json } from "@/types/supabase";
+import { companyTrialWorkflow } from "@/workflows/company-trial";
 import { ensureMessagingBranding } from "./messaging-branding";
 import { updateNotificationSettings } from "./settings/communications";
 import { purchasePhoneNumber } from "./telnyx";
@@ -57,6 +67,7 @@ type OnboardingResult = {
 
 const INCOMPLETE_SUBSCRIPTION_STATUSES = [
   "incomplete",
+  "incomplete_expired",
   "past_due",
   "canceled",
   "unpaid",
@@ -377,6 +388,94 @@ async function generateUniqueSlug(
   return slug;
 }
 
+function extractDomainFromUrl(url?: string | null) {
+  if (!url) return null;
+  try {
+    const normalized = url.startsWith("http")
+      ? url
+      : `https://${url.replace(/^\/+/, "")}`;
+    const parsed = new URL(normalized);
+    return parsed.hostname.replace(/^www\./, "");
+  } catch {
+    const sanitized = url.replace(/^https?:\/\//, "").split("/")[0];
+    return sanitized || null;
+  }
+}
+
+async function autoConfigureEmailInfrastructure(
+  serviceSupabase: ServiceSupabaseClient,
+  companyId: string,
+  website?: string | null
+) {
+  const domain = extractDomainFromUrl(website);
+  if (domain) {
+    try {
+      const result = await createResendDomain(domain);
+      if (result.success) {
+        await (serviceSupabase as any)
+          .from("communication_email_domains")
+          .insert({
+            company_id: companyId,
+            domain,
+            status: result.data.status || "pending",
+            resend_domain_id: result.data.id,
+            dns_records: result.data.records || [],
+            last_synced_at: new Date().toISOString(),
+          });
+      }
+    } catch (error) {
+      console.error(
+        "Failed to provision email domain during onboarding:",
+        error
+      );
+    }
+  }
+
+  const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
+  if (!inboundDomain) {
+    return;
+  }
+
+  const { data: existingRoute } = await (serviceSupabase as any)
+    .from("communication_email_inbound_routes")
+    .select("id")
+    .eq("company_id", companyId)
+    .maybeSingle();
+
+  if (existingRoute) {
+    return;
+  }
+
+  const routeAddress = `company-${companyId.slice(0, 8)}@${inboundDomain}`;
+  const destinationUrl = `${
+    process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  }/api/webhooks/resend`;
+
+  try {
+    const result = await createResendInboundRoute({
+      name: `Company ${companyId}`,
+      recipients: [routeAddress],
+      url: destinationUrl,
+    });
+
+    if (result.success) {
+      await (serviceSupabase as any)
+        .from("communication_email_inbound_routes")
+        .insert({
+          company_id: companyId,
+          route_address: routeAddress,
+          resend_route_id: result.data.id,
+          signing_secret: result.data.secret || null,
+          status: result.data.status || "pending",
+          destination_url: destinationUrl,
+          last_synced_at: new Date().toISOString(),
+        });
+    }
+  } catch (error) {
+    console.error("Failed to create inbound route during onboarding:", error);
+  }
+}
+
 async function updateOnboardingProgressRecord(
   serviceSupabase: ServiceSupabaseClient,
   companyId: string,
@@ -677,6 +776,21 @@ export async function saveOnboardingProgress(
       };
     }
 
+    if (createdCompany) {
+      try {
+        await ensureCompanyTrialStatus({
+          companyId,
+          trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS,
+          serviceClient: serviceSupabase,
+        });
+        await startWorkflow(companyTrialWorkflow, [
+          { companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS },
+        ]);
+      } catch (trialError) {
+        console.error("Failed to initialize company trial:", trialError);
+      }
+    }
+
     try {
       await ensureActiveMembership(serviceSupabase, companyId, userId);
     } catch (membershipError) {
@@ -719,6 +833,19 @@ export async function saveOnboardingProgress(
       console.error(
         `Error ensuring Telnyx branding for company ${companyId}:`,
         brandingError
+      );
+    }
+
+    try {
+      await autoConfigureEmailInfrastructure(
+        serviceSupabase,
+        companyId,
+        data.orgWebsite
+      );
+    } catch (emailInfraError) {
+      console.error(
+        `Failed to configure email automation for company ${companyId}:`,
+        emailInfraError
       );
     }
 
@@ -1116,7 +1243,10 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
           });
 
         if (insertPhoneError) {
-          console.error("Failed to create placeholder phone record:", insertPhoneError);
+          console.error(
+            "Failed to create placeholder phone record:",
+            insertPhoneError
+          );
         }
       }
 

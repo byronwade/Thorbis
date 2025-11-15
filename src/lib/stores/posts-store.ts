@@ -209,13 +209,12 @@ export const postsSelectors = {
   filters: (state: PostsStore) => state.filters,
   publishedPosts: (state: PostsStore) =>
     state.posts.filter(
-      (p) => String(p.published).toLowerCase() === "true" || p.published === true
+      (p) =>
+        String(p.published).toLowerCase() === "true" || p.published === true
     ),
   draftPosts: (state: PostsStore) =>
     state.posts.filter(
       (p) =>
-        !(
-          String(p.published).toLowerCase() === "true" || p.published === true
-        )
+        !(String(p.published).toLowerCase() === "true" || p.published === true)
     ),
 };

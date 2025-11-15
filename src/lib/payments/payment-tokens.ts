@@ -12,8 +12,8 @@
 
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { emailConfig } from "@/lib/email/resend-client";
+import { createClient } from "@/lib/supabase/server";
 
 export interface PaymentToken {
   token: string;
@@ -37,23 +37,26 @@ export interface TokenValidation {
  */
 export async function generatePaymentToken(
   invoiceId: string,
-  expiryHours: number = 72,
-  maxUses: number = 1
+  expiryHours = 72,
+  maxUses = 1
 ): Promise<PaymentToken | null> {
   try {
     const supabase = await createClient();
-    
+
     if (!supabase) {
       console.error("Unable to connect to database");
       return null;
     }
 
     // Call database function to generate token
-    const { data, error } = await supabase.rpc("generate_invoice_payment_token", {
-      p_invoice_id: invoiceId,
-      p_expiry_hours: expiryHours,
-      p_max_uses: maxUses,
-    });
+    const { data, error } = await supabase.rpc(
+      "generate_invoice_payment_token",
+      {
+        p_invoice_id: invoiceId,
+        p_expiry_hours: expiryHours,
+        p_max_uses: maxUses,
+      }
+    );
 
     if (error || !data || data.length === 0) {
       console.error("Error generating payment token:", error);
@@ -133,7 +136,10 @@ export async function validatePaymentToken(
  * @param token - The payment token to mark as used
  * @param ipAddress - Optional IP address for security tracking
  */
-export async function markTokenAsUsed(token: string, ipAddress?: string): Promise<boolean> {
+export async function markTokenAsUsed(
+  token: string,
+  ipAddress?: string
+): Promise<boolean> {
   try {
     const supabase = await createClient();
 
@@ -149,7 +155,10 @@ export async function markTokenAsUsed(token: string, ipAddress?: string): Promis
       .limit(1);
 
     if (fetchError || !existingTokens || existingTokens.length === 0) {
-      console.error("Unable to fetch token before marking as used:", fetchError);
+      console.error(
+        "Unable to fetch token before marking as used:",
+        fetchError
+      );
       return false;
     }
 
@@ -190,7 +199,7 @@ export async function getInvoicePaymentTokens(
 ): Promise<PaymentToken[]> {
   try {
     const supabase = await createClient();
-    
+
     if (!supabase) {
       console.error("Unable to connect to database");
       return [];
@@ -219,4 +228,3 @@ export async function getInvoicePaymentTokens(
     return [];
   }
 }
-

@@ -3,8 +3,8 @@
  * Run with: node scripts/create-tool-stubs.js
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const toolPages = [
   // Marketing pages
@@ -299,7 +299,7 @@ function createStubPages() {
     "../src/app/(dashboard)/dashboard/tools"
   );
 
-  toolPages.forEach((page) => {
+  for (const page of toolPages) {
     const fullPath = path.join(baseDir, page.path);
     const filePath = path.join(fullPath, "page.tsx");
 
@@ -311,7 +311,7 @@ function createStubPages() {
     // Write page content
     fs.writeFileSync(filePath, generatePageContent(page));
     console.log(`✓ Created ${page.path}/page.tsx`);
-  });
+  }
 
   console.log(`\n✓ Successfully created ${toolPages.length} stub pages!`);
 }

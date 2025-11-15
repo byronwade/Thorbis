@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Archive,
-  ClipboardList,
-  Package,
-  Wrench,
-} from "lucide-react";
+import { Archive, ClipboardList, Package, Wrench } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveInventoryItem } from "@/actions/inventory";
@@ -178,4 +173,3 @@ export function MaterialDetailToolbarActions() {
     </>
   );
 }
-

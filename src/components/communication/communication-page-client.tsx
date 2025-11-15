@@ -1,29 +1,27 @@
 "use client";
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  Inbox,
-  Mail,
-  MessageSquare,
-  Phone,
-  RefreshCw,
-  Search,
-  Ticket,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { Inbox, Mail, MessageSquare, Phone, Ticket } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AllMessagesView } from "@/components/communication/all-messages-view";
 import { CallsView } from "@/components/communication/calls-view";
+import { CommunicationComposerHost } from "@/components/communication/communication-composer-host";
 import { EmailView } from "@/components/communication/email-view";
 import { SMSView } from "@/components/communication/sms-view";
 import { TicketsView } from "@/components/communication/tickets-view";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
-import type { ConversationThread, ThreadMessage } from "./sms-thread-view";
+import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
 type MessagePriority = "low" | "normal" | "high" | "urgent";
+export type CompanyPhone = {
+  id: string;
+  number: string;
+  label?: string | null;
+  status?: string | null;
+};
 
 export type CommunicationRecord = {
   id: string;
@@ -37,12 +35,22 @@ export type CommunicationRecord = {
   read_at: string | null;
   from_address: string | null;
   to_address: string | null;
+  customer_id: string | null;
+  phone_number_id: string | null;
+  job_id?: string | null;
+  property_id?: string | null;
+  invoice_id?: string | null;
+  estimate_id?: string | null;
   call_duration: number | null;
   customer: {
     id: string;
     first_name: string | null;
     last_name: string | null;
   } | null;
+  telnyx_call_control_id?: string | null;
+  telnyx_call_session_id?: string | null;
+  call_recording_url?: string | null;
+  provider_metadata?: Record<string, unknown> | null;
 };
 
 type UnifiedMessage = {
@@ -50,6 +58,9 @@ type UnifiedMessage = {
   type: MessageType;
   from: string;
   fromPhone?: string;
+  toPhone?: string;
+  fromEmail?: string;
+  toEmail?: string;
   subject?: string;
   preview: string;
   timestamp: Date;
@@ -58,30 +69,71 @@ type UnifiedMessage = {
   direction: "inbound" | "outbound";
   callDuration?: number;
   callType?: "incoming" | "outgoing" | "missed" | "voicemail";
+  telnyxCallControlId?: string;
+  callRecordingUrl?: string;
+  customerId?: string;
 };
 
-interface CommunicationPageClientProps {
+type CommunicationPageClientProps = {
   communications: CommunicationRecord[];
-}
+  companyId: string;
+  companyPhones: CompanyPhone[];
+};
 
 export function CommunicationPageClient({
   communications,
+  companyId,
+  companyPhones,
 }: CommunicationPageClientProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [records, setRecords] = useState<CommunicationRecord[]>(communications);
 
   const activeFilter = useCommunicationStore((state) => state.activeFilter);
   const setActiveFilter = useCommunicationStore(
     (state) => state.setActiveFilter
   );
+  useEffect(() => {
+    setRecords(communications);
+  }, [communications]);
 
-  const unifiedMessages = useMemo(
-    () => communications.map(convertCommunicationToMessage),
-    [communications]
+  useEffect(() => {
+    const supabase = createBrowserSupabaseClient();
+    if (!supabase) {
+      return;
+    }
+
+    const channel = supabase
+      .channel(`communications:company:${companyId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "communications",
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          setRecords((prev) => applyRealtimePayload(prev, payload));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId]);
+
+  const handleCommunicationCreated = useCallback(
+    (record: CommunicationRecord) => {
+      setRecords((prev) =>
+        upsertCommunicationRecord(prev, normalizeCommunicationRecord(record))
+      );
+    },
+    []
   );
 
-  const smsThreads = useMemo(
-    () => buildSmsThreads(communications),
-    [communications]
+  const unifiedMessages = useMemo(
+    () => records.map(convertCommunicationToMessage),
+    [records]
   );
 
   const messageCounts = useMemo(
@@ -95,220 +147,229 @@ export function CommunicationPageClient({
     [unifiedMessages]
   );
 
-  const filteredMessages = useMemo(() => {
-    return unifiedMessages.filter((msg) => {
-      if (activeFilter !== "all" && msg.type !== activeFilter) {
-        return false;
-      }
+  const filteredMessages = useMemo(
+    () =>
+      unifiedMessages.filter(
+        (msg) => activeFilter === "all" || msg.type === activeFilter
+      ),
+    [unifiedMessages, activeFilter]
+  );
 
-      if (!searchQuery) {
-        return true;
-      }
-
-      const query = searchQuery.toLowerCase();
-      return (
-        msg.from.toLowerCase().includes(query) ||
-        msg.subject?.toLowerCase().includes(query) ||
-        msg.preview.toLowerCase().includes(query)
-      );
-    });
-  }, [unifiedMessages, activeFilter, searchQuery]);
-
-  const filteredSmsThreads = useMemo(() => {
-    if (!searchQuery) {
-      return smsThreads;
+  const handleResumeCall = useCallback((callControlId: string) => {
+    if (!callControlId) {
+      return;
     }
-    const query = searchQuery.toLowerCase();
-    return smsThreads.filter((thread) => {
-      return (
-        thread.contactName.toLowerCase().includes(query) ||
-        thread.contactNumber.toLowerCase().includes(query) ||
-        (thread.lastMessage?.toLowerCase().includes(query) ?? false)
-      );
-    });
-  }, [smsThreads, searchQuery]);
+    const CALL_WINDOW_WIDTH = 420;
+    const CALL_WINDOW_HEIGHT = 720;
+    window.open(
+      `/call-window?callId=${encodeURIComponent(callControlId)}`,
+      "_blank",
+      `width=${CALL_WINDOW_WIDTH},height=${CALL_WINDOW_HEIGHT},noopener`
+    );
+  }, []);
+
+  const handleViewRecording = useCallback((recordingUrl: string) => {
+    if (!recordingUrl) {
+      return;
+    }
+    window.open(recordingUrl, "_blank", "noopener");
+  }, []);
 
   const renderView = () => {
     switch (activeFilter) {
-      case "email":
       case "all":
+        return (
+          <AllMessagesView
+            messages={filteredMessages}
+            onResumeCall={handleResumeCall}
+            onViewRecording={handleViewRecording}
+          />
+        );
+      case "email":
         return <EmailView messages={filteredMessages} />;
       case "sms":
-        return <SMSView threads={filteredSmsThreads} />;
+        return <SMSView messages={filteredMessages} />;
       case "phone":
-        return <CallsView messages={filteredMessages} />;
+        return (
+          <CallsView
+            messages={filteredMessages}
+            onResumeCall={handleResumeCall}
+            onViewRecording={handleViewRecording}
+          />
+        );
       case "ticket":
         return <TicketsView messages={filteredMessages} />;
       default:
-        return <EmailView messages={filteredMessages} />;
+        return (
+          <AllMessagesView
+            messages={filteredMessages}
+            onResumeCall={handleResumeCall}
+            onViewRecording={handleViewRecording}
+          />
+        );
     }
   };
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Filter Tabs */}
-      <div className="border-b bg-background">
-        <div className="grid grid-cols-5 divide-x">
-          {[
-            { key: "all", label: "All Messages", icon: Inbox },
-            { key: "email", label: "Email", icon: Mail },
-            { key: "sms", label: "Texts", icon: MessageSquare },
-            { key: "phone", label: "Calls", icon: Phone },
-            { key: "ticket", label: "Support", icon: Ticket },
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              className={`relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50 ${
-                activeFilter === key
-                  ? "bg-muted/30 text-foreground"
-                  : "text-muted-foreground"
-              }`}
-              key={key}
-              onClick={() => setActiveFilter(key as MessageType | "all")}
-              type="button"
-            >
-              <Icon className="size-4" />
-              {label}
-              <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
-                {messageCounts[key as keyof typeof messageCounts] ?? 0}
-              </span>
-              {activeFilter === key && (
-                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
-              )}
-            </button>
-          ))}
+    <>
+      <div className="flex h-full flex-col">
+        {/* Filter Tabs */}
+        <div className="border-b bg-background">
+          <div className="grid grid-cols-5 divide-x">
+            {[
+              { key: "all", label: "All Messages", icon: Inbox },
+              { key: "email", label: "Email", icon: Mail },
+              { key: "sms", label: "Texts", icon: MessageSquare },
+              { key: "phone", label: "Calls", icon: Phone },
+              { key: "ticket", label: "Support", icon: Ticket },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                className={cn(
+                  "relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50",
+                  activeFilter === key
+                    ? "bg-muted/30 text-foreground"
+                    : "text-muted-foreground"
+                )}
+                key={key}
+                onClick={() => setActiveFilter(key as MessageType | "all")}
+                type="button"
+              >
+                <Icon className="size-4" />
+                {label}
+                <span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
+                  {messageCounts[key as keyof typeof messageCounts] ?? 0}
+                </span>
+                {activeFilter === key && (
+                  <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Type-specific View */}
+        <div className="flex-1 overflow-auto">{renderView()}</div>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex items-center gap-2 border-b px-4 py-2">
-        <Button size="icon" variant="ghost">
-          <RefreshCw className="size-4" />
-        </Button>
-        <div className="relative max-w-md flex-1">
-          <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="h-9 pl-8"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search messages..."
-            value={searchQuery}
-          />
-        </div>
-        <div className="ml-auto flex items-center gap-2 text-muted-foreground text-sm">
-          <Button size="icon" variant="ghost">
-            <ChevronLeft className="size-4" />
-          </Button>
-          <span>
-            {filteredMessages.length === 0
-              ? "0"
-              : `1-${filteredMessages.length}`}
-          </span>
-          <Button size="icon" variant="ghost">
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Type-specific View */}
-      <div className="flex-1 overflow-auto">{renderView()}</div>
-    </div>
+      <CommunicationComposerHost
+        companyId={companyId}
+        companyPhones={companyPhones}
+        onCommunicationCreated={handleCommunicationCreated}
+      />
+    </>
   );
 }
 
-function convertCommunicationToMessage(record: CommunicationRecord): UnifiedMessage {
+function convertCommunicationToMessage(
+  record: CommunicationRecord
+): UnifiedMessage {
   const type = mapMessageType(record.type);
   const customerName = getCustomerName(record);
-  const phone =
-    record.direction === "inbound"
-      ? record.from_address
-      : record.to_address;
-
+  const { primaryAddress, secondaryAddress } = getDirectionalAddresses(record);
   const status = mapMessageStatus(record);
   const callType =
     type === "phone"
       ? mapCallType(record.direction, status, record.call_duration)
       : undefined;
+  const { fromEmail, toEmail } = getEmailAddresses(record);
+
+  // Parse timestamp: Database stores in UTC without timezone suffix
+  // Ensure we parse it as UTC by appending 'Z' if no timezone is present
+  const timestampStr = record.created_at;
+  const timestamp = timestampStr.includes('Z') || timestampStr.includes('+') || timestampStr.includes('-') 
+    ? new Date(timestampStr)
+    : new Date(timestampStr + 'Z'); // Force UTC parsing
 
   return {
     id: record.id,
     type,
-    from: customerName ?? formatDisplayPhoneNumber(phone ?? ""),
-    fromPhone: phone ?? undefined,
+    from: customerName ?? formatDisplayPhoneNumber(primaryAddress ?? ""),
+    fromPhone: primaryAddress ?? undefined,
+    toPhone: secondaryAddress ?? undefined,
+    fromEmail,
+    toEmail,
     subject: record.subject ?? undefined,
     preview: record.body || "",
-    timestamp: new Date(record.created_at),
+    timestamp,
     status,
     priority: mapPriority(record.priority),
     direction: record.direction,
     callDuration: record.call_duration ?? undefined,
     callType,
+    telnyxCallControlId: record.telnyx_call_control_id ?? undefined,
+    callRecordingUrl: record.call_recording_url ?? undefined,
+    customerId: record.customer?.id ?? record.customer_id ?? undefined,
   };
 }
 
-function buildSmsThreads(
-  records: CommunicationRecord[]
-): ConversationThread[] {
-  const threads = new Map<string, ConversationThread>();
+function normalizeCommunicationRecord(
+  record: CommunicationRecord
+): CommunicationRecord {
+  const normalizedCustomer = buildNormalizedCustomer(record);
+  return {
+    ...record,
+    priority: record.priority ?? null,
+    subject: record.subject ?? null,
+    body: record.body ?? null,
+    read_at: record.read_at ?? null,
+    from_address: record.from_address ?? null,
+    to_address: record.to_address ?? null,
+    call_duration: record.call_duration ?? null,
+    customer_id: record.customer_id ?? record.customer?.id ?? null,
+    customer: normalizedCustomer,
+    telnyx_call_control_id: record.telnyx_call_control_id ?? null,
+    telnyx_call_session_id: record.telnyx_call_session_id ?? null,
+    call_recording_url: record.call_recording_url ?? null,
+    provider_metadata: record.provider_metadata ?? null,
+  };
+}
 
-  records
-    .filter((record) => mapMessageType(record.type) === "sms")
-    .forEach((record) => {
-      const contactId =
-        record.customer?.id ||
-        (record.direction === "inbound"
-          ? record.from_address
-          : record.to_address) ||
-        record.id;
+function upsertCommunicationRecord(
+  list: CommunicationRecord[],
+  incoming: CommunicationRecord
+): CommunicationRecord[] {
+  const existingIndex = list.findIndex((record) => record.id === incoming.id);
+  if (existingIndex === -1) {
+    return sortRecords([incoming, ...list]);
+  }
+  const next = [...list];
+  next[existingIndex] = {
+    ...next[existingIndex],
+    ...incoming,
+  };
+  return sortRecords(next);
+}
 
-      if (!threads.has(contactId)) {
-        const contactName =
-          getCustomerName(record) ||
-          formatDisplayPhoneNumber(
-            record.direction === "inbound"
-              ? record.from_address ?? ""
-              : record.to_address ?? ""
-          );
-        const contactNumber =
-          record.direction === "inbound"
-            ? formatDisplayPhoneNumber(record.from_address ?? "")
-            : formatDisplayPhoneNumber(record.to_address ?? "");
-
-        threads.set(contactId, {
-          id: contactId,
-          contactName,
-          contactNumber,
-          contactInitials: getInitials(contactName),
-          lastMessage: "",
-          lastMessageTime: undefined,
-          unreadCount: 0,
-          messages: [],
-        });
+function applyRealtimePayload(
+  state: CommunicationRecord[],
+  payload: RealtimePostgresChangesPayload<Record<string, unknown>>
+): CommunicationRecord[] {
+  switch (payload.eventType) {
+    case "INSERT":
+    case "UPDATE": {
+      const rawRecord = payload.new as CommunicationRecord;
+      return upsertCommunicationRecord(
+        state,
+        normalizeCommunicationRecord(rawRecord)
+      );
+    }
+    case "DELETE": {
+      const recordId = (payload.old as { id?: string } | null)?.id;
+      if (!recordId) {
+        return state;
       }
+      return state.filter((record) => record.id !== recordId);
+    }
+    default:
+      return state;
+  }
+}
 
-      const thread = threads.get(contactId)!;
-      const message: ThreadMessage = {
-        id: record.id,
-        conversationId: contactId,
-        direction: record.direction === "inbound" ? "received" : "sent",
-        content: record.body || "",
-        timestamp: record.created_at,
-        status: mapSmsDeliveryStatus(record.status),
-      };
-
-      thread.messages.push(message);
-      thread.lastMessage = record.body || thread.lastMessage;
-      thread.lastMessageTime = record.created_at;
-
-      if (record.direction === "inbound" && !record.read_at) {
-        thread.unreadCount += 1;
-      }
-    });
-
-  return Array.from(threads.values()).map((thread) => ({
-    ...thread,
-    messages: thread.messages.sort((a, b) =>
-      a.timestamp.localeCompare(b.timestamp)
-    ),
-  }));
+function sortRecords(records: CommunicationRecord[]): CommunicationRecord[] {
+  return [...records].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
 }
 
 function mapMessageType(type: string): MessageType {
@@ -352,23 +413,6 @@ function mapCallType(
   return "incoming";
 }
 
-function mapSmsDeliveryStatus(status: string): ThreadMessage["status"] {
-  switch (status) {
-    case "queued":
-      return "sending";
-    case "sent":
-      return "sent";
-    case "delivered":
-      return "delivered";
-    case "read":
-      return "read";
-    case "failed":
-      return "failed";
-    default:
-      return "sent";
-  }
-}
-
 function getCustomerName(record: CommunicationRecord): string | null {
   const first = record.customer?.first_name ?? "";
   const last = record.customer?.last_name ?? "";
@@ -376,21 +420,85 @@ function getCustomerName(record: CommunicationRecord): string | null {
   return name || null;
 }
 
-function getInitials(name: string): string {
-  const parts = name.split(" ").filter(Boolean);
-  if (parts.length === 0) return "??";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-function formatDisplayPhoneNumber(phoneNumber: string): string {
-  const digits = phoneNumber.replace(/\D/g, "");
-  if (digits.length === 11 && digits.startsWith("1")) {
-    return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+function formatDisplayPhoneNumber(phoneNumber?: string | null): string {
+  if (!phoneNumber) {
+    return "Unknown";
   }
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  const digits = phoneNumber.replace(/\D/g, "");
+  if (
+    digits.length === NANP_WITH_COUNTRY_LENGTH &&
+    digits.startsWith(NORTH_AMERICAN_COUNTRY_CODE)
+  ) {
+    const areaCode = digits.slice(
+      COUNTRY_CODE_PREFIX_LENGTH,
+      NANP_COUNTRY_AREA_END_INDEX
+    );
+    const exchangeCode = digits.slice(
+      NANP_COUNTRY_AREA_END_INDEX,
+      NANP_COUNTRY_EXCHANGE_END_INDEX
+    );
+    const subscriberNumber = digits.slice(NANP_COUNTRY_EXCHANGE_END_INDEX);
+    return `+${NORTH_AMERICAN_COUNTRY_CODE} (${areaCode}) ${exchangeCode}-${subscriberNumber}`;
+  }
+  if (digits.length === NANP_LOCAL_LENGTH) {
+    const areaCode = digits.slice(0, NANP_LOCAL_AREA_END_INDEX);
+    const exchangeCode = digits.slice(
+      NANP_LOCAL_AREA_END_INDEX,
+      NANP_LOCAL_EXCHANGE_END_INDEX
+    );
+    const subscriberNumber = digits.slice(NANP_LOCAL_EXCHANGE_END_INDEX);
+    return `(${areaCode}) ${exchangeCode}-${subscriberNumber}`;
   }
   return phoneNumber || "Unknown";
 }
 
+function getDirectionalAddresses(record: CommunicationRecord) {
+  const isInbound = record.direction === "inbound";
+  return {
+    primaryAddress: isInbound ? record.from_address : record.to_address,
+    secondaryAddress: isInbound ? record.to_address : record.from_address,
+  };
+}
+
+function getEmailAddresses(record: CommunicationRecord) {
+  const isInbound = record.direction === "inbound";
+  return {
+    fromEmail:
+      (isInbound ? record.from_address : record.to_address) ?? undefined,
+    toEmail: (isInbound ? record.to_address : record.from_address) ?? undefined,
+  };
+}
+
+function buildNormalizedCustomer(
+  record: CommunicationRecord
+): CommunicationRecord["customer"] {
+  if (record.customer) {
+    return {
+      id: record.customer.id,
+      first_name: record.customer.first_name ?? null,
+      last_name: record.customer.last_name ?? null,
+    };
+  }
+  if (record.customer_id) {
+    return {
+      id: record.customer_id,
+      first_name: null,
+      last_name: null,
+    };
+  }
+  return null;
+}
+
+const NORTH_AMERICAN_COUNTRY_CODE = "1";
+const NANP_WITH_COUNTRY_LENGTH = 11;
+const NANP_LOCAL_LENGTH = 10;
+const COUNTRY_CODE_PREFIX_LENGTH = 1;
+const NANP_AREA_CODE_LENGTH = 3;
+const NANP_EXCHANGE_CODE_LENGTH = 3;
+const NANP_COUNTRY_AREA_END_INDEX =
+  COUNTRY_CODE_PREFIX_LENGTH + NANP_AREA_CODE_LENGTH;
+const NANP_COUNTRY_EXCHANGE_END_INDEX =
+  NANP_COUNTRY_AREA_END_INDEX + NANP_EXCHANGE_CODE_LENGTH;
+const NANP_LOCAL_AREA_END_INDEX = NANP_AREA_CODE_LENGTH;
+const NANP_LOCAL_EXCHANGE_END_INDEX =
+  NANP_LOCAL_AREA_END_INDEX + NANP_EXCHANGE_CODE_LENGTH;

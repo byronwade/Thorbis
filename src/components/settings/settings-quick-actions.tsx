@@ -11,7 +11,10 @@ interface SettingsQuickActionsProps {
   section: string;
 }
 
-export function SettingsQuickActions({ actions, section }: SettingsQuickActionsProps) {
+export function SettingsQuickActions({
+  actions,
+  section,
+}: SettingsQuickActionsProps) {
   if (!actions.length) {
     return null;
   }
@@ -20,18 +23,21 @@ export function SettingsQuickActions({ actions, section }: SettingsQuickActionsP
     <div className="flex flex-wrap gap-2">
       {actions.map((action) => (
         <Link
-          key={action.key}
+          className={cn(
+            buttonVariants({
+              variant: action.variant ?? "default",
+              size: "sm",
+            }),
+            "group justify-between"
+          )}
           href={action.href}
+          key={action.key}
           onClick={() =>
             trackCustomEvent("settings.quick_action", {
               action: action.analyticsEvent ?? action.key,
               section,
             })
           }
-          className={cn(
-            buttonVariants({ variant: action.variant ?? "default", size: "sm" }),
-            "group justify-between"
-          )}
         >
           {action.label}
           <span className="ml-2 text-muted-foreground transition-transform group-hover:translate-x-0.5">
@@ -42,4 +48,3 @@ export function SettingsQuickActions({ actions, section }: SettingsQuickActionsP
     </div>
   );
 }
-

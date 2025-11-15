@@ -51,6 +51,13 @@ async function VerifyEmailContent({ token }: { token: string }) {
     );
   }
 
+  const successMessage =
+    typeof result.data?.message === "string"
+      ? result.data.message
+      : "Your account is now active. You can sign in to get started!";
+  const verifiedEmail =
+    typeof result.data?.email === "string" ? result.data.email : undefined;
+
   // Success - show success message and redirect to login
   return (
     <Card className="mx-auto w-full max-w-md">
@@ -63,13 +70,12 @@ async function VerifyEmailContent({ token }: { token: string }) {
       <CardContent className="space-y-4">
         <div className="rounded-lg bg-success p-4 dark:bg-success/20">
           <p className="text-sm text-success dark:text-success">
-            {result.data?.message ||
-              "Your account is now active. You can sign in to get started!"}
+            {successMessage}
           </p>
         </div>
 
         <p className="text-muted-foreground text-sm">
-          Verified email: <strong>{result.data?.email}</strong>
+          Verified email: <strong>{verifiedEmail ?? "Email on file"}</strong>
         </p>
 
         <Button asChild className="w-full">

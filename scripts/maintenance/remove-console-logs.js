@@ -5,8 +5,9 @@
  * Complies with CLAUDE.md line 294: "No `console`"
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
+const CONSOLE_STATEMENT_REGEX = /^\s*console\.(log|warn|error|debug)\(/;
 
 const files = [
   "src/actions/team.ts",
@@ -15,12 +16,12 @@ const files = [
   "src/actions/customers.ts",
 ];
 
-files.forEach((filePath) => {
+for (const filePath of files) {
   const fullPath = path.join(process.cwd(), filePath);
 
   if (!fs.existsSync(fullPath)) {
     console.log(`Skipping ${filePath} - file not found`);
-    return;
+    continue;
   }
 
   const content = fs.readFileSync(fullPath, "utf8");
@@ -31,7 +32,7 @@ files.forEach((filePath) => {
     const line = lines[i];
 
     // Skip lines that are only console.log statements
-    if (/^\s*console\.(log|warn|error|debug)\(/.test(line)) {
+    if (CONSOLE_STATEMENT_REGEX.test(line)) {
       // Check if statement continues on next line
       if (!line.includes(");")) {
         // Multi-line console statement - skip until we find the closing
@@ -53,6 +54,6 @@ files.forEach((filePath) => {
   } else {
     console.log(`- No changes needed for ${filePath}`);
   }
-});
+}
 
 console.log("\nDone! All console statements removed.");

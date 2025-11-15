@@ -1,270 +1,121 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { GenericEmail } from "@/emails/generic-email";
+import { sendEmail } from "@/lib/email/email-sender";
+import { EmailTemplate } from "@/lib/email/email-types";
 import { createClient } from "@/lib/supabase/server";
-import {
-  type CommunicationInsert,
-  type CommunicationUpdate,
-  communicationInsertSchema,
-  communicationUpdateSchema,
-} from "@/lib/validations/database-schemas";
 
-/**
- * Server Actions for Communication Management
- *
- * Handles multi-channel communication (email, SMS, phone, chat) with:
- * - Server-side validation using Zod
- * - Supabase database operations
- * - Threading support
- * - Read tracking
- * - Company-based multi-tenancy via RLS
- */
+const COMMUNICATIONS_PATH = "/dashboard/communication";
 
-// ============================================================================
-// CREATE
-// ============================================================================
+const sendCustomerEmailSchema = z.object({
+  to: z.string().email(),
+  subject: z.string().min(1),
+  body: z.string().min(1),
+  customerName: z.string().min(1),
+  companyId: z.string().min(1),
+  customerId: z.string().optional(),
+  jobId: z.string().optional(),
+  propertyId: z.string().optional(),
+  invoiceId: z.string().optional(),
+  estimateId: z.string().optional(),
+});
 
-export async function createCommunication(
-  data: CommunicationInsert
-): Promise<{ success: boolean; error?: string; communicationId?: string }> {
-  try {
-    const validated = communicationInsertSchema.parse(data);
-    const supabase = await createClient();
+export type SendCustomerEmailInput = z.infer<typeof sendCustomerEmailSchema>;
 
-    if (!supabase) {
-      return { success: false, error: "Database connection not available" };
-    }
+type SendCustomerEmailActionResult = {
+  success: boolean;
+  error?: string;
+  data?: Record<string, unknown>;
+};
 
-    const { data: communication, error } = await supabase
-      .from("communications")
-      .insert(validated)
-      .select("id")
-      .single();
+export async function sendCustomerEmailAction(
+  input: SendCustomerEmailInput
+): Promise<SendCustomerEmailActionResult> {
+  const payload = sendCustomerEmailSchema.parse(input);
+  const supabase = await createClient();
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: error.message };
-    }
-
-    revalidatePath("/dashboard/communication");
-    return { success: true, communicationId: communication.id };
-  } catch (error) {
-    console.error("Create communication error:", error);
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Failed to create communication" };
+  if (!supabase) {
+    return { success: false, error: "Unable to access database" };
   }
-}
 
-// ============================================================================
-// READ
-// ============================================================================
+  const insertResult = await supabase
+    .from("communications")
+    .insert({
+      company_id: payload.companyId,
+      customer_id: payload.customerId ?? null,
+      job_id: payload.jobId ?? null,
+      property_id: payload.propertyId ?? null,
+      invoice_id: payload.invoiceId ?? null,
+      estimate_id: payload.estimateId ?? null,
+      type: "email",
+      channel: "resend",
+      direction: "outbound",
+      from_address: null,
+      to_address: payload.to,
+      subject: payload.subject,
+      body: payload.body,
+      status: "queued",
+      priority: "normal",
+      is_archived: false,
+      is_automated: false,
+      is_internal: false,
+      is_thread_starter: true,
+    })
+    .select()
+    .single();
 
-export async function getCommunication(
-  communicationId: string
-): Promise<{ success: boolean; error?: string; communication?: any }> {
-  try {
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return { success: false, error: "Database connection not available" };
-    }
-
-    const { data: communication, error } = await supabase
-      .from("communications")
-      .select("*")
-      .eq("id", communicationId)
-      .is("deleted_at", null)
-      .single();
-
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true, communication };
-  } catch (error) {
-    console.error("Get communication error:", error);
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Failed to get communication" };
+  if (insertResult.error || !insertResult.data) {
+    return {
+      success: false,
+      error: insertResult.error?.message
+        ? `Failed to log communication: ${insertResult.error.message}`
+        : "Failed to log communication before sending email",
+    };
   }
-}
 
-export async function getCommunications(filters?: {
-  type?: string;
-  direction?: string;
-  status?: string;
-  customerId?: string;
-  jobId?: string;
-  threadId?: string;
-}): Promise<{ success: boolean; error?: string; communications?: any[] }> {
-  try {
-    const supabase = await createClient();
+  const communication = insertResult.data;
 
-    if (!supabase) {
-      return { success: false, error: "Database connection not available" };
-    }
+  const sendResult = await sendEmail({
+    to: payload.to,
+    subject: payload.subject,
+    template: GenericEmail({
+      recipientName: payload.customerName,
+      message: payload.body,
+    }),
+    templateType: EmailTemplate.GENERIC,
+    companyId: payload.companyId,
+    communicationId: communication.id,
+  });
 
-    let query = supabase
-      .from("communications")
-      .select("*")
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false });
-
-    // Apply filters
-    if (filters?.type && filters.type !== "all") {
-      query = query.eq("type", filters.type);
-    }
-    if (filters?.direction) {
-      query = query.eq("direction", filters.direction);
-    }
-    if (filters?.status && filters.status !== "all") {
-      query = query.eq("status", filters.status);
-    }
-    if (filters?.customerId) {
-      query = query.eq("customer_id", filters.customerId);
-    }
-    if (filters?.jobId) {
-      query = query.eq("job_id", filters.jobId);
-    }
-    if (filters?.threadId) {
-      query = query.eq("thread_id", filters.threadId);
-    }
-
-    const { data: communications, error } = await query;
-
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true, communications };
-  } catch (error) {
-    console.error("Get communications error:", error);
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Failed to get communications" };
-  }
-}
-
-// ============================================================================
-// UPDATE
-// ============================================================================
-
-export async function updateCommunication(
-  communicationId: string,
-  data: CommunicationUpdate
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const validated = communicationUpdateSchema.parse(data);
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return { success: false, error: "Database connection not available" };
-    }
-
-    const { error } = await supabase
-      .from("communications")
-      .update(validated)
-      .eq("id", communicationId)
-      .is("deleted_at", null);
-
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: error.message };
-    }
-
-    revalidatePath("/dashboard/communication");
-    return { success: true };
-  } catch (error) {
-    console.error("Update communication error:", error);
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Failed to update communication" };
-  }
-}
-
-export async function markAsRead(
-  communicationId: string
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return { success: false, error: "Database connection not available" };
-    }
-
-    const { error } = await supabase
+  if (!sendResult.success) {
+    await supabase
       .from("communications")
       .update({
-        read_at: new Date().toISOString(),
-        status: "read",
+        status: "failed",
+        failure_reason: sendResult.error || "Email send failed",
       })
-      .eq("id", communicationId);
+      .eq("id", communication.id);
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: error.message };
-    }
-
-    revalidatePath("/dashboard/communication");
-    return { success: true };
-  } catch (error) {
-    console.error("Mark as read error:", error);
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Failed to mark as read" };
+    return {
+      success: false,
+      error: sendResult.error || "Failed to send email",
+    };
   }
-}
 
-// ============================================================================
-// DELETE
-// ============================================================================
+  await supabase
+    .from("communications")
+    .update({
+      status: "sent",
+      sent_at: new Date().toISOString(),
+    })
+    .eq("id", communication.id);
 
-export async function deleteCommunication(
-  communicationId: string
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const supabase = await createClient();
+  revalidatePath(COMMUNICATIONS_PATH);
 
-    if (!supabase) {
-      return { success: false, error: "Database connection not available" };
-    }
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return { success: false, error: "Unauthorized" };
-    }
-
-    const { error } = await supabase
-      .from("communications")
-      .update({
-        deleted_at: new Date().toISOString(),
-        deleted_by: user.id,
-      })
-      .eq("id", communicationId);
-
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: error.message };
-    }
-
-    revalidatePath("/dashboard/communication");
-    return { success: true };
-  } catch (error) {
-    console.error("Delete communication error:", error);
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Failed to delete communication" };
-  }
+  return {
+    success: true,
+    data: communication,
+  };
 }

@@ -12,9 +12,9 @@
  * - Rate limited to prevent abuse
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { formatPhoneNumber } from "@/lib/telnyx/messaging";
 import { lookupCallerInfo } from "@/lib/telnyx/number-lookup";

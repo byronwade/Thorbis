@@ -5,7 +5,7 @@
 
 "use client";
 
-import { Users, User as UserIcon } from "lucide-react";
+import { Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,11 @@ type JobTeamProps = {
   jobId: string;
 };
 
-export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) {
+export function JobTeam({
+  assignedUser,
+  teamAssignments,
+  jobId,
+}: JobTeamProps) {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "—";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -87,8 +91,8 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
 
               return (
                 <div
-                  key={assignment.id}
                   className="flex items-center gap-4 rounded-md border p-4"
+                  key={assignment.id}
                 >
                   <Avatar className="size-10">
                     <AvatarImage
@@ -105,7 +109,10 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
                       {member.first_name} {member.last_name}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      Assigned {formatDate(assignment.created_at || assignment.assigned_at)}
+                      Assigned{" "}
+                      {formatDate(
+                        assignment.created_at || assignment.assigned_at
+                      )}
                     </p>
                   </div>
                   {(assignment.role || member.role) && (
@@ -131,4 +138,3 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
     </div>
   );
 }
-

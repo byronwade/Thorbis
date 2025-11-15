@@ -2,6 +2,7 @@
 
 import { Buffer } from "node:buffer";
 import { extname } from "node:path";
+import { AuthApiError } from "@supabase/supabase-js";
 import { checkBotId } from "botid/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -30,6 +31,22 @@ import {
   sendWelcomeEmail,
 } from "./emails";
 
+const NAME_MIN_LENGTH = 2;
+const NAME_MAX_LENGTH = 100;
+const COMPANY_NAME_MIN_LENGTH = 2;
+const COMPANY_NAME_MAX_LENGTH = 200;
+const PHONE_MIN_DIGITS = 10;
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 100;
+const CONFIRMATION_TOKEN_TTL_HOURS = 24;
+const COUNTRY_CODE_US = "1";
+const NATIONAL_NUMBER_DIGITS = 10;
+const EXTENDED_US_NUMBER_DIGITS = 11;
+const BYTES_PER_KILOBYTE = 1024;
+const BYTES_PER_MEGABYTE = BYTES_PER_KILOBYTE * BYTES_PER_KILOBYTE;
+const AVATAR_SIZE_LIMIT_MB = 5;
+const MAX_AVATAR_FILE_SIZE = AVATAR_SIZE_LIMIT_MB * BYTES_PER_MEGABYTE;
+
 /**
  * Authentication Server Actions - Supabase Auth + Resend Email Integration
  *
@@ -46,21 +63,21 @@ const signUpSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name is too long"),
+    .min(NAME_MIN_LENGTH, "Name must be at least 2 characters")
+    .max(NAME_MAX_LENGTH, "Name is too long"),
   email: z.string().email("Invalid email address"),
   phone: z
     .string()
     .trim()
-    .min(10, "Phone number is required")
+    .min(PHONE_MIN_DIGITS, "Phone number is required")
     .refine(
-      (value) => value.replace(/\D/g, "").length >= 10,
+      (value) => value.replace(/\D/g, "").length >= PHONE_MIN_DIGITS,
       "Enter a valid phone number"
     ),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(100, "Password is too long")
+    .min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
+    .max(PASSWORD_MAX_LENGTH, "Password is too long")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Password must contain uppercase, lowercase, and number"
@@ -68,8 +85,8 @@ const signUpSchema = z.object({
   companyName: z
     .string()
     .trim()
-    .min(2, "Company name must be at least 2 characters")
-    .max(200, "Company name is too long")
+    .min(COMPANY_NAME_MIN_LENGTH, "Company name must be at least 2 characters")
+    .max(COMPANY_NAME_MAX_LENGTH, "Company name is too long")
     .optional(),
   terms: z
     .boolean()
@@ -89,8 +106,8 @@ const resetPasswordSchema = z
   .object({
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(100, "Password is too long")
+      .min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
+      .max(PASSWORD_MAX_LENGTH, "Password is too long")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain uppercase, lowercase, and number"
@@ -102,8 +119,64 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const AVATAR_STORAGE_BUCKET = "avatars";
+const SUPABASE_RATE_LIMIT_MAX_RETRIES = 3;
+const SUPABASE_RATE_LIMIT_BACKOFF_MS = 200;
+
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+const withSupabaseRateLimitRetry = async <T extends { error?: unknown }>(
+  operation: () => Promise<T>
+): Promise<T> => {
+  for (
+    let attempt = 1;
+    attempt <= SUPABASE_RATE_LIMIT_MAX_RETRIES;
+    attempt += 1
+  ) {
+    try {
+      const result = await operation();
+
+      if (
+        result &&
+        typeof result === "object" &&
+        "error" in result &&
+        result.error instanceof AuthApiError &&
+        result.error.code === "over_request_rate_limit"
+      ) {
+        if (attempt === SUPABASE_RATE_LIMIT_MAX_RETRIES) {
+          throw result.error;
+        }
+
+        await delay(SUPABASE_RATE_LIMIT_BACKOFF_MS * attempt);
+        continue;
+      }
+
+      return result;
+    } catch (error) {
+      if (
+        error instanceof AuthApiError &&
+        error.code === "over_request_rate_limit" &&
+        attempt < SUPABASE_RATE_LIMIT_MAX_RETRIES
+      ) {
+        await delay(SUPABASE_RATE_LIMIT_BACKOFF_MS * attempt);
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error("Supabase auth operation failed after retries");
+};
+
+type SignUpFormInput = z.infer<typeof signUpSchema>;
+
+type SupabaseBrowserClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
 
 function normalizePhoneNumber(input: string): string {
   const trimmed = input.trim();
@@ -117,16 +190,37 @@ function normalizePhoneNumber(input: string): string {
     return `+${digitsOnly}`;
   }
 
-  if (digitsOnly.length === 11 && digitsOnly.startsWith("1")) {
+  if (
+    digitsOnly.length === EXTENDED_US_NUMBER_DIGITS &&
+    digitsOnly.startsWith(COUNTRY_CODE_US)
+  ) {
     return `+${digitsOnly}`;
   }
 
-  if (digitsOnly.length === 10) {
-    return `+1${digitsOnly}`;
+  if (digitsOnly.length === NATIONAL_NUMBER_DIGITS) {
+    return `+${COUNTRY_CODE_US}${digitsOnly}`;
   }
 
   return `+${digitsOnly}`;
 }
+
+const reportAuthIssue = (_message: string, _error?: unknown) => {
+  // TODO: Integrate structured logging/monitoring
+};
+
+const getMetadataString = (
+  metadata: unknown,
+  key: string
+): string | undefined => {
+  if (metadata && typeof metadata === "object") {
+    const value = (metadata as Record<string, unknown>)[key];
+    if (typeof value === "string") {
+      return value;
+    }
+  }
+
+  return;
+};
 
 async function uploadAvatarForNewUser(
   supabase: ServiceSupabaseClient,
@@ -138,14 +232,14 @@ async function uploadAvatarForNewUser(
   }
 
   if (file.size > MAX_AVATAR_FILE_SIZE) {
-    throw new Error("Avatar must be smaller than 5MB");
+    throw new Error(`Avatar must be smaller than ${AVATAR_SIZE_LIMIT_MB}MB`);
   }
 
   const arrayBuffer = await file.arrayBuffer();
   const extension = extname(file.name) || ".jpg";
   const filePath = `${userId}/profile${extension}`;
 
-  const { error } = await supabase.storage
+  const { error: uploadError } = await supabase.storage
     .from(AVATAR_STORAGE_BUCKET)
     .upload(filePath, Buffer.from(arrayBuffer), {
       cacheControl: "3600",
@@ -153,8 +247,8 @@ async function uploadAvatarForNewUser(
       upsert: true,
     });
 
-  if (error) {
-    throw new Error(error.message);
+  if (uploadError) {
+    throw new Error(uploadError.message);
   }
 
   const {
@@ -164,11 +258,468 @@ async function uploadAvatarForNewUser(
   return publicUrl;
 }
 
+const createServiceClientLoader = () => {
+  let client: ServiceSupabaseClient | null = null;
+  return async () => {
+    if (client) {
+      return client;
+    }
+    client = await createServiceSupabaseClient();
+    return client;
+  };
+};
+
+type ParsedSignUpForm = {
+  validated: SignUpFormInput;
+  normalizedPhone: string;
+  companyName?: string;
+  avatarFile: File | null;
+};
+
+const parseSignUpFormData = (formData: FormData): ParsedSignUpForm => {
+  const companyNameEntry = formData.get("companyName");
+  const normalizedCompanyName =
+    typeof companyNameEntry === "string" && companyNameEntry.trim().length > 0
+      ? companyNameEntry
+      : undefined;
+
+  const rawData = {
+    name: (formData.get("name") as string) ?? "",
+    email: (formData.get("email") as string) ?? "",
+    phone: (formData.get("phone") as string) ?? "",
+    password: (formData.get("password") as string) ?? "",
+    companyName: normalizedCompanyName,
+    terms: formData.get("terms") === "on" || formData.get("terms") === "true",
+  };
+
+  const validated = signUpSchema.parse(rawData);
+  const avatarEntry = formData.get("avatar");
+  const avatarFile =
+    avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
+
+  return {
+    validated,
+    normalizedPhone: normalizePhoneNumber(validated.phone),
+    companyName: validated.companyName?.trim() || undefined,
+    avatarFile,
+  };
+};
+
+const requireSupabaseBrowserClient =
+  async (): Promise<SupabaseBrowserClient> => {
+    const supabase = await createClient();
+
+    if (!supabase) {
+      throw new Error(
+        "Authentication service is not configured. Please check your environment variables."
+      );
+    }
+
+    return supabase as SupabaseBrowserClient;
+  };
+
+type RegisterSupabaseUserParams = {
+  supabase: SupabaseBrowserClient;
+  validated: SignUpFormInput;
+  normalizedPhone: string;
+  companyName?: string;
+};
+
+const registerSupabaseUser = async ({
+  supabase,
+  validated,
+  normalizedPhone,
+  companyName,
+}: RegisterSupabaseUserParams) => {
+  const { data, error } = await withSupabaseRateLimitRetry(() =>
+    supabase.auth.signUp({
+      email: validated.email,
+      password: validated.password,
+      options: {
+        data: {
+          name: validated.name,
+          phone: normalizedPhone,
+          companyName: companyName ?? null,
+        },
+        emailRedirectTo: `${emailConfig.siteUrl}/auth/callback`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data.user) {
+    throw new Error("Failed to create user account");
+  }
+
+  return data;
+};
+
+type SyncSignUpProfileParams = {
+  ensureServiceSupabase: () => Promise<ServiceSupabaseClient>;
+  userId: string;
+  normalizedPhone: string;
+  name: string;
+  companyName?: string;
+  avatarFile: File | null;
+};
+
+const syncSignUpProfile = async ({
+  ensureServiceSupabase,
+  userId,
+  normalizedPhone,
+  name,
+  companyName,
+  avatarFile,
+}: SyncSignUpProfileParams) => {
+  let avatarUrl: string | null = null;
+
+  if (avatarFile) {
+    try {
+      const adminClient = await ensureServiceSupabase();
+      avatarUrl = await uploadAvatarForNewUser(adminClient, avatarFile, userId);
+    } catch (avatarUploadError) {
+      reportAuthIssue("Avatar upload failed", avatarUploadError);
+    }
+  }
+
+  try {
+    const adminClient = await ensureServiceSupabase();
+    const updatePayload: Record<string, string | null> = {
+      phone: normalizedPhone,
+    };
+
+    if (avatarUrl) {
+      updatePayload.avatar = avatarUrl;
+    }
+
+    await adminClient.from("users").update(updatePayload).eq("id", userId);
+  } catch (profileUpdateError) {
+    reportAuthIssue("Failed to update user profile", profileUpdateError);
+  }
+
+  if (!avatarUrl) {
+    return;
+  }
+
+  try {
+    const adminClient = await ensureServiceSupabase();
+    await adminClient.auth.admin.updateUserById(userId, {
+      user_metadata: {
+        name,
+        phone: normalizedPhone,
+        companyName: companyName ?? null,
+        avatarUrl,
+      },
+    });
+  } catch (metadataError) {
+    reportAuthIssue("Failed to sync avatar metadata", metadataError);
+  }
+};
+
+type PostSignUpEmailParams = {
+  email: string;
+  name: string;
+  requiresConfirmation: boolean;
+  userId: string;
+};
+
+const handlePostSignUpEmails = async ({
+  email,
+  name,
+  requiresConfirmation,
+  userId,
+}: PostSignUpEmailParams): Promise<AuthActionResult | null> => {
+  if (requiresConfirmation) {
+    const { token, expiresAt } = await createEmailVerificationToken(
+      email,
+      userId,
+      CONFIRMATION_TOKEN_TTL_HOURS
+    );
+
+    const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
+    const verificationResult = await sendEmailVerification(email, {
+      name,
+      verificationUrl,
+    });
+
+    if (!verificationResult.success) {
+      reportAuthIssue(
+        "Failed to send verification email",
+        verificationResult.error
+      );
+    }
+
+    return {
+      success: true,
+      data: {
+        requiresEmailConfirmation: true,
+        message:
+          "Account created! Please check your email to verify your account.",
+        expiresAt: expiresAt.toISOString(),
+      },
+    };
+  }
+
+  const emailResult = await sendWelcomeEmail(email, {
+    name,
+    loginUrl: `${emailConfig.siteUrl}/dashboard/welcome`,
+  });
+
+  if (!emailResult.success) {
+    reportAuthIssue("Failed to send welcome email", emailResult.error);
+  }
+
+  return null;
+};
+
+const normalizeOptionalPhone = (phone: string | null): string | null => {
+  if (!phone) {
+    return null;
+  }
+
+  const digitsOnly = phone.replace(/\D/g, "");
+  if (digitsOnly.length < PHONE_MIN_DIGITS) {
+    throw new Error(
+      "Please enter a valid phone number with at least 10 digits."
+    );
+  }
+
+  return normalizePhoneNumber(phone);
+};
+
+type CompleteProfileForm = {
+  name: string | null;
+  normalizedPhone: string | null;
+  avatarFile: File | null;
+};
+
+const parseCompleteProfileForm = (formData: FormData): CompleteProfileForm => {
+  const avatarEntry = formData.get("avatar");
+  const avatarFile =
+    avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
+
+  const name = (formData.get("name") as string | null) ?? null;
+  const phone = (formData.get("phone") as string | null) ?? null;
+
+  return {
+    name,
+    normalizedPhone: normalizeOptionalPhone(phone),
+    avatarFile,
+  };
+};
+
+const requireAuthenticatedUser = async (supabase: SupabaseBrowserClient) => {
+  const {
+    data: { user },
+  } = await withSupabaseRateLimitRetry(() => supabase.auth.getUser());
+
+  if (!user) {
+    throw new Error("You must be signed in to complete your profile.");
+  }
+
+  return user;
+};
+
+type UpdateCompleteProfileRecordsParams = {
+  ensureServiceSupabase: () => Promise<ServiceSupabaseClient>;
+  userId: string;
+  name: string | null;
+  normalizedPhone: string | null;
+  avatarFile: File | null;
+  existingAvatar: string | null;
+  existingMetadata?: Record<string, unknown>;
+};
+
+const uploadAvatarWithFallback = async ({
+  ensureServiceSupabase,
+  avatarFile,
+  userId,
+  fallbackAvatar,
+}: {
+  ensureServiceSupabase: () => Promise<ServiceSupabaseClient>;
+  avatarFile: File | null;
+  userId: string;
+  fallbackAvatar: string | null;
+}): Promise<string | null> => {
+  if (!avatarFile) {
+    return fallbackAvatar;
+  }
+
+  try {
+    const adminClient = await ensureServiceSupabase();
+    return await uploadAvatarForNewUser(adminClient, avatarFile, userId);
+  } catch (avatarUploadError) {
+    reportAuthIssue("Avatar upload failed", avatarUploadError);
+    return fallbackAvatar;
+  }
+};
+
+const updateUserTableRecord = async ({
+  ensureServiceSupabase,
+  userId,
+  name,
+  normalizedPhone,
+  avatarUrl,
+}: {
+  ensureServiceSupabase: () => Promise<ServiceSupabaseClient>;
+  userId: string;
+  name: string | null;
+  normalizedPhone: string | null;
+  avatarUrl: string | null;
+}): Promise<AuthActionResult | null> => {
+  const updatePayload: Record<string, string | null> = {};
+
+  if (name) {
+    updatePayload.name = name;
+  }
+  if (normalizedPhone) {
+    updatePayload.phone = normalizedPhone;
+  }
+  if (avatarUrl) {
+    updatePayload.avatar = avatarUrl;
+  }
+
+  if (Object.keys(updatePayload).length === 0) {
+    return null;
+  }
+
+  try {
+    const adminClient = await ensureServiceSupabase();
+    const { error } = await adminClient
+      .from("users")
+      .update(updatePayload)
+      .eq("id", userId);
+
+    if (error) {
+      reportAuthIssue("Failed to update user profile", error);
+      return {
+        success: false,
+        error: `Failed to update your profile: ${error.message}`,
+      };
+    }
+  } catch (profileUpdateError) {
+    reportAuthIssue("Failed to update user profile", profileUpdateError);
+    return {
+      success: false,
+      error: "Failed to update your profile. Please try again.",
+    };
+  }
+
+  return null;
+};
+
+const syncUserMetadataProfile = async ({
+  ensureServiceSupabase,
+  userId,
+  name,
+  normalizedPhone,
+  avatarUrl,
+  existingMetadata,
+}: {
+  ensureServiceSupabase: () => Promise<ServiceSupabaseClient>;
+  userId: string;
+  name: string | null;
+  normalizedPhone: string | null;
+  avatarUrl: string | null;
+  existingMetadata?: Record<string, unknown>;
+}) => {
+  const hasMetadataChanges = Boolean(name || normalizedPhone || avatarUrl);
+  if (!hasMetadataChanges) {
+    return;
+  }
+
+  try {
+    const adminClient = await ensureServiceSupabase();
+    const metadata: Record<string, string | null> = {
+      ...(existingMetadata as Record<string, string | null>),
+    };
+
+    if (name) {
+      metadata.name = name;
+    }
+    if (normalizedPhone) {
+      metadata.phone = normalizedPhone;
+    }
+    if (avatarUrl) {
+      metadata.avatarUrl = avatarUrl;
+    }
+
+    await adminClient.auth.admin.updateUserById(userId, {
+      user_metadata: metadata,
+    });
+  } catch (metadataError) {
+    reportAuthIssue("Failed to sync user metadata", metadataError);
+  }
+};
+
+const updateCompleteProfileRecords = async ({
+  ensureServiceSupabase,
+  userId,
+  name,
+  normalizedPhone,
+  avatarFile,
+  existingAvatar,
+  existingMetadata,
+}: UpdateCompleteProfileRecordsParams): Promise<AuthActionResult | null> => {
+  const avatarUrl = await uploadAvatarWithFallback({
+    ensureServiceSupabase,
+    avatarFile,
+    userId,
+    fallbackAvatar: existingAvatar,
+  });
+
+  const userUpdateResult = await updateUserTableRecord({
+    ensureServiceSupabase,
+    userId,
+    name,
+    normalizedPhone,
+    avatarUrl,
+  });
+
+  if (userUpdateResult) {
+    return userUpdateResult;
+  }
+
+  await syncUserMetadataProfile({
+    ensureServiceSupabase,
+    userId,
+    name,
+    normalizedPhone,
+    avatarUrl,
+    existingMetadata,
+  });
+
+  return null;
+};
+
+type ResolveProfileRedirectParams = {
+  ensureServiceSupabase: () => Promise<ServiceSupabaseClient>;
+  userId: string;
+};
+
+const resolveProfileRedirectPath = async ({
+  ensureServiceSupabase,
+  userId,
+}: ResolveProfileRedirectParams): Promise<string> => {
+  const adminClient = await ensureServiceSupabase();
+  const { data: hasCompany } = await adminClient
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+
+  return hasCompany ? "/dashboard" : "/dashboard/welcome";
+};
 // Internal return type (not exported - Next.js 16 "use server" restriction)
 type AuthActionResult = {
   success: boolean;
   error?: string;
-  data?: any;
+  data?: Record<string, unknown>;
 };
 
 /**
@@ -192,211 +743,67 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
       };
     }
 
-    // Parse and validate form data
-    const companyNameEntry = formData.get("companyName");
-    const normalizedCompanyName =
-      typeof companyNameEntry === "string" && companyNameEntry.trim().length > 0
-        ? companyNameEntry
-        : undefined;
+    const parsedForm = parseSignUpFormData(formData);
 
-    const rawData = {
-      name: (formData.get("name") as string) ?? "",
-      email: (formData.get("email") as string) ?? "",
-      phone: (formData.get("phone") as string) ?? "",
-      password: (formData.get("password") as string) ?? "",
-      companyName: normalizedCompanyName,
-      terms: formData.get("terms") === "on" || formData.get("terms") === "true",
-    };
+    await checkRateLimit(parsedForm.validated.email, authRateLimiter);
 
-    const validatedData = signUpSchema.parse(rawData);
-    const normalizedPhone = normalizePhoneNumber(validatedData.phone);
-    const companyName = validatedData.companyName?.trim() || undefined;
-    const avatarEntry = formData.get("avatar");
-    const avatarFile =
-      avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
-
-    // Rate limit sign-up attempts by email
-    try {
-      await checkRateLimit(validatedData.email, authRateLimiter);
-    } catch (error) {
-      if (error instanceof RateLimitError) {
-        return {
-          success: false,
-          error: error.message,
-        };
-      }
-      throw error;
-    }
-
-    // Create Supabase client
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return {
-        success: false,
-        error:
-          "Authentication service is not configured. Please check your environment variables.",
-      };
-    }
-
-    // Sign up with Supabase Auth
-    // IMPORTANT: Disable "Confirm signup" in Supabase Dashboard > Authentication > Email Templates
-    // We're handling email verification ourselves with custom tokens
-    const { data, error } = await supabase.auth.signUp({
-      email: validatedData.email,
-      password: validatedData.password,
-      options: {
-        data: {
-          name: validatedData.name,
-          phone: normalizedPhone,
-          companyName: companyName ?? null,
-        },
-        // Skip Supabase's email confirmation - we'll handle it ourselves
-        emailRedirectTo: `${emailConfig.siteUrl}/auth/callback`,
-      },
+    const supabase = await requireSupabaseBrowserClient();
+    const authResult = await registerSupabaseUser({
+      supabase,
+      validated: parsedForm.validated,
+      normalizedPhone: parsedForm.normalizedPhone,
+      companyName: parsedForm.companyName,
     });
 
-    if (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
+    const userId = authResult.user?.id;
+    if (!userId) {
+      throw new Error("Failed to create user account");
     }
 
-    if (!data.user) {
-      return {
-        success: false,
-        error: "Failed to create user account",
-      };
-    }
-
-    const userId = data.user.id;
-    let serviceSupabase: ServiceSupabaseClient | null = null;
-    const ensureServiceSupabase = async () => {
-      if (serviceSupabase) {
-        return serviceSupabase;
-      }
-      serviceSupabase = await createServiceSupabaseClient();
-      return serviceSupabase;
-    };
-
-    let avatarUrl: string | null = null;
-
-    if (avatarFile) {
-      try {
-        const adminClient = await ensureServiceSupabase();
-        avatarUrl = await uploadAvatarForNewUser(
-          adminClient,
-          avatarFile,
-          userId
-        );
-      } catch (avatarUploadError) {
-        console.error("Avatar upload failed:", avatarUploadError);
-      }
-    }
-
-    try {
-      const adminClient = await ensureServiceSupabase();
-      const updatePayload: Record<string, string | null> = {
-        phone: normalizedPhone,
-      };
-      if (avatarUrl) {
-        updatePayload.avatar = avatarUrl;
-      }
-      await adminClient.from("users").update(updatePayload).eq("id", userId);
-    } catch (profileUpdateError) {
-      console.error("Failed to update user profile:", profileUpdateError);
-    }
-
-    if (avatarUrl) {
-      try {
-        const adminClient = await ensureServiceSupabase();
-        await adminClient.auth.admin.updateUserById(userId, {
-          user_metadata: {
-            name: validatedData.name,
-            phone: normalizedPhone,
-            companyName: companyName ?? null,
-            avatarUrl,
-          },
-        });
-      } catch (metadataError) {
-        console.error("Failed to sync avatar metadata:", metadataError);
-      }
-    }
-
-    // Check if email confirmation is required (based on Supabase settings)
-    const requiresConfirmation = !data.session;
-
-    if (requiresConfirmation) {
-      // Generate our own secure verification token
-      const { token, expiresAt } = await createEmailVerificationToken(
-        validatedData.email,
-        data.user.id,
-        24 // Expires in 24 hours
-      );
-
-      // Send custom branded verification email via Resend
-      const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
-
-      const verificationResult = await sendEmailVerification(
-        validatedData.email,
-        {
-          name: validatedData.name,
-          verificationUrl,
-        }
-      );
-
-      // Log email send failure but don't block signup
-      if (!verificationResult.success) {
-        console.error(
-          "Failed to send verification email:",
-          verificationResult.error
-        );
-      }
-
-      return {
-        success: true,
-        data: {
-          requiresEmailConfirmation: true,
-          message:
-            "Account created! Please check your email to verify your account.",
-          expiresAt: expiresAt.toISOString(),
-        },
-      };
-    }
-
-    // If no email confirmation needed, send welcome email and redirect to onboarding
-    const emailResult = await sendWelcomeEmail(validatedData.email, {
-      name: validatedData.name,
-      loginUrl: `${emailConfig.siteUrl}/dashboard/welcome`,
+    const ensureServiceSupabase = createServiceClientLoader();
+    await syncSignUpProfile({
+      ensureServiceSupabase,
+      userId,
+      normalizedPhone: parsedForm.normalizedPhone,
+      name: parsedForm.validated.name,
+      companyName: parsedForm.companyName,
+      avatarFile: parsedForm.avatarFile,
     });
 
-    // Log email send failure but don't block signup
-    if (!emailResult.success) {
-      console.error("Failed to send welcome email:", emailResult.error);
+    const postSignUpResult = await handlePostSignUpEmails({
+      email: parsedForm.validated.email,
+      name: parsedForm.validated.name,
+      requiresConfirmation: !authResult.session,
+      userId,
+    });
+
+    if (postSignUpResult) {
+      return postSignUpResult;
     }
 
     // Revalidate and redirect to onboarding
     revalidatePath("/", "layout");
     redirect("/dashboard/welcome");
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (caughtError) {
+    if (caughtError instanceof z.ZodError) {
       return {
         success: false,
-        error: error.issues[0]?.message || "Validation error",
+        error: caughtError.issues[0]?.message || "Validation error",
       };
     }
 
-    // Don't redirect on errors, just return them
-    if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+    if (
+      caughtError instanceof Error &&
+      caughtError.message !== "NEXT_REDIRECT"
+    ) {
       return {
         success: false,
-        error: error.message,
+        error: caughtError.message,
       };
     }
 
     // Re-throw redirect errors
-    throw error;
+    throw caughtError;
   }
 }
 
@@ -413,184 +820,55 @@ export async function completeProfile(
   formData: FormData
 ): Promise<AuthActionResult> {
   try {
-    // Create Supabase client
-    const supabase = await createClient();
+    const supabase = await requireSupabaseBrowserClient();
+    const user = await requireAuthenticatedUser(supabase);
+    const parsedForm = parseCompleteProfileForm(formData);
+    const ensureServiceSupabase = createServiceClientLoader();
 
-    if (!supabase) {
+    const profileUpdateResult = await updateCompleteProfileRecords({
+      ensureServiceSupabase,
+      userId: user.id,
+      name: parsedForm.name,
+      normalizedPhone: parsedForm.normalizedPhone,
+      avatarFile: parsedForm.avatarFile,
+      existingAvatar:
+        user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+      existingMetadata: user.user_metadata,
+    });
+
+    if (profileUpdateResult) {
+      return profileUpdateResult;
+    }
+
+    const redirectPath = await resolveProfileRedirectPath({
+      ensureServiceSupabase,
+      userId: user.id,
+    }).catch((redirectError) => {
+      reportAuthIssue("Error checking company status", redirectError);
+      return "/dashboard/welcome";
+    });
+
+    revalidatePath("/", "layout");
+    redirect(redirectPath);
+  } catch (caughtError) {
+    if (caughtError instanceof z.ZodError) {
       return {
         success: false,
-        error: "Authentication service is not configured.",
+        error: caughtError.issues[0]?.message || "Validation error",
       };
     }
 
-    // Get current user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    if (
+      caughtError instanceof Error &&
+      caughtError.message !== "NEXT_REDIRECT"
+    ) {
       return {
         success: false,
-        error: "You must be signed in to complete your profile.",
+        error: caughtError.message,
       };
     }
 
-    // Parse form data
-    const name = formData.get("name") as string | null;
-    const phone = formData.get("phone") as string | null;
-    const avatarFile = formData.get("avatar") as File | null;
-
-    // Validate phone if provided
-    let normalizedPhone: string | null = null;
-    if (phone) {
-      normalizedPhone = phone.replace(/\D/g, "");
-      if (normalizedPhone.length < 10) {
-        return {
-          success: false,
-          error: "Please enter a valid phone number with at least 10 digits.",
-        };
-      }
-    }
-
-    const userId = user.id;
-    let serviceSupabase: ServiceSupabaseClient | null = null;
-    const ensureServiceSupabase = async () => {
-      if (serviceSupabase) {
-        return serviceSupabase;
-      }
-      serviceSupabase = await createServiceSupabaseClient();
-      return serviceSupabase;
-    };
-
-    // Get existing avatar from user metadata (OAuth avatar)
-    const existingOAuthAvatar =
-      user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
-
-    // Upload new avatar if provided, otherwise keep OAuth avatar
-    let avatarUrl: string | null = existingOAuthAvatar;
-    if (avatarFile && avatarFile.size > 0) {
-      try {
-        const adminClient = await ensureServiceSupabase();
-        avatarUrl = await uploadAvatarForNewUser(
-          adminClient,
-          avatarFile,
-          userId
-        );
-      } catch (avatarUploadError) {
-        console.error("Avatar upload failed:", avatarUploadError);
-        // Keep OAuth avatar if upload fails
-        avatarUrl = existingOAuthAvatar;
-      }
-    }
-
-    // Update public.users table
-    try {
-      const adminClient = await ensureServiceSupabase();
-      const updatePayload: Record<string, string | null> = {};
-
-      if (name) {
-        updatePayload.name = name;
-      }
-      if (normalizedPhone) {
-        updatePayload.phone = normalizedPhone;
-      }
-      // Always update avatar (either new upload or OAuth avatar)
-      if (avatarUrl) {
-        updatePayload.avatar = avatarUrl;
-      }
-
-      const { error: updateError } = await adminClient
-        .from("users")
-        .update(updatePayload)
-        .eq("id", userId);
-
-      if (updateError) {
-        console.error("Failed to update user profile:", updateError);
-        return {
-          success: false,
-          error: `Failed to update your profile: ${updateError.message}`,
-        };
-      }
-
-      console.log(
-        `✅ Profile updated for user ${userId}:`,
-        JSON.stringify(updatePayload)
-      );
-    } catch (profileUpdateError) {
-      console.error("Failed to update user profile:", profileUpdateError);
-      return {
-        success: false,
-        error: "Failed to update your profile. Please try again.",
-      };
-    }
-
-    // Update auth metadata
-    try {
-      const adminClient = await ensureServiceSupabase();
-      const metadata: Record<string, string | null> = {
-        ...user.user_metadata,
-      };
-
-      if (name) {
-        metadata.name = name;
-      }
-      if (normalizedPhone) {
-        metadata.phone = normalizedPhone;
-      }
-      if (avatarUrl) {
-        metadata.avatarUrl = avatarUrl;
-      }
-
-      await adminClient.auth.admin.updateUserById(userId, {
-        user_metadata: metadata,
-      });
-    } catch (metadataError) {
-      console.error("Failed to sync user metadata:", metadataError);
-    }
-
-    // Check if user has an active company to determine redirect
-    try {
-      const adminClient = await ensureServiceSupabase();
-      const { data: hasCompany } = await adminClient
-        .from("team_members")
-        .select("company_id")
-        .eq("user_id", userId)
-        .eq("status", "active")
-        .limit(1)
-        .maybeSingle();
-
-      const redirectPath = hasCompany ? "/dashboard" : "/dashboard/welcome";
-      console.log(
-        `✅ Profile complete - redirecting to ${redirectPath} (hasCompany: ${!!hasCompany})`
-      );
-
-      // Revalidate and redirect
-      revalidatePath("/", "layout");
-      redirect(redirectPath);
-    } catch (redirectError) {
-      console.error("Error checking company status:", redirectError);
-      // Fallback to welcome page
-      revalidatePath("/", "layout");
-      redirect("/dashboard/welcome");
-    }
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-
-    // Don't redirect on errors, just return them
-    if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-
-    // Re-throw redirect errors
-    throw error;
+    throw caughtError;
   }
 }
 
@@ -625,14 +903,14 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
     // Rate limit sign-in attempts by email
     try {
       await checkRateLimit(validatedData.email, authRateLimiter);
-    } catch (error) {
-      if (error instanceof RateLimitError) {
+    } catch (rateLimitError) {
+      if (rateLimitError instanceof RateLimitError) {
         return {
           success: false,
-          error: error.message,
+          error: rateLimitError.message,
         };
       }
-      throw error;
+      throw rateLimitError;
     }
 
     // Create Supabase client
@@ -647,15 +925,17 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
     }
 
     // Sign in with Supabase Auth
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: validatedData.email,
-      password: validatedData.password,
-    });
+    const { data, error: signInError } = await withSupabaseRateLimitRetry(() =>
+      supabase.auth.signInWithPassword({
+        email: validatedData.email,
+        password: validatedData.password,
+      })
+    );
 
-    if (error) {
+    if (signInError) {
       return {
         success: false,
-        error: error.message,
+        error: signInError.message,
       };
     }
 
@@ -669,24 +949,25 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
     // Revalidate and redirect to dashboard
     revalidatePath("/", "layout");
     redirect("/dashboard");
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (caughtError) {
+    if (caughtError instanceof z.ZodError) {
       return {
         success: false,
-        error: error.issues[0]?.message || "Validation error",
+        error: caughtError.issues[0]?.message || "Validation error",
       };
     }
 
-    // Don't redirect on errors, just return them
-    if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+    if (
+      caughtError instanceof Error &&
+      caughtError.message !== "NEXT_REDIRECT"
+    ) {
       return {
         success: false,
-        error: error.message,
+        error: caughtError.message,
       };
     }
 
-    // Re-throw redirect errors
-    throw error;
+    throw caughtError;
   }
 }
 
@@ -716,12 +997,14 @@ export async function signOut(): Promise<AuthActionResult> {
     }
 
     // Sign out from Supabase (clears auth cookies)
-    const { error } = await supabase.auth.signOut();
+    const { error: signOutError } = await withSupabaseRateLimitRetry(() =>
+      supabase.auth.signOut()
+    );
 
-    if (error) {
+    if (signOutError) {
       return {
         success: false,
-        error: error.message,
+        error: signOutError.message,
       };
     }
 
@@ -732,17 +1015,18 @@ export async function signOut(): Promise<AuthActionResult> {
     // Revalidate and redirect to login
     revalidatePath("/", "layout");
     redirect("/login");
-  } catch (error) {
-    // Don't redirect on errors, just return them
-    if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+  } catch (caughtError) {
+    if (
+      caughtError instanceof Error &&
+      caughtError.message !== "NEXT_REDIRECT"
+    ) {
       return {
         success: false,
-        error: error.message,
+        error: caughtError.message,
       };
     }
 
-    // Re-throw redirect errors
-    throw error;
+    throw caughtError;
   }
 }
 
@@ -769,17 +1053,19 @@ export async function signInWithOAuth(
       };
     }
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
-      },
-    });
+    const { data, error: oauthError } = await withSupabaseRateLimitRetry(() =>
+      supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+        },
+      })
+    );
 
-    if (error) {
+    if (oauthError) {
       return {
         success: false,
-        error: error.message,
+        error: oauthError.message,
       };
     }
 
@@ -791,17 +1077,18 @@ export async function signInWithOAuth(
     return {
       success: true,
     };
-  } catch (error) {
-    // Don't redirect on errors, just return them
-    if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+  } catch (caughtError) {
+    if (
+      caughtError instanceof Error &&
+      caughtError.message !== "NEXT_REDIRECT"
+    ) {
       return {
         success: false,
-        error: error.message,
+        error: caughtError.message,
       };
     }
 
-    // Re-throw redirect errors
-    throw error;
+    throw caughtError;
   }
 }
 
@@ -835,14 +1122,14 @@ export async function forgotPassword(
     // Rate limit password reset requests by email (stricter limit)
     try {
       await checkRateLimit(validatedData.email, passwordResetRateLimiter);
-    } catch (error) {
-      if (error instanceof RateLimitError) {
+    } catch (rateLimitError) {
+      if (rateLimitError instanceof RateLimitError) {
         return {
           success: false,
-          error: error.message,
+          error: rateLimitError.message,
         };
       }
-      throw error;
+      throw rateLimitError;
     }
 
     const supabase = await createClient();
@@ -855,17 +1142,16 @@ export async function forgotPassword(
     }
 
     // Generate password reset token via Supabase
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      validatedData.email,
-      {
+    const { error: resetPasswordError } = await withSupabaseRateLimitRetry(() =>
+      supabase.auth.resetPasswordForEmail(validatedData.email, {
         redirectTo: `${emailConfig.siteUrl}/auth/reset-password`,
-      }
+      })
     );
 
-    if (error) {
+    if (resetPasswordError) {
       return {
         success: false,
-        error: error.message,
+        error: resetPasswordError.message,
       };
     }
 
@@ -894,18 +1180,20 @@ export async function forgotPassword(
         message: "Password reset email sent. Please check your inbox.",
       },
     };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (caughtError) {
+    if (caughtError instanceof z.ZodError) {
       return {
         success: false,
-        error: error.issues[0]?.message || "Validation error",
+        error: caughtError.issues[0]?.message || "Validation error",
       };
     }
 
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : "Failed to send reset email",
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Failed to send reset email",
     };
   }
 }
@@ -951,16 +1239,18 @@ export async function resetPassword(
     // Get current user before updating password
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await withSupabaseRateLimitRetry(() => supabase.auth.getUser());
 
-    const { error } = await supabase.auth.updateUser({
-      password: validatedData.password,
-    });
+    const { error: updateUserError } = await withSupabaseRateLimitRetry(() =>
+      supabase.auth.updateUser({
+        password: validatedData.password,
+      })
+    );
 
-    if (error) {
+    if (updateUserError) {
       return {
         success: false,
-        error: error.message,
+        error: updateUserError.message,
       };
     }
 
@@ -973,8 +1263,8 @@ export async function resetPassword(
 
       // Log email send failure but don't block password reset
       if (!emailResult.success) {
-        console.error(
-          "Failed to send password changed email:",
+        reportAuthIssue(
+          "Failed to send password changed email",
           emailResult.error
         );
       }
@@ -987,18 +1277,20 @@ export async function resetPassword(
           "Password updated successfully. A confirmation email has been sent.",
       },
     };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (caughtError) {
+    if (caughtError instanceof z.ZodError) {
       return {
         success: false,
-        error: error.issues[0]?.message || "Validation error",
+        error: caughtError.issues[0]?.message || "Validation error",
       };
     }
 
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : "Failed to reset password",
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Failed to reset password",
     };
   }
 }
@@ -1021,11 +1313,11 @@ export async function getCurrentUser() {
 
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await withSupabaseRateLimitRetry(() => supabase.auth.getUser());
 
     return user;
-  } catch (error) {
-    console.error("Error getting current user:", error);
+  } catch (caughtError) {
+    reportAuthIssue("Error getting current user", caughtError);
     return null;
   }
 }
@@ -1048,11 +1340,11 @@ export async function getSession() {
 
     const {
       data: { session },
-    } = await supabase.auth.getSession();
+    } = await withSupabaseRateLimitRetry(() => supabase.auth.getSession());
 
     return session;
-  } catch (error) {
-    console.error("Error getting session:", error);
+  } catch (caughtError) {
+    reportAuthIssue("Error getting session", caughtError);
     return null;
   }
 }
@@ -1100,8 +1392,8 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
         .eq("id", tokenRecord.userId);
 
       if (updateError) {
-        console.error(
-          "Failed to update email verification status:",
+        reportAuthIssue(
+          "Failed to update email verification status",
           updateError
         );
         return {
@@ -1112,12 +1404,12 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
 
       // Send welcome email after successful verification
       const welcomeResult = await sendWelcomeEmail(tokenRecord.email, {
-        name: (tokenRecord.metadata as any)?.name || "User",
+        name: getMetadataString(tokenRecord.metadata, "name") || "User",
         loginUrl: `${emailConfig.siteUrl}/login`,
       });
 
       if (!welcomeResult.success) {
-        console.error("Failed to send welcome email:", welcomeResult.error);
+        reportAuthIssue("Failed to send welcome email", welcomeResult.error);
       }
     }
 
@@ -1128,11 +1420,14 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
         email: tokenRecord.email,
       },
     };
-  } catch (error) {
-    console.error("Error verifying email:", error);
+  } catch (caughtError) {
+    reportAuthIssue("Error verifying email", caughtError);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to verify email",
+      error:
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Failed to verify email",
     };
   }
 }
@@ -1180,7 +1475,7 @@ export async function resendVerificationEmail(
     const { token, expiresAt } = await createEmailVerificationToken(
       email,
       userData.id,
-      24
+      CONFIRMATION_TOKEN_TTL_HOURS
     );
 
     // Send verification email
@@ -1192,7 +1487,7 @@ export async function resendVerificationEmail(
     });
 
     if (!emailResult.success) {
-      console.error("Failed to send verification email:", emailResult.error);
+      reportAuthIssue("Failed to send verification email", emailResult.error);
       return {
         success: false,
         error: "Failed to send verification email. Please try again.",
@@ -1206,13 +1501,13 @@ export async function resendVerificationEmail(
         expiresAt: expiresAt.toISOString(),
       },
     };
-  } catch (error) {
-    console.error("Error resending verification email:", error);
+  } catch (caughtError) {
+    reportAuthIssue("Error resending verification email", caughtError);
     return {
       success: false,
       error:
-        error instanceof Error
-          ? error.message
+        caughtError instanceof Error
+          ? caughtError.message
           : "Failed to resend verification email",
     };
   }

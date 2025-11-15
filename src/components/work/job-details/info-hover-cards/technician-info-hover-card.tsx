@@ -5,17 +5,16 @@
 
 "use client";
 
-import { Check, Copy, Mail, Phone, User, Users, Wrench } from "lucide-react";
+import { Check, Copy, Mail, Phone, User, Users } from "lucide-react";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type TechnicianInfoHoverCardProps = {
   technician?: {
@@ -64,9 +63,8 @@ export function TechnicianInfoHoverCard({
       "Technician"
     : "Team";
 
-  const getInitials = (firstName?: string | null, lastName?: string | null) => {
-    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase() || "T";
-  };
+  const getInitials = (firstName?: string | null, lastName?: string | null) =>
+    `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase() || "T";
 
   // If no technician or team members, don't render
   if (!primaryTech && teamMembers.length === 0) {
@@ -89,7 +87,8 @@ export function TechnicianInfoHoverCard({
           ) : (
             <>
               <Users className="size-4" />
-              {teamMembers.length} Team {teamMembers.length === 1 ? "Member" : "Members"}
+              {teamMembers.length} Team{" "}
+              {teamMembers.length === 1 ? "Member" : "Members"}
             </>
           )}
         </Button>
@@ -112,7 +111,7 @@ export function TechnicianInfoHoverCard({
                 <div className="flex-1">
                   <h4 className="font-semibold text-sm">{displayName}</h4>
                   {primaryTech.role && (
-                    <p className="capitalize text-muted-foreground text-xs">
+                    <p className="text-muted-foreground text-xs capitalize">
                       {primaryTech.role}
                     </p>
                   )}
@@ -219,7 +218,7 @@ export function TechnicianInfoHoverCard({
                         <div className="flex-1">
                           <p className="text-sm">{memberName}</p>
                           {member.role && (
-                            <p className="capitalize text-muted-foreground text-xs">
+                            <p className="text-muted-foreground text-xs capitalize">
                               {member.role}
                             </p>
                           )}
@@ -263,7 +262,7 @@ export function TechnicianInfoHoverCard({
                       <div className="flex-1">
                         <p className="font-medium text-sm">{memberName}</p>
                         {member.role && (
-                          <p className="capitalize text-muted-foreground text-xs">
+                          <p className="text-muted-foreground text-xs capitalize">
                             {member.role}
                           </p>
                         )}
@@ -301,4 +300,3 @@ export function TechnicianInfoHoverCard({
     </HoverCard>
   );
 }
-

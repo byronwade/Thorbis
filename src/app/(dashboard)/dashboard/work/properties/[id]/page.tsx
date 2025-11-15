@@ -22,6 +22,10 @@ import {
 } from "@/lib/auth/company-context";
 import { generatePropertyStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
+import {
+  hasReportableError,
+  isMissingColumnError,
+} from "@/lib/supabase/error-helpers";
 
 type PropertyPageProps = {
   params: Promise<{
@@ -111,7 +115,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     estimatesResult,
     invoicesResult,
     maintenancePlansResult,
-    communicationsResult,
     activitiesResult,
     notesResult,
     attachmentsResult,
@@ -222,14 +225,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       .is("deleted_at", null)
       .order("created_at", { ascending: false }),
 
-    // 8. Communications related to this property
-    supabase
-      .from("communications")
-      .select("*")
-      .eq("property_id", propertyId)
-      .order("created_at", { ascending: false })
-      .limit(50),
-
     // 6. Activity log
     supabase
       .from("activity_log")
@@ -270,10 +265,84 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const estimates = estimatesResult.data || []; // NEW
   const invoices = invoicesResult.data || []; // NEW
   const maintenancePlans = maintenancePlansResult.data || []; // NEW
-  const communications = communicationsResult.data || [];
   const activities = activitiesResult.data || [];
   const notes = notesResult.data || [];
   const attachments = attachmentsResult.data || [];
+
+  const propertyCommunicationFilters: string[] = [];
+  if (customer?.id) {
+    propertyCommunicationFilters.push(`customer_id.eq.${customer.id}`);
+  }
+  const jobIds = jobs.map((job: any) => job.id).filter(Boolean);
+  for (const id of jobIds) {
+    propertyCommunicationFilters.push(`job_id.eq.${id}`);
+  }
+  const invoiceIds = invoices.map((invoice: any) => invoice.id).filter(Boolean);
+  for (const id of invoiceIds) {
+    propertyCommunicationFilters.push(`invoice_id.eq.${id}`);
+  }
+
+  const propertyFilter = propertyId ? `property_id.eq.${propertyId}` : null;
+
+  const buildPropertyCommunicationsQuery = (filters: string[]) => {
+    let query = supabase
+      .from("communications")
+      .select(
+        `
+          *,
+          customer:customers!customer_id(id, first_name, last_name)
+        `
+      )
+      .eq("company_id", activeCompanyId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (filters.length > 0) {
+      query = query.or(filters.join(","));
+    }
+
+    return query;
+  };
+
+  const filtersWithProperty = propertyFilter
+    ? [...propertyCommunicationFilters, propertyFilter]
+    : propertyCommunicationFilters;
+
+  let {
+    data: propertyCommunications,
+    error: propertyCommunicationsError,
+  } = await buildPropertyCommunicationsQuery(filtersWithProperty);
+
+  const shouldFallbackToFiltersWithoutProperty =
+    propertyFilter &&
+    isMissingColumnError(propertyCommunicationsError, "property_id");
+
+  if (shouldFallbackToFiltersWithoutProperty) {
+    if (propertyCommunicationFilters.length > 0) {
+      ({
+        data: propertyCommunications,
+        error: propertyCommunicationsError,
+      } = await buildPropertyCommunicationsQuery(propertyCommunicationFilters));
+    } else {
+      propertyCommunications = [];
+      propertyCommunicationsError = null;
+    }
+  }
+
+  if (hasReportableError(propertyCommunicationsError)) {
+    console.error(
+      "[Property Details] Failed to load communications:",
+      propertyCommunicationsError
+    );
+  }
+
+  const communications =
+    (propertyCommunications || []).filter((record, index, self) => {
+      if (!record?.id) {
+        return false;
+      }
+      return self.findIndex((entry) => entry.id === record.id) === index;
+    }) ?? [];
 
   // ==================================================================================
   // CALCULATE METRICS FOR STATS BAR

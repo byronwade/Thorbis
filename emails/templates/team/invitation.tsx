@@ -17,14 +17,14 @@ import {
   Text,
 } from "@react-email/components";
 
-interface TeamInvitationProps {
+type TeamInvitationProps = {
   inviteeName: string;
   inviterName: string;
   companyName: string;
   role: string;
   magicLink: string;
   expiresInDays: number;
-}
+};
 
 const TeamInvitationEmail = ({
   inviteeName = "John Doe",

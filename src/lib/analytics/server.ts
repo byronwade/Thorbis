@@ -18,12 +18,15 @@ export function createTrackingEvent(event: AnalyticsEvent): AnalyticsEvent {
 /**
  * Helper to create job tracking events
  */
-export function trackJobCreated(jobId: string, properties?: {
-  customerId?: string;
-  jobType?: string;
-  estimatedValue?: number;
-  source?: string;
-}): AnalyticsEvent {
+export function trackJobCreated(
+  jobId: string,
+  properties?: {
+    customerId?: string;
+    jobType?: string;
+    estimatedValue?: number;
+    source?: string;
+  }
+): AnalyticsEvent {
   return {
     name: "job.created",
     properties: {
@@ -33,11 +36,14 @@ export function trackJobCreated(jobId: string, properties?: {
   };
 }
 
-export function trackJobUpdated(jobId: string, properties?: {
-  field?: string;
-  oldValue?: string;
-  newValue?: string;
-}): AnalyticsEvent {
+export function trackJobUpdated(
+  jobId: string,
+  properties?: {
+    field?: string;
+    oldValue?: string;
+    newValue?: string;
+  }
+): AnalyticsEvent {
   return {
     name: "job.updated",
     properties: {
@@ -131,4 +137,3 @@ export function trackInvoicePaid(
     },
   };
 }
-

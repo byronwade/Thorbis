@@ -3,7 +3,6 @@
 import {
   BadgeInfo,
   Boxes,
-  ClipboardList,
   DollarSign,
   MapPin,
   Package,
@@ -153,24 +152,26 @@ function formatUnitLabel(unit?: string | null): string {
 }
 
 export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
-  const { material, priceBookItem, activities, notes, attachments } = entityData;
+  const { material, priceBookItem, activities, notes, attachments } =
+    entityData;
 
   const headerBadges = useMemo(() => {
     const badges: React.ReactNode[] = [];
-    const statusConfig = STATUS_CONFIG[material.status] ?? STATUS_CONFIG["in-stock"];
+    const statusConfig =
+      STATUS_CONFIG[material.status] ?? STATUS_CONFIG["in-stock"];
     badges.push(
-      <Badge
-        className={statusConfig.className}
-        key="status"
-        variant="outline"
-      >
+      <Badge className={statusConfig.className} key="status" variant="outline">
         {statusConfig.label}
       </Badge>
     );
 
     if (material.isLowStock) {
       badges.push(
-        <Badge className="bg-warning text-warning" key="low-stock" variant="outline">
+        <Badge
+          className="bg-warning text-warning"
+          key="low-stock"
+          variant="outline"
+        >
           Low Stock Alert
         </Badge>
       );
@@ -267,16 +268,17 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2 rounded-lg border bg-background p-4 shadow-sm">
               <Label>Quantity on Hand</Label>
-              <p className="text-foreground text-xl font-semibold tabular-nums">
+              <p className="font-semibold text-foreground text-xl tabular-nums">
                 {material.quantityOnHand} {formatUnitLabel(priceBookItem?.unit)}
               </p>
               <p className="text-muted-foreground text-sm">
-                {material.quantityReserved} reserved • {material.quantityAvailable} available
+                {material.quantityReserved} reserved •{" "}
+                {material.quantityAvailable} available
               </p>
             </div>
             <div className="space-y-2 rounded-lg border bg-background p-4 shadow-sm">
               <Label>Reorder Threshold</Label>
-              <p className="text-foreground text-xl font-semibold tabular-nums">
+              <p className="font-semibold text-foreground text-xl tabular-nums">
                 {material.reorderPoint ?? 0}
               </p>
               <p className="text-muted-foreground text-sm">
@@ -285,11 +287,12 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
             </div>
             <div className="space-y-2 rounded-lg border bg-background p-4 shadow-sm">
               <Label>Inventory Value</Label>
-              <p className="text-foreground text-xl font-semibold tabular-nums">
+              <p className="font-semibold text-foreground text-xl tabular-nums">
                 {formatCurrency(material.totalCostValue)}
               </p>
               <p className="text-muted-foreground text-sm">
-                Last purchase cost {formatCurrency(material.lastPurchaseCost ?? 0)}
+                Last purchase cost{" "}
+                {formatCurrency(material.lastPurchaseCost ?? 0)}
               </p>
             </div>
           </div>
@@ -318,9 +321,9 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
                 value={material.warehouseLocation ?? "Not specified"}
               />
             </div>
-            <div className="md:col-span-2 space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label>Notes</Label>
-              <p className="rounded-md border bg-muted/20 p-3 text-sm text-muted-foreground">
+              <p className="rounded-md border bg-muted/20 p-3 text-muted-foreground text-sm">
                 {material.notes?.trim() || "No internal notes"}
               </p>
             </div>
@@ -366,7 +369,7 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
               <div>
                 <Label>Manage Item</Label>
                 <Link
-                  className="text-primary text-sm font-medium hover:underline"
+                  className="font-medium text-primary text-sm hover:underline"
                   href={`/dashboard/work/pricebook/${priceBookItem.id}`}
                 >
                   View price book item &rarr;
@@ -388,13 +391,17 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
             <div className="space-y-2">
               <Label>Low Stock Alert</Label>
               <p className="text-muted-foreground text-sm">
-                {material.isLowStock ? "Alert triggered" : "No alerts triggered"}
+                {material.isLowStock
+                  ? "Alert triggered"
+                  : "No alerts triggered"}
               </p>
             </div>
             <div className="space-y-2">
               <Label>Alert Status</Label>
               <p className="text-muted-foreground text-sm">
-                {material.lowStockAlertSent ? "Notification sent" : "No notifications sent"}
+                {material.lowStockAlertSent
+                  ? "Notification sent"
+                  : "No notifications sent"}
               </p>
             </div>
           </div>
@@ -443,4 +450,3 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
     />
   );
 }
-

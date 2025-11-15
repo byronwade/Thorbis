@@ -6,6 +6,8 @@
 "use client";
 
 import { Package } from "lucide-react";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import {
   Table,
   TableBody,
@@ -14,8 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type JobMaterialsProps = {
   materials: any[];
@@ -85,7 +85,8 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
                 </TableCell>
                 <TableCell className="text-right font-medium">
                   {formatCurrency(
-                    (material.quantity || 0) * (material.unit_cost || material.cost || 0)
+                    (material.quantity || 0) *
+                      (material.unit_cost || material.cost || 0)
                   )}
                 </TableCell>
               </TableRow>
@@ -120,4 +121,3 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
     </div>
   );
 }
-

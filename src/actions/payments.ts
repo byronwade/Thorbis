@@ -105,7 +105,9 @@ async function createPaymentWithData(
   }
 }
 
-async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentResult> {
+async function createPaymentFromForm(
+  formData: FormData
+): Promise<CreatePaymentResult> {
   try {
     const supabase = await createClient();
     if (!supabase) {
@@ -126,9 +128,7 @@ async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentR
 
     const { data: invoice, error: invoiceError } = await supabase
       .from("invoices")
-      .select(
-        "id, company_id, customer_id, job_id, invoice_number, currency"
-      )
+      .select("id, company_id, customer_id, job_id, invoice_number, currency")
       .eq("id", invoiceId)
       .single();
 

@@ -61,4 +61,3 @@ export default async function CompanyProfilePage() {
 
   return <CompanyProfileClient initialData={initialData} />;
 }
-

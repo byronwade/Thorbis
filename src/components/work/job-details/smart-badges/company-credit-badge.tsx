@@ -29,14 +29,13 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
     return null;
   }
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (cents: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(cents / 100);
-  };
 
   const hasAvailableCredit = availableCredit > 0;
 
@@ -76,7 +75,7 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Outstanding Balance</span>
-              <span className="font-medium text-sm text-amber-600 dark:text-amber-400">
+              <span className="font-medium text-amber-600 text-sm dark:text-amber-400">
                 {formatCurrency(outstandingBalance)}
               </span>
             </div>
@@ -99,7 +98,8 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
             <>
               <Separator />
               <p className="text-muted-foreground text-xs">
-                Customer has reached their credit limit. Payment required before additional work.
+                Customer has reached their credit limit. Payment required before
+                additional work.
               </p>
             </>
           )}
@@ -108,4 +108,3 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
     </HoverCard>
   );
 }
-

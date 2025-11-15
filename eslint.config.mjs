@@ -1,4 +1,5 @@
 import nextPlugin from "@next/eslint-plugin-next";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
 const ignores = [
@@ -22,6 +23,7 @@ export default [
   },
   ...tseslint.configs.recommended,
   nextPlugin.configs["core-web-vitals"],
+  reactHooksPlugin.configs.recommended,
   {
     name: "custom-rules",
     rules: {
@@ -34,4 +36,3 @@ export default [
     },
   },
 ];
-

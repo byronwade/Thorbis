@@ -11,6 +11,10 @@ import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { getUserRole } from "@/lib/auth/permissions";
 import { generateJobStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
+import {
+  hasReportableError,
+  isMissingColumnError,
+} from "@/lib/supabase/error-helpers";
 
 export default async function JobDetailsPage({
   params,
@@ -83,11 +87,7 @@ export default async function JobDetailsPage({
   console.log("[Job Details] User role:", userRole);
 
   // Check for real errors (not "no rows found")
-  const hasRealError =
-    teamMemberError &&
-    teamMemberError.code !== "PGRST116" &&
-    Object.keys(teamMemberError).length > 0 &&
-    teamMemberError.message;
+  const hasRealError = hasReportableError(teamMemberError);
 
   if (hasRealError) {
     console.error("[Job Details] Error fetching team member:", teamMemberError);
@@ -157,7 +157,7 @@ export default async function JobDetailsPage({
     { data: documents },
     { data: signatures },
     { data: activities },
-    { data: communications },
+    { data: initialCommunications },
     { data: equipment },
     { data: jobEquipment },
     { data: jobMaterials },
@@ -343,7 +343,8 @@ export default async function JobDetailsPage({
         date: p.payment_date || p.created_at,
       })) || [];
 
-  const estimatedProfit = (job.total_amount || 0) - (laborCosts + materialsCost);
+  const estimatedProfit =
+    (job.total_amount || 0) - (laborCosts + materialsCost);
   const profitMargin =
     job.total_amount > 0 ? (estimatedProfit / job.total_amount) * 100 : 0;
 
@@ -371,8 +372,8 @@ export default async function JobDetailsPage({
 
   // Find last communication/contact
   const lastContact =
-    (communications || []).length > 0
-      ? (communications || []).sort(
+    (initialCommunications || []).length > 0
+      ? (initialCommunications || []).sort(
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )[0]?.created_at
@@ -421,9 +422,79 @@ export default async function JobDetailsPage({
     ? (phoneNumbersResult.data || []).map((phone: any) => ({
         id: phone.id,
         number: phone.phone_number,
-        label: phone.formatted_number || phone.phone_number,
+        label: phone.formatted_number || phone.phone_number || "",
       }))
     : [];
+
+  const baseCommunicationFilters: string[] = [`job_id.eq.${jobId}`];
+  if (customer?.id) {
+    baseCommunicationFilters.push(`customer_id.eq.${customer.id}`);
+  }
+  const invoiceFilters = (invoices || [])
+    .map((invoice) => invoice.id)
+    .filter(Boolean)
+    .map((invoiceId) => `invoice_id.eq.${invoiceId}`);
+
+  const communicationFiltersWithoutProperty = [
+    ...baseCommunicationFilters,
+    ...invoiceFilters,
+  ];
+
+  const propertyFilter = property?.id ? `property_id.eq.${property.id}` : null;
+
+  const buildJobCommunicationsQuery = (filters: string[]) => {
+    let query = supabase
+      .from("communications")
+      .select(
+        `
+        *,
+        customer:customers!customer_id(id, first_name, last_name)
+      `
+      )
+      .eq("company_id", activeCompanyId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (filters.length > 0) {
+      query = query.or(filters.join(","));
+    }
+
+    return query;
+  };
+
+  const filtersWithProperty = propertyFilter
+    ? [...communicationFiltersWithoutProperty, propertyFilter]
+    : communicationFiltersWithoutProperty;
+
+  let {
+    data: jobCommunications,
+    error: jobCommunicationsError,
+  } = await buildJobCommunicationsQuery(filtersWithProperty);
+
+  if (
+    propertyFilter &&
+    isMissingColumnError(jobCommunicationsError, "property_id")
+  ) {
+    ({
+      data: jobCommunications,
+      error: jobCommunicationsError,
+    } = await buildJobCommunicationsQuery(communicationFiltersWithoutProperty));
+  }
+
+  if (hasReportableError(jobCommunicationsError)) {
+    console.error(
+      "[Job Details] Failed to load communications:",
+      jobCommunicationsError
+    );
+  }
+
+  const communications =
+    (jobCommunications || []).filter((record, index, self) => {
+      if (!record?.id) {
+        return false;
+      }
+      return self.findIndex((entry) => entry.id === record.id) === index;
+    }) ?? [];
 
   const jobData = {
     job,
@@ -441,7 +512,7 @@ export default async function JobDetailsPage({
     documents: documents || [],
     signatures: signatures || [],
     activities: activities || [],
-    communications: communications || [],
+    communications,
     equipment: equipment || [], // Customer's equipment at the property
     jobEquipment: jobEquipment || [], // Equipment serviced on this job
     jobMaterials: jobMaterials || [], // Materials used on this job

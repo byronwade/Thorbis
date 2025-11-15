@@ -281,29 +281,30 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 
       {/* Unlink Confirmation Dialog */}
       <Dialog
-        open={unlinkEstimateId !== null}
         onOpenChange={(open) => !open && setUnlinkEstimateId(null)}
+        open={unlinkEstimateId !== null}
       >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Unlink Estimate from Job?</DialogTitle>
             <DialogDescription>
-              This will remove the job association from this estimate. The estimate will
-              remain in the system but will no longer appear on this job's page.
+              This will remove the job association from this estimate. The
+              estimate will remain in the system but will no longer appear on
+              this job's page.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setUnlinkEstimateId(null)}
               disabled={isUnlinking}
+              onClick={() => setUnlinkEstimateId(null)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              variant="destructive"
-              onClick={handleUnlinkEstimate}
               disabled={isUnlinking}
+              onClick={handleUnlinkEstimate}
+              variant="destructive"
             >
               {isUnlinking ? "Unlinking..." : "Unlink Estimate"}
             </Button>

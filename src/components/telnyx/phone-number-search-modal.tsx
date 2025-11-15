@@ -85,7 +85,7 @@ export function PhoneNumberSearchModal({
     });
 
     setPurchasing(null);
-    
+
     // Call onSuccess callback if provided
     if (onSuccess) {
       onSuccess(phoneNumber);

@@ -1,37 +1,71 @@
 /**
  * Schedule View Store - Zustand State Management
- *
- * Performance optimizations:
- * - Lightweight state management with Zustand
- * - No provider wrapper needed
- * - Selective subscriptions prevent unnecessary re-renders
- *
- * Manages schedule view state (timeline, calendar, list, board)
+ * Simplified for timeline-only view
  */
 
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import type { ScheduleView } from "@/types/schedule";
+import { devtools, persist } from "zustand/middleware";
+
+type TimelineViewMode = "day" | "week" | "month";
 
 type ScheduleViewStore = {
-  view: ScheduleView;
-  setView: (view: ScheduleView) => void;
+  viewMode: TimelineViewMode;
+  currentDate: Date;
+  setViewMode: (mode: TimelineViewMode) => void;
+  setCurrentDate: (date: Date) => void;
+  goToToday: () => void;
+  navigatePrevious: () => void;
+  navigateNext: () => void;
   reset: () => void;
 };
 
 const initialState = {
-  view: "timeline" as ScheduleView,
+  viewMode: "day" as TimelineViewMode,
+  currentDate: new Date(),
 };
 
 export const useScheduleViewStore = create<ScheduleViewStore>()(
   devtools(
-    (set) => ({
-      ...initialState,
+    persist(
+      (set, get) => ({
+        ...initialState,
 
-      setView: (view) => set({ view }),
+        setViewMode: (mode) => set({ viewMode: mode }),
 
-      reset: () => set(initialState),
-    }),
-    { name: "ScheduleViewStore" } // DevTools name
+        setCurrentDate: (date) => set({ currentDate: date }),
+
+        goToToday: () => set({ currentDate: new Date() }),
+
+        navigatePrevious: () => {
+          const { currentDate, viewMode } = get();
+          const newDate = new Date(currentDate);
+          if (viewMode === "day") {
+            newDate.setDate(newDate.getDate() - 1);
+          } else if (viewMode === "week") {
+            newDate.setDate(newDate.getDate() - 7);
+          } else {
+            newDate.setMonth(newDate.getMonth() - 1);
+          }
+          set({ currentDate: newDate });
+        },
+
+        navigateNext: () => {
+          const { currentDate, viewMode } = get();
+          const newDate = new Date(currentDate);
+          if (viewMode === "day") {
+            newDate.setDate(newDate.getDate() + 1);
+          } else if (viewMode === "week") {
+            newDate.setDate(newDate.getDate() + 7);
+          } else {
+            newDate.setMonth(newDate.getMonth() + 1);
+          }
+          set({ currentDate: newDate });
+        },
+
+        reset: () => set(initialState),
+      }),
+      { name: "schedule-view-store" }
+    ),
+    { name: "ScheduleViewStore" }
   )
 );

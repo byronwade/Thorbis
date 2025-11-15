@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { togglePurchaseOrderSystem } from "@/actions/settings";
-import { trackCustomEvent } from "@/lib/analytics/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +15,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { trackCustomEvent } from "@/lib/analytics/client";
 
 interface POSystemToggleProps {
   enabled: boolean;
   lastEnabledAt?: string | null;
 }
 
-export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) {
+export function POSystemToggle({
+  enabled,
+  lastEnabledAt,
+}: POSystemToggleProps) {
   const [isEnabled, setIsEnabled] = useState(enabled);
   const [isPending, startTransition] = useTransition();
 
@@ -36,12 +39,16 @@ export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) 
           enabled: result.enabled,
         });
         toast.success(
-          result.enabled ? "Purchase orders enabled" : "Purchase orders disabled"
+          result.enabled
+            ? "Purchase orders enabled"
+            : "Purchase orders disabled"
         );
       } catch (error) {
         setIsEnabled(!nextValue);
         const message =
-          error instanceof Error ? error.message : "Unable to update purchase orders";
+          error instanceof Error
+            ? error.message
+            : "Unable to update purchase orders";
         toast.error(message);
       }
     });
@@ -67,7 +74,7 @@ export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) 
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               {isEnabled ? "Enabled" : "Disabled"}
             </span>
             <Switch
@@ -79,12 +86,14 @@ export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) 
         </div>
       </CardHeader>
       <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-0">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-muted-foreground text-sm">
           Last changed: <span className="font-medium">{lastUpdatedLabel}</span>
         </div>
         {isEnabled && (
-          <Button asChild variant="outline" disabled={isPending}>
-            <Link href="/dashboard/work/purchase-orders">Manage purchase orders</Link>
+          <Button asChild disabled={isPending} variant="outline">
+            <Link href="/dashboard/work/purchase-orders">
+              Manage purchase orders
+            </Link>
           </Button>
         )}
       </CardContent>

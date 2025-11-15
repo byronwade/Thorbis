@@ -6,6 +6,7 @@
 "use client";
 
 import { Clock } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -14,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type JobTimeTrackingProps = {
   timeEntries: any[];
@@ -38,8 +38,11 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
     });
   };
 
-  const calculateDuration = (startTime: string | null, endTime: string | null) => {
-    if (!startTime || !endTime) return "—";
+  const calculateDuration = (
+    startTime: string | null,
+    endTime: string | null
+  ) => {
+    if (!(startTime && endTime)) return "—";
     const start = new Date(startTime);
     const end = new Date(endTime);
     const durationMs = end.getTime() - start.getTime();
@@ -128,13 +131,17 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
           </div>
           <div className="text-right">
             <p className="font-bold text-2xl">
-              {timeEntries.reduce((total, entry) => {
-                if (!entry.start_time || !entry.end_time) return total;
-                const start = new Date(entry.start_time);
-                const end = new Date(entry.end_time);
-                const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-                return total + hours;
-              }, 0).toFixed(1)}h
+              {timeEntries
+                .reduce((total, entry) => {
+                  if (!(entry.start_time && entry.end_time)) return total;
+                  const start = new Date(entry.start_time);
+                  const end = new Date(entry.end_time);
+                  const hours =
+                    (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+                  return total + hours;
+                }, 0)
+                .toFixed(1)}
+              h
             </p>
             <p className="text-muted-foreground text-xs">Total Time</p>
           </div>
@@ -143,4 +150,3 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
     </div>
   );
 }
-

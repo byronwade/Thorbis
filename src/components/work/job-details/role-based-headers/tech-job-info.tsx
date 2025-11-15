@@ -6,13 +6,13 @@
 "use client";
 
 import {
-  Wrench,
-  FileText,
-  Camera,
-  StickyNote,
   AlertCircle,
+  Camera,
   CheckCircle,
+  FileText,
   Package,
+  StickyNote,
+  Wrench,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -125,7 +125,7 @@ export function TechJobInfo({
                       )}
                     </div>
                     {eq.status && (
-                      <Badge className="capitalize shrink-0" variant="outline">
+                      <Badge className="shrink-0 capitalize" variant="outline">
                         {eq.status}
                       </Badge>
                     )}
@@ -177,7 +177,7 @@ export function TechJobInfo({
       {importantNotes.length > 0 && (
         <HoverCard openDelay={200}>
           <HoverCardTrigger asChild>
-            <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-sm text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+            <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
               <AlertCircle className="size-4" />
               {importantNotes.length} Important
             </button>
@@ -194,7 +194,7 @@ export function TechJobInfo({
               <div className="space-y-2">
                 {importantNotes.map((note) => (
                   <div
-                    className="rounded-md border-l-2 border-destructive bg-destructive/10 p-2"
+                    className="rounded-md border-destructive border-l-2 bg-destructive/10 p-2"
                     key={note.id}
                   >
                     <p className="text-sm">{note.content}</p>
@@ -238,7 +238,7 @@ export function TechJobInfo({
       {/* Completion Status */}
       {jobEquipment.length > 0 &&
         jobEquipment.every((je) => je.action === "completed") && (
-          <button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 font-medium text-sm text-green-700 transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
+          <button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 font-medium text-green-700 text-sm transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
             <CheckCircle className="size-4" />
             All Tasks Complete
           </button>

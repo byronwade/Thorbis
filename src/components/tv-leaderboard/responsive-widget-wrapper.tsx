@@ -30,7 +30,7 @@ export function ResponsiveWidgetWrapper({
   return (
     <div
       className={cn(
-        "relative h-full w-full overflow-hidden rounded-lg border bg-background shadow-sm",
+        "relative h-full w-full rounded-lg border bg-background shadow-sm",
         "@container", // Enable container queries
         className
       )}

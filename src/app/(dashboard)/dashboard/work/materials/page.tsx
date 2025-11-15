@@ -122,7 +122,7 @@ export default async function MaterialsPage() {
 
   const materials = inventoryRows.reduce<Material[]>((accumulator, row) => {
     const item = Array.isArray(row.price_book_item)
-      ? row.price_book_item[0] ?? null
+      ? (row.price_book_item[0] ?? null)
       : row.price_book_item;
 
     if (!item) {
@@ -140,7 +140,7 @@ export default async function MaterialsPage() {
     const isActive = item.is_active !== false;
     const archivedAt = isActive
       ? null
-      : row.deleted_at ?? row.updated_at ?? null;
+      : (row.deleted_at ?? row.updated_at ?? null);
 
     const categoryLabel = [item.category, item.subcategory]
       .filter(Boolean)

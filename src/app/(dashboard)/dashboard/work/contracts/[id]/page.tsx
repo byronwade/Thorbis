@@ -1,9 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import type { StatCard } from "@/components/ui/stats-cards";
-import {
-  ContractPageContent,
-} from "@/components/work/contracts/contract-page-content";
 import type {
   AppointmentRecord,
   ContractPageEntityData,
@@ -14,6 +11,7 @@ import type {
   RelatedInvoice,
   RelatedJob,
 } from "@/components/work/contracts/contract-page-content";
+import { ContractPageContent } from "@/components/work/contracts/contract-page-content";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { formatDate } from "@/lib/formatters";
 import { createClient } from "@/lib/supabase/server";
@@ -249,9 +247,11 @@ export default async function ContractDetailPage({
     appointments: normalizedAppointments,
   };
 
-  const linkedRecordsCount = [normalizedEstimate, normalizedInvoice, normalizedJob].filter(
-    Boolean
-  ).length;
+  const linkedRecordsCount = [
+    normalizedEstimate,
+    normalizedInvoice,
+    normalizedJob,
+  ].filter(Boolean).length;
 
   const stats: StatCard[] = [
     {

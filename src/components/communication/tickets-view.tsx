@@ -12,6 +12,7 @@
 
 import {
   AlertCircle,
+  Archive,
   CheckCircle,
   Clock,
   MessageSquare,
@@ -19,8 +20,13 @@ import {
   User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
+import {
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
+import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 type TicketStatus = "new" | "open" | "pending" | "resolved" | "closed";
@@ -46,6 +52,7 @@ type TicketsViewProps = {
 
 export function TicketsView({ messages }: TicketsViewProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const setSelectedMessageId = useCommunicationStore(
     (state) => state.setSelectedMessageId
   );
@@ -139,128 +146,162 @@ export function TicketsView({ messages }: TicketsViewProps) {
     return date.toLocaleDateString();
   };
 
-  return (
-    <div className="flex h-full flex-col">
-      {/* Tickets List */}
-      <div className="flex-1 overflow-auto">
-        {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="space-y-2 text-center">
-              <Ticket className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="font-medium">No support tickets</p>
-              <p className="text-muted-foreground text-sm">
-                All tickets will appear here
-              </p>
+  const columns: ColumnDef<TicketMessage>[] = [
+    {
+      key: "ticket",
+      header: "Ticket",
+      width: "w-56",
+      render: (message) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+            {getStatusIcon(message.ticketStatus)}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-semibold text-sm">#{message.id}</span>
+            <span className="text-muted-foreground text-xs">
+              {message.from}
+            </span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "subject",
+      header: "Subject",
+      width: "flex-1",
+      render: (message) => (
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+            >
+              {message.subject || "Support Request"}
+            </span>
+            <Badge
+              className="text-xs"
+              variant={getStatusVariant(message.ticketStatus)}
+            >
+              {getStatusLabel(message.ticketStatus)}
+            </Badge>
+            <Badge
+              className="text-xs"
+              variant={getPriorityColor(message.priority)}
+            >
+              {message.priority}
+            </Badge>
+          </div>
+          <p className="line-clamp-2 text-muted-foreground text-xs">
+            {message.preview}
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: "assignments",
+      header: "Assignments",
+      width: "w-48",
+      render: (message) => (
+        <div className="flex flex-col gap-1 text-muted-foreground text-xs">
+          <div className="flex items-center gap-1">
+            <User className="size-3" />
+            <span>{message.assignedTo ?? "Unassigned"}</span>
+          </div>
+          {message.responseTime ? (
+            <div className="flex items-center gap-1">
+              <Clock className="size-3" />
+              <span>Response: {message.responseTime}h</span>
             </div>
+          ) : null}
+        </div>
+      ),
+    },
+    {
+      key: "tags",
+      header: "Tags",
+      width: "w-40",
+      render: (message) =>
+        message.tags && message.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {message.tags.slice(0, 2).map((tag) => (
+              <Badge
+                className="text-xs"
+                key={`${message.id}-${tag}`}
+                variant="outline"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {message.tags.length > 2 && (
+              <Badge className="text-xs" variant="outline">
+                +{message.tags.length - 2}
+              </Badge>
+            )}
           </div>
         ) : (
-          <div className="divide-y">
-            {messages.map((message) => (
-              <div
-                className={`group flex cursor-pointer items-start gap-4 px-4 py-3 transition-colors hover:bg-muted/50 ${
-                  message.status === "unread"
-                    ? "bg-primary/30 dark:bg-primary/10"
-                    : ""
-                }`}
-                key={message.id}
-                onClick={() => handleOpenMessage(message)}
-              >
-                {/* Status Icon */}
-                <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                  {getStatusIcon(message.ticketStatus)}
-                </div>
+          <span className="text-muted-foreground text-xs">—</span>
+        ),
+    },
+    {
+      key: "timestamp",
+      header: "Updated",
+      width: "w-32",
+      align: "right",
+      sortable: true,
+      render: (message) => (
+        <span className="text-muted-foreground text-xs">
+          {formatTimestamp(message.timestamp)}
+        </span>
+      ),
+    },
+  ];
 
-                {/* Ticket Content */}
-                <div className="min-w-0 flex-1">
-                  <div className="mb-2 flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <span className="font-medium text-sm">
-                          #{message.id}
-                        </span>
-                        <Badge
-                          className="text-xs"
-                          variant={getStatusVariant(message.ticketStatus)}
-                        >
-                          {getStatusLabel(message.ticketStatus)}
-                        </Badge>
-                        <Badge
-                          className="text-xs"
-                          variant={getPriorityColor(message.priority)}
-                        >
-                          {message.priority}
-                        </Badge>
-                      </div>
-                      <h3
-                        className={`mb-1 text-sm ${
-                          message.status === "unread" ? "font-semibold" : ""
-                        }`}
-                      >
-                        {message.subject || "Support Request"}
-                      </h3>
-                    </div>
-                    <span className="text-muted-foreground text-xs">
-                      {formatTimestamp(message.timestamp)}
-                    </span>
-                  </div>
+  const searchFilter = (message: TicketMessage, query: string) => {
+    const needle = query.toLowerCase();
+    return (
+      String(message.id).toLowerCase().includes(needle) ||
+      message.from.toLowerCase().includes(needle) ||
+      (message.subject?.toLowerCase().includes(needle) ?? false) ||
+      message.preview.toLowerCase().includes(needle) ||
+      (message.assignedTo?.toLowerCase().includes(needle) ?? false) ||
+      (message.ticketStatus ?? "new").toLowerCase().includes(needle)
+    );
+  };
 
-                  <p className="mb-2 line-clamp-2 text-muted-foreground text-sm">
-                    {message.preview}
-                  </p>
+  const handleBulkArchive = useCallback(
+    (selectedIds: Set<string>) => {
+      if (selectedIds.size === 0) {
+        return;
+      }
+      const noun = selectedIds.size === 1 ? "ticket" : "tickets";
+      toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
+    },
+    [toast]
+  );
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-muted-foreground text-xs">
-                      <div className="flex items-center gap-1">
-                        <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-[10px]">
-                            {message.from
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>{message.from}</span>
-                      </div>
-                      {message.assignedTo && (
-                        <>
-                          <span>•</span>
-                          <div className="flex items-center gap-1">
-                            <User className="size-3" />
-                            <span>Assigned to {message.assignedTo}</span>
-                          </div>
-                        </>
-                      )}
-                      {message.responseTime && (
-                        <>
-                          <span>•</span>
-                          <div className="flex items-center gap-1">
-                            <Clock className="size-3" />
-                            <span>Response: {message.responseTime}h</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
+  const bulkActions = [
+    {
+      label: "Archive",
+      icon: <Archive className="size-3.5" />,
+      onClick: handleBulkArchive,
+    },
+  ];
 
-                    {message.tags && message.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {message.tags.slice(0, 2).map((tag) => (
-                          <Badge
-                            className="text-xs"
-                            key={tag}
-                            variant="outline"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+  return (
+    <FullWidthDataTable
+      bulkActions={bulkActions}
+      columns={columns}
+      data={messages}
+      emptyIcon={<Ticket className="size-10 text-muted-foreground" />}
+      emptyMessage="No support tickets"
+      enableSelection
+      entity="communications-tickets"
+      getHighlightClass={() => "bg-primary/10 dark:bg-primary/5"}
+      getItemId={(item) => item.id}
+      isHighlighted={(item) => item.status === "unread"}
+      onRowClick={handleOpenMessage}
+      searchFilter={searchFilter}
+      searchPlaceholder="Search tickets"
+      showRefresh={false}
+    />
   );
 }

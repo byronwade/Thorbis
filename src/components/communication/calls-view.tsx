@@ -2,16 +2,11 @@
 
 /**
  * Calls View Component - Client Component
- * Call log style layout for phone calls and voicemails
- *
- * Client-side features:
- * - Call log table
- * - Call type indicators (incoming, outgoing, missed, voicemail)
- * - Duration and status
+ * Shared FullWidthDataTable implementation for call records.
  */
 
 import {
-  Clock,
+  Archive,
   Phone,
   PhoneCall,
   PhoneIncoming,
@@ -20,8 +15,14 @@ import {
   Voicemail,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
+import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 type CallType = "incoming" | "outgoing" | "missed" | "voicemail";
@@ -36,15 +37,24 @@ type CallMessage = {
   priority: "low" | "normal" | "high" | "urgent";
   tags?: string[];
   callType?: CallType;
-  duration?: number; // in seconds
+  duration?: number;
+  telnyxCallControlId?: string | null;
+  callRecordingUrl?: string | null;
 };
 
 type CallsViewProps = {
   messages: CallMessage[];
+  onResumeCall?: (callControlId: string) => void;
+  onViewRecording?: (recordingUrl: string) => void;
 };
 
-export function CallsView({ messages }: CallsViewProps) {
+export function CallsView({
+  messages,
+  onResumeCall,
+  onViewRecording,
+}: CallsViewProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const setSelectedMessageId = useCommunicationStore(
     (state) => state.setSelectedMessageId
   );
@@ -88,8 +98,10 @@ export function CallsView({ messages }: CallsViewProps) {
     }
   };
 
-  const formatDuration = (seconds?: number) => {
-    if (!seconds) return "-";
+  const formatDuration = (seconds?: number | null) => {
+    if (!seconds) {
+      return "—";
+    }
     const SECONDS_PER_MINUTE = 60;
     const mins = Math.floor(seconds / SECONDS_PER_MINUTE);
     const secs = seconds % SECONDS_PER_MINUTE;
@@ -122,89 +134,163 @@ export function CallsView({ messages }: CallsViewProps) {
     return date.toLocaleDateString();
   };
 
-  return (
-    <div className="flex h-full flex-col">
-      {/* Call Log */}
-      <div className="flex-1 overflow-auto">
-        {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="space-y-2 text-center">
-              <PhoneCall className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="font-medium">No call history</p>
-              <p className="text-muted-foreground text-sm">
-                Your calls will appear here
-              </p>
-            </div>
+  const columns: ColumnDef<CallMessage>[] = [
+    {
+      key: "caller",
+      header: "Caller",
+      width: "w-72",
+      render: (message) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+            {getCallIcon(message.callType)}
           </div>
-        ) : (
-          <div className="divide-y">
-            {messages.map((message) => (
-              <div
-                className={`group flex cursor-pointer items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/50 ${
-                  message.status === "unread"
-                    ? "bg-primary/30 dark:bg-primary/10"
-                    : ""
-                }`}
-                key={message.id}
-                onClick={() => handleOpenMessage(message)}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span
+                className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
               >
-                {/* Call Type Icon */}
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                  {getCallIcon(message.callType)}
-                </div>
-
-                {/* Caller Info */}
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center gap-2">
-                    <span
-                      className={`font-medium text-sm ${
-                        message.status === "unread" ? "font-semibold" : ""
-                      }`}
-                    >
-                      {message.from}
-                    </span>
-                    <Badge className="text-xs" variant="outline">
-                      {getCallTypeLabel(message.callType)}
-                    </Badge>
-                  </div>
-
-                  {message.fromPhone && (
-                    <div className="mb-1 text-muted-foreground text-xs">
-                      {message.fromPhone}
-                    </div>
-                  )}
-
-                  {message.callType === "voicemail" && (
-                    <p className="line-clamp-1 text-muted-foreground text-sm">
-                      {message.preview}
-                    </p>
-                  )}
-                </div>
-
-                {/* Call Details */}
-                <div className="flex flex-col items-end gap-1">
-                  <span className="text-muted-foreground text-xs">
-                    {formatTimestamp(message.timestamp)}
-                  </span>
-                  {message.duration && (
-                    <div className="flex items-center gap-1 text-muted-foreground text-xs">
-                      <Clock className="size-3" />
-                      <span>{formatDuration(message.duration)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Button size="icon" variant="ghost">
-                    <PhoneCall className="size-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+                {message.from}
+              </span>
+              <Badge className="text-xs" variant="outline">
+                {getCallTypeLabel(message.callType)}
+              </Badge>
+            </div>
+            {message.fromPhone && (
+              <span className="text-muted-foreground text-xs">
+                {message.fromPhone}
+              </span>
+            )}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      ),
+    },
+    {
+      key: "details",
+      header: "Details",
+      width: "flex-1",
+      render: (message) =>
+        message.callType === "voicemail" ? (
+          <p className="line-clamp-1 text-muted-foreground text-xs">
+            {message.preview}
+          </p>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        ),
+    },
+    {
+      key: "duration",
+      header: "Duration",
+      width: "w-24",
+      align: "center",
+      render: (message) => (
+        <span className="text-muted-foreground text-xs">
+          {formatDuration(message.duration)}
+        </span>
+      ),
+    },
+    {
+      key: "timestamp",
+      header: "Timestamp",
+      width: "w-32",
+      align: "right",
+      sortable: true,
+      render: (message) => (
+        <span className="text-muted-foreground text-xs">
+          {formatTimestamp(message.timestamp)}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      width: "w-40",
+      align: "right",
+      render: (message) => (
+        <div className="flex items-center justify-end gap-2">
+          {message.telnyxCallControlId && (
+            <Button
+              onClick={(event) => {
+                event.stopPropagation();
+                const controlId = message.telnyxCallControlId;
+                if (!controlId) {
+                  return;
+                }
+                onResumeCall?.(controlId);
+              }}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              Resume
+            </Button>
+          )}
+          {message.callRecordingUrl && (
+            <Button
+              onClick={(event) => {
+                event.stopPropagation();
+                const recordingUrl = message.callRecordingUrl;
+                if (!recordingUrl) {
+                  return;
+                }
+                onViewRecording?.(recordingUrl);
+              }}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              Recording
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  const handleBulkArchive = useCallback(
+    (selectedIds: Set<string>) => {
+      if (selectedIds.size === 0) {
+        return;
+      }
+      const noun = selectedIds.size === 1 ? "call" : "calls";
+      toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
+    },
+    [toast]
+  );
+
+  const bulkActions = [
+    {
+      label: "Archive",
+      icon: <Archive className="size-3.5" />,
+      onClick: handleBulkArchive,
+    },
+  ];
+
+  const searchFilter = (message: CallMessage, query: string) => {
+    const needle = query.toLowerCase();
+    return (
+      message.from.toLowerCase().includes(needle) ||
+      (message.fromPhone?.toLowerCase().includes(needle) ?? false) ||
+      message.preview.toLowerCase().includes(needle) ||
+      (message.callType ?? "call").toLowerCase().includes(needle)
+    );
+  };
+
+  return (
+    <FullWidthDataTable
+      bulkActions={bulkActions}
+      columns={columns}
+      data={messages}
+      emptyIcon={<PhoneCall className="size-10 text-muted-foreground" />}
+      emptyMessage="No call history"
+      enableSelection
+      entity="communications-calls"
+      getHighlightClass={() => "bg-primary/10 dark:bg-primary/5"}
+      getItemId={(item) => item.id}
+      isHighlighted={(item) => item.status === "unread"}
+      onRowClick={handleOpenMessage}
+      searchFilter={searchFilter}
+      searchPlaceholder="Search calls"
+      showRefresh={false}
+    />
   );
 }

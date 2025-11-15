@@ -7,10 +7,10 @@
  * Returns: PDF file
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
-import { createClient } from "@/lib/supabase/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { InvoicePDFDocument } from "@/lib/pdf/invoice-pdf-generator";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
   request: NextRequest,
@@ -21,14 +21,14 @@ export async function GET(
 
     // Fetch invoice with customer and company details
     const supabase = await createClient();
-    
+
     if (!supabase) {
       return NextResponse.json(
         { error: "Unable to connect to database" },
         { status: 500 }
       );
     }
-    
+
     const { data: invoice, error } = await supabase
       .from("invoices")
       .select(
@@ -64,17 +64,18 @@ export async function GET(
       .single();
 
     if (error || !invoice) {
-      return NextResponse.json(
-        { error: "Invoice not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
 
     // Normalize customer and company data
-    const customer = Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer;
-    const company = Array.isArray(invoice.company) ? invoice.company[0] : invoice.company;
+    const customer = Array.isArray(invoice.customer)
+      ? invoice.customer[0]
+      : invoice.customer;
+    const company = Array.isArray(invoice.company)
+      ? invoice.company[0]
+      : invoice.company;
 
-    if (!customer || !company) {
+    if (!(customer && company)) {
       return NextResponse.json(
         { error: "Invoice data incomplete" },
         { status: 400 }

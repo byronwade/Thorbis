@@ -15,7 +15,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { ensureMessagingCampaign } from "./messaging-branding";
 import {
   answerCall,
   hangupCall,
@@ -34,6 +33,7 @@ import {
   searchAvailableNumbers,
 } from "@/lib/telnyx/numbers";
 import type { Database, Json } from "@/types/supabase";
+import { ensureMessagingCampaign } from "./messaging-branding";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -163,8 +163,7 @@ export async function purchasePhoneNumber(params: {
     const areaCode = extractAreaCode(normalizedPhoneNumber);
 
     // Purchase number from Telnyx
-    const messagingProfileId =
-      DEFAULT_MESSAGING_PROFILE_ID || undefined;
+    const messagingProfileId = DEFAULT_MESSAGING_PROFILE_ID || undefined;
 
     const result = await purchaseNumber({
       phoneNumber: normalizedPhoneNumber,
@@ -372,6 +371,10 @@ export async function makeCall(params: {
   from: string;
   companyId: string;
   customerId?: string;
+  jobId?: string;
+  propertyId?: string;
+  invoiceId?: string;
+  estimateId?: string;
 }) {
   try {
     const supabase = await createClient();
@@ -402,6 +405,10 @@ export async function makeCall(params: {
       .insert({
         company_id: params.companyId,
         customer_id: params.customerId,
+        job_id: params.jobId ?? null,
+        property_id: params.propertyId ?? null,
+        invoice_id: params.invoiceId ?? null,
+        estimate_id: params.estimateId ?? null,
         type: "phone",
         channel: "telnyx",
         direction: "outbound",
@@ -610,8 +617,8 @@ export async function transcribeCallRecording(params: {
 
     // Store transcription job ID in database
     await mergeProviderMetadata(supabase, params.communicationId, {
-          assemblyai_transcription_id: result.data.id,
-          assemblyai_status: result.data.status,
+      assemblyai_transcription_id: result.data.id,
+      assemblyai_status: result.data.status,
     });
 
     console.log(
@@ -648,6 +655,10 @@ export async function sendTextMessage(params: {
   text: string;
   companyId: string;
   customerId?: string;
+  jobId?: string;
+  propertyId?: string;
+  invoiceId?: string;
+  estimateId?: string;
 }) {
   try {
     const supabase = await createClient();
@@ -677,6 +688,10 @@ export async function sendTextMessage(params: {
       .insert({
         company_id: params.companyId,
         customer_id: params.customerId,
+        job_id: params.jobId ?? null,
+        property_id: params.propertyId ?? null,
+        invoice_id: params.invoiceId ?? null,
+        estimate_id: params.estimateId ?? null,
         type: "sms",
         channel: "telnyx",
         direction: "outbound",
@@ -723,6 +738,10 @@ export async function sendMMSMessage(params: {
   mediaUrls: string[];
   companyId: string;
   customerId?: string;
+  jobId?: string;
+  propertyId?: string;
+  invoiceId?: string;
+  estimateId?: string;
 }) {
   try {
     const supabase = await createClient();
@@ -753,6 +772,10 @@ export async function sendMMSMessage(params: {
       .insert({
         company_id: params.companyId,
         customer_id: params.customerId,
+        job_id: params.jobId ?? null,
+        property_id: params.propertyId ?? null,
+        invoice_id: params.invoiceId ?? null,
+        estimate_id: params.estimateId ?? null,
         type: "sms",
         channel: "telnyx",
         direction: "outbound",

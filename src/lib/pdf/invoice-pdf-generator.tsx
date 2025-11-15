@@ -10,14 +10,13 @@
  * - Respects invoice settings
  */
 
-import React from "react";
 import {
   Document,
+  Font,
   Page,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  Font,
 } from "@react-pdf/renderer";
 
 // Register fonts
@@ -203,27 +202,29 @@ interface InvoicePDFProps {
   company: any;
 }
 
-export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFProps) {
+export function InvoicePDFDocument({
+  invoice,
+  customer,
+  company,
+}: InvoicePDFProps) {
   const lineItems = invoice.line_items || [];
   const subtotal = invoice.subtotal || invoice.total_amount;
   const taxAmount = invoice.tax_amount || 0;
   const discountAmount = invoice.discount_amount || 0;
   const total = invoice.total_amount;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(amount / 100);
-  };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  };
 
   return (
     <Document>
@@ -231,7 +232,9 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.companyName}>{company.name || "Company Name"}</Text>
+            <Text style={styles.companyName}>
+              {company.name || "Company Name"}
+            </Text>
             {company.address_line1 && (
               <Text style={styles.companyInfo}>{company.address_line1}</Text>
             )}
@@ -240,8 +243,12 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
                 {company.city}, {company.state} {company.postal_code}
               </Text>
             )}
-            {company.phone && <Text style={styles.companyInfo}>{company.phone}</Text>}
-            {company.email && <Text style={styles.companyInfo}>{company.email}</Text>}
+            {company.phone && (
+              <Text style={styles.companyInfo}>{company.phone}</Text>
+            )}
+            {company.email && (
+              <Text style={styles.companyInfo}>{company.email}</Text>
+            )}
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.invoiceTitle}>INVOICE</Text>
@@ -257,7 +264,9 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
               {invoice.due_date && (
                 <Text style={styles.invoiceMeta}>
                   <Text style={styles.metaLabel}>Due: </Text>
-                  <Text style={styles.metaValue}>{formatDate(invoice.due_date)}</Text>
+                  <Text style={styles.metaValue}>
+                    {formatDate(invoice.due_date)}
+                  </Text>
                 </Text>
               )}
             </View>
@@ -268,7 +277,8 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
         <View style={styles.billToSection}>
           <Text style={styles.sectionTitle}>Bill To</Text>
           <Text style={styles.customerName}>
-            {customer.display_name || `${customer.first_name} ${customer.last_name}`}
+            {customer.display_name ||
+              `${customer.first_name} ${customer.last_name}`}
           </Text>
           {customer.company_name && (
             <Text style={styles.customerInfo}>{customer.company_name}</Text>
@@ -278,25 +288,50 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
           )}
           {customer.billing_city && (
             <Text style={styles.customerInfo}>
-              {customer.billing_city}, {customer.billing_state} {customer.billing_zip}
+              {customer.billing_city}, {customer.billing_state}{" "}
+              {customer.billing_zip}
             </Text>
           )}
-          {customer.email && <Text style={styles.customerInfo}>{customer.email}</Text>}
-          {customer.phone && <Text style={styles.customerInfo}>{customer.phone}</Text>}
+          {customer.email && (
+            <Text style={styles.customerInfo}>{customer.email}</Text>
+          )}
+          {customer.phone && (
+            <Text style={styles.customerInfo}>{customer.phone}</Text>
+          )}
         </View>
 
         {/* Line Items Table */}
         <View style={styles.table}>
           {/* Table Header */}
           <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.colDescription]}>Description</Text>
-            <Text style={[styles.tableHeaderCell, styles.colQty, styles.tableCellRight]}>
+            <Text style={[styles.tableHeaderCell, styles.colDescription]}>
+              Description
+            </Text>
+            <Text
+              style={[
+                styles.tableHeaderCell,
+                styles.colQty,
+                styles.tableCellRight,
+              ]}
+            >
               Qty
             </Text>
-            <Text style={[styles.tableHeaderCell, styles.colRate, styles.tableCellRight]}>
+            <Text
+              style={[
+                styles.tableHeaderCell,
+                styles.colRate,
+                styles.tableCellRight,
+              ]}
+            >
               Rate
             </Text>
-            <Text style={[styles.tableHeaderCell, styles.colAmount, styles.tableCellRight]}>
+            <Text
+              style={[
+                styles.tableHeaderCell,
+                styles.colAmount,
+                styles.tableCellRight,
+              ]}
+            >
               Amount
             </Text>
           </View>
@@ -304,15 +339,30 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
           {/* Table Rows */}
           {lineItems.map((item: any, index: number) => (
             <View key={index} style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.colDescription]}>{item.description}</Text>
-              <Text style={[styles.tableCell, styles.colQty, styles.tableCellRight]}>
+              <Text style={[styles.tableCell, styles.colDescription]}>
+                {item.description}
+              </Text>
+              <Text
+                style={[styles.tableCell, styles.colQty, styles.tableCellRight]}
+              >
                 {item.quantity}
               </Text>
-              <Text style={[styles.tableCell, styles.colRate, styles.tableCellRight]}>
+              <Text
+                style={[
+                  styles.tableCell,
+                  styles.colRate,
+                  styles.tableCellRight,
+                ]}
+              >
                 {formatCurrency(item.unit_price || item.unitPrice)}
               </Text>
               <Text
-                style={[styles.tableCell, styles.colAmount, styles.tableCellRight, styles.tableCellBold]}
+                style={[
+                  styles.tableCell,
+                  styles.colAmount,
+                  styles.tableCellRight,
+                  styles.tableCellBold,
+                ]}
               >
                 {formatCurrency(item.amount || item.quantity * item.unit_price)}
               </Text>
@@ -330,18 +380,24 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
             {taxAmount > 0 && (
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Tax</Text>
-                <Text style={styles.totalValue}>{formatCurrency(taxAmount)}</Text>
+                <Text style={styles.totalValue}>
+                  {formatCurrency(taxAmount)}
+                </Text>
               </View>
             )}
             {discountAmount > 0 && (
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Discount</Text>
-                <Text style={styles.totalValue}>-{formatCurrency(discountAmount)}</Text>
+                <Text style={styles.totalValue}>
+                  -{formatCurrency(discountAmount)}
+                </Text>
               </View>
             )}
             <View style={styles.grandTotalRow}>
               <Text style={styles.grandTotalLabel}>Total</Text>
-              <Text style={styles.grandTotalValue}>{formatCurrency(total)}</Text>
+              <Text style={styles.grandTotalValue}>
+                {formatCurrency(total)}
+              </Text>
             </View>
           </View>
         </View>
@@ -362,4 +418,3 @@ export function InvoicePDFDocument({ invoice, customer, company }: InvoicePDFPro
     </Document>
   );
 }
-

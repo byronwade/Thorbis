@@ -2,7 +2,7 @@
 
 /**
  * Advanced Filters Component
- * 
+ *
  * Powerful multi-criteria filtering system for data tables
  * - Filter by any field
  * - Multiple filter conditions
@@ -11,8 +11,9 @@
  * - Save filter presets
  */
 
-import { Plus, X, Filter } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,8 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 export type FilterOperator =
   | "equals"
@@ -149,12 +148,11 @@ export function AdvancedFilters({
     onChange([...conditions, newCondition]);
   };
 
-  const updateCondition = (
-    id: string,
-    updates: Partial<FilterCondition>
-  ) => {
+  const updateCondition = (id: string, updates: Partial<FilterCondition>) => {
     console.log("🔄 Updating condition:", id, "with:", updates);
-    const newConditions = conditions.map((c) => (c.id === id ? { ...c, ...updates } : c));
+    const newConditions = conditions.map((c) =>
+      c.id === id ? { ...c, ...updates } : c
+    );
     console.log("🔄 Updated conditions:", newConditions);
     onChange(newConditions);
   };
@@ -183,9 +181,8 @@ export function AdvancedFilters({
     }
   };
 
-  const needsValueInput = (operator: FilterOperator) => {
-    return operator !== "is_empty" && operator !== "is_not_empty";
-  };
+  const needsValueInput = (operator: FilterOperator) =>
+    operator !== "is_empty" && operator !== "is_not_empty";
 
   return (
     <div className="space-y-2">
@@ -201,21 +198,21 @@ export function AdvancedFilters({
 
             return (
               <div
-                key={condition.id}
                 className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3"
+                key={condition.id}
               >
                 {index > 0 && (
-                  <span className="text-xs text-muted-foreground font-medium">
+                  <span className="font-medium text-muted-foreground text-xs">
                     AND
                   </span>
                 )}
 
                 {/* Field Selector */}
                 <Select
-                  value={condition.field}
                   onValueChange={(value) =>
                     updateCondition(condition.id, { field: value })
                   }
+                  value={condition.field}
                 >
                   <SelectTrigger className="h-8 w-[140px]">
                     <SelectValue />
@@ -231,12 +228,12 @@ export function AdvancedFilters({
 
                 {/* Operator Selector */}
                 <Select
-                  value={condition.operator}
                   onValueChange={(value) =>
                     updateCondition(condition.id, {
                       operator: value as FilterOperator,
                     })
                   }
+                  value={condition.operator}
                 >
                   <SelectTrigger className="h-8 w-[160px]">
                     <SelectValue />
@@ -255,10 +252,10 @@ export function AdvancedFilters({
                   <>
                     {field.type === "select" && field.options ? (
                       <Select
-                        value={String(condition.value)}
                         onValueChange={(value) =>
                           updateCondition(condition.id, { value })
                         }
+                        value={String(condition.value)}
                       >
                         <SelectTrigger className="h-8 w-[140px]">
                           <SelectValue placeholder="Select..." />
@@ -273,57 +270,57 @@ export function AdvancedFilters({
                       </Select>
                     ) : field.type === "date" ? (
                       <Input
-                        type="date"
                         className="h-8 w-[140px]"
-                        value={String(condition.value)}
                         onChange={(e) =>
                           updateCondition(condition.id, {
                             value: e.target.value,
                           })
                         }
+                        type="date"
+                        value={String(condition.value)}
                       />
                     ) : field.type === "number" ? (
                       <Input
-                        type="number"
                         className="h-8 w-[140px]"
-                        value={String(condition.value)}
                         onChange={(e) =>
                           updateCondition(condition.id, {
                             value: e.target.value,
                           })
                         }
                         placeholder="Value..."
+                        type="number"
+                        value={String(condition.value)}
                       />
                     ) : (
                       <Input
-                        type="text"
                         className="h-8 w-[180px]"
-                        value={String(condition.value)}
                         onChange={(e) =>
                           updateCondition(condition.id, {
                             value: e.target.value,
                           })
                         }
                         placeholder="Value..."
+                        type="text"
+                        value={String(condition.value)}
                       />
                     )}
 
                     {/* Second value for "between" operator */}
                     {condition.operator === "between" && (
                       <>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           and
                         </span>
                         <Input
-                          type={field.type === "date" ? "date" : "number"}
                           className="h-8 w-[140px]"
-                          value={String(condition.value2 || "")}
                           onChange={(e) =>
                             updateCondition(condition.id, {
                               value2: e.target.value,
                             })
                           }
                           placeholder="Value..."
+                          type={field.type === "date" ? "date" : "number"}
+                          value={String(condition.value2 || "")}
                         />
                       </>
                     )}
@@ -332,10 +329,10 @@ export function AdvancedFilters({
 
                 {/* Remove Button */}
                 <Button
-                  size="icon"
-                  variant="ghost"
                   className="h-8 w-8 shrink-0"
                   onClick={() => removeCondition(condition.id)}
+                  size="icon"
+                  variant="ghost"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -350,13 +347,13 @@ export function AdvancedFilters({
         {/* Add Filter Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="sm" variant="outline" className="h-8 gap-1">
+            <Button className="h-8 gap-1" size="sm" variant="outline">
               <Plus className="h-3.5 w-3.5" />
               <span>Add Filter</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuLabel className="text-xs font-semibold uppercase text-muted-foreground">
+            <DropdownMenuLabel className="font-semibold text-muted-foreground text-xs uppercase">
               Filter by field
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -373,19 +370,14 @@ export function AdvancedFilters({
 
         {/* Clear All Button */}
         {conditions.length > 0 && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-8"
-            onClick={onClear}
-          >
+          <Button className="h-8" onClick={onClear} size="sm" variant="ghost">
             Clear all
           </Button>
         )}
 
         {/* Active Filter Count Badge */}
         {conditions.length > 0 && (
-          <Badge variant="secondary" className="h-6">
+          <Badge className="h-6" variant="secondary">
             {conditions.length} active
           </Badge>
         )}
@@ -417,7 +409,11 @@ export function applyFilters<T extends Record<string, any>>(
       }
 
       // Skip filters with empty values (except for is_empty/is_not_empty which we handled above)
-      if (filterValue === "" || filterValue === null || filterValue === undefined) {
+      if (
+        filterValue === "" ||
+        filterValue === null ||
+        filterValue === undefined
+      ) {
         return true; // Don't filter out items if the filter value is empty
       }
 
@@ -486,4 +482,3 @@ export function applyFilters<T extends Record<string, any>>(
     });
   });
 }
-

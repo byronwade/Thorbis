@@ -106,7 +106,7 @@ export default async function AppointmentsPage() {
 
   // Only count active (non-archived) appointments in stats
   const activeAppointments = appointments.filter(
-    (a) => !a.archived_at && !a.deleted_at
+    (a) => !(a.archived_at || a.deleted_at)
   );
 
   const scheduledCount = activeAppointments.filter(

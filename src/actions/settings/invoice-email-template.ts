@@ -29,7 +29,7 @@ export async function loadInvoiceEmailTemplate(): Promise<
 > {
   try {
     const supabase = await createClient();
-    
+
     if (!supabase) {
       return {
         success: false,
@@ -106,7 +106,8 @@ Thank you for your business!
 
 Best regards,
 {{company_name}}`,
-        footer: "This is an automated message. Please do not reply to this email.",
+        footer:
+          "This is an automated message. Please do not reply to this email.",
       },
     };
   } catch (error) {
@@ -126,7 +127,7 @@ export async function saveInvoiceEmailTemplate(
 ): Promise<ActionResult<void>> {
   try {
     const supabase = await createClient();
-    
+
     if (!supabase) {
       return {
         success: false,
@@ -235,4 +236,3 @@ export async function saveInvoiceEmailTemplate(
     };
   }
 }
-

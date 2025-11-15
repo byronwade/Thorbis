@@ -6,6 +6,8 @@ import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
 import { EMAIL_COLORS } from "../../theme";
 
+const CENTS_IN_DOLLAR = 100;
+
 // Simple currency formatter for email templates
 function formatCurrency(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", {
@@ -13,7 +15,7 @@ function formatCurrency(amount: number, currency = "USD"): string {
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount / 100); // Convert cents to dollars
+  }).format(amount / CENTS_IN_DOLLAR); // Convert cents to dollars
 }
 
 export default function EstimateNotificationEmail({

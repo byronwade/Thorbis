@@ -3,7 +3,6 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { MarketingValueProp } from "@/lib/marketing/types";
 import {
   Card,
   CardContent,
@@ -12,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getFeatureBySlug } from "@/lib/marketing/features";
+import type { MarketingValueProp } from "@/lib/marketing/types";
 import {
   generateBreadcrumbStructuredData,
   generateMetadata as generateSEOMetadata,
@@ -291,15 +291,15 @@ export default function SolutionsOverviewPage() {
             <section key={group.heading}>
               <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                  <p className="font-semibold text-primary text-sm uppercase tracking-wide">
                     {group.heading}
                   </p>
-                  <h2 className="text-2xl font-semibold text-foreground">
+                  <h2 className="font-semibold text-2xl text-foreground">
                     {group.description}
                   </h2>
                 </div>
                 <Link
-                  className="text-sm font-semibold text-primary underline underline-offset-4"
+                  className="font-semibold text-primary text-sm underline underline-offset-4"
                   href="/features"
                 >
                   Browse all features
@@ -316,13 +316,13 @@ export default function SolutionsOverviewPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge variant="outline">{feature.label}</Badge>
                         {feature.highlight ? (
-                          <span className="rounded-full bg-primary/10 px-3 py-1 text-primary text-xs font-semibold">
+                          <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary text-xs">
                             {feature.highlight}
                           </span>
                         ) : null}
                       </div>
                       {feature.heroEyebrow ? (
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
                           {feature.heroEyebrow}
                         </p>
                       ) : null}
@@ -366,13 +366,13 @@ export default function SolutionsOverviewPage() {
         </div>
 
         <div className="mt-16 rounded-3xl border border-border/60 bg-muted/30 p-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+          <p className="font-semibold text-primary text-sm uppercase tracking-wide">
             Switch Programs
           </p>
-          <h2 className="mt-2 text-3xl font-bold">
+          <h2 className="mt-2 font-bold text-3xl">
             Moving from ServiceTitan or Housecall Pro?
           </h2>
-          <p className="mt-3 text-muted-foreground text-lg">
+          <p className="mt-3 text-lg text-muted-foreground">
             Our white-glove team migrates data, recreates automations, and
             enables Dispatch AI in under 24 hours. Keep your workflows, drop the
             bloat.
@@ -392,10 +392,10 @@ export default function SolutionsOverviewPage() {
             <Badge className="mb-4" variant="secondary">
               Resource Library
             </Badge>
-            <h2 className="text-3xl font-bold">
+            <h2 className="font-bold text-3xl">
               All the research paths your buying committee needs
             </h2>
-            <p className="mt-3 text-muted-foreground text-lg">
+            <p className="mt-3 text-lg text-muted-foreground">
               Every link below is an SEO-ready landing page with rich content,
               schema markup, and clear CTAs—ideal for programmatic search
               capture.
@@ -408,10 +408,10 @@ export default function SolutionsOverviewPage() {
                 href={item.href}
                 key={item.href}
               >
-                <p className="text-base font-semibold text-foreground">
+                <p className="font-semibold text-base text-foreground">
                   {item.label}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-muted-foreground text-sm">
                   {item.description}
                 </p>
               </Link>
@@ -424,10 +424,10 @@ export default function SolutionsOverviewPage() {
             <Badge className="mb-4" variant="secondary">
               Company & Trust
             </Badge>
-            <h2 className="text-3xl font-bold">
+            <h2 className="font-bold text-3xl">
               Learn about the team behind Thorbis
             </h2>
-            <p className="mt-3 text-muted-foreground text-lg">
+            <p className="mt-3 text-lg text-muted-foreground">
               Dive into pricing, careers, press, implementation, and security
               resources that buyers, partners, and analysts ask for.
             </p>
@@ -439,10 +439,10 @@ export default function SolutionsOverviewPage() {
                 href={item.href}
                 key={item.href}
               >
-                <p className="text-base font-semibold text-foreground">
+                <p className="font-semibold text-base text-foreground">
                   {item.label}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-muted-foreground text-sm">
                   Visit {item.label} →
                 </p>
               </Link>
@@ -451,13 +451,13 @@ export default function SolutionsOverviewPage() {
         </section>
 
         <section className="mt-20 rounded-3xl border border-border/60 bg-gradient-to-br from-primary/10 via-background to-background p-10 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+          <p className="font-semibold text-primary text-sm uppercase tracking-wide">
             Ready to build?
           </p>
-          <h2 className="mt-2 text-3xl font-bold">
+          <h2 className="mt-2 font-bold text-3xl">
             Create your account or schedule a working session
           </h2>
-          <p className="mt-3 text-muted-foreground text-lg">
+          <p className="mt-3 text-lg text-muted-foreground">
             Thorbis is $100/month base plus usage, unlimited users, and data
             exports whenever you like. No contracts, no surprise add-ons.
           </p>
@@ -474,5 +474,3 @@ export default function SolutionsOverviewPage() {
     </>
   );
 }
-
-

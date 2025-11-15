@@ -26,6 +26,7 @@ import {
   Home,
   Info,
   MapPin,
+  MessageSquare,
   Navigation,
   Paperclip,
   Receipt,
@@ -37,11 +38,13 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { updateEntityTags } from "@/actions/entity-tags";
 import { updateProperty } from "@/actions/properties";
 import {
   DetailPageContentLayout,
   type DetailPageHeaderConfig,
 } from "@/components/layout/detail-page-content-layout";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,8 +56,6 @@ import { PropertyLocationVisual } from "@/components/work/job-details/widgets/pr
 import { useToast } from "@/hooks/use-toast";
 import { PropertyEquipmentTable } from "./property-equipment-table";
 import { PropertyJobsTable } from "./property-jobs-table";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type PropertyPageContentProps = {
   entityData: {
@@ -239,6 +240,52 @@ export function PropertyPageContent({
     },
   ];
 
+  const renderCommunicationEntries = (items: any[]) => (
+    <div className="space-y-3">
+      {items.slice(0, 25).map((communication) => {
+        const contactName =
+          communication.customer?.first_name ||
+          communication.customer?.last_name
+            ? `${communication.customer?.first_name ?? ""} ${communication.customer?.last_name ?? ""}`.trim()
+            : communication.direction === "inbound"
+              ? communication.from_address
+              : communication.to_address;
+        const preview =
+          communication.subject ||
+          communication.body?.slice(0, 160) ||
+          "No additional details";
+        const timestamp = new Date(communication.created_at).toLocaleString();
+
+        return (
+          <div className="rounded-lg border p-3" key={communication.id}>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline">
+                {communication.type?.toUpperCase()}
+              </Badge>
+              <Badge
+                variant={
+                  communication.direction === "inbound"
+                    ? "secondary"
+                    : "default"
+                }
+              >
+                {communication.direction === "inbound" ? "Inbound" : "Outbound"}
+              </Badge>
+              {communication.status && (
+                <Badge variant="outline">{communication.status}</Badge>
+              )}
+              <span className="text-muted-foreground text-xs">{timestamp}</span>
+            </div>
+            <div className="mt-2">
+              <p className="font-medium text-sm">{contactName || "Contact"}</p>
+              <p className="text-muted-foreground text-sm">{preview}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   const headerConfig: DetailPageHeaderConfig = {
     title: property.name || property.address,
     subtitle: `${property.city}, ${property.state} ${property.zip_code}`,
@@ -307,6 +354,23 @@ export function PropertyPageContent({
               </div>
             )}
           </div>
+        </UnifiedAccordionContent>
+      ),
+    },
+    {
+      id: "communications",
+      title: "Communications",
+      icon: <MessageSquare className="size-4" />,
+      content: (
+        <UnifiedAccordionContent>
+          {communications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground text-sm">
+              <MessageSquare className="mb-4 size-10 text-muted-foreground" />
+              No communications logged for this property yet.
+            </div>
+          ) : (
+            renderCommunicationEntries(communications)
+          )}
         </UnifiedAccordionContent>
       ),
     },
@@ -780,13 +844,15 @@ export function PropertyPageContent({
 
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-muted-foreground text-xs font-medium">
+            <span className="font-medium text-muted-foreground text-xs">
               Tags:
             </span>
             <EntityTags
               entityId={property.id}
               entityType="property"
-              onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
+              onUpdateTags={(id, tags) =>
+                updateEntityTags("property", id, tags)
+              }
               tags={propertyTags}
             />
           </div>

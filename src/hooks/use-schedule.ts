@@ -1,16 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
+import { fetchScheduleData } from "@/lib/schedule-data";
 import { filterJobs, sortJobsByStartTime } from "@/lib/schedule-utils";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useViewStore } from "@/lib/stores/view-store";
 import { createClient } from "@/lib/supabase/client";
-
-/**
- * Custom hook for managing schedule data
- */
-
-// Track if we've already initiated a load to prevent multiple simultaneous loads
-let loadingPromise: Promise<void> | null = null;
 
 export function useSchedule() {
   // Use granular selectors to avoid closure issues
@@ -23,6 +17,8 @@ export function useSchedule() {
   const selectedTechnicianId = useScheduleStore(
     (state) => state.selectedTechnicianId
   );
+  const lastFetchedRange = useScheduleStore((state) => state.lastFetchedRange);
+  const storeCompanyId = useScheduleStore((state) => state.companyId);
 
   // Get actions
   const setLoading = useScheduleStore((state) => state.setLoading);
@@ -38,6 +34,17 @@ export function useSchedule() {
   const duplicateJob = useScheduleStore((state) => state.duplicateJob);
   const getJobById = useScheduleStore((state) => state.getJobById);
   const syncWithServer = useScheduleStore((state) => state.syncWithServer);
+  const setLastSync = useScheduleStore((state) => state.setLastSync);
+  const setCompanyId = useScheduleStore((state) => state.setCompanyId);
+  const setLastFetchedRange = useScheduleStore(
+    (state) => state.setLastFetchedRange
+  );
+  const getUnassignedJobsFromStore = useScheduleStore(
+    (state) => state.getUnassignedJobs
+  );
+  const getJobsGroupedByTechnicianFromStore = useScheduleStore(
+    (state) => state.getJobsGroupedByTechnician
+  );
 
   // Get view store values with selectors to avoid re-renders
   const filters = useViewStore((state) => state.filters);
@@ -51,233 +58,134 @@ export function useSchedule() {
     [currentDate, zoom]
   );
 
-  // Track if we've loaded to prevent infinite loops
-  const hasLoadedRef = useRef(false);
+  const rangeStart = visibleTimeRange.start.getTime();
+  const rangeEnd = visibleTimeRange.end.getTime();
+  const companyIdRef = useRef<string | null>(
+    useScheduleStore.getState().companyId
+  );
 
-  // Load initial data - ONLY ONCE ON MOUNT
   useEffect(() => {
-    // Prevent multiple loads
-    if (hasLoadedRef.current) {
-      return;
+    companyIdRef.current = storeCompanyId;
+  }, [storeCompanyId]);
+
+  const jobCount = jobs.size;
+
+  const hasCoverage = useMemo(() => {
+    if (!lastFetchedRange || jobCount === 0) {
+      return false;
     }
 
+    const fetchedStart = lastFetchedRange.start.getTime();
+    const fetchedEnd = lastFetchedRange.end.getTime();
+
+    return fetchedStart <= rangeStart && fetchedEnd >= rangeEnd;
+  }, [jobCount, lastFetchedRange, rangeEnd, rangeStart]);
+
+  useEffect(() => {
     let isMounted = true;
 
+    if (hasCoverage && companyIdRef.current) {
+      return () => {
+        isMounted = false;
+      };
+    }
+
     const loadData = async () => {
-      // If already loaded, skip
-      const currentJobs = useScheduleStore.getState().jobs;
-      if (currentJobs.size > 0) {
-        hasLoadedRef.current = true;
-        setLoading(false);
-        return;
-      }
+      setLoading(true);
+      setError(null);
 
-      // If another instance is already loading, wait for it
-      if (loadingPromise) {
-        await loadingPromise;
-        hasLoadedRef.current = true;
-        setLoading(false);
-        return;
-      }
+      try {
+        const supabase = createClient();
 
-      // Mark as loading to prevent duplicate loads
-      hasLoadedRef.current = true;
-
-      // Create and store the loading promise
-      loadingPromise = (async () => {
-        try {
-          setLoading(true);
-          setError(null);
-
-          const supabase = createClient();
-
-          if (!supabase) {
-            throw new Error("Database connection not available");
-          }
-
-          // Fetch schedules from Supabase
-          const { data: schedules, error: schedulesError } = await supabase
-            .from("schedules")
-            .select(`
-              *,
-              customer:customers(first_name, last_name, email, phone),
-              job:jobs(job_number, title)
-            `)
-            .is("deleted_at", null)
-            .order("start_time", { ascending: true });
-
-          if (!isMounted) {
-            setLoading(false);
-            return;
-          }
-
-          if (schedulesError) throw schedulesError;
-
-          // Try to load team members, but don't fail if it doesn't work
-          // This is wrapped in try-catch so schedule loading can continue even if team members fail
-          try {
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-
-            if (user) {
-              // Get user's company - use maybeSingle() to avoid error if no record exists
-              const { data: userTeamMember } = await supabase
-                .from("team_members")
-                .select("company_id")
-                .eq("user_id", user.id)
-                .eq("status", "active")
-                .maybeSingle();
-
-              if (userTeamMember?.company_id) {
-                // Fetch team members (technicians) for the user's company
-                const { data: teamMembers } = await supabase
-                  .from("team_members")
-                  .select(`
-                    *,
-                    users!team_members_user_id_fkey (
-                      id,
-                      name,
-                      email,
-                      avatar_url,
-                      phone
-                    )
-                  `)
-                  .eq("company_id", userTeamMember.company_id)
-                  .eq("status", "active");
-
-                if (teamMembers && teamMembers.length > 0) {
-                  // Convert team members to Technician format
-                  const convertedTechnicians = teamMembers.map(
-                    (member: any) => ({
-                      id: member.user_id,
-                      name:
-                        member.users?.name || member.job_title || "Team Member",
-                      email: member.users?.email || "",
-                      phone: member.users?.phone || member.phone || "",
-                      avatar: member.users?.avatar_url || member.avatar_url,
-                      color: "#3B82F6",
-                      role: member.job_title || "Team Member",
-                      isActive: member.status === "active",
-                      status: "available" as const,
-                      schedule: {
-                        workingHours: { start: "08:00", end: "17:00" },
-                        daysOff: [],
-                        availableHours: { start: 0, end: 40 },
-                      },
-                      createdAt: new Date(member.created_at),
-                      updatedAt: new Date(member.updated_at),
-                    })
-                  );
-
-                  if (isMounted) {
-                    setTechnicians(convertedTechnicians);
-                  }
-                } else if (isMounted) {
-                  setTechnicians([]);
-                }
-              } else if (isMounted) {
-                setTechnicians([]);
-              }
-            } else if (isMounted) {
-              setTechnicians([]);
-            }
-          } catch (teamError) {
-            // Silently fail - team members are optional for schedule display
-            console.warn(
-              "Failed to load team members (non-critical):",
-              teamError
-            );
-            if (isMounted) {
-              setTechnicians([]);
-            }
-          }
-
-          // Convert schedules to Job format (filter out jobs without customers)
-          const convertedJobs = (schedules || [])
-            .filter((schedule: any) => schedule.customer)
-            .map((schedule: any) => ({
-              id: schedule.id,
-              technicianId: schedule.assigned_to || "",
-              customerId: schedule.customer_id || "",
-              customer: {
-                id: schedule.customer_id,
-                name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
-                email: schedule.customer.email,
-                phone: schedule.customer.phone,
-                location: {
-                  address: {
-                    street: "",
-                    city: "",
-                    state: "",
-                    zip: "",
-                    country: "",
-                  },
-                  coordinates: {
-                    lat: 0,
-                    lng: 0,
-                  },
-                },
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-              location: {
-                address: {
-                  street: "",
-                  city: "",
-                  state: "",
-                  zip: "",
-                  country: "",
-                },
-                coordinates: {
-                  lat: 0,
-                  lng: 0,
-                },
-              },
-              title: schedule.title || "",
-              description: schedule.description || "",
-              status: schedule.status || "scheduled",
-              priority: schedule.priority || "normal",
-              startTime: new Date(schedule.start_time),
-              endTime: new Date(schedule.end_time),
-              notes: schedule.notes || "",
-              metadata: {},
-              createdAt: new Date(schedule.created_at),
-              updatedAt: new Date(schedule.updated_at),
-            }));
-
-          if (!isMounted) {
-            setLoading(false);
-            return;
-          }
-
-          setJobs(convertedJobs);
-        } catch (error) {
-          if (!isMounted) {
-            setLoading(false);
-            return;
-          }
-          let errorMessage = "Unknown error";
-          if (error instanceof Error) {
-            errorMessage = error.message;
-          } else if (
-            typeof error === "object" &&
-            error !== null &&
-            "message" in error
-          ) {
-            errorMessage = String(error.message);
-          }
-          console.error("Schedule loading error:", error);
-          setError(errorMessage);
-        } finally {
-          if (isMounted) {
-            setLoading(false);
-          }
-          loadingPromise = null;
+        if (!supabase) {
+          throw new Error("Database connection not available");
         }
-      })();
 
-      await loadingPromise;
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError) {
+          throw authError;
+        }
+
+        if (!user) {
+          throw new Error("User session not found");
+        }
+
+        let companyId = companyIdRef.current;
+
+        if (!companyId) {
+          const { data: membership, error: membershipError } = await supabase
+            .from("team_members")
+            .select("company_id")
+            .eq("user_id", user.id)
+            .eq("status", "active")
+            .order("joined_at", { ascending: false, nullsFirst: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (membershipError) {
+            throw membershipError;
+          }
+
+          if (!membership?.company_id) {
+            throw new Error("No active company membership found");
+          }
+
+          companyId = membership.company_id;
+          companyIdRef.current = companyId;
+          setCompanyId(companyId);
+        }
+
+        if (!companyId) {
+          throw new Error(
+            "Unable to resolve company context for schedule data"
+          );
+        }
+
+        const { jobs: convertedJobs, technicians: convertedTechnicians } =
+          await fetchScheduleData({
+            supabase,
+            companyId,
+            range: {
+              start: new Date(rangeStart),
+              end: new Date(rangeEnd),
+            },
+          });
+
+        if (!isMounted) {
+          return;
+        }
+
+        setTechnicians(convertedTechnicians);
+        setJobs(convertedJobs);
+        const fetchedRange = {
+          start: new Date(rangeStart),
+          end: new Date(rangeEnd),
+        };
+
+        setTechnicians(convertedTechnicians);
+        setJobs(convertedJobs);
+        setLastSync(new Date());
+        setLastFetchedRange(fetchedRange);
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : typeof error === "object" && error !== null && "message" in error
+              ? String((error as { message: string }).message)
+              : "Unknown error";
+        setError(errorMessage);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
     };
 
     loadData();
@@ -285,7 +193,18 @@ export function useSchedule() {
     return () => {
       isMounted = false;
     };
-  }, []); // Empty array - only run once on mount!
+  }, [
+    hasCoverage,
+    rangeEnd,
+    rangeStart,
+    setCompanyId,
+    setLastFetchedRange,
+    setError,
+    setJobs,
+    setLastSync,
+    setLoading,
+    setTechnicians,
+  ]);
 
   // Get filtered and sorted jobs - MEMOIZED
   const filteredJobs = useMemo((): Job[] => {
@@ -359,6 +278,8 @@ export function useSchedule() {
     getJobsForTechnician,
     selectJob,
     selectTechnician,
+    getUnassignedJobs: getUnassignedJobsFromStore,
+    getJobsGroupedByTechnician: getJobsGroupedByTechnicianFromStore,
 
     // Mutations
     addJob,

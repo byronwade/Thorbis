@@ -3,9 +3,9 @@
  * Keeps only the completed company (with active subscription)
  */
 
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { resolve } from "path";
 
 // Load environment variables
 config({ path: resolve(process.cwd(), ".env.local") });
@@ -19,6 +19,36 @@ if (!(supabaseUrl && supabaseServiceKey)) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+const DAYS_TO_PERMANENT_DELETE = 90;
+const HOURS_PER_DAY = 24;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_MINUTE = 60;
+const MILLISECONDS_PER_SECOND = 1000;
+const MILLISECONDS_PER_DAY =
+  HOURS_PER_DAY *
+  MINUTES_PER_HOUR *
+  SECONDS_PER_MINUTE *
+  MILLISECONDS_PER_SECOND;
+const PERMANENT_DELETE_DELAY_MS =
+  DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
+
+type CompanyRecord = {
+  id: string;
+  name: string;
+  stripe_subscription_status: string | null;
+  deleted_at: string | null;
+};
+
+type MembershipRecord = {
+  id: string;
+  company_id: string;
+  companies: CompanyRecord;
+};
+
+function getPermanentDeleteDateISO() {
+  return new Date(Date.now() + PERMANENT_DELETE_DELAY_MS).toISOString();
+}
 
 async function cleanupIncompleteCompanies() {
   try {
@@ -69,18 +99,19 @@ async function cleanupIncompleteCompanies() {
       return;
     }
 
-    console.log(`\nFound ${memberships.length} companies:`);
-    memberships.forEach((m: any) => {
+    const typedMemberships = memberships as MembershipRecord[];
+    console.log(`\nFound ${typedMemberships.length} companies:`);
+    for (const membership of typedMemberships) {
       console.log(
-        `  - ${m.companies.name} (${m.companies.id}): ${m.companies.stripe_subscription_status}`
+        `  - ${membership.companies.name} (${membership.companies.id}): ${membership.companies.stripe_subscription_status}`
       );
-    });
+    }
 
     // Find the completed company (active subscription)
-    const completedCompany = memberships.find(
-      (m: any) =>
-        m.companies.stripe_subscription_status === "active" ||
-        m.companies.stripe_subscription_status === "trialing"
+    const completedCompany = typedMemberships.find(
+      (membership) =>
+        membership.companies.stripe_subscription_status === "active" ||
+        membership.companies.stripe_subscription_status === "trialing"
     );
 
     if (!completedCompany) {
@@ -93,8 +124,8 @@ async function cleanupIncompleteCompanies() {
     );
 
     // Archive all incomplete companies
-    const incompleteCompanies = memberships.filter(
-      (m: any) => m.companies.id !== completedCompany.companies.id
+    const incompleteCompanies = typedMemberships.filter(
+      (membership) => membership.companies.id !== completedCompany.companies.id
     );
 
     if (incompleteCompanies.length === 0) {
@@ -119,9 +150,7 @@ async function cleanupIncompleteCompanies() {
           deleted_at: new Date().toISOString(),
           deleted_by: user.id,
           archived_at: new Date().toISOString(),
-          permanent_delete_scheduled_at: new Date(
-            Date.now() + 90 * 24 * 60 * 60 * 1000
-          ).toISOString(), // 90 days from now
+          permanent_delete_scheduled_at: getPermanentDeleteDateISO(), // 90 days from now
         })
         .eq("id", companyId);
 
