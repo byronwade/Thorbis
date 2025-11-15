@@ -76,9 +76,7 @@ export function EstimatesTable({
   const [selectedEstimateIds, setSelectedEstimateIds] = useState<Set<string>>(
     new Set()
   );
-  const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(
-    new Set()
-  );
+  const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(new Set());
 
   // Count estimates by status
   const statusCounts = useMemo(() => {
@@ -490,7 +488,8 @@ export function EstimatesTable({
             </AlertDialogTitle>
             <AlertDialogDescription>
               This will send {pendingSendIds.size} estimate
-              {pendingSendIds.size !== 1 ? "s" : ""} via email to your customers.
+              {pendingSendIds.size !== 1 ? "s" : ""} via email to your
+              customers.
               <br />
               <br />
               <strong>Estimated time:</strong>{" "}
@@ -509,7 +508,9 @@ export function EstimatesTable({
                 setIsBulkSending(true);
 
                 // Import sync store
-                const { useSyncStore } = await import("@/lib/stores/sync-store");
+                const { useSyncStore } = await import(
+                  "@/lib/stores/sync-store"
+                );
                 const { startOperation, completeOperation } =
                   useSyncStore.getState();
 

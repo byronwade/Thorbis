@@ -1,14 +1,20 @@
 import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
+import { withWorkflow } from "workflow/next";
 
 // Only load bundle analyzer when ANALYZE=true to avoid build overhead
+const SECONDS_PER_DAY = 24 * 60 * 60;
+const DAYS_PER_MONTH = 30;
+const THIRTY_DAYS_IN_SECONDS = DAYS_PER_MONTH * SECONDS_PER_DAY;
+const ONE_DAY_IN_SECONDS = SECONDS_PER_DAY;
+
 const withBundleAnalyzer =
   process.env.ANALYZE === "true"
     ? require("@next/bundle-analyzer")({
         enabled: true,
         openAnalyzer: false,
       })
-    : (config: NextConfig) => config;
+    : (baseConfig: NextConfig) => baseConfig;
 
 const isPwaEnabled = process.env.NEXT_PUBLIC_ENABLE_PWA === "true";
 
@@ -43,7 +49,7 @@ const withPWA = isPwaEnabled
             cacheName: "image-cache",
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              maxAgeSeconds: THIRTY_DAYS_IN_SECONDS, // 30 days
             },
           },
         },
@@ -54,13 +60,15 @@ const withPWA = isPwaEnabled
             cacheName: "static-resources",
             expiration: {
               maxEntries: 60,
-              maxAgeSeconds: 24 * 60 * 60, // 1 day
+              maxAgeSeconds: ONE_DAY_IN_SECONDS, // 1 day
             },
           },
         },
       ],
     })
-  : (config: NextConfig) => config;
+  : (baseConfig: NextConfig) => baseConfig;
+
+type WorkflowContext = { defaultConfig: NextConfig };
 
 const nextConfig: NextConfig = {
   // PERFORMANCE: Static generation RE-ENABLED! ✅
@@ -175,21 +183,32 @@ const nextConfig: NextConfig = {
   // Build output optimizations
   poweredByHeader: false, // Remove X-Powered-By header
   compress: true, // Enable gzip compression
-  webpack: (config) => {
+  webpack: (webpackConfig) => {
     // Keep webpack running to display all errors instead of bailing on the first failure
-    config.bail = false;
-    return config;
+    webpackConfig.bail = false;
+    return webpackConfig;
   },
 };
 
 // Conditionally wrap configs only when needed
-let config = nextConfig;
+let mergedConfig = nextConfig;
 
 // Only apply bundle analyzer when ANALYZE=true
-config = withBundleAnalyzer(config);
+mergedConfig = withBundleAnalyzer(mergedConfig);
 
 // Apply PWA (already optimized to skip in dev)
-config = withPWA(config);
+mergedConfig = withPWA(mergedConfig);
+
+// Enable Vercel Workflow directives for long-running onboarding flows while
+// keeping type compatibility with NextConfig expectations.
+const workflowEnabledConfig = withWorkflow(mergedConfig);
 
 // Wrap with BotID protection (outermost wrapper for security)
-export default withBotId(config);
+export default withBotId(async (phase, config) =>
+  workflowEnabledConfig(
+    phase,
+    (config as unknown as WorkflowContext | undefined) ?? {
+      defaultConfig: mergedConfig,
+    }
+  )
+);

@@ -40,6 +40,10 @@ const inviteTeamMemberSchema = z.object({
 const createRoleSchema = z.object({
   name: z.string().min(1, "Role name is required"),
   description: z.string().optional(),
+  color: z
+    .string()
+    .regex(/^#([0-9A-Fa-f]{6})$/, "Color must be a hex value")
+    .optional(),
   permissions: z
     .array(z.string())
     .min(1, "At least one permission is required"),
@@ -1193,6 +1197,7 @@ export async function createRole(
     const data = createRoleSchema.parse({
       name: formData.get("name"),
       description: formData.get("description") || undefined,
+      color: (formData.get("color") as string) || undefined,
       permissions,
     });
 
@@ -1218,6 +1223,7 @@ export async function createRole(
         company_id: currentUserTeam.company_id,
         name: data.name,
         description: data.description,
+        color: data.color,
         permissions: data.permissions,
         is_system: false,
       })
@@ -1303,6 +1309,7 @@ export async function updateRole(
     const data = createRoleSchema.parse({
       name: formData.get("name"),
       description: formData.get("description") || undefined,
+      color: (formData.get("color") as string) || undefined,
       permissions,
     });
 
@@ -1312,6 +1319,7 @@ export async function updateRole(
       .update({
         name: data.name,
         description: data.description,
+        color: data.color,
         permissions: data.permissions,
       })
       .eq("id", roleId);
@@ -1687,23 +1695,27 @@ export async function deleteDepartment(
 
 export type TeamMemberWithDetails = {
   id: string;
-  user_id: string;
+  user_id: string | null;
   company_id: string;
   role_id: string | null;
   department_id: string | null;
   status: string;
   job_title: string | null;
   phone: string | null;
+  email: string | null;
+  invited_name: string | null;
+  invited_email: string | null;
   invited_at: string | null;
   joined_at: string | null;
   last_active_at: string | null;
   created_at: string;
+  archived_at: string | null;
   user: {
     id: string;
     name: string;
     email: string;
     avatar: string | null;
-  };
+  } | null;
   role: {
     id: string;
     name: string;
@@ -1758,11 +1770,14 @@ export async function getTeamMembers() {
         status,
         job_title,
         phone,
+        email,
         invited_at,
         joined_at,
         last_active_at,
         created_at,
-        archived_at
+        archived_at,
+        invited_name,
+        invited_email
       `
       )
       .eq("company_id", companyId)
@@ -1783,14 +1798,23 @@ export async function getTeamMembers() {
     }
 
     // Get unique user IDs and role IDs
-    const userIds = [...new Set(members.map((m) => m.user_id))];
+    const userIds = [
+      ...new Set(
+        members
+          .map((m) => m.user_id)
+          .filter((value): value is string => typeof value === "string")
+      ),
+    ];
     const roleIds = [...new Set(members.map((m) => m.role_id).filter(Boolean))];
 
     // Fetch user details from public.users
-    const { data: users } = await supabase
-      .from("users")
-      .select("id, name, email, avatar")
-      .in("id", userIds);
+    const { data: users } =
+      userIds.length > 0
+        ? await supabase
+            .from("users")
+            .select("id, name, email, avatar")
+            .in("id", userIds)
+        : { data: [] };
 
     // Fetch role details
     const { data: roles } = await supabase
@@ -1803,23 +1827,51 @@ export async function getTeamMembers() {
     const rolesMap = new Map(roles?.map((r) => [r.id, r]) || []);
 
     // Transform the data to match expected structure
-    const transformedMembers = members.map((member: any) => ({
-      id: member.id,
-      user_id: member.user_id,
-      company_id: member.company_id,
-      role_id: member.role_id,
-      department_id: member.department_id,
-      status: member.status,
-      job_title: member.job_title,
-      phone: member.phone,
-      invited_at: member.invited_at,
-      joined_at: member.joined_at,
-      last_active_at: member.last_active_at,
-      created_at: member.created_at,
-      user: usersMap.get(member.user_id) || null,
-      role: rolesMap.get(member.role_id) || null,
-      department: null, // Department FK constraint doesn't exist yet
-    }));
+    const transformedMembers = members.map((member: any) => {
+      const resolvedUser =
+        member.user_id && usersMap.get(member.user_id)
+          ? usersMap.get(member.user_id)
+          : null;
+
+      const fallbackName =
+        member.invited_name ||
+        member.email ||
+        member.invited_email ||
+        "Pending team member";
+
+      const fallbackEmail = member.email || member.invited_email || "";
+
+      return {
+        id: member.id,
+        user_id: member.user_id,
+        company_id: member.company_id,
+        role_id: member.role_id,
+        department_id: member.department_id,
+        status: member.status,
+        job_title: member.job_title,
+        phone: member.phone,
+        email: member.email,
+        invited_name: member.invited_name,
+        invited_email: member.invited_email,
+        invited_at: member.invited_at,
+        joined_at: member.joined_at,
+        last_active_at: member.last_active_at,
+        created_at: member.created_at,
+        archived_at: member.archived_at,
+        user:
+          resolvedUser ||
+          (fallbackEmail || fallbackName
+            ? {
+                id: member.user_id ?? member.id,
+                name: fallbackName,
+                email: fallbackEmail,
+                avatar: null,
+              }
+            : null),
+        role: rolesMap.get(member.role_id) || null,
+        department: null, // Department FK constraint doesn't exist yet
+      };
+    });
 
     return transformedMembers;
   });
@@ -1904,6 +1956,83 @@ export async function getRoles(): Promise<
   });
 }
 
+export async function getRoleDetails(roleId: string): Promise<
+  ActionResult<{
+    id: string;
+    name: string;
+    description: string | null;
+    color: string | null;
+    permissions: string[];
+    is_system: boolean;
+    member_count: number;
+  }>
+> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getActiveCompanyId();
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const { data: role, error } = await supabase
+      .from("custom_roles")
+      .select(
+        "id, name, description, color, permissions, is_system, company_id"
+      )
+      .eq("id", roleId)
+      .single();
+
+    if (error || !role) {
+      throw new ActionError(
+        ERROR_MESSAGES.notFound("role"),
+        ERROR_CODES.NOT_FOUND
+      );
+    }
+
+    if (role.company_id !== companyId) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("role"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const { count } = await supabase
+      .from("team_members")
+      .select("*", { count: "exact", head: true })
+      .eq("role_id", roleId)
+      .eq("company_id", companyId);
+
+    return {
+      id: role.id,
+      name: role.name,
+      description: role.description,
+      color: role.color,
+      permissions: Array.isArray(role.permissions)
+        ? (role.permissions as string[])
+        : [],
+      is_system: role.is_system,
+      member_count: count ?? 0,
+    };
+  });
+}
+
 /**
  * Get all departments for current user's company
  */
@@ -1978,5 +2107,164 @@ export async function getDepartments(): Promise<
     );
 
     return departmentsWithCounts;
+  });
+}
+
+// ============================================================================
+// TEAM OVERVIEW SNAPSHOT
+// ============================================================================
+
+export type TeamOverviewSnapshot = {
+  generatedAt: string;
+  readinessScore: number;
+  stepsCompleted: number;
+  totalSteps: number;
+  totals: {
+    members: number;
+    active: number;
+    invited: number;
+    suspended: number;
+  };
+  lastInviteAt: string | null;
+  onboardingAcceptanceRate: number;
+  roles: {
+    total: number;
+    system: number;
+    custom: number;
+  };
+  departments: {
+    total: number;
+    membersAssigned: number;
+  };
+};
+
+export async function getTeamOverview(): Promise<
+  ActionResult<TeamOverviewSnapshot>
+> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const companyId = await getActiveCompanyId();
+    if (!companyId) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    const [membersResult, rolesResult, departmentsResult] = await Promise.all([
+      supabase
+        .from("team_members")
+        .select("status, invited_at, joined_at, department_id")
+        .eq("company_id", companyId),
+      supabase
+        .from("custom_roles")
+        .select("id, is_system")
+        .eq("company_id", companyId),
+      supabase.from("departments").select("id").eq("company_id", companyId),
+    ]);
+
+    if (membersResult.error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch team members"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+    if (rolesResult.error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch roles"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+    if (departmentsResult.error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch departments"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    const members = membersResult.data ?? [];
+    const roles = rolesResult.data ?? [];
+    const departments = departmentsResult.data ?? [];
+
+    const totals = members.reduce(
+      (acc, member) => {
+        acc.members += 1;
+        if (member.status === "active") {
+          acc.active += 1;
+        } else if (member.status === "invited" || member.status === "pending") {
+          acc.invited += 1;
+        } else if (
+          member.status === "suspended" ||
+          member.status === "inactive" ||
+          member.status === "disabled" ||
+          member.status === "archived"
+        ) {
+          acc.suspended += 1;
+        }
+        return acc;
+      },
+      { members: 0, active: 0, invited: 0, suspended: 0 }
+    );
+
+    const lastInviteAt =
+      members
+        .filter((member) => member.invited_at)
+        .sort(
+          (a, b) =>
+            new Date(b.invited_at!).getTime() -
+            new Date(a.invited_at!).getTime()
+        )[0]?.invited_at ?? null;
+
+    const onboardingAcceptanceRate =
+      totals.active + totals.invited === 0
+        ? 1
+        : totals.active / (totals.active + totals.invited);
+
+    const systemRoles = roles.filter((role) => role.is_system).length;
+    const customRoles = roles.length - systemRoles;
+
+    const membersWithDepartments = members.filter(
+      (member) => member.department_id
+    ).length;
+
+    const readinessSteps = [
+      totals.active > 0,
+      customRoles > 0,
+      departments.length > 0,
+      onboardingAcceptanceRate >= 0.6 || totals.invited === 0,
+      membersWithDepartments > 0,
+    ];
+
+    const stepsCompleted = readinessSteps.filter(Boolean).length;
+    const readinessScore = Math.round(
+      (stepsCompleted / readinessSteps.length) * 100
+    );
+
+    return {
+      generatedAt: new Date().toISOString(),
+      readinessScore,
+      stepsCompleted,
+      totalSteps: readinessSteps.length,
+      totals,
+      lastInviteAt,
+      onboardingAcceptanceRate,
+      roles: {
+        total: roles.length,
+        system: systemRoles,
+        custom: customRoles,
+      },
+      departments: {
+        total: departments.length,
+        membersAssigned: membersWithDepartments,
+      },
+    };
   });
 }

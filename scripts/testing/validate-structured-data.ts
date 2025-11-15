@@ -132,11 +132,11 @@ const schemas: Array<{ name: string; schema: ValidationTarget }> = [
 
 const errors: string[] = [];
 
-schemas.forEach(({ name, schema }) => {
+for (const { name, schema } of schemas) {
   if (!(schema["@context"] && schema["@type"])) {
     errors.push(`${name} schema is missing '@context' or '@type'.`);
   }
-});
+}
 
 if (errors.length > 0) {
   process.stderr.write(

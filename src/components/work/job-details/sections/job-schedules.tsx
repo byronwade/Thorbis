@@ -6,6 +6,7 @@
 "use client";
 
 import { Calendar, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -14,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 type JobSchedulesProps = {
   schedules: any[];
@@ -40,7 +40,10 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
   };
 
   const getStatusVariant = (status: string) => {
-    const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+    const statusMap: Record<
+      string,
+      "default" | "secondary" | "outline" | "destructive"
+    > = {
       scheduled: "outline",
       confirmed: "secondary",
       in_progress: "default",
@@ -119,4 +122,3 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
     </div>
   );
 }
-

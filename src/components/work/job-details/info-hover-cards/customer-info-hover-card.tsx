@@ -5,16 +5,16 @@
 
 "use client";
 
-import { Copy, Mail, MapPin, Phone, User, Check } from "lucide-react";
+import { Check, Copy, Mail, MapPin, Phone, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 type CustomerInfoHoverCardProps = {
@@ -35,7 +35,9 @@ type CustomerInfoHoverCardProps = {
   };
 };
 
-export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) {
+export function CustomerInfoHoverCard({
+  customer,
+}: CustomerInfoHoverCardProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -191,4 +193,3 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
     </HoverCard>
   );
 }
-

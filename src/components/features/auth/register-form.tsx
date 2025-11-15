@@ -34,13 +34,14 @@ export function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (avatarPreview) {
         URL.revokeObjectURL(avatarPreview);
       }
-    };
-  }, [avatarPreview]);
+    },
+    [avatarPreview]
+  );
 
   const passwordScore = useMemo(() => {
     let score = 0;
@@ -325,7 +326,11 @@ export function RegisterForm() {
               type="button"
               variant="ghost"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
               <span className="sr-only">
                 {showPassword ? "Hide password" : "Show password"}
               </span>
@@ -399,7 +404,7 @@ export function RegisterForm() {
 
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="avatar">Profile image (optional)</Label>
-          <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-border/70 p-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-4 rounded-2xl border border-border/70 border-dashed p-4 sm:flex-row sm:items-center">
             <div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border/80">
               {avatarPreview ? (
                 <Image
@@ -441,12 +446,7 @@ export function RegisterForm() {
         {/* Terms & Submit */}
         <div className="space-y-4 md:col-span-2">
           <div className="flex items-center gap-3">
-            <Checkbox
-              disabled={isLoading}
-              id="terms"
-              name="terms"
-              required
-            />
+            <Checkbox disabled={isLoading} id="terms" name="terms" required />
             <Label className="text-sm" htmlFor="terms">
               I agree to the{" "}
               <Link className="hover:underline" href="/legal/terms">
@@ -469,6 +469,9 @@ export function RegisterForm() {
               "Create account"
             )}
           </Button>
+          <p className="text-center text-muted-foreground text-sm">
+            14-day free trial • No credit card required
+          </p>
         </div>
       </form>
 
@@ -482,4 +485,3 @@ export function RegisterForm() {
     </div>
   );
 }
-

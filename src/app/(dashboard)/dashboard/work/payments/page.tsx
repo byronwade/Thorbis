@@ -90,17 +90,23 @@ export default async function PaymentsPage() {
   }));
 
   // Filter to active payments for stats calculations
-  const activePayments = payments.filter((p) => !p.archived_at && !p.deleted_at);
+  const activePayments = payments.filter(
+    (p) => !(p.archived_at || p.deleted_at)
+  );
 
   // Calculate payment stats (from active payments only)
   const completedCount = activePayments.filter(
     (p) => p.status === "completed"
   ).length;
-  const pendingCount = activePayments.filter((p) => p.status === "pending").length;
+  const pendingCount = activePayments.filter(
+    (p) => p.status === "pending"
+  ).length;
   const refundedCount = activePayments.filter(
     (p) => p.status === "refunded" || p.status === "partially_refunded"
   ).length;
-  const failedCount = activePayments.filter((p) => p.status === "failed").length;
+  const failedCount = activePayments.filter(
+    (p) => p.status === "failed"
+  ).length;
 
   const paymentStats: StatCard[] = [
     {

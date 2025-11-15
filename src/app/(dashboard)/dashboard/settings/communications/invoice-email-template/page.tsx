@@ -12,25 +12,34 @@
 
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { Eye, Loader2, Mail, Save } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Mail, Eye, Save } from "lucide-react";
 import {
+  type InvoiceEmailTemplate,
   loadInvoiceEmailTemplate,
   saveInvoiceEmailTemplate,
-  type InvoiceEmailTemplate,
 } from "@/actions/settings/invoice-email-template";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 const TEMPLATE_VARIABLES = [
   { name: "{{customer_name}}", description: "Customer's full name" },
-  { name: "{{invoice_number}}", description: "Invoice number (e.g., INV-202511-0001)" },
+  {
+    name: "{{invoice_number}}",
+    description: "Invoice number (e.g., INV-202511-0001)",
+  },
   { name: "{{invoice_amount}}", description: "Total invoice amount" },
   { name: "{{due_date}}", description: "Payment due date" },
   { name: "{{payment_link}}", description: "Secure payment portal link" },
@@ -63,7 +72,8 @@ export default function InvoiceEmailTemplatePage() {
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
-  const [template, setTemplate] = useState<InvoiceEmailTemplate>(DEFAULT_TEMPLATE);
+  const [template, setTemplate] =
+    useState<InvoiceEmailTemplate>(DEFAULT_TEMPLATE);
 
   // Load template from database
   useEffect(() => {
@@ -96,7 +106,9 @@ export default function InvoiceEmailTemplatePage() {
   };
 
   const handleInsertVariable = (variable: string) => {
-    const textarea = document.getElementById("email-body") as HTMLTextAreaElement;
+    const textarea = document.getElementById(
+      "email-body"
+    ) as HTMLTextAreaElement;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
@@ -120,17 +132,19 @@ export default function InvoiceEmailTemplatePage() {
     }, 0);
   };
 
-  const getPreviewText = (text: string) => {
-    return text
+  const getPreviewText = (text: string) =>
+    text
       .replace(/{{customer_name}}/g, "John Doe")
       .replace(/{{invoice_number}}/g, "INV-202511-0001")
       .replace(/{{invoice_amount}}/g, "$1,234.56")
       .replace(/{{due_date}}/g, "December 15, 2024")
-      .replace(/{{payment_link}}/g, "https://app.thorbis.com/pay/abc123?token=xyz789")
+      .replace(
+        /{{payment_link}}/g,
+        "https://app.thorbis.com/pay/abc123?token=xyz789"
+      )
       .replace(/{{company_name}}/g, "Acme Services")
       .replace(/{{company_email}}/g, "billing@acmeservices.com")
       .replace(/{{company_phone}}/g, "(555) 123-4567");
-  };
 
   if (isLoading) {
     return (
@@ -146,9 +160,10 @@ export default function InvoiceEmailTemplatePage() {
     <div className="container mx-auto max-w-4xl space-y-6 py-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Invoice Email Template</h1>
+        <h1 className="font-bold text-3xl">Invoice Email Template</h1>
         <p className="text-muted-foreground">
-          Customize the email that customers receive when you send them an invoice
+          Customize the email that customers receive when you send them an
+          invoice
         </p>
       </div>
 
@@ -172,11 +187,11 @@ export default function InvoiceEmailTemplatePage() {
                 <Label htmlFor="email-subject">Subject Line</Label>
                 <Input
                   id="email-subject"
-                  placeholder="Invoice subject line..."
-                  value={template.subject}
                   onChange={(e) =>
                     setTemplate({ ...template, subject: e.target.value })
                   }
+                  placeholder="Invoice subject line..."
+                  value={template.subject}
                 />
               </div>
 
@@ -184,14 +199,14 @@ export default function InvoiceEmailTemplatePage() {
               <div className="space-y-2">
                 <Label htmlFor="email-body">Email Body</Label>
                 <Textarea
+                  className="font-mono text-sm"
                   id="email-body"
-                  placeholder="Email body text..."
-                  value={template.body}
                   onChange={(e) =>
                     setTemplate({ ...template, body: e.target.value })
                   }
+                  placeholder="Email body text..."
                   rows={12}
-                  className="font-mono text-sm"
+                  value={template.body}
                 />
               </div>
 
@@ -200,20 +215,20 @@ export default function InvoiceEmailTemplatePage() {
                 <Label htmlFor="email-footer">Email Footer</Label>
                 <Input
                   id="email-footer"
-                  placeholder="Email footer text..."
-                  value={template.footer}
                   onChange={(e) =>
                     setTemplate({ ...template, footer: e.target.value })
                   }
+                  placeholder="Email footer text..."
+                  value={template.footer}
                 />
               </div>
 
               {/* Actions */}
               <div className="flex gap-3">
                 <Button
-                  onClick={handleSave}
-                  disabled={isPending}
                   className="flex-1"
+                  disabled={isPending}
+                  onClick={handleSave}
                 >
                   {isPending ? (
                     <>
@@ -228,8 +243,8 @@ export default function InvoiceEmailTemplatePage() {
                   )}
                 </Button>
                 <Button
-                  variant="outline"
                   onClick={() => setShowPreview(!showPreview)}
+                  variant="outline"
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   {showPreview ? "Hide" : "Show"} Preview
@@ -249,12 +264,16 @@ export default function InvoiceEmailTemplatePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Subject</Label>
-                  <p className="mt-1 font-medium">{getPreviewText(template.subject)}</p>
+                  <Label className="text-muted-foreground text-xs">
+                    Subject
+                  </Label>
+                  <p className="mt-1 font-medium">
+                    {getPreviewText(template.subject)}
+                  </p>
                 </div>
                 <Separator />
                 <div>
-                  <Label className="text-xs text-muted-foreground">Body</Label>
+                  <Label className="text-muted-foreground text-xs">Body</Label>
                   <p className="mt-1 whitespace-pre-wrap text-sm">
                     {getPreviewText(template.body)}
                   </p>
@@ -263,7 +282,9 @@ export default function InvoiceEmailTemplatePage() {
                   <>
                     <Separator />
                     <div>
-                      <Label className="text-xs text-muted-foreground">Footer</Label>
+                      <Label className="text-muted-foreground text-xs">
+                        Footer
+                      </Label>
                       <p className="mt-1 text-muted-foreground text-sm">
                         {getPreviewText(template.footer)}
                       </p>
@@ -287,16 +308,18 @@ export default function InvoiceEmailTemplatePage() {
             <CardContent className="space-y-2">
               {TEMPLATE_VARIABLES.map((variable) => (
                 <button
+                  className="w-full rounded-md border p-3 text-left transition-colors hover:bg-accent"
                   key={variable.name}
                   onClick={() => handleInsertVariable(variable.name)}
-                  className="w-full rounded-md border p-3 text-left transition-colors hover:bg-accent"
                 >
                   <div className="mb-1 font-mono text-xs">
-                    <Badge variant="secondary" className="font-mono text-xs">
+                    <Badge className="font-mono text-xs" variant="secondary">
                       {variable.name}
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground text-xs">{variable.description}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {variable.description}
+                  </p>
                 </button>
               ))}
             </CardContent>
@@ -326,4 +349,3 @@ export default function InvoiceEmailTemplatePage() {
     </div>
   );
 }
-

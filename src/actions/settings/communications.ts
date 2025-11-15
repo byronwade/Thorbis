@@ -177,6 +177,49 @@ export async function getEmailSettings(): Promise<ActionResult<any>> {
   });
 }
 
+export async function getEmailInfrastructure(): Promise<
+  ActionResult<{
+    domain: Record<string, unknown> | null;
+    inboundRoute: Record<string, unknown> | null;
+  }>
+> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    const [{ data: domain }, { data: inboundRoute }] = await Promise.all([
+      supabase
+        .from("communication_email_domains")
+        .select("*")
+        .eq("company_id", companyId)
+        .order("created_at", { ascending: false })
+        .maybeSingle(),
+      supabase
+        .from("communication_email_inbound_routes")
+        .select("*")
+        .eq("company_id", companyId)
+        .maybeSingle(),
+    ]);
+
+    return {
+      domain: domain ?? null,
+      inboundRoute: inboundRoute ?? null,
+    };
+  });
+}
+
 // ============================================================================
 // SMS SETTINGS
 // ============================================================================

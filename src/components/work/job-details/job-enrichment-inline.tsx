@@ -7,7 +7,15 @@
 
 "use client";
 
-import { AlertTriangle, Cloud, CloudRain, Sun, Wind, Route, Clock } from "lucide-react";
+import {
+  AlertTriangle,
+  Clock,
+  Cloud,
+  CloudRain,
+  Route,
+  Sun,
+  Wind,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   HoverCard,
@@ -167,7 +175,7 @@ export function JobEnrichmentInline({
   useEffect(() => {
     const fetchTravelTime = async () => {
       // Only fetch if we have required address data
-      if (!property?.address || !property?.city || !property?.state) {
+      if (!(property?.address && property?.city && property?.state)) {
         return;
       }
 
@@ -203,7 +211,14 @@ export function JobEnrichmentInline({
     };
 
     fetchTravelTime();
-  }, [property?.address, property?.city, property?.state, property?.zip_code, property?.lat, property?.lon]);
+  }, [
+    property?.address,
+    property?.city,
+    property?.state,
+    property?.zip_code,
+    property?.lat,
+    property?.lon,
+  ]);
 
   if (
     isLoading ||
@@ -320,16 +335,19 @@ export function JobEnrichmentInline({
       {!isLoadingTravel && travelTime && (
         <HoverCard openDelay={200}>
           <HoverCardTrigger asChild>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5 cursor-help">
+            <div className="inline-flex cursor-help items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
               <Route className="size-4" />
-              {formatDuration(travelTime.duration)} • {travelTime.distance.toFixed(1)} mi
+              {formatDuration(travelTime.duration)} •{" "}
+              {travelTime.distance.toFixed(1)} mi
             </div>
           </HoverCardTrigger>
           <HoverCardContent className="w-80">
             <div className="space-y-3">
               <div>
                 <h4 className="font-semibold text-sm">Distance from HQ</h4>
-                <p className="text-muted-foreground text-xs">Real-time driving info</p>
+                <p className="text-muted-foreground text-xs">
+                  Real-time driving info
+                </p>
               </div>
               <div className="flex items-center gap-3 rounded-md bg-muted/50 p-3">
                 <div className="flex items-center gap-2">
@@ -353,61 +371,74 @@ export function JobEnrichmentInline({
       )}
 
       {/* Weather Forecast */}
-      {todayForecast && (() => {
-        const WeatherIcon = getWeatherIcon(todayForecast.shortForecast);
-        const weekForecast = weather?.forecast?.periods?.slice(0, 14) || []; // Get up to 14 periods (7 days, day+night)
-        return (
-          <HoverCard openDelay={200}>
-            <HoverCardTrigger asChild>
-              <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5 cursor-help">
-                <WeatherIcon className="size-4" />
-                {todayForecast.temperature}°{todayForecast.temperatureUnit}
-              </div>
-            </HoverCardTrigger>
-            <HoverCardContent align="start" className="w-[420px]" side="bottom">
-              <div className="space-y-3">
-                <div>
-                  <h4 className="font-semibold text-sm">7-Day Weather Forecast</h4>
-                  <p className="text-muted-foreground text-xs">Plan ahead for your service visit</p>
+      {todayForecast &&
+        (() => {
+          const WeatherIcon = getWeatherIcon(todayForecast.shortForecast);
+          const weekForecast = weather?.forecast?.periods?.slice(0, 14) || []; // Get up to 14 periods (7 days, day+night)
+          return (
+            <HoverCard openDelay={200}>
+              <HoverCardTrigger asChild>
+                <div className="inline-flex cursor-help items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+                  <WeatherIcon className="size-4" />
+                  {todayForecast.temperature}°{todayForecast.temperatureUnit}
                 </div>
-                <div className="space-y-1.5 max-h-[400px] overflow-y-auto">
-                  {weekForecast.map((period, idx) => {
-                    const PeriodIcon = getWeatherIcon(period.shortForecast);
-                    return (
-                      <div
-                        className="flex items-center justify-between gap-3 rounded-md bg-muted/50 p-2.5 hover:bg-muted transition-colors"
-                        key={idx}
-                      >
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <PeriodIcon className="size-4 shrink-0 text-muted-foreground" />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">{period.name}</p>
-                            <p className="text-muted-foreground text-xs truncate">{period.shortForecast}</p>
+              </HoverCardTrigger>
+              <HoverCardContent
+                align="start"
+                className="w-[420px]"
+                side="bottom"
+              >
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="font-semibold text-sm">
+                      7-Day Weather Forecast
+                    </h4>
+                    <p className="text-muted-foreground text-xs">
+                      Plan ahead for your service visit
+                    </p>
+                  </div>
+                  <div className="max-h-[400px] space-y-1.5 overflow-y-auto">
+                    {weekForecast.map((period, idx) => {
+                      const PeriodIcon = getWeatherIcon(period.shortForecast);
+                      return (
+                        <div
+                          className="flex items-center justify-between gap-3 rounded-md bg-muted/50 p-2.5 transition-colors hover:bg-muted"
+                          key={idx}
+                        >
+                          <div className="flex min-w-0 flex-1 items-center gap-2">
+                            <PeriodIcon className="size-4 shrink-0 text-muted-foreground" />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-medium text-sm">
+                                {period.name}
+                              </p>
+                              <p className="truncate text-muted-foreground text-xs">
+                                {period.shortForecast}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 items-center gap-3">
+                            <span className="font-semibold text-sm tabular-nums">
+                              {period.temperature}°{period.temperatureUnit}
+                            </span>
+                            <span className="min-w-[60px] text-right text-muted-foreground text-xs">
+                              {period.windSpeed}
+                            </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="font-semibold text-sm tabular-nums">
-                            {period.temperature}°{period.temperatureUnit}
-                          </span>
-                          <span className="text-muted-foreground text-xs min-w-[60px] text-right">
-                            {period.windSpeed}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </HoverCardContent>
-          </HoverCard>
-        );
-      })()}
+              </HoverCardContent>
+            </HoverCard>
+          );
+        })()}
 
       {/* Safety Warnings */}
       {hasSafetyWarnings && recommendations?.safetyWarnings && (
         <HoverCard openDelay={200}>
           <HoverCardTrigger asChild>
-            <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/30 cursor-help">
+            <div className="inline-flex cursor-help items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/30">
               <AlertTriangle className="size-4" />
               {recommendations.safetyWarnings.length} Safety Warning
               {recommendations.safetyWarnings.length > 1 ? "s" : ""}
@@ -439,7 +470,7 @@ export function JobEnrichmentInline({
         <HoverCard key={index} openDelay={200}>
           <HoverCardTrigger asChild>
             <div
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors cursor-help ${
+              className={`inline-flex cursor-help items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors ${
                 alert.severity === "Extreme"
                   ? "border-red-200 bg-red-50 text-red-700 hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/30"
                   : alert.severity === "Severe"
@@ -456,7 +487,9 @@ export function JobEnrichmentInline({
               <div className="flex items-center gap-2">
                 <AlertTriangle className="size-4" />
                 <h4 className="font-semibold text-sm">{alert.event}</h4>
-                <span className="ml-auto rounded-full border px-2 py-0.5 text-xs">{alert.severity}</span>
+                <span className="ml-auto rounded-full border px-2 py-0.5 text-xs">
+                  {alert.severity}
+                </span>
               </div>
               <p className="text-muted-foreground text-xs leading-relaxed">
                 {alert.headline}
@@ -477,7 +510,7 @@ export function JobEnrichmentInline({
           <HoverCard key={`traffic-${index}`} openDelay={200}>
             <HoverCardTrigger asChild>
               <div
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors cursor-help ${
+                className={`inline-flex cursor-help items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors ${
                   incident.severity === "major"
                     ? "border-red-200 bg-red-50 text-red-700 hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/30"
                     : incident.severity === "moderate"
@@ -494,15 +527,20 @@ export function JobEnrichmentInline({
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="size-4" />
-                  <h4 className="font-semibold text-sm">{getTrafficLabel(incident.type)}</h4>
-                  <span className="ml-auto rounded-full border px-2 py-0.5 text-xs">{incident.severity}</span>
+                  <h4 className="font-semibold text-sm">
+                    {getTrafficLabel(incident.type)}
+                  </h4>
+                  <span className="ml-auto rounded-full border px-2 py-0.5 text-xs">
+                    {incident.severity}
+                  </span>
                 </div>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   {incident.description}
                 </p>
                 <div className="flex items-center gap-4 text-muted-foreground text-xs">
                   <span>
-                    <span className="font-medium">Distance:</span> {incident.distance.toFixed(1)} mi
+                    <span className="font-medium">Distance:</span>{" "}
+                    {incident.distance.toFixed(1)} mi
                   </span>
                   {incident.affectsRoute && (
                     <span className="font-medium text-amber-600 dark:text-amber-400">

@@ -12,7 +12,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export interface CustomerContact {
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
+export type CustomerContact = {
   id: string;
   company_id: string;
   customer_id: string;
@@ -29,18 +34,36 @@ export interface CustomerContact {
   notes?: string;
   created_at: string;
   updated_at: string;
-}
+};
+
+type UpdateCustomerContactInput = {
+  firstName?: string;
+  lastName?: string;
+  title?: string;
+  email?: string;
+  phone?: string;
+  secondaryPhone?: string;
+  isPrimary?: boolean;
+  isBillingContact?: boolean;
+  isEmergencyContact?: boolean;
+  preferredContactMethod?: string;
+  notes?: string;
+};
+
+const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
+  const supabase = await createClient();
+  if (!supabase) {
+    throw new Error("Database connection failed");
+  }
+  return supabase as SupabaseServerClient;
+};
 
 /**
  * Get all contacts for a customer
  */
 export async function getCustomerContacts(customerId: string) {
   try {
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return { success: false, error: "Database connection failed", data: [] };
-    }
+    const supabase = await getSupabaseServerClient();
 
     const {
       data: { user },
@@ -71,13 +94,11 @@ export async function getCustomerContacts(customerId: string) {
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("Error fetching customer contacts:", error);
       return { success: false, error: error.message, data: [] };
     }
 
     return { success: true, data: data || [] };
   } catch (error) {
-    console.error("Error in getCustomerContacts:", error);
     return {
       success: false,
       error:
@@ -118,11 +139,7 @@ export async function addCustomerContact({
   notes?: string;
 }) {
   try {
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" };
-    }
+    const supabase = await getSupabaseServerClient();
 
     const {
       data: { user },
@@ -164,14 +181,12 @@ export async function addCustomerContact({
       .single();
 
     if (error) {
-      console.error("Error adding customer contact:", error);
       return { success: false, error: error.message };
     }
 
     revalidatePath(`/dashboard/customers/${customerId}`);
     return { success: true, data };
   } catch (error) {
-    console.error("Error in addCustomerContact:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to add contact",
@@ -185,46 +200,10 @@ export async function addCustomerContact({
 export async function updateCustomerContact({
   contactId,
   ...updateData
-}: {
-  contactId: string;
-  firstName?: string;
-  lastName?: string;
-  title?: string;
-  email?: string;
-  phone?: string;
-  secondaryPhone?: string;
-  isPrimary?: boolean;
-  isBillingContact?: boolean;
-  isEmergencyContact?: boolean;
-  preferredContactMethod?: string;
-  notes?: string;
-}) {
+}: { contactId: string } & UpdateCustomerContactInput) {
   try {
-    const supabase = await createClient();
-
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" };
-    }
-
-    const updates: any = {};
-    if (updateData.firstName !== undefined)
-      updates.first_name = updateData.firstName;
-    if (updateData.lastName !== undefined)
-      updates.last_name = updateData.lastName;
-    if (updateData.title !== undefined) updates.title = updateData.title;
-    if (updateData.email !== undefined) updates.email = updateData.email;
-    if (updateData.phone !== undefined) updates.phone = updateData.phone;
-    if (updateData.secondaryPhone !== undefined)
-      updates.secondary_phone = updateData.secondaryPhone;
-    if (updateData.isPrimary !== undefined)
-      updates.is_primary = updateData.isPrimary;
-    if (updateData.isBillingContact !== undefined)
-      updates.is_billing_contact = updateData.isBillingContact;
-    if (updateData.isEmergencyContact !== undefined)
-      updates.is_emergency_contact = updateData.isEmergencyContact;
-    if (updateData.preferredContactMethod !== undefined)
-      updates.preferred_contact_method = updateData.preferredContactMethod;
-    if (updateData.notes !== undefined) updates.notes = updateData.notes;
+    const supabase = await getSupabaseServerClient();
+    const updates = buildContactUpdates(updateData);
 
     const { data, error } = await supabase
       .from("customer_contacts")
@@ -234,13 +213,11 @@ export async function updateCustomerContact({
       .single();
 
     if (error) {
-      console.error("Error updating customer contact:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error in updateCustomerContact:", error);
     return {
       success: false,
       error:
@@ -254,10 +231,16 @@ export async function updateCustomerContact({
  */
 export async function removeCustomerContact(contactId: string) {
   try {
-    const supabase = await createClient();
+    const supabase = await getSupabaseServerClient();
 
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" };
+    const { data: contact } = await supabase
+      .from("customer_contacts")
+      .select("customer_id")
+      .eq("id", contactId)
+      .single();
+
+    if (!contact?.customer_id) {
+      return { success: false, error: "Contact not found" };
     }
 
     const { error } = await supabase
@@ -266,13 +249,12 @@ export async function removeCustomerContact(contactId: string) {
       .eq("id", contactId);
 
     if (error) {
-      console.error("Error removing customer contact:", error);
       return { success: false, error: error.message };
     }
 
+    revalidatePath(`/dashboard/customers/${contact.customer_id}`);
     return { success: true };
   } catch (error) {
-    console.error("Error in removeCustomerContact:", error);
     return {
       success: false,
       error:
@@ -280,3 +262,34 @@ export async function removeCustomerContact(contactId: string) {
     };
   }
 }
+
+const buildContactUpdates = (
+  updateData: UpdateCustomerContactInput
+): Record<string, unknown> => {
+  const mappings: Record<keyof UpdateCustomerContactInput, string> = {
+    firstName: "first_name",
+    lastName: "last_name",
+    title: "title",
+    email: "email",
+    phone: "phone",
+    secondaryPhone: "secondary_phone",
+    isPrimary: "is_primary",
+    isBillingContact: "is_billing_contact",
+    isEmergencyContact: "is_emergency_contact",
+    preferredContactMethod: "preferred_contact_method",
+    notes: "notes",
+  };
+
+  const updates: Record<string, unknown> = {};
+
+  for (const key of Object.keys(mappings) as Array<
+    keyof UpdateCustomerContactInput
+  >) {
+    const value = updateData[key];
+    if (value !== undefined) {
+      updates[mappings[key]] = value;
+    }
+  }
+
+  return updates;
+};

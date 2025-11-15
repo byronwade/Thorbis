@@ -4,6 +4,23 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
+const CONTRACT_NUMBER_PAD_LENGTH = 4;
+const ARCHIVE_RETENTION_DAYS = 90;
+const HOURS_PER_DAY = 24;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_MINUTE = 60;
+const MILLISECONDS_PER_SECOND = 1000;
+const MILLISECONDS_PER_DAY =
+  HOURS_PER_DAY *
+  MINUTES_PER_HOUR *
+  SECONDS_PER_MINUTE *
+  MILLISECONDS_PER_SECOND;
+
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
 /**
  * Server Actions for Contract Management
  *
@@ -25,17 +42,19 @@ async function getAuthContext() {
     throw new Error("Supabase client not configured");
   }
 
+  const typedSupabase = supabase as SupabaseServerClient;
+
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await typedSupabase.auth.getUser();
 
   if (authError || !user) {
     throw new Error("Not authenticated");
   }
 
   // Get user's active company from team_members
-  const { data: teamMember, error: teamError } = await supabase
+  const { data: teamMember, error: teamError } = await typedSupabase
     .from("team_members")
     .select("company_id")
     .eq("user_id", user.id)
@@ -49,7 +68,7 @@ async function getAuthContext() {
   return {
     userId: user.id,
     companyId: teamMember.company_id,
-    supabase,
+    supabase: typedSupabase,
   };
 }
 
@@ -58,15 +77,10 @@ async function getAuthContext() {
  */
 async function generateContractNumber(
   companyId: string,
-  supabase: Awaited<ReturnType<typeof createClient>>
+  supabase: SupabaseServerClient
 ): Promise<string> {
   const year = new Date().getFullYear();
   const prefix = `CON-${year}-`;
-
-  // Get count of contracts for this company this year
-  if (!supabase) {
-    throw new Error("Supabase client not available");
-  }
 
   const { data: contracts } = await supabase
     .from("contracts")
@@ -77,7 +91,10 @@ async function generateContractNumber(
     contracts?.filter((c) => c.contract_number?.startsWith(prefix)) || [];
 
   const nextNumber = yearContracts.length + 1;
-  return `${prefix}${String(nextNumber).padStart(4, "0")}`;
+  return `${prefix}${String(nextNumber).padStart(
+    CONTRACT_NUMBER_PAD_LENGTH,
+    "0"
+  )}`;
 }
 
 /**
@@ -128,6 +145,90 @@ const signContractSchema = z.object({
 // NOTE: Type exports moved to @/types/contracts
 // to comply with Next.js 16 "use server" file restrictions.
 
+type ContractInsertPayload = {
+  company_id: string;
+  contract_number: string;
+  title: string;
+  description: string | null;
+  content: string;
+  job_id: string | null;
+  estimate_id: string | null;
+  invoice_id: string | null;
+  contract_type: string;
+  valid_from: string | null;
+  valid_until: string | null;
+  terms: string | null;
+  notes: string | null;
+  signer_name: string | null;
+  signer_email: string;
+  signer_title: string | null;
+  signer_company: string | null;
+  status: string;
+};
+
+const buildContractInsertPayload = ({
+  companyId,
+  contractNumber,
+  data,
+}: {
+  companyId: string;
+  contractNumber: string;
+  data: z.infer<typeof contractSchema>;
+}): ContractInsertPayload => ({
+  company_id: companyId,
+  contract_number: contractNumber,
+  title: data.title,
+  description: data.description || null,
+  content: data.content,
+  job_id: data.jobId || null,
+  estimate_id: data.estimateId || null,
+  invoice_id: data.invoiceId || null,
+  contract_type: data.contractType,
+  valid_from: data.validFrom || null,
+  valid_until: data.validUntil || null,
+  terms: data.terms || null,
+  notes: data.notes || null,
+  signer_name: data.signerName || null,
+  signer_email: data.signerEmail,
+  signer_title: data.signerTitle || null,
+  signer_company: data.signerCompany || null,
+  status: "draft",
+});
+
+const buildContractUpdatePayload = (
+  data: Partial<z.infer<typeof contractSchema>>
+): Record<string, unknown> => {
+  const update: Record<string, unknown> = {};
+
+  const assign = (condition: unknown, key: string, value: unknown) => {
+    if (condition !== undefined) {
+      update[key] = value;
+    }
+  };
+
+  assign(data.title, "title", data.title);
+  assign(data.description, "description", data.description ?? null);
+  assign(data.content, "content", data.content);
+  assign(data.jobId, "job_id", data.jobId ?? null);
+  assign(data.estimateId, "estimate_id", data.estimateId ?? null);
+  assign(data.invoiceId, "invoice_id", data.invoiceId ?? null);
+  assign(data.contractType, "contract_type", data.contractType);
+  assign(data.validFrom, "valid_from", data.validFrom ?? null);
+  assign(data.validUntil, "valid_until", data.validUntil ?? null);
+  assign(data.terms, "terms", data.terms ?? null);
+  assign(data.notes, "notes", data.notes ?? null);
+  assign(data.signerName, "signer_name", data.signerName ?? null);
+  assign(data.signerEmail, "signer_email", data.signerEmail);
+  assign(data.signerTitle, "signer_title", data.signerTitle ?? null);
+  assign(data.signerCompany, "signer_company", data.signerCompany ?? null);
+
+  return update;
+};
+
+const reportContractIssue = (_message: string, _error?: unknown) => {
+  // TODO: Integrate structured logging
+};
+
 /**
  * Create a new contract
  */
@@ -160,33 +261,20 @@ export async function createContract(
     const contractNumber = await generateContractNumber(companyId, supabase);
 
     // Insert into database
+    const contractPayload = buildContractInsertPayload({
+      companyId,
+      contractNumber,
+      data,
+    });
+
     const { data: contract, error } = await supabase
       .from("contracts")
-      .insert({
-        company_id: companyId,
-        contract_number: contractNumber,
-        title: data.title,
-        description: data.description || null,
-        content: data.content,
-        job_id: data.jobId || null,
-        estimate_id: data.estimateId || null,
-        invoice_id: data.invoiceId || null,
-        contract_type: data.contractType,
-        valid_from: data.validFrom || null,
-        valid_until: data.validUntil || null,
-        terms: data.terms || null,
-        notes: data.notes || null,
-        signer_name: data.signerName || null,
-        signer_email: data.signerEmail,
-        signer_title: data.signerTitle || null,
-        signer_company: data.signerCompany || null,
-        status: "draft",
-      })
+      .insert(contractPayload)
       .select()
       .single();
 
     if (error) {
-      console.error("Error creating contract:", error);
+      reportContractIssue("Error creating contract", error);
       throw new Error("Failed to create contract");
     }
 
@@ -235,35 +323,12 @@ export async function updateContract(
     // Get auth context for security
     const { companyId, supabase } = await getAuthContext();
 
-    // Prepare update data with snake_case for Supabase
-    const updateData: any = {};
-    if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined)
-      updateData.description = data.description || null;
-    if (data.content !== undefined) updateData.content = data.content;
-    if (data.jobId !== undefined) updateData.job_id = data.jobId || null;
-    if (data.estimateId !== undefined)
-      updateData.estimate_id = data.estimateId || null;
-    if (data.invoiceId !== undefined)
-      updateData.invoice_id = data.invoiceId || null;
-    if (data.contractType !== undefined)
-      updateData.contract_type = data.contractType;
-    if (data.validFrom !== undefined)
-      updateData.valid_from = data.validFrom || null;
-    if (data.validUntil !== undefined)
-      updateData.valid_until = data.validUntil || null;
-    if (data.terms !== undefined) updateData.terms = data.terms || null;
-    if (data.notes !== undefined) updateData.notes = data.notes || null;
-    if (data.signerName !== undefined)
-      updateData.signer_name = data.signerName || null;
-    if (data.signerEmail !== undefined)
-      updateData.signer_email = data.signerEmail;
-    if (data.signerTitle !== undefined)
-      updateData.signer_title = data.signerTitle || null;
-    if (data.signerCompany !== undefined)
-      updateData.signer_company = data.signerCompany || null;
+    const updateData = buildContractUpdatePayload(data);
 
-    // Update in database (company-scoped for security via RLS)
+    if (Object.keys(updateData).length === 0) {
+      return { success: true };
+    }
+
     const { error } = await supabase
       .from("contracts")
       .update(updateData)
@@ -271,7 +336,7 @@ export async function updateContract(
       .eq("company_id", companyId);
 
     if (error) {
-      console.error("Error updating contract:", error);
+      reportContractIssue("Error updating contract", error);
       throw new Error("Failed to update contract");
     }
 
@@ -320,7 +385,7 @@ export async function archiveContract(
     // Archive contract (soft delete)
     const now = new Date().toISOString();
     const scheduledDeletion = new Date(
-      Date.now() + 90 * 24 * 60 * 60 * 1000
+      Date.now() + ARCHIVE_RETENTION_DAYS * MILLISECONDS_PER_DAY
     ).toISOString();
 
     const { error } = await supabase
@@ -336,14 +401,14 @@ export async function archiveContract(
       .eq("company_id", companyId);
 
     if (error) {
-      console.error("Error archiving contract:", error);
+      reportContractIssue("Error archiving contract", error);
       throw new Error("Failed to archive contract");
     }
 
     revalidatePath("/dashboard/work/contracts");
     revalidatePath("/dashboard/settings/archive");
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to archive contract" };
   }
 }
@@ -384,14 +449,14 @@ export async function restoreContract(
       .eq("company_id", companyId);
 
     if (error) {
-      console.error("Error restoring contract:", error);
+      reportContractIssue("Error restoring contract", error);
       throw new Error("Failed to restore contract");
     }
 
     revalidatePath("/dashboard/work/contracts");
     revalidatePath("/dashboard/settings/archive");
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to restore contract" };
   }
 }
@@ -427,7 +492,7 @@ export async function sendContract(
       .eq("company_id", companyId);
 
     if (error) {
-      console.error("Error sending contract:", error);
+      reportContractIssue("Error sending contract", error);
       throw new Error("Failed to send contract");
     }
 
@@ -437,7 +502,7 @@ export async function sendContract(
     revalidatePath("/dashboard/work/contracts");
     revalidatePath(`/dashboard/work/contracts/${contractId}`);
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to send contract" };
   }
 }
@@ -481,7 +546,7 @@ export async function signContract(
       .eq("id", data.contractId);
 
     if (error) {
-      console.error("Error signing contract:", error);
+      reportContractIssue("Error signing contract", error);
       throw new Error("Failed to sign contract");
     }
 
@@ -521,14 +586,14 @@ export async function rejectContract(
       .eq("company_id", companyId);
 
     if (error) {
-      console.error("Error rejecting contract:", error);
+      reportContractIssue("Error rejecting contract", error);
       throw new Error("Failed to reject contract");
     }
 
     revalidatePath("/dashboard/work/contracts");
     revalidatePath(`/dashboard/work/contracts/${contractId}`);
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to reject contract" };
   }
 }
@@ -553,7 +618,7 @@ export async function trackContractView(
       .single();
 
     if (fetchError) {
-      console.error("Error fetching contract:", fetchError);
+      reportContractIssue("Error fetching contract", fetchError);
       throw new Error("Failed to track contract view");
     }
 
@@ -568,7 +633,7 @@ export async function trackContractView(
         .eq("id", contractId);
 
       if (error) {
-        console.error("Error updating contract view:", error);
+        reportContractIssue("Error updating contract view", error);
         throw new Error("Failed to update contract view");
       }
     }
@@ -576,7 +641,7 @@ export async function trackContractView(
     revalidatePath("/dashboard/work/contracts");
     revalidatePath(`/dashboard/work/contracts/${contractId}`);
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to track contract view" };
   }
 }

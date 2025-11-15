@@ -13,8 +13,7 @@
  * });
  */
 
-export * from "./types";
 export * from "./client";
 export * from "./hooks";
 export * from "./server";
-
+export * from "./types";

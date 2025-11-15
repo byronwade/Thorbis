@@ -7,35 +7,47 @@
  * 3. Updates JSDoc comments to reflect Server Component status
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const glob = require("glob");
 
 // Configure revalidation times by route pattern
+const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+const FIVE_MINUTES = 5;
+const FIFTEEN_MINUTES = 15;
+const FIVE_MINUTES_SECONDS = FIVE_MINUTES * SECONDS_PER_MINUTE;
+const FIFTEEN_MINUTES_SECONDS = FIFTEEN_MINUTES * SECONDS_PER_MINUTE;
+const ONE_HOUR_SECONDS = SECONDS_PER_HOUR;
+
+const CLIENT_COMPONENT_DOC_REGEX =
+  /\/\*\*\s*\n\s*\*\s+.*? - Client Component\s*\n\s*\*\s*\n\s*\*\s+Client-side features:[\s\S]*?\*\//m;
+
 const REVALIDATION_CONFIG = {
   // Real-time data - 5 minutes
-  "/dashboard/jobs": 300,
-  "/dashboard/schedule": 300,
-  "/dashboard/customers": 300,
-  "/dashboard/invoices": 300,
-  "/dashboard/work": 300,
-  "/dashboard/technicians": 300,
-  "/dashboard/communication": 300,
+  "/dashboard/jobs": FIVE_MINUTES_SECONDS,
+  "/dashboard/schedule": FIVE_MINUTES_SECONDS,
+  "/dashboard/customers": FIVE_MINUTES_SECONDS,
+  "/dashboard/invoices": FIVE_MINUTES_SECONDS,
+  "/dashboard/work": FIVE_MINUTES_SECONDS,
+  "/dashboard/technicians": FIVE_MINUTES_SECONDS,
+  "/dashboard/communication": FIVE_MINUTES_SECONDS,
 
   // Analytics and reports - 15 minutes
-  "/dashboard/analytics": 900,
-  "/dashboard/reports": 900,
-  "/dashboard/finance": 900,
-  "/dashboard/marketing": 900,
+  "/dashboard/analytics": FIFTEEN_MINUTES_SECONDS,
+  "/dashboard/reports": FIFTEEN_MINUTES_SECONDS,
+  "/dashboard/finance": FIFTEEN_MINUTES_SECONDS,
+  "/dashboard/marketing": FIFTEEN_MINUTES_SECONDS,
 
   // Settings - 1 hour (rarely changes)
-  "/dashboard/settings": 3600,
-  "/dashboard/pricebook": 3600,
-  "/dashboard/training": 3600,
-  "/dashboard/inventory": 3600,
+  "/dashboard/settings": ONE_HOUR_SECONDS,
+  "/dashboard/pricebook": ONE_HOUR_SECONDS,
+  "/dashboard/training": ONE_HOUR_SECONDS,
+  "/dashboard/inventory": ONE_HOUR_SECONDS,
 
   // Default - 5 minutes
-  default: 300,
+  default: FIVE_MINUTES_SECONDS,
 };
 
 function getRevalidateTime(filePath) {
@@ -82,7 +94,7 @@ function processFile(filePath) {
     // Replace Client Component JSDoc with Server Component JSDoc
     if (content.includes("* Client Component")) {
       content = content.replace(
-        /\/\*\*\s*\n\s*\*\s+.*? - Client Component\s*\n\s*\*\s*\n\s*\*\s+Client-side features:[\s\S]*?\*\//m,
+        CLIENT_COMPONENT_DOC_REGEX,
         `/**
  * ${path.basename(path.dirname(filePath))} Page - Server Component
  *
@@ -91,7 +103,7 @@ function processFile(filePath) {
  * - Static content rendered on server
  * - Reduced JavaScript bundle size
  * - Better SEO and initial page load
- * - ISR revalidation every ${revalidateTime >= 3600 ? `${revalidateTime / 3600} hour${revalidateTime > 3600 ? "s" : ""}` : `${revalidateTime / 60} minutes`}
+ * - ISR revalidation every ${formatRevalidationDescription(revalidateTime)}
  */`
       );
     }
@@ -102,14 +114,14 @@ function processFile(filePath) {
       return { skipped: true, reason: "no imports found" };
     }
 
-    const lastImport = importMatches[importMatches.length - 1];
+    const lastImport = importMatches.at(-1);
+    if (!lastImport || lastImport.index === undefined) {
+      return { skipped: true, reason: "unable to find import position" };
+    }
     const insertPosition = lastImport.index + lastImport[0].length;
 
     // Insert revalidate export after imports
-    const revalidateComment =
-      revalidateTime >= 3600
-        ? `// Revalidate every ${revalidateTime / 3600} hour${revalidateTime > 3600 ? "s" : ""}`
-        : `// Revalidate every ${revalidateTime / 60} minutes`;
+    const revalidateComment = buildRevalidateComment(revalidateTime);
 
     const newContent =
       content.slice(0, insertPosition) +
@@ -143,7 +155,7 @@ function main() {
     errors: [],
   };
 
-  files.forEach((file) => {
+  for (const file of files) {
     const result = processFile(path.join(process.cwd(), file));
 
     if (result.success) {
@@ -153,7 +165,7 @@ function main() {
     } else if (result.error) {
       results.errors.push(result);
     }
-  });
+  }
 
   console.log("✅ Results:\n");
   console.log(`  Processed: ${results.processed.length} files`);
@@ -162,17 +174,33 @@ function main() {
 
   if (results.processed.length > 0) {
     console.log("\n📝 Processed files:");
-    results.processed.forEach(({ file, revalidateTime }) => {
+    for (const { file, revalidateTime } of results.processed) {
       console.log(`  ${file} (revalidate: ${revalidateTime}s)`);
-    });
+    }
   }
 
   if (results.errors.length > 0) {
     console.log("\n❌ Errors:");
-    results.errors.forEach(({ file, message }) => {
+    for (const { file, message } of results.errors) {
       console.log(`  ${file}: ${message}`);
-    });
+    }
   }
+}
+
+function formatRevalidationDescription(seconds) {
+  if (seconds >= ONE_HOUR_SECONDS) {
+    const hours = seconds / SECONDS_PER_HOUR;
+    const suffix = hours > 1 ? "s" : "";
+    return `${hours} hour${suffix}`;
+  }
+
+  const minutes = seconds / SECONDS_PER_MINUTE;
+  return `${minutes} minutes`;
+}
+
+function buildRevalidateComment(seconds) {
+  const description = formatRevalidationDescription(seconds);
+  return `// Revalidate every ${description}`;
 }
 
 main();

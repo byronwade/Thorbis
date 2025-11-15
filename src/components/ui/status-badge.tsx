@@ -59,7 +59,11 @@ export function StatusBadge({
 
   return (
     <Badge
-      className={cn("font-medium text-[11px] px-2 py-0.5 transition-all duration-200", config.className, className)}
+      className={cn(
+        "px-2 py-0.5 font-medium text-[11px] transition-all duration-200",
+        config.className,
+        className
+      )}
       variant={variant}
     >
       {config.label}

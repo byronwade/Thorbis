@@ -6,6 +6,7 @@
 
 "use server";
 
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
@@ -18,6 +19,16 @@ import {
   withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/supabase";
+
+const PASSWORD_MIN_LENGTH = 8;
+const HTTP_STATUS = {
+  notFound: 404,
+  gone: 410,
+  badRequest: 400,
+  conflict: 409,
+  internal: 500,
+} as const;
 
 const acceptInvitationSchema = z.object({
   token: z.string().min(1, "Token is required"),
@@ -27,11 +38,15 @@ const acceptInvitationSchema = z.object({
   phone: z.string().optional(),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
+
+type SupabaseServerClient = SupabaseClient<Database>;
+
+type InvitationRecord = Database["public"]["Tables"]["team_invitations"]["Row"];
 
 /**
  * Accept a team invitation and create user account
@@ -39,7 +54,7 @@ const acceptInvitationSchema = z.object({
 export async function acceptTeamInvitation(
   formData: FormData
 ): Promise<ActionResult<string>> {
-  return withErrorHandling(async () => {
+  return await withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
@@ -66,144 +81,188 @@ export async function acceptTeamInvitation(
       password,
     });
 
-    // Look up invitation
-    const { data: invitation, error: invitationError } = await supabase
-      .from("team_invitations")
-      .select("*")
-      .eq("token", validated.token)
-      .is("used_at", null)
-      .single();
+    const invitation = await fetchInvitation(supabase, validated.token);
+    validateInvitation(invitation, validated.email);
 
-    if (invitationError || !invitation) {
-      throw new ActionError(
-        "Invalid or expired invitation",
-        ERROR_CODES.DB_RECORD_NOT_FOUND,
-        404
-      );
-    }
-
-    // Check if expired
-    if (new Date(invitation.expires_at) < new Date()) {
-      throw new ActionError(
-        "Invitation has expired",
-        ERROR_CODES.VALIDATION_ERROR,
-        410
-      );
-    }
-
-    // Check if email matches
-    if (invitation.email !== validated.email) {
-      throw new ActionError(
-        "Email does not match invitation",
-        ERROR_CODES.VALIDATION_ERROR,
-        400
-      );
-    }
-
-    // Create auth user account
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: validated.email,
-      password: validated.password,
-      options: {
-        data: {
-          first_name: validated.firstName,
-          last_name: validated.lastName,
-          phone: validated.phone || "",
-        },
-      },
-    });
-
-    if (authError || !authData.user) {
-      // Check if user already exists
-      if (authError?.message?.includes("already registered")) {
-        // Try to sign in instead
-        const { data: signInData, error: signInError } =
-          await supabase.auth.signInWithPassword({
-            email: validated.email,
-            password: validated.password,
-          });
-
-        if (signInError || !signInData.user) {
-          throw new ActionError(
-            "An account with this email already exists. Please log in or reset your password.",
-            ERROR_CODES.AUTH_FORBIDDEN,
-            409
-          );
-        }
-
-        // Use existing user
-        (authData as any).user = signInData.user;
-      } else {
-        throw new ActionError(
-          authError?.message || "Failed to create account",
-          ERROR_CODES.AUTH_UNAUTHORIZED,
-          500
-        );
-      }
-    }
-
-    // Ensure user exists at this point (either from signUp or signIn)
-    if (!authData.user) {
-      throw new ActionError(
-        "Failed to authenticate user",
-        ERROR_CODES.AUTH_UNAUTHORIZED,
-        500
-      );
-    }
+    const user = await ensureAuthUser(supabase, validated);
 
     // Upload profile photo if provided
     let photoUrl: string | null = null;
     if (photo && photo.size > 0) {
-      const photoPath = `team-member-photos/${authData.user.id}/${Date.now()}-${photo.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(photoPath, photo);
-
-      if (!uploadError) {
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("avatars").getPublicUrl(photoPath);
-        photoUrl = publicUrl;
-      }
+      photoUrl = await uploadProfilePhoto(supabase, user.id, photo);
     }
 
-    // Create team_members record
-    const { error: teamMemberError } = await supabase
-      .from("team_members")
-      .upsert(
-        {
-          user_id: authData.user.id,
-          company_id: invitation.company_id,
-          role: invitation.role,
-          status: "active",
-          phone: validated.phone || invitation.phone || null,
-          avatar_url: photoUrl,
-          joined_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "user_id,company_id",
-        }
-      );
-
-    if (teamMemberError) {
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("join team"),
-        ERROR_CODES.DB_QUERY_ERROR
-      );
-    }
-
-    // Mark invitation as used
-    const { error: updateError } = await supabase
-      .from("team_invitations")
-      .update({ used_at: new Date().toISOString() })
-      .eq("id", invitation.id);
-
-    if (updateError) {
-      console.error("Error marking invitation as used:", updateError);
-    }
+    await upsertTeamMember({
+      supabase,
+      invitation,
+      userId: user.id,
+      phone: validated.phone,
+      photoUrl,
+    });
+    await markInvitationUsed(supabase, invitation.id);
 
     revalidatePath("/dashboard/settings/team");
 
     return "Invitation accepted successfully";
   });
+}
+
+async function fetchInvitation(
+  supabase: SupabaseServerClient,
+  token: string
+): Promise<InvitationRecord> {
+  const { data, error } = await supabase
+    .from("team_invitations")
+    .select("*")
+    .eq("token", token)
+    .is("used_at", null)
+    .single();
+
+  if (error || !data) {
+    throw new ActionError(
+      "Invalid or expired invitation",
+      ERROR_CODES.DB_RECORD_NOT_FOUND,
+      HTTP_STATUS.notFound
+    );
+  }
+
+  return data as InvitationRecord;
+}
+
+function validateInvitation(invitation: InvitationRecord, email: string) {
+  if (new Date(invitation.expires_at) < new Date()) {
+    throw new ActionError(
+      "Invitation has expired",
+      ERROR_CODES.VALIDATION_ERROR,
+      HTTP_STATUS.gone
+    );
+  }
+
+  if (invitation.email !== email) {
+    throw new ActionError(
+      "Email does not match invitation",
+      ERROR_CODES.VALIDATION_ERROR,
+      HTTP_STATUS.badRequest
+    );
+  }
+}
+
+async function ensureAuthUser(
+  supabase: SupabaseServerClient,
+  validated: z.infer<typeof acceptInvitationSchema>
+): Promise<User> {
+  const { data, error } = await supabase.auth.signUp({
+    email: validated.email,
+    password: validated.password,
+    options: {
+      data: {
+        first_name: validated.firstName,
+        last_name: validated.lastName,
+        phone: validated.phone || "",
+      },
+    },
+  });
+
+  if (data.user) {
+    return data.user;
+  }
+
+  if (error?.message?.includes("already registered")) {
+    const { data: signInData, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email: validated.email,
+        password: validated.password,
+      });
+
+    if (signInError || !signInData.user) {
+      throw new ActionError(
+        "An account with this email already exists. Please log in or reset your password.",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        HTTP_STATUS.conflict
+      );
+    }
+
+    return signInData.user;
+  }
+
+  throw new ActionError(
+    error?.message || "Failed to create account",
+    ERROR_CODES.AUTH_UNAUTHORIZED,
+    HTTP_STATUS.internal
+  );
+}
+
+async function uploadProfilePhoto(
+  supabase: SupabaseServerClient,
+  userId: string,
+  photo: File
+): Promise<string | null> {
+  const photoPath = `team-member-photos/${userId}/${Date.now()}-${photo.name}`;
+  const { error } = await supabase.storage
+    .from("avatars")
+    .upload(photoPath, photo);
+
+  if (error) {
+    return null;
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("avatars").getPublicUrl(photoPath);
+  return publicUrl;
+}
+
+type UpsertTeamMemberParams = {
+  supabase: SupabaseServerClient;
+  invitation: InvitationRecord;
+  userId: string;
+  phone?: string;
+  photoUrl: string | null;
+};
+
+async function upsertTeamMember({
+  supabase,
+  invitation,
+  userId,
+  phone,
+  photoUrl,
+}: UpsertTeamMemberParams) {
+  const { error } = await supabase.from("team_members").upsert(
+    {
+      user_id: userId,
+      company_id: invitation.company_id,
+      role: invitation.role,
+      status: "active",
+      phone: phone || invitation.phone || null,
+      avatar_url: photoUrl,
+      joined_at: new Date().toISOString(),
+    },
+    {
+      onConflict: "user_id,company_id",
+    }
+  );
+
+  if (error) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("join team"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+}
+
+async function markInvitationUsed(
+  supabase: SupabaseServerClient,
+  invitationId: string
+) {
+  const { error } = await supabase
+    .from("team_invitations")
+    .update({ used_at: new Date().toISOString() })
+    .eq("id", invitationId);
+
+  if (error) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("update invitation status"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
 }

@@ -5,20 +5,50 @@
  * Run with: npx tsx scripts/create-meters-and-prices.ts
  */
 
-import { config } from "dotenv";
-import { resolve } from "path";
+import { resolve } from "node:path";
+import { config as loadEnvConfig } from "dotenv";
 import Stripe from "stripe";
 
 // Load environment variables from .env.local
-config({ path: resolve(process.cwd(), ".env.local") });
+loadEnvConfig({ path: resolve(process.cwd(), ".env.local") });
+
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+  "2025-01-27.acacia";
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+
+if (!STRIPE_SECRET_KEY) {
+  throw new Error("STRIPE_SECRET_KEY is not defined in the environment");
+}
 
 // Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia" as any,
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
+  apiVersion: STRIPE_API_VERSION,
 });
 
+const CENTS_IN_DOLLAR = 100;
+const PRICE_DECIMAL_PLACES = 4;
+
+type AggregationFormula = "sum" | "count" | "last";
+
+type MeterConfig = {
+  display_name: string;
+  event_name: string;
+  aggregation: AggregationFormula;
+  product_name: string;
+  product_description: string;
+  price_amount: number;
+};
+
+type MeterResult = {
+  meter_id: string;
+  product_id: string;
+  price_id: string;
+  event_name: string;
+  price_amount: number;
+};
+
 // Meter configurations
-const meterConfigs = [
+const meterConfigs: MeterConfig[] = [
   {
     display_name: "Thorbis Team Members",
     event_name: "thorbis_team_members",
@@ -112,28 +142,28 @@ const meterConfigs = [
 async function createMetersAndPrices() {
   console.log("🚀 Starting Stripe meters and prices creation...\n");
 
-  const results = [];
+  const results: MeterResult[] = [];
 
-  for (const config of meterConfigs) {
+  for (const meterConfig of meterConfigs) {
     try {
-      console.log(`Creating meter: ${config.display_name}...`);
+      console.log(`Creating meter: ${meterConfig.display_name}...`);
 
       // Create meter
       const meter = await stripe.billing.meters.create({
-        display_name: config.display_name,
-        event_name: config.event_name,
+        display_name: meterConfig.display_name,
+        event_name: meterConfig.event_name,
         default_aggregation: {
-          formula: config.aggregation as any,
+          formula: meterConfig.aggregation,
         },
       });
 
       console.log(`✅ Meter created: ${meter.id}`);
 
       // Create product
-      console.log(`Creating product: ${config.product_name}...`);
+      console.log(`Creating product: ${meterConfig.product_name}...`);
       const product = await stripe.products.create({
-        name: config.product_name,
-        description: config.product_description,
+        name: meterConfig.product_name,
+        description: meterConfig.product_description,
       });
 
       console.log(`✅ Product created: ${product.id}`);
@@ -149,23 +179,29 @@ async function createMetersAndPrices() {
           meter: meter.id,
         },
         billing_scheme: "per_unit",
-        unit_amount_decimal: config.price_amount.toString(),
-      } as any);
+        unit_amount_decimal: meterConfig.price_amount.toString(),
+      });
 
       console.log(`✅ Price created: ${price.id}`);
-      console.log(
-        `   Amount: $${(config.price_amount / 100).toFixed(4)} per unit\n`
+      const priceDisplay = (meterConfig.price_amount / CENTS_IN_DOLLAR).toFixed(
+        PRICE_DECIMAL_PLACES
       );
+      console.log(`   Amount: $${priceDisplay} per unit\n`);
 
       results.push({
         meter_id: meter.id,
         product_id: product.id,
         price_id: price.id,
-        event_name: config.event_name,
-        price_amount: config.price_amount,
+        event_name: meterConfig.event_name,
+        price_amount: meterConfig.price_amount,
       });
-    } catch (error: any) {
-      console.error(`❌ Error creating ${config.display_name}:`, error.message);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(
+        `❌ Error creating ${meterConfig.display_name}:`,
+        errorMessage
+      );
       console.error("   Full error:", error);
     }
   }
@@ -192,24 +228,27 @@ async function createMetersAndPrices() {
     thorbis_api_calls: "STRIPE_PRICE_ID_API_CALLS",
   };
 
-  results.forEach((result) => {
+  for (const result of results) {
     const envVar = envMapping[result.event_name];
     if (envVar) {
       console.log(`${envVar}=${result.price_id}`);
     }
-  });
+  }
 
   console.log("\n");
   console.log("📊 All meters and prices:");
   console.log("========================\n");
-  results.forEach((result) => {
+  for (const result of results) {
     console.log(`Event: ${result.event_name}`);
     console.log(`  Meter ID: ${result.meter_id}`);
     console.log(`  Product ID: ${result.product_id}`);
     console.log(`  Price ID: ${result.price_id}`);
-    console.log(`  Amount: $${(result.price_amount / 100).toFixed(4)}`);
+    const formattedAmount = (result.price_amount / CENTS_IN_DOLLAR).toFixed(
+      PRICE_DECIMAL_PLACES
+    );
+    console.log(`  Amount: $${formattedAmount}`);
     console.log("");
-  });
+  }
 }
 
 // Run the script

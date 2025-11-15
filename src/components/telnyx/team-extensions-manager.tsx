@@ -163,7 +163,8 @@ export function TeamExtensionsManager() {
   function openVacationDialog(member: TeamMember) {
     setSelectedMember(member);
     setVacationForm({
-      vacation_mode_enabled: member.availability?.vacation_mode_enabled ?? false,
+      vacation_mode_enabled:
+        member.availability?.vacation_mode_enabled ?? false,
       vacation_start_date: member.availability?.vacation_start_date || "",
       vacation_end_date: member.availability?.vacation_end_date || "",
       vacation_message: member.availability?.vacation_message || "",

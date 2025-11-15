@@ -20,6 +20,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { signOut } from "@/actions/auth";
 import { switchCompany } from "@/actions/company-context";
+import { updateUserStatus, type UserStatus } from "@/actions/user-status";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,6 +33,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { StatusIndicator } from "@/components/ui/status-indicator";
 import { Switch } from "@/components/ui/switch";
 
 /**
@@ -50,6 +52,7 @@ interface UserMenuProps {
     name: string;
     email: string;
     avatar: string;
+    status?: UserStatus;
   };
   teams: {
     id: string;
@@ -67,6 +70,10 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const [userStatus, setUserStatus] = useState<UserStatus>(
+    user.status || "online"
+  );
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   // Find the active team based on activeCompanyId, fallback to first team
   const initialActiveTeam =
     teams.find((t) => t.id === activeCompanyId) || teams[0];
@@ -94,6 +101,21 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
     await signOut();
   };
 
+  const handleStatusChange = async (status: UserStatus) => {
+    setIsUpdatingStatus(true);
+    try {
+      const result = await updateUserStatus(status);
+      if (result.success) {
+        setUserStatus(status);
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   const isDark =
     mounted &&
     (theme === "dark" ||
@@ -108,19 +130,24 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="hover-gradient flex h-8 items-center gap-2 rounded-md border border-border bg-background px-2 shadow-sm outline-none transition-all hover:border-primary/50 hover:bg-accent hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+          className="flex h-8 items-center gap-2 rounded-md px-2 outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           suppressHydrationWarning
           type="button"
         >
-          <Avatar className="size-6 rounded-md">
-            <AvatarImage alt={user.name} src={user.avatar} />
-            <AvatarFallback className="rounded-md text-[10px]">
-              {user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="size-6 rounded-md">
+              <AvatarImage alt={user.name} src={user.avatar} />
+              <AvatarFallback className="rounded-md text-[10px]">
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-0.5 -right-0.5">
+              <StatusIndicator status={userStatus} size="sm" />
+            </div>
+          </div>
           <span className="hidden font-medium text-sm md:inline-block">
             {user.name.split(" ")[0]}
           </span>
@@ -130,21 +157,78 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
       <DropdownMenuContent align="end" className="w-64 rounded-lg">
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="size-8 rounded-lg">
-              <AvatarImage alt={user.name} src={user.avatar} />
-              <AvatarFallback className="rounded-lg">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="size-8 rounded-lg">
+                <AvatarImage alt={user.name} src={user.avatar} />
+                <AvatarFallback className="rounded-lg">
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-0.5 -right-0.5">
+                <StatusIndicator status={userStatus} size="md" />
+              </div>
+            </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{user.name}</span>
               <span className="truncate text-xs">{user.email}</span>
             </div>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        {/* Status Selector */}
+        <DropdownMenuLabel className="text-muted-foreground text-xs">
+          Status
+        </DropdownMenuLabel>
+        <div className="px-2 pb-2">
+          <div className="space-y-1">
+            <button
+              className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+                userStatus === "online" ? "bg-accent" : ""
+              }`}
+              disabled={isUpdatingStatus}
+              onClick={() => handleStatusChange("online")}
+              type="button"
+            >
+              <StatusIndicator status="online" size="md" />
+              <span>Online</span>
+              {userStatus === "online" && (
+                <div className="ml-auto size-2 rounded-full bg-primary" />
+              )}
+            </button>
+            <button
+              className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+                userStatus === "available" ? "bg-accent" : ""
+              }`}
+              disabled={isUpdatingStatus}
+              onClick={() => handleStatusChange("available")}
+              type="button"
+            >
+              <StatusIndicator status="available" size="md" />
+              <span>Available</span>
+              {userStatus === "available" && (
+                <div className="ml-auto size-2 rounded-full bg-primary" />
+              )}
+            </button>
+            <button
+              className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+                userStatus === "busy" ? "bg-accent" : ""
+              }`}
+              disabled={isUpdatingStatus}
+              onClick={() => handleStatusChange("busy")}
+              type="button"
+            >
+              <StatusIndicator status="busy" size="md" />
+              <span>Busy</span>
+              {userStatus === "busy" && (
+                <div className="ml-auto size-2 rounded-full bg-primary" />
+              )}
+            </button>
+          </div>
+        </div>
         <DropdownMenuSeparator />
 
         {/* Teams */}
@@ -275,4 +359,3 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
     </DropdownMenu>
   );
 }
-

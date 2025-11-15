@@ -6,6 +6,9 @@
 "use client";
 
 import { Wrench } from "lucide-react";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -14,9 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type JobEquipmentProps = {
   equipment: any[];
@@ -78,7 +78,7 @@ export function JobEquipment({ equipment }: JobEquipmentProps) {
                 </TableCell>
                 <TableCell>
                   {item.status && (
-                    <Badge variant="outline" className="capitalize">
+                    <Badge className="capitalize" variant="outline">
                       {item.status}
                     </Badge>
                   )}
@@ -99,4 +99,3 @@ export function JobEquipment({ equipment }: JobEquipmentProps) {
     </div>
   );
 }
-

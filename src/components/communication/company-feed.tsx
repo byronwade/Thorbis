@@ -86,121 +86,6 @@ const MS_PER_MINUTE = MS_PER_SECOND * SECONDS_PER_MINUTE;
 const MINUTES_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
 
-const MOCK_POSTS: Post[] = [
-  {
-    id: "1",
-    author: {
-      name: "Sarah Johnson",
-      role: "CEO",
-    },
-    content:
-      "🎉 Exciting news team! We've just closed our biggest quarter yet with a 45% increase in revenue. This wouldn't have been possible without each and every one of you. Thank you for your dedication and hard work. Let's keep this momentum going!",
-    type: "announcement",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * 30),
-    isPinned: true,
-    category: "Company News",
-    tags: ["announcement", "success"],
-    reactions: [
-      { type: "like", count: 42, userReacted: false },
-      { type: "celebrate", count: 28, userReacted: true },
-    ],
-    comments: 15,
-    shares: 3,
-    views: 127,
-  },
-  {
-    id: "2",
-    author: {
-      name: "Mike Chen",
-      role: "Training Manager",
-    },
-    content:
-      "New HVAC certification training starts next Monday! We have 5 spots remaining. This is a great opportunity to expand your skills and increase your earning potential. Check the training portal for details and to register.",
-    type: "content",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * 120),
-    category: "Training",
-    tags: ["training", "hvac", "certification"],
-    attachments: [
-      {
-        type: "document",
-        name: "HVAC-Certification-Program.pdf",
-        url: "#",
-      },
-    ],
-    reactions: [
-      { type: "like", count: 18, userReacted: false },
-      { type: "insightful", count: 7, userReacted: false },
-    ],
-    comments: 8,
-    shares: 2,
-    views: 89,
-  },
-  {
-    id: "3",
-    author: {
-      name: "Emma Rodriguez",
-      role: "Operations Manager",
-    },
-    content:
-      "Quick poll: What time works best for our monthly all-hands meeting?\n\nA) 9:00 AM\nB) 12:00 PM (Lunch provided)\nC) 3:00 PM\nD) After hours (5:30 PM with dinner)\n\nCast your vote in the comments!",
-    type: "poll",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * 240),
-    category: "Team",
-    tags: ["poll", "meeting"],
-    reactions: [{ type: "like", count: 12, userReacted: true }],
-    comments: 24,
-    shares: 0,
-    views: 76,
-  },
-  {
-    id: "4",
-    author: {
-      name: "David Martinez",
-      role: "Lead Technician",
-    },
-    content:
-      "Pro tip for new techs: Always check the air filter first! I can't tell you how many 'broken' AC units I've fixed by simply replacing a clogged filter. Save yourself time and the company money by starting with the basics. 🔧",
-    type: "discussion",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * 360),
-    category: "Best Practices",
-    tags: ["tips", "ac", "troubleshooting"],
-    reactions: [
-      { type: "like", count: 34, userReacted: false },
-      { type: "insightful", count: 19, userReacted: true },
-    ],
-    comments: 11,
-    shares: 8,
-    views: 156,
-  },
-  {
-    id: "5",
-    author: {
-      name: "Lisa Thompson",
-      role: "HR Manager",
-    },
-    content:
-      "🎂 Company BBQ this Friday at 4 PM! Bring your families and join us for food, games, and fun. We'll have a bounce house for the kids, yard games, and plenty of great food. RSVP in the comments so we know how much food to order!",
-    type: "event",
-    timestamp: new Date(Date.now() - MS_PER_MINUTE * 480),
-    category: "Events",
-    tags: ["event", "team-building", "family"],
-    attachments: [
-      {
-        type: "image",
-        name: "bbq-invite.jpg",
-        url: "#",
-      },
-    ],
-    reactions: [
-      { type: "like", count: 45, userReacted: true },
-      { type: "celebrate", count: 22, userReacted: false },
-    ],
-    comments: 31,
-    shares: 5,
-    views: 198,
-  },
-];
-
 const CATEGORIES = [
   "All Posts",
   "Announcements",
@@ -214,13 +99,15 @@ const CATEGORIES = [
 type CompanyFeedProps = {
   channel?: string;
   channelType?: "channel" | "dm";
+  posts?: Post[];
 };
 
 export function CompanyFeed({
   channel = "company-feed",
   channelType = "channel",
+  posts: initialPosts = [],
 }: CompanyFeedProps = {}) {
-  const [posts] = useState<Post[]>(MOCK_POSTS);
+  const [posts] = useState<Post[]>(initialPosts);
   const [newPostContent, setNewPostContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Posts");
   const [searchQuery, setSearchQuery] = useState("");

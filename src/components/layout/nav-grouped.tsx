@@ -79,7 +79,10 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                 let isDetailPage = safePathname.startsWith(`${item.url}/`);
                 if (item.url === "/dashboard/work" && isDetailPage) {
                   // Check if pathname matches any known work subpath
-                  const pathAfterWork = safePathname.replace("/dashboard/work", "");
+                  const pathAfterWork = safePathname.replace(
+                    "/dashboard/work",
+                    ""
+                  );
                   const isKnownSubpath = workSubpaths.some((subpath) =>
                     pathAfterWork.startsWith(subpath)
                   );

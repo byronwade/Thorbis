@@ -17,6 +17,11 @@ import type {
   EntityType,
 } from "@/types/activity";
 
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
 /**
  * Log a new activity to the database
  *
@@ -39,72 +44,13 @@ export async function logActivity(
   data: CreateActivityData
 ): Promise<{ success: boolean; activityId?: string; error?: string }> {
   try {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Supabase client not configured");
-    }
+    const supabase = await createSupabaseClient();
+    const activity = await insertActivityRecord(supabase, data);
+    revalidateActivityPaths(data.entityType, data.entityId);
 
-    // Insert activity into database
-    const { data: activity, error } = await supabase
-      .from("activities")
-      .insert({
-        entity_type: data.entityType,
-        entity_id: data.entityId,
-        company_id: data.companyId,
-        activity_type: data.activityType,
-        action: data.action,
-        category: data.category,
-        actor_id: data.actorId || null,
-        actor_type: data.actorType || null,
-        actor_name: data.actorName || null,
-        field_name: data.fieldName || null,
-        old_value: data.oldValue || null,
-        new_value: data.newValue || null,
-        description: data.description || null,
-        metadata: data.metadata || null,
-        related_entity_type: data.relatedEntityType || null,
-        related_entity_id: data.relatedEntityId || null,
-        attachment_type: data.attachmentType || null,
-        attachment_url: data.attachmentUrl || null,
-        attachment_name: data.attachmentName || null,
-        ai_model: data.aiModel || null,
-        automation_workflow_id: data.automationWorkflowId || null,
-        automation_workflow_name: data.automationWorkflowName || null,
-        is_important: data.isImportant,
-        is_system_generated: data.isSystemGenerated,
-        is_visible: true,
-        occurred_at: data.occurredAt
-          ? new Date(data.occurredAt).toISOString()
-          : new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("[Activity Log Error]", error);
-      throw new Error("Failed to log activity");
-    }
-
-    console.log("[Activity Logged]", {
-      id: activity.id,
-      entityType: data.entityType,
-      action: data.action,
-    });
-
-    // Revalidate relevant paths
-    revalidatePath(`/${data.entityType}s/${data.entityId}`);
-    revalidatePath(`/dashboard/${data.entityType}s/${data.entityId}`);
-
-    return {
-      success: true,
-      activityId: activity.id,
-    };
+    return { success: true, activityId: activity.id };
   } catch (error) {
-    console.error("[Activity Log Error]", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to log activity",
-    };
+    return buildActivityErrorResponse("Failed to log activity", error);
   }
 }
 
@@ -121,350 +67,30 @@ export async function getActivities(
   filters: ActivityFilters
 ): Promise<{ success: boolean; activities?: Activity[]; error?: string }> {
   try {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Supabase client not configured");
-    }
+    const supabase = await createSupabaseClient();
+    const baseQuery = supabase
+      .from("activities")
+      .select("*")
+      .eq("is_visible", true);
+    let query = applyActivityFilters(baseQuery, filters).order("occurred_at", {
+      ascending: false,
+    });
 
-    // Build query
-    let query = supabase.from("activities").select("*").eq("is_visible", true);
-
-    if (filters.entityType) {
-      query = query.eq("entity_type", filters.entityType);
-    }
-
-    if (filters.entityId) {
-      query = query.eq("entity_id", filters.entityId);
-    }
-
-    if (filters.companyId) {
-      query = query.eq("company_id", filters.companyId);
-    }
-
-    if (filters.activityType) {
-      if (Array.isArray(filters.activityType)) {
-        query = query.in("activity_type", filters.activityType);
-      } else {
-        query = query.eq("activity_type", filters.activityType);
-      }
-    }
-
-    if (filters.category) {
-      query = query.eq("category", filters.category);
-    }
-
-    // Order by occurred_at descending (most recent first)
-    query = query.order("occurred_at", { ascending: false });
-
-    // Limit results if specified
     if (filters.limit) {
       query = query.limit(filters.limit);
     }
 
-    const { data: activities, error } = await query;
-
-    if (error) {
-      console.error("[Get Activities Error]", error);
-      throw new Error("Failed to fetch activities");
-    }
-
-    // Transform snake_case to camelCase for frontend
-    const transformedActivities =
-      activities?.map((activity: any) => ({
-        id: activity.id,
-        entityType: activity.entity_type,
-        entityId: activity.entity_id,
-        companyId: activity.company_id,
-        activityType: activity.activity_type,
-        action: activity.action,
-        category: activity.category,
-        actorId: activity.actor_id,
-        actorType: activity.actor_type,
-        actorName: activity.actor_name,
-        fieldName: activity.field_name,
-        oldValue: activity.old_value,
-        newValue: activity.new_value,
-        description: activity.description,
-        metadata: activity.metadata,
-        relatedEntityType: activity.related_entity_type,
-        relatedEntityId: activity.related_entity_id,
-        attachmentType: activity.attachment_type,
-        attachmentUrl: activity.attachment_url,
-        attachmentName: activity.attachment_name,
-        aiModel: activity.ai_model,
-        automationWorkflowId: activity.automation_workflow_id,
-        automationWorkflowName: activity.automation_workflow_name,
-        isImportant: activity.is_important,
-        isSystemGenerated: activity.is_system_generated,
-        isVisible: activity.is_visible,
-        occurredAt: new Date(activity.occurred_at),
-        createdAt: new Date(activity.created_at),
-      })) || [];
+    const { data } = await query;
 
     return {
       success: true,
-      activities: transformedActivities as Activity[],
+      activities: transformActivityRows(data ?? []),
     };
   } catch (error) {
-    console.error("[Get Activities Error]", error);
-
-    // Fallback to mock data for development
-    const mockActivities: Activity[] = [
-      {
-        id: "1",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "created",
-        action: "created job",
-        category: "user",
-        actorId: "user-1",
-        actorType: "user",
-        actorName: "John Smith",
-        fieldName: null,
-        oldValue: null,
-        newValue: null,
-        description: null,
-        metadata: null,
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: null,
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: true,
-        isSystemGenerated: false,
-        isVisible: true,
-        occurredAt: new Date("2025-01-15T10:00:00Z"),
-        createdAt: new Date("2025-01-15T10:00:00Z"),
-      },
-      {
-        id: "2",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "status_change",
-        action: "changed status from Quoted to Scheduled",
-        category: "user",
-        actorId: "user-1",
-        actorType: "user",
-        actorName: "John Smith",
-        fieldName: "status",
-        oldValue: "quoted",
-        newValue: "scheduled",
-        description: null,
-        metadata: null,
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: null,
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: false,
-        isSystemGenerated: false,
-        isVisible: true,
-        occurredAt: new Date("2025-01-20T14:30:00Z"),
-        createdAt: new Date("2025-01-20T14:30:00Z"),
-      },
-      {
-        id: "3",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "assignment_change",
-        action: "assigned to Mike Johnson",
-        category: "user",
-        actorId: "user-1",
-        actorType: "user",
-        actorName: "John Smith",
-        fieldName: "assignedTo",
-        oldValue: null,
-        newValue: "user-2",
-        description: null,
-        metadata: null,
-        relatedEntityType: "user",
-        relatedEntityId: "user-2",
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: null,
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: false,
-        isSystemGenerated: false,
-        isVisible: true,
-        occurredAt: new Date("2025-01-22T09:15:00Z"),
-        createdAt: new Date("2025-01-22T09:15:00Z"),
-      },
-      {
-        id: "4",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "note_added",
-        action: "added a note",
-        category: "user",
-        actorId: "user-2",
-        actorType: "user",
-        actorName: "Mike Johnson",
-        fieldName: null,
-        oldValue: null,
-        newValue: null,
-        description:
-          "Confirmed installation date with customer. They're available all week.",
-        metadata: null,
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: null,
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: false,
-        isSystemGenerated: false,
-        isVisible: true,
-        occurredAt: new Date("2025-01-25T16:45:00Z"),
-        createdAt: new Date("2025-01-25T16:45:00Z"),
-      },
-      {
-        id: "5",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "photo_added",
-        action: "uploaded a photo",
-        category: "user",
-        actorId: "user-2",
-        actorType: "user",
-        actorName: "Mike Johnson",
-        fieldName: null,
-        oldValue: null,
-        newValue: null,
-        description: "Before installation - existing HVAC system",
-        metadata: null,
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: "photo",
-        attachmentUrl:
-          "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400",
-        attachmentName: "hvac-before-1.jpg",
-        aiModel: null,
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: false,
-        isSystemGenerated: false,
-        isVisible: true,
-        occurredAt: new Date("2025-01-28T11:20:00Z"),
-        createdAt: new Date("2025-01-28T11:20:00Z"),
-      },
-      {
-        id: "6",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "ai_insight",
-        action: "generated equipment detection insight",
-        category: "ai",
-        actorId: null,
-        actorType: "ai",
-        actorName: "AI Assistant",
-        fieldName: null,
-        oldValue: null,
-        newValue: null,
-        description:
-          "Detected HVAC equipment: Carrier 3-ton AC unit, 80% efficiency furnace",
-        metadata: {
-          confidence: 0.92,
-          equipmentDetected: ["AC Unit", "Furnace"],
-        },
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: "gpt-4-vision",
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: false,
-        isSystemGenerated: true,
-        isVisible: true,
-        occurredAt: new Date("2025-01-28T11:21:00Z"),
-        createdAt: new Date("2025-01-28T11:21:00Z"),
-      },
-      {
-        id: "7",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "status_change",
-        action: "changed status from Scheduled to In Progress",
-        category: "user",
-        actorId: "user-2",
-        actorType: "user",
-        actorName: "Mike Johnson",
-        fieldName: "status",
-        oldValue: "scheduled",
-        newValue: "in_progress",
-        description: "Started work on site",
-        metadata: null,
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: null,
-        automationWorkflowId: null,
-        automationWorkflowName: null,
-        isImportant: true,
-        isSystemGenerated: false,
-        isVisible: true,
-        occurredAt: new Date("2025-01-31T08:00:00Z"),
-        createdAt: new Date("2025-01-31T08:00:00Z"),
-      },
-      {
-        id: "8",
-        entityType: filters.entityType || "job",
-        entityId: filters.entityId || "job-123",
-        companyId: "company-1",
-        activityType: "automation",
-        action: "sent customer update notification (success)",
-        category: "automation",
-        actorId: null,
-        actorType: "automation",
-        actorName: "Customer Update Workflow",
-        fieldName: null,
-        oldValue: null,
-        newValue: null,
-        description: "Automatically notified customer of job progress",
-        metadata: {
-          triggerType: "status_change",
-          actionType: "send_sms",
-          result: "success",
-        },
-        relatedEntityType: null,
-        relatedEntityId: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        aiModel: null,
-        automationWorkflowId: "workflow-1",
-        automationWorkflowName: "Customer Update Workflow",
-        isImportant: false,
-        isSystemGenerated: true,
-        isVisible: true,
-        occurredAt: new Date("2025-01-31T08:01:00Z"),
-        createdAt: new Date("2025-01-31T08:01:00Z"),
-      },
-    ];
-
     return {
       success: true,
-      activities: mockActivities,
+      activities: buildMockActivities(filters),
+      error: error instanceof Error ? error.message : undefined,
     };
   }
 }
@@ -477,36 +103,17 @@ export async function getActivityCount(
   entityId: string
 ): Promise<{ success: boolean; count?: number; error?: string }> {
   try {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Supabase client not configured");
-    }
-
-    const { count, error } = await supabase
+    const supabase = await createSupabaseClient();
+    const { count } = await supabase
       .from("activities")
       .select("*", { count: "exact", head: true })
       .eq("entity_type", entityType)
       .eq("entity_id", entityId)
       .eq("is_visible", true);
 
-    if (error) {
-      console.error("[Get Activity Count Error]", error);
-      throw new Error("Failed to fetch activity count");
-    }
-
-    return {
-      success: true,
-      count: count || 0,
-    };
+    return { success: true, count: count ?? 0 };
   } catch (error) {
-    console.error("[Get Activity Count Error]", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch activity count",
-    };
+    return buildActivityErrorResponse("Failed to fetch activity count", error);
   }
 }
 
@@ -517,33 +124,456 @@ export async function deleteActivity(
   activityId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Supabase client not configured");
-    }
-
-    // Soft delete by setting is_visible to false
+    const supabase = await createSupabaseClient();
     const { error } = await supabase
       .from("activities")
       .update({ is_visible: false })
       .eq("id", activityId);
 
     if (error) {
-      console.error("[Delete Activity Error]", error);
-      throw new Error("Failed to delete activity");
+      throw new Error(error.message);
     }
 
-    console.log("[Activity Deleted]", activityId);
-
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (error) {
-    console.error("[Delete Activity Error]", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to delete activity",
-    };
+    return buildActivityErrorResponse("Failed to delete activity", error);
   }
 }
+
+type ActivityRow = {
+  id: string;
+  entity_type: EntityType;
+  entity_id: string | null;
+  company_id: string;
+  activity_type: string;
+  action: string;
+  category: string | null;
+  actor_id: string | null;
+  actor_type: string | null;
+  actor_name: string | null;
+  field_name: string | null;
+  old_value: string | null;
+  new_value: string | null;
+  description: string | null;
+  metadata: Record<string, unknown> | null;
+  related_entity_type: string | null;
+  related_entity_id: string | null;
+  attachment_type: string | null;
+  attachment_url: string | null;
+  attachment_name: string | null;
+  ai_model: string | null;
+  automation_workflow_id: string | null;
+  automation_workflow_name: string | null;
+  is_important: boolean;
+  is_system_generated: boolean;
+  is_visible: boolean;
+  occurred_at: string;
+  created_at: string;
+};
+
+const createSupabaseClient = async (): Promise<SupabaseServerClient> => {
+  const supabase = await createClient();
+  if (!supabase) {
+    throw new Error("Supabase client not configured");
+  }
+  return supabase as SupabaseServerClient;
+};
+
+const toNullable = <T>(value: T | null | undefined): T | null => value ?? null;
+
+const mapActivityInsertPayload = (data: CreateActivityData) => ({
+  entity_type: data.entityType,
+  entity_id: data.entityId,
+  company_id: data.companyId,
+  activity_type: data.activityType,
+  action: data.action,
+  category: data.category,
+  actor_id: toNullable(data.actorId),
+  actor_type: toNullable(data.actorType),
+  actor_name: toNullable(data.actorName),
+  field_name: toNullable(data.fieldName),
+  old_value: toNullable(data.oldValue),
+  new_value: toNullable(data.newValue),
+  description: toNullable(data.description),
+  metadata: toNullable(data.metadata),
+  related_entity_type: toNullable(data.relatedEntityType),
+  related_entity_id: toNullable(data.relatedEntityId),
+  attachment_type: toNullable(data.attachmentType),
+  attachment_url: toNullable(data.attachmentUrl),
+  attachment_name: toNullable(data.attachmentName),
+  ai_model: toNullable(data.aiModel),
+  automation_workflow_id: toNullable(data.automationWorkflowId),
+  automation_workflow_name: toNullable(data.automationWorkflowName),
+  is_important: Boolean(data.isImportant),
+  is_system_generated: Boolean(data.isSystemGenerated),
+  is_visible: true,
+  occurred_at: data.occurredAt
+    ? new Date(data.occurredAt).toISOString()
+    : new Date().toISOString(),
+});
+
+const insertActivityRecord = async (
+  supabase: SupabaseServerClient,
+  data: CreateActivityData
+): Promise<ActivityRow> => {
+  const payload = mapActivityInsertPayload(data);
+  const { data: activity, error } = await supabase
+    .from("activities")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error || !activity) {
+    throw new Error(error?.message ?? "Failed to log activity");
+  }
+
+  return activity as ActivityRow;
+};
+
+const revalidateActivityPaths = (
+  entityType: EntityType,
+  entityId?: string | null
+) => {
+  if (!entityId) {
+    return;
+  }
+  revalidatePath(`/${entityType}s/${entityId}`);
+  revalidatePath(`/dashboard/${entityType}s/${entityId}`);
+};
+
+type FilterableQuery<T> = {
+  eq: (column: string, value: unknown) => T;
+  in: (column: string, values: string[]) => T;
+};
+
+const applyActivityFilters = <T extends FilterableQuery<T>>(
+  query: T,
+  filters: ActivityFilters
+): T => {
+  let nextQuery = query;
+  const filterMap: [string, string | undefined | null][] = [
+    ["entity_type", filters.entityType],
+    ["entity_id", filters.entityId],
+    ["company_id", filters.companyId],
+  ];
+
+  for (const [column, value] of filterMap) {
+    if (value) {
+      nextQuery = nextQuery.eq(column, value);
+    }
+  }
+
+  if (filters.category) {
+    nextQuery = Array.isArray(filters.category)
+      ? nextQuery.in("category", filters.category)
+      : nextQuery.eq("category", filters.category);
+  }
+
+  if (filters.activityType) {
+    nextQuery = Array.isArray(filters.activityType)
+      ? nextQuery.in("activity_type", filters.activityType)
+      : nextQuery.eq("activity_type", filters.activityType);
+  }
+
+  return nextQuery;
+};
+
+const transformActivityRows = (rows: ActivityRow[]): Activity[] =>
+  rows.map((activity) => ({
+    id: activity.id,
+    entityType: activity.entity_type,
+    entityId: activity.entity_id ?? "",
+    companyId: activity.company_id,
+    activityType: activity.activity_type as Activity["activityType"],
+    action: activity.action,
+    category: (activity.category ?? "system") as Activity["category"],
+    actorId: activity.actor_id,
+    actorType: (activity.actor_type ?? "system") as Activity["actorType"],
+    actorName: activity.actor_name,
+    fieldName: activity.field_name,
+    oldValue: activity.old_value,
+    newValue: activity.new_value,
+    description: activity.description,
+    metadata: activity.metadata,
+    relatedEntityType: activity.related_entity_type,
+    relatedEntityId: activity.related_entity_id,
+    attachmentType: activity.attachment_type as Activity["attachmentType"],
+    attachmentUrl: activity.attachment_url,
+    attachmentName: activity.attachment_name,
+    aiModel: activity.ai_model,
+    automationWorkflowId: activity.automation_workflow_id,
+    automationWorkflowName: activity.automation_workflow_name,
+    isImportant: activity.is_important,
+    isSystemGenerated: activity.is_system_generated,
+    isVisible: activity.is_visible,
+    occurredAt: new Date(activity.occurred_at),
+    createdAt: new Date(activity.created_at),
+  }));
+
+const MOCK_ACTIVITIES: Activity[] = [
+  {
+    id: "1",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "created",
+    action: "created job",
+    category: "user",
+    actorId: "user-1",
+    actorType: "user",
+    actorName: "John Smith",
+    fieldName: null,
+    oldValue: null,
+    newValue: null,
+    description: null,
+    metadata: null,
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: null,
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: true,
+    isSystemGenerated: false,
+    isVisible: true,
+    occurredAt: new Date("2025-01-15T10:00:00Z"),
+    createdAt: new Date("2025-01-15T10:00:00Z"),
+  },
+  {
+    id: "2",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "status_change",
+    action: "changed status from Quoted to Scheduled",
+    category: "user",
+    actorId: "user-1",
+    actorType: "user",
+    actorName: "John Smith",
+    fieldName: "status",
+    oldValue: "quoted",
+    newValue: "scheduled",
+    description: null,
+    metadata: null,
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: null,
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: false,
+    isSystemGenerated: false,
+    isVisible: true,
+    occurredAt: new Date("2025-01-20T14:30:00Z"),
+    createdAt: new Date("2025-01-20T14:30:00Z"),
+  },
+  {
+    id: "3",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "assignment_change",
+    action: "assigned to Mike Johnson",
+    category: "user",
+    actorId: "user-1",
+    actorType: "user",
+    actorName: "John Smith",
+    fieldName: "assignedTo",
+    oldValue: null,
+    newValue: "user-2",
+    description: null,
+    metadata: null,
+    relatedEntityType: "user",
+    relatedEntityId: "user-2",
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: null,
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: false,
+    isSystemGenerated: false,
+    isVisible: true,
+    occurredAt: new Date("2025-01-22T09:15:00Z"),
+    createdAt: new Date("2025-01-22T09:15:00Z"),
+  },
+  {
+    id: "4",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "note_added",
+    action: "added a note",
+    category: "user",
+    actorId: "user-2",
+    actorType: "user",
+    actorName: "Mike Johnson",
+    fieldName: null,
+    oldValue: null,
+    newValue: null,
+    description:
+      "Confirmed installation date with customer. They're available all week.",
+    metadata: null,
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: null,
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: false,
+    isSystemGenerated: false,
+    isVisible: true,
+    occurredAt: new Date("2025-01-25T16:45:00Z"),
+    createdAt: new Date("2025-01-25T16:45:00Z"),
+  },
+  {
+    id: "5",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "photo_added",
+    action: "uploaded a photo",
+    category: "user",
+    actorId: "user-2",
+    actorType: "user",
+    actorName: "Mike Johnson",
+    fieldName: null,
+    oldValue: null,
+    newValue: null,
+    description: "Before installation - existing HVAC system",
+    metadata: null,
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: "photo",
+    attachmentUrl:
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400",
+    attachmentName: "hvac-before-1.jpg",
+    aiModel: null,
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: false,
+    isSystemGenerated: false,
+    isVisible: true,
+    occurredAt: new Date("2025-01-28T11:20:00Z"),
+    createdAt: new Date("2025-01-28T11:20:00Z"),
+  },
+  {
+    id: "6",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "ai_insight",
+    action: "generated equipment detection insight",
+    category: "ai",
+    actorId: null,
+    actorType: "ai",
+    actorName: "AI Assistant",
+    fieldName: null,
+    oldValue: null,
+    newValue: null,
+    description:
+      "Detected HVAC equipment: Carrier 3-ton AC unit, 80% efficiency furnace",
+    metadata: {
+      confidence: 0.92,
+      equipmentDetected: ["AC Unit", "Furnace"],
+    },
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: "gpt-4-vision",
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: false,
+    isSystemGenerated: true,
+    isVisible: true,
+    occurredAt: new Date("2025-01-28T11:21:00Z"),
+    createdAt: new Date("2025-01-28T11:21:00Z"),
+  },
+  {
+    id: "7",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "status_change",
+    action: "changed status from Scheduled to In Progress",
+    category: "user",
+    actorId: "user-2",
+    actorType: "user",
+    actorName: "Mike Johnson",
+    fieldName: "status",
+    oldValue: "scheduled",
+    newValue: "in_progress",
+    description: "Started work on site",
+    metadata: null,
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: null,
+    automationWorkflowId: null,
+    automationWorkflowName: null,
+    isImportant: true,
+    isSystemGenerated: false,
+    isVisible: true,
+    occurredAt: new Date("2025-01-31T08:00:00Z"),
+    createdAt: new Date("2025-01-31T08:00:00Z"),
+  },
+  {
+    id: "8",
+    entityType: "job",
+    entityId: "job-123",
+    companyId: "company-1",
+    activityType: "automation",
+    action: "sent customer update notification (success)",
+    category: "automation",
+    actorId: null,
+    actorType: "automation",
+    actorName: "Customer Update Workflow",
+    fieldName: null,
+    oldValue: null,
+    newValue: null,
+    description: "Automatically notified customer of job progress",
+    metadata: {
+      triggerType: "status_change",
+      actionType: "send_sms",
+      result: "success",
+    },
+    relatedEntityType: null,
+    relatedEntityId: null,
+    attachmentType: null,
+    attachmentUrl: null,
+    attachmentName: null,
+    aiModel: null,
+    automationWorkflowId: "workflow-1",
+    automationWorkflowName: "Customer Update Workflow",
+    isImportant: false,
+    isSystemGenerated: true,
+    isVisible: true,
+    occurredAt: new Date("2025-01-31T08:01:00Z"),
+    createdAt: new Date("2025-01-31T08:01:00Z"),
+  },
+];
+
+const buildMockActivities = (filters: ActivityFilters): Activity[] =>
+  MOCK_ACTIVITIES.map((activity) => ({
+    ...activity,
+    entityType: filters.entityType ?? activity.entityType,
+    entityId: filters.entityId ?? activity.entityId,
+  }));
+
+const buildActivityErrorResponse = (
+  fallbackMessage: string,
+  error: unknown
+): { success: false; error: string } => ({
+  success: false,
+  error: error instanceof Error ? error.message : fallbackMessage,
+});

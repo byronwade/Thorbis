@@ -1,13 +1,19 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useWorkView, type WorkSection } from "@/lib/stores/work-view-store";
+import { type ReactNode, useEffect } from "react";
+import {
+  useSetWorkView,
+  useWorkView,
+  type WorkSection,
+  type WorkViewMode,
+} from "@/lib/stores/work-view-store";
 
 type WorkDataViewProps = {
   section: WorkSection;
   table: ReactNode;
   kanban: ReactNode;
   fallback?: ReactNode;
+  forceView?: WorkViewMode;
 };
 
 export function WorkDataView({
@@ -15,8 +21,17 @@ export function WorkDataView({
   table,
   kanban,
   fallback = null,
+  forceView,
 }: WorkDataViewProps) {
-  const viewMode = useWorkView(section);
+  const storedView = useWorkView(section);
+  const setView = useSetWorkView(section);
+  const viewMode = forceView ?? storedView;
+
+  useEffect(() => {
+    if (forceView && storedView !== forceView) {
+      setView(forceView);
+    }
+  }, [forceView, setView, storedView]);
 
   if (viewMode === "kanban") {
     return <>{kanban ?? fallback}</>;

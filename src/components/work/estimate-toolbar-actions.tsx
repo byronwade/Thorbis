@@ -8,9 +8,9 @@
  * - Import/Export
  */
 
-import { EstimatesFilterDropdown } from "@/components/work/estimates-filter-dropdown";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
+import { EstimatesFilterDropdown } from "@/components/work/estimates-filter-dropdown";
 
 // Critical columns (always visible - shown for reference)
 const ESTIMATES_CRITICAL_COLUMNS = [

@@ -5,10 +5,10 @@
  * Usage: pnpm tsx scripts/seed-database.ts
  */
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { readFileSync } from "fs";
-import { join } from "path";
 
 // Load environment variables
 config({ path: ".env.local" });
@@ -64,7 +64,7 @@ async function runSeedFile(filepath: string): Promise<void> {
     );
 
     // Execute the SQL
-    const { data, error } = await supabase.rpc("exec_sql", { sql_query: sql });
+    const { error } = await supabase.rpc("exec_sql", { sql_query: sql });
 
     if (error) {
       console.error(`❌ Error in ${filename}:`, error.message);

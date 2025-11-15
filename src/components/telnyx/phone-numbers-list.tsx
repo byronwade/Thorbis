@@ -97,7 +97,7 @@ function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
               {number.routingRule ?? "Routing not configured"}{" "}
               {number.voicemailEnabled && "• Voicemail enabled"}
             </CardDescription>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
               {number.metadata?.ten_dlc_campaign_id ? (
                 <Badge variant="secondary">10DLC Linked</Badge>
               ) : (

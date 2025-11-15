@@ -103,11 +103,17 @@ export default async function EstimatesPage() {
   });
 
   // Filter to active estimates for stats calculations
-  const activeEstimates = estimates.filter((est) => !est.archived_at && !est.deleted_at);
+  const activeEstimates = estimates.filter(
+    (est) => !(est.archived_at || est.deleted_at)
+  );
 
   // Calculate estimate stats (from active estimates only)
-  const draftCount = activeEstimates.filter((est) => est.status === "draft").length;
-  const sentCount = activeEstimates.filter((est) => est.status === "sent").length;
+  const draftCount = activeEstimates.filter(
+    (est) => est.status === "draft"
+  ).length;
+  const sentCount = activeEstimates.filter(
+    (est) => est.status === "sent"
+  ).length;
   const acceptedCount = activeEstimates.filter(
     (est) => est.status === "accepted"
   ).length;

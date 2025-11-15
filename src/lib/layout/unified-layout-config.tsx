@@ -34,6 +34,7 @@ import { DetailBackButton } from "@/components/layout/detail-back-button";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
 import { PropertyDetailToolbarActions } from "@/components/properties/property-detail-toolbar-actions";
+import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
 import type { StatCard } from "@/components/ui/stats-cards";
@@ -808,11 +809,11 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
         gap: "none",
         fixedHeight: true,
       },
-      header: {
-        show: false, // Full screen - no header
-      },
+      header: DEFAULT_HEADER,
       toolbar: {
-        show: false, // Full screen - no toolbar
+        show: true,
+        title: "Schedule",
+        actions: <ScheduleToolbarActions />,
       },
       sidebar: {
         show: false, // Full screen - no sidebar
@@ -1336,7 +1337,9 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       header: DEFAULT_HEADER,
       toolbar: {
         show: true,
-        back: <DetailBackButton href="/dashboard/team" label="Team" />,
+        back: (
+          <DetailBackButton href="/dashboard/work/team" label="Team Members" />
+        ),
         actions: <TeamMemberDetailToolbar />,
       },
       sidebar: {

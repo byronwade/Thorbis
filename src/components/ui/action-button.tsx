@@ -40,7 +40,7 @@
 import { AlertCircle, Check, Loader2 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type ActionResult<T = void> =
@@ -56,8 +56,10 @@ type ActionResult<T = void> =
       details?: Record<string, any>;
     };
 
+type BaseButtonProps = React.ComponentProps<typeof Button>;
+
 export interface ActionButtonProps
-  extends Omit<ButtonProps, "onClick" | "onError"> {
+  extends Omit<BaseButtonProps, "onClick" | "onError"> {
   /**
    * Async action to execute when button is clicked
    * Should return an ActionResult

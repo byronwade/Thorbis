@@ -58,13 +58,17 @@ export async function GET(
       // Fetch customer
       supabase
         .from("customers")
-        .select("id, first_name, last_name, display_name, tags, credit_limit, outstanding_balance")
+        .select(
+          "id, first_name, last_name, display_name, tags, credit_limit, outstanding_balance"
+        )
         .eq("id", job.customer_id)
         .single(),
       // Fetch property with metadata (includes tags)
       supabase
         .from("properties")
-        .select("id, name, address, city, state, zip_code, property_type, square_footage, year_built, lat, lon, metadata")
+        .select(
+          "id, name, address, city, state, zip_code, property_type, square_footage, year_built, lat, lon, metadata"
+        )
         .eq("id", job.property_id)
         .single(),
       supabase

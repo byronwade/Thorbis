@@ -111,8 +111,9 @@
   --footer-height: 0rem; /* Footer height for KB sidebar calculations */
   --sidebar-width: 12rem;
   --top-spacing: 1rem;
-  --font-geist-sans: "Inter", "SF Pro Display", "Segoe UI", system-ui,
-    -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist-sans:
+    "Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
   --font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
 
   /* Shadcn Neutral – clean minimalistic palette with electric blue accent */
@@ -205,7 +206,7 @@
   --chart-4: 280 87.3% 65.3%;
   --chart-5: 340 82.2% 52.5%;
 
-  --sidebar: 0 0% 10%;
+  --sidebar: 0 0% 8%;
   --sidebar-foreground: 0 0% 95%;
   --sidebar-primary: 221 73% 56%;
   --sidebar-primary-foreground: 0 0% 12%;
@@ -422,6 +423,13 @@
     padding-right: env(safe-area-inset-right);
   }
 
+  @media (min-width: 768px) {
+    [data-slot="sidebar"][data-variant="inset"][data-state="collapsed"]
+      ~ [data-slot="sidebar-inset"] {
+      margin-left: 1rem;
+    }
+  }
+
   /* Active touch feedback */
   .touch-active:active {
     opacity: 0.7;
@@ -476,4 +484,3 @@
     transform: scale(0.95);
   }
 }
-

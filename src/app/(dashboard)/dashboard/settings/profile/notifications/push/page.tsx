@@ -19,4 +19,3 @@ export default async function PushNotificationsPage() {
 
   return <NotificationsPushClient initialPreferences={initialPreferences} />;
 }
-

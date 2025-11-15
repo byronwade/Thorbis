@@ -4,4 +4,3 @@ import { botIdProtectedRoutes } from "@/lib/security/botid-routes";
 initBotId({
   protect: botIdProtectedRoutes,
 });
-

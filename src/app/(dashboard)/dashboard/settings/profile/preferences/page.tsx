@@ -1,9 +1,9 @@
 import { getUserPreferences } from "@/actions/settings";
+import { PreferencesClient } from "./preferences-client";
 import {
   DEFAULT_PREFERENCE_SETTINGS,
   mapPreferencesFromDb,
 } from "./preferences-config";
-import { PreferencesClient } from "./preferences-client";
 
 export default async function PreferencesPage() {
   const result = await getUserPreferences();
@@ -19,4 +19,3 @@ export default async function PreferencesPage() {
 
   return <PreferencesClient initialSettings={initialSettings} />;
 }
-

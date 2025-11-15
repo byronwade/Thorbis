@@ -7,17 +7,31 @@
  * Run with: npx tsx scripts/setup-stripe-webhooks.ts
  */
 
+import { resolve } from "node:path";
 import { config } from "dotenv";
-import { resolve } from "path";
 import Stripe from "stripe";
 
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+  "2025-01-27.acacia";
+const WEBHOOK_LIST_LIMIT = 100;
+
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+if (!stripeSecretKey) {
+  throw new Error("STRIPE_SECRET_KEY is not defined in the environment");
+}
+
 // Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia" as any,
+const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: STRIPE_API_VERSION,
 });
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
 
 async function setupWebhook() {
   console.log("🔗 Setting up Stripe Webhook Endpoint...\n");
@@ -33,11 +47,12 @@ async function setupWebhook() {
     // Check for existing webhooks at this URL
     console.log("Checking for existing webhooks...");
     const existingEndpoints = await stripe.webhookEndpoints.list({
-      limit: 100,
+      limit: WEBHOOK_LIST_LIMIT,
     });
 
     const matchingEndpoint = existingEndpoints.data.find(
-      (endpoint) => endpoint.url === webhookUrl && endpoint.status === "enabled"
+      (endpointItem) =>
+        endpointItem.url === webhookUrl && endpointItem.status === "enabled"
     );
 
     if (matchingEndpoint) {
@@ -69,7 +84,7 @@ async function setupWebhook() {
         "invoice.finalized",
       ],
       description: "Thorbis Subscription Events",
-      api_version: "2025-01-27.acacia",
+      api_version: STRIPE_API_VERSION,
     });
 
     console.log("\n✅ Webhook endpoint created successfully!");
@@ -80,9 +95,9 @@ async function setupWebhook() {
     console.log(`  Status: ${endpoint.status}`);
     console.log(`  API Version: ${endpoint.api_version}`);
     console.log("\nEnabled Events:");
-    endpoint.enabled_events.forEach((event) => {
+    for (const event of endpoint.enabled_events) {
       console.log(`  ✓ ${event}`);
-    });
+    }
 
     console.log("\n🔐 IMPORTANT: Signing Secret");
     console.log("═══════════════════════════════════════\n");
@@ -97,8 +112,8 @@ async function setupWebhook() {
       "3. Test webhook delivery at: https://dashboard.stripe.com/webhooks"
     );
     console.log("\n");
-  } catch (error: any) {
-    console.error("❌ Error setting up webhook:", error.message);
+  } catch (error) {
+    console.error("❌ Error setting up webhook:", getErrorMessage(error));
     console.error("\nFull error:", error);
     process.exit(1);
   }

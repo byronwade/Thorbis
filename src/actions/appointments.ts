@@ -19,6 +19,28 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
+const APPOINTMENT_NUMBER_REGEX = /APT-(\d+)/;
+const APPOINTMENT_NUMBER_LENGTH = 6;
+const MILLISECONDS_PER_MINUTE = 60_000;
+const DEFAULT_SEARCH_LIMIT = 50;
+const DEFAULT_SEARCH_OFFSET = 0;
+
+const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
+  const supabase = await createClient();
+  if (!supabase) {
+    throw new ActionError(
+      "Database connection failed",
+      ERROR_CODES.DB_CONNECTION_ERROR
+    );
+  }
+  return supabase as SupabaseServerClient;
+};
+
 // Validation Schemas
 const createAppointmentSchema = z.object({
   customerId: z.string().uuid("Invalid customer ID"),
@@ -90,7 +112,7 @@ const rescheduleAppointmentSchema = z.object({
  * Generate unique appointment number using database function
  */
 async function generateAppointmentNumber(
-  supabase: any,
+  supabase: SupabaseServerClient,
   companyId: string
 ): Promise<string> {
   const { data, error } = await supabase.rpc("generate_appointment_number", {
@@ -111,13 +133,17 @@ async function generateAppointmentNumber(
       return "APT-000001";
     }
 
-    const match = latestAppointment.appointment_number.match(/APT-(\d+)/);
+    const match = latestAppointment.appointment_number.match(
+      APPOINTMENT_NUMBER_REGEX
+    );
     if (match) {
-      const nextNumber = Number.parseInt(match[1]) + 1;
-      return `APT-${nextNumber.toString().padStart(6, "0")}`;
+      const nextNumber = Number.parseInt(match[1], 10) + 1;
+      return `APT-${nextNumber
+        .toString()
+        .padStart(APPOINTMENT_NUMBER_LENGTH, "0")}`;
     }
 
-    return `APT-${Date.now().toString().slice(-6)}`;
+    return `APT-${Date.now().toString().slice(-APPOINTMENT_NUMBER_LENGTH)}`;
   }
 
   return data;
@@ -129,7 +155,9 @@ async function generateAppointmentNumber(
 function calculateDuration(start: string, end: string): number {
   const startDate = new Date(start);
   const endDate = new Date(end);
-  return Math.round((endDate.getTime() - startDate.getTime()) / 60_000);
+  return Math.round(
+    (endDate.getTime() - startDate.getTime()) / MILLISECONDS_PER_MINUTE
+  );
 }
 
 /**
@@ -154,20 +182,56 @@ function validateAppointmentTimes(start: string, end: string): void {
   }
 }
 
+const extractFormValues = (
+  formData: FormData,
+  fields: string[]
+): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
+  for (const field of fields) {
+    const value = formData.get(field);
+    if (value !== null && value !== undefined && value !== "") {
+      result[field] = value;
+    }
+  }
+  return result;
+};
+
+const buildUpdatePayload = (
+  data: z.infer<typeof updateAppointmentSchema>,
+  duration?: number
+): Record<string, unknown> => {
+  const updateData: Record<string, unknown> = { ...data };
+  if (duration) {
+    updateData.duration_minutes = duration;
+  }
+
+  if (data.actualStart && data.actualEnd) {
+    updateData.actual_duration_minutes = calculateDuration(
+      data.actualStart,
+      data.actualEnd
+    );
+  }
+
+  return updateData;
+};
+
+const toSnakeCaseRecord = (data: Record<string, unknown>) => {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    const snakeKey = key.replace(/([A-Z])/g, "_$1").toLowerCase();
+    result[snakeKey] = value;
+  }
+  return result;
+};
+
 /**
  * Create a new appointment
  */
 export async function createAppointment(
   formData: FormData
 ): Promise<ActionResult<string>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -193,7 +257,7 @@ export async function createAppointment(
       scheduledEnd: formData.get("scheduledEnd") as string,
       notes: (formData.get("notes") as string) || undefined,
       travelTimeMinutes: formData.get("travelTimeMinutes")
-        ? Number.parseInt(formData.get("travelTimeMinutes") as string)
+        ? Number.parseInt(formData.get("travelTimeMinutes") as string, 10)
         : undefined,
     };
 
@@ -267,14 +331,8 @@ export async function updateAppointment(
   appointmentId: string,
   formData: FormData
 ): Promise<ActionResult<boolean>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -302,8 +360,7 @@ export async function updateAppointment(
     }
 
     // Parse and validate form data
-    const rawData: any = {};
-    const fields = [
+    const rawData = extractFormValues(formData, [
       "title",
       "description",
       "status",
@@ -316,14 +373,7 @@ export async function updateAppointment(
       "assignedTo",
       "notes",
       "cancellationReason",
-    ];
-
-    fields.forEach((field) => {
-      const value = formData.get(field);
-      if (value !== null && value !== undefined && value !== "") {
-        rawData[field] = value;
-      }
-    });
+    ]);
 
     const validatedData = updateAppointmentSchema.parse(rawData);
 
@@ -345,17 +395,8 @@ export async function updateAppointment(
     }
 
     // Build update object
-    const updateData: any = { ...validatedData };
-    if (duration) {
-      updateData.duration_minutes = duration;
-    }
-
-    // Convert camelCase to snake_case for database
-    const dbUpdateData: any = {};
-    Object.entries(updateData).forEach(([key, value]) => {
-      const snakeKey = key.replace(/([A-Z])/g, "_$1").toLowerCase();
-      dbUpdateData[snakeKey] = value;
-    });
+    const updateData = buildUpdatePayload(validatedData, duration);
+    const dbUpdateData = toSnakeCaseRecord(updateData);
 
     // Update appointment
     const { error } = await supabase
@@ -390,14 +431,8 @@ export async function rescheduleAppointment(
   appointmentId: string,
   formData: FormData
 ): Promise<ActionResult<boolean>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -468,14 +503,8 @@ export async function cancelAppointment(
   appointmentId: string,
   reason?: string
 ): Promise<ActionResult<boolean>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -520,14 +549,8 @@ export async function completeAppointment(
   appointmentId: string,
   actualEnd?: string
 ): Promise<ActionResult<boolean>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -571,14 +594,8 @@ export async function completeAppointment(
 export async function archiveAppointment(
   appointmentId: string
 ): Promise<ActionResult<boolean>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -621,14 +638,8 @@ export async function archiveAppointment(
 export async function deleteAppointment(
   appointmentId: string
 ): Promise<ActionResult<boolean>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -671,15 +682,9 @@ export async function searchAppointments(
     limit?: number;
     offset?: number;
   }
-): Promise<ActionResult<any[]>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+): Promise<ActionResult<Record<string, unknown>[]>> {
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {
@@ -695,8 +700,8 @@ export async function searchAppointments(
     const { data, error } = await supabase.rpc("search_appointments_ranked", {
       p_company_id: companyId,
       p_search_query: searchQuery,
-      p_limit: options?.limit || 50,
-      p_offset: options?.offset || 0,
+      p_limit: options?.limit ?? DEFAULT_SEARCH_LIMIT,
+      p_offset: options?.offset ?? DEFAULT_SEARCH_OFFSET,
     });
 
     if (error) {
@@ -706,7 +711,7 @@ export async function searchAppointments(
       );
     }
 
-    return data || [];
+    return (data as Record<string, unknown>[]) || [];
   });
 }
 
@@ -718,14 +723,8 @@ export async function searchAppointments(
 export async function unlinkScheduleFromJob(
   appointmentId: string
 ): Promise<ActionResult<void>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError(
-        "Database connection failed",
-        ERROR_CODES.DB_CONNECTION_ERROR
-      );
-    }
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
 
     // Get current user
     const {

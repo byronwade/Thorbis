@@ -5,16 +5,38 @@
  * Run with: npx tsx scripts/create-prices-for-existing-meters.ts
  */
 
+import { resolve } from "node:path";
 import { config } from "dotenv";
-import { resolve } from "path";
 import Stripe from "stripe";
 
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+  "2025-01-27.acacia";
+const METER_LIST_LIMIT = 20;
+const PRODUCT_LIST_LIMIT = 20;
+const PRICE_LIST_LIMIT = 10;
+const CENTS_IN_DOLLAR = 100;
+const PRICE_DECIMALS = 4;
+
+type MeterPriceResult = {
+  event_name: string;
+  meter_id: string;
+  product_id: string;
+  price_id: string;
+  amount: number;
+};
+
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+if (!stripeSecretKey) {
+  throw new Error("STRIPE_SECRET_KEY is not defined in the environment");
+}
+
 // Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia" as any,
+const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: STRIPE_API_VERSION,
 });
 
 async function createPricesForMeters() {
@@ -23,15 +45,19 @@ async function createPricesForMeters() {
   try {
     // Step 1: List all existing meters
     console.log("Step 1: Fetching existing meters...");
-    const meters = await stripe.billing.meters.list({ limit: 20 });
+    const meters = await stripe.billing.meters.list({
+      limit: METER_LIST_LIMIT,
+    });
     console.log(`Found ${meters.data.length} meters\n`);
 
     // Step 2: List all existing products
     console.log("Step 2: Fetching existing products...");
-    const allProducts = await stripe.products.list({ limit: 20 });
+    const allProducts = await stripe.products.list({
+      limit: PRODUCT_LIST_LIMIT,
+    });
     console.log(`Found ${allProducts.data.length} products\n`);
 
-    const results = [];
+    const results: MeterPriceResult[] = [];
 
     // Step 3: For each meter, find matching product and create price
     for (const meter of meters.data) {
@@ -59,18 +85,19 @@ async function createPricesForMeters() {
         // Check if price already exists for this meter
         const existingPrices = await stripe.prices.list({
           product: product.id,
-          limit: 10,
+          limit: PRICE_LIST_LIMIT,
         });
 
         const meterPrice = existingPrices.data.find(
-          (p: any) => p.recurring?.meter === meter.id
+          (priceItem) => priceItem.recurring?.meter === meter.id
         );
 
         if (meterPrice) {
           console.log(`  ✓ Price already exists: ${meterPrice.id}`);
-          console.log(
-            `    Amount: $${((meterPrice.unit_amount || 0) / 100).toFixed(4)}`
-          );
+          const formattedAmount = (
+            (meterPrice.unit_amount || 0) / CENTS_IN_DOLLAR
+          ).toFixed(PRICE_DECIMALS);
+          console.log(`    Amount: $${formattedAmount}`);
           results.push({
             event_name: meter.event_name,
             meter_id: meter.id,
@@ -101,7 +128,7 @@ async function createPricesForMeters() {
 
         // Create price
         console.log(
-          `  Creating price with amount: $${(unitAmount / 100).toFixed(4)}...`
+          `  Creating price with amount: $${(unitAmount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}...`
         );
         const price = await stripe.prices.create({
           product: product.id,
@@ -113,10 +140,12 @@ async function createPricesForMeters() {
           },
           billing_scheme: "per_unit",
           unit_amount_decimal: unitAmount.toString(),
-        } as any);
+        });
 
         console.log(`  ✅ Price created: ${price.id}`);
-        console.log(`    Amount: $${(unitAmount / 100).toFixed(4)}\n`);
+        console.log(
+          `    Amount: $${(unitAmount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}\n`
+        );
 
         results.push({
           event_name: meter.event_name,
@@ -125,10 +154,10 @@ async function createPricesForMeters() {
           price_id: price.id,
           amount: unitAmount,
         });
-      } catch (error: any) {
+      } catch (error) {
         console.error(
           `  ❌ Error processing ${meter.display_name}:`,
-          error.message
+          getErrorMessage(error)
         );
         console.log("");
       }
@@ -153,23 +182,27 @@ async function createPricesForMeters() {
       thorbis_api_calls: "STRIPE_PRICE_ID_API_CALLS",
     };
 
-    results.forEach((result) => {
+    for (const result of results) {
       const envVar = envMapping[result.event_name];
       if (envVar) {
         console.log(`${envVar}=${result.price_id}`);
       }
-    });
+    }
 
     console.log("\n");
     console.log("📊 Summary:");
     console.log(`  Total meters: ${meters.data.length}`);
     console.log(`  Prices created/found: ${results.length}`);
     console.log("\n");
-  } catch (error: any) {
-    console.error("❌ Script failed:", error.message);
+  } catch (error) {
+    console.error("❌ Script failed:", getErrorMessage(error));
     console.error("\nFull error:", error);
     process.exit(1);
   }
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 
 // Run the script

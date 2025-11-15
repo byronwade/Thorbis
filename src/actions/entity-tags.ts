@@ -9,6 +9,11 @@ import { revalidatePath } from "next/cache";
 import { withErrorHandling } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
 export type TagWithColor = {
   label: string;
   color?: string;
@@ -54,70 +59,31 @@ export async function updateEntityTags(
       throw new Error("Database connection not available");
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+    const typedSupabase = supabase as SupabaseServerClient;
+    await requireAuthenticatedUser(typedSupabase);
 
     const config = ENTITY_TAG_FIELD_MAP[entityType];
     if (!config) {
       throw new Error(`Unsupported entity type: ${entityType}`);
     }
 
-    let updateData: Record<string, unknown>;
-    if (config.useMetadata) {
-      const { data: existingRecord, error: fetchError } = await supabase
-        .from(config.table)
-        .select("metadata")
-        .eq("id", entityId)
-        .single();
+    const updateData = await buildTagsUpdateData({
+      supabase: typedSupabase,
+      config,
+      entityId,
+      entityType,
+      tags,
+    });
 
-      if (fetchError) {
-        throw new Error(
-          `Failed to load ${entityType} metadata: ${fetchError.message}`
-        );
-      }
+    await applyTagUpdate({
+      supabase: typedSupabase,
+      config,
+      entityId,
+      entityType,
+      updateData,
+    });
 
-      const existingMetadata =
-        existingRecord &&
-        typeof existingRecord.metadata === "object" &&
-        existingRecord.metadata !== null
-          ? (existingRecord.metadata as Record<string, unknown>)
-          : {};
-
-      updateData = {
-        metadata: {
-          ...existingMetadata,
-          tags,
-        },
-        updated_at: new Date().toISOString(),
-      };
-    } else {
-      // For entities that have a direct tags field (like customers)
-      updateData = {
-        tags,
-        updated_at: new Date().toISOString(),
-      };
-    }
-
-    const { error } = await supabase
-      .from(config.table)
-      .update(updateData)
-      .eq("id", entityId);
-
-    if (error) {
-      throw new Error(`Failed to update ${entityType} tags: ${error.message}`);
-    }
-
-    const basePath = getPathForEntity(entityType);
-    if (basePath) {
-      revalidatePath(`/dashboard/${basePath}/${entityId}`);
-      revalidatePath(`/dashboard/${basePath}`);
-    }
-
-    revalidatePath("/dashboard");
+    revalidateEntityPaths(entityType, entityId);
 
     return { entityId, entityType, tags };
   });
@@ -140,3 +106,101 @@ function getPathForEntity(entityType: EntityType): string | null {
   return pathMap[entityType] ?? null;
 }
 
+const requireAuthenticatedUser = async (
+  supabase: SupabaseServerClient
+) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+  return user;
+};
+
+type TagUpdateConfig = (typeof ENTITY_TAG_FIELD_MAP)[EntityType];
+
+type BuildTagsUpdateDataParams = {
+  supabase: SupabaseServerClient;
+  config: TagUpdateConfig;
+  entityId: string;
+  entityType: EntityType;
+  tags: EntityTag[];
+};
+
+const buildTagsUpdateData = async ({
+  supabase,
+  config,
+  entityId,
+  entityType,
+  tags,
+}: BuildTagsUpdateDataParams): Promise<Record<string, unknown>> => {
+  if (!config.useMetadata) {
+    return {
+      tags,
+      updated_at: new Date().toISOString(),
+    };
+  }
+
+  const { data: existingRecord, error: fetchError } = await supabase
+    .from(config.table)
+    .select("metadata")
+    .eq("id", entityId)
+    .single();
+
+  if (fetchError) {
+    throw new Error(
+      `Failed to load ${entityType} metadata: ${fetchError.message}`
+    );
+  }
+
+  const existingMetadata =
+    existingRecord &&
+    typeof existingRecord.metadata === "object" &&
+    existingRecord.metadata !== null
+      ? (existingRecord.metadata as Record<string, unknown>)
+      : {};
+
+  return {
+    metadata: {
+      ...existingMetadata,
+      tags,
+    },
+    updated_at: new Date().toISOString(),
+  };
+};
+
+type ApplyTagUpdateParams = {
+  supabase: SupabaseServerClient;
+  config: TagUpdateConfig;
+  entityId: string;
+  entityType: EntityType;
+  updateData: Record<string, unknown>;
+};
+
+const applyTagUpdate = async ({
+  supabase,
+  config,
+  entityId,
+  entityType,
+  updateData,
+}: ApplyTagUpdateParams) => {
+  const { error } = await supabase
+    .from(config.table)
+    .update(updateData)
+    .eq("id", entityId);
+
+  if (error) {
+    throw new Error(`Failed to update ${entityType} tags: ${error.message}`);
+  }
+};
+
+const revalidateEntityPaths = (entityType: EntityType, entityId: string) => {
+  const basePath = getPathForEntity(entityType);
+  if (basePath) {
+    revalidatePath(`/dashboard/${basePath}/${entityId}`);
+    revalidatePath(`/dashboard/${basePath}`);
+  }
+
+  revalidatePath("/dashboard");
+};

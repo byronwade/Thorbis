@@ -1,7 +1,8 @@
 import type { Database } from "@/types/supabase";
 
 type UserPreferencesRow =
-  Database["public"]["Tables"]["user_preferences"]["Row"] | null;
+  | Database["public"]["Tables"]["user_preferences"]["Row"]
+  | null;
 
 export type ThemeOption = "light" | "dark" | "system";
 
@@ -39,9 +40,12 @@ export function mapPreferencesFromDb(
   return {
     ...DEFAULT_PREFERENCE_SETTINGS,
     theme:
-      (data?.theme === "light" || data?.theme === "dark" || data?.theme === "system"
+      (data?.theme === "light" ||
+      data?.theme === "dark" ||
+      data?.theme === "system"
         ? data.theme
-        : DEFAULT_PREFERENCE_SETTINGS.theme) ?? DEFAULT_PREFERENCE_SETTINGS.theme,
+        : DEFAULT_PREFERENCE_SETTINGS.theme) ??
+      DEFAULT_PREFERENCE_SETTINGS.theme,
     language: data?.language ?? DEFAULT_PREFERENCE_SETTINGS.language,
     timezone: data?.timezone ?? DEFAULT_PREFERENCE_SETTINGS.timezone,
     dateFormat: data?.date_format ?? DEFAULT_PREFERENCE_SETTINGS.dateFormat,
@@ -57,4 +61,3 @@ export function mapPreferencesFromDb(
         : DEFAULT_PREFERENCE_SETTINGS.tableView,
   };
 }
-

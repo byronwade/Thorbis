@@ -40,9 +40,9 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import {
   DEFAULT_PREFERENCE_SETTINGS,
+  mapPreferencesFromDb,
   type PreferenceSettings,
   type ThemeOption,
-  mapPreferencesFromDb,
 } from "./preferences-config";
 
 interface PreferencesClientProps {
@@ -122,50 +122,58 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 sm:grid-cols-3">
-                {(["light", "dark", "system"] as ThemeOption[]).map((option) => {
-                  const isActive = settings.theme === option;
-                  const Icon =
-                    option === "light" ? Sun : option === "dark" ? Moon : Monitor;
-                  const label =
-                    option === "light"
-                      ? "Light"
-                      : option === "dark"
-                        ? "Dark"
-                        : "System";
-                  return (
-                    <button
-                      className={`relative cursor-pointer rounded-lg border-2 p-4 text-left transition-colors ${
-                        isActive
-                          ? "border-primary bg-primary/5"
-                          : "border-transparent hover:border-primary/50"
-                      }`}
-                      key={option}
-                      onClick={() => updateSetting("theme", option)}
-                      type="button"
-                    >
-                      <div className="mb-2 flex items-center gap-2">
-                        <Icon
-                          className={`h-5 w-5 ${
-                            option === "light"
-                              ? "text-warning"
-                              : option === "dark"
-                                ? "text-primary"
-                                : "text-accent-foreground"
-                          }`}
-                        />
-                        <span className="font-medium">{label}</span>
-                        {isActive && <Check className="ml-auto h-4 w-4 text-primary" />}
-                      </div>
-                      <p className="text-muted-foreground text-sm">
-                        {option === "light"
-                          ? "Clean and bright interface"
-                          : option === "dark"
-                            ? "Easy on the eyes"
-                            : "Follows device settings"}
-                      </p>
-                    </button>
-                  );
-                })}
+                {(["light", "dark", "system"] as ThemeOption[]).map(
+                  (option) => {
+                    const isActive = settings.theme === option;
+                    const Icon =
+                      option === "light"
+                        ? Sun
+                        : option === "dark"
+                          ? Moon
+                          : Monitor;
+                    const label =
+                      option === "light"
+                        ? "Light"
+                        : option === "dark"
+                          ? "Dark"
+                          : "System";
+                    return (
+                      <button
+                        className={`relative cursor-pointer rounded-lg border-2 p-4 text-left transition-colors ${
+                          isActive
+                            ? "border-primary bg-primary/5"
+                            : "border-transparent hover:border-primary/50"
+                        }`}
+                        key={option}
+                        onClick={() => updateSetting("theme", option)}
+                        type="button"
+                      >
+                        <div className="mb-2 flex items-center gap-2">
+                          <Icon
+                            className={`h-5 w-5 ${
+                              option === "light"
+                                ? "text-warning"
+                                : option === "dark"
+                                  ? "text-primary"
+                                  : "text-accent-foreground"
+                            }`}
+                          />
+                          <span className="font-medium">{label}</span>
+                          {isActive && (
+                            <Check className="ml-auto h-4 w-4 text-primary" />
+                          )}
+                        </div>
+                        <p className="text-muted-foreground text-sm">
+                          {option === "light"
+                            ? "Clean and bright interface"
+                            : option === "dark"
+                              ? "Easy on the eyes"
+                              : "Follows device settings"}
+                        </p>
+                      </button>
+                    );
+                  }
+                )}
               </div>
             </CardContent>
           </Card>
@@ -181,8 +189,8 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="max-w-xs">
-                      Configure language, timezone, and regional formats for dates
-                      and currency
+                      Configure language, timezone, and regional formats for
+                      dates and currency
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -258,7 +266,9 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
                       <SelectItem value="America/Los_Angeles">
                         Pacific Time (PST)
                       </SelectItem>
-                      <SelectItem value="Europe/London">London (GMT)</SelectItem>
+                      <SelectItem value="Europe/London">
+                        London (GMT)
+                      </SelectItem>
                       <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
                     </SelectContent>
                   </Select>
@@ -275,24 +285,31 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="max-w-xs">
-                          Choose how dates are displayed throughout the application
+                          Choose how dates are displayed throughout the
+                          application
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </Label>
                   <Select
-                    onValueChange={(value) => updateSetting("dateFormat", value)}
+                    onValueChange={(value) =>
+                      updateSetting("dateFormat", value)
+                    }
                     value={settings.dateFormat}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="MM/dd/yyyy">MM/DD/YYYY (US)</SelectItem>
+                      <SelectItem value="MM/dd/yyyy">
+                        MM/DD/YYYY (US)
+                      </SelectItem>
                       <SelectItem value="dd/MM/yyyy">
                         DD/MM/YYYY (European)
                       </SelectItem>
-                      <SelectItem value="yyyy-MM-dd">YYYY-MM-DD (ISO)</SelectItem>
+                      <SelectItem value="yyyy-MM-dd">
+                        YYYY-MM-DD (ISO)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -410,34 +427,38 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label className="mb-2 block text-sm font-medium">
+                <Label className="mb-2 block font-medium text-sm">
                   Sidebar Position
                 </Label>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {(["left", "right"] as Array<"left" | "right">).map((position) => (
-                    <button
-                      className={`rounded-lg border p-4 text-left transition-colors ${
-                        settings.sidebarPosition === position
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/40"
-                      }`}
-                      key={position}
-                      onClick={() => updateSetting("sidebarPosition", position)}
-                      type="button"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">
-                          {position === "left" ? "Left" : "Right"} sidebar
-                        </span>
-                        {settings.sidebarPosition === position && (
-                          <Check className="h-4 w-4 text-primary" />
-                        )}
-                      </div>
-                      <p className="text-muted-foreground text-sm">
-                        Navigation appears on the {position}
-                      </p>
-                    </button>
-                  ))}
+                  {(["left", "right"] as Array<"left" | "right">).map(
+                    (position) => (
+                      <button
+                        className={`rounded-lg border p-4 text-left transition-colors ${
+                          settings.sidebarPosition === position
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/40"
+                        }`}
+                        key={position}
+                        onClick={() =>
+                          updateSetting("sidebarPosition", position)
+                        }
+                        type="button"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">
+                            {position === "left" ? "Left" : "Right"} sidebar
+                          </span>
+                          {settings.sidebarPosition === position && (
+                            <Check className="h-4 w-4 text-primary" />
+                          )}
+                        </div>
+                        <p className="text-muted-foreground text-sm">
+                          Navigation appears on the {position}
+                        </p>
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
 
@@ -482,10 +503,19 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
                 updateSetting("theme", DEFAULT_PREFERENCE_SETTINGS.theme);
                 updateSetting("language", DEFAULT_PREFERENCE_SETTINGS.language);
                 updateSetting("timezone", DEFAULT_PREFERENCE_SETTINGS.timezone);
-                updateSetting("dateFormat", DEFAULT_PREFERENCE_SETTINGS.dateFormat);
-                updateSetting("timeFormat", DEFAULT_PREFERENCE_SETTINGS.timeFormat);
+                updateSetting(
+                  "dateFormat",
+                  DEFAULT_PREFERENCE_SETTINGS.dateFormat
+                );
+                updateSetting(
+                  "timeFormat",
+                  DEFAULT_PREFERENCE_SETTINGS.timeFormat
+                );
                 updateSetting("currency", DEFAULT_PREFERENCE_SETTINGS.currency);
-                updateSetting("compactMode", DEFAULT_PREFERENCE_SETTINGS.compactMode);
+                updateSetting(
+                  "compactMode",
+                  DEFAULT_PREFERENCE_SETTINGS.compactMode
+                );
                 updateSetting(
                   "showAnimations",
                   DEFAULT_PREFERENCE_SETTINGS.showAnimations
@@ -498,7 +528,10 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
                   "sidebarPosition",
                   DEFAULT_PREFERENCE_SETTINGS.sidebarPosition
                 );
-                updateSetting("tableView", DEFAULT_PREFERENCE_SETTINGS.tableView);
+                updateSetting(
+                  "tableView",
+                  DEFAULT_PREFERENCE_SETTINGS.tableView
+                );
               }}
               type="button"
               variant="outline"
@@ -513,4 +546,3 @@ export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
 }
 
 export default PreferencesClient;
-

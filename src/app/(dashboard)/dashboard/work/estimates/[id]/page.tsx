@@ -66,40 +66,44 @@ export default async function EstimateDetailsPage({
   }
 
   if (estimate.company_id !== activeCompanyId) {
-    console.error("Company access denied for estimate:", estimateId, "company:", estimate.company_id, "active:", activeCompanyId);
+    console.error(
+      "Company access denied for estimate:",
+      estimateId,
+      "company:",
+      estimate.company_id,
+      "active:",
+      activeCompanyId
+    );
     return notFound();
   }
 
   // Now fetch related data separately to avoid join issues
-  const [
-    { data: customer },
-    { data: job },
-    { data: invoice },
-  ] = await Promise.all([
-    // Fetch customer
-    estimate.customer_id
-      ? supabase
-          .from("customers")
-          .select("*")
-          .eq("id", estimate.customer_id)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-    // Fetch job
-    estimate.job_id
-      ? supabase
-          .from("jobs")
-          .select("*")
-          .eq("id", estimate.job_id)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-    // Fetch invoice (if this estimate was converted)
-    supabase
-      .from("invoices")
-      .select("*")
-      .eq("converted_from_estimate_id", estimateId)
-      .is("deleted_at", null)
-      .maybeSingle(),
-  ]);
+  const [{ data: customer }, { data: job }, { data: invoice }] =
+    await Promise.all([
+      // Fetch customer
+      estimate.customer_id
+        ? supabase
+            .from("customers")
+            .select("*")
+            .eq("id", estimate.customer_id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+      // Fetch job
+      estimate.job_id
+        ? supabase
+            .from("jobs")
+            .select("*")
+            .eq("id", estimate.job_id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+      // Fetch invoice (if this estimate was converted)
+      supabase
+        .from("invoices")
+        .select("*")
+        .eq("converted_from_estimate_id", estimateId)
+        .is("deleted_at", null)
+        .maybeSingle(),
+    ]);
 
   // Fetch all related data (including contract for workflow timeline)
   const [

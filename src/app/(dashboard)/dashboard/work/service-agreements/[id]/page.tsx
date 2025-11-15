@@ -212,8 +212,7 @@ export default async function ServiceAgreementDetailsPage({
       label: "Outstanding",
       value: formatCurrency(outstandingBalance),
       change: outstandingBalance > 0 ? -6.5 : 5.1,
-      changeLabel:
-        outstandingBalance > 0 ? "balance due" : "paid in full",
+      changeLabel: outstandingBalance > 0 ? "balance due" : "paid in full",
     },
     {
       label: "Linked Jobs",

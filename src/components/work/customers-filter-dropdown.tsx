@@ -1,7 +1,7 @@
 "use client";
 
-import { Filter, ChevronDown } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { ChevronDown, Filter } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useCustomersFiltersStore, type CustomersFilters } from "@/lib/stores/customers-filters-store";
+import {
+  type CustomersFilters,
+  useCustomersFiltersStore,
+} from "@/lib/stores/customers-filters-store";
 
 type CustomersFilterDropdownProps = {
   activeCount?: number;
@@ -37,7 +40,7 @@ export function CustomersFilterDropdown({
   const globalFilters = useCustomersFiltersStore((state) => state.filters);
   const setFilters = useCustomersFiltersStore((state) => state.setFilters);
   const resetFilters = useCustomersFiltersStore((state) => state.resetFilters);
-  
+
   const [localFilters, setLocalFilters] = useState(globalFilters);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -73,13 +76,16 @@ export function CustomersFilterDropdown({
   };
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" variant="outline" className="relative">
+        <Button className="relative" size="sm" variant="outline">
           <Filter className="size-4" />
           <span className="ml-2">Filters</span>
           {activeFilterCount > 0 && (
-            <Badge className="ml-2 h-5 w-5 justify-center p-0 text-xs" variant="secondary">
+            <Badge
+              className="ml-2 h-5 w-5 justify-center p-0 text-xs"
+              variant="secondary"
+            >
               {activeFilterCount}
             </Badge>
           )}
@@ -90,7 +96,12 @@ export function CustomersFilterDropdown({
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Filter Customers</span>
           {activeFilterCount > 0 && (
-            <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={handleClear}>
+            <Button
+              className="h-6 px-2 text-xs"
+              onClick={handleClear}
+              size="sm"
+              variant="ghost"
+            >
               Clear all
             </Button>
           )}
@@ -100,12 +111,15 @@ export function CustomersFilterDropdown({
         <div className="space-y-4 p-3">
           {/* Archive Status */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Archive Status</Label>
+            <Label className="font-medium text-xs">Archive Status</Label>
             <Select
-              value={localFilters.archiveStatus}
               onValueChange={(value) =>
-                handleLocalChange("archiveStatus", value as CustomersFilters["archiveStatus"])
+                handleLocalChange(
+                  "archiveStatus",
+                  value as CustomersFilters["archiveStatus"]
+                )
               }
+              value={localFilters.archiveStatus}
             >
               <SelectTrigger className="h-9">
                 <SelectValue />
@@ -118,7 +132,8 @@ export function CustomersFilterDropdown({
                   All Customers {totalCount !== undefined && `(${totalCount})`}
                 </SelectItem>
                 <SelectItem value="archived">
-                  Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+                  Archived Only{" "}
+                  {archivedCount !== undefined && `(${archivedCount})`}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -128,10 +143,10 @@ export function CustomersFilterDropdown({
 
           {/* Customer Type */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Customer Type</Label>
+            <Label className="font-medium text-xs">Customer Type</Label>
             <Select
-              value={localFilters.type}
               onValueChange={(value) => handleLocalChange("type", value)}
+              value={localFilters.type}
             >
               <SelectTrigger className="h-9">
                 <SelectValue />
@@ -148,10 +163,10 @@ export function CustomersFilterDropdown({
 
           {/* Status */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Status</Label>
+            <Label className="font-medium text-xs">Status</Label>
             <Select
-              value={localFilters.status}
               onValueChange={(value) => handleLocalChange("status", value)}
+              value={localFilters.status}
             >
               <SelectTrigger className="h-9">
                 <SelectValue />
@@ -168,13 +183,13 @@ export function CustomersFilterDropdown({
 
           {/* Name */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Name</Label>
+            <Label className="font-medium text-xs">Name</Label>
             <Input
-              type="text"
-              placeholder="Search by name..."
               className="h-9"
-              value={localFilters.name}
               onChange={(e) => handleLocalChange("name", e.target.value)}
+              placeholder="Search by name..."
+              type="text"
+              value={localFilters.name}
             />
           </div>
 
@@ -182,13 +197,13 @@ export function CustomersFilterDropdown({
 
           {/* Email */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Email</Label>
+            <Label className="font-medium text-xs">Email</Label>
             <Input
-              type="text"
-              placeholder="Search by email..."
               className="h-9"
-              value={localFilters.email}
               onChange={(e) => handleLocalChange("email", e.target.value)}
+              placeholder="Search by email..."
+              type="text"
+              value={localFilters.email}
             />
           </div>
 
@@ -196,24 +211,29 @@ export function CustomersFilterDropdown({
 
           {/* Phone */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Phone</Label>
+            <Label className="font-medium text-xs">Phone</Label>
             <Input
-              type="text"
-              placeholder="Search by phone..."
               className="h-9"
-              value={localFilters.phone}
               onChange={(e) => handleLocalChange("phone", e.target.value)}
+              placeholder="Search by phone..."
+              type="text"
+              value={localFilters.phone}
             />
           </div>
         </div>
 
         <DropdownMenuSeparator />
-        
+
         <div className="flex gap-2 p-3">
-          <Button size="sm" variant="outline" className="flex-1" onClick={() => setIsOpen(false)}>
+          <Button
+            className="flex-1"
+            onClick={() => setIsOpen(false)}
+            size="sm"
+            variant="outline"
+          >
             Cancel
           </Button>
-          <Button size="sm" className="flex-1" onClick={handleApply}>
+          <Button className="flex-1" onClick={handleApply} size="sm">
             Apply Filters
           </Button>
         </div>
@@ -221,4 +241,3 @@ export function CustomersFilterDropdown({
     </DropdownMenu>
   );
 }
-

@@ -23,6 +23,10 @@ import type {
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
+import {
+  COMMUNICATION_MARK_AS_READ_EVENT,
+  type CommunicationMarkAsReadDetail,
+} from "./notification-events";
 
 // =====================================================================================
 // Types
@@ -35,7 +39,11 @@ export type {
   NotificationType,
 } from "./notifications-types";
 
-import type { Notification, NotificationType, NotificationPriority } from "./notifications-types";
+import type {
+  Notification,
+  NotificationPriority,
+  NotificationType,
+} from "./notifications-types";
 
 interface NotificationsState {
   // State
@@ -397,6 +405,19 @@ export const useNotificationsStore = create<NotificationsState>()(
     { name: "NotificationsStore" }
   )
 );
+
+if (typeof window !== "undefined") {
+  window.addEventListener(COMMUNICATION_MARK_AS_READ_EVENT, (event: Event) => {
+    const { detail } = event as CustomEvent<CommunicationMarkAsReadDetail>;
+    const notificationId = detail?.notificationId;
+
+    if (!notificationId) {
+      return;
+    }
+
+    useNotificationsStore.getState().optimisticMarkAsRead(notificationId);
+  });
+}
 
 // =====================================================================================
 // Selectors (for optimized re-renders)

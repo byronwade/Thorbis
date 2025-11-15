@@ -162,7 +162,7 @@ export default function NotificationsPushClient({
       saveButtonText="Save push preferences"
       title="Push Notifications"
     >
-      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+      <div className="flex items-center gap-3 text-muted-foreground text-sm">
         <Button asChild size="icon" variant="outline">
           <Link href="/dashboard/settings/profile/notifications">
             <ArrowLeft className="size-4" />
@@ -379,7 +379,8 @@ export default function NotificationsPushClient({
             },
             {
               label: "Auto-Hide",
-              description: "Automatically dismiss notifications after 5 seconds",
+              description:
+                "Automatically dismiss notifications after 5 seconds",
             },
           ].map((item) => (
             <div className="flex items-center justify-between" key={item.label}>
@@ -450,4 +451,3 @@ export default function NotificationsPushClient({
     </SettingsPageLayout>
   );
 }
-

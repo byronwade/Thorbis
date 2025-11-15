@@ -17,6 +17,7 @@
  */
 
 import { revalidatePath } from "next/cache";
+import type Stripe from "stripe";
 import { getCurrentUser } from "@/lib/auth/session";
 import {
   createBillingPortalSession,
@@ -33,7 +34,29 @@ type BillingActionResult = {
   success: boolean;
   error?: string;
   url?: string;
-  data?: any;
+  data?: Record<string, unknown>;
+};
+
+const toBillingError = (
+  error: unknown,
+  fallbackMessage: string
+): BillingActionResult => ({
+  success: false,
+  error: error instanceof Error ? error.message : fallbackMessage,
+});
+
+type MembershipWithSubscriptionStatus = {
+  company_id: string;
+  companies: {
+    stripe_subscription_status: string | null;
+  } | null;
+};
+
+type OwnerMembership = {
+  role_id: string;
+  custom_roles: {
+    name: string;
+  } | null;
 };
 
 /**
@@ -98,13 +121,13 @@ export async function createOrganizationCheckoutSession(
       .from("team_members")
       .select("company_id, companies!inner(stripe_subscription_status)")
       .eq("user_id", user.id)
-      .eq("status", "active");
+      .eq("status", "active")
+      .returns<MembershipWithSubscriptionStatus[]>();
 
-    // Count organizations with active subscriptions
-    const activeOrgsCount =
-      existingMemberships?.filter(
-        (m: any) => m.companies?.stripe_subscription_status === "active"
-      ).length || 0;
+    const activeOrgsCount = (existingMemberships ?? []).filter(
+      (membership) =>
+        membership.companies?.stripe_subscription_status === "active"
+    ).length;
 
     const isAdditionalOrg = activeOrgsCount > 0;
 
@@ -133,14 +156,7 @@ export async function createOrganizationCheckoutSession(
       url: checkoutUrl,
     };
   } catch (error) {
-    console.error("Error creating checkout session:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to create checkout session",
-    };
+    return toBillingError(error, "Failed to create checkout session");
   }
 }
 
@@ -201,14 +217,7 @@ export async function createBillingPortal(
       url: portalUrl,
     };
   } catch (error) {
-    console.error("Error creating billing portal:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to access billing portal",
-    };
+    return toBillingError(error, "Failed to access billing portal");
   }
 }
 
@@ -268,7 +277,7 @@ export async function getCompanySubscriptionStatus(
     }
 
     // Get detailed subscription info from Stripe if we have a subscription ID
-    let stripeSubscription = null;
+    let stripeSubscription: Stripe.Subscription | null = null;
     if (company.stripe_subscription_id) {
       stripeSubscription = await getSubscription(
         company.stripe_subscription_id
@@ -283,14 +292,7 @@ export async function getCompanySubscriptionStatus(
       },
     };
   } catch (error) {
-    console.error("Error getting subscription status:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to get subscription status",
-    };
+    return toBillingError(error, "Failed to get subscription status");
   }
 }
 
@@ -322,7 +324,9 @@ export async function cancelCompanySubscription(
       .eq("status", "active")
       .single();
 
-    if (!membership || (membership as any).custom_roles?.name !== "Owner") {
+    const ownerMembership = membership as OwnerMembership | null;
+
+    if (ownerMembership?.custom_roles?.name !== "Owner") {
       return {
         success: false,
         error: "Only organization owners can cancel subscriptions",
@@ -360,14 +364,7 @@ export async function cancelCompanySubscription(
       data: { message: "Subscription will be canceled at period end" },
     };
   } catch (error) {
-    console.error("Error canceling subscription:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to cancel subscription",
-    };
+    return toBillingError(error, "Failed to cancel subscription");
   }
 }
 
@@ -399,7 +396,9 @@ export async function reactivateCompanySubscription(
       .eq("status", "active")
       .single();
 
-    if (!membership || (membership as any).custom_roles?.name !== "Owner") {
+    const ownerMembership = membership as OwnerMembership | null;
+
+    if (ownerMembership?.custom_roles?.name !== "Owner") {
       return {
         success: false,
         error: "Only organization owners can reactivate subscriptions",
@@ -437,13 +436,6 @@ export async function reactivateCompanySubscription(
       data: { message: "Subscription reactivated successfully" },
     };
   } catch (error) {
-    console.error("Error reactivating subscription:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to reactivate subscription",
-    };
+    return toBillingError(error, "Failed to reactivate subscription");
   }
 }

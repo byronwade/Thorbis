@@ -182,6 +182,7 @@ export default async function WorkTeamMembersPage() {
     <>
       <StatusPipeline compact stats={teamStats} />
       <WorkDataView
+        forceView="table"
         kanban={<TeamsKanban members={teamMembers} />}
         section="teams"
         table={<TeamsTable itemsPerPage={50} teamMembers={teamMembers} />}

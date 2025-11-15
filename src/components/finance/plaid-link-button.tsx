@@ -63,7 +63,7 @@ export function PlaidLinkButton({
           {
             success: result.success,
             hasData: result.success ? !!result.data : false,
-            error: errorMsg
+            error: errorMsg,
           }
         );
 

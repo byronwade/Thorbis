@@ -1,6 +1,6 @@
 /**
  * Invoice Filters Store
- * 
+ *
  * Global state management for invoice filtering
  * - Archive status (active, all, archived)
  * - Status filter (draft, pending, paid, overdue)
@@ -40,18 +40,16 @@ export const useInvoiceFiltersStore = create<InvoiceFiltersStore>()(
   persist(
     (set) => ({
       filters: DEFAULT_FILTERS,
-      
+
       setFilters: (newFilters) =>
         set((state) => ({
           filters: { ...state.filters, ...newFilters },
         })),
-      
-      resetFilters: () =>
-        set({ filters: DEFAULT_FILTERS }),
+
+      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
     }),
     {
       name: "invoice-filters",
     }
   )
 );
-

@@ -12,11 +12,31 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/lib/types/action-result";
 
+const HTTP_STATUS = {
+  forbidden: 403,
+} as const;
+
+const PERMANENT_DELETE_BUFFER_DAYS = 90;
+const MILLISECONDS_IN_DAY = 86_400_000;
+
 type BulkArchiveResult = {
   successful: number;
   failed: number;
   skipped: number;
   errors: Array<{ id: string; error: string }>;
+};
+
+type InvoiceRecord = {
+  id: string;
+  status: string;
+  company_id: string;
+};
+
+type InvoiceAudit = {
+  archivableIds: string[];
+  failed: number;
+  skipped: number;
+  errors: BulkArchiveResult["errors"];
 };
 
 /**
@@ -44,7 +64,7 @@ export async function bulkArchiveInvoices(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
@@ -52,7 +72,8 @@ export async function bulkArchiveInvoices(
     const { data: invoices, error: fetchError } = await supabase
       .from("invoices")
       .select("id, status, company_id")
-      .in("id", invoiceIds);
+      .in("id", invoiceIds)
+      .returns<InvoiceRecord[]>();
 
     if (fetchError) {
       throw new ActionError(
@@ -61,42 +82,18 @@ export async function bulkArchiveInvoices(
       );
     }
 
-    const result: BulkArchiveResult = {
-      successful: 0,
-      failed: 0,
-      skipped: 0,
-      errors: [],
-    };
-
-    // Filter invoices
-    const archivableIds: string[] = [];
-
-    for (const invoice of invoices || []) {
-      // Check ownership
-      if (invoice.company_id !== companyId) {
-        result.failed++;
-        result.errors.push({
-          id: invoice.id,
-          error: "Access denied",
-        });
-        continue;
-      }
-
-      // Skip paid invoices
-      if (invoice.status === "paid") {
-        result.skipped++;
-        continue;
-      }
-
-      archivableIds.push(invoice.id);
-    }
+    const { archivableIds, failed, skipped, errors } = evaluateInvoices(
+      invoices ?? [],
+      companyId
+    );
 
     // Bulk archive in single query
+    let successful = 0;
     if (archivableIds.length > 0) {
       const now = new Date().toISOString();
       const scheduledDeletion = new Date(
-        Date.now() + 90 * 24 * 60 * 60 * 1000
-      ).toISOString(); // 90 days from now
+        Date.now() + PERMANENT_DELETE_BUFFER_DAYS * MILLISECONDS_IN_DAY
+      ).toISOString();
 
       const { error: archiveError } = await supabase
         .from("invoices")
@@ -115,13 +112,18 @@ export async function bulkArchiveInvoices(
         );
       }
 
-      result.successful = archivableIds.length;
+      successful = archivableIds.length;
     }
 
     // Revalidate the page
     revalidatePath("/dashboard/work/invoices");
 
-    return result;
+    return {
+      successful,
+      failed,
+      skipped,
+      errors,
+    };
   });
 
   if (actionResult.success) {
@@ -159,4 +161,33 @@ function generateSummaryMessage(result: BulkArchiveResult): string {
   }
 
   return parts.join(", ");
+}
+
+function evaluateInvoices(
+  invoices: InvoiceRecord[],
+  companyId: string
+): InvoiceAudit {
+  return invoices.reduce<InvoiceAudit>(
+    (audit, invoice) => {
+      if (invoice.company_id !== companyId) {
+        audit.failed++;
+        audit.errors.push({ id: invoice.id, error: "Access denied" });
+        return audit;
+      }
+
+      if (invoice.status === "paid") {
+        audit.skipped++;
+        return audit;
+      }
+
+      audit.archivableIds.push(invoice.id);
+      return audit;
+    },
+    {
+      archivableIds: [],
+      failed: 0,
+      skipped: 0,
+      errors: [],
+    }
+  );
 }

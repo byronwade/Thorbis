@@ -1,7 +1,8 @@
 import type { Database } from "@/types/supabase";
 
 type NotificationPreferencesRow =
-  Database["public"]["Tables"]["user_notification_preferences"]["Row"] | null;
+  | Database["public"]["Tables"]["user_notification_preferences"]["Row"]
+  | null;
 
 export type NotificationPreferencesState = {
   emailNewJobs: boolean;
@@ -35,14 +36,17 @@ export function mapNotificationPreferences(
   data: NotificationPreferencesRow
 ): NotificationPreferencesState {
   return {
-    emailNewJobs: data?.email_new_jobs ?? DEFAULT_NOTIFICATION_PREFERENCES.emailNewJobs,
+    emailNewJobs:
+      data?.email_new_jobs ?? DEFAULT_NOTIFICATION_PREFERENCES.emailNewJobs,
     emailJobUpdates:
-      data?.email_job_updates ?? DEFAULT_NOTIFICATION_PREFERENCES.emailJobUpdates,
+      data?.email_job_updates ??
+      DEFAULT_NOTIFICATION_PREFERENCES.emailJobUpdates,
     emailMentions:
       data?.email_mentions ?? DEFAULT_NOTIFICATION_PREFERENCES.emailMentions,
     emailMessages:
       data?.email_messages ?? DEFAULT_NOTIFICATION_PREFERENCES.emailMessages,
-    pushNewJobs: data?.push_new_jobs ?? DEFAULT_NOTIFICATION_PREFERENCES.pushNewJobs,
+    pushNewJobs:
+      data?.push_new_jobs ?? DEFAULT_NOTIFICATION_PREFERENCES.pushNewJobs,
     pushJobUpdates:
       data?.push_job_updates ?? DEFAULT_NOTIFICATION_PREFERENCES.pushJobUpdates,
     pushMentions:
@@ -57,4 +61,3 @@ export function mapNotificationPreferences(
     inAppAll: data?.in_app_all ?? DEFAULT_NOTIFICATION_PREFERENCES.inAppAll,
   };
 }
-

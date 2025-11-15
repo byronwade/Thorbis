@@ -6,8 +6,14 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
+import { start as startWorkflow } from "workflow/api";
 import { getCurrentUser } from "@/lib/auth/session";
+import {
+  ensureCompanyTrialStatus,
+  DEFAULT_TRIAL_LENGTH_DAYS,
+} from "@/lib/billing/trial-management";
 import { createClient } from "@/lib/supabase/server";
+import { companyTrialWorkflow } from "@/workflows/company-trial";
 
 export const dynamic = "force-dynamic";
 
@@ -72,20 +78,21 @@ export async function POST(request: NextRequest) {
     const fullAddress = `${data.address}, ${data.city}, ${data.state}, ${data.zipCode}`;
 
     let companyId = data.id;
+    let createdCompany = false;
 
     if (companyId) {
       // Update existing company
       const updatePayload = {
         name: data.name,
-      legal_name: data.legalName || data.name,
-      doing_business_as: data.doingBusinessAs || data.name,
+        legal_name: data.legalName || data.name,
+        doing_business_as: data.doingBusinessAs || data.name,
         industry: data.industry,
         company_size: data.size,
         phone: data.phone,
-      support_email: data.supportEmail || user.email || null,
-      support_phone: data.supportPhone || data.phone || null,
-      brand_color: data.brandColor || null,
-      ein: data.ein || null,
+        support_email: data.supportEmail || user.email || null,
+        support_phone: data.supportPhone || data.phone || null,
+        brand_color: data.brandColor || null,
+        ein: data.ein || null,
         address: fullAddress,
         city: data.city,
         state: data.state,
@@ -245,6 +252,7 @@ export async function POST(request: NextRequest) {
       }
 
       companyId = newCompany.id;
+      createdCompany = true;
 
       // Get Owner role ID
       const { data: ownerRole } = await supabase
@@ -296,6 +304,17 @@ export async function POST(request: NextRequest) {
       if (settingsError) {
         console.error("Error creating company settings:", settingsError);
         // Don't fail company creation if settings creation fails
+      }
+    }
+
+    if (companyId && createdCompany) {
+      try {
+        await ensureCompanyTrialStatus({ companyId });
+        await startWorkflow(companyTrialWorkflow, [
+          { companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS },
+        ]);
+      } catch (trialError) {
+        console.error("Failed to initialize company trial:", trialError);
       }
     }
 

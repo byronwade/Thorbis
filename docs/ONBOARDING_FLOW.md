@@ -136,7 +136,7 @@ Professional onboarding flow triggered after new user signup with:
    - Lists 6 key features
    - 14-day free trial messaging
    - Payment form fields
-   - Start Free Trial button
+   - Start 14-day Free Trial button
 
 7. **Submit & Create Company**
    - Server action validates data
@@ -321,7 +321,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
 - [ ] Verify Step 3 shows billing info
 - [ ] Verify plan details are correct ($99/month)
 - [ ] Fill out payment form (placeholder)
-- [ ] Click "Start Free Trial"
+- [ ] Click "Start 14-day Free Trial"
 - [ ] Verify loading state appears
 - [ ] Verify redirect to dashboard
 - [ ] Check company was created in database

@@ -4,8 +4,8 @@ import { StatusPipeline } from "@/components/ui/status-pipeline";
 import { JobsKanban } from "@/components/work/jobs-kanban";
 import { JobsTable } from "@/components/work/jobs-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { createClient } from "@/lib/supabase/server";
 import type { Job } from "@/lib/db/schema";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Work Page - Server Component
@@ -137,11 +137,13 @@ export default async function JobsPage() {
   // Transform snake_case to camelCase for the component
   const toDate = (value: string | null) => (value ? new Date(value) : null);
 
-  const resolveRelation = <T,>(relation: T | T[] | null | undefined): T | null => {
+  const resolveRelation = <T,>(
+    relation: T | T[] | null | undefined
+  ): T | null => {
     if (!relation) {
       return null;
     }
-    return Array.isArray(relation) ? relation[0] ?? null : relation;
+    return Array.isArray(relation) ? (relation[0] ?? null) : relation;
   };
 
   const jobs: ExtendedJob[] = (jobsRaw ?? []).map((job) => {

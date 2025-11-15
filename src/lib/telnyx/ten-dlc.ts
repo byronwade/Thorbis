@@ -25,7 +25,7 @@ async function telnyxRequest<TResponse>(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const payload = (await response.json().catch(() => undefined)) as
+  const payload = (await response.json().catch(() => {})) as
     | { data?: TResponse; errors?: Array<{ detail?: string }> }
     | undefined;
 
@@ -78,7 +78,9 @@ export async function createTenDlcBrand(payload: TenDlcBrandPayload) {
 }
 
 export async function getTenDlcBrand(brandId: string) {
-  return telnyxRequest<{ id: string; status: string }>(`/10dlc/brands/${brandId}`);
+  return telnyxRequest<{ id: string; status: string }>(
+    `/10dlc/brands/${brandId}`
+  );
 }
 
 export type TenDlcCampaignPayload = {
@@ -129,4 +131,3 @@ export async function attachNumberToCampaign(
     }
   );
 }
-

@@ -25,6 +25,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveJob } from "@/actions/jobs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -52,7 +53,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
-import { Badge } from "@/components/ui/badge";
 
 type JobDetailToolbarProps = {
   job?: any;
@@ -86,7 +86,8 @@ export function JobDetailToolbar({
 
   // Calculate tag count
   const customerTags = (customer?.tags as string[]) || [];
-  const jobTags = ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
+  const jobTags =
+    ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
   const tagCount = customerTags.length + jobTags.length;
 
   const handleArchive = async () => {

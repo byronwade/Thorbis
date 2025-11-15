@@ -1,12 +1,16 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
+import type { ScheduleHydrationPayload } from "@/lib/schedule-bootstrap";
+import { fetchScheduleData } from "@/lib/schedule-data";
 import { createClient } from "@/lib/supabase/client";
 
 interface ScheduleState {
   // Data
   technicians: Map<string, Technician>;
   jobs: Map<string, Job>;
+  companyId: string | null;
+  lastFetchedRange: { start: Date; end: Date } | null;
 
   // Loading states
   isLoading: boolean;
@@ -50,6 +54,9 @@ interface ScheduleState {
   syncWithServer: () => Promise<void>;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setLastSync: (timestamp: Date | null) => void;
+  setCompanyId: (companyId: string | null) => void;
+  setLastFetchedRange: (range: { start: Date; end: Date } | null) => void;
 
   // Helpers
   getJobsByTechnician: (technicianId: string) => Job[];
@@ -62,6 +69,9 @@ interface ScheduleState {
     endTime: Date,
     excludeJobId?: string
   ) => boolean;
+  getUnassignedJobs: () => Job[];
+  getJobsGroupedByTechnician: () => Record<string, Job[]>;
+  hydrateFromServer: (payload: ScheduleHydrationPayload) => void;
 }
 
 export const useScheduleStore = create<ScheduleState>()(
@@ -71,6 +81,8 @@ export const useScheduleStore = create<ScheduleState>()(
         // Initial state
         technicians: new Map(),
         jobs: new Map(),
+        companyId: null,
+        lastFetchedRange: null,
         isLoading: false,
         error: null,
         lastSync: null,
@@ -107,11 +119,22 @@ export const useScheduleStore = create<ScheduleState>()(
             const newTechnicians = new Map(state.technicians);
             newTechnicians.delete(id);
 
-            // Remove all jobs for this technician
             const newJobs = new Map(state.jobs);
             for (const [jobId, job] of newJobs) {
-              if (job.technicianId === id) {
-                newJobs.delete(jobId);
+              const filteredAssignments = job.assignments.filter(
+                (assignment) => assignment.technicianId !== id
+              );
+
+              if (filteredAssignments.length !== job.assignments.length) {
+                newJobs.set(jobId, {
+                  ...job,
+                  assignments: filteredAssignments,
+                  technicianId:
+                    filteredAssignments.find(
+                      (assignment) => assignment.role === "primary"
+                    )?.technicianId ?? "",
+                  isUnassigned: filteredAssignments.length === 0,
+                });
               }
             }
 
@@ -156,9 +179,41 @@ export const useScheduleStore = create<ScheduleState>()(
             const newJobs = new Map(state.jobs);
             const existing = newJobs.get(jobId);
             if (existing) {
+              const technician = state.technicians.get(newTechnicianId);
+              const updatedAssignments =
+                existing.assignments.length > 0
+                  ? existing.assignments.map((assignment) =>
+                      assignment.role === "primary"
+                        ? {
+                            ...assignment,
+                            technicianId: newTechnicianId,
+                            teamMemberId: technician?.teamMemberId,
+                            displayName:
+                              technician?.name || assignment.displayName,
+                            avatar:
+                              technician?.avatar ?? assignment.avatar ?? null,
+                            status: technician?.status ?? assignment.status,
+                            isActive: technician?.isActive ?? true,
+                          }
+                        : assignment
+                    )
+                  : [
+                      {
+                        technicianId: newTechnicianId,
+                        teamMemberId: technician?.teamMemberId,
+                        displayName: technician?.name || "Primary Technician",
+                        avatar: technician?.avatar ?? null,
+                        role: "primary" as const,
+                        status: technician?.status ?? "available",
+                        isActive: true,
+                      },
+                    ];
+
               newJobs.set(jobId, {
                 ...existing,
                 technicianId: newTechnicianId,
+                assignments: updatedAssignments,
+                isUnassigned: updatedAssignments.length === 0,
                 startTime: newStartTime,
                 endTime: newEndTime,
               });
@@ -192,6 +247,11 @@ export const useScheduleStore = create<ScheduleState>()(
             startTime: newStartTime,
             endTime: newEndTime,
             status: "scheduled",
+            assignments: job.assignments.map((assignment) => ({
+              ...assignment,
+            })),
+            createdAt: new Date(),
+            updatedAt: new Date(),
           };
 
           get().addJob(newJob);
@@ -229,6 +289,31 @@ export const useScheduleStore = create<ScheduleState>()(
           });
         },
 
+        hydrateFromServer: (payload) => {
+          set((state) => {
+            const jobMap = new Map(payload.jobs.map((job) => [job.id, job]));
+            const technicianMap = new Map(
+              payload.technicians.map((tech) => [tech.id, tech])
+            );
+
+            return {
+              ...state,
+              companyId: payload.companyId,
+              jobs: jobMap,
+              technicians: technicianMap,
+              lastFetchedRange: {
+                start: payload.range.start,
+                end: payload.range.end,
+              },
+              lastSync: payload.lastSync,
+              isLoading: false,
+              error: null,
+              selectedTechnicianId: null,
+              selectedJobId: null,
+            };
+          });
+        },
+
         // Sync
         syncWithServer: async () => {
           set({ isLoading: true, error: null });
@@ -239,105 +324,34 @@ export const useScheduleStore = create<ScheduleState>()(
               throw new Error("Database connection not available");
             }
 
-            // Fetch schedules from Supabase
-            const { data: schedules, error: schedulesError } = await supabase
-              .from("schedules")
-              .select(`
-                *,
-                customer:customers(first_name, last_name, email, phone),
-                job:jobs(job_number, title)
-              `)
-              .is("deleted_at", null)
-              .order("start_time", { ascending: true });
+            const companyId = get().companyId;
 
-            if (schedulesError) throw schedulesError;
+            if (!companyId) {
+              throw new Error("Company context is missing");
+            }
 
-            // Fetch team members (technicians)
-            const { data: teamMembers, error: teamError } = await supabase
-              .from("team_members")
-              .select("*")
-              .eq("is_active", true);
+            const range =
+              get().lastFetchedRange ??
+              ({
+                start: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+                end: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+              } as { start: Date; end: Date });
 
-            if (teamError) throw teamError;
+            const { jobs, technicians } = await fetchScheduleData({
+              supabase,
+              companyId,
+              range,
+            });
 
-            // Convert schedules to Job format (filter out jobs without customers)
-            const convertedJobs = (schedules || [])
-              .filter((schedule: any) => schedule.customer)
-              .map((schedule: any) => ({
-                id: schedule.id,
-                technicianId: schedule.assigned_to || "",
-                customerId: schedule.customer_id || "",
-                customer: {
-                  id: schedule.customer_id,
-                  name: `${schedule.customer.first_name || ""} ${schedule.customer.last_name || ""}`.trim(),
-                  email: schedule.customer.email,
-                  phone: schedule.customer.phone,
-                  location: {
-                    address: {
-                      street: "",
-                      city: "",
-                      state: "",
-                      zip: "",
-                      country: "",
-                    },
-                    coordinates: {
-                      lat: 0,
-                      lng: 0,
-                    },
-                  },
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                },
-                location: {
-                  address: {
-                    street: "",
-                    city: "",
-                    state: "",
-                    zip: "",
-                    country: "",
-                  },
-                  coordinates: {
-                    lat: 0,
-                    lng: 0,
-                  },
-                },
-                title: schedule.title || "",
-                description: schedule.description || "",
-                status: schedule.status || "scheduled",
-                priority: schedule.priority || "normal",
-                startTime: new Date(schedule.start_time),
-                endTime: new Date(schedule.end_time),
-                notes: schedule.notes || "",
-                metadata: {},
-                createdAt: new Date(schedule.created_at),
-                updatedAt: new Date(schedule.updated_at),
-              }));
-
-            // Convert team members to Technician format
-            const convertedTechnicians = (teamMembers || []).map(
-              (member: any) => ({
-                id: member.user_id,
-                name: member.title || "Team Member",
-                email: "",
-                phone: "",
-                avatar: member.avatar_url,
-                color: "#3B82F6",
-                role: member.role,
-                isActive: member.is_active,
-                status: "available" as const,
-                schedule: {
-                  workingHours: { start: "08:00", end: "17:00" },
-                  daysOff: [],
-                  availableHours: { start: 0, end: 40 },
-                },
-                createdAt: new Date(member.created_at),
-                updatedAt: new Date(member.updated_at),
-              })
-            );
-
-            get().setTechnicians(convertedTechnicians);
-            get().setJobs(convertedJobs);
-            set({ lastSync: new Date() });
+            get().setTechnicians(technicians);
+            get().setJobs(jobs);
+            set({
+              lastSync: new Date(),
+              lastFetchedRange: {
+                start: new Date(range.start),
+                end: new Date(range.end),
+              },
+            });
           } catch (error) {
             set({
               error: error instanceof Error ? error.message : "Unknown error",
@@ -349,16 +363,21 @@ export const useScheduleStore = create<ScheduleState>()(
 
         setLoading: (loading) => set({ isLoading: loading }),
         setError: (error) => set({ error }),
+        setLastSync: (timestamp) => set({ lastSync: timestamp }),
+        setCompanyId: (companyId) => set({ companyId }),
+        setLastFetchedRange: (range) => set({ lastFetchedRange: range }),
 
         // Helpers
         getJobsByTechnician: (technicianId) =>
-          Array.from(get().jobs.values()).filter(
-            (job) => job.technicianId === technicianId
+          Array.from(get().jobs.values()).filter((job) =>
+            job.assignments.some(
+              (assignment) => assignment.technicianId === technicianId
+            )
           ),
 
         getJobsByDateRange: (startDate, endDate) =>
           Array.from(get().jobs.values()).filter(
-            (job) => job.startTime >= startDate && job.endTime <= endDate
+            (job) => job.startTime <= endDate && job.endTime >= startDate
           ),
 
         getTechnicianById: (id) => get().technicians.get(id),
@@ -378,6 +397,23 @@ export const useScheduleStore = create<ScheduleState>()(
               (startTime <= job.startTime && endTime >= job.endTime)
             );
           });
+        },
+
+        getUnassignedJobs: () =>
+          Array.from(get().jobs.values()).filter((job) => job.isUnassigned),
+
+        getJobsGroupedByTechnician: () => {
+          const grouped: Record<string, Job[]> = {};
+          for (const job of get().jobs.values()) {
+            job.assignments.forEach((assignment) => {
+              if (!assignment.technicianId) return;
+              if (!grouped[assignment.technicianId]) {
+                grouped[assignment.technicianId] = [];
+              }
+              grouped[assignment.technicianId].push(job);
+            });
+          }
+          return grouped;
         },
       }),
       {

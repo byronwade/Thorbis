@@ -6,8 +6,8 @@
 "use client";
 
 import { Calendar } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 type JobHeaderProps = {
   job: any;
@@ -45,7 +45,7 @@ export function JobHeader({ job, onUpdate }: JobHeaderProps) {
         <div>
           <Label>Status</Label>
           <div className="mt-2">
-            <Badge variant="outline" className="text-sm">
+            <Badge className="text-sm" variant="outline">
               {getStatusLabel(job.status)}
             </Badge>
           </div>
@@ -53,7 +53,7 @@ export function JobHeader({ job, onUpdate }: JobHeaderProps) {
         <div>
           <Label>Priority</Label>
           <div className="mt-2">
-            <Badge variant="secondary" className="text-sm capitalize">
+            <Badge className="text-sm capitalize" variant="secondary">
               {job.priority || "Normal"}
             </Badge>
           </div>
@@ -70,7 +70,7 @@ export function JobHeader({ job, onUpdate }: JobHeaderProps) {
         </div>
         <div>
           <Label>Job Number</Label>
-          <p className="mt-2 text-sm font-mono">
+          <p className="mt-2 font-mono text-sm">
             {job.job_number || job.id.slice(0, 8)}
           </p>
         </div>
@@ -131,4 +131,3 @@ export function JobHeader({ job, onUpdate }: JobHeaderProps) {
     </div>
   );
 }
-

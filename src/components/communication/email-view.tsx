@@ -2,21 +2,19 @@
 
 /**
  * Email View Component - Client Component
- * Gmail-style table layout for email messages
- *
- * Client-side features:
- * - Table view with checkboxes
- * - Bulk selection
- * - Search and filters
+ * Uses shared FullWidthDataTable for consistent experience across modules
  */
 
-import { Archive, Mail, Star, Trash2 } from "lucide-react";
+import { Archive, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  type ColumnDef,
+  FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
+import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 type EmailMessage = {
@@ -38,7 +36,7 @@ type EmailViewProps = {
 
 export function EmailView({ messages }: EmailViewProps) {
   const router = useRouter();
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
   const setSelectedMessageId = useCommunicationStore(
     (state) => state.setSelectedMessageId
   );
@@ -46,31 +44,13 @@ export function EmailView({ messages }: EmailViewProps) {
     (state) => state.setIsDetailView
   );
 
-  const handleSelectAll = () => {
-    if (selectedIds.size === messages.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(messages.map((m) => m.id)));
-    }
-  };
-
-  const handleSelectMessage = (id: string) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
-    } else {
-      newSelected.add(id);
-    }
-    setSelectedIds(newSelected);
-  };
-
   const handleOpenMessage = (message: EmailMessage) => {
     setSelectedMessageId(message.id);
     setIsDetailView(true);
     router.push(`/dashboard/communication/${message.id}`);
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityVariant = (priority: string) => {
     switch (priority) {
       case "urgent":
         return "destructive";
@@ -111,141 +91,157 @@ export function EmailView({ messages }: EmailViewProps) {
     return date.toLocaleDateString();
   };
 
-  return (
-    <div className="flex h-full flex-col">
-      {/* Toolbar */}
-      <div className="flex items-center gap-2 border-b px-4 py-2">
-        <Checkbox
-          checked={selectedIds.size === messages.length && messages.length > 0}
-          onCheckedChange={handleSelectAll}
-        />
-
-        {selectedIds.size > 0 && (
-          <>
-            <div className="mx-2 h-4 w-px bg-border" />
-            <Button
-              className="text-destructive hover:text-destructive"
-              size="sm"
-              variant="ghost"
+  const columns: ColumnDef<EmailMessage>[] = [
+    {
+      key: "from",
+      header: "From",
+      width: "w-64",
+      shrink: true,
+      sortable: true,
+      render: (message) => (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="text-xs">
+              {message.from
+                .split(" ")
+                .filter(Boolean)
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="font-medium text-sm">{message.from}</span>
+            {message.fromEmail && (
+              <span className="text-muted-foreground text-xs">
+                {message.fromEmail}
+              </span>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "subject",
+      header: "Subject",
+      width: "flex-1",
+      sortable: true,
+      render: (message) => (
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <Mail className="size-3.5 text-muted-foreground" />
+            <span
+              className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
             >
-              <Archive className="mr-2 size-4" />
-              Archive
-            </Button>
-            <Button
-              className="text-destructive hover:text-destructive"
-              size="sm"
-              variant="ghost"
-            >
-              <Trash2 className="mr-2 size-4" />
-              Delete
-            </Button>
-            <Button size="sm" variant="ghost">
-              <Star className="mr-2 size-4" />
-              Star
-            </Button>
-            <span className="ml-2 text-muted-foreground text-sm">
-              {selectedIds.size} selected
+              {message.subject || "(No subject)"}
             </span>
-          </>
-        )}
-      </div>
-
-      {/* Email Table */}
-      <div className="flex-1 overflow-auto">
-        {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="space-y-2 text-center">
-              <Mail className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="font-medium">No emails found</p>
-              <p className="text-muted-foreground text-sm">
-                Try adjusting your filters
-              </p>
-            </div>
+          </div>
+          <p className="line-clamp-1 text-muted-foreground text-xs">
+            {message.preview}
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: "priority",
+      header: "Priority",
+      width: "w-28",
+      render: (message) => (
+        <Badge
+          className="capitalize"
+          variant={getPriorityVariant(message.priority)}
+        >
+          {message.priority}
+        </Badge>
+      ),
+    },
+    {
+      key: "tags",
+      header: "Tags",
+      width: "w-40",
+      render: (message) =>
+        message.tags && message.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {message.tags.slice(0, 2).map((tag) => (
+              <Badge
+                className="text-xs"
+                key={`${message.id}-${tag}`}
+                variant="outline"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {message.tags.length > 2 && (
+              <Badge className="text-xs" variant="outline">
+                +{message.tags.length - 2}
+              </Badge>
+            )}
           </div>
         ) : (
-          <div className="divide-y">
-            {messages.map((message) => (
-              <div
-                className={`group flex cursor-pointer items-center gap-4 px-4 py-2 transition-colors hover:bg-muted/50 ${
-                  message.status === "unread"
-                    ? "bg-primary/30 dark:bg-primary/10"
-                    : ""
-                } ${selectedIds.has(message.id) ? "bg-muted/50" : ""}`}
-                key={message.id}
-                onClick={() => handleOpenMessage(message)}
-              >
-                <div
-                  className="flex items-center gap-3"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Checkbox
-                    checked={selectedIds.has(message.id)}
-                    onCheckedChange={() => handleSelectMessage(message.id)}
-                  />
-                  <button
-                    className="opacity-0 transition-opacity group-hover:opacity-100"
-                    type="button"
-                  >
-                    <Star className="h-4 w-4 text-muted-foreground hover:text-warning" />
-                  </button>
-                </div>
+          <span className="text-muted-foreground text-xs">—</span>
+        ),
+    },
+    {
+      key: "timestamp",
+      header: "Received",
+      width: "w-32",
+      align: "right",
+      sortable: true,
+      render: (message) => (
+        <span className="text-muted-foreground text-xs">
+          {formatTimestamp(message.timestamp)}
+        </span>
+      ),
+    },
+  ];
 
-                <div className="flex min-w-0 flex-1 items-center gap-4">
-                  <div className="flex w-48 shrink-0 items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-xs">
-                        {message.from
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span
-                      className={`truncate text-sm ${
-                        message.status === "unread" ? "font-semibold" : ""
-                      }`}
-                    >
-                      {message.from}
-                    </span>
-                  </div>
+  const handleBulkArchive = useCallback(
+    (selectedIds: Set<string>) => {
+      if (selectedIds.size === 0) {
+        return;
+      }
+      const noun = selectedIds.size === 1 ? "email" : "emails";
+      toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
+    },
+    [toast]
+  );
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <Mail className="size-4" />
-                      {message.subject && (
-                        <span
-                          className={`text-sm ${
-                            message.status === "unread" ? "font-semibold" : ""
-                          }`}
-                        >
-                          {message.subject}
-                        </span>
-                      )}
-                      <span className="text-muted-foreground text-sm">
-                        - {message.preview.substring(0, 80)}...
-                      </span>
-                    </div>
-                  </div>
+  const bulkActions = [
+    {
+      label: "Archive",
+      icon: <Archive className="size-3.5" />,
+      variant: "ghost" as const,
+      onClick: handleBulkArchive,
+    },
+  ];
 
-                  <div className="flex shrink-0 items-center gap-2">
-                    {message.tags?.slice(0, 2).map((tag) => (
-                      <Badge className="text-xs" key={tag} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {message.attachments && (
-                      <span className="text-muted-foreground text-xs">📎</span>
-                    )}
-                    <span className="w-20 text-right text-muted-foreground text-xs">
-                      {formatTimestamp(message.timestamp)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+  const searchFilter = (message: EmailMessage, query: string) => {
+    const needle = query.toLowerCase();
+    return (
+      message.from.toLowerCase().includes(needle) ||
+      (message.fromEmail?.toLowerCase().includes(needle) ?? false) ||
+      (message.subject?.toLowerCase().includes(needle) ?? false) ||
+      message.preview.toLowerCase().includes(needle)
+    );
+  };
+
+  return (
+    <FullWidthDataTable
+      bulkActions={bulkActions}
+      columns={columns}
+      data={messages}
+      emptyIcon={<Mail className="size-10 text-muted-foreground" />}
+      emptyMessage="No emails found"
+      enableSelection
+      entity="communications-email"
+      getHighlightClass={() => "bg-primary/10 dark:bg-primary/5"}
+      getItemId={(item) => item.id}
+      isHighlighted={(item) => item.status === "unread"}
+      onRowClick={handleOpenMessage}
+      searchFilter={searchFilter}
+      searchPlaceholder="Search emails"
+      showRefresh={false}
+    />
   );
 }

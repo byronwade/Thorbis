@@ -30,59 +30,16 @@ type Message = {
 type TeamChatProps = {
   channelName: string;
   channelDescription?: string;
+  messages?: Message[];
 };
 
-// Calculate timestamps once at module load time to prevent re-renders
-const NOW = Date.now();
-
-const MOCK_MESSAGES: Message[] = [
-  {
-    id: "1",
-    userId: "1",
-    userName: "John Smith",
-    content: "Good morning team! Ready for the busy day ahead?",
-    timestamp: new Date(NOW - 3_600_000 * 2),
-    reactions: [{ emoji: "👍", count: 3, users: ["2", "3", "4"] }],
-  },
-  {
-    id: "2",
-    userId: "2",
-    userName: "Sarah Johnson",
-    content:
-      "Morning! I've updated the schedule for today's appointments. Everyone should check their calendars.",
-    timestamp: new Date(NOW - 3_600_000 * 1.5),
-  },
-  {
-    id: "3",
-    userId: "3",
-    userName: "Mike Davis",
-    content:
-      "Thanks Sarah! I see I have 3 appointments today. All confirmed with customers.",
-    timestamp: new Date(NOW - 3_600_000),
-    reactions: [{ emoji: "✅", count: 1, users: ["2"] }],
-  },
-  {
-    id: "4",
-    userId: "4",
-    userName: "Emma Wilson",
-    content:
-      "Quick question - has anyone seen the new price book updates? I can't find the labor rates for HVAC installation.",
-    timestamp: new Date(NOW - 1_800_000),
-  },
-  {
-    id: "5",
-    userId: "1",
-    userName: "John Smith",
-    content:
-      "Emma - check the settings page. We moved all pricebook management there last week. The labor rates should be under Services > HVAC.",
-    timestamp: new Date(NOW - 900_000),
-    reactions: [{ emoji: "🙏", count: 1, users: ["4"] }],
-  },
-];
-
-export function TeamChat({ channelName, channelDescription }: TeamChatProps) {
+export function TeamChat({
+  channelName,
+  channelDescription,
+  messages: initialMessages = [],
+}: TeamChatProps) {
   const [message, setMessage] = useState("");
-  const [messages] = useState<Message[]>(MOCK_MESSAGES);
+  const [messages] = useState<Message[]>(initialMessages);
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -134,7 +91,20 @@ export function TeamChat({ channelName, channelDescription }: TeamChatProps) {
       {/* Messages Area */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {messages.map((msg, index) => {
+          {messages.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center p-8 text-center">
+              <div className="rounded-full bg-muted p-4 mb-4">
+                <Hash className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-lg mb-2">
+                No messages yet
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Be the first to start the conversation in #{channelName}
+              </p>
+            </div>
+          ) : (
+            messages.map((msg, index) => {
             const showAvatar =
               index === 0 ||
               messages[index - 1]?.userId !== msg.userId ||
@@ -191,7 +161,8 @@ export function TeamChat({ channelName, channelDescription }: TeamChatProps) {
                 </div>
               </div>
             );
-          })}
+          })
+          )}
         </div>
       </ScrollArea>
 

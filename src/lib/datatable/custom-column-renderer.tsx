@@ -12,9 +12,7 @@ import { Badge } from "@/components/ui/badge";
  * Get nested value from object using dot notation path
  */
 function getNestedValue(obj: any, path: string): any {
-  return path.split(".").reduce((current, key) => {
-    return current?.[key];
-  }, obj);
+  return path.split(".").reduce((current, key) => current?.[key], obj);
 }
 
 /**
@@ -98,13 +96,13 @@ export function renderCustomColumn(
       }
       // Handle string values as badges
       return (
-        <Badge variant="outline" className="capitalize">
+        <Badge className="capitalize" variant="outline">
           {String(value).replace(/_/g, " ")}
         </Badge>
       );
 
     case "text":
-    default:
+    default: {
       // Truncate long text
       const text = String(value);
       const truncated = text.length > 50 ? `${text.slice(0, 50)}...` : text;
@@ -113,6 +111,7 @@ export function renderCustomColumn(
           {truncated}
         </span>
       );
+    }
   }
 }
 

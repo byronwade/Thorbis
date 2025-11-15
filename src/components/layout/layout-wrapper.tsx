@@ -55,7 +55,9 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const config = getUnifiedLayoutConfig(safePathname);
 
   // Get dynamic stats from store - subscribe to changes by accessing the pathname key directly
-  const dynamicStats = useToolbarStatsStore((state) => state.stats[safePathname]);
+  const dynamicStats = useToolbarStatsStore(
+    (state) => state.stats[safePathname]
+  );
 
   // Get dynamic actions from store
   const dynamicActions = useToolbarActionsStore(

@@ -69,15 +69,11 @@ export default async function MaintenancePlanDetailsPage({
         ? Math.round(Number(planRecord.amount) * 100)
         : 0),
     included_services:
-      planRecord.included_services ??
-      planRecord.services_included ??
-      [],
+      planRecord.included_services ?? planRecord.services_included ?? [],
     next_service_due:
       planRecord.next_service_due ?? planRecord.next_service_date ?? null,
     visits_per_term:
-      planRecord.visits_per_term ??
-      planRecord.total_services_scheduled ??
-      1,
+      planRecord.visits_per_term ?? planRecord.total_services_scheduled ?? 1,
     type: planRecord.type ?? "maintenance",
     taxable: planRecord.taxable ?? false,
   };

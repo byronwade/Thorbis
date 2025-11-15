@@ -147,14 +147,14 @@ export function Footer() {
               Solutions
             </h4>
             <ul className="space-y-2.5">
-            <li>
-              <Link
-                className="text-muted-foreground text-sm transition-colors hover:text-foreground"
-                href="/solutions"
-              >
-                Solutions Overview
-              </Link>
-            </li>
+              <li>
+                <Link
+                  className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                  href="/solutions"
+                >
+                  Solutions Overview
+                </Link>
+              </li>
               <li>
                 <Link
                   className="text-muted-foreground text-sm transition-colors hover:text-foreground"

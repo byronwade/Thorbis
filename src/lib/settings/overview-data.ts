@@ -1,8 +1,8 @@
-import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
 import { requireActiveCompany } from "@/lib/auth/company-context";
 import { requireUser } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 import {
   SETTINGS_INFORMATION_ARCHITECTURE,
@@ -11,12 +11,12 @@ import {
   type SettingsLinkDefinition,
 } from "./information-architecture";
 import {
-  describeHealthStatus,
   deriveHealthStatus,
+  describeHealthStatus,
   formatTrendDelta,
+  type HealthStatus,
   normalizeProgress,
   progressFromSteps,
-  type HealthStatus,
 } from "./status-utils";
 
 type Tables = Database["public"]["Tables"];
@@ -28,19 +28,26 @@ type CompanySettingsRow = Tables["company_settings"]["Row"] & {
   po_system_last_enabled_at?: string | null;
 };
 type UserPreferencesRow = Tables["user_preferences"]["Row"];
-type UserNotificationPreferencesRow = Tables["user_notification_preferences"]["Row"];
-type CommunicationEmailSettingsRow = Tables["communication_email_settings"]["Row"];
+type UserNotificationPreferencesRow =
+  Tables["user_notification_preferences"]["Row"];
+type CommunicationEmailSettingsRow =
+  Tables["communication_email_settings"]["Row"];
 type CommunicationSmsSettingsRow = Tables["communication_sms_settings"]["Row"];
-type CommunicationPhoneSettingsRow = Tables["communication_phone_settings"]["Row"];
+type CommunicationPhoneSettingsRow =
+  Tables["communication_phone_settings"]["Row"];
 type CommunicationNotificationSettingsRow =
   Tables["communication_notification_settings"]["Row"];
 type JobSettingsRow = Tables["job_settings"]["Row"];
-type ScheduleAvailabilitySettingsRow = Tables["schedule_availability_settings"]["Row"];
+type ScheduleAvailabilitySettingsRow =
+  Tables["schedule_availability_settings"]["Row"];
 type ScheduleCalendarSettingsRow = Tables["schedule_calendar_settings"]["Row"];
-type FinanceAccountingSettingsRow = Tables["finance_accounting_settings"]["Row"];
-type FinanceBookkeepingSettingsRow = Tables["finance_bookkeeping_settings"]["Row"];
+type FinanceAccountingSettingsRow =
+  Tables["finance_accounting_settings"]["Row"];
+type FinanceBookkeepingSettingsRow =
+  Tables["finance_bookkeeping_settings"]["Row"];
 type FinanceBankAccountRow = Tables["finance_bank_accounts"]["Row"];
-type FinanceVirtualBucketSettingsRow = Tables["finance_virtual_bucket_settings"]["Row"];
+type FinanceVirtualBucketSettingsRow =
+  Tables["finance_virtual_bucket_settings"]["Row"];
 type FinanceBusinessFinancingSettingsRow =
   Tables["finance_business_financing_settings"]["Row"];
 type FinanceConsumerFinancingSettingsRow =
@@ -449,7 +456,10 @@ async function fetchRawSettingsData(
         query.eq("company_id", companyId).eq("status", "active")
       ),
       getExactCount(supabase, "team_invitations", (query) =>
-        query.eq("company_id", companyId).is("used_at", null).gt("expires_at", nowIso)
+        query
+          .eq("company_id", companyId)
+          .is("used_at", null)
+          .gt("expires_at", nowIso)
       ),
       getExactCount(supabase, "custom_roles", (query) =>
         query.eq("company_id", companyId).eq("is_active", true)
@@ -478,11 +488,15 @@ async function fetchRawSettingsData(
       getExactCount(supabase, "schedule_team_rules", (query) =>
         query.eq("company_id", companyId)
       ),
-      getExactCount(supabase, "jobs", (query) => query.eq("company_id", companyId)),
+      getExactCount(supabase, "jobs", (query) =>
+        query.eq("company_id", companyId)
+      ),
       getExactCount(supabase, "jobs", (query) =>
         query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso)
       ),
-      getExactCount(supabase, "customers", (query) => query.eq("company_id", companyId)),
+      getExactCount(supabase, "customers", (query) =>
+        query.eq("company_id", companyId)
+      ),
       getExactCount(supabase, "invoices", (query) =>
         query.eq("company_id", companyId).in("status", ["open", "overdue"])
       ),
@@ -490,7 +504,10 @@ async function fetchRawSettingsData(
         query.eq("company_id", companyId).gte("occurred_at", sevenDaysAgoIso)
       ),
       getExactCount(supabase, "activities", (query) =>
-        query.eq("company_id", companyId).eq("category", "automation").gte("occurred_at", sevenDaysAgoIso)
+        query
+          .eq("company_id", companyId)
+          .eq("category", "automation")
+          .gte("occurred_at", sevenDaysAgoIso)
       ),
       getExactCount(supabase, "notifications", (query) =>
         query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso)
@@ -510,7 +527,10 @@ async function fetchRawSettingsData(
         .select("id,active,created_at")
         .eq("company_id", companyId),
       getExactCount(supabase, "phone_porting_requests", (query) =>
-        query.eq("company_id", companyId).is("completed_at", null).is("cancelled_at", null)
+        query
+          .eq("company_id", companyId)
+          .is("completed_at", null)
+          .is("cancelled_at", null)
       ),
       getExactCount(supabase, "notification_queue", (query) =>
         query.eq("company_id", companyId).is("sent_at", null)
@@ -518,9 +538,15 @@ async function fetchRawSettingsData(
       getExactCount(supabase, "notification_queue", (query) =>
         query.eq("company_id", companyId).eq("status", "failed")
       ),
-      getExactCount(supabase, "departments", (query) => query.eq("company_id", companyId)),
-      getExactCount(supabase, "lead_sources", (query) => query.eq("company_id", companyId)),
-      getExactCount(supabase, "tags", (query) => query.eq("company_id", companyId)),
+      getExactCount(supabase, "departments", (query) =>
+        query.eq("company_id", companyId)
+      ),
+      getExactCount(supabase, "lead_sources", (query) =>
+        query.eq("company_id", companyId)
+      ),
+      getExactCount(supabase, "tags", (query) =>
+        query.eq("company_id", companyId)
+      ),
     ]);
 
     const company = companyRes.data;
@@ -531,7 +557,8 @@ async function fetchRawSettingsData(
     const communicationEmailSettings = communicationEmailSettingsRes.data;
     const communicationSmsSettings = communicationSmsSettingsRes.data;
     const communicationPhoneSettings = communicationPhoneSettingsRes.data;
-    const communicationNotificationSettings = communicationNotificationSettingsRes.data;
+    const communicationNotificationSettings =
+      communicationNotificationSettingsRes.data;
     const jobSettings = jobSettingsRes.data;
     const scheduleAvailabilitySettings = scheduleAvailabilitySettingsRes.data;
     const scheduleCalendarSettings = scheduleCalendarSettingsRes.data;
@@ -562,7 +589,9 @@ async function fetchRawSettingsData(
     }
 
     const webhooksData = webhooksRes.data ?? [];
-    const webhooksCount = webhooksData.filter((webhook) => webhook.active).length;
+    const webhooksCount = webhooksData.filter(
+      (webhook) => webhook.active
+    ).length;
     let webhookFailuresWeekCount = 0;
     if (webhooksData.length > 0) {
       const webhookIds = webhooksData.map((webhook) => webhook.id);
@@ -585,7 +614,8 @@ async function fetchRawSettingsData(
       communicationEmailSettings: communicationEmailSettings ?? null,
       communicationSmsSettings: communicationSmsSettings ?? null,
       communicationPhoneSettings: communicationPhoneSettings ?? null,
-      communicationNotificationSettings: communicationNotificationSettings ?? null,
+      communicationNotificationSettings:
+        communicationNotificationSettings ?? null,
       jobSettings: jobSettings ?? null,
       scheduleAvailabilitySettings: scheduleAvailabilitySettings ?? null,
       scheduleCalendarSettings: scheduleCalendarSettings ?? null,
@@ -646,7 +676,9 @@ function buildOverviewPayload(raw: RawSettingsData): SettingsOverviewData {
 
   const alerts = sections
     .filter((section) => section.status !== "ready")
-    .map((section) => describeHealthStatus(section.status) + ": " + section.title);
+    .map(
+      (section) => describeHealthStatus(section.status) + ": " + section.title
+    );
 
   return {
     meta: {
@@ -655,7 +687,8 @@ function buildOverviewPayload(raw: RawSettingsData): SettingsOverviewData {
       teamCount: raw.teamCounts.active,
       alerts,
       poSystemEnabled: Boolean(raw.companySettings?.po_system_enabled),
-      poSystemLastEnabledAt: raw.companySettings?.po_system_last_enabled_at ?? null,
+      poSystemLastEnabledAt:
+        raw.companySettings?.po_system_last_enabled_at ?? null,
       generatedAt: raw.generatedAt,
     },
     sections,
@@ -836,7 +869,9 @@ function buildWorkspaceSection(
       key: "roles",
       label: "Custom roles",
       value: raw.customRolesCount.toString(),
-      helper: raw.customRolesCount ? "Granular access in place" : "Using defaults",
+      helper: raw.customRolesCount
+        ? "Granular access in place"
+        : "Using defaults",
       status: raw.customRolesCount ? "ready" : "warning",
     },
     {
@@ -938,26 +973,30 @@ function buildCommunicationsSection(
       raw.communicationEmailSettings?.smtp_from_email
   );
   const smsConfigured = Boolean(
-    raw.communicationSmsSettings?.provider && raw.communicationSmsSettings?.sender_number
+    raw.communicationSmsSettings?.provider &&
+      raw.communicationSmsSettings?.sender_number
   );
   const phoneConfigured = Boolean(
-    raw.communicationPhoneSettings?.routing_strategy && raw.phoneNumbersCount > 0
+    raw.communicationPhoneSettings?.routing_strategy &&
+      raw.phoneNumbersCount > 0
   );
   const readyStatuses = ["approved", "active", "verified", "running"];
-  const normalizeStatusLabel = (value?: string | null, fallback = "Not configured") =>
-    value ? value.replace(/_/g, " ") : fallback;
+  const normalizeStatusLabel = (
+    value?: string | null,
+    fallback = "Not configured"
+  ) => (value ? value.replace(/_/g, " ") : fallback);
   const brandStatus = raw.messagingBrand?.status ?? "";
   const campaignStatus = raw.messagingCampaign?.status ?? "";
   const brandHealth = readyStatuses.includes(brandStatus.toLowerCase())
     ? "ready"
     : raw.messagingBrand
-    ? "warning"
-    : "danger";
+      ? "warning"
+      : "danger";
   const campaignHealth = readyStatuses.includes(campaignStatus.toLowerCase())
     ? "ready"
     : raw.messagingCampaign
-    ? "warning"
-    : "danger";
+      ? "warning"
+      : "danger";
   const readinessSteps = [
     emailConfigured,
     smsConfigured,
@@ -1142,14 +1181,18 @@ function buildOperationsSection(
       key: "portal",
       label: "Customer portal",
       value: raw.portalSettings?.portal_enabled ? "Enabled" : "Disabled",
-      helper: raw.portalSettings?.welcome_message ? "Custom welcome" : "Default copy",
+      helper: raw.portalSettings?.welcome_message
+        ? "Custom welcome"
+        : "Default copy",
       status: raw.portalSettings?.portal_enabled ? "ready" : "warning",
     },
     {
       key: "intake",
       label: "Intake form",
       value: intakeConfigured ? "Customized" : "Defaults",
-      helper: raw.intakeSettings?.auto_assign_technician ? "Auto-assign on" : "Manual triage",
+      helper: raw.intakeSettings?.auto_assign_technician
+        ? "Auto-assign on"
+        : "Manual triage",
       status: intakeConfigured ? "ready" : "warning",
     },
     {
@@ -1239,9 +1282,11 @@ function buildFinanceSection(
     Boolean(raw.accountingSettings?.provider_enabled) &&
     Boolean(raw.accountingSettings?.provider);
   const bankConnected = raw.bankAccounts.length > 0;
-  const collectionsHealthy = raw.invoicesOpenCount < Math.max(5, raw.jobsWeekCount);
+  const collectionsHealthy =
+    raw.invoicesOpenCount < Math.max(5, raw.jobsWeekCount);
   const progress = progressFromSteps(
-    [accountingConnected, bankConnected, collectionsHealthy].filter(Boolean).length,
+    [accountingConnected, bankConnected, collectionsHealthy].filter(Boolean)
+      .length,
     3
   );
   const status = deriveHealthStatus(progress);
@@ -1255,7 +1300,9 @@ function buildFinanceSection(
       key: "bank-accounts",
       label: "Connected accounts",
       value: raw.bankAccounts.length.toString(),
-      helper: raw.bankAccounts.find((account) => account.is_primary)?.bank_name ?? "None primary",
+      helper:
+        raw.bankAccounts.find((account) => account.is_primary)?.bank_name ??
+        "None primary",
       status: bankConnected ? "ready" : "danger",
     },
     {
@@ -1272,20 +1319,26 @@ function buildFinanceSection(
       helper: raw.virtualBucketSettings?.virtual_buckets_enabled
         ? "Automation enabled"
         : "Automation off",
-      status: raw.virtualBucketSettings?.virtual_buckets_enabled ? "ready" : "warning",
+      status: raw.virtualBucketSettings?.virtual_buckets_enabled
+        ? "ready"
+        : "warning",
     },
     {
       key: "debit-cards",
       label: "Debit cards",
       value: raw.debitCardsCount.toString(),
-      helper: raw.debitCardsCount ? "Spend controls enabled" : "No cards issued",
+      helper: raw.debitCardsCount
+        ? "Spend controls enabled"
+        : "No cards issued",
       status: raw.debitCardsCount ? "ready" : "warning",
     },
     {
       key: "gift-cards",
       label: "Gift cards",
       value: raw.giftCardsActiveCount.toString(),
-      helper: raw.giftCardSettings?.gift_cards_enabled ? "Program live" : "Program disabled",
+      helper: raw.giftCardSettings?.gift_cards_enabled
+        ? "Program live"
+        : "Program disabled",
       status: raw.giftCardSettings?.gift_cards_enabled ? "ready" : "warning",
     },
   ];
@@ -1478,7 +1531,9 @@ function buildAnalyticsSection(
 ): SettingsOverviewSection {
   const activityTrend =
     raw.activitiesWeekCount && raw.jobsWeekCount
-      ? normalizeProgress((raw.activitiesWeekCount / (raw.jobsWeekCount || 1)) * 100)
+      ? normalizeProgress(
+          (raw.activitiesWeekCount / (raw.jobsWeekCount || 1)) * 100
+        )
       : 0;
   const progress = normalizeProgress(
     Math.round((activityTrend + (raw.notificationsWeekCount ? 100 : 40)) / 2)
@@ -1502,7 +1557,9 @@ function buildAnalyticsSection(
       label: "Automation runs",
       value: raw.automationWeekCount.toString(),
       helper: formatTrendDelta(
-        raw.activitiesWeekCount ? (raw.automationWeekCount / raw.activitiesWeekCount) * 100 - 50 : 0
+        raw.activitiesWeekCount
+          ? (raw.automationWeekCount / raw.activitiesWeekCount) * 100 - 50
+          : 0
       ),
     },
     {
@@ -1576,4 +1633,3 @@ async function getExactCount(
   const { count } = await query;
   return count ?? 0;
 }
-

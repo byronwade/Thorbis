@@ -1,21 +1,26 @@
 "use client";
 
+import {
+  BarChart3,
+  Briefcase,
+  Calculator,
+  CalendarDays,
+  DollarSign,
+  Info,
+  Target,
+  TrendingUp,
+  Wrench,
+} from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
-  Calculator,
-  TrendingUp,
-  Briefcase,
-  Wrench,
-  Info,
-  CalendarDays,
-  DollarSign,
-  BarChart3,
-  Target,
-} from "lucide-react";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAnalytics, useFeatureTracking } from "@/lib/analytics";
 
 const CALCULATION_TRACKING_DEBOUNCE_MS = 1000;
@@ -158,7 +163,8 @@ export default function HonestHourlyRateCalculator() {
     const billableHoursSoldPct = toPercent(inputs.billableHoursSoldPercent);
 
     const totalWorkDaysPerYearRaw =
-      workDaysPerWeek * weeksPerYear - (holidaysPerYear + vacationDaysPerYear + personalDaysPerYear);
+      workDaysPerWeek * weeksPerYear -
+      (holidaysPerYear + vacationDaysPerYear + personalDaysPerYear);
     const totalWorkDaysPerYear = Math.max(0, totalWorkDaysPerYearRaw);
     const totalWorkHoursPerYear = totalWorkDaysPerYear * dailyWorkHours;
     const availableBillableHours = totalWorkHoursPerYear * serviceVehicles;
@@ -169,7 +175,9 @@ export default function HonestHourlyRateCalculator() {
     const apprenticesHelpers = toNumber(inputs.apprenticesHelpers);
     const officeSalaries = toNumber(inputs.officeSalaries);
     const employerTaxRate = toPercent(inputs.employerTaxPercent);
-    const employerTaxesAnnual = (ownerPay + plumber + apprenticesHelpers + officeSalaries) * employerTaxRate;
+    const employerTaxesAnnual =
+      (ownerPay + plumber + apprenticesHelpers + officeSalaries) *
+      employerTaxRate;
 
     const operatingExpenses = {
       ownerPay,
@@ -201,9 +209,13 @@ export default function HonestHourlyRateCalculator() {
       otherExpenses: toNumber(inputs.otherExpenses),
     };
 
-    const hourlyFromAnnual = (annual: number) => (annualBillableHours > 0 ? annual / annualBillableHours : 0);
+    const hourlyFromAnnual = (annual: number) =>
+      annualBillableHours > 0 ? annual / annualBillableHours : 0;
 
-    const totalOperatingAnnual = Object.values(operatingExpenses).reduce((sum, val) => sum + val, 0);
+    const totalOperatingAnnual = Object.values(operatingExpenses).reduce(
+      (sum, val) => sum + val,
+      0
+    );
     const totalOperatingHourly = hourlyFromAnnual(totalOperatingAnnual);
 
     const growthExpenses = {
@@ -213,17 +225,23 @@ export default function HonestHourlyRateCalculator() {
       other: toNumber(inputs.growthOther),
     };
 
-    const totalGrowthAnnual = Object.values(growthExpenses).reduce((sum, val) => sum + val, 0);
+    const totalGrowthAnnual = Object.values(growthExpenses).reduce(
+      (sum, val) => sum + val,
+      0
+    );
     const totalGrowthHourly = hourlyFromAnnual(totalGrowthAnnual);
 
     const totalExpensesAnnual = totalOperatingAnnual + totalGrowthAnnual;
     const totalExpensesHourly = totalOperatingHourly + totalGrowthHourly;
     const hourlyExpenseRate = totalExpensesHourly;
     const profitPercent = toPercent(inputs.profitPercent);
-    const honestHourlyRate = profitPercent < 1 ? hourlyExpenseRate / (1 - profitPercent) : Number.NaN;
+    const honestHourlyRate =
+      profitPercent < 1 ? hourlyExpenseRate / (1 - profitPercent) : Number.NaN;
 
-    const dailyExpense = totalWorkDaysPerYear > 0 ? totalExpensesAnnual / totalWorkDaysPerYear : 0;
-    const dailyBillableHours = totalWorkDaysPerYear > 0 ? annualBillableHours / totalWorkDaysPerYear : 0;
+    const dailyExpense =
+      totalWorkDaysPerYear > 0 ? totalExpensesAnnual / totalWorkDaysPerYear : 0;
+    const dailyBillableHours =
+      totalWorkDaysPerYear > 0 ? annualBillableHours / totalWorkDaysPerYear : 0;
     const dailyBreakEvenRevenue = dailyExpense;
     const dailyRevenueCapacity = dailyBillableHours * honestHourlyRate;
 
@@ -298,19 +316,21 @@ export default function HonestHourlyRateCalculator() {
     track,
   ]);
 
-  const handleChange = (field: keyof InputState) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs((prev) => ({
-      ...prev,
-      [field]: e.target.value,
-    }));
-  };
+  const handleChange =
+    (field: keyof InputState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputs((prev) => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+    };
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
       const offset = 100;
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - offset,
         behavior: "smooth",
@@ -327,14 +347,22 @@ export default function HonestHourlyRateCalculator() {
     }
   };
 
-  const LabelWithTooltip = ({ htmlFor, label, tooltip }: { htmlFor: string; label: string; tooltip: string }) => (
+  const LabelWithTooltip = ({
+    htmlFor,
+    label,
+    tooltip,
+  }: {
+    htmlFor: string;
+    label: string;
+    tooltip: string;
+  }) => (
     <div className="flex items-center gap-1.5">
-      <Label htmlFor={htmlFor} className="text-sm font-medium">
+      <Label className="font-medium text-sm" htmlFor={htmlFor}>
         {label}
       </Label>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+          <Info className="h-3.5 w-3.5 cursor-help text-muted-foreground" />
         </TooltipTrigger>
         <TooltipContent className="max-w-xs">
           <p className="text-xs leading-relaxed">{tooltip}</p>
@@ -357,16 +385,17 @@ export default function HonestHourlyRateCalculator() {
         <div className="bg-background">
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 font-medium text-muted-foreground text-xs">
                 <Calculator className="h-3.5 w-3.5" />
                 Thorbis Rights
               </div>
-              <h1 className="mb-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+              <h1 className="mb-3 text-balance font-bold text-3xl tracking-tight sm:text-4xl lg:text-5xl">
                 Free Tradesman Calculator
               </h1>
               <p className="mx-auto max-w-2xl text-pretty text-base text-muted-foreground leading-relaxed">
-                Calculate your honest hourly rate for your trades business. Factor in all expenses, capacity
-                constraints, and profit margins to price your services right and build a sustainable business.
+                Calculate your honest hourly rate for your trades business.
+                Factor in all expenses, capacity constraints, and profit margins
+                to price your services right and build a sustainable business.
               </p>
             </div>
           </div>
@@ -374,1417 +403,1612 @@ export default function HonestHourlyRateCalculator() {
 
         {/* Main Content */}
         <main className="px-4 py-8 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-5xl space-y-12">
-              {/* Capacity Section */}
-              <section id="capacity" className="scroll-mt-24">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="rounded-lg bg-muted p-2">
-                      <Briefcase className="h-5 w-5" />
-                    </div>
-                    Work Schedule & Capacity
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">Define your working hours and billable capacity</p>
-                </div>
-
-                <div className="space-y-6 bg-background p-6 rounded-lg">
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="workDaysPerWeek"
-                        label="Work days per week"
-                        tooltip="Number of days per week you operate. Standard is 5 days (Mon-Fri)."
-                      />
-                      <Input
-                        id="workDaysPerWeek"
-                        type="number"
-                        value={inputs.workDaysPerWeek}
-                        onChange={handleChange("workDaysPerWeek")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="weeksPerYear"
-                        label="Weeks per year"
-                        tooltip="Total weeks in a year. Standard is 52 weeks."
-                      />
-                      <Input
-                        id="weeksPerYear"
-                        type="number"
-                        value={inputs.weeksPerYear}
-                        onChange={handleChange("weeksPerYear")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="holidaysPerYear"
-                        label="Holidays per year"
-                        tooltip="Paid company holidays (e.g., New Year's, July 4th, Thanksgiving, Christmas). Industry standard: 8-10 days."
-                      />
-                      <Input
-                        id="holidaysPerYear"
-                        type="number"
-                        value={inputs.holidaysPerYear}
-                        onChange={handleChange("holidaysPerYear")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="vacationDaysPerYear"
-                        label="Vacation days per year"
-                        tooltip="Paid vacation time for employees. Industry standard: 10-15 days per year."
-                      />
-                      <Input
-                        id="vacationDaysPerYear"
-                        type="number"
-                        value={inputs.vacationDaysPerYear}
-                        onChange={handleChange("vacationDaysPerYear")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="personalDaysPerYear"
-                        label="Personal days per year"
-                        tooltip="Paid personal/sick days. Industry standard: 5-7 days per year."
-                      />
-                      <Input
-                        id="personalDaysPerYear"
-                        type="number"
-                        value={inputs.personalDaysPerYear}
-                        onChange={handleChange("personalDaysPerYear")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="dailyWorkHours"
-                        label="Daily work hours"
-                        tooltip="Hours worked per day. Standard is 8 hours."
-                      />
-                      <Input
-                        id="dailyWorkHours"
-                        type="number"
-                        value={inputs.dailyWorkHours}
-                        onChange={handleChange("dailyWorkHours")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="serviceVehicles"
-                        label="Service vehicles"
-                        tooltip="Number of vehicles/crews that can be billed simultaneously. For a 3-man company, typically 3 vehicles (1 per person)."
-                      />
-                      <Input
-                        id="serviceVehicles"
-                        type="number"
-                        value={inputs.serviceVehicles}
-                        onChange={handleChange("serviceVehicles")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="billableHoursSoldPercent"
-                        label="Billable hours sold (%)"
-                        tooltip="Percentage of available hours actually sold to customers. Calculation: (Billable Hours Sold / Available Hours) × 100. Industry average: 70-80%."
-                      />
-                      <Input
-                        id="billableHoursSoldPercent"
-                        type="number"
-                        value={inputs.billableHoursSoldPercent}
-                        onChange={handleChange("billableHoursSoldPercent")}
-                        className="bg-input"
-                      />
-                    </div>
+          <div className="mx-auto max-w-5xl space-y-12">
+            {/* Capacity Section */}
+            <section className="scroll-mt-24" id="capacity">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <Briefcase className="h-5 w-5" />
                   </div>
+                  Work Schedule & Capacity
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Define your working hours and billable capacity
+                </p>
+              </div>
 
-                  <div className="mt-6 grid gap-4 bg-muted/30 p-4 rounded-lg sm:grid-cols-2 lg:grid-cols-4">
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Work Days/Year
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatNumber(calculations.totalWorkDaysPerYear)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: (Work Days/Week × Weeks/Year) - (Holidays + Vacation + Personal Days)
-                            <br />= ({inputs.workDaysPerWeek} × {inputs.weeksPerYear}) - ({inputs.holidaysPerYear} +{" "}
-                            {inputs.vacationDaysPerYear} + {inputs.personalDaysPerYear})
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Work Hours/Year
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatNumber(calculations.totalWorkHoursPerYear)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Work Days/Year × Daily Work Hours
-                            <br />= {formatNumber(calculations.totalWorkDaysPerYear)} × {inputs.dailyWorkHours}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Available Billable Hours
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatNumber(calculations.availableBillableHours)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Work Hours/Year × Service Vehicles
-                            <br />= {formatNumber(calculations.totalWorkHoursPerYear)} × {inputs.serviceVehicles}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Annual Billable Hours
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold text-green-600 dark:text-green-500">
-                              {formatNumber(calculations.annualBillableHours)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Available Billable Hours × (Billable Hours Sold % ÷ 100)
-                            <br />= {formatNumber(calculations.availableBillableHours)} × (
-                            {inputs.billableHoursSoldPercent}% ÷ 100)
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
+              <div className="space-y-6 rounded-lg bg-background p-6">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="workDaysPerWeek"
+                      label="Work days per week"
+                      tooltip="Number of days per week you operate. Standard is 5 days (Mon-Fri)."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="workDaysPerWeek"
+                      onChange={handleChange("workDaysPerWeek")}
+                      type="number"
+                      value={inputs.workDaysPerWeek}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="weeksPerYear"
+                      label="Weeks per year"
+                      tooltip="Total weeks in a year. Standard is 52 weeks."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="weeksPerYear"
+                      onChange={handleChange("weeksPerYear")}
+                      type="number"
+                      value={inputs.weeksPerYear}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="holidaysPerYear"
+                      label="Holidays per year"
+                      tooltip="Paid company holidays (e.g., New Year's, July 4th, Thanksgiving, Christmas). Industry standard: 8-10 days."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="holidaysPerYear"
+                      onChange={handleChange("holidaysPerYear")}
+                      type="number"
+                      value={inputs.holidaysPerYear}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="vacationDaysPerYear"
+                      label="Vacation days per year"
+                      tooltip="Paid vacation time for employees. Industry standard: 10-15 days per year."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="vacationDaysPerYear"
+                      onChange={handleChange("vacationDaysPerYear")}
+                      type="number"
+                      value={inputs.vacationDaysPerYear}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="personalDaysPerYear"
+                      label="Personal days per year"
+                      tooltip="Paid personal/sick days. Industry standard: 5-7 days per year."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="personalDaysPerYear"
+                      onChange={handleChange("personalDaysPerYear")}
+                      type="number"
+                      value={inputs.personalDaysPerYear}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="dailyWorkHours"
+                      label="Daily work hours"
+                      tooltip="Hours worked per day. Standard is 8 hours."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="dailyWorkHours"
+                      onChange={handleChange("dailyWorkHours")}
+                      type="number"
+                      value={inputs.dailyWorkHours}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="serviceVehicles"
+                      label="Service vehicles"
+                      tooltip="Number of vehicles/crews that can be billed simultaneously. For a 3-man company, typically 3 vehicles (1 per person)."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="serviceVehicles"
+                      onChange={handleChange("serviceVehicles")}
+                      type="number"
+                      value={inputs.serviceVehicles}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="billableHoursSoldPercent"
+                      label="Billable hours sold (%)"
+                      tooltip="Percentage of available hours actually sold to customers. Calculation: (Billable Hours Sold / Available Hours) × 100. Industry average: 70-80%."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="billableHoursSoldPercent"
+                      onChange={handleChange("billableHoursSoldPercent")}
+                      type="number"
+                      value={inputs.billableHoursSoldPercent}
+                    />
                   </div>
                 </div>
-              </section>
 
-              {/* Expenses Section */}
-              <section id="expenses" className="scroll-mt-24 space-y-6">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="rounded-lg bg-muted p-2">
-                      <Wrench className="h-5 w-5" />
-                    </div>
-                    Business Expenses
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Track all annual operating and growth expenses with hourly breakdowns
+                <div className="mt-6 grid gap-4 rounded-lg bg-muted/30 p-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Work Days/Year
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatNumber(calculations.totalWorkDaysPerYear)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: (Work Days/Week × Weeks/Year) - (Holidays +
+                          Vacation + Personal Days)
+                          <br />= ({inputs.workDaysPerWeek} ×{" "}
+                          {inputs.weeksPerYear}) - ({inputs.holidaysPerYear} +{" "}
+                          {inputs.vacationDaysPerYear} +{" "}
+                          {inputs.personalDaysPerYear})
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Work Hours/Year
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatNumber(calculations.totalWorkHoursPerYear)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Work Days/Year × Daily Work Hours
+                          <br />={" "}
+                          {formatNumber(calculations.totalWorkDaysPerYear)} ×{" "}
+                          {inputs.dailyWorkHours}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Available Billable Hours
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatNumber(calculations.availableBillableHours)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Work Hours/Year × Service Vehicles
+                          <br />={" "}
+                          {formatNumber(calculations.totalWorkHoursPerYear)} ×{" "}
+                          {inputs.serviceVehicles}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Annual Billable Hours
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl text-green-600 dark:text-green-500">
+                            {formatNumber(calculations.annualBillableHours)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Available Billable Hours × (Billable Hours
+                          Sold % ÷ 100)
+                          <br />={" "}
+                          {formatNumber(calculations.availableBillableHours)} ×
+                          ({inputs.billableHoursSoldPercent}% ÷ 100)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Expenses Section */}
+            <section className="scroll-mt-24 space-y-6" id="expenses">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <Wrench className="h-5 w-5" />
+                  </div>
+                  Business Expenses
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Track all annual operating and growth expenses with hourly
+                  breakdowns
+                </p>
+              </div>
+
+              {/* Operating Expenses */}
+              <div className="rounded-lg bg-background p-6">
+                <div className="mb-4">
+                  <h3 className="font-semibold text-lg">Operating Expenses</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Annual business expenses and hourly breakdown
                   </p>
                 </div>
-
-                {/* Operating Expenses */}
-                <div className="bg-background p-6 rounded-lg">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Operating Expenses</h3>
-                    <p className="text-sm text-muted-foreground">Annual business expenses and hourly breakdown</p>
-                  </div>
-                  <div className="space-y-4">
-                    {/* Personnel */}
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">Personnel Costs</h3>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="ownerPay"
-                            label="Owner Pay"
-                            tooltip="Annual salary for business owner. Small company standard: $60,000-$100,000."
-                          />
-                          <Input
-                            id="ownerPay"
-                            type="number"
-                            value={inputs.ownerPay}
-                            onChange={handleChange("ownerPay")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="plumber"
-                            label="Plumber"
-                            tooltip="Annual salary for licensed plumber(s). Industry standard: $50,000-$80,000 per plumber."
-                          />
-                          <Input
-                            id="plumber"
-                            type="number"
-                            value={inputs.plumber}
-                            onChange={handleChange("plumber")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="apprenticesHelpers"
-                            label="Apprentices / Helpers"
-                            tooltip="Annual salary for apprentices and helpers. Industry standard: $30,000-$50,000 per person."
-                          />
-                          <Input
-                            id="apprenticesHelpers"
-                            type="number"
-                            value={inputs.apprenticesHelpers}
-                            onChange={handleChange("apprenticesHelpers")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="officeSalaries"
-                            label="Office Salaries"
-                            tooltip="Annual cost for administrative staff (receptionist, bookkeeper, etc.). Part-time standard: $20,000-$40,000."
-                          />
-                          <Input
-                            id="officeSalaries"
-                            type="number"
-                            value={inputs.officeSalaries}
-                            onChange={handleChange("officeSalaries")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="employerTaxPercent"
-                            label="Employer Tax Rate (%)"
-                            tooltip="FICA (7.65%) + unemployment insurance + workers comp. Calculation: (Owner Pay + Plumber + Apprentices + Office Salaries) × Tax Rate. Typical total: 10-15%."
-                          />
-                          <Input
-                            id="employerTaxPercent"
-                            type="number"
-                            value={inputs.employerTaxPercent}
-                            onChange={handleChange("employerTaxPercent")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="flex items-end">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full rounded-lg bg-muted/50 p-3 cursor-help">
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                  Employer Taxes
-                                  <Info className="h-3 w-3" />
-                                </p>
-                                <p className="mt-1 font-semibold">{formatCurrency(calculations.employerTaxesAnnual)}</p>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                Formula: (Owner Pay + Plumber + Apprentices + Office) × (Tax Rate ÷ 100)
-                                <br />= ({formatCurrency(toNumber(inputs.ownerPay))} +{" "}
-                                {formatCurrency(toNumber(inputs.plumber))} +{" "}
-                                {formatCurrency(toNumber(inputs.apprenticesHelpers))} +{" "}
-                                {formatCurrency(toNumber(inputs.officeSalaries))}) × {inputs.employerTaxPercent}%
+                <div className="space-y-4">
+                  {/* Personnel */}
+                  <div>
+                    <h3 className="mb-3 font-semibold text-foreground text-sm">
+                      Personnel Costs
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="ownerPay"
+                          label="Owner Pay"
+                          tooltip="Annual salary for business owner. Small company standard: $60,000-$100,000."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="ownerPay"
+                          onChange={handleChange("ownerPay")}
+                          type="number"
+                          value={inputs.ownerPay}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="plumber"
+                          label="Plumber"
+                          tooltip="Annual salary for licensed plumber(s). Industry standard: $50,000-$80,000 per plumber."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="plumber"
+                          onChange={handleChange("plumber")}
+                          type="number"
+                          value={inputs.plumber}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="apprenticesHelpers"
+                          label="Apprentices / Helpers"
+                          tooltip="Annual salary for apprentices and helpers. Industry standard: $30,000-$50,000 per person."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="apprenticesHelpers"
+                          onChange={handleChange("apprenticesHelpers")}
+                          type="number"
+                          value={inputs.apprenticesHelpers}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="officeSalaries"
+                          label="Office Salaries"
+                          tooltip="Annual cost for administrative staff (receptionist, bookkeeper, etc.). Part-time standard: $20,000-$40,000."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="officeSalaries"
+                          onChange={handleChange("officeSalaries")}
+                          type="number"
+                          value={inputs.officeSalaries}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="employerTaxPercent"
+                          label="Employer Tax Rate (%)"
+                          tooltip="FICA (7.65%) + unemployment insurance + workers comp. Calculation: (Owner Pay + Plumber + Apprentices + Office Salaries) × Tax Rate. Typical total: 10-15%."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="employerTaxPercent"
+                          onChange={handleChange("employerTaxPercent")}
+                          type="number"
+                          value={inputs.employerTaxPercent}
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-full cursor-help rounded-lg bg-muted/50 p-3">
+                              <p className="flex items-center gap-1 text-muted-foreground text-xs">
+                                Employer Taxes
+                                <Info className="h-3 w-3" />
                               </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Insurance & Benefits */}
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">Insurance & Benefits</h3>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="insuranceAuto"
-                            label="Insurance - Auto"
-                            tooltip="Annual commercial auto insurance. 3 vehicles: $2,500-$4,000 per vehicle = $7,500-$12,000 total."
-                          />
-                          <Input
-                            id="insuranceAuto"
-                            type="number"
-                            value={inputs.insuranceAuto}
-                            onChange={handleChange("insuranceAuto")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="insuranceBusiness"
-                            label="Insurance - Business"
-                            tooltip="General liability and property insurance. Small service business standard: $3,000-$6,000/year."
-                          />
-                          <Input
-                            id="insuranceBusiness"
-                            type="number"
-                            value={inputs.insuranceBusiness}
-                            onChange={handleChange("insuranceBusiness")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="insuranceHealth"
-                            label="Insurance - Health"
-                            tooltip="Employer portion of health insurance. 3 employees: $4,000-$8,000 per person = $12,000-$24,000 total."
-                          />
-                          <Input
-                            id="insuranceHealth"
-                            type="number"
-                            value={inputs.insuranceHealth}
-                            onChange={handleChange("insuranceHealth")}
-                            className="bg-input"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Vehicle Expenses */}
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">Vehicle Expenses</h3>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="vehicleFuel"
-                            label="Vehicle - Fuel"
-                            tooltip="Annual fuel costs. 3 vehicles at ~$300-$500/month each = $10,800-$18,000/year."
-                          />
-                          <Input
-                            id="vehicleFuel"
-                            type="number"
-                            value={inputs.vehicleFuel}
-                            onChange={handleChange("vehicleFuel")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="vehicleLease"
-                            label="Vehicle - Lease"
-                            tooltip="Annual vehicle lease/loan payments. 3 vehicles at ~$400-$600/month each = $14,400-$21,600/year."
-                          />
-                          <Input
-                            id="vehicleLease"
-                            type="number"
-                            value={inputs.vehicleLease}
-                            onChange={handleChange("vehicleLease")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="vehicleMaintenance"
-                            label="Vehicle - Maintenance"
-                            tooltip="Annual maintenance and repairs. 3 vehicles: $1,500-$2,500 per vehicle = $4,500-$7,500/year."
-                          />
-                          <Input
-                            id="vehicleMaintenance"
-                            type="number"
-                            value={inputs.vehicleMaintenance}
-                            onChange={handleChange("vehicleMaintenance")}
-                            className="bg-input"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Office & Operations */}
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">Office & Operations</h3>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="rentLease"
-                            label="Rent / Lease"
-                            tooltip="Annual office/shop rent. Small shop/office: $1,500-$3,000/month = $18,000-$36,000/year."
-                          />
-                          <Input
-                            id="rentLease"
-                            type="number"
-                            value={inputs.rentLease}
-                            onChange={handleChange("rentLease")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="utilities"
-                            label="Utilities"
-                            tooltip="Annual electricity, water, gas for office/shop. Small location: $300-$500/month = $3,600-$6,000/year."
-                          />
-                          <Input
-                            id="utilities"
-                            type="number"
-                            value={inputs.utilities}
-                            onChange={handleChange("utilities")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="internetExpense"
-                            label="Internet"
-                            tooltip="Annual business internet service. $80-$150/month = $960-$1,800/year."
-                          />
-                          <Input
-                            id="internetExpense"
-                            type="number"
-                            value={inputs.internetExpense}
-                            onChange={handleChange("internetExpense")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="telephoneExpense"
-                            label="Telephone"
-                            tooltip="Annual phone service (landline + 3 mobile lines). ~$200-$300/month = $2,400-$3,600/year."
-                          />
-                          <Input
-                            id="telephoneExpense"
-                            type="number"
-                            value={inputs.telephoneExpense}
-                            onChange={handleChange("telephoneExpense")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="officeSupplies"
-                            label="Office Supplies"
-                            tooltip="Annual office supplies (paper, pens, forms). Small business: $150-$300/month = $1,800-$3,600/year."
-                          />
-                          <Input
-                            id="officeSupplies"
-                            type="number"
-                            value={inputs.officeSupplies}
-                            onChange={handleChange("officeSupplies")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="suppliesExpense"
-                            label="Supplies Expense"
-                            tooltip="Annual job supplies (parts, materials kept in stock). ~3-5% of revenue, typically $10,000-$20,000/year."
-                          />
-                          <Input
-                            id="suppliesExpense"
-                            type="number"
-                            value={inputs.suppliesExpense}
-                            onChange={handleChange("suppliesExpense")}
-                            className="bg-input"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Marketing & Professional */}
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">Marketing & Professional Services</h3>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="advertisingMarketing"
-                            label="Advertising / Marketing"
-                            tooltip="Annual marketing spend (Google Ads, local ads, website). 5-8% of revenue standard, ~$10,000-$15,000/year for small companies."
-                          />
-                          <Input
-                            id="advertisingMarketing"
-                            type="number"
-                            value={inputs.advertisingMarketing}
-                            onChange={handleChange("advertisingMarketing")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="professionalServices"
-                            label="Professional Services"
-                            tooltip="Annual accounting, legal, consulting fees. Small business: $400-$600/month = $4,800-$7,200/year."
-                          />
-                          <Input
-                            id="professionalServices"
-                            type="number"
-                            value={inputs.professionalServices}
-                            onChange={handleChange("professionalServices")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="professionalLicensing"
-                            label="Professional Licensing"
-                            tooltip="Annual license renewals and permits. Multiple licenses/permits: $1,000-$2,500/year."
-                          />
-                          <Input
-                            id="professionalLicensing"
-                            type="number"
-                            value={inputs.professionalLicensing}
-                            onChange={handleChange("professionalLicensing")}
-                            className="bg-input"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Other Expenses */}
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">Other Expenses</h3>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="bankMerchantFees"
-                            label="Bank & Merchant Fees"
-                            tooltip="Annual credit card processing and bank fees. ~2-3% of revenue or $250-$400/month = $3,000-$4,800/year."
-                          />
-                          <Input
-                            id="bankMerchantFees"
-                            type="number"
-                            value={inputs.bankMerchantFees}
-                            onChange={handleChange("bankMerchantFees")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="debtService"
-                            label="Debt Service"
-                            tooltip="Annual loan payments (equipment, startup loans). Enter 0 if debt-free."
-                          />
-                          <Input
-                            id="debtService"
-                            type="number"
-                            value={inputs.debtService}
-                            onChange={handleChange("debtService")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="lossRefund"
-                            label="Loss / Refund"
-                            tooltip="Annual allowance for bad debt, refunds, write-offs. Typically 1-2% of revenue or ~$2,000-$4,000/year."
-                          />
-                          <Input
-                            id="lossRefund"
-                            type="number"
-                            value={inputs.lossRefund}
-                            onChange={handleChange("lossRefund")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="membershipDues"
-                            label="Membership Dues"
-                            tooltip="Annual professional association dues, chamber of commerce, etc. Typically $400-$1,000/year."
-                          />
-                          <Input
-                            id="membershipDues"
-                            type="number"
-                            value={inputs.membershipDues}
-                            onChange={handleChange("membershipDues")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="replacementAllowance"
-                            label="Replacement Allowance"
-                            tooltip="Annual reserve for tool/equipment replacement. Small company: ~$400-$600/month = $4,800-$7,200/year."
-                          />
-                          <Input
-                            id="replacementAllowance"
-                            type="number"
-                            value={inputs.replacementAllowance}
-                            onChange={handleChange("replacementAllowance")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="uniformsExpense"
-                            label="Uniforms"
-                            tooltip="Annual uniform purchase and cleaning. 3 employees: $50-75/month each = $1,800-$2,700/year."
-                          />
-                          <Input
-                            id="uniformsExpense"
-                            type="number"
-                            value={inputs.uniformsExpense}
-                            onChange={handleChange("uniformsExpense")}
-                            className="bg-input"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <LabelWithTooltip
-                            htmlFor="otherExpenses"
-                            label="Other Expenses"
-                            tooltip="Annual miscellaneous expenses not categorized elsewhere. Safety equipment, training, etc.: $200-$400/month = $2,400-$4,800/year."
-                          />
-                          <Input
-                            id="otherExpenses"
-                            type="number"
-                            value={inputs.otherExpenses}
-                            onChange={handleChange("otherExpenses")}
-                            className="bg-input"
-                          />
-                        </div>
+                              <p className="mt-1 font-semibold">
+                                {formatCurrency(
+                                  calculations.employerTaxesAnnual
+                                )}
+                              </p>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">
+                              Formula: (Owner Pay + Plumber + Apprentices +
+                              Office) × (Tax Rate ÷ 100)
+                              <br />= (
+                              {formatCurrency(toNumber(inputs.ownerPay))} +{" "}
+                              {formatCurrency(toNumber(inputs.plumber))} +{" "}
+                              {formatCurrency(
+                                toNumber(inputs.apprenticesHelpers)
+                              )}{" "}
+                              +{" "}
+                              {formatCurrency(toNumber(inputs.officeSalaries))})
+                              × {inputs.employerTaxPercent}%
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-4 bg-muted/30 p-4 rounded-lg sm:grid-cols-2">
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Operating (Annual)
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatCurrency(calculations.totalOperatingAnnual)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">Sum of all operating expenses listed above.</p>
-                        </TooltipContent>
-                      </Tooltip>
+                  {/* Insurance & Benefits */}
+                  <div>
+                    <h3 className="mb-3 font-semibold text-foreground text-sm">
+                      Insurance & Benefits
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="insuranceAuto"
+                          label="Insurance - Auto"
+                          tooltip="Annual commercial auto insurance. 3 vehicles: $2,500-$4,000 per vehicle = $7,500-$12,000 total."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="insuranceAuto"
+                          onChange={handleChange("insuranceAuto")}
+                          type="number"
+                          value={inputs.insuranceAuto}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="insuranceBusiness"
+                          label="Insurance - Business"
+                          tooltip="General liability and property insurance. Small service business standard: $3,000-$6,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="insuranceBusiness"
+                          onChange={handleChange("insuranceBusiness")}
+                          type="number"
+                          value={inputs.insuranceBusiness}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="insuranceHealth"
+                          label="Insurance - Health"
+                          tooltip="Employer portion of health insurance. 3 employees: $4,000-$8,000 per person = $12,000-$24,000 total."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="insuranceHealth"
+                          onChange={handleChange("insuranceHealth")}
+                          type="number"
+                          value={inputs.insuranceHealth}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Operating (Hourly)
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatCurrency(calculations.totalOperatingHourly)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Operating Annual ÷ Annual Billable Hours
-                            <br />= {formatCurrency(calculations.totalOperatingAnnual)} ÷{" "}
-                            {formatNumber(calculations.annualBillableHours)}
+                  </div>
+
+                  {/* Vehicle Expenses */}
+                  <div>
+                    <h3 className="mb-3 font-semibold text-foreground text-sm">
+                      Vehicle Expenses
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="vehicleFuel"
+                          label="Vehicle - Fuel"
+                          tooltip="Annual fuel costs. 3 vehicles at ~$300-$500/month each = $10,800-$18,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="vehicleFuel"
+                          onChange={handleChange("vehicleFuel")}
+                          type="number"
+                          value={inputs.vehicleFuel}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="vehicleLease"
+                          label="Vehicle - Lease"
+                          tooltip="Annual vehicle lease/loan payments. 3 vehicles at ~$400-$600/month each = $14,400-$21,600/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="vehicleLease"
+                          onChange={handleChange("vehicleLease")}
+                          type="number"
+                          value={inputs.vehicleLease}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="vehicleMaintenance"
+                          label="Vehicle - Maintenance"
+                          tooltip="Annual maintenance and repairs. 3 vehicles: $1,500-$2,500 per vehicle = $4,500-$7,500/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="vehicleMaintenance"
+                          onChange={handleChange("vehicleMaintenance")}
+                          type="number"
+                          value={inputs.vehicleMaintenance}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Office & Operations */}
+                  <div>
+                    <h3 className="mb-3 font-semibold text-foreground text-sm">
+                      Office & Operations
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="rentLease"
+                          label="Rent / Lease"
+                          tooltip="Annual office/shop rent. Small shop/office: $1,500-$3,000/month = $18,000-$36,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="rentLease"
+                          onChange={handleChange("rentLease")}
+                          type="number"
+                          value={inputs.rentLease}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="utilities"
+                          label="Utilities"
+                          tooltip="Annual electricity, water, gas for office/shop. Small location: $300-$500/month = $3,600-$6,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="utilities"
+                          onChange={handleChange("utilities")}
+                          type="number"
+                          value={inputs.utilities}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="internetExpense"
+                          label="Internet"
+                          tooltip="Annual business internet service. $80-$150/month = $960-$1,800/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="internetExpense"
+                          onChange={handleChange("internetExpense")}
+                          type="number"
+                          value={inputs.internetExpense}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="telephoneExpense"
+                          label="Telephone"
+                          tooltip="Annual phone service (landline + 3 mobile lines). ~$200-$300/month = $2,400-$3,600/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="telephoneExpense"
+                          onChange={handleChange("telephoneExpense")}
+                          type="number"
+                          value={inputs.telephoneExpense}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="officeSupplies"
+                          label="Office Supplies"
+                          tooltip="Annual office supplies (paper, pens, forms). Small business: $150-$300/month = $1,800-$3,600/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="officeSupplies"
+                          onChange={handleChange("officeSupplies")}
+                          type="number"
+                          value={inputs.officeSupplies}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="suppliesExpense"
+                          label="Supplies Expense"
+                          tooltip="Annual job supplies (parts, materials kept in stock). ~3-5% of revenue, typically $10,000-$20,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="suppliesExpense"
+                          onChange={handleChange("suppliesExpense")}
+                          type="number"
+                          value={inputs.suppliesExpense}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Marketing & Professional */}
+                  <div>
+                    <h3 className="mb-3 font-semibold text-foreground text-sm">
+                      Marketing & Professional Services
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="advertisingMarketing"
+                          label="Advertising / Marketing"
+                          tooltip="Annual marketing spend (Google Ads, local ads, website). 5-8% of revenue standard, ~$10,000-$15,000/year for small companies."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="advertisingMarketing"
+                          onChange={handleChange("advertisingMarketing")}
+                          type="number"
+                          value={inputs.advertisingMarketing}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="professionalServices"
+                          label="Professional Services"
+                          tooltip="Annual accounting, legal, consulting fees. Small business: $400-$600/month = $4,800-$7,200/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="professionalServices"
+                          onChange={handleChange("professionalServices")}
+                          type="number"
+                          value={inputs.professionalServices}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="professionalLicensing"
+                          label="Professional Licensing"
+                          tooltip="Annual license renewals and permits. Multiple licenses/permits: $1,000-$2,500/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="professionalLicensing"
+                          onChange={handleChange("professionalLicensing")}
+                          type="number"
+                          value={inputs.professionalLicensing}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Other Expenses */}
+                  <div>
+                    <h3 className="mb-3 font-semibold text-foreground text-sm">
+                      Other Expenses
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="bankMerchantFees"
+                          label="Bank & Merchant Fees"
+                          tooltip="Annual credit card processing and bank fees. ~2-3% of revenue or $250-$400/month = $3,000-$4,800/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="bankMerchantFees"
+                          onChange={handleChange("bankMerchantFees")}
+                          type="number"
+                          value={inputs.bankMerchantFees}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="debtService"
+                          label="Debt Service"
+                          tooltip="Annual loan payments (equipment, startup loans). Enter 0 if debt-free."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="debtService"
+                          onChange={handleChange("debtService")}
+                          type="number"
+                          value={inputs.debtService}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="lossRefund"
+                          label="Loss / Refund"
+                          tooltip="Annual allowance for bad debt, refunds, write-offs. Typically 1-2% of revenue or ~$2,000-$4,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="lossRefund"
+                          onChange={handleChange("lossRefund")}
+                          type="number"
+                          value={inputs.lossRefund}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="membershipDues"
+                          label="Membership Dues"
+                          tooltip="Annual professional association dues, chamber of commerce, etc. Typically $400-$1,000/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="membershipDues"
+                          onChange={handleChange("membershipDues")}
+                          type="number"
+                          value={inputs.membershipDues}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="replacementAllowance"
+                          label="Replacement Allowance"
+                          tooltip="Annual reserve for tool/equipment replacement. Small company: ~$400-$600/month = $4,800-$7,200/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="replacementAllowance"
+                          onChange={handleChange("replacementAllowance")}
+                          type="number"
+                          value={inputs.replacementAllowance}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="uniformsExpense"
+                          label="Uniforms"
+                          tooltip="Annual uniform purchase and cleaning. 3 employees: $50-75/month each = $1,800-$2,700/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="uniformsExpense"
+                          onChange={handleChange("uniformsExpense")}
+                          type="number"
+                          value={inputs.uniformsExpense}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <LabelWithTooltip
+                          htmlFor="otherExpenses"
+                          label="Other Expenses"
+                          tooltip="Annual miscellaneous expenses not categorized elsewhere. Safety equipment, training, etc.: $200-$400/month = $2,400-$4,800/year."
+                        />
+                        <Input
+                          className="bg-input"
+                          id="otherExpenses"
+                          onChange={handleChange("otherExpenses")}
+                          type="number"
+                          value={inputs.otherExpenses}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 rounded-lg bg-muted/30 p-4 sm:grid-cols-2">
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Operating (Annual)
+                            <Info className="h-3 w-3" />
                           </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 12-Month Growth */}
-                <div className="bg-background p-6 rounded-lg">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="rounded-lg bg-muted p-2">
-                      <TrendingUp className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">12-Month Growth Expenses</h3>
-                      <p className="text-sm text-muted-foreground">Investment in business growth and expansion</p>
-                    </div>
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="growthDevelopment"
-                        label="Development"
-                        tooltip="Investment in training, certifications, and skill development. $5,000-$10,000/year for small company."
-                      />
-                      <Input
-                        id="growthDevelopment"
-                        type="number"
-                        value={inputs.growthDevelopment}
-                        onChange={handleChange("growthDevelopment")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="growthEquipment"
-                        label="Equipment"
-                        tooltip="New equipment purchases for expansion. $10,000-$20,000/year depending on growth plans."
-                      />
-                      <Input
-                        id="growthEquipment"
-                        type="number"
-                        value={inputs.growthEquipment}
-                        onChange={handleChange("growthEquipment")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="growthVehicle"
-                        label="Vehicle"
-                        tooltip="Down payment or purchase of additional service vehicle. Enter 0 if not adding vehicles this year."
-                      />
-                      <Input
-                        id="growthVehicle"
-                        type="number"
-                        value={inputs.growthVehicle}
-                        onChange={handleChange("growthVehicle")}
-                        className="bg-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="growthOther"
-                        label="Other"
-                        tooltip="Other growth investments (technology, systems, processes). $3,000-$7,000/year for small company improvements."
-                      />
-                      <Input
-                        id="growthOther"
-                        type="number"
-                        value={inputs.growthOther}
-                        onChange={handleChange("growthOther")}
-                        className="bg-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid gap-4 bg-muted/30 p-4 rounded-lg sm:grid-cols-2">
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Growth (Annual)
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatCurrency(calculations.totalGrowthAnnual)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">Sum of all growth expenses.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Growth (Hourly)
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                              {formatCurrency(calculations.totalGrowthHourly)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Growth Annual ÷ Annual Billable Hours
-                            <br />= {formatCurrency(calculations.totalGrowthAnnual)} ÷{" "}
-                            {formatNumber(calculations.annualBillableHours)}
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatCurrency(calculations.totalOperatingAnnual)}
                           </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Sum of all operating expenses listed above.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Operating (Hourly)
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatCurrency(calculations.totalOperatingHourly)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Operating Annual ÷ Annual Billable
+                          Hours
+                          <br />={" "}
+                          {formatCurrency(calculations.totalOperatingAnnual)} ÷{" "}
+                          {formatNumber(calculations.annualBillableHours)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
-              </section>
+              </div>
 
-              {/* Overview Section */}
-              <section id="overview" className="scroll-mt-24">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="rounded-lg bg-muted p-2">
-                      <BarChart3 className="h-5 w-5" />
-                    </div>
-                    Business Overview
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Key metrics and financial insights for your business
-                  </p>
-                </div>
-
-                {/* Key Metrics Dashboard */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-                  <div className="bg-muted/30 p-4 rounded-lg">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Your Hourly Rate</p>
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-500">
-                      {Number.isFinite(calculations.honestHourlyRate)
-                        ? formatCurrency(calculations.honestHourlyRate)
-                        : "—"}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">With {inputs.profitPercent}% profit margin</p>
+              {/* 12-Month Growth */}
+              <div className="rounded-lg bg-background p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-muted p-2">
+                    <TrendingUp className="h-5 w-5" />
                   </div>
-
-                  <div className="bg-muted/30 p-4 rounded-lg">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Annual Billable Hours</p>
-                    <div className="text-2xl font-bold">{formatNumber(calculations.annualBillableHours)}</div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatNumber(calculations.dailyBillableHours)} hrs/day average
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      12-Month Growth Expenses
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Investment in business growth and expansion
                     </p>
                   </div>
-
-                  <div className="bg-muted/30 p-4 rounded-lg">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Total Annual Expenses</p>
-                    <div className="text-2xl font-bold">{formatCurrency(calculations.totalExpensesAnnual)}</div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatCurrency(calculations.dailyExpense)}/day
-                    </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="growthDevelopment"
+                      label="Development"
+                      tooltip="Investment in training, certifications, and skill development. $5,000-$10,000/year for small company."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="growthDevelopment"
+                      onChange={handleChange("growthDevelopment")}
+                      type="number"
+                      value={inputs.growthDevelopment}
+                    />
                   </div>
-
-                  <div className="bg-muted/30 p-4 rounded-lg">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Annual Revenue Target</p>
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-500">
-                      {Number.isFinite(calculations.honestHourlyRate)
-                        ? formatCurrency(calculations.honestHourlyRate * calculations.annualBillableHours)
-                        : "—"}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">At full capacity</p>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="growthEquipment"
+                      label="Equipment"
+                      tooltip="New equipment purchases for expansion. $10,000-$20,000/year depending on growth plans."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="growthEquipment"
+                      onChange={handleChange("growthEquipment")}
+                      type="number"
+                      value={inputs.growthEquipment}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="growthVehicle"
+                      label="Vehicle"
+                      tooltip="Down payment or purchase of additional service vehicle. Enter 0 if not adding vehicles this year."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="growthVehicle"
+                      onChange={handleChange("growthVehicle")}
+                      type="number"
+                      value={inputs.growthVehicle}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="growthOther"
+                      label="Other"
+                      tooltip="Other growth investments (technology, systems, processes). $3,000-$7,000/year for small company improvements."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="growthOther"
+                      onChange={handleChange("growthOther")}
+                      type="number"
+                      value={inputs.growthOther}
+                    />
                   </div>
                 </div>
 
-                {/* Expense Breakdown */}
-                <div className="bg-background p-6 rounded-lg mb-6">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Expense Breakdown</h3>
-                    <p className="text-sm text-muted-foreground">Where your money goes annually</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                      <div>
-                        <p className="font-medium">Operating Expenses</p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatCurrency(calculations.totalOperatingHourly)}/hour
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold">{formatCurrency(calculations.totalOperatingAnnual)}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {((calculations.totalOperatingAnnual / calculations.totalExpensesAnnual) * 100).toFixed(1)}% of
-                          total
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                      <div>
-                        <p className="font-medium">Growth Expenses</p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatCurrency(calculations.totalGrowthHourly)}/hour
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold">{formatCurrency(calculations.totalGrowthAnnual)}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {((calculations.totalGrowthAnnual / calculations.totalExpensesAnnual) * 100).toFixed(1)}% of
-                          total
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2">
-                      <div>
-                        <p className="font-semibold text-lg">Total Expenses</p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatCurrency(calculations.hourlyExpenseRate)}/hour
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold">{formatCurrency(calculations.totalExpensesAnnual)}</p>
-                        <p className="text-xs text-muted-foreground">Annual total</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Financial Insights */}
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <div className="bg-background p-6 rounded-lg">
-                    <div className="mb-4 flex items-center gap-2">
-                      <DollarSign className="h-5 w-5" />
-                      <h3 className="text-base font-semibold">Break-Even Analysis</h3>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Hourly break-even rate</p>
-                        <p className="text-2xl font-bold text-red-600 dark:text-red-500">
-                          {formatCurrency(calculations.hourlyExpenseRate)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Daily break-even revenue</p>
-                        <p className="text-2xl font-bold text-red-600 dark:text-red-500">
-                          {formatCurrency(calculations.dailyBreakEvenRevenue)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Annual break-even revenue</p>
-                        <p className="text-2xl font-bold text-red-600 dark:text-red-500">
-                          {formatCurrency(calculations.totalExpensesAnnual)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-background p-6 rounded-lg">
-                    <div className="mb-4 flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      <h3 className="text-base font-semibold">Profit Projections</h3>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Profit per billable hour</p>
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-500">
-                          {Number.isFinite(calculations.honestHourlyRate)
-                            ? formatCurrency(calculations.honestHourlyRate - calculations.hourlyExpenseRate)
-                            : "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Daily profit potential</p>
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-500">
-                          {Number.isFinite(calculations.dailyRevenueCapacity)
-                            ? formatCurrency(calculations.dailyRevenueCapacity - calculations.dailyExpense)
-                            : "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Annual profit potential</p>
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-500">
-                          {Number.isFinite(calculations.honestHourlyRate)
-                            ? formatCurrency(
-                                calculations.honestHourlyRate * calculations.annualBillableHours -
-                                  calculations.totalExpensesAnnual,
-                              )
-                            : "—"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Daily View Section */}
-              <section id="daily" className="scroll-mt-24">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="rounded-lg bg-muted p-2">
-                      <CalendarDays className="h-5 w-5" />
-                    </div>
-                    Daily Break-Even Analysis
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Understand what it takes to cover expenses each working day
-                  </p>
-                </div>
-
-                <div className="bg-background p-6 rounded-lg">
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="bg-muted/30 p-4 rounded-lg">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Daily Operating Cost
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-2 text-2xl font-semibold">{formatCurrency(calculations.dailyExpense)}</p>
-                            <p className="mt-1 text-xs text-muted-foreground">Per working day</p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Annual Expenses ÷ Working Days Per Year
-                            <br />= {formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
-                            {formatNumber(calculations.totalWorkDaysPerYear)}
-                            <br />
-                            <br />
-                            This is how much your company spends every working day just to keep the doors open.
+                <div className="mt-6 grid gap-4 rounded-lg bg-muted/30 p-4 sm:grid-cols-2">
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Growth (Annual)
+                            <Info className="h-3 w-3" />
                           </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-
-                    <div className="bg-muted/30 p-4 rounded-lg">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Daily Break-Even Revenue
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-2 text-2xl font-semibold text-red-600 dark:text-red-500">
-                              {formatCurrency(calculations.dailyBreakEvenRevenue)}
-                            </p>
-                            <p className="mt-1 text-xs text-muted-foreground">Minimum to cover costs</p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Daily Operating Cost (same value)
-                            <br />= {formatCurrency(calculations.dailyExpense)}
-                            <br />
-                            <br />
-                            You must bill at least this amount each working day just to break even (zero profit).
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-
-                    <div className="bg-muted/30 p-4 rounded-lg">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Daily Billable Hours
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-2 text-2xl font-semibold">
-                              {formatNumber(calculations.dailyBillableHours)} hrs
-                            </p>
-                            <p className="mt-1 text-xs text-muted-foreground">Average sold per day</p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Annual Billable Hours ÷ Working Days Per Year
-                            <br />= {formatNumber(calculations.annualBillableHours)} ÷{" "}
-                            {formatNumber(calculations.totalWorkDaysPerYear)}
-                            <br />
-                            <br />
-                            This is the average number of billable hours your team sells each working day.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-
-                    <div className="bg-muted/30 p-4 rounded-lg">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Daily Revenue Capacity
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-2 text-2xl font-semibold text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.dailyRevenueCapacity)
-                                ? formatCurrency(calculations.dailyRevenueCapacity)
-                                : "—"}
-                            </p>
-                            <p className="mt-1 text-xs text-muted-foreground">Target with profit margin</p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Daily Billable Hours × Honest Hourly Rate
-                            <br />= {formatNumber(calculations.dailyBillableHours)} hrs ×{" "}
-                            {formatCurrency(calculations.honestHourlyRate)}
-                            <br />
-                            <br />
-                            This is your target daily revenue when billing at your honest hourly rate, including your
-                            desired profit margin.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 bg-muted/30 p-6 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-lg bg-muted p-2 mt-0.5">
-                        <Info className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground mb-2">Understanding Your Daily Numbers</h4>
-                        <div className="space-y-3 text-sm text-muted-foreground">
-                          <p>
-                            <strong className="text-foreground">Daily Operating Cost:</strong> Every working day, your
-                            business spends{" "}
-                            <span className="text-foreground font-medium">
-                              {formatCurrency(calculations.dailyExpense)}
-                            </span>{" "}
-                            on expenses before earning a single dollar.
-                          </p>
-                          <p>
-                            <strong className="text-foreground">Break-Even Point:</strong> You need to bill at least{" "}
-                            <span className="text-red-600 dark:text-red-500 font-medium">
-                              {formatCurrency(calculations.dailyBreakEvenRevenue)}
-                            </span>{" "}
-                            each day just to cover costs with zero profit.
-                          </p>
-                          <p>
-                            <strong className="text-foreground">Profit Target:</strong> To achieve your{" "}
-                            {inputs.profitPercent}% profit margin, aim to bill{" "}
-                            <span className="text-green-600 dark:text-green-500 font-medium">
-                              {Number.isFinite(calculations.dailyRevenueCapacity)
-                                ? formatCurrency(calculations.dailyRevenueCapacity)
-                                : "—"}
-                            </span>{" "}
-                            daily ({formatNumber(calculations.dailyBillableHours)} billable hours at{" "}
-                            {formatCurrency(calculations.honestHourlyRate)}/hr).
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Final Rate Section */}
-              <section id="final" className="scroll-mt-24">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="rounded-lg bg-muted p-2">
-                      <Target className="h-5 w-5" />
-                    </div>
-                    Your Honest Hourly Rate
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Final calculation based on all expenses and profit margin
-                  </p>
-                </div>
-
-                <div className="bg-background p-6 rounded-lg">
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <div className="bg-muted/30 p-4 rounded-lg">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Total Expenses (Annual)
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-2 text-2xl font-semibold">
-                              {formatCurrency(calculations.totalExpensesAnnual)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Operating + Total Growth
-                            <br />= {formatCurrency(calculations.totalOperatingAnnual)} +{" "}
+                          <p className="mt-1 font-semibold text-2xl">
                             {formatCurrency(calculations.totalGrowthAnnual)}
                           </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div className="bg-muted/30 p-4 rounded-lg">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="cursor-help">
-                            <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                              Hourly Expense Rate
-                              <Info className="h-3 w-3" />
-                            </p>
-                            <p className="mt-2 text-2xl font-semibold">
-                              {formatCurrency(calculations.hourlyExpenseRate)}
-                            </p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Formula: Total Expenses Annual ÷ Annual Billable Hours
-                            <br />= {formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
-                            {formatNumber(calculations.annualBillableHours)}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Sum of all growth expenses.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Growth (Hourly)
+                            <Info className="h-3 w-3" />
                           </p>
-                        </TooltipContent>
-                      </Tooltip>
+                          <p className="mt-1 font-semibold text-2xl">
+                            {formatCurrency(calculations.totalGrowthHourly)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Growth Annual ÷ Annual Billable Hours
+                          <br />={" "}
+                          {formatCurrency(calculations.totalGrowthAnnual)} ÷{" "}
+                          {formatNumber(calculations.annualBillableHours)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Overview Section */}
+            <section className="scroll-mt-24" id="overview">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <BarChart3 className="h-5 w-5" />
+                  </div>
+                  Business Overview
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Key metrics and financial insights for your business
+                </p>
+              </div>
+
+              {/* Key Metrics Dashboard */}
+              <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <p className="mb-2 font-medium text-muted-foreground text-xs">
+                    Your Hourly Rate
+                  </p>
+                  <div className="font-bold text-2xl text-green-600 dark:text-green-500">
+                    {Number.isFinite(calculations.honestHourlyRate)
+                      ? formatCurrency(calculations.honestHourlyRate)
+                      : "—"}
+                  </div>
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    With {inputs.profitPercent}% profit margin
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <p className="mb-2 font-medium text-muted-foreground text-xs">
+                    Annual Billable Hours
+                  </p>
+                  <div className="font-bold text-2xl">
+                    {formatNumber(calculations.annualBillableHours)}
+                  </div>
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    {formatNumber(calculations.dailyBillableHours)} hrs/day
+                    average
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <p className="mb-2 font-medium text-muted-foreground text-xs">
+                    Total Annual Expenses
+                  </p>
+                  <div className="font-bold text-2xl">
+                    {formatCurrency(calculations.totalExpensesAnnual)}
+                  </div>
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    {formatCurrency(calculations.dailyExpense)}/day
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <p className="mb-2 font-medium text-muted-foreground text-xs">
+                    Annual Revenue Target
+                  </p>
+                  <div className="font-bold text-2xl text-green-600 dark:text-green-500">
+                    {Number.isFinite(calculations.honestHourlyRate)
+                      ? formatCurrency(
+                          calculations.honestHourlyRate *
+                            calculations.annualBillableHours
+                        )
+                      : "—"}
+                  </div>
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    At full capacity
+                  </p>
+                </div>
+              </div>
+
+              {/* Expense Breakdown */}
+              <div className="mb-6 rounded-lg bg-background p-6">
+                <div className="mb-4">
+                  <h3 className="font-semibold text-lg">Expense Breakdown</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Where your money goes annually
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-border/50 border-b pb-3">
+                    <div>
+                      <p className="font-medium">Operating Expenses</p>
+                      <p className="text-muted-foreground text-sm">
+                        {formatCurrency(calculations.totalOperatingHourly)}/hour
+                      </p>
                     </div>
-                    <div className="space-y-2">
-                      <LabelWithTooltip
-                        htmlFor="profitPercent"
-                        label="Desired Profit Margin (%)"
-                        tooltip="Target profit percentage. Formula: Hourly Rate = Hourly Expense Rate ÷ (1 - Profit %). Industry standard: 40-60% for service businesses."
-                      />
-                      <Input
-                        id="profitPercent"
-                        type="number"
-                        value={inputs.profitPercent}
-                        onChange={handleChange("profitPercent")}
-                        className="bg-input"
-                      />
+                    <div className="text-right">
+                      <p className="font-bold text-xl">
+                        {formatCurrency(calculations.totalOperatingAnnual)}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {(
+                          (calculations.totalOperatingAnnual /
+                            calculations.totalExpensesAnnual) *
+                          100
+                        ).toFixed(1)}
+                        % of total
+                      </p>
                     </div>
                   </div>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="mt-8 bg-muted/40 p-6 rounded-lg text-center cursor-help">
-                        <p className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-1.5">
-                          Your Honest Hourly Rate
-                          <Info className="h-4 w-4" />
-                        </p>
-                        <p className="mt-3 text-5xl font-bold text-green-600 dark:text-green-500">
-                          {Number.isFinite(calculations.honestHourlyRate)
-                            ? formatCurrency(calculations.honestHourlyRate)
-                            : "—"}
-                        </p>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          This rate covers all expenses and your desired profit margin
-                        </p>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-sm">
-                      <p className="text-xs leading-relaxed">
-                        Formula: Hourly Expense Rate ÷ (1 - Profit Margin ÷ 100)
-                        <br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷ (1 - {inputs.profitPercent}% ÷ 100)
-                        <br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷{" "}
-                        {(1 - toPercent(inputs.profitPercent)).toFixed(2)}
-                        <br />
-                        <br />
-                        This ensures your hourly rate not only covers all expenses but also delivers your target profit
-                        percentage on each billable hour.
+                  <div className="flex items-center justify-between border-border/50 border-b pb-3">
+                    <div>
+                      <p className="font-medium">Growth Expenses</p>
+                      <p className="text-muted-foreground text-sm">
+                        {formatCurrency(calculations.totalGrowthHourly)}/hour
                       </p>
-                    </TooltipContent>
-                  </Tooltip>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-xl">
+                        {formatCurrency(calculations.totalGrowthAnnual)}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {(
+                          (calculations.totalGrowthAnnual /
+                            calculations.totalExpensesAnnual) *
+                          100
+                        ).toFixed(1)}
+                        % of total
+                      </p>
+                    </div>
+                  </div>
 
-                  <div className="mt-8 space-y-4">
-                    <h3 className="text-lg font-semibold">Revenue Projections</h3>
-                    <div className="overflow-hidden bg-muted/30 rounded-lg">
-                      <table className="w-full">
-                        <thead className="bg-muted/50">
-                          <tr>
-                            <th className="px-4 py-3 text-left text-sm font-medium">Time Period</th>
-                            <th className="px-4 py-3 text-right text-sm font-medium">Expenses</th>
-                            <th className="px-4 py-3 text-right text-sm font-medium">Revenue (Full Capacity)</th>
-                            <th className="px-4 py-3 text-right text-sm font-medium">Profit</th>
-                            <th className="px-4 py-3 text-right text-sm font-medium">Profit Margin</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border/30">
-                          <tr className="hover:bg-muted/20">
-                            <td className="px-4 py-3 text-sm font-medium">Per Hour</td>
-                            <td className="px-4 py-3 text-sm text-right">
-                              {formatCurrency(calculations.hourlyExpenseRate)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right font-medium text-green-600 dark:text-green-500">
-                              {formatCurrency(calculations.honestHourlyRate)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(calculations.honestHourlyRate - calculations.hourlyExpenseRate)
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right">{inputs.profitPercent}%</td>
-                          </tr>
-                          <tr className="hover:bg-muted/20">
-                            <td className="px-4 py-3 text-sm font-medium">Per Day</td>
-                            <td className="px-4 py-3 text-sm text-right">
-                              {formatCurrency(calculations.dailyExpense)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right font-medium text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.dailyRevenueCapacity)
-                                ? formatCurrency(calculations.dailyRevenueCapacity)
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.dailyRevenueCapacity)
-                                ? formatCurrency(calculations.dailyRevenueCapacity - calculations.dailyExpense)
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right">{inputs.profitPercent}%</td>
-                          </tr>
-                          <tr className="hover:bg-muted/20">
-                            <td className="px-4 py-3 text-sm font-medium">Per Week</td>
-                            <td className="px-4 py-3 text-sm text-right">
-                              {formatCurrency(calculations.totalExpensesAnnual / 52)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right font-medium text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(
-                                    (calculations.honestHourlyRate * calculations.annualBillableHours) / 52,
-                                  )
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(
-                                    (calculations.honestHourlyRate * calculations.annualBillableHours) / 52 -
-                                      calculations.totalExpensesAnnual / 52,
-                                  )
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right">{inputs.profitPercent}%</td>
-                          </tr>
-                          <tr className="hover:bg-muted/20">
-                            <td className="px-4 py-3 text-sm font-medium">Per Month</td>
-                            <td className="px-4 py-3 text-sm text-right">
-                              {formatCurrency(calculations.totalExpensesAnnual / 12)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right font-medium text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(
-                                    (calculations.honestHourlyRate * calculations.annualBillableHours) / 12,
-                                  )
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(
-                                    (calculations.honestHourlyRate * calculations.annualBillableHours) / 12 -
-                                      calculations.totalExpensesAnnual / 12,
-                                  )
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right">{inputs.profitPercent}%</td>
-                          </tr>
-                          <tr className="bg-muted/50 font-semibold">
-                            <td className="px-4 py-3 text-sm">Per Year</td>
-                            <td className="px-4 py-3 text-sm text-right">
-                              {formatCurrency(calculations.totalExpensesAnnual)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right font-bold text-green-600 dark:text-green-500">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(calculations.honestHourlyRate * calculations.annualBillableHours)
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-500 font-bold">
-                              {Number.isFinite(calculations.honestHourlyRate)
-                                ? formatCurrency(
-                                    calculations.honestHourlyRate * calculations.annualBillableHours -
-                                      calculations.totalExpensesAnnual,
-                                  )
-                                : "—"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-right">{inputs.profitPercent}%</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                  <div className="flex items-center justify-between pt-2">
+                    <div>
+                      <p className="font-semibold text-lg">Total Expenses</p>
+                      <p className="text-muted-foreground text-sm">
+                        {formatCurrency(calculations.hourlyExpenseRate)}/hour
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-2xl">
+                        {formatCurrency(calculations.totalExpensesAnnual)}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Annual total
+                      </p>
                     </div>
                   </div>
                 </div>
-              </section>
-            </div>
-          </main>
+              </div>
+
+              {/* Quick Financial Insights */}
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="rounded-lg bg-background p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    <h3 className="font-semibold text-base">
+                      Break-Even Analysis
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-muted-foreground text-sm">
+                        Hourly break-even rate
+                      </p>
+                      <p className="font-bold text-2xl text-red-600 dark:text-red-500">
+                        {formatCurrency(calculations.hourlyExpenseRate)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-sm">
+                        Daily break-even revenue
+                      </p>
+                      <p className="font-bold text-2xl text-red-600 dark:text-red-500">
+                        {formatCurrency(calculations.dailyBreakEvenRevenue)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-sm">
+                        Annual break-even revenue
+                      </p>
+                      <p className="font-bold text-2xl text-red-600 dark:text-red-500">
+                        {formatCurrency(calculations.totalExpensesAnnual)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-background p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    <h3 className="font-semibold text-base">
+                      Profit Projections
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-muted-foreground text-sm">
+                        Profit per billable hour
+                      </p>
+                      <p className="font-bold text-2xl text-green-600 dark:text-green-500">
+                        {Number.isFinite(calculations.honestHourlyRate)
+                          ? formatCurrency(
+                              calculations.honestHourlyRate -
+                                calculations.hourlyExpenseRate
+                            )
+                          : "—"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-sm">
+                        Daily profit potential
+                      </p>
+                      <p className="font-bold text-2xl text-green-600 dark:text-green-500">
+                        {Number.isFinite(calculations.dailyRevenueCapacity)
+                          ? formatCurrency(
+                              calculations.dailyRevenueCapacity -
+                                calculations.dailyExpense
+                            )
+                          : "—"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-sm">
+                        Annual profit potential
+                      </p>
+                      <p className="font-bold text-2xl text-green-600 dark:text-green-500">
+                        {Number.isFinite(calculations.honestHourlyRate)
+                          ? formatCurrency(
+                              calculations.honestHourlyRate *
+                                calculations.annualBillableHours -
+                                calculations.totalExpensesAnnual
+                            )
+                          : "—"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Daily View Section */}
+            <section className="scroll-mt-24" id="daily">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <CalendarDays className="h-5 w-5" />
+                  </div>
+                  Daily Break-Even Analysis
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Understand what it takes to cover expenses each working day
+                </p>
+              </div>
+
+              <div className="rounded-lg bg-background p-6">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Daily Operating Cost
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-2 font-semibold text-2xl">
+                            {formatCurrency(calculations.dailyExpense)}
+                          </p>
+                          <p className="mt-1 text-muted-foreground text-xs">
+                            Per working day
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Annual Expenses ÷ Working Days Per Year
+                          <br />={" "}
+                          {formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
+                          {formatNumber(calculations.totalWorkDaysPerYear)}
+                          <br />
+                          <br />
+                          This is how much your company spends every working day
+                          just to keep the doors open.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Daily Break-Even Revenue
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-2 font-semibold text-2xl text-red-600 dark:text-red-500">
+                            {formatCurrency(calculations.dailyBreakEvenRevenue)}
+                          </p>
+                          <p className="mt-1 text-muted-foreground text-xs">
+                            Minimum to cover costs
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Daily Operating Cost (same value)
+                          <br />= {formatCurrency(calculations.dailyExpense)}
+                          <br />
+                          <br />
+                          You must bill at least this amount each working day
+                          just to break even (zero profit).
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Daily Billable Hours
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-2 font-semibold text-2xl">
+                            {formatNumber(calculations.dailyBillableHours)} hrs
+                          </p>
+                          <p className="mt-1 text-muted-foreground text-xs">
+                            Average sold per day
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Annual Billable Hours ÷ Working Days Per Year
+                          <br />={" "}
+                          {formatNumber(calculations.annualBillableHours)} ÷{" "}
+                          {formatNumber(calculations.totalWorkDaysPerYear)}
+                          <br />
+                          <br />
+                          This is the average number of billable hours your team
+                          sells each working day.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Daily Revenue Capacity
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-2 font-semibold text-2xl text-green-600 dark:text-green-500">
+                            {Number.isFinite(calculations.dailyRevenueCapacity)
+                              ? formatCurrency(
+                                  calculations.dailyRevenueCapacity
+                                )
+                              : "—"}
+                          </p>
+                          <p className="mt-1 text-muted-foreground text-xs">
+                            Target with profit margin
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Daily Billable Hours × Honest Hourly Rate
+                          <br />={" "}
+                          {formatNumber(calculations.dailyBillableHours)} hrs ×{" "}
+                          {formatCurrency(calculations.honestHourlyRate)}
+                          <br />
+                          <br />
+                          This is your target daily revenue when billing at your
+                          honest hourly rate, including your desired profit
+                          margin.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-lg bg-muted/30 p-6">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 rounded-lg bg-muted p-2">
+                      <Info className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="mb-2 font-semibold text-foreground">
+                        Understanding Your Daily Numbers
+                      </h4>
+                      <div className="space-y-3 text-muted-foreground text-sm">
+                        <p>
+                          <strong className="text-foreground">
+                            Daily Operating Cost:
+                          </strong>{" "}
+                          Every working day, your business spends{" "}
+                          <span className="font-medium text-foreground">
+                            {formatCurrency(calculations.dailyExpense)}
+                          </span>{" "}
+                          on expenses before earning a single dollar.
+                        </p>
+                        <p>
+                          <strong className="text-foreground">
+                            Break-Even Point:
+                          </strong>{" "}
+                          You need to bill at least{" "}
+                          <span className="font-medium text-red-600 dark:text-red-500">
+                            {formatCurrency(calculations.dailyBreakEvenRevenue)}
+                          </span>{" "}
+                          each day just to cover costs with zero profit.
+                        </p>
+                        <p>
+                          <strong className="text-foreground">
+                            Profit Target:
+                          </strong>{" "}
+                          To achieve your {inputs.profitPercent}% profit margin,
+                          aim to bill{" "}
+                          <span className="font-medium text-green-600 dark:text-green-500">
+                            {Number.isFinite(calculations.dailyRevenueCapacity)
+                              ? formatCurrency(
+                                  calculations.dailyRevenueCapacity
+                                )
+                              : "—"}
+                          </span>{" "}
+                          daily ({formatNumber(calculations.dailyBillableHours)}{" "}
+                          billable hours at{" "}
+                          {formatCurrency(calculations.honestHourlyRate)}/hr).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Final Rate Section */}
+            <section className="scroll-mt-24" id="final">
+              <div className="mb-6">
+                <h2 className="flex items-center gap-3 font-bold text-2xl tracking-tight">
+                  <div className="rounded-lg bg-muted p-2">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  Your Honest Hourly Rate
+                </h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Final calculation based on all expenses and profit margin
+                </p>
+              </div>
+
+              <div className="rounded-lg bg-background p-6">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Total Expenses (Annual)
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-2 font-semibold text-2xl">
+                            {formatCurrency(calculations.totalExpensesAnnual)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Operating + Total Growth
+                          <br />={" "}
+                          {formatCurrency(calculations.totalOperatingAnnual)} +{" "}
+                          {formatCurrency(calculations.totalGrowthAnnual)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cursor-help">
+                          <p className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+                            Hourly Expense Rate
+                            <Info className="h-3 w-3" />
+                          </p>
+                          <p className="mt-2 font-semibold text-2xl">
+                            {formatCurrency(calculations.hourlyExpenseRate)}
+                          </p>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Formula: Total Expenses Annual ÷ Annual Billable Hours
+                          <br />={" "}
+                          {formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
+                          {formatNumber(calculations.annualBillableHours)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="space-y-2">
+                    <LabelWithTooltip
+                      htmlFor="profitPercent"
+                      label="Desired Profit Margin (%)"
+                      tooltip="Target profit percentage. Formula: Hourly Rate = Hourly Expense Rate ÷ (1 - Profit %). Industry standard: 40-60% for service businesses."
+                    />
+                    <Input
+                      className="bg-input"
+                      id="profitPercent"
+                      onChange={handleChange("profitPercent")}
+                      type="number"
+                      value={inputs.profitPercent}
+                    />
+                  </div>
+                </div>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="mt-8 cursor-help rounded-lg bg-muted/40 p-6 text-center">
+                      <p className="flex items-center justify-center gap-1.5 font-medium text-muted-foreground text-sm">
+                        Your Honest Hourly Rate
+                        <Info className="h-4 w-4" />
+                      </p>
+                      <p className="mt-3 font-bold text-5xl text-green-600 dark:text-green-500">
+                        {Number.isFinite(calculations.honestHourlyRate)
+                          ? formatCurrency(calculations.honestHourlyRate)
+                          : "—"}
+                      </p>
+                      <p className="mt-2 text-muted-foreground text-sm">
+                        This rate covers all expenses and your desired profit
+                        margin
+                      </p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    <p className="text-xs leading-relaxed">
+                      Formula: Hourly Expense Rate ÷ (1 - Profit Margin ÷ 100)
+                      <br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷
+                      (1 - {inputs.profitPercent}% ÷ 100)
+                      <br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷{" "}
+                      {(1 - toPercent(inputs.profitPercent)).toFixed(2)}
+                      <br />
+                      <br />
+                      This ensures your hourly rate not only covers all expenses
+                      but also delivers your target profit percentage on each
+                      billable hour.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <div className="mt-8 space-y-4">
+                  <h3 className="font-semibold text-lg">Revenue Projections</h3>
+                  <div className="overflow-hidden rounded-lg bg-muted/30">
+                    <table className="w-full">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-medium text-sm">
+                            Time Period
+                          </th>
+                          <th className="px-4 py-3 text-right font-medium text-sm">
+                            Expenses
+                          </th>
+                          <th className="px-4 py-3 text-right font-medium text-sm">
+                            Revenue (Full Capacity)
+                          </th>
+                          <th className="px-4 py-3 text-right font-medium text-sm">
+                            Profit
+                          </th>
+                          <th className="px-4 py-3 text-right font-medium text-sm">
+                            Profit Margin
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/30">
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">
+                            Per Hour
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {formatCurrency(calculations.hourlyExpenseRate)}
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
+                            {formatCurrency(calculations.honestHourlyRate)}
+                          </td>
+                          <td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  calculations.honestHourlyRate -
+                                    calculations.hourlyExpenseRate
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {inputs.profitPercent}%
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">
+                            Per Day
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {formatCurrency(calculations.dailyExpense)}
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.dailyRevenueCapacity)
+                              ? formatCurrency(
+                                  calculations.dailyRevenueCapacity
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.dailyRevenueCapacity)
+                              ? formatCurrency(
+                                  calculations.dailyRevenueCapacity -
+                                    calculations.dailyExpense
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {inputs.profitPercent}%
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">
+                            Per Week
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {formatCurrency(
+                              calculations.totalExpensesAnnual / 52
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  (calculations.honestHourlyRate *
+                                    calculations.annualBillableHours) /
+                                    52
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  (calculations.honestHourlyRate *
+                                    calculations.annualBillableHours) /
+                                    52 -
+                                    calculations.totalExpensesAnnual / 52
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {inputs.profitPercent}%
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-medium text-sm">
+                            Per Month
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {formatCurrency(
+                              calculations.totalExpensesAnnual / 12
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  (calculations.honestHourlyRate *
+                                    calculations.annualBillableHours) /
+                                    12
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  (calculations.honestHourlyRate *
+                                    calculations.annualBillableHours) /
+                                    12 -
+                                    calculations.totalExpensesAnnual / 12
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {inputs.profitPercent}%
+                          </td>
+                        </tr>
+                        <tr className="bg-muted/50 font-semibold">
+                          <td className="px-4 py-3 text-sm">Per Year</td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {formatCurrency(calculations.totalExpensesAnnual)}
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  calculations.honestHourlyRate *
+                                    calculations.annualBillableHours
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-green-600 text-sm dark:text-green-500">
+                            {Number.isFinite(calculations.honestHourlyRate)
+                              ? formatCurrency(
+                                  calculations.honestHourlyRate *
+                                    calculations.annualBillableHours -
+                                    calculations.totalExpensesAnnual
+                                )
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            {inputs.profitPercent}%
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
 
         {/* Footer */}
-        <div className="mt-12 text-center text-sm text-muted-foreground py-8">
+        <div className="mt-12 py-8 text-center text-muted-foreground text-sm">
           Copyright © 2025 - Thorbis Rights. All Rights Reserved.
         </div>
       </div>

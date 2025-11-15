@@ -2,9 +2,9 @@
  * Archive company with null status
  */
 
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { resolve } from "path";
 
 // Load environment variables
 config({ path: resolve(process.cwd(), ".env.local") });
@@ -18,6 +18,90 @@ if (!(supabaseUrl && supabaseServiceKey)) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+const DAYS_TO_PERMANENT_DELETE = 90;
+const HOURS_PER_DAY = 24;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_MINUTE = 60;
+const MILLISECONDS_PER_SECOND = 1000;
+const MILLISECONDS_PER_DAY =
+  HOURS_PER_DAY *
+  MINUTES_PER_HOUR *
+  SECONDS_PER_MINUTE *
+  MILLISECONDS_PER_SECOND;
+const PERMANENT_DELETE_DELAY_MS =
+  DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
+
+type CompanyRecord = {
+  id: string;
+  name: string;
+  stripe_subscription_status: string | null;
+  deleted_at: string | null;
+};
+
+type MembershipRecord = {
+  id: string;
+  company_id: string;
+  companies: CompanyRecord | CompanyRecord[] | null;
+};
+
+function getCompanyFromMembership(
+  membership: MembershipRecord
+): CompanyRecord | null {
+  if (!membership.companies) {
+    return null;
+  }
+  if (Array.isArray(membership.companies)) {
+    return membership.companies[0] ?? null;
+  }
+  return membership.companies;
+}
+
+function getPermanentDeleteDateISO() {
+  return new Date(Date.now() + PERMANENT_DELETE_DELAY_MS).toISOString();
+}
+
+async function archiveCompanyMembership(
+  membership: MembershipRecord,
+  userId: string
+) {
+  const company = getCompanyFromMembership(membership);
+  if (!company) {
+    return;
+  }
+
+  const companyId = company.id;
+  console.log(`Archiving: ${company.name} (${companyId})`);
+
+  const { error: archiveError } = await supabase
+    .from("companies")
+    .update({
+      deleted_at: new Date().toISOString(),
+      deleted_by: userId,
+      archived_at: new Date().toISOString(),
+      permanent_delete_scheduled_at: getPermanentDeleteDateISO(),
+    })
+    .eq("id", companyId);
+
+  if (archiveError) {
+    console.error("  ❌ Error archiving company:", archiveError);
+    return;
+  }
+
+  const { error: memberError } = await supabase
+    .from("team_members")
+    .update({
+      status: "archived",
+    })
+    .eq("company_id", companyId)
+    .eq("user_id", userId);
+
+  if (memberError) {
+    console.error("  ⚠️  Error archiving team members:", memberError);
+  } else {
+    console.log("  ✅ Archived");
+  }
+}
 
 async function archiveNullStatus() {
   try {
@@ -69,46 +153,8 @@ async function archiveNullStatus() {
 
     console.log(`Found ${memberships.length} companies with null status:\n`);
 
-    for (const membership of memberships) {
-      const company = Array.isArray(membership.companies)
-        ? membership.companies[0]
-        : membership.companies;
-      if (!company) continue;
-      const companyId = company.id;
-      console.log(`Archiving: ${company.name} (${companyId})`);
-
-      // Archive the company
-      const { error: archiveError } = await supabase
-        .from("companies")
-        .update({
-          deleted_at: new Date().toISOString(),
-          deleted_by: user.id,
-          archived_at: new Date().toISOString(),
-          permanent_delete_scheduled_at: new Date(
-            Date.now() + 90 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-        })
-        .eq("id", companyId);
-
-      if (archiveError) {
-        console.error("  ❌ Error archiving company:", archiveError);
-        continue;
-      }
-
-      // Archive team members
-      const { error: memberError } = await supabase
-        .from("team_members")
-        .update({
-          status: "archived",
-        })
-        .eq("company_id", companyId)
-        .eq("user_id", user.id);
-
-      if (memberError) {
-        console.error("  ⚠️  Error archiving team members:", memberError);
-      } else {
-        console.log("  ✅ Archived");
-      }
+    for (const membership of memberships as MembershipRecord[]) {
+      await archiveCompanyMembership(membership, user.id);
     }
 
     console.log("\n✅ Done!");

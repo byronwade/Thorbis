@@ -243,6 +243,55 @@ export default async function InvoiceDetailsPage({
       .order("created_at", { ascending: false }),
   ]);
 
+  const invoiceCommunicationFilters: string[] = [`invoice_id.eq.${invoiceId}`];
+  if (invoice.customer_id) {
+    invoiceCommunicationFilters.push(`customer_id.eq.${invoice.customer_id}`);
+  }
+  if (invoice.job_id) {
+    invoiceCommunicationFilters.push(`job_id.eq.${invoice.job_id}`);
+  }
+
+  let invoiceCommunicationsQuery = supabase
+    .from("communications")
+    .select(
+      `
+        *,
+        customer:customers!customer_id(id, first_name, last_name)
+      `
+    )
+    .eq("company_id", activeCompanyId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (invoiceCommunicationFilters.length > 1) {
+    invoiceCommunicationsQuery = invoiceCommunicationsQuery.or(
+      invoiceCommunicationFilters.join(",")
+    );
+  } else {
+    invoiceCommunicationsQuery = invoiceCommunicationsQuery.eq(
+      "invoice_id",
+      invoiceId
+    );
+  }
+
+  const { data: invoiceCommunications, error: invoiceCommunicationsError } =
+    await invoiceCommunicationsQuery;
+
+  if (invoiceCommunicationsError) {
+    console.error(
+      "[Invoice Details] Failed to load communications:",
+      invoiceCommunicationsError
+    );
+  }
+
+  const communications =
+    (invoiceCommunications || []).filter((record, index, self) => {
+      if (!record?.id) {
+        return false;
+      }
+      return self.findIndex((entry) => entry.id === record.id) === index;
+    }) ?? [];
+
   // Calculate metrics for stats bar
   const metrics = {
     totalAmount: invoice.total_amount || 0,
@@ -269,6 +318,7 @@ export default async function InvoiceDetailsPage({
     notes: notes || [],
     activities: activities || [],
     attachments: attachments || [],
+    communications,
   };
 
   return (

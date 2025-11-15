@@ -12,8 +12,8 @@
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
 import {
-  PhoneNumbersList,
   type PhoneNumberRecord,
+  PhoneNumbersList,
 } from "@/components/telnyx/phone-numbers-list";
 import { PhoneNumbersToolbar } from "@/components/telnyx/phone-numbers-toolbar";
 import { Skeleton } from "@/components/ui/skeleton";

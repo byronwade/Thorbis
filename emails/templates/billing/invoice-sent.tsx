@@ -46,15 +46,18 @@ export default function InvoiceSentEmail({
         <Divider style={{ margin: "20px 0" }} />
 
         <div style={itemsSection}>
-          {items.map((item, index) => (
-            <div key={index} style={itemRow}>
-              <div style={itemDetails}>
-                <Text style={itemDescription}>{item.description}</Text>
-                <Text style={itemQuantity}>Qty: {item.quantity}</Text>
+          {items.map((item) => {
+            const key = `${item.description}-${item.quantity}-${item.amount}`;
+            return (
+              <div key={key} style={itemRow}>
+                <div style={itemDetails}>
+                  <Text style={itemDescription}>{item.description}</Text>
+                  <Text style={itemQuantity}>Qty: {item.quantity}</Text>
+                </div>
+                <Text style={itemAmount}>{item.amount}</Text>
               </div>
-              <Text style={itemAmount}>{item.amount}</Text>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <Divider style={{ margin: "20px 0" }} />

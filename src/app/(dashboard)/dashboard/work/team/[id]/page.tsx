@@ -3,12 +3,29 @@
  * Matches customer and job details page pattern
  */
 
+import type { PostgrestError } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import { ToolbarActionsProvider } from "@/components/layout/toolbar-actions-provider";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { TeamMemberPageContent } from "@/components/team/team-member-page-content";
 import { generateTeamMemberStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
+
+const POSTGREST_ROW_NOT_FOUND = "PGRST116";
+
+type QueryError = PostgrestError | null;
+
+const hasSupabaseErrorPayload = (error: QueryError): error is PostgrestError =>
+  Boolean(error?.code);
+
+const isRowNotFoundError = (error: QueryError) =>
+  hasSupabaseErrorPayload(error) && error.code === POSTGREST_ROW_NOT_FOUND;
+
+const ensureNoQueryFailure = (error: QueryError, message: string) => {
+  if (hasSupabaseErrorPayload(error) && !isRowNotFoundError(error)) {
+    throw new Error(message);
+  }
+};
 
 // Configure page for full width with no sidebars
 export const dynamic = "force-dynamic";
@@ -35,7 +52,6 @@ export default async function TeamMemberDetailsPage({
   const supabase = await createClient();
 
   if (!supabase) {
-    console.error("[Team Member Page] Supabase client not initialized");
     return notFound();
   }
 
@@ -46,12 +62,10 @@ export default async function TeamMemberDetailsPage({
   } = await supabase.auth.getUser();
 
   if (authError) {
-    console.error("[Team Member Page] Auth error:", authError);
     return notFound();
   }
 
   if (!user) {
-    console.error("[Team Member Page] No authenticated user");
     return notFound();
   }
 
@@ -60,7 +74,6 @@ export default async function TeamMemberDetailsPage({
   const activeCompanyId = await getActiveCompanyId();
 
   if (!activeCompanyId) {
-    console.error("[Team Member Page] No active company ID");
     return notFound();
   }
 
@@ -73,32 +86,12 @@ export default async function TeamMemberDetailsPage({
     .eq("status", "active")
     .maybeSingle();
 
-  // Check for real errors
-  const hasRealError =
-    teamMemberError &&
-    teamMemberError.code !== "PGRST116" &&
-    Object.keys(teamMemberError).length > 0;
-
-  if (hasRealError) {
-    try {
-      console.error(
-        "[Team Member Page] Team member query error:",
-        JSON.stringify(teamMemberError, null, 2)
-      );
-    } catch (e) {
-      console.error(
-        "[Team Member Page] Team member error (could not serialize):",
-        teamMemberError
-      );
-    }
-    return notFound();
-  }
+  ensureNoQueryFailure(
+    teamMemberError,
+    "Unable to verify active company membership"
+  );
 
   if (!teamMember?.company_id) {
-    console.error(
-      "[Team Member Page] User has no active company membership. User ID:",
-      user.id
-    );
     return notFound();
   }
 
@@ -110,20 +103,14 @@ export default async function TeamMemberDetailsPage({
     .eq("company_id", teamMember.company_id)
     .single();
 
-  if (memberError) {
-    console.error("[Team Member Page] Member query error:", memberError);
-    console.error("[Team Member Page] Member ID:", memberId);
-    console.error("[Team Member Page] Company ID:", teamMember.company_id);
-    return notFound();
-  }
+  ensureNoQueryFailure(
+    memberError,
+    "Unable to load requested team member record"
+  );
 
-  if (!member) {
-    console.error(
-      "[Team Member Page] Member not found. ID:",
-      memberId,
-      "Company ID:",
-      teamMember.company_id
-    );
+  const memberIsMissing = !member || isRowNotFoundError(memberError);
+
+  if (memberIsMissing) {
     return notFound();
   }
 

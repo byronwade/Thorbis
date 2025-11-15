@@ -648,7 +648,6 @@ export function MaintenancePlanPageContent({
           relatedItems: true,
         }}
       />
-
     </>
   );
 }

@@ -161,9 +161,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
           </div>
 
           {badges && badges.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-2">
-              {badges}
-            </div>
+            <div className="flex flex-wrap items-center gap-2">{badges}</div>
           ) : null}
         </div>
 

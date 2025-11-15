@@ -21,6 +21,7 @@ export type ActionResult<T = void> =
       success: true;
       data: T;
       message?: string;
+      error?: string;
     }
   | {
       success: false;

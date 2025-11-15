@@ -231,7 +231,7 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
       <div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
         <span>Updated {formatDate(job.updatedAt, { preset: "short" })}</span>
         <span className="uppercase">
-          {columnId ? COLUMN_LABEL.get(columnId) ?? columnId : "—"}
+          {columnId ? (COLUMN_LABEL.get(columnId) ?? columnId) : "—"}
         </span>
       </div>
 

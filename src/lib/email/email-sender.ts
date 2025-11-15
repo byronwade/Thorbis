@@ -12,9 +12,11 @@
 "use server";
 
 import { render } from "@react-email/components";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ReactElement } from "react";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/supabase";
 import type {
   EmailSendResult,
   EmailTemplate as EmailTemplateEnum,
@@ -30,6 +32,9 @@ interface SendEmailOptions {
   templateType: EmailTemplateEnum;
   replyTo?: string;
   tags?: { name: string; value: string }[];
+  companyId?: string;
+  communicationId?: string;
+  fromOverride?: string;
 }
 
 /**
@@ -49,6 +54,9 @@ export async function sendEmail({
   templateType,
   replyTo,
   tags = [],
+  companyId,
+  communicationId,
+  fromOverride,
 }: SendEmailOptions): Promise<EmailSendResult> {
   try {
     // Validate email data
@@ -84,21 +92,38 @@ export async function sendEmail({
       };
     }
 
+    const supabase = await createClient();
+
+    // Determine from identity
+    let fromAddress = fromOverride || emailConfig.from;
+    if (companyId && supabase) {
+      const override = await getCompanyEmailIdentity(supabase, companyId);
+      if (override) {
+        fromAddress = override;
+      }
+    }
+
     // Render template to HTML
     const html = await render(template);
 
+    const sendTags = [
+      ...tags,
+      { name: "template", value: templateType },
+      { name: "environment", value: process.env.NODE_ENV || "development" },
+    ];
+
+    if (communicationId) {
+      sendTags.push({ name: "communication_id", value: communicationId });
+    }
+
     // Send email via Resend
     const { data, error } = await resend.emails.send({
-      from: emailConfig.from,
+      from: fromAddress,
       to: validatedData.to,
       subject: validatedData.subject,
       html,
       replyTo: validatedData.replyTo,
-      tags: [
-        ...tags,
-        { name: "template", value: templateType },
-        { name: "environment", value: process.env.NODE_ENV || "development" },
-      ],
+      tags: sendTags,
     });
 
     if (error) {
@@ -106,18 +131,17 @@ export async function sendEmail({
 
       // Log failed email to database for retry queue
       try {
-        const supabase = await createClient();
         if (supabase) {
           await supabase.from("email_logs").insert({
             to: Array.isArray(validatedData.to)
               ? validatedData.to.join(", ")
               : validatedData.to,
-            from: emailConfig.from,
+            from: fromAddress,
             subject: validatedData.subject,
             html_body: html,
             status: "failed",
             error_message: error.message || "Unknown error",
-            metadata: { template: templateType, tags },
+            metadata: { template: templateType, tags: sendTags },
             retry_count: 0,
             max_retries: 3,
             next_retry_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
@@ -135,18 +159,17 @@ export async function sendEmail({
 
     // Log successful email to database
     try {
-      const supabase = await createClient();
       if (supabase) {
         await supabase.from("email_logs").insert({
           to: Array.isArray(validatedData.to)
             ? validatedData.to.join(", ")
             : validatedData.to,
-          from: emailConfig.from,
+          from: fromAddress,
           subject: validatedData.subject,
           html_body: html,
           status: "sent",
           message_id: data?.id,
-          metadata: { template: templateType, tags },
+          metadata: { template: templateType, tags: sendTags },
           sent_at: new Date().toISOString(),
         });
       }
@@ -272,4 +295,40 @@ export async function testEmailConfiguration(
         error instanceof Error ? error.message : "Configuration test failed",
     };
   }
+}
+
+async function getCompanyEmailIdentity(
+  supabase: SupabaseClient<Database>,
+  companyId: string
+) {
+  const { data: settings } = await supabase
+    .from("communication_email_settings")
+    .select("smtp_from_email, smtp_from_name")
+    .eq("company_id", companyId)
+    .maybeSingle();
+
+  if (settings?.smtp_from_email) {
+    return formatFromAddress(settings.smtp_from_name, settings.smtp_from_email);
+  }
+
+  const { data: domain } = await supabase
+    .from("communication_email_domains")
+    .select("domain")
+    .eq("company_id", companyId)
+    .eq("status", "verified")
+    .order("last_verified_at", { ascending: false })
+    .maybeSingle();
+
+  if (domain?.domain) {
+    return formatFromAddress("Notifications", `notifications@${domain.domain}`);
+  }
+
+  return null;
+}
+
+function formatFromAddress(name: string | null | undefined, email: string) {
+  if (name && name.trim()) {
+    return `${name} <${email}>`;
+  }
+  return email;
 }

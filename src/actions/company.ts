@@ -10,6 +10,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
+  convertHoursToSettings,
+  DAYS_OF_WEEK,
+  DEFAULT_HOURS,
+  type HoursOfOperation,
+  normalizeHoursFromSettings,
+} from "@/lib/company/hours";
+import {
   ActionError,
   ERROR_CODES,
   ERROR_MESSAGES,
@@ -25,13 +32,6 @@ import {
   getOrCreateStripeCustomer,
 } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
-import {
-  DEFAULT_HOURS,
-  DAYS_OF_WEEK,
-  convertHoursToSettings,
-  normalizeHoursFromSettings,
-  type HoursOfOperation,
-} from "@/lib/company/hours";
 import type { Database } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
@@ -95,7 +95,8 @@ const parseServiceAreas = (value: FormDataEntryValue | null): string[] => {
       return [];
     }
     return parsed.filter(
-      (entry): entry is string => typeof entry === "string" && entry.trim().length > 0
+      (entry): entry is string =>
+        typeof entry === "string" && entry.trim().length > 0
     );
   } catch {
     return [];
@@ -283,8 +284,10 @@ export async function getCompanyInfo(): Promise<ActionResult<any>> {
       .single();
 
     const hoursOfOperation = normalizeHoursFromSettings(
-      (settings?.hours_of_operation as Record<string, { open?: string | null; close?: string | null }>) ??
-        null
+      (settings?.hours_of_operation as Record<
+        string,
+        { open?: string | null; close?: string | null }
+      >) ?? null
     );
     const portalSettings = settings?.portal_settings as
       | Record<string, unknown>
@@ -421,8 +424,7 @@ export async function updateCompanyInfo(
       .single();
 
     const portalSettingsPayload = {
-      ...((existingSettings?.portal_settings as Record<string, unknown>) ??
-        {}),
+      ...((existingSettings?.portal_settings as Record<string, unknown>) ?? {}),
       profile_description: data.description ?? "",
     };
 

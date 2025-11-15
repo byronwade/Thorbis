@@ -1010,9 +1010,7 @@ export function WelcomePageClient({
           onSave={(updatedMember) => {
             setTeamMembers((prev) =>
               prev.map((m) =>
-                m.email === updatedMember.email
-                  ? updatedMember
-                  : m
+                m.email === updatedMember.email ? updatedMember : m
               )
             );
             setEditingMember(null);

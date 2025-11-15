@@ -7,17 +7,37 @@
  * Run with: npx tsx scripts/setup-billing-portal.ts
  */
 
+import { resolve } from "node:path";
 import { config } from "dotenv";
-import { resolve } from "path";
 import Stripe from "stripe";
 
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+  "2025-01-27.acacia";
+const SECONDS_TO_MILLISECONDS = 1000;
+
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+if (!stripeSecretKey) {
+  throw new Error("STRIPE_SECRET_KEY is not defined in the environment");
+}
+
 // Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia" as any,
+const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: STRIPE_API_VERSION,
 });
+
+function formatUnixSeconds(timestampSeconds: number) {
+  return new Date(
+    timestampSeconds * SECONDS_TO_MILLISECONDS
+  ).toLocaleDateString();
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
 
 async function setupBillingPortal() {
   console.log("🏪 Setting up Stripe Billing Portal...\n");
@@ -29,24 +49,23 @@ async function setupBillingPortal() {
       limit: 10,
     });
 
-    if (configurations.data.length > 0 && configurations.data[0].active) {
+    const existingConfig = configurations.data[0];
+    if (existingConfig?.active) {
       console.log("✅ Active billing portal configuration already exists!");
-      console.log(`   Configuration ID: ${configurations.data[0].id}`);
-      console.log(
-        `   Created: ${new Date(configurations.data[0].created * 1000).toLocaleDateString()}`
-      );
+      console.log(`   Configuration ID: ${existingConfig.id}`);
+      console.log(`   Created: ${formatUnixSeconds(existingConfig.created)}`);
       console.log("\n📋 Current Features:");
       console.log(
-        `   • Cancel subscriptions: ${configurations.data[0].features.subscription_cancel.enabled ? "✓" : "✗"}`
+        `   • Cancel subscriptions: ${existingConfig.features.subscription_cancel.enabled ? "✓" : "✗"}`
       );
       console.log(
-        `   • Update payment method: ${configurations.data[0].features.payment_method_update.enabled ? "✓" : "✗"}`
+        `   • Update payment method: ${existingConfig.features.payment_method_update.enabled ? "✓" : "✗"}`
       );
       console.log(
-        `   • Invoice history: ${configurations.data[0].features.invoice_history.enabled ? "✓" : "✗"}`
+        `   • Invoice history: ${existingConfig.features.invoice_history.enabled ? "✓" : "✗"}`
       );
       console.log(
-        `   • Customer update: ${configurations.data[0].features.customer_update.enabled ? "✓" : "✗"}`
+        `   • Customer update: ${existingConfig.features.customer_update.enabled ? "✓" : "✗"}`
       );
       console.log("\n✅ Billing portal is ready to use!");
       console.log("   Users can access it at: /dashboard/settings/billing");
@@ -95,9 +114,7 @@ async function setupBillingPortal() {
     console.log("Portal Details:");
     console.log(`  Configuration ID: ${configuration.id}`);
     console.log(`  Status: ${configuration.active ? "Active" : "Inactive"}`);
-    console.log(
-      `  Created: ${new Date(configuration.created * 1000).toLocaleDateString()}`
-    );
+    console.log(`  Created: ${formatUnixSeconds(configuration.created)}`);
 
     console.log("\n📋 Enabled Features:");
     console.log("  ✓ Customer can update email, address, phone, tax ID");
@@ -118,10 +135,11 @@ async function setupBillingPortal() {
       "2. Customize portal at: https://dashboard.stripe.com/settings/billing/portal"
     );
     console.log("\n");
-  } catch (error: any) {
-    console.error("❌ Error setting up billing portal:", error.message);
+  } catch (error) {
+    const errorMessage = getErrorMessage(error);
+    console.error("❌ Error setting up billing portal:", errorMessage);
 
-    if (error.message.includes("configuration has not been created")) {
+    if (errorMessage.includes("configuration has not been created")) {
       console.log("\n💡 Alternative Setup:");
       console.log(
         "Configure manually at: https://dashboard.stripe.com/settings/billing/portal"

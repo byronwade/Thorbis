@@ -437,9 +437,7 @@ export function generateMaterialStats(metrics: {
 
   const reservedPercent =
     metrics.quantityOnHand > 0 && metrics.quantityReserved > 0
-      ? Math.round(
-          (-metrics.quantityReserved / metrics.quantityOnHand) * 100
-        )
+      ? Math.round((-metrics.quantityReserved / metrics.quantityOnHand) * 100)
       : undefined;
 
   return [
@@ -624,7 +622,9 @@ export function generatePaymentStats(metrics: {
 }): StatCard[] {
   const now = new Date();
   const createdAt = new Date(metrics.createdAt);
-  const processedAt = metrics.processedAt ? new Date(metrics.processedAt) : null;
+  const processedAt = metrics.processedAt
+    ? new Date(metrics.processedAt)
+    : null;
 
   // Calculate processing time if processed
   const processingTime = processedAt
@@ -657,15 +657,17 @@ export function generatePaymentStats(metrics: {
     },
     {
       label: "Processing Time",
-      value: processingTime !== null
-        ? processingTime < 60
-          ? `${processingTime}m`
-          : `${Math.floor(processingTime / 60)}h ${processingTime % 60}m`
-        : "Not processed",
+      value:
+        processingTime !== null
+          ? processingTime < 60
+            ? `${processingTime}m`
+            : `${Math.floor(processingTime / 60)}h ${processingTime % 60}m`
+          : "Not processed",
       change: processingTime !== null && processingTime < 30 ? 100 : undefined,
-      changeLabel: processingTime !== null
-        ? `from ${createdAt.toLocaleDateString()}`
-        : "awaiting processing",
+      changeLabel:
+        processingTime !== null
+          ? `from ${createdAt.toLocaleDateString()}`
+          : "awaiting processing",
     },
   ];
 }

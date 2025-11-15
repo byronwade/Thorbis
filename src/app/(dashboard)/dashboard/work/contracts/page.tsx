@@ -127,16 +127,22 @@ export default async function ContractsPage() {
   }
 
   // Filter to active contracts for stats calculations
-  const activeContracts = contracts.filter((c) => !c.archived_at && !c.deleted_at);
+  const activeContracts = contracts.filter(
+    (c) => !(c.archived_at || c.deleted_at)
+  );
 
   // Calculate contract stats (from active contracts only)
   const totalContracts = activeContracts.length;
-  const signedCount = activeContracts.filter((c) => c.status === "signed").length;
+  const signedCount = activeContracts.filter(
+    (c) => c.status === "signed"
+  ).length;
   const pendingCount = activeContracts.filter(
     (c) => c.status === "sent" || c.status === "viewed"
   ).length;
   const draftCount = activeContracts.filter((c) => c.status === "draft").length;
-  const expiredCount = activeContracts.filter((c) => c.status === "expired").length;
+  const expiredCount = activeContracts.filter(
+    (c) => c.status === "expired"
+  ).length;
 
   const contractStats: StatCard[] = [
     {

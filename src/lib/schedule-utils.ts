@@ -2,6 +2,7 @@ import type {
   Address,
   Customer,
   Job,
+  JobAssignment,
   LegacyJob,
   Location,
   Technician,
@@ -43,7 +44,7 @@ export function findConflictingJobs(
 ): Job[] {
   return jobs.filter((job) => {
     if (excludeJobId && job.id === excludeJobId) return false;
-    if (job.technicianId !== technicianId) return false;
+    if (!jobHasTechnician(job, technicianId)) return false;
 
     return hasTimeConflict(startTime, endTime, job.startTime, job.endTime);
   });
@@ -98,9 +99,25 @@ export function legacyJobToJob(legacy: LegacyJob, technicianId: string): Job {
     ? Number.parseFloat(legacy.estimatedDuration.replace(/[^\d.]/g, "")) * 60
     : undefined;
 
+  const assignments: JobAssignment[] = technicianId
+    ? [
+        {
+          technicianId,
+          teamMemberId: undefined,
+          displayName: "Technician",
+          avatar: null,
+          role: "primary",
+          status: "available",
+          isActive: true,
+        },
+      ]
+    : [];
+
   return {
     id: legacy.id,
     technicianId,
+    assignments,
+    isUnassigned: assignments.length === 0,
     title: legacy.title,
     description: legacy.description,
     customer,
@@ -298,7 +315,9 @@ export function filterJobs(
     if (
       filters.technicianIds &&
       filters.technicianIds.length > 0 &&
-      !filters.technicianIds.includes(job.technicianId)
+      !filters.technicianIds.some((technicianId) =>
+        jobHasTechnician(job, technicianId)
+      )
     )
       return false;
 
@@ -391,7 +410,12 @@ export function validateJob(job: Partial<Job>): {
     errors.push("Title is required");
   }
 
-  if (!job.technicianId) {
+  const hasTechnician =
+    !!job.technicianId ||
+    (job.assignments &&
+      job.assignments.some((assignment) => assignment.technicianId));
+
+  if (!hasTechnician) {
     errors.push("Technician must be assigned");
   }
 
@@ -414,4 +438,14 @@ export function validateJob(job: Partial<Job>): {
     valid: errors.length === 0,
     errors,
   };
+}
+
+function jobHasTechnician(job: Job, technicianId: string): boolean {
+  if (job.technicianId === technicianId) {
+    return true;
+  }
+
+  return job.assignments.some(
+    (assignment) => assignment.technicianId === technicianId
+  );
 }

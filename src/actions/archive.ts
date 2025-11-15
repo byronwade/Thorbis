@@ -24,6 +24,52 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
+const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
+  const supabase = await createClient();
+  if (!supabase) {
+    throw new ActionError(
+      "Database connection failed",
+      ERROR_CODES.DB_CONNECTION_ERROR
+    );
+  }
+  return supabase as SupabaseServerClient;
+};
+
+const HTTP_STATUS = {
+  forbidden: 403,
+} as const;
+
+const ARCHIVE_LIMIT = {
+  min: 1,
+  max: 100,
+  default: 50,
+} as const;
+
+const MILLISECONDS_IN_DAY = 86_400_000;
+const PERMANENT_DELETE_BUFFER_DAYS = 90;
+
+const DATE_RANGE_TO_DAYS = {
+  "7days": 7,
+  "30days": 30,
+  "90days": 90,
+} as const;
+
+type LimitedDateRange = keyof typeof DATE_RANGE_TO_DAYS;
+type DateRangeFilter = LimitedDateRange | "all";
+
+type ArchivedEntityRow = {
+  id: string;
+  deleted_at: string;
+  deleted_by?: string | null;
+  archived_at?: string | null;
+  permanent_delete_scheduled_at?: string | null;
+} & Record<string, unknown>;
+
 // Entity types that support archiving
 export type ArchivableEntityType =
   | "invoice"
@@ -34,6 +80,8 @@ export type ArchivableEntityType =
   | "property"
   | "equipment"
   | "purchase_order";
+
+type EntityFilter = ArchivableEntityType | "all";
 
 // Archived item representation
 export type ArchivedItem = {
@@ -47,8 +95,41 @@ export type ArchivedItem = {
   archivedAt: string;
   permanentDeleteScheduledAt: string;
   daysUntilPermanentDelete: number;
-  metadata?: Record<string, any>; // Entity-specific data
+  metadata?: Record<string, unknown>; // Entity-specific data
 };
+
+type EntityFetchConfig = {
+  table: string;
+  entityType: ArchivableEntityType;
+  numberField?: string;
+};
+
+const ENTITY_FETCH_CONFIGS: EntityFetchConfig[] = [
+  { table: "invoices", entityType: "invoice", numberField: "invoice_number" },
+  {
+    table: "estimates",
+    entityType: "estimate",
+    numberField: "estimate_number",
+  },
+  {
+    table: "contracts",
+    entityType: "contract",
+    numberField: "contract_number",
+  },
+  { table: "jobs", entityType: "job", numberField: "job_number" },
+  { table: "customers", entityType: "customer" },
+  { table: "properties", entityType: "property" },
+  {
+    table: "equipment",
+    entityType: "equipment",
+    numberField: "equipment_number",
+  },
+  {
+    table: "purchase_orders",
+    entityType: "purchase_order",
+    numberField: "po_number",
+  },
+];
 
 // Filter options for archive queries
 const getArchivedItemsSchema = z.object({
@@ -68,7 +149,11 @@ const getArchivedItemsSchema = z.object({
   dateRange: z.enum(["7days", "30days", "90days", "all"]).default("30days"),
   deletedBy: z.string().uuid().optional(),
   searchQuery: z.string().optional(),
-  limit: z.number().min(1).max(100).default(50),
+  limit: z
+    .number()
+    .min(ARCHIVE_LIMIT.min)
+    .max(ARCHIVE_LIMIT.max)
+    .default(ARCHIVE_LIMIT.default),
   offset: z.number().min(0).default(0),
 });
 
@@ -78,8 +163,8 @@ const getArchivedItemsSchema = z.object({
 export async function getArchivedItems(
   options: z.infer<typeof getArchivedItemsSchema>
 ): Promise<ActionResult<ArchivedItem[]>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
@@ -102,192 +187,221 @@ export async function getArchivedItems(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
     const validated = getArchivedItemsSchema.parse(options);
+    const dateFilterIso = computeDateFilterIso(validated.dateRange);
+    const configs = getEntityFetchConfigs(validated.entityType);
 
-    // Calculate date range filter
-    let dateFilter: Date | null = null;
-    if (validated.dateRange !== "all") {
-      const days =
-        validated.dateRange === "7days"
-          ? 7
-          : validated.dateRange === "30days"
-            ? 30
-            : 90;
-      dateFilter = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    }
-
-    const archivedItems: ArchivedItem[] = [];
-
-    // Helper to fetch from a specific table
-    const fetchArchived = async (
-      table: string,
-      entityType: ArchivableEntityType,
-      numberField?: string
-    ) => {
-      let query = supabase
-        .from(table)
-        .select(
-          `
-          id,
-          ${numberField ? `${numberField},` : ""}
-          deleted_at,
-          deleted_by,
-          archived_at,
-          permanent_delete_scheduled_at,
-          *
-        `
+    const archivedItems = (
+      await Promise.all(
+        configs.map((config) =>
+          fetchArchivedEntities({
+            supabase,
+            companyId: teamMember.company_id,
+            config,
+            limit: validated.limit,
+            deletedBy: validated.deletedBy,
+            dateFilterIso,
+          })
         )
-        .eq("company_id", teamMember.company_id)
-        .not("deleted_at", "is", null)
-        .order("deleted_at", { ascending: false });
-
-      if (dateFilter) {
-        query = query.gte("deleted_at", dateFilter.toISOString());
-      }
-
-      if (validated.deletedBy) {
-        query = query.eq("deleted_by", validated.deletedBy);
-      }
-
-      const { data, error } = await query.limit(validated.limit);
-
-      if (error) {
-        console.error(`Error fetching archived ${table}:`, error);
-        return [];
-      }
-
-      return (data || []).map((item: any) => {
-        const now = new Date();
-        const permanentDeleteDate = new Date(
-          item.permanent_delete_scheduled_at || item.deleted_at
-        );
-        const daysUntil = Math.ceil(
-          (permanentDeleteDate.getTime() - now.getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-
-        return {
-          id: item.id,
-          entityType,
-          entityNumber: numberField ? item[numberField] : undefined,
-          displayName: getDisplayName(item, entityType),
-          deletedAt: item.deleted_at,
-          deletedBy: item.deleted_by,
-          archivedAt: item.archived_at || item.deleted_at,
-          permanentDeleteScheduledAt:
-            item.permanent_delete_scheduled_at ||
-            new Date(
-              new Date(item.deleted_at).getTime() + 90 * 24 * 60 * 60 * 1000
-            ).toISOString(),
-          daysUntilPermanentDelete: Math.max(0, daysUntil),
-          metadata: item,
-        };
-      });
-    };
-
-    // Fetch from requested entity types
-    if (validated.entityType === "all" || validated.entityType === "invoice") {
-      const items = await fetchArchived(
-        "invoices",
-        "invoice",
-        "invoice_number"
+      )
+    )
+      .flat()
+      .sort(
+        (a, b) =>
+          new Date(b.deletedAt).getTime() - new Date(a.deletedAt).getTime()
       );
-      archivedItems.push(...items);
-    }
 
-    if (validated.entityType === "all" || validated.entityType === "estimate") {
-      const items = await fetchArchived(
-        "estimates",
-        "estimate",
-        "estimate_number"
-      );
-      archivedItems.push(...items);
-    }
-
-    if (validated.entityType === "all" || validated.entityType === "contract") {
-      const items = await fetchArchived(
-        "contracts",
-        "contract",
-        "contract_number"
-      );
-      archivedItems.push(...items);
-    }
-
-    if (validated.entityType === "all" || validated.entityType === "job") {
-      const items = await fetchArchived("jobs", "job", "job_number");
-      archivedItems.push(...items);
-    }
-
-    if (validated.entityType === "all" || validated.entityType === "customer") {
-      const items = await fetchArchived("customers", "customer");
-      archivedItems.push(...items);
-    }
-
-    if (validated.entityType === "all" || validated.entityType === "property") {
-      const items = await fetchArchived("properties", "property");
-      archivedItems.push(...items);
-    }
-
-    if (
-      validated.entityType === "all" ||
-      validated.entityType === "equipment"
-    ) {
-      const items = await fetchArchived(
-        "equipment",
-        "equipment",
-        "equipment_number"
-      );
-      archivedItems.push(...items);
-    }
-
-    // Sort by most recently deleted
-    archivedItems.sort(
-      (a, b) =>
-        new Date(b.deletedAt).getTime() - new Date(a.deletedAt).getTime()
-    );
-
-    // Apply search filter if provided
-    if (validated.searchQuery) {
-      const query = validated.searchQuery.toLowerCase();
-      return archivedItems.filter(
-        (item) =>
-          item.displayName.toLowerCase().includes(query) ||
-          item.entityNumber?.toLowerCase().includes(query) ||
-          item.entityType.toLowerCase().includes(query)
-      );
-    }
-
-    return archivedItems;
+    return applySearchFilter(archivedItems, validated.searchQuery);
   });
 }
+
+const computeDateFilterIso = (range: DateRangeFilter): string | null => {
+  if (range === "all") {
+    return null;
+  }
+
+  const days = DATE_RANGE_TO_DAYS[range as LimitedDateRange];
+  return new Date(Date.now() - days * MILLISECONDS_IN_DAY).toISOString();
+};
+
+const getEntityFetchConfigs = (filter: EntityFilter): EntityFetchConfig[] =>
+  ENTITY_FETCH_CONFIGS.filter(
+    (config) => filter === "all" || config.entityType === filter
+  );
+
+type FetchArchivedEntitiesParams = {
+  supabase: SupabaseServerClient;
+  companyId: string;
+  config: EntityFetchConfig;
+  limit: number;
+  deletedBy?: string;
+  dateFilterIso: string | null;
+};
+
+async function fetchArchivedEntities({
+  supabase,
+  companyId,
+  config,
+  limit,
+  deletedBy,
+  dateFilterIso,
+}: FetchArchivedEntitiesParams): Promise<ArchivedItem[]> {
+  const selectionFields = [
+    "id",
+    "deleted_at",
+    "deleted_by",
+    "archived_at",
+    "permanent_delete_scheduled_at",
+    "*",
+  ];
+
+  if (config.numberField) {
+    selectionFields.splice(1, 0, config.numberField);
+  }
+
+  let query = supabase
+    .from(config.table)
+    .select(selectionFields.join(","))
+    .eq("company_id", companyId)
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false });
+
+  if (dateFilterIso) {
+    query = query.gte("deleted_at", dateFilterIso);
+  }
+
+  if (deletedBy) {
+    query = query.eq("deleted_by", deletedBy);
+  }
+
+  const { data, error } = await query
+    .limit(limit)
+    .returns<ArchivedEntityRow[]>();
+
+  if (error) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed(`fetch archived ${config.entityType}`),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+
+  return (data ?? []).map((item) => buildArchivedItem(item, config));
+}
+
+const buildArchivedItem = (
+  item: ArchivedEntityRow,
+  config: EntityFetchConfig
+): ArchivedItem => {
+  const fallbackDeleteDate = new Date(
+    new Date(item.deleted_at).getTime() +
+      PERMANENT_DELETE_BUFFER_DAYS * MILLISECONDS_IN_DAY
+  );
+
+  const permanentDeleteDate = item.permanent_delete_scheduled_at
+    ? new Date(item.permanent_delete_scheduled_at)
+    : fallbackDeleteDate;
+
+  const entityNumber =
+    config.numberField && typeof item[config.numberField] === "string"
+      ? (item[config.numberField] as string)
+      : undefined;
+
+  const daysUntil = Math.ceil(
+    (permanentDeleteDate.getTime() - Date.now()) / MILLISECONDS_IN_DAY
+  );
+
+  return {
+    id: item.id,
+    entityType: config.entityType,
+    entityNumber,
+    displayName: getDisplayName(item, config.entityType),
+    deletedAt: item.deleted_at,
+    deletedBy: item.deleted_by ?? undefined,
+    archivedAt: item.archived_at || item.deleted_at,
+    permanentDeleteScheduledAt:
+      item.permanent_delete_scheduled_at || fallbackDeleteDate.toISOString(),
+    daysUntilPermanentDelete: Math.max(0, daysUntil),
+    metadata: item,
+  };
+};
+
+const applySearchFilter = (
+  items: ArchivedItem[],
+  query?: string
+): ArchivedItem[] => {
+  if (!query) {
+    return items;
+  }
+
+  const normalized = query.toLowerCase();
+  return items.filter(
+    (item) =>
+      item.displayName.toLowerCase().includes(normalized) ||
+      item.entityNumber?.toLowerCase().includes(normalized) ||
+      item.entityType.toLowerCase().includes(normalized)
+  );
+};
+
+const normalizeString = (value: unknown): string =>
+  typeof value === "string" ? value : "";
+
+const nonEmptyString = (value: unknown, fallback = ""): string => {
+  const normalized = normalizeString(value).trim();
+  return normalized.length > 0 ? normalized : fallback;
+};
+
+const fullName = (first: unknown, last: unknown): string => {
+  const combined = `${normalizeString(first)} ${normalizeString(last)}`.trim();
+  return combined.length > 0 ? combined : "";
+};
 
 /**
  * Helper to get display name for different entity types
  */
-function getDisplayName(item: any, entityType: ArchivableEntityType): string {
+function getDisplayName(
+  item: ArchivedEntityRow,
+  entityType: ArchivableEntityType
+): string {
   switch (entityType) {
-    case "invoice":
-      return `Invoice ${item.invoice_number}`;
-    case "estimate":
-      return `Estimate ${item.estimate_number}`;
-    case "contract":
-      return `Contract ${item.contract_number || item.title || item.id}`;
-    case "job":
-      return `Job ${item.job_number} - ${item.title || "Untitled"}`;
-    case "customer":
-      return (
-        item.display_name ||
-        `${item.first_name || ""} ${item.last_name || ""}`.trim() ||
-        "Unknown Customer"
+    case "invoice": {
+      const invoiceNumber = nonEmptyString(item.invoice_number, item.id);
+      return `Invoice ${invoiceNumber}`;
+    }
+    case "estimate": {
+      const estimateNumber = nonEmptyString(item.estimate_number, item.id);
+      return `Estimate ${estimateNumber}`;
+    }
+    case "contract": {
+      const contractRef = nonEmptyString(
+        item.contract_number,
+        nonEmptyString(item.title, item.id)
       );
+      return `Contract ${contractRef}`;
+    }
+    case "job": {
+      const jobNumber = nonEmptyString(item.job_number, item.id);
+      const jobTitle = nonEmptyString(item.title, "Untitled");
+      return `Job ${jobNumber} - ${jobTitle}`;
+    }
+    case "customer": {
+      const displayName = nonEmptyString(item.display_name);
+      const fallbackName = fullName(item.first_name, item.last_name);
+      return displayName || fallbackName || "Unknown Customer";
+    }
     case "property":
-      return item.name || item.address || "Unknown Property";
-    case "equipment":
-      return `${item.equipment_number || ""} ${item.name || "Unknown Equipment"}`.trim();
+      return nonEmptyString(
+        item.name,
+        nonEmptyString(item.address, "Unknown Property")
+      );
+    case "equipment": {
+      const equipmentNumber = nonEmptyString(item.equipment_number);
+      const equipmentName = nonEmptyString(item.name, "Unknown Equipment");
+      return `${equipmentNumber ? `${equipmentNumber} ` : ""}${equipmentName}`.trim();
+    }
     default:
       return "Unknown Item";
   }
@@ -299,8 +413,8 @@ function getDisplayName(item: any, entityType: ArchivableEntityType): string {
 export async function getArchiveStats(): Promise<
   ActionResult<Record<ArchivableEntityType, number>>
 > {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
@@ -323,7 +437,7 @@ export async function getArchiveStats(): Promise<
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
@@ -378,8 +492,8 @@ export async function bulkRestore(
   itemIds: string[],
   entityType: ArchivableEntityType
 ): Promise<ActionResult<{ restored: number; failed: number }>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
@@ -402,7 +516,7 @@ export async function bulkRestore(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
@@ -458,8 +572,8 @@ export async function bulkArchive(
   itemIds: string[],
   entityType: ArchivableEntityType
 ): Promise<ActionResult<{ archived: number; failed: number }>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
@@ -482,7 +596,7 @@ export async function bulkArchive(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
@@ -506,7 +620,9 @@ export async function bulkArchive(
 
     // Calculate permanent delete date (90 days from now)
     const permanentDeleteDate = new Date();
-    permanentDeleteDate.setDate(permanentDeleteDate.getDate() + 90);
+    permanentDeleteDate.setDate(
+      permanentDeleteDate.getDate() + PERMANENT_DELETE_BUFFER_DAYS
+    );
 
     // Archive items (soft delete)
     const { error, count } = await supabase
@@ -547,8 +663,8 @@ export async function permanentDelete(
   itemId: string,
   entityType: ArchivableEntityType
 ): Promise<ActionResult<void>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
+  return await withErrorHandling(async () => {
+    const supabase = await getSupabaseServerClient();
     if (!supabase) {
       throw new ActionError(
         "Database connection failed",
@@ -571,7 +687,7 @@ export async function permanentDelete(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
@@ -597,7 +713,7 @@ export async function permanentDelete(
       .eq("company_id", teamMember.company_id)
       .single();
 
-    if (!(item && item.deleted_at)) {
+    if (!item?.deleted_at) {
       throw new ActionError(
         "Item is not archived",
         ERROR_CODES.OPERATION_NOT_ALLOWED

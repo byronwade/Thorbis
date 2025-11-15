@@ -6,7 +6,9 @@
  * Comprehensive filter control for jobs
  */
 
+import { ChevronDown, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,11 +25,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Filter, ChevronDown } from "lucide-react";
 import {
-  useJobsFiltersStore,
   type JobsFilters,
+  useJobsFiltersStore,
 } from "@/lib/stores/jobs-filters-store";
 
 interface JobsFilterDropdownProps {
@@ -73,32 +73,32 @@ export function JobsFilterDropdown({
   };
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="relative">
+        <Button className="relative" size="sm" variant="outline">
           <Filter className="mr-2 size-4" />
           Filters
           <ChevronDown className="ml-2 size-4" />
           {activeFilterCount > 0 && (
             <Badge
-              variant="secondary"
               className="ml-2 size-5 rounded-full p-0 text-xs"
+              variant="secondary"
             >
               {activeFilterCount}
             </Badge>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 p-4" align="start">
+      <DropdownMenuContent align="start" className="w-80 p-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold">Filter Jobs</h4>
+            <h4 className="font-semibold text-sm">Filter Jobs</h4>
             {activeFilterCount > 0 && (
               <Button
-                variant="ghost"
-                size="sm"
                 className="h-auto p-1 text-xs"
                 onClick={handleClearAll}
+                size="sm"
+                variant="ghost"
               >
                 Clear All
               </Button>
@@ -111,26 +111,24 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Status</Label>
             <Select
-              value={localFilters.archiveStatus}
               onValueChange={(value: JobsFilters["archiveStatus"]) =>
                 setLocalFilters({ ...localFilters, archiveStatus: value })
               }
+              value={localFilters.archiveStatus}
             >
               <SelectTrigger className="h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="active">
-                  Active Only{" "}
-                  {activeCount !== undefined && `(${activeCount})`}
+                  Active Only {activeCount !== undefined && `(${activeCount})`}
                 </SelectItem>
                 <SelectItem value="archived">
                   Archived Only{" "}
                   {archivedCount !== undefined && `(${archivedCount})`}
                 </SelectItem>
                 <SelectItem value="all">
-                  All Jobs{" "}
-                  {totalCount !== undefined && `(${totalCount})`}
+                  All Jobs {totalCount !== undefined && `(${totalCount})`}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -140,10 +138,10 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Job Status</Label>
             <Select
-              value={localFilters.status}
               onValueChange={(value) =>
                 setLocalFilters({ ...localFilters, status: value })
               }
+              value={localFilters.status}
             >
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="All statuses" />
@@ -163,10 +161,10 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Priority</Label>
             <Select
-              value={localFilters.priority}
               onValueChange={(value) =>
                 setLocalFilters({ ...localFilters, priority: value })
               }
+              value={localFilters.priority}
             >
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="All priorities" />
@@ -185,12 +183,15 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Customer Name</Label>
             <Input
+              className="h-9"
+              onChange={(e) =>
+                setLocalFilters({
+                  ...localFilters,
+                  customerName: e.target.value,
+                })
+              }
               placeholder="Search by customer..."
               value={localFilters.customerName}
-              onChange={(e) =>
-                setLocalFilters({ ...localFilters, customerName: e.target.value })
-              }
-              className="h-9"
             />
           </div>
 
@@ -198,12 +199,12 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Assigned To</Label>
             <Input
-              placeholder="Search by assigned person..."
-              value={localFilters.assignedTo}
+              className="h-9"
               onChange={(e) =>
                 setLocalFilters({ ...localFilters, assignedTo: e.target.value })
               }
-              className="h-9"
+              placeholder="Search by assigned person..."
+              value={localFilters.assignedTo}
             />
           </div>
 
@@ -211,12 +212,12 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Job Number</Label>
             <Input
-              placeholder="Search by number..."
-              value={localFilters.jobNumber}
+              className="h-9"
               onChange={(e) =>
                 setLocalFilters({ ...localFilters, jobNumber: e.target.value })
               }
-              className="h-9"
+              placeholder="Search by number..."
+              value={localFilters.jobNumber}
             />
           </div>
 
@@ -224,12 +225,12 @@ export function JobsFilterDropdown({
           <div className="space-y-2">
             <Label className="text-xs">Category</Label>
             <Input
-              placeholder="Filter by category..."
-              value={localFilters.category}
+              className="h-9"
               onChange={(e) =>
                 setLocalFilters({ ...localFilters, category: e.target.value })
               }
-              className="h-9"
+              placeholder="Filter by category..."
+              value={localFilters.category}
             />
           </div>
 
@@ -238,18 +239,14 @@ export function JobsFilterDropdown({
           {/* Actions */}
           <div className="flex gap-2">
             <Button
-              variant="outline"
-              size="sm"
               className="flex-1"
               onClick={() => setIsOpen(false)}
+              size="sm"
+              variant="outline"
             >
               Cancel
             </Button>
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={handleApplyFilters}
-            >
+            <Button className="flex-1" onClick={handleApplyFilters} size="sm">
               Apply Filters
             </Button>
           </div>

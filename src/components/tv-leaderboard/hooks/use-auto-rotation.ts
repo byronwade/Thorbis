@@ -9,6 +9,10 @@ type UseAutoRotationProps = {
   isEditMode: boolean;
 };
 
+type PauseOptions = {
+  manual?: boolean;
+};
+
 export function useAutoRotation({
   slideCount,
   currentSlide,
@@ -17,6 +21,7 @@ export function useAutoRotation({
   isEditMode,
 }: UseAutoRotationProps) {
   const [isPaused, setIsPaused] = useState(false);
+  const [isManuallyPaused, setIsManuallyPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -68,27 +73,40 @@ export function useAutoRotation({
     clearTimers,
   ]);
 
-  const pauseRotation = useCallback(() => {
-    if (!settings.pauseOnInteraction) {
-      return;
-    }
+  const pauseRotation = useCallback(
+    (options?: PauseOptions) => {
+      if (!settings.pauseOnInteraction) {
+        return;
+      }
 
-    setIsPaused(true);
-    clearTimers();
+      setIsPaused(true);
+      setIsManuallyPaused(Boolean(options?.manual));
+      clearTimers();
 
-    // Resume after inactivity timeout
-    inactivityTimerRef.current = setTimeout(() => {
-      setIsPaused(false);
-    }, settings.inactivityTimeout);
-  }, [settings, clearTimers]);
+      // Resume after inactivity timeout unless manually paused
+      if (!options?.manual) {
+        inactivityTimerRef.current = setTimeout(() => {
+          setIsPaused(false);
+        }, settings.inactivityTimeout);
+      }
+    },
+    [settings, clearTimers]
+  );
 
   const resumeRotation = useCallback(() => {
+    setIsManuallyPaused(false);
     setIsPaused(false);
     startRotation();
   }, [startRotation]);
 
   // Start/restart rotation when conditions change
   useEffect(() => {
+    if (isManuallyPaused) {
+      return () => {
+        clearTimers();
+      };
+    }
+
     if (!(isPaused || isEditMode) && settings.autoRotate && slideCount > 1) {
       startRotation();
     }
@@ -98,6 +116,7 @@ export function useAutoRotation({
     };
   }, [
     isPaused,
+    isManuallyPaused,
     isEditMode,
     settings.autoRotate,
     slideCount,
@@ -118,5 +137,6 @@ export function useAutoRotation({
     pauseRotation,
     resumeRotation,
     handleInteraction,
+    isManuallyPaused,
   };
 }

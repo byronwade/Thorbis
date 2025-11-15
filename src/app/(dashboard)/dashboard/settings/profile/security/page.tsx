@@ -188,8 +188,8 @@ export default function SecurityPage() {
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p className="text-sm">
-                      Control how you sign in to your account and add extra layers
-                      of security.
+                      Control how you sign in to your account and add extra
+                      layers of security.
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -213,7 +213,9 @@ export default function SecurityPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-semibold text-sm">{feature.title}</p>
+                          <p className="font-semibold text-sm">
+                            {feature.title}
+                          </p>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button type="button">
@@ -295,7 +297,9 @@ export default function SecurityPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-sm">{device.name}</p>
+                            <p className="font-semibold text-sm">
+                              {device.name}
+                            </p>
                             {device.current && (
                               <Badge className="bg-success" variant="default">
                                 Current
@@ -367,14 +371,16 @@ export default function SecurityPage() {
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-sm">{activity.device}</p>
+                          <p className="font-semibold text-sm">
+                            {activity.device}
+                          </p>
                           <p className="text-muted-foreground text-xs">
                             {activity.location}
                           </p>
                         </div>
                         <Badge variant="outline">{activity.ip}</Badge>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 text-muted-foreground text-xs">
                         <Clock className="h-3 w-3" />
                         {activity.time}
                       </div>
@@ -461,7 +467,8 @@ export default function SecurityPage() {
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p className="text-sm">
-                      Sign out of other active sessions and protect your account.
+                      Sign out of other active sessions and protect your
+                      account.
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -514,7 +521,9 @@ export default function SecurityPage() {
               <div className="rounded-lg border bg-muted/30 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-sm">Thorbis Production Key</p>
+                    <p className="font-semibold text-sm">
+                      Thorbis Production Key
+                    </p>
                     <p className="text-muted-foreground text-xs">
                       Created Sep 10, 2024 • Last used 2 hours ago
                     </p>
@@ -560,4 +569,3 @@ export default function SecurityPage() {
     </TooltipProvider>
   );
 }
-

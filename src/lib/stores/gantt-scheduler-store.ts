@@ -5,17 +5,22 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type { GanttViewType } from "@/components/schedule/gantt-view-switcher";
+
+type GanttViewType = "day" | "week" | "month";
 
 type GanttSchedulerStore = {
   currentDate: Date;
   view: GanttViewType;
   selectedTechnicianId: string;
   statusFilter: string;
+  highlightUnassigned: boolean;
+  showOverloadedOnly: boolean;
   setCurrentDate: (date: Date) => void;
   setView: (view: GanttViewType) => void;
   setSelectedTechnicianId: (id: string) => void;
   setStatusFilter: (status: string) => void;
+  toggleHighlightUnassigned: () => void;
+  toggleShowOverloadedOnly: () => void;
   handlePrevious: () => void;
   handleNext: () => void;
   handleToday: () => void;
@@ -28,6 +33,8 @@ export const useGanttSchedulerStore = create<GanttSchedulerStore>()(
       view: "day",
       selectedTechnicianId: "",
       statusFilter: "",
+      highlightUnassigned: false,
+      showOverloadedOnly: false,
 
       setCurrentDate: (date) => set({ currentDate: date }),
 
@@ -36,6 +43,12 @@ export const useGanttSchedulerStore = create<GanttSchedulerStore>()(
       setSelectedTechnicianId: (id) => set({ selectedTechnicianId: id }),
 
       setStatusFilter: (status) => set({ statusFilter: status }),
+
+      toggleHighlightUnassigned: () =>
+        set((state) => ({ highlightUnassigned: !state.highlightUnassigned })),
+
+      toggleShowOverloadedOnly: () =>
+        set((state) => ({ showOverloadedOnly: !state.showOverloadedOnly })),
 
       handlePrevious: () => {
         const { currentDate, view } = get();

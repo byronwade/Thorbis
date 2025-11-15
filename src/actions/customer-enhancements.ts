@@ -26,17 +26,43 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const HTTP_STATUS = {
+  forbidden: 403,
+} as const;
+
+const NAME_MAX_LENGTH = 100;
+const PHONE_MAX_LENGTH = 20;
+const ADDRESS_LINE_MAX_LENGTH = 255;
+const CITY_MAX_LENGTH = 100;
+const STATE_MAX_LENGTH = 50;
+const ZIP_CODE_MAX_LENGTH = 20;
+const COUNTRY_MAX_LENGTH = 50;
+const GATE_CODE_MAX_LENGTH = 50;
+
+type SupabaseServerClient = Exclude<
+  Awaited<ReturnType<typeof createClient>>,
+  null
+>;
+
+type PreferredContactMethod = "email" | "phone" | "sms";
+
+type AddressType = "billing" | "shipping" | "service" | "mailing" | "other";
+
+// ============================================================================
 // VALIDATION SCHEMAS
 // ============================================================================
 
 const customerContactSchema = z.object({
   customerId: z.string().uuid("Invalid customer ID"),
-  firstName: z.string().min(1, "First name is required").max(100),
-  lastName: z.string().min(1, "Last name is required").max(100),
-  title: z.string().max(100).optional(),
+  firstName: z.string().min(1, "First name is required").max(NAME_MAX_LENGTH),
+  lastName: z.string().min(1, "Last name is required").max(NAME_MAX_LENGTH),
+  title: z.string().max(NAME_MAX_LENGTH).optional(),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone is required").max(20),
-  secondaryPhone: z.string().max(20).optional(),
+  phone: z.string().min(1, "Phone is required").max(PHONE_MAX_LENGTH),
+  secondaryPhone: z.string().max(PHONE_MAX_LENGTH).optional(),
   isPrimary: z.boolean().default(false),
   isBillingContact: z.boolean().default(false),
   isEmergencyContact: z.boolean().default(false),
@@ -48,24 +74,20 @@ const customerAddressSchema = z.object({
   customerId: z.string().uuid("Invalid customer ID"),
   addressType: z.enum(["billing", "shipping", "service", "mailing", "other"]),
   isDefault: z.boolean().default(false),
-  label: z.string().max(100).optional(),
-  addressLine1: z.string().min(1, "Address is required").max(255),
-  addressLine2: z.string().max(255).optional(),
-  city: z.string().min(1, "City is required").max(100),
-  state: z.string().min(1, "State is required").max(50),
-  zipCode: z.string().min(1, "ZIP code is required").max(20),
-  country: z.string().max(50).default("USA"),
+  label: z.string().max(NAME_MAX_LENGTH).optional(),
+  addressLine1: z
+    .string()
+    .min(1, "Address is required")
+    .max(ADDRESS_LINE_MAX_LENGTH),
+  addressLine2: z.string().max(ADDRESS_LINE_MAX_LENGTH).optional(),
+  city: z.string().min(1, "City is required").max(CITY_MAX_LENGTH),
+  state: z.string().min(1, "State is required").max(STATE_MAX_LENGTH),
+  zipCode: z.string().min(1, "ZIP code is required").max(ZIP_CODE_MAX_LENGTH),
+  country: z.string().max(COUNTRY_MAX_LENGTH).default("USA"),
   directions: z.string().optional(),
   accessNotes: z.string().optional(),
   parkingInstructions: z.string().optional(),
-  gateCode: z.string().max(50).optional(),
-});
-
-const updateCustomerBusinessInfoSchema = z.object({
-  isBusiness: z.boolean(),
-  directions: z.string().optional(),
-  salesContext: z.string().optional(),
-  serviceFlags: z.array(z.string()).optional(),
+  gateCode: z.string().max(GATE_CODE_MAX_LENGTH).optional(),
 });
 
 // ============================================================================
@@ -73,9 +95,91 @@ const updateCustomerBusinessInfoSchema = z.object({
 // ============================================================================
 
 /**
+ * Get authenticated user and company context
+ */
+async function getAuthContext(
+  supabase: SupabaseServerClient
+): Promise<{ userId: string; companyId: string }> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  assertAuthenticated(user?.id);
+
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!teamMember?.company_id) {
+    throw new ActionError(
+      "You must be part of a company",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS.forbidden
+    );
+  }
+
+  return { userId: user.id, companyId: teamMember.company_id };
+}
+
+/**
+ * Verify customer belongs to company
+ */
+async function verifyCustomerAccess(
+  supabase: SupabaseServerClient,
+  customerId: string,
+  companyId: string
+): Promise<void> {
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("company_id, is_business")
+    .eq("id", customerId)
+    .single();
+
+  assertExists(customer, "Customer");
+
+  if (customer.company_id !== companyId) {
+    throw new ActionError(
+      ERROR_MESSAGES.forbidden("customer"),
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS.forbidden
+    );
+  }
+}
+
+/**
+ * Parse contact form data
+ */
+function parseContactFormData(
+  formData: FormData
+): z.infer<typeof customerContactSchema> {
+  const preferredContactMethodValue = formData.get("preferredContactMethod");
+  const preferredContactMethod: PreferredContactMethod =
+    preferredContactMethodValue === "phone" ||
+    preferredContactMethodValue === "sms"
+      ? (preferredContactMethodValue as PreferredContactMethod)
+      : "email";
+
+  return customerContactSchema.parse({
+    customerId: formData.get("customerId"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    title: formData.get("title") || undefined,
+    email: formData.get("email"),
+    phone: formData.get("phone"),
+    secondaryPhone: formData.get("secondaryPhone") || undefined,
+    isPrimary: formData.get("isPrimary") === "true",
+    isBillingContact: formData.get("isBillingContact") === "true",
+    isEmergencyContact: formData.get("isEmergencyContact") === "true",
+    preferredContactMethod,
+    notes: formData.get("notes") || undefined,
+  });
+}
+
+/**
  * Add contact to business customer
  */
-export async function addCustomerContact(
+export function addCustomerContact(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -87,61 +191,21 @@ export async function addCustomerContact(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
+    const data = parseContactFormData(formData);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    await verifyCustomerAccess(typedSupabase, data.customerId, companyId);
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const data = customerContactSchema.parse({
-      customerId: formData.get("customerId"),
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      title: formData.get("title") || undefined,
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      secondaryPhone: formData.get("secondaryPhone") || undefined,
-      isPrimary: formData.get("isPrimary") === "true",
-      isBillingContact: formData.get("isBillingContact") === "true",
-      isEmergencyContact: formData.get("isEmergencyContact") === "true",
-      preferredContactMethod:
-        (formData.get("preferredContactMethod") as any) || "email",
-      notes: formData.get("notes") || undefined,
-    });
-
-    // Verify customer exists and belongs to company
-    const { data: customer } = await supabase
+    // Ensure customer is marked as business
+    const { data: customer } = await typedSupabase
       .from("customers")
-      .select("company_id, is_business")
+      .select("is_business")
       .eq("id", data.customerId)
       .single();
 
-    assertExists(customer, "Customer");
-
-    if (customer.company_id !== teamMember.company_id) {
-      throw new ActionError(
-        ERROR_MESSAGES.forbidden("customer"),
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Ensure customer is marked as business
-    if (!customer.is_business) {
-      await supabase
+    if (customer && !customer.is_business) {
+      await typedSupabase
         .from("customers")
         .update({ is_business: true })
         .eq("id", data.customerId);
@@ -149,17 +213,17 @@ export async function addCustomerContact(
 
     // If setting as primary, unset other primaries
     if (data.isPrimary) {
-      await supabase
+      await typedSupabase
         .from("customer_contacts")
         .update({ is_primary: false })
         .eq("customer_id", data.customerId);
     }
 
     // Add contact
-    const { data: contact, error: createError } = await supabase
+    const { data: contact, error: createError } = await typedSupabase
       .from("customer_contacts")
       .insert({
-        company_id: teamMember.company_id,
+        company_id: companyId,
         customer_id: data.customerId,
         first_name: data.firstName,
         last_name: data.lastName,
@@ -189,9 +253,65 @@ export async function addCustomerContact(
 }
 
 /**
+ * Build contact update payload from form data
+ */
+function buildContactUpdatePayload(
+  formData: FormData
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {};
+
+  const firstName = formData.get("firstName");
+  if (firstName) {
+    updateData.first_name = firstName;
+  }
+
+  const lastName = formData.get("lastName");
+  if (lastName) {
+    updateData.last_name = lastName;
+  }
+
+  if (formData.has("title")) {
+    updateData.title = formData.get("title");
+  }
+
+  const email = formData.get("email");
+  if (email) {
+    updateData.email = email;
+  }
+
+  const phone = formData.get("phone");
+  if (phone) {
+    updateData.phone = phone;
+  }
+
+  if (formData.has("secondaryPhone")) {
+    updateData.secondary_phone = formData.get("secondaryPhone");
+  }
+
+  if (formData.has("notes")) {
+    updateData.notes = formData.get("notes");
+  }
+
+  if (formData.has("isPrimary")) {
+    updateData.is_primary = formData.get("isPrimary") === "true";
+  }
+
+  if (formData.has("isBillingContact")) {
+    updateData.is_billing_contact = formData.get("isBillingContact") === "true";
+  }
+
+  if (formData.has("isEmergencyContact")) {
+    updateData.is_emergency_contact =
+      formData.get("isEmergencyContact") === "true";
+  }
+
+  return updateData;
+}
+
+/**
  * Update customer contact
  */
-export async function updateCustomerContact(
+export function updateCustomerContact(
   contactId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -204,27 +324,11 @@ export async function updateCustomerContact(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
-
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
     // Verify contact belongs to company
-    const { data: existingContact } = await supabase
+    const { data: existingContact } = await typedSupabase
       .from("customer_contacts")
       .select("company_id, customer_id")
       .eq("id", contactId)
@@ -232,51 +336,29 @@ export async function updateCustomerContact(
 
     assertExists(existingContact, "Contact");
 
-    if (existingContact.company_id !== teamMember.company_id) {
+    if (existingContact.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("contact"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
-    const updateData: any = {};
-    if (formData.get("firstName"))
-      updateData.first_name = formData.get("firstName");
-    if (formData.get("lastName"))
-      updateData.last_name = formData.get("lastName");
-    if (formData.has("title")) updateData.title = formData.get("title");
-    if (formData.get("email")) updateData.email = formData.get("email");
-    if (formData.get("phone")) updateData.phone = formData.get("phone");
-    if (formData.has("secondaryPhone"))
-      updateData.secondary_phone = formData.get("secondaryPhone");
-    if (formData.has("notes")) updateData.notes = formData.get("notes");
+    const updateData = buildContactUpdatePayload(formData);
 
-    // Handle boolean flags
+    // Handle primary flag separately to unset other primaries
     if (formData.has("isPrimary")) {
       const isPrimary = formData.get("isPrimary") === "true";
       if (isPrimary) {
-        // Unset other primaries
-        await supabase
+        await typedSupabase
           .from("customer_contacts")
           .update({ is_primary: false })
           .eq("customer_id", existingContact.customer_id);
       }
-      updateData.is_primary = isPrimary;
-    }
-
-    if (formData.has("isBillingContact")) {
-      updateData.is_billing_contact =
-        formData.get("isBillingContact") === "true";
-    }
-
-    if (formData.has("isEmergencyContact")) {
-      updateData.is_emergency_contact =
-        formData.get("isEmergencyContact") === "true";
     }
 
     // Update contact
-    const { error: updateError } = await supabase
+    const { error: updateError } = await typedSupabase
       .from("customer_contacts")
       .update(updateData)
       .eq("id", contactId);
@@ -295,7 +377,7 @@ export async function updateCustomerContact(
 /**
  * Delete customer contact
  */
-export async function deleteCustomerContact(
+export function deleteCustomerContact(
   contactId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -307,27 +389,11 @@ export async function deleteCustomerContact(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
-
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
     // Verify contact belongs to company
-    const { data: contact } = await supabase
+    const { data: contact } = await typedSupabase
       .from("customer_contacts")
       .select("company_id, customer_id")
       .eq("id", contactId)
@@ -335,16 +401,16 @@ export async function deleteCustomerContact(
 
     assertExists(contact, "Contact");
 
-    if (contact.company_id !== teamMember.company_id) {
+    if (contact.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("contact"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
     // Soft delete
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await typedSupabase
       .from("customer_contacts")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", contactId);
@@ -365,9 +431,43 @@ export async function deleteCustomerContact(
 // ============================================================================
 
 /**
+ * Parse address form data
+ */
+function parseAddressFormData(
+  formData: FormData
+): z.infer<typeof customerAddressSchema> {
+  const addressTypeValue = formData.get("addressType");
+  const addressType: AddressType =
+    addressTypeValue === "billing" ||
+    addressTypeValue === "shipping" ||
+    addressTypeValue === "service" ||
+    addressTypeValue === "mailing" ||
+    addressTypeValue === "other"
+      ? (addressTypeValue as AddressType)
+      : "other";
+
+  return customerAddressSchema.parse({
+    customerId: formData.get("customerId"),
+    addressType,
+    isDefault: formData.get("isDefault") === "true",
+    label: formData.get("label") || undefined,
+    addressLine1: formData.get("addressLine1"),
+    addressLine2: formData.get("addressLine2") || undefined,
+    city: formData.get("city"),
+    state: formData.get("state"),
+    zipCode: formData.get("zipCode"),
+    country: formData.get("country") || "USA",
+    directions: formData.get("directions") || undefined,
+    accessNotes: formData.get("accessNotes") || undefined,
+    parkingInstructions: formData.get("parkingInstructions") || undefined,
+    gateCode: formData.get("gateCode") || undefined,
+  });
+}
+
+/**
  * Add address to customer
  */
-export async function addCustomerAddress(
+export function addCustomerAddress(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -379,44 +479,12 @@ export async function addCustomerAddress(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
-
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const data = customerAddressSchema.parse({
-      customerId: formData.get("customerId"),
-      addressType: formData.get("addressType") as any,
-      isDefault: formData.get("isDefault") === "true",
-      label: formData.get("label") || undefined,
-      addressLine1: formData.get("addressLine1"),
-      addressLine2: formData.get("addressLine2") || undefined,
-      city: formData.get("city"),
-      state: formData.get("state"),
-      zipCode: formData.get("zipCode"),
-      country: formData.get("country") || "USA",
-      directions: formData.get("directions") || undefined,
-      accessNotes: formData.get("accessNotes") || undefined,
-      parkingInstructions: formData.get("parkingInstructions") || undefined,
-      gateCode: formData.get("gateCode") || undefined,
-    });
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
+    const data = parseAddressFormData(formData);
 
     // Verify customer exists and belongs to company
-    const { data: customer } = await supabase
+    const { data: customer } = await typedSupabase
       .from("customers")
       .select("company_id")
       .eq("id", data.customerId)
@@ -424,17 +492,17 @@ export async function addCustomerAddress(
 
     assertExists(customer, "Customer");
 
-    if (customer.company_id !== teamMember.company_id) {
+    if (customer.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("customer"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
     // If setting as default, unset other defaults of same type
     if (data.isDefault) {
-      await supabase
+      await typedSupabase
         .from("customer_addresses")
         .update({ is_default: false })
         .eq("customer_id", data.customerId)
@@ -442,10 +510,10 @@ export async function addCustomerAddress(
     }
 
     // Add address
-    const { data: address, error: createError } = await supabase
+    const { data: address, error: createError } = await typedSupabase
       .from("customer_addresses")
       .insert({
-        company_id: teamMember.company_id,
+        company_id: companyId,
         customer_id: data.customerId,
         address_type: data.addressType,
         is_default: data.isDefault,
@@ -473,7 +541,7 @@ export async function addCustomerAddress(
 
     // If this is the first address or is default, set as customer's default
     if (data.isDefault) {
-      await supabase
+      await typedSupabase
         .from("customers")
         .update({ default_address_id: address.id })
         .eq("id", data.customerId);
@@ -485,9 +553,68 @@ export async function addCustomerAddress(
 }
 
 /**
+ * Build address update payload from form data
+ */
+function buildAddressUpdatePayload(
+  formData: FormData
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {};
+
+  if (formData.has("label")) {
+    updateData.label = formData.get("label");
+  }
+
+  const addressLine1 = formData.get("addressLine1");
+  if (addressLine1) {
+    updateData.address_line1 = addressLine1;
+  }
+
+  if (formData.has("addressLine2")) {
+    updateData.address_line2 = formData.get("addressLine2");
+  }
+
+  const city = formData.get("city");
+  if (city) {
+    updateData.city = city;
+  }
+
+  const state = formData.get("state");
+  if (state) {
+    updateData.state = state;
+  }
+
+  const zipCode = formData.get("zipCode");
+  if (zipCode) {
+    updateData.zip_code = zipCode;
+  }
+
+  if (formData.has("directions")) {
+    updateData.directions = formData.get("directions");
+  }
+
+  if (formData.has("accessNotes")) {
+    updateData.access_notes = formData.get("accessNotes");
+  }
+
+  if (formData.has("parkingInstructions")) {
+    updateData.parking_instructions = formData.get("parkingInstructions");
+  }
+
+  if (formData.has("gateCode")) {
+    updateData.gate_code = formData.get("gateCode");
+  }
+
+  if (formData.has("isDefault")) {
+    updateData.is_default = formData.get("isDefault") === "true";
+  }
+
+  return updateData;
+}
+
+/**
  * Update customer address
  */
-export async function updateCustomerAddress(
+export function updateCustomerAddress(
   addressId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -500,27 +627,11 @@ export async function updateCustomerAddress(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
-
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
     // Verify address belongs to company
-    const { data: existingAddress } = await supabase
+    const { data: existingAddress } = await typedSupabase
       .from("customer_addresses")
       .select("company_id, customer_id, address_type")
       .eq("id", addressId)
@@ -528,47 +639,30 @@ export async function updateCustomerAddress(
 
     assertExists(existingAddress, "Address");
 
-    if (existingAddress.company_id !== teamMember.company_id) {
+    if (existingAddress.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("address"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
-    const updateData: any = {};
-    if (formData.has("label")) updateData.label = formData.get("label");
-    if (formData.get("addressLine1"))
-      updateData.address_line1 = formData.get("addressLine1");
-    if (formData.has("addressLine2"))
-      updateData.address_line2 = formData.get("addressLine2");
-    if (formData.get("city")) updateData.city = formData.get("city");
-    if (formData.get("state")) updateData.state = formData.get("state");
-    if (formData.get("zipCode")) updateData.zip_code = formData.get("zipCode");
-    if (formData.has("directions"))
-      updateData.directions = formData.get("directions");
-    if (formData.has("accessNotes"))
-      updateData.access_notes = formData.get("accessNotes");
-    if (formData.has("parkingInstructions"))
-      updateData.parking_instructions = formData.get("parkingInstructions");
-    if (formData.has("gateCode"))
-      updateData.gate_code = formData.get("gateCode");
+    const updateData = buildAddressUpdatePayload(formData);
 
+    // Handle default flag separately to unset other defaults
     if (formData.has("isDefault")) {
       const isDefault = formData.get("isDefault") === "true";
       if (isDefault) {
-        // Unset other defaults of same type
-        await supabase
+        await typedSupabase
           .from("customer_addresses")
           .update({ is_default: false })
           .eq("customer_id", existingAddress.customer_id)
           .eq("address_type", existingAddress.address_type);
       }
-      updateData.is_default = isDefault;
     }
 
     // Update address
-    const { error: updateError } = await supabase
+    const { error: updateError } = await typedSupabase
       .from("customer_addresses")
       .update(updateData)
       .eq("id", addressId);
@@ -587,7 +681,7 @@ export async function updateCustomerAddress(
 /**
  * Delete customer address
  */
-export async function deleteCustomerAddress(
+export function deleteCustomerAddress(
   addressId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -599,27 +693,11 @@ export async function deleteCustomerAddress(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
-
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
     // Verify address belongs to company
-    const { data: address } = await supabase
+    const { data: address } = await typedSupabase
       .from("customer_addresses")
       .select("company_id, customer_id")
       .eq("id", addressId)
@@ -627,16 +705,16 @@ export async function deleteCustomerAddress(
 
     assertExists(address, "Address");
 
-    if (address.company_id !== teamMember.company_id) {
+    if (address.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("address"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
     // Soft delete
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await typedSupabase
       .from("customer_addresses")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", addressId);
@@ -657,9 +735,41 @@ export async function deleteCustomerAddress(
 // ============================================================================
 
 /**
+ * Build business info update payload from form data
+ */
+function buildBusinessInfoUpdatePayload(
+  formData: FormData
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {};
+
+  if (formData.has("isBusiness")) {
+    updateData.is_business = formData.get("isBusiness") === "true";
+  }
+
+  if (formData.has("directions")) {
+    updateData.directions = formData.get("directions");
+  }
+
+  if (formData.has("salesContext")) {
+    updateData.sales_context = formData.get("salesContext");
+  }
+
+  if (formData.has("serviceFlags")) {
+    try {
+      const flags = JSON.parse(formData.get("serviceFlags") as string);
+      updateData.service_flags = flags;
+    } catch {
+      // Invalid JSON, skip
+    }
+  }
+
+  return updateData;
+}
+
+/**
  * Update customer business information
  */
-export async function updateCustomerBusinessInfo(
+export function updateCustomerBusinessInfo(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -672,27 +782,11 @@ export async function updateCustomerBusinessInfo(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
-
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
     // Verify customer belongs to company
-    const { data: customer } = await supabase
+    const { data: customer } = await typedSupabase
       .from("customers")
       .select("company_id")
       .eq("id", customerId)
@@ -700,39 +794,18 @@ export async function updateCustomerBusinessInfo(
 
     assertExists(customer, "Customer");
 
-    if (customer.company_id !== teamMember.company_id) {
+    if (customer.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("customer"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS.forbidden
       );
     }
 
-    const updateData: any = {};
-
-    if (formData.has("isBusiness")) {
-      updateData.is_business = formData.get("isBusiness") === "true";
-    }
-
-    if (formData.has("directions")) {
-      updateData.directions = formData.get("directions");
-    }
-
-    if (formData.has("salesContext")) {
-      updateData.sales_context = formData.get("salesContext");
-    }
-
-    if (formData.has("serviceFlags")) {
-      try {
-        const flags = JSON.parse(formData.get("serviceFlags") as string);
-        updateData.service_flags = flags;
-      } catch {
-        // Invalid JSON, skip
-      }
-    }
+    const updateData = buildBusinessInfoUpdatePayload(formData);
 
     // Update customer
-    const { error: updateError } = await supabase
+    const { error: updateError } = await typedSupabase
       .from("customers")
       .update(updateData)
       .eq("id", customerId);
@@ -748,12 +821,14 @@ export async function updateCustomerBusinessInfo(
   });
 }
 
+type CustomerContact = Record<string, unknown>;
+
 /**
  * Get all contacts for a customer
  */
-export async function getCustomerContacts(
+export function getCustomerContacts(
   customerId: string
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<CustomerContact[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -763,30 +838,14 @@ export async function getCustomerContacts(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const { data: contacts, error } = await supabase
+    const { data: contacts, error } = await typedSupabase
       .from("customer_contacts")
       .select("*")
       .eq("customer_id", customerId)
-      .eq("company_id", teamMember.company_id)
+      .eq("company_id", companyId)
       .is("deleted_at", null)
       .order("is_primary", { ascending: false })
       .order("created_at", { ascending: true });
@@ -802,12 +861,14 @@ export async function getCustomerContacts(
   });
 }
 
+type CustomerAddress = Record<string, unknown>;
+
 /**
  * Get all addresses for a customer
  */
-export async function getCustomerAddresses(
+export function getCustomerAddresses(
   customerId: string
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<CustomerAddress[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -817,30 +878,14 @@ export async function getCustomerAddresses(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const typedSupabase = supabase as SupabaseServerClient;
+    const { companyId } = await getAuthContext(typedSupabase);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const { data: addresses, error } = await supabase
+    const { data: addresses, error } = await typedSupabase
       .from("customer_addresses")
       .select("*")
       .eq("customer_id", customerId)
-      .eq("company_id", teamMember.company_id)
+      .eq("company_id", companyId)
       .is("deleted_at", null)
       .order("is_default", { ascending: false })
       .order("address_type", { ascending: true });

@@ -12,6 +12,7 @@
  */
 
 import { cookies } from "next/headers";
+import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "./session";
 
@@ -241,7 +242,9 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
   // Check the ACTIVE company's payment status
   const { data: teamMember } = await supabase
     .from("team_members")
-    .select("company_id, companies!inner(stripe_subscription_status)")
+    .select(
+      "company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)"
+    )
     .eq("user_id", user.id)
     .eq("company_id", activeCompanyId)
     .eq("status", "active")
@@ -253,10 +256,17 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
     ? teamMember.companies[0]
     : teamMember.companies;
   const subscriptionStatus = companies?.stripe_subscription_status;
+  const subscriptionActive =
+    subscriptionStatus === "active" || subscriptionStatus === "trialing";
+  const onboardingProgress =
+    (companies?.onboarding_progress as Record<string, unknown>) || null;
+  const onboardingFinished = isOnboardingComplete({
+    progress: onboardingProgress,
+    completedAt: companies?.onboarding_completed_at ?? null,
+  });
 
   return (
-    subscriptionStatus === "active" ||
-    subscriptionStatus === "trialing" ||
-    process.env.NODE_ENV === "development" // Allow in dev mode
+    (subscriptionActive && onboardingFinished) ||
+    process.env.NODE_ENV === "development"
   );
 }

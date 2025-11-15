@@ -434,6 +434,80 @@ export function JobPageContentUnified({
 
   const showCreatedDate = !job.scheduled_start && !!job.created_at;
 
+  const assignedTechnicians = useMemo(() => {
+    const technicians: { id: string; name: string }[] = [];
+    const seen = new Set<string>();
+
+    const registerTechnician = (
+      idCandidate: string | null | undefined,
+      nameCandidate: string | null | undefined
+    ) => {
+      if (!(idCandidate || nameCandidate)) {
+        return;
+      }
+      const identifier =
+        idCandidate ?? nameCandidate ?? `tech-${technicians.length}`;
+      if (seen.has(identifier)) {
+        return;
+      }
+      seen.add(identifier);
+      technicians.push({
+        id: identifier,
+        name: nameCandidate || "Technician",
+      });
+    };
+
+    if (assignedUser) {
+      registerTechnician(
+        assignedUser.id || assignedUser.user_id || assignedUser.email,
+        assignedUser.name || assignedUser.email || assignedUser.phone
+      );
+    }
+
+    teamAssignments.forEach((assignment) => {
+      const teamMember = assignment?.team_member;
+      const nestedUser = Array.isArray(teamMember?.users)
+        ? teamMember?.users[0]
+        : teamMember?.users || teamMember?.user || assignment?.user;
+
+      registerTechnician(
+        nestedUser?.id ||
+          teamMember?.user_id ||
+          assignment?.team_member_id ||
+          assignment?.id,
+        nestedUser?.name ||
+          teamMember?.display_name ||
+          nestedUser?.email ||
+          assignment?.role
+      );
+    });
+
+    return technicians;
+  }, [assignedUser, teamAssignments]);
+
+  const technicianBadge = useMemo(() => {
+    if (assignedTechnicians.length === 0) {
+      return null;
+    }
+
+    const DISPLAY_LIMIT = 3;
+    const visibleNames = assignedTechnicians
+      .slice(0, DISPLAY_LIMIT)
+      .map((tech) => tech.name || "Technician");
+    const remaining = assignedTechnicians.length - visibleNames.length;
+    const label =
+      remaining > 0
+        ? `${visibleNames.join(", ")} +${remaining} more`
+        : visibleNames.join(", ");
+
+    return {
+      label,
+      tooltip: assignedTechnicians
+        .map((tech) => tech.name || "Technician")
+        .join(", "),
+    };
+  }, [assignedTechnicians]);
+
   const customHeader = (
     <div className="w-full px-2 sm:px-0">
       <div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
@@ -496,6 +570,17 @@ export function JobPageContentUnified({
                 {property.city && property.state
                   ? `${property.city}, ${property.state}`
                   : property.address || "Location"}
+              </div>
+            )}
+
+            {/* Assigned Technicians */}
+            {technicianBadge && (
+              <div
+                className="inline-flex max-w-full items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+                title={technicianBadge.tooltip}
+              >
+                <Users className="size-4 shrink-0" />
+                <span className="truncate">{technicianBadge.label}</span>
               </div>
             )}
 

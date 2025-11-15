@@ -594,7 +594,7 @@ export function PricingCalculator() {
                 <div className="mt-6">
                   <Button asChild className="w-full" size="lg">
                     <Link href="/register">
-                      Start Free Trial - No Credit Card Required
+                      Start 14-day Free Trial - No Credit Card Required
                       <ArrowRight className="ml-2 size-5" />
                     </Link>
                   </Button>
@@ -816,13 +816,13 @@ export function PricingCalculator() {
               Ready to Save <span className="text-primary">$20,000+/year?</span>
             </h2>
             <p className="mb-8 text-foreground/70 text-xl">
-              Start your free trial today. No credit card required. No sales
+              Start your 14-day free trial today. No credit card required. No sales
               calls. Cancel anytime.
             </p>
             <div className="flex justify-center">
               <Button asChild className="h-14 px-12" size="lg">
                 <Link href="/register">
-                  Start Free Trial Now
+                  Start 14-day Free Trial Now
                   <ArrowRight className="ml-2 size-5" />
                 </Link>
               </Button>

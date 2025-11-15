@@ -60,9 +60,7 @@ function normalizeArticle(raw: any): KBArticleWithRelations {
     metaDescription: raw?.metaDescription ?? undefined,
     keywords: raw?.keywords ?? undefined,
     tags: raw?.tags?.map((at: any) => at.tag) ?? [],
-    category: raw?.category
-      ? normalizeCategory(raw.category)
-      : raw?.category,
+    category: raw?.category ? normalizeCategory(raw.category) : raw?.category,
   };
 }
 

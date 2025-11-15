@@ -1,6 +1,6 @@
 /**
  * Jobs Filters Store
- * 
+ *
  * Global state management for job filtering
  */
 
@@ -37,14 +37,13 @@ export const useJobsFiltersStore = create<JobsFiltersStore>()(
   persist(
     (set) => ({
       filters: DEFAULT_FILTERS,
-      
+
       setFilters: (newFilters) =>
         set((state) => ({
           filters: { ...state.filters, ...newFilters },
         })),
-      
-      resetFilters: () =>
-        set({ filters: DEFAULT_FILTERS }),
+
+      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
     }),
     {
       name: "jobs-filters",

@@ -13,6 +13,10 @@
 import { MessageSquare, Send } from "lucide-react";
 import { useState, useTransition } from "react";
 import { sendTextMessage } from "@/actions/telnyx";
+import type {
+  CommunicationRecord,
+  CompanyPhone,
+} from "@/components/communication/communication-page-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,15 +36,20 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
-interface SMSDialogProps {
+type SMSDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customerName: string;
   customerPhone: string;
-  customerId?: string;
   companyId: string;
-  companyPhones?: Array<{ id: string; number: string; label?: string }>;
-}
+  customerId?: string;
+  companyPhones?: CompanyPhone[];
+  jobId?: string;
+  propertyId?: string;
+  invoiceId?: string;
+  estimateId?: string;
+  onCommunicationCreated?: (record: CommunicationRecord) => void;
+};
 
 export function SMSDialog({
   open,
@@ -50,6 +59,11 @@ export function SMSDialog({
   customerId,
   companyId,
   companyPhones = [],
+  jobId,
+  propertyId,
+  invoiceId,
+  estimateId,
+  onCommunicationCreated,
 }: SMSDialogProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -60,7 +74,8 @@ export function SMSDialog({
 
   const charCount = message.length;
   const maxChars = 1600; // SMS max length (multiple segments)
-  const segmentCount = Math.ceil(charCount / 160);
+  const SMS_SEGMENT_LENGTH = 160;
+  const segmentCount = Math.ceil(charCount / SMS_SEGMENT_LENGTH);
 
   const handleSend = () => {
     if (!message.trim()) {
@@ -80,10 +95,15 @@ export function SMSDialog({
         text: message,
         companyId,
         customerId,
+        jobId,
+        propertyId,
+        invoiceId,
+        estimateId,
       });
 
-      if (result.success) {
+      if (result.success && "data" in result && result.data) {
         toast.success(`Text message sent to ${customerName}`);
+        onCommunicationCreated?.(result.data as CommunicationRecord);
         setMessage("");
         onOpenChange(false);
       } else {

@@ -25,7 +25,7 @@ type AllEntitiesOrderState = Record<string, EntityColumnOrder>; // { entityType:
 type DataTableColumnsStore = {
   // State - all entity column visibility states
   entities: AllEntitiesState;
-  
+
   // State - all entity column order states
   columnOrder: AllEntitiesOrderState;
 
@@ -40,13 +40,13 @@ type DataTableColumnsStore = {
   hideAllColumns: (entity: string, columnKeys: string[]) => void;
   isColumnVisible: (entity: string, columnKey: string) => boolean;
   getVisibleColumns: (entity: string) => string[];
-  
+
   // Actions - Ordering
   setColumnOrder: (entity: string, columnOrder: string[]) => void;
   getColumnOrder: (entity: string) => string[] | undefined;
   reorderColumn: (entity: string, fromIndex: number, toIndex: number) => void;
   resetColumnOrder: (entity: string) => void;
-  
+
   // General Actions
   resetEntity: (entity: string) => void;
   initializeEntity: (entity: string, columns: string[]) => void;
@@ -85,13 +85,10 @@ export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
         set((state) => ({
           entities: {
             ...state.entities,
-            [entity]: columnKeys.reduce(
-              (acc, key) => {
-                acc[key] = true;
-                return acc;
-              },
-              {} as EntityColumnsState
-            ),
+            [entity]: columnKeys.reduce((acc, key) => {
+              acc[key] = true;
+              return acc;
+            }, {} as EntityColumnsState),
           },
         })),
 
@@ -99,13 +96,10 @@ export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
         set((state) => ({
           entities: {
             ...state.entities,
-            [entity]: columnKeys.reduce(
-              (acc, key) => {
-                acc[key] = false;
-                return acc;
-              },
-              {} as EntityColumnsState
-            ),
+            [entity]: columnKeys.reduce((acc, key) => {
+              acc[key] = false;
+              return acc;
+            }, {} as EntityColumnsState),
           },
         })),
 
@@ -160,9 +154,9 @@ export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
         set((state) => {
           const { [entity]: _visibility, ...restEntities } = state.entities;
           const { [entity]: _order, ...restOrder } = state.columnOrder;
-          return { 
+          return {
             entities: restEntities,
-            columnOrder: restOrder 
+            columnOrder: restOrder,
           };
         }),
 
@@ -172,13 +166,10 @@ export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
           set((currentState) => ({
             entities: {
               ...currentState.entities,
-              [entity]: columns.reduce(
-                (acc, key) => {
-                  acc[key] = true;
-                  return acc;
-                },
-                {} as EntityColumnsState
-              ),
+              [entity]: columns.reduce((acc, key) => {
+                acc[key] = true;
+                return acc;
+              }, {} as EntityColumnsState),
             },
           }));
         }

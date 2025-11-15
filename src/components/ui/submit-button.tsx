@@ -25,10 +25,12 @@
 import { AlertCircle, Check, Loader2 } from "lucide-react";
 import * as React from "react";
 import { useFormStatus } from "react-dom";
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export interface SubmitButtonProps extends Omit<ButtonProps, "type"> {
+type BaseButtonProps = React.ComponentProps<typeof Button>;
+
+export interface SubmitButtonProps extends Omit<BaseButtonProps, "type"> {
   /**
    * Loading text to show while submitting
    */

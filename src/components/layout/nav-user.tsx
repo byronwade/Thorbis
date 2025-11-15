@@ -9,6 +9,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { updateUserStatus, type UserStatus } from "@/actions/user-status";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -25,6 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { StatusIndicator } from "@/components/ui/status-indicator";
 
 export function NavUser({
   user,
@@ -33,14 +36,35 @@ export function NavUser({
     name: string;
     email: string;
     avatar: string;
+    status?: UserStatus;
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [userStatus, setUserStatus] = useState<UserStatus>(
+    user.status || "online"
+  );
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleStatusChange = async (status: UserStatus) => {
+    setIsUpdatingStatus(true);
+    try {
+      const result = await updateUserStatus(status);
+      if (result.success) {
+        setUserStatus(status);
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   // Prevent SSR hydration mismatch with Radix UI IDs
   if (!mounted) {
@@ -48,15 +72,20 @@ export function NavUser({
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton className="h-10" size="lg">
-            <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage alt={user.name} src={user.avatar} />
-              <AvatarFallback className="rounded-lg">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage alt={user.name} src={user.avatar} />
+                <AvatarFallback className="rounded-lg">
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-0.5 -right-0.5">
+                <StatusIndicator status={userStatus} size="sm" />
+              </div>
+            </div>
             <div className="grid flex-1 text-left leading-[1.2]">
               <span className="truncate font-semibold text-sm">
                 {user.name}
@@ -79,15 +108,20 @@ export function NavUser({
               className="h-10 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               size="lg"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage alt={user.name} src={user.avatar} />
-                <AvatarFallback className="rounded-lg">
-                  {user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage alt={user.name} src={user.avatar} />
+                  <AvatarFallback className="rounded-lg">
+                    {user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-0.5 -right-0.5">
+                  <StatusIndicator status={userStatus} size="sm" />
+                </div>
+              </div>
               <div className="grid flex-1 text-left leading-[1.2]">
                 <span className="truncate font-semibold text-sm">
                   {user.name}
@@ -105,21 +139,78 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage alt={user.name} src={user.avatar} />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage alt={user.name} src={user.avatar} />
+                    <AvatarFallback className="rounded-lg">
+                      {user.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-0.5 -right-0.5">
+                    <StatusIndicator status={userStatus} size="md" />
+                  </div>
+                </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            
+            {/* Status Selector */}
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
+              Status
+            </DropdownMenuLabel>
+            <div className="px-2 pb-2">
+              <div className="space-y-1">
+                <button
+                  className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+                    userStatus === "online" ? "bg-accent" : ""
+                  }`}
+                  disabled={isUpdatingStatus}
+                  onClick={() => handleStatusChange("online")}
+                  type="button"
+                >
+                  <StatusIndicator status="online" size="md" />
+                  <span>Online</span>
+                  {userStatus === "online" && (
+                    <div className="ml-auto size-2 rounded-full bg-primary" />
+                  )}
+                </button>
+                <button
+                  className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+                    userStatus === "available" ? "bg-accent" : ""
+                  }`}
+                  disabled={isUpdatingStatus}
+                  onClick={() => handleStatusChange("available")}
+                  type="button"
+                >
+                  <StatusIndicator status="available" size="md" />
+                  <span>Available</span>
+                  {userStatus === "available" && (
+                    <div className="ml-auto size-2 rounded-full bg-primary" />
+                  )}
+                </button>
+                <button
+                  className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+                    userStatus === "busy" ? "bg-accent" : ""
+                  }`}
+                  disabled={isUpdatingStatus}
+                  onClick={() => handleStatusChange("busy")}
+                  type="button"
+                >
+                  <StatusIndicator status="busy" size="md" />
+                  <span>Busy</span>
+                  {userStatus === "busy" && (
+                    <div className="ml-auto size-2 rounded-full bg-primary" />
+                  )}
+                </button>
+              </div>
+            </div>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>

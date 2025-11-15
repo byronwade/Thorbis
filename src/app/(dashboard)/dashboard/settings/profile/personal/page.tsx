@@ -11,7 +11,9 @@ type PersonalInfoRow = {
   avatar?: string | null;
 };
 
-function mapPersonalInfo(data: PersonalInfoRow): PersonalInformationClientProps["initialData"] {
+function mapPersonalInfo(
+  data: PersonalInfoRow
+): PersonalInformationClientProps["initialData"] {
   const name = data.name?.trim() ?? "";
   const [firstName = "", ...rest] = name.split(" ").filter(Boolean);
   const lastName = rest.join(" ");
@@ -47,4 +49,3 @@ export default async function PersonalInformationPage() {
 
   return <PersonalInformationClient initialData={initialData} />;
 }
-

@@ -137,9 +137,7 @@ export function CreditCardVisual({
               <span>••••</span>
               <span className="font-semibold">{last4}</span>
             </div>
-            {isVerified && (
-              <BadgeCheck className="size-4 text-primary" />
-            )}
+            {isVerified && <BadgeCheck className="size-4 text-primary" />}
           </div>
 
           {/* Footer */}
@@ -243,9 +241,7 @@ export function CreditCardVisual({
             <span className="opacity-70">••••</span>
             <span className="font-semibold">{last4}</span>
           </div>
-          {isVerified && (
-            <BadgeCheck className="size-5 opacity-90" />
-          )}
+          {isVerified && <BadgeCheck className="size-5 opacity-90" />}
         </div>
 
         {/* Footer */}

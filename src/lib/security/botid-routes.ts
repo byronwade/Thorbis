@@ -23,4 +23,3 @@ export const botIdProtectedRoutes = [
   { path: "/forgot-password", method: "POST" },
   { path: "/reset-password", method: "POST" },
 ] satisfies BotIdProtectedRoute[];
-

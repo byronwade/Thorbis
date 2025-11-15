@@ -1,13 +1,14 @@
 #!/usr/bin/env node
+
 /**
  * Script to fix customer relationship foreign keys
  * Run: node scripts/fix-customer-relationships.mjs
  */
 
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -71,7 +72,7 @@ NOTIFY pgrst, 'reload schema';
 try {
   console.log("Executing SQL migration...");
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .rpc("exec_sql", { sql_string: sql })
     .single();
 

@@ -5,19 +5,29 @@
 
 "use client";
 
-import { Building2, Check, Clock, Copy, Home, MapPin, Navigation, Route, Loader2 } from "lucide-react";
+import {
+  Building2,
+  Check,
+  Clock,
+  Copy,
+  Home,
+  Loader2,
+  MapPin,
+  Navigation,
+  Route,
+} from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { updateEntityTags } from "@/actions/entity-tags";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { updateEntityTags } from "@/actions/entity-tags";
 
 type TravelTimeData = {
   duration: number; // seconds
@@ -47,7 +57,9 @@ type PropertyInfoHoverCardProps = {
   };
 };
 
-export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) {
+export function PropertyInfoHoverCard({
+  property,
+}: PropertyInfoHoverCardProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
   const [isLoadingTravel, setIsLoadingTravel] = useState(false);
@@ -62,7 +74,7 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
   useEffect(() => {
     const fetchTravelTime = async () => {
       // Only fetch if we have required address data
-      if (!property.address || !property.city || !property.state) {
+      if (!(property.address && property.city && property.state)) {
         return;
       }
 
@@ -98,7 +110,14 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
     };
 
     fetchTravelTime();
-  }, [property.address, property.city, property.state, property.zip_code, property.lat, property.lon]);
+  }, [
+    property.address,
+    property.city,
+    property.state,
+    property.zip_code,
+    property.lat,
+    property.lon,
+  ]);
 
   const displayName = property.name || property.address || "Service Location";
 
@@ -147,7 +166,7 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
               <div>
                 <h4 className="font-semibold text-sm">{displayName}</h4>
                 {property.property_type && (
-                  <p className="capitalize text-muted-foreground text-xs">
+                  <p className="text-muted-foreground text-xs capitalize">
                     {property.property_type}
                   </p>
                 )}
@@ -275,7 +294,9 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
             <EntityTags
               entityId={property.id}
               entityType="property"
-              onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
+              onUpdateTags={(id, tags) =>
+                updateEntityTags("property", id, tags)
+              }
               tags={property.metadata?.tags || []}
             />
           </div>
@@ -284,4 +305,3 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
     </HoverCard>
   );
 }
-

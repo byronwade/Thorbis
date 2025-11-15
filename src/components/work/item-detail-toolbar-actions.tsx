@@ -80,9 +80,11 @@ export function ItemDetailToolbarActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => {
-            /* TODO: implement duplicate */
-          }}>
+          <DropdownMenuItem
+            onClick={() => {
+              /* TODO: implement duplicate */
+            }}
+          >
             <Copy className="mr-2 size-4" />
             Duplicate Item
           </DropdownMenuItem>

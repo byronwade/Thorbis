@@ -123,6 +123,7 @@ export async function updateAvailabilitySettings(
     }
 
     revalidatePath("/dashboard/settings/schedule/availability");
+    revalidatePath("/dashboard/settings/schedule");
   });
 }
 
@@ -231,6 +232,7 @@ export async function updateCalendarSettings(
     }
 
     revalidatePath("/dashboard/settings/schedule/calendar");
+    revalidatePath("/dashboard/settings/schedule");
   });
 }
 
@@ -339,6 +341,7 @@ export async function updateTeamSchedulingRules(
     }
 
     revalidatePath("/dashboard/settings/schedule/team-scheduling");
+    revalidatePath("/dashboard/settings/schedule");
   });
 }
 
@@ -373,6 +376,222 @@ export async function getTeamSchedulingRules(): Promise<ActionResult<any>> {
     }
 
     return data || null;
+  });
+}
+
+// ============================================================================
+// DISPATCH RULES
+// ============================================================================
+
+const dispatchRuleSchema = z.object({
+  ruleName: z.string().min(1, "Rule name is required"),
+  priority: z.coerce.number().default(0),
+  isActive: z.boolean().default(true),
+  assignmentMethod: z
+    .enum([
+      "auto",
+      "manual",
+      "round_robin",
+      "closest_technician",
+      "skill_based",
+    ])
+    .default("auto"),
+  conditions: z.string().optional(),
+  actions: z.string().optional(),
+});
+
+function parseJsonField(value?: string | null) {
+  if (!value) {
+    return {};
+  }
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    throw new ActionError(
+      "Invalid JSON provided",
+      ERROR_CODES.VALIDATION_FAILED
+    );
+  }
+}
+
+export async function createDispatchRule(
+  formData: FormData
+): Promise<ActionResult<string>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    const data = dispatchRuleSchema.parse({
+      ruleName: formData.get("ruleName"),
+      priority: formData.get("priority") || "0",
+      isActive: formData.get("isActive") !== "false",
+      assignmentMethod: formData.get("assignmentMethod") || "auto",
+      conditions: formData.get("conditions") || "{}",
+      actions: formData.get("actions") || "{}",
+    });
+
+    const { data: newRule, error } = await supabase
+      .from("schedule_dispatch_rules")
+      .insert({
+        company_id: companyId,
+        rule_name: data.ruleName,
+        priority: data.priority,
+        is_active: data.isActive,
+        assignment_method: data.assignmentMethod,
+        conditions: parseJsonField(data.conditions),
+        actions: parseJsonField(data.actions),
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("create dispatch rule"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/settings/schedule/dispatch-rules");
+    revalidatePath("/dashboard/settings/schedule");
+    return newRule.id;
+  });
+}
+
+export async function updateDispatchRule(
+  ruleId: string,
+  formData: FormData
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    const data = dispatchRuleSchema.parse({
+      ruleName: formData.get("ruleName"),
+      priority: formData.get("priority") || "0",
+      isActive: formData.get("isActive") !== "false",
+      assignmentMethod: formData.get("assignmentMethod") || "auto",
+      conditions: formData.get("conditions") || "{}",
+      actions: formData.get("actions") || "{}",
+    });
+
+    const { error } = await supabase
+      .from("schedule_dispatch_rules")
+      .update({
+        rule_name: data.ruleName,
+        priority: data.priority,
+        is_active: data.isActive,
+        assignment_method: data.assignmentMethod,
+        conditions: parseJsonField(data.conditions),
+        actions: parseJsonField(data.actions),
+      })
+      .eq("id", ruleId)
+      .eq("company_id", companyId);
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update dispatch rule"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/settings/schedule/dispatch-rules");
+    revalidatePath("/dashboard/settings/schedule");
+  });
+}
+
+export async function deleteDispatchRule(
+  ruleId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    const { error } = await supabase
+      .from("schedule_dispatch_rules")
+      .delete()
+      .eq("id", ruleId)
+      .eq("company_id", companyId);
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("delete dispatch rule"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/settings/schedule/dispatch-rules");
+    revalidatePath("/dashboard/settings/schedule");
+  });
+}
+
+export async function getDispatchRules(): Promise<ActionResult<any[]>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    const { data, error } = await supabase
+      .from("schedule_dispatch_rules")
+      .select("*")
+      .eq("company_id", companyId)
+      .order("priority", { ascending: false })
+      .order("rule_name", { ascending: true });
+
+    if (error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch dispatch rules"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    return data ?? [];
   });
 }
 
@@ -475,6 +694,7 @@ export async function createServiceArea(
     }
 
     revalidatePath("/dashboard/settings/schedule/service-areas");
+    revalidatePath("/dashboard/settings/schedule");
     return newArea.id;
   });
 }
@@ -556,6 +776,7 @@ export async function updateServiceArea(
     }
 
     revalidatePath("/dashboard/settings/schedule/service-areas");
+    revalidatePath("/dashboard/settings/schedule");
   });
 }
 
@@ -592,6 +813,7 @@ export async function deleteServiceArea(
     }
 
     revalidatePath("/dashboard/settings/schedule/service-areas");
+    revalidatePath("/dashboard/settings/schedule");
   });
 }
 
@@ -626,5 +848,200 @@ export async function getServiceAreas(): Promise<ActionResult<any[]>> {
     }
 
     return data || [];
+  });
+}
+
+// ============================================================================
+// SCHEDULE OVERVIEW SNAPSHOT
+// ============================================================================
+
+export type ScheduleOverviewSnapshot = {
+  generatedAt: string;
+  readinessScore: number;
+  stepsCompleted: number;
+  totalSteps: number;
+  availability: {
+    configured: boolean;
+    updatedAt: string | null;
+  };
+  calendar: {
+    configured: boolean;
+    defaultView: string | null;
+    updatedAt: string | null;
+  };
+  serviceAreas: {
+    total: number;
+    active: number;
+  };
+  dispatchRules: {
+    total: number;
+    active: number;
+    updatedAt: string | null;
+  };
+  teamRules: {
+    configured: boolean;
+    maxJobsPerDay: number | null;
+    maxJobsPerWeek: number | null;
+    allowOvertime: boolean;
+    requireBreaks: boolean;
+  };
+};
+
+export async function getScheduleOverview(): Promise<
+  ActionResult<ScheduleOverviewSnapshot>
+> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const companyId = await getCompanyId(supabase, user.id);
+
+    const [
+      availabilityResult,
+      calendarResult,
+      teamRulesResult,
+      serviceAreasResult,
+      dispatchRulesResult,
+    ] = await Promise.all([
+      supabase
+        .from("schedule_availability_settings")
+        .select("updated_at")
+        .eq("company_id", companyId)
+        .single(),
+      supabase
+        .from("schedule_calendar_settings")
+        .select("default_view, updated_at")
+        .eq("company_id", companyId)
+        .single(),
+      supabase
+        .from("schedule_team_rules")
+        .select(
+          "max_jobs_per_day, max_jobs_per_week, allow_overtime, require_breaks, updated_at"
+        )
+        .eq("company_id", companyId)
+        .single(),
+      supabase
+        .from("schedule_service_areas")
+        .select("id, is_active")
+        .eq("company_id", companyId),
+      supabase
+        .from("schedule_dispatch_rules")
+        .select("id, is_active, updated_at")
+        .eq("company_id", companyId)
+        .order("updated_at", { ascending: false }),
+    ]);
+
+    const availabilityError = availabilityResult.error;
+    if (availabilityError && availabilityError.code !== "PGRST116") {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch availability settings"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    const calendarError = calendarResult.error;
+    if (calendarError && calendarError.code !== "PGRST116") {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch calendar settings"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    const teamRulesError = teamRulesResult.error;
+    if (teamRulesError && teamRulesError.code !== "PGRST116") {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch team scheduling rules"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    if (serviceAreasResult.error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch service areas"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    if (dispatchRulesResult.error) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("fetch dispatch rules"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    const availabilityData = availabilityResult.data ?? null;
+    const calendarData = calendarResult.data ?? null;
+    const teamRulesData = teamRulesResult.data ?? null;
+    const serviceAreasData = serviceAreasResult.data ?? [];
+    const dispatchRulesData = dispatchRulesResult.data ?? [];
+
+    const availabilityConfigured = Boolean(availabilityData);
+    const calendarConfigured = Boolean(calendarData);
+    const teamRulesConfigured = Boolean(teamRulesData);
+    const serviceAreasTotal = serviceAreasData.length;
+    const serviceAreasActive = serviceAreasData.filter(
+      (area) => area.is_active
+    ).length;
+    const dispatchRulesTotal = dispatchRulesData.length;
+    const dispatchRulesActive = dispatchRulesData.filter(
+      (rule) => rule.is_active
+    ).length;
+
+    const latestDispatchUpdate =
+      dispatchRulesData.find((rule) => rule.updated_at)?.updated_at ?? null;
+
+    const readinessSteps = [
+      availabilityConfigured,
+      calendarConfigured,
+      serviceAreasTotal > 0,
+      dispatchRulesTotal > 0,
+      teamRulesConfigured,
+    ];
+    const stepsCompleted = readinessSteps.filter(Boolean).length;
+    const readinessScore = Math.round(
+      (stepsCompleted / readinessSteps.length) * 100
+    );
+
+    return {
+      generatedAt: new Date().toISOString(),
+      readinessScore,
+      stepsCompleted,
+      totalSteps: readinessSteps.length,
+      availability: {
+        configured: availabilityConfigured,
+        updatedAt: availabilityData?.updated_at ?? null,
+      },
+      calendar: {
+        configured: calendarConfigured,
+        defaultView: calendarData?.default_view ?? null,
+        updatedAt: calendarData?.updated_at ?? null,
+      },
+      serviceAreas: {
+        total: serviceAreasTotal,
+        active: serviceAreasActive,
+      },
+      dispatchRules: {
+        total: dispatchRulesTotal,
+        active: dispatchRulesActive,
+        updatedAt: latestDispatchUpdate,
+      },
+      teamRules: {
+        configured: teamRulesConfigured,
+        maxJobsPerDay: teamRulesData?.max_jobs_per_day ?? null,
+        maxJobsPerWeek: teamRulesData?.max_jobs_per_week ?? null,
+        allowOvertime: teamRulesData?.allow_overtime ?? false,
+        requireBreaks: teamRulesData?.require_breaks ?? false,
+      },
+    };
   });
 }
