@@ -108,11 +108,14 @@
       "Bash(node -e:*)",
       "Bash(while read file)",
       "Bash(do if head -c 110 $file)",
-      "Bash(then echo \"$file\" fi done)"
+      "Bash(then echo \"$file\" fi done)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["shadcn"]
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }

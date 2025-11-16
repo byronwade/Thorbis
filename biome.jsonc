@@ -25,7 +25,8 @@
         "useTemplate": "warn",
         "useSelfClosingElements": "warn",
         "noUnusedTemplateLiteral": "warn",
-        "useNamingConvention": "off"
+        "useNamingConvention": "off",
+        "noMagicNumbers": "off"
       },
       "correctness": {
         "noUnusedVariables": "warn",
