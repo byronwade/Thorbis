@@ -79,18 +79,23 @@ export async function DashboardAuthWrapper() {
 	}
 
 	// If no active company or onboarding not complete, redirect to welcome
-	// Note: We can't check the current pathname here (server component)
+	// Note: We can't check the current pathname reliably in server component
 	// The welcome page itself should not trigger this redirect
-	// This will be handled by checking if user is accessing a protected route
 	if (!isCompanyOnboardingComplete) {
 		// Use already imported headers (parallelized earlier)
 		const headersList = await headersImport();
-		const pathname = headersList.get("x-pathname") || headersList.get("referer") || "";
+		const referer = headersList.get("referer") || "";
+		const pathname = headersList.get("x-invoke-path") || headersList.get("x-pathname") || "";
 
-		// Only redirect if not already on welcome page
-		if (!pathname.includes("/welcome")) {
+		// More reliable check: look in both referer and pathname headers
+		const currentPath = pathname || referer;
+		const isOnWelcomePage = currentPath.includes("/welcome") || currentPath.endsWith("/welcome");
+
+		// Only redirect if definitely NOT on welcome page
+		if (!isOnWelcomePage && currentPath) {
 			redirect("/dashboard/welcome");
 		}
+		// If we can't determine the path, don't redirect (prevents loops)
 	}
 
 	// This component renders nothing - it only performs auth checks and redirects

@@ -142,7 +142,9 @@
       "Bash(chmod:*)",
       "Bash(/Users/byronwade/Stratos/fix-zustand-hydration.sh)",
       "Bash(curl:*)",
-      "Bash(git -C /Users/byronwade/Stratos log --oneline --all --graph)"
+      "Bash(git -C /Users/byronwade/Stratos log --oneline --all --graph)",
+      "Bash([ -d /Users/byronwade/Stratos/scripts/archive/ppr-migration ])",
+      "Bash([ -f /Users/byronwade/Stratos/scripts/test-migration.js ])"
     ],
     "deny": [],
     "ask": []

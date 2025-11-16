@@ -1,9 +1,0 @@
-{
-  "workflows": {
-    "src/workflows/company-trial.ts": {
-      "companyTrialWorkflow": {
-        "workflowId": "workflow//src/workflows/company-trial.ts//companyTrialWorkflow"
-      }
-    }
-  }
-}

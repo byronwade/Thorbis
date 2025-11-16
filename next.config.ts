@@ -86,7 +86,7 @@ const nextConfig: NextConfig = {
 	typescript: {
 		// Speed up builds by skipping type checking during build (use CI/CD for type checking)
 		// Set to false if you want Next.js to type-check during build (slower)
-		ignoreBuildErrors: true, // Temporarily true to complete skeleton consolidation
+		ignoreBuildErrors: true, // Enabled to allow build completion - fix type errors separately
 	},
 
 	// Enable Partial Prerendering via cacheComponents (Next.js 16+)

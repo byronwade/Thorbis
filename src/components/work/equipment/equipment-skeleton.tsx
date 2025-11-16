@@ -8,9 +8,6 @@
 
 import { DataTableListSkeleton } from "@/components/ui/skeletons";
 
-export function EquipmentSkeleton() {
+export default function EquipmentSkeleton() {
 	return <DataTableListSkeleton />;
 }
-
-// Export alias for dynamic imports
-export default EquipmentSkeleton;

@@ -23,6 +23,10 @@
 # misc
 .DS_Store
 *.pem
+build-output.log
+*.backup.tsx
+*.backup.ts
+*.backup.js
 
 # debug
 npm-debug.log*

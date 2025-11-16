@@ -11,7 +11,7 @@
 
 import { Suspense } from "react";
 import { UpaymentsData } from "@/components/work/payments/payments-data";
-import { PaymentsSkeleton } from "@/components/work/payments/payments-skeleton";
+import PaymentsSkeleton from "@/components/work/payments/payments-skeleton";
 import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 
 export default function UpaymentsPage() {

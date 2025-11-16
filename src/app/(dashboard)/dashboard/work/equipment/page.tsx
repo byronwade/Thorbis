@@ -11,7 +11,7 @@
 
 import { Suspense } from "react";
 import { UequipmentData } from "@/components/work/equipment/equipment-data";
-import { EquipmentSkeleton } from "@/components/work/equipment/equipment-skeleton";
+import EquipmentSkeleton from "@/components/work/equipment/equipment-skeleton";
 import { UequipmentStats } from "@/components/work/equipment/equipment-stats";
 
 export default function UequipmentPage() {
