@@ -89,9 +89,13 @@ const nextConfig: NextConfig = {
 		ignoreBuildErrors: true, // Enabled to allow build completion - fix type errors separately
 	},
 
-	// Enable Partial Prerendering via cacheComponents (Next.js 16+)
-	// This provides instant page loads with streaming content
-	cacheComponents: true,
+	// DISABLED: Partial Prerendering via cacheComponents (Next.js 16+)
+	// PPR was causing severe performance degradation:
+	// - Render times: 2s → 11s (degrading over time)
+	// - Continuous POST request loops
+	// - Memory leaks and connection pool exhaustion
+	// Will re-enable after Next.js 16.1+ stabilizes PPR
+	cacheComponents: false,
 
 	// Enable experimental features for better performance
 	experimental: {
