@@ -16,89 +16,89 @@ import type { ArchiveFilter } from "@/lib/utils/archive";
 
 // Define entity types that can have archive filters
 export type ArchivableEntity =
-  | "team_members"
-  | "customers"
-  | "jobs"
-  | "equipment"
-  | "materials"
-  | "payments"
-  | "invoices"
-  | "estimates"
-  | "contracts"
-  | "purchase_orders"
-  | "service_agreements"
-  | "maintenance_plans"
-  | "appointments"
-  | "properties";
+	| "team_members"
+	| "customers"
+	| "jobs"
+	| "equipment"
+	| "materials"
+	| "payments"
+	| "invoices"
+	| "estimates"
+	| "contracts"
+	| "purchase_orders"
+	| "service_agreements"
+	| "maintenance_plans"
+	| "appointments"
+	| "properties";
 
 // State type
 type ArchiveStore = {
-  // Archive filters per entity
-  filters: Record<ArchivableEntity, ArchiveFilter>;
+	// Archive filters per entity
+	filters: Record<ArchivableEntity, ArchiveFilter>;
 
-  // Actions
-  setFilter: (entity: ArchivableEntity, filter: ArchiveFilter) => void;
-  getFilter: (entity: ArchivableEntity) => ArchiveFilter;
-  resetFilter: (entity: ArchivableEntity) => void;
-  resetAllFilters: () => void;
+	// Actions
+	setFilter: (entity: ArchivableEntity, filter: ArchiveFilter) => void;
+	getFilter: (entity: ArchivableEntity) => ArchiveFilter;
+	resetFilter: (entity: ArchivableEntity) => void;
+	resetAllFilters: () => void;
 };
 
 // Default filters (all entities default to "active" - don't show archived)
 const defaultFilters: Record<ArchivableEntity, ArchiveFilter> = {
-  team_members: "active",
-  customers: "active",
-  jobs: "active",
-  equipment: "active",
-  materials: "active",
-  payments: "active",
-  invoices: "active",
-  estimates: "active",
-  contracts: "active",
-  purchase_orders: "active",
-  service_agreements: "active",
-  maintenance_plans: "active",
-  appointments: "active",
-  properties: "active",
+	team_members: "active",
+	customers: "active",
+	jobs: "active",
+	equipment: "active",
+	materials: "active",
+	payments: "active",
+	invoices: "active",
+	estimates: "active",
+	contracts: "active",
+	purchase_orders: "active",
+	service_agreements: "active",
+	maintenance_plans: "active",
+	appointments: "active",
+	properties: "active",
 };
 
 // Create store
 export const useArchiveStore = create<ArchiveStore>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        filters: { ...defaultFilters },
+	devtools(
+		persist(
+			(set, get) => ({
+				filters: { ...defaultFilters },
 
-        setFilter: (entity, filter) =>
-          set((state) => ({
-            filters: {
-              ...state.filters,
-              [entity]: filter,
-            },
-          })),
+				setFilter: (entity, filter) =>
+					set((state) => ({
+						filters: {
+							...state.filters,
+							[entity]: filter,
+						},
+					})),
 
-        getFilter: (entity) => {
-          const state = get();
-          return state.filters[entity] || "active";
-        },
+				getFilter: (entity) => {
+					const state = get();
+					return state.filters[entity] || "active";
+				},
 
-        resetFilter: (entity) =>
-          set((state) => ({
-            filters: {
-              ...state.filters,
-              [entity]: "active",
-            },
-          })),
+				resetFilter: (entity) =>
+					set((state) => ({
+						filters: {
+							...state.filters,
+							[entity]: "active",
+						},
+					})),
 
-        resetAllFilters: () =>
-          set({
-            filters: { ...defaultFilters },
-          }),
-      }),
-      {
-        name: "archive-filters", // localStorage key
-        partialize: (state) => ({ filters: state.filters }), // Persist only filters
-      }
-    ),
-    { name: "ArchiveStore" } // DevTools name
-  )
+				resetAllFilters: () =>
+					set({
+						filters: { ...defaultFilters },
+					}),
+			}),
+			{
+				name: "archive-filters", // localStorage key
+				partialize: (state) => ({ filters: state.filters }), // Persist only filters
+			}
+		),
+		{ name: "ArchiveStore" } // DevTools name
+	)
 );

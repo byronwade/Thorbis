@@ -15,19 +15,17 @@ import { EstimatesSkeleton } from "@/components/work/estimates/estimates-skeleto
 import { EstimatesStats } from "@/components/work/estimates/estimates-stats";
 
 export default function EstimatesPage() {
-  return (
-    <>
-      {/* Stats - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <EstimatesStats />
-      </Suspense>
+	return (
+		<>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<EstimatesStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <Suspense fallback={<EstimatesSkeleton />}>
-        <EstimatesData />
-      </Suspense>
-    </>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<Suspense fallback={<EstimatesSkeleton />}>
+				<EstimatesData />
+			</Suspense>
+		</>
+	);
 }

@@ -21,9 +21,9 @@ import { PricebookData } from "@/components/work/pricebook/pricebook-data";
 import { PricebookSkeleton } from "@/components/work/pricebook/pricebook-skeleton";
 
 export default function PriceBookPage() {
-  return (
-    <Suspense fallback={<PricebookSkeleton />}>
-      <PricebookData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PricebookSkeleton />}>
+			<PricebookData />
+		</Suspense>
+	);
 }

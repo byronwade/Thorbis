@@ -10,9 +10,9 @@ import { UscheduleData } from "@/components/settings/schedule/schedule-data";
 import { UscheduleSkeleton } from "@/components/settings/schedule/schedule-skeleton";
 
 export default function UschedulePage() {
-  return (
-    <Suspense fallback={<UscheduleSkeleton />}>
-      <UscheduleData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UscheduleSkeleton />}>
+			<UscheduleData />
+		</Suspense>
+	);
 }

@@ -15,18 +15,14 @@ import { PriceBookItemDetailData } from "@/components/work/pricebook/pricebook-i
 import { PriceBookItemDetailShell } from "@/components/work/pricebook/pricebook-item-detail-shell";
 import { PriceBookItemDetailSkeleton } from "@/components/work/pricebook/pricebook-item-detail-skeleton";
 
-export default async function PriceBookItemPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id: itemId } = await params;
+export default async function PriceBookItemPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id: itemId } = await params;
 
-  return (
-    <PriceBookItemDetailShell>
-      <Suspense fallback={<PriceBookItemDetailSkeleton />}>
-        <PriceBookItemDetailData itemId={itemId} />
-      </Suspense>
-    </PriceBookItemDetailShell>
-  );
+	return (
+		<PriceBookItemDetailShell>
+			<Suspense fallback={<PriceBookItemDetailSkeleton />}>
+				<PriceBookItemDetailData itemId={itemId} />
+			</Suspense>
+		</PriceBookItemDetailShell>
+	);
 }

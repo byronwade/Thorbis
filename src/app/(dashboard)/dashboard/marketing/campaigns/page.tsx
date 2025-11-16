@@ -19,9 +19,9 @@ import { CampaignsData } from "@/components/marketing/campaigns/campaigns-data";
 import { CampaignsSkeleton } from "@/components/marketing/campaigns/campaigns-skeleton";
 
 export default function CampaignsPage() {
-  return (
-    <Suspense fallback={<CampaignsSkeleton />}>
-      <CampaignsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<CampaignsSkeleton />}>
+			<CampaignsData />
+		</Suspense>
+	);
 }

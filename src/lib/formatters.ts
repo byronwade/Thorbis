@@ -12,30 +12,30 @@
  */
 
 export type CurrencyFormatOptions = {
-  /** Minimum fraction digits (default: 0) */
-  minimumFractionDigits?: number;
-  /** Maximum fraction digits (default: 2) */
-  maximumFractionDigits?: number;
-  /** Show zero as "$0.00" or "$0" (default: true) */
-  showZero?: boolean;
-  /** Decimal places (alias for maximumFractionDigits, for convenience) */
-  decimals?: number;
+	/** Minimum fraction digits (default: 0) */
+	minimumFractionDigits?: number;
+	/** Maximum fraction digits (default: 2) */
+	maximumFractionDigits?: number;
+	/** Show zero as "$0.00" or "$0" (default: true) */
+	showZero?: boolean;
+	/** Decimal places (alias for maximumFractionDigits, for convenience) */
+	decimals?: number;
 };
 
 export type DateFormatPreset =
-  | "short" // "Jan 15, 2024"
-  | "medium" // "Jan 15, 2024"
-  | "long" // "January 15, 2024"
-  | "full" // "Monday, January 15, 2024"
-  | "table" // "Jan 15, 2024" (optimized for tables)
-  | "time" // "2:30 PM"
-  | "datetime"; // "Jan 15, 2024, 2:30 PM"
+	| "short" // "Jan 15, 2024"
+	| "medium" // "Jan 15, 2024"
+	| "long" // "January 15, 2024"
+	| "full" // "Monday, January 15, 2024"
+	| "table" // "Jan 15, 2024" (optimized for tables)
+	| "time" // "2:30 PM"
+	| "datetime"; // "Jan 15, 2024, 2:30 PM"
 
 export type DateFormatOptions = {
-  /** Preset format style */
-  preset?: DateFormatPreset;
-  /** Custom format options (overrides preset) */
-  custom?: Intl.DateTimeFormatOptions;
+	/** Preset format style */
+	preset?: DateFormatPreset;
+	/** Custom format options (overrides preset) */
+	custom?: Intl.DateTimeFormatOptions;
 };
 
 /**
@@ -50,40 +50,35 @@ export type DateFormatOptions = {
  * formatCurrency(null) // "$0.00"
  * formatCurrency(123456, { minimumFractionDigits: 0 }) // "$1,235"
  */
-export function formatCurrency(
-  cents: number | null | undefined,
-  options: CurrencyFormatOptions = {}
-): string {
-  const {
-    minimumFractionDigits = 0,
-    maximumFractionDigits = options.decimals ?? 2,
-    showZero = true,
-    decimals,
-  } = options;
+export function formatCurrency(cents: number | null | undefined, options: CurrencyFormatOptions = {}): string {
+	const {
+		minimumFractionDigits = 0,
+		maximumFractionDigits = options.decimals ?? 2,
+		showZero = true,
+		decimals,
+	} = options;
 
-  // Use decimals if provided, otherwise use maximumFractionDigits
-  const finalMaxFractionDigits =
-    decimals !== undefined ? decimals : maximumFractionDigits;
-  const finalMinFractionDigits =
-    decimals !== undefined ? decimals : minimumFractionDigits;
+	// Use decimals if provided, otherwise use maximumFractionDigits
+	const finalMaxFractionDigits = decimals !== undefined ? decimals : maximumFractionDigits;
+	const finalMinFractionDigits = decimals !== undefined ? decimals : minimumFractionDigits;
 
-  if (cents === null || cents === undefined) {
-    return showZero
-      ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(0)
-      : "$0.00";
-  }
+	if (cents === null || cents === undefined) {
+		return showZero
+			? new Intl.NumberFormat("en-US", {
+					style: "currency",
+					currency: "USD",
+					minimumFractionDigits: 0,
+					maximumFractionDigits: 0,
+				}).format(0)
+			: "$0.00";
+	}
 
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: finalMinFractionDigits,
-    maximumFractionDigits: finalMaxFractionDigits,
-  }).format(cents / 100);
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+		minimumFractionDigits: finalMinFractionDigits,
+		maximumFractionDigits: finalMaxFractionDigits,
+	}).format(cents / 100);
 }
 
 /**
@@ -98,39 +93,37 @@ export function formatCurrency(
  * formatCurrencyFromDollars(null) // "$0.00"
  */
 export function formatCurrencyFromDollars(
-  amount: number | null | undefined,
-  options: CurrencyFormatOptions = {}
+	amount: number | null | undefined,
+	options: CurrencyFormatOptions = {}
 ): string {
-  const {
-    minimumFractionDigits = 0,
-    maximumFractionDigits = options.decimals ?? 2,
-    showZero = true,
-    decimals,
-  } = options;
+	const {
+		minimumFractionDigits = 0,
+		maximumFractionDigits = options.decimals ?? 2,
+		showZero = true,
+		decimals,
+	} = options;
 
-  // Use decimals if provided, otherwise use maximumFractionDigits
-  const finalMaxFractionDigits =
-    decimals !== undefined ? decimals : maximumFractionDigits;
-  const finalMinFractionDigits =
-    decimals !== undefined ? decimals : minimumFractionDigits;
+	// Use decimals if provided, otherwise use maximumFractionDigits
+	const finalMaxFractionDigits = decimals !== undefined ? decimals : maximumFractionDigits;
+	const finalMinFractionDigits = decimals !== undefined ? decimals : minimumFractionDigits;
 
-  if (amount === null || amount === undefined || Number.isNaN(amount)) {
-    return showZero
-      ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(0)
-      : "$0.00";
-  }
+	if (amount === null || amount === undefined || Number.isNaN(amount)) {
+		return showZero
+			? new Intl.NumberFormat("en-US", {
+					style: "currency",
+					currency: "USD",
+					minimumFractionDigits: 0,
+					maximumFractionDigits: 0,
+				}).format(0)
+			: "$0.00";
+	}
 
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: finalMinFractionDigits,
-    maximumFractionDigits: finalMaxFractionDigits,
-  }).format(amount);
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+		minimumFractionDigits: finalMinFractionDigits,
+		maximumFractionDigits: finalMaxFractionDigits,
+	}).format(amount);
 }
 
 /**
@@ -146,80 +139,77 @@ export function formatCurrencyFromDollars(
  * formatDate(null) // "—"
  */
 export function formatDate(
-  date: Date | number | string | null | undefined,
-  options: DateFormatOptions | DateFormatPreset | string = {}
+	date: Date | number | string | null | undefined,
+	options: DateFormatOptions | DateFormatPreset | string = {}
 ): string {
-  if (!date) {
-    return "—";
-  }
+	if (!date) {
+		return "—";
+	}
 
-  const dateObj =
-    typeof date === "number" || typeof date === "string"
-      ? new Date(date)
-      : date;
+	const dateObj = typeof date === "number" || typeof date === "string" ? new Date(date) : date;
 
-  if (Number.isNaN(dateObj.getTime())) {
-    return "—";
-  }
+	if (Number.isNaN(dateObj.getTime())) {
+		return "—";
+	}
 
-  // Handle backward compatibility: string format parameter
-  let preset: DateFormatPreset = "table";
-  let custom: Intl.DateTimeFormatOptions | undefined;
+	// Handle backward compatibility: string format parameter
+	let preset: DateFormatPreset = "table";
+	let custom: Intl.DateTimeFormatOptions | undefined;
 
-  if (typeof options === "string") {
-    // Legacy format: formatDate(date, "short")
-    preset = (options as DateFormatPreset) || "table";
-  } else {
-    preset = options.preset || "table";
-    custom = options.custom;
-  }
+	if (typeof options === "string") {
+		// Legacy format: formatDate(date, "short")
+		preset = (options as DateFormatPreset) || "table";
+	} else {
+		preset = options.preset || "table";
+		custom = options.custom;
+	}
 
-  // Preset configurations
-  const presetConfigs: Record<DateFormatPreset, Intl.DateTimeFormatOptions> = {
-    short: {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    },
-    medium: {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    },
-    long: {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    },
-    full: {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    },
-    table: {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    },
-    time: {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    },
-    datetime: {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    },
-  };
+	// Preset configurations
+	const presetConfigs: Record<DateFormatPreset, Intl.DateTimeFormatOptions> = {
+		short: {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		},
+		medium: {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		},
+		long: {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		},
+		full: {
+			weekday: "long",
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		},
+		table: {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		},
+		time: {
+			hour: "numeric",
+			minute: "2-digit",
+			hour12: true,
+		},
+		datetime: {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+			hour: "numeric",
+			minute: "2-digit",
+			hour12: true,
+		},
+	};
 
-  const formatOptions = custom || presetConfigs[preset];
+	const formatOptions = custom || presetConfigs[preset];
 
-  return new Intl.DateTimeFormat("en-US", formatOptions).format(dateObj);
+	return new Intl.DateTimeFormat("en-US", formatOptions).format(dateObj);
 }
 
 /**
@@ -231,10 +221,8 @@ export function formatDate(
  * @example
  * formatDateTime(new Date()) // "Jan 15, 2024, 2:30 PM"
  */
-export function formatDateTime(
-  date: Date | number | string | null | undefined
-): string {
-  return formatDate(date, { preset: "datetime" });
+export function formatDateTime(date: Date | number | string | null | undefined): string {
+	return formatDate(date, { preset: "datetime" });
 }
 
 /**
@@ -246,10 +234,8 @@ export function formatDateTime(
  * @example
  * formatTime(new Date()) // "2:30 PM"
  */
-export function formatTime(
-  date: Date | number | string | null | undefined
-): string {
-  return formatDate(date, { preset: "time" });
+export function formatTime(date: Date | number | string | null | undefined): string {
+	return formatDate(date, { preset: "time" });
 }
 
 /**
@@ -263,56 +249,52 @@ export function formatTime(
  * formatDateRange(new Date("2024-01-15"), new Date("2024-01-20")) // "Jan 15 → Jan 20, 2024"
  */
 export function formatDateRange(
-  start: Date | number | string | null | undefined,
-  end?: Date | number | string | null | undefined
+	start: Date | number | string | null | undefined,
+	end?: Date | number | string | null | undefined
 ): string {
-  if (!start) {
-    return "—";
-  }
+	if (!start) {
+		return "—";
+	}
 
-  const startDate =
-    typeof start === "number" || typeof start === "string"
-      ? new Date(start)
-      : start;
+	const startDate = typeof start === "number" || typeof start === "string" ? new Date(start) : start;
 
-  if (Number.isNaN(startDate.getTime())) {
-    return "—";
-  }
+	if (Number.isNaN(startDate.getTime())) {
+		return "—";
+	}
 
-  if (!end) {
-    return formatDate(startDate, { preset: "short" });
-  }
+	if (!end) {
+		return formatDate(startDate, { preset: "short" });
+	}
 
-  const endDate =
-    typeof end === "number" || typeof end === "string" ? new Date(end) : end;
+	const endDate = typeof end === "number" || typeof end === "string" ? new Date(end) : end;
 
-  if (Number.isNaN(endDate.getTime())) {
-    return formatDate(startDate, { preset: "short" });
-  }
+	if (Number.isNaN(endDate.getTime())) {
+		return formatDate(startDate, { preset: "short" });
+	}
 
-  // Check if same day
-  const sameDay =
-    startDate.getFullYear() === endDate.getFullYear() &&
-    startDate.getMonth() === endDate.getMonth() &&
-    startDate.getDate() === endDate.getDate();
+	// Check if same day
+	const sameDay =
+		startDate.getFullYear() === endDate.getFullYear() &&
+		startDate.getMonth() === endDate.getMonth() &&
+		startDate.getDate() === endDate.getDate();
 
-  if (sameDay) {
-    return formatDate(startDate, { preset: "short" });
-  }
+	if (sameDay) {
+		return formatDate(startDate, { preset: "short" });
+	}
 
-  // Format range
-  const startFormatted = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(startDate);
+	// Format range
+	const startFormatted = new Intl.DateTimeFormat("en-US", {
+		month: "short",
+		day: "numeric",
+	}).format(startDate);
 
-  const endFormatted = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(endDate);
+	const endFormatted = new Intl.DateTimeFormat("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	}).format(endDate);
 
-  return `${startFormatted} → ${endFormatted}`;
+	return `${startFormatted} → ${endFormatted}`;
 }
 
 /**
@@ -326,15 +308,12 @@ export function formatDateRange(
  * formatPercentage(45.5) // "46%"
  * formatPercentage(45.5, 1) // "45.5%"
  */
-export function formatPercentage(
-  value: number | null | undefined,
-  decimals = 0
-): string {
-  if (value === null || value === undefined) {
-    return "—";
-  }
+export function formatPercentage(value: number | null | undefined, decimals = 0): string {
+	if (value === null || value === undefined) {
+		return "—";
+	}
 
-  return `${value.toFixed(decimals)}%`;
+	return `${value.toFixed(decimals)}%`;
 }
 
 /**
@@ -348,18 +327,18 @@ export function formatPercentage(
  * formatHours(1.25) // "1h 15m"
  */
 export function formatHours(hours: number | null | undefined): string {
-  if (hours === null || hours === undefined) {
-    return "0h";
-  }
+	if (hours === null || hours === undefined) {
+		return "0h";
+	}
 
-  const wholeHours = Math.floor(hours);
-  const minutes = Math.round((hours - wholeHours) * 60);
+	const wholeHours = Math.floor(hours);
+	const minutes = Math.round((hours - wholeHours) * 60);
 
-  if (minutes === 0) {
-    return `${wholeHours}h`;
-  }
+	if (minutes === 0) {
+		return `${wholeHours}h`;
+	}
 
-  return `${wholeHours}h ${minutes}m`;
+	return `${wholeHours}h ${minutes}m`;
 }
 
 /**
@@ -373,16 +352,13 @@ export function formatHours(hours: number | null | undefined): string {
  * formatNumber(1234567) // "1,234,567"
  * formatNumber(1234.56, 2) // "1,234.56"
  */
-export function formatNumber(
-  value: number | null | undefined,
-  decimals = 0
-): string {
-  if (value === null || value === undefined) {
-    return "0";
-  }
+export function formatNumber(value: number | null | undefined, decimals = 0): string {
+	if (value === null || value === undefined) {
+		return "0";
+	}
 
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(value);
+	return new Intl.NumberFormat("en-US", {
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals,
+	}).format(value);
 }

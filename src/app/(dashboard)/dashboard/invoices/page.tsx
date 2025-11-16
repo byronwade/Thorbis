@@ -10,6 +10,6 @@
 import { redirect } from "next/navigation";
 
 export default function InvoicesPage() {
-  // Redirect to the canonical invoices page in the work section
-  redirect("/dashboard/work/invoices");
+	// Redirect to the canonical invoices page in the work section
+	redirect("/dashboard/work/invoices");
 }

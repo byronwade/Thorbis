@@ -27,13 +27,10 @@ import { emailSchema } from "./shared-schemas";
  * - Optional: Special character (can be enforced later)
  */
 export const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .max(100, "Password is too long")
-  .regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-    "Password must contain uppercase, lowercase, and number"
-  );
+	.string()
+	.min(8, "Password must be at least 8 characters")
+	.max(100, "Password is too long")
+	.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number");
 
 /**
  * Sign Up Schema
@@ -41,30 +38,21 @@ export const passwordSchema = z
  * Used for new user registration.
  */
 export const signUpSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name is too long")
-    .trim(),
-  email: emailSchema,
-  phone: z
-    .string()
-    .trim()
-    .min(10, "Phone number is required")
-    .refine(
-      (value) => value.replace(/\D/g, "").length >= 10,
-      "Enter a valid phone number"
-    ),
-  password: passwordSchema,
-  terms: z
-    .boolean()
-    .refine((val) => val === true, "You must accept the terms and conditions"),
-  companyName: z
-    .string()
-    .min(2, "Company name must be at least 2 characters")
-    .max(200, "Company name is too long")
-    .trim()
-    .optional(),
+	name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long").trim(),
+	email: emailSchema,
+	phone: z
+		.string()
+		.trim()
+		.min(10, "Phone number is required")
+		.refine((value) => value.replace(/\D/g, "").length >= 10, "Enter a valid phone number"),
+	password: passwordSchema,
+	terms: z.boolean().refine((val) => val === true, "You must accept the terms and conditions"),
+	companyName: z
+		.string()
+		.min(2, "Company name must be at least 2 characters")
+		.max(200, "Company name is too long")
+		.trim()
+		.optional(),
 });
 
 /**
@@ -73,9 +61,9 @@ export const signUpSchema = z.object({
  * Used for existing user login.
  */
 export const signInSchema = z.object({
-  email: emailSchema,
-  password: z.string().min(1, "Password is required"),
-  rememberMe: z.boolean().default(false).optional(),
+	email: emailSchema,
+	password: z.string().min(1, "Password is required"),
+	rememberMe: z.boolean().default(false).optional(),
 });
 
 /**
@@ -84,7 +72,7 @@ export const signInSchema = z.object({
  * Used for password reset requests.
  */
 export const forgotPasswordSchema = z.object({
-  email: emailSchema,
+	email: emailSchema,
 });
 
 /**
@@ -94,15 +82,15 @@ export const forgotPasswordSchema = z.object({
  * Ensures password and confirmation match.
  */
 export const resetPasswordSchema = z
-  .object({
-    password: passwordSchema,
-    confirmPassword: z.string(),
-    token: z.string().min(1, "Reset token is required"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+	.object({
+		password: passwordSchema,
+		confirmPassword: z.string(),
+		token: z.string().min(1, "Reset token is required"),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: "Passwords don't match",
+		path: ["confirmPassword"],
+	});
 
 /**
  * Change Password Schema
@@ -111,19 +99,19 @@ export const resetPasswordSchema = z
  * Ensures new password is different from current.
  */
 export const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: passwordSchema,
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  })
-  .refine((data) => data.currentPassword !== data.newPassword, {
-    message: "New password must be different from current password",
-    path: ["newPassword"],
-  });
+	.object({
+		currentPassword: z.string().min(1, "Current password is required"),
+		newPassword: passwordSchema,
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.newPassword === data.confirmPassword, {
+		message: "Passwords don't match",
+		path: ["confirmPassword"],
+	})
+	.refine((data) => data.currentPassword !== data.newPassword, {
+		message: "New password must be different from current password",
+		path: ["newPassword"],
+	});
 
 /**
  * Update Profile Schema
@@ -131,22 +119,14 @@ export const changePasswordSchema = z
  * Used for updating user profile information.
  */
 export const updateProfileSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name is too long")
-    .trim()
-    .optional(),
-  bio: z.string().max(500, "Bio is too long").optional(),
-  phone: z
-    .string()
-    .regex(
-      /^(\+1|1)?[-.\s]?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
-      "Invalid phone number format"
-    )
-    .optional()
-    .or(z.literal("")),
-  avatar: z.string().url("Invalid avatar URL").optional().or(z.literal("")),
+	name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long").trim().optional(),
+	bio: z.string().max(500, "Bio is too long").optional(),
+	phone: z
+		.string()
+		.regex(/^(\+1|1)?[-.\s]?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/, "Invalid phone number format")
+		.optional()
+		.or(z.literal("")),
+	avatar: z.string().url("Invalid avatar URL").optional().or(z.literal("")),
 });
 
 /**
@@ -155,7 +135,7 @@ export const updateProfileSchema = z.object({
  * Used for verifying email with token.
  */
 export const emailVerificationSchema = z.object({
-  token: z.string().min(1, "Verification token is required"),
+	token: z.string().min(1, "Verification token is required"),
 });
 
 /**
@@ -164,7 +144,7 @@ export const emailVerificationSchema = z.object({
  * Used for requesting a new verification email.
  */
 export const resendVerificationSchema = z.object({
-  email: emailSchema,
+	email: emailSchema,
 });
 
 /**

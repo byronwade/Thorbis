@@ -12,44 +12,29 @@
  */
 
 import {
-  AlertCircle,
-  Briefcase,
-  Calendar,
-  Check,
-  DollarSign,
-  Info,
-  MessageSquare,
-  Shield,
-  ShieldAlert,
-  User,
-  Users,
-  X,
+	AlertCircle,
+	Briefcase,
+	Calendar,
+	Check,
+	DollarSign,
+	Info,
+	MessageSquare,
+	Shield,
+	ShieldAlert,
+	User,
+	Users,
+	X,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import {
-  getTeamMemberPermissions,
-  updateTeamMemberPermissions,
-} from "@/actions/team";
+import { getTeamMemberPermissions, updateTeamMemberPermissions } from "@/actions/team";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,414 +42,368 @@ import type { Permission } from "@/lib/auth/permissions";
 import { getRolePreset, PERMISSION_GROUPS } from "@/lib/team/permission-groups";
 
 const ROLE_OPTIONS = [
-  {
-    value: "owner",
-    label: "Owner",
-    description: "Full system access and control",
-    badge: "Full Access",
-  },
-  {
-    value: "admin",
-    label: "Admin",
-    description: "System administration and configuration",
-    badge: "Admin",
-  },
-  {
-    value: "manager",
-    label: "Manager",
-    description: "Team and operations management",
-    badge: "Manager",
-  },
-  {
-    value: "dispatcher",
-    label: "Dispatcher",
-    description: "Schedule coordination and job dispatch",
-    badge: "Dispatch",
-  },
-  {
-    value: "technician",
-    label: "Technician",
-    description: "Field work and job updates",
-    badge: "Tech",
-  },
-  {
-    value: "csr",
-    label: "Customer Service",
-    description: "Customer communication and support",
-    badge: "Support",
-  },
+	{
+		value: "owner",
+		label: "Owner",
+		description: "Full system access and control",
+		badge: "Full Access",
+	},
+	{
+		value: "admin",
+		label: "Admin",
+		description: "System administration and configuration",
+		badge: "Admin",
+	},
+	{
+		value: "manager",
+		label: "Manager",
+		description: "Team and operations management",
+		badge: "Manager",
+	},
+	{
+		value: "dispatcher",
+		label: "Dispatcher",
+		description: "Schedule coordination and job dispatch",
+		badge: "Dispatch",
+	},
+	{
+		value: "technician",
+		label: "Technician",
+		description: "Field work and job updates",
+		badge: "Tech",
+	},
+	{
+		value: "csr",
+		label: "Customer Service",
+		description: "Customer communication and support",
+		badge: "Support",
+	},
 ];
 
 const CATEGORY_ICONS = {
-  team: Users,
-  customers: User,
-  jobs: Briefcase,
-  schedule: Calendar,
-  financial: DollarSign,
-  communication: MessageSquare,
-  reports: DollarSign,
+	team: Users,
+	customers: User,
+	jobs: Briefcase,
+	schedule: Calendar,
+	financial: DollarSign,
+	communication: MessageSquare,
+	reports: DollarSign,
 };
 
 export function TeamMemberPermissionsAdvanced() {
-  const params = useParams();
-  const router = useRouter();
-  const memberId = params?.id as string;
+	const params = useParams();
+	const router = useRouter();
+	const memberId = params?.id as string;
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [canManage, setCanManage] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isSaving, setIsSaving] = useState(false);
+	const [canManage, setCanManage] = useState(false);
 
-  // Current state (from database)
-  const [currentRole, setCurrentRole] = useState<string>("");
-  const [currentPermissions, setCurrentPermissions] = useState<
-    Record<string, boolean>
-  >({});
+	// Current state (from database)
+	const [currentRole, setCurrentRole] = useState<string>("");
+	const [currentPermissions, setCurrentPermissions] = useState<Record<string, boolean>>({});
 
-  // Working state (for editing)
-  const [selectedRole, setSelectedRole] = useState<string>("");
-  const [customPermissions, setCustomPermissions] = useState<
-    Record<string, boolean>
-  >({});
-  const [isCustomMode, setIsCustomMode] = useState(false);
+	// Working state (for editing)
+	const [selectedRole, setSelectedRole] = useState<string>("");
+	const [customPermissions, setCustomPermissions] = useState<Record<string, boolean>>({});
+	const [isCustomMode, setIsCustomMode] = useState(false);
 
-  useEffect(() => {
-    async function loadPermissions() {
-      setIsLoading(true);
-      const result = await getTeamMemberPermissions(memberId);
+	useEffect(() => {
+		async function loadPermissions() {
+			setIsLoading(true);
+			const result = await getTeamMemberPermissions(memberId);
 
-      if (result.success && result.data) {
-        const role = result.data.role || "technician"; // Default to technician if no role
-        setCurrentRole(role);
-        setSelectedRole(role);
-        setCurrentPermissions(result.data.permissions || {});
-        setCustomPermissions(result.data.permissions || {});
-        setCanManage(result.data.canManage);
+			if (result.success && result.data) {
+				const role = result.data.role || "technician"; // Default to technician if no role
+				setCurrentRole(role);
+				setSelectedRole(role);
+				setCurrentPermissions(result.data.permissions || {});
+				setCustomPermissions(result.data.permissions || {});
+				setCanManage(result.data.canManage);
 
-        // Check if permissions match role preset
-        const preset = getRolePreset(role);
-        const isCustom =
-          preset &&
-          JSON.stringify(result.data.permissions) !== JSON.stringify(preset);
-        setIsCustomMode(isCustom ?? false);
-      } else {
-        toast.error("Failed to load permissions");
-      }
+				// Check if permissions match role preset
+				const preset = getRolePreset(role);
+				const isCustom = preset && JSON.stringify(result.data.permissions) !== JSON.stringify(preset);
+				setIsCustomMode(isCustom ?? false);
+			} else {
+				toast.error("Failed to load permissions");
+			}
 
-      setIsLoading(false);
-    }
+			setIsLoading(false);
+		}
 
-    if (memberId) {
-      loadPermissions();
-    }
-  }, [memberId]);
+		if (memberId) {
+			loadPermissions();
+		}
+	}, [memberId]);
 
-  const handleRoleChange = (newRole: string) => {
-    setSelectedRole(newRole);
-    const preset = getRolePreset(newRole);
-    if (preset) {
-      setCustomPermissions(preset);
-      setIsCustomMode(false);
-    }
-  };
+	const handleRoleChange = (newRole: string) => {
+		setSelectedRole(newRole);
+		const preset = getRolePreset(newRole);
+		if (preset) {
+			setCustomPermissions(preset);
+			setIsCustomMode(false);
+		}
+	};
 
-  const handlePermissionToggle = (permission: Permission) => {
-    setCustomPermissions((prev) => ({
-      ...prev,
-      [permission]: !prev[permission],
-    }));
-    setIsCustomMode(true);
-  };
+	const handlePermissionToggle = (permission: Permission) => {
+		setCustomPermissions((prev) => ({
+			...prev,
+			[permission]: !prev[permission],
+		}));
+		setIsCustomMode(true);
+	};
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    const result = await updateTeamMemberPermissions(memberId, selectedRole);
+	const handleSave = async () => {
+		setIsSaving(true);
+		const result = await updateTeamMemberPermissions(memberId, selectedRole);
 
-    if (result.success) {
-      toast.success("Permissions updated successfully");
-      setCurrentRole(selectedRole);
-      setCurrentPermissions(customPermissions);
-      setIsCustomMode(false);
-      router.refresh();
-    } else {
-      toast.error(result.error || "Failed to update permissions");
-    }
+		if (result.success) {
+			toast.success("Permissions updated successfully");
+			setCurrentRole(selectedRole);
+			setCurrentPermissions(customPermissions);
+			setIsCustomMode(false);
+			router.refresh();
+		} else {
+			toast.error(result.error || "Failed to update permissions");
+		}
 
-    setIsSaving(false);
-  };
+		setIsSaving(false);
+	};
 
-  const handleReset = () => {
-    setSelectedRole(currentRole);
-    setCustomPermissions(currentPermissions);
-    setIsCustomMode(false);
-  };
+	const handleReset = () => {
+		setSelectedRole(currentRole);
+		setCustomPermissions(currentPermissions);
+		setIsCustomMode(false);
+	};
 
-  const hasChanges =
-    selectedRole !== currentRole ||
-    JSON.stringify(customPermissions) !== JSON.stringify(currentPermissions);
+	const hasChanges =
+		selectedRole !== currentRole || JSON.stringify(customPermissions) !== JSON.stringify(currentPermissions);
 
-  const enabledCount = Object.values(customPermissions).filter(Boolean).length;
-  const criticalEnabled = PERMISSION_GROUPS.flatMap(
-    (g) => g.permissions
-  ).filter((p) => p.critical && customPermissions[p.key]).length;
+	const enabledCount = Object.values(customPermissions).filter(Boolean).length;
+	const criticalEnabled = PERMISSION_GROUPS.flatMap((g) => g.permissions).filter(
+		(p) => p.critical && customPermissions[p.key]
+	).length;
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Permissions & Access</CardTitle>
-          <CardDescription>Loading permissions...</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-64 items-center justify-center">
-            <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+	if (isLoading) {
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle>Permissions & Access</CardTitle>
+					<CardDescription>Loading permissions...</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="flex h-64 items-center justify-center">
+						<div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
 
-  if (!canManage) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="size-5" />
-            Permissions & Access
-          </CardTitle>
-          <CardDescription>View-only access</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <p className="mb-2 font-medium text-sm">Current Role</p>
-              <Badge className="capitalize" variant="secondary">
-                {currentRole || "Not Set"}
-              </Badge>
-            </div>
-            <div>
-              <p className="mb-2 font-medium text-sm">Active Permissions</p>
-              <p className="text-muted-foreground text-sm">
-                {enabledCount} permission{enabledCount !== 1 ? "s" : ""} enabled
-              </p>
-            </div>
-            <Alert>
-              <Info className="size-4" />
-              <AlertDescription>
-                Only owners and managers can modify team member permissions
-              </AlertDescription>
-            </Alert>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+	if (!canManage) {
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle className="flex items-center gap-2">
+						<Shield className="size-5" />
+						Permissions & Access
+					</CardTitle>
+					<CardDescription>View-only access</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="space-y-4">
+						<div>
+							<p className="mb-2 font-medium text-sm">Current Role</p>
+							<Badge className="capitalize" variant="secondary">
+								{currentRole || "Not Set"}
+							</Badge>
+						</div>
+						<div>
+							<p className="mb-2 font-medium text-sm">Active Permissions</p>
+							<p className="text-muted-foreground text-sm">
+								{enabledCount} permission{enabledCount !== 1 ? "s" : ""} enabled
+							</p>
+						</div>
+						<Alert>
+							<Info className="size-4" />
+							<AlertDescription>Only owners and managers can modify team member permissions</AlertDescription>
+						</Alert>
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ShieldAlert className="size-5" />
-          Advanced Permissions Manager
-        </CardTitle>
-        <CardDescription>
-          Configure detailed access controls for this team member
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Role Selector */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="font-medium text-base">Role Preset</Label>
-            {isCustomMode && (
-              <Badge variant="outline">
-                <AlertCircle className="mr-1 size-3" />
-                Custom
-              </Badge>
-            )}
-          </div>
-          <Select onValueChange={handleRoleChange} value={selectedRole}>
-            <SelectTrigger className="h-auto">
-              <SelectValue placeholder="Select a role" />
-            </SelectTrigger>
-            <SelectContent>
-              {ROLE_OPTIONS.map((role) => (
-                <SelectItem key={role.value} value={role.value}>
-                  <div className="flex flex-col py-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{role.label}</span>
-                      <Badge className="text-xs" variant="secondary">
-                        {role.badge}
-                      </Badge>
-                    </div>
-                    <span className="text-muted-foreground text-xs">
-                      {role.description}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center gap-2">
+					<ShieldAlert className="size-5" />
+					Advanced Permissions Manager
+				</CardTitle>
+				<CardDescription>Configure detailed access controls for this team member</CardDescription>
+			</CardHeader>
+			<CardContent className="space-y-6">
+				{/* Role Selector */}
+				<div className="space-y-3">
+					<div className="flex items-center justify-between">
+						<Label className="font-medium text-base">Role Preset</Label>
+						{isCustomMode && (
+							<Badge variant="outline">
+								<AlertCircle className="mr-1 size-3" />
+								Custom
+							</Badge>
+						)}
+					</div>
+					<Select onValueChange={handleRoleChange} value={selectedRole}>
+						<SelectTrigger className="h-auto">
+							<SelectValue placeholder="Select a role" />
+						</SelectTrigger>
+						<SelectContent>
+							{ROLE_OPTIONS.map((role) => (
+								<SelectItem key={role.value} value={role.value}>
+									<div className="flex flex-col py-1">
+										<div className="flex items-center gap-2">
+											<span className="font-medium">{role.label}</span>
+											<Badge className="text-xs" variant="secondary">
+												{role.badge}
+											</Badge>
+										</div>
+										<span className="text-muted-foreground text-xs">{role.description}</span>
+									</div>
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 
-        {/* Permission Stats */}
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2">
-              <Check className="size-4 text-success" />
-              <span className="text-muted-foreground text-sm">Enabled</span>
-            </div>
-            <p className="mt-1 font-semibold text-2xl">{enabledCount}</p>
-          </div>
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2">
-              <X className="size-4 text-muted-foreground" />
-              <span className="text-muted-foreground text-sm">Disabled</span>
-            </div>
-            <p className="mt-1 font-semibold text-2xl">
-              {PERMISSION_GROUPS.flatMap((g) => g.permissions).length -
-                enabledCount}
-            </p>
-          </div>
-          <div className="rounded-lg border border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/20">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="size-4 text-destructive" />
-              <span className="text-destructive text-sm dark:text-destructive">
-                Critical
-              </span>
-            </div>
-            <p className="mt-1 font-semibold text-2xl text-destructive dark:text-destructive">
-              {criticalEnabled}
-            </p>
-          </div>
-        </div>
+				{/* Permission Stats */}
+				<div className="grid gap-4 sm:grid-cols-3">
+					<div className="rounded-lg border p-3">
+						<div className="flex items-center gap-2">
+							<Check className="size-4 text-success" />
+							<span className="text-muted-foreground text-sm">Enabled</span>
+						</div>
+						<p className="mt-1 font-semibold text-2xl">{enabledCount}</p>
+					</div>
+					<div className="rounded-lg border p-3">
+						<div className="flex items-center gap-2">
+							<X className="size-4 text-muted-foreground" />
+							<span className="text-muted-foreground text-sm">Disabled</span>
+						</div>
+						<p className="mt-1 font-semibold text-2xl">
+							{PERMISSION_GROUPS.flatMap((g) => g.permissions).length - enabledCount}
+						</p>
+					</div>
+					<div className="rounded-lg border border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/20">
+						<div className="flex items-center gap-2">
+							<AlertCircle className="size-4 text-destructive" />
+							<span className="text-destructive text-sm dark:text-destructive">Critical</span>
+						</div>
+						<p className="mt-1 font-semibold text-2xl text-destructive dark:text-destructive">{criticalEnabled}</p>
+					</div>
+				</div>
 
-        <Separator />
+				<Separator />
 
-        {/* Permission Categories Tabs */}
-        <Tabs className="w-full" defaultValue={PERMISSION_GROUPS[0]?.category}>
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
-            {PERMISSION_GROUPS.map((group) => {
-              const Icon = CATEGORY_ICONS[group.category];
-              return (
-                <TabsTrigger
-                  className="flex items-center gap-1.5"
-                  key={group.category}
-                  value={group.category}
-                >
-                  <Icon className="size-3.5" />
-                  <span className="hidden sm:inline">{group.label}</span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+				{/* Permission Categories Tabs */}
+				<Tabs className="w-full" defaultValue={PERMISSION_GROUPS[0]?.category}>
+					<TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+						{PERMISSION_GROUPS.map((group) => {
+							const Icon = CATEGORY_ICONS[group.category];
+							return (
+								<TabsTrigger className="flex items-center gap-1.5" key={group.category} value={group.category}>
+									<Icon className="size-3.5" />
+									<span className="hidden sm:inline">{group.label}</span>
+								</TabsTrigger>
+							);
+						})}
+					</TabsList>
 
-          {PERMISSION_GROUPS.map((group) => {
-            const Icon = CATEGORY_ICONS[group.category];
-            return (
-              <TabsContent
-                className="space-y-4"
-                key={group.category}
-                value={group.category}
-              >
-                <div>
-                  <div className="mb-4 flex items-start gap-3">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                      <Icon className="size-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{group.label}</h3>
-                      <p className="text-muted-foreground text-sm">
-                        {group.description}
-                      </p>
-                    </div>
-                  </div>
+					{PERMISSION_GROUPS.map((group) => {
+						const Icon = CATEGORY_ICONS[group.category];
+						return (
+							<TabsContent className="space-y-4" key={group.category} value={group.category}>
+								<div>
+									<div className="mb-4 flex items-start gap-3">
+										<div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+											<Icon className="size-5 text-primary" />
+										</div>
+										<div>
+											<h3 className="font-semibold">{group.label}</h3>
+											<p className="text-muted-foreground text-sm">{group.description}</p>
+										</div>
+									</div>
 
-                  <div className="space-y-3">
-                    {group.permissions.map((permission) => (
-                      <div
-                        className={`flex items-start justify-between rounded-lg border p-4 transition-colors ${
-                          customPermissions[permission.key]
-                            ? "border-primary/50 bg-primary/5"
-                            : "hover:bg-muted/50"
-                        } ${
-                          permission.critical
-                            ? "border-l-4 border-l-red-500"
-                            : ""
-                        }`}
-                        key={permission.key}
-                      >
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Label
-                              className="cursor-pointer font-medium"
-                              htmlFor={permission.key}
-                            >
-                              {permission.label}
-                            </Label>
-                            {permission.critical && (
-                              <Badge className="text-xs" variant="destructive">
-                                Critical
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-muted-foreground text-sm">
-                            {permission.description}
-                          </p>
-                        </div>
-                        <Switch
-                          checked={customPermissions[permission.key]}
-                          className="ml-4"
-                          id={permission.key}
-                          onCheckedChange={() =>
-                            handlePermissionToggle(permission.key)
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </TabsContent>
-            );
-          })}
-        </Tabs>
+									<div className="space-y-3">
+										{group.permissions.map((permission) => (
+											<div
+												className={`flex items-start justify-between rounded-lg border p-4 transition-colors ${
+													customPermissions[permission.key] ? "border-primary/50 bg-primary/5" : "hover:bg-muted/50"
+												} ${permission.critical ? "border-l-4 border-l-red-500" : ""}`}
+												key={permission.key}
+											>
+												<div className="flex-1 space-y-1">
+													<div className="flex items-center gap-2">
+														<Label className="cursor-pointer font-medium" htmlFor={permission.key}>
+															{permission.label}
+														</Label>
+														{permission.critical && (
+															<Badge className="text-xs" variant="destructive">
+																Critical
+															</Badge>
+														)}
+													</div>
+													<p className="text-muted-foreground text-sm">{permission.description}</p>
+												</div>
+												<Switch
+													checked={customPermissions[permission.key]}
+													className="ml-4"
+													id={permission.key}
+													onCheckedChange={() => handlePermissionToggle(permission.key)}
+												/>
+											</div>
+										))}
+									</div>
+								</div>
+							</TabsContent>
+						);
+					})}
+				</Tabs>
 
-        {/* Critical Permissions Warning */}
-        {criticalEnabled > 0 && (
-          <Alert variant="destructive">
-            <AlertCircle className="size-4" />
-            <AlertTitle>Critical Permissions Enabled</AlertTitle>
-            <AlertDescription>
-              This team member has {criticalEnabled} critical permission
-              {criticalEnabled !== 1 ? "s" : ""} that allow destructive actions.
-              Ensure you trust this user with these capabilities.
-            </AlertDescription>
-          </Alert>
-        )}
+				{/* Critical Permissions Warning */}
+				{criticalEnabled > 0 && (
+					<Alert variant="destructive">
+						<AlertCircle className="size-4" />
+						<AlertTitle>Critical Permissions Enabled</AlertTitle>
+						<AlertDescription>
+							This team member has {criticalEnabled} critical permission
+							{criticalEnabled !== 1 ? "s" : ""} that allow destructive actions. Ensure you trust this user with these
+							capabilities.
+						</AlertDescription>
+					</Alert>
+				)}
 
-        {/* Action Buttons */}
-        {hasChanges && (
-          <div className="flex items-center justify-end gap-2 border-t pt-4">
-            <Button
-              disabled={isSaving}
-              onClick={handleReset}
-              size="default"
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button disabled={isSaving} onClick={handleSave} size="default">
-              {isSaving ? (
-                <>
-                  <div className="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  Saving...
-                </>
-              ) : (
-                "Save Permissions"
-              )}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+				{/* Action Buttons */}
+				{hasChanges && (
+					<div className="flex items-center justify-end gap-2 border-t pt-4">
+						<Button disabled={isSaving} onClick={handleReset} size="default" variant="outline">
+							Cancel
+						</Button>
+						<Button disabled={isSaving} onClick={handleSave} size="default">
+							{isSaving ? (
+								<>
+									<div className="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+									Saving...
+								</>
+							) : (
+								"Save Permissions"
+							)}
+						</Button>
+					</div>
+				)}
+			</CardContent>
+		</Card>
+	);
 }

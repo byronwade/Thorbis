@@ -3,113 +3,98 @@
 import { ChevronsUpDown, type LucideIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuShortcut,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 
 export function TeamSwitcher({
-  teams,
+	teams,
 }: {
-  teams: {
-    name: string;
-    logo: LucideIcon;
-    plan: string;
-  }[];
+	teams: {
+		name: string;
+		logo: LucideIcon;
+		plan: string;
+	}[];
 }) {
-  const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = useState(teams[0]);
-  const [mounted, setMounted] = useState(false);
+	const { isMobile } = useSidebar();
+	const [activeTeam, setActiveTeam] = useState(teams[0]);
+	const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
-  // Prevent SSR hydration mismatch with Radix UI IDs
-  if (!mounted) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton className="h-10" size="lg">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <activeTeam.logo className="size-4" />
-            </div>
-            <div className="grid flex-1 text-left leading-[1.2]">
-              <span className="truncate font-semibold text-sm">
-                {activeTeam.name}
-              </span>
-              <span className="truncate text-xs">{activeTeam.plan}</span>
-            </div>
-            <ChevronsUpDown className="ml-auto" />
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  }
+	// Prevent SSR hydration mismatch with Radix UI IDs
+	if (!mounted) {
+		return (
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<SidebarMenuButton className="h-10" size="lg">
+						<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+							<activeTeam.logo className="size-4" />
+						</div>
+						<div className="grid flex-1 text-left leading-[1.2]">
+							<span className="truncate font-semibold text-sm">{activeTeam.name}</span>
+							<span className="truncate text-xs">{activeTeam.plan}</span>
+						</div>
+						<ChevronsUpDown className="ml-auto" />
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		);
+	}
 
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              className="h-10 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              size="lg"
-            >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left leading-[1.2]">
-                <span className="truncate font-semibold text-sm">
-                  {activeTeam.name}
-                </span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Teams
-            </DropdownMenuLabel>
-            {teams.map((team, index) => (
-              <DropdownMenuItem
-                className="gap-2 p-2"
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
-                </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Plus className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">Add team</div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
+	return (
+		<SidebarMenu>
+			<SidebarMenuItem>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<SidebarMenuButton
+							className="h-10 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							size="lg"
+						>
+							<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+								<activeTeam.logo className="size-4" />
+							</div>
+							<div className="grid flex-1 text-left leading-[1.2]">
+								<span className="truncate font-semibold text-sm">{activeTeam.name}</span>
+								<span className="truncate text-xs">{activeTeam.plan}</span>
+							</div>
+							<ChevronsUpDown className="ml-auto" />
+						</SidebarMenuButton>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent
+						align="start"
+						className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+						side={isMobile ? "bottom" : "right"}
+						sideOffset={4}
+					>
+						<DropdownMenuLabel className="text-muted-foreground text-xs">Teams</DropdownMenuLabel>
+						{teams.map((team, index) => (
+							<DropdownMenuItem className="gap-2 p-2" key={team.name} onClick={() => setActiveTeam(team)}>
+								<div className="flex size-6 items-center justify-center rounded-sm border">
+									<team.logo className="size-4 shrink-0" />
+								</div>
+								{team.name}
+								<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+							</DropdownMenuItem>
+						))}
+						<DropdownMenuSeparator />
+						<DropdownMenuItem className="gap-2 p-2">
+							<div className="flex size-6 items-center justify-center rounded-md border bg-background">
+								<Plus className="size-4" />
+							</div>
+							<div className="font-medium text-muted-foreground">Add team</div>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</SidebarMenuItem>
+		</SidebarMenu>
+	);
 }

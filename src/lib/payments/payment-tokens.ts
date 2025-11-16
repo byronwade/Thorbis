@@ -16,15 +16,15 @@ import { emailConfig } from "@/lib/email/resend-client";
 import { createClient } from "@/lib/supabase/server";
 
 export type PaymentToken = {
-  token: string;
-  expiresAt: string;
-  paymentLink: string;
+	token: string;
+	expiresAt: string;
+	paymentLink: string;
 };
 
 export type TokenValidation = {
-  isValid: boolean;
-  invoiceId: string | null;
-  message: string;
+	isValid: boolean;
+	invoiceId: string | null;
+	message: string;
 };
 
 /**
@@ -36,42 +36,39 @@ export type TokenValidation = {
  * @returns Payment token details including the full payment link
  */
 export async function generatePaymentToken(
-  invoiceId: string,
-  expiryHours = 72,
-  maxUses = 1
+	invoiceId: string,
+	expiryHours = 72,
+	maxUses = 1
 ): Promise<PaymentToken | null> {
-  try {
-    const supabase = await createClient();
+	try {
+		const supabase = await createClient();
 
-    if (!supabase) {
-      return null;
-    }
+		if (!supabase) {
+			return null;
+		}
 
-    // Call database function to generate token
-    const { data, error } = await supabase.rpc(
-      "generate_invoice_payment_token",
-      {
-        p_invoice_id: invoiceId,
-        p_expiry_hours: expiryHours,
-        p_max_uses: maxUses,
-      }
-    );
+		// Call database function to generate token
+		const { data, error } = await supabase.rpc("generate_invoice_payment_token", {
+			p_invoice_id: invoiceId,
+			p_expiry_hours: expiryHours,
+			p_max_uses: maxUses,
+		});
 
-    if (error || !data || data.length === 0) {
-      return null;
-    }
+		if (error || !data || data.length === 0) {
+			return null;
+		}
 
-    const tokenData = data[0];
-    const paymentLink = `${emailConfig.appUrl}/pay/${invoiceId}?token=${tokenData.token}`;
+		const tokenData = data[0];
+		const paymentLink = `${emailConfig.appUrl}/pay/${invoiceId}?token=${tokenData.token}`;
 
-    return {
-      token: tokenData.token,
-      expiresAt: tokenData.expires_at,
-      paymentLink,
-    };
-  } catch (_error) {
-    return null;
-  }
+		return {
+			token: tokenData.token,
+			expiresAt: tokenData.expires_at,
+			paymentLink,
+		};
+	} catch (_error) {
+		return null;
+	}
 }
 
 /**
@@ -81,47 +78,44 @@ export async function generatePaymentToken(
  * @param token - The payment token to check
  * @returns Validation result with invoice ID if valid
  */
-export async function validatePaymentToken(
-  token: string,
-  _ipAddress?: string
-): Promise<TokenValidation> {
-  try {
-    const supabase = await createClient();
+export async function validatePaymentToken(token: string, _ipAddress?: string): Promise<TokenValidation> {
+	try {
+		const supabase = await createClient();
 
-    if (!supabase) {
-      return {
-        isValid: false,
-        invoiceId: null,
-        message: "Unable to connect to database",
-      };
-    }
+		if (!supabase) {
+			return {
+				isValid: false,
+				invoiceId: null,
+				message: "Unable to connect to database",
+			};
+		}
 
-    const { data, error } = await supabase.rpc("check_payment_token", {
-      p_token: token,
-    });
+		const { data, error } = await supabase.rpc("check_payment_token", {
+			p_token: token,
+		});
 
-    if (error || !data || data.length === 0) {
-      return {
-        isValid: false,
-        invoiceId: null,
-        message: "Invalid payment token",
-      };
-    }
+		if (error || !data || data.length === 0) {
+			return {
+				isValid: false,
+				invoiceId: null,
+				message: "Invalid payment token",
+			};
+		}
 
-    const validation = data[0];
+		const validation = data[0];
 
-    return {
-      isValid: validation.is_valid,
-      invoiceId: validation.invoice_id,
-      message: validation.message,
-    };
-  } catch (_error) {
-    return {
-      isValid: false,
-      invoiceId: null,
-      message: "Error validating payment token",
-    };
-  }
+		return {
+			isValid: validation.is_valid,
+			invoiceId: validation.invoice_id,
+			message: validation.message,
+		};
+	} catch (_error) {
+		return {
+			isValid: false,
+			invoiceId: null,
+			message: "Error validating payment token",
+		};
+	}
 }
 
 /**
@@ -131,47 +125,44 @@ export async function validatePaymentToken(
  * @param token - The payment token to mark as used
  * @param ipAddress - Optional IP address for security tracking
  */
-export async function markTokenAsUsed(
-  token: string,
-  ipAddress?: string
-): Promise<boolean> {
-  try {
-    const supabase = await createClient();
+export async function markTokenAsUsed(token: string, ipAddress?: string): Promise<boolean> {
+	try {
+		const supabase = await createClient();
 
-    if (!supabase) {
-      return false;
-    }
+		if (!supabase) {
+			return false;
+		}
 
-    const { data: existingTokens, error: fetchError } = await supabase
-      .from("invoice_payment_tokens")
-      .select("use_count")
-      .eq("token", token)
-      .limit(1);
+		const { data: existingTokens, error: fetchError } = await supabase
+			.from("invoice_payment_tokens")
+			.select("use_count")
+			.eq("token", token)
+			.limit(1);
 
-    if (fetchError || !existingTokens || existingTokens.length === 0) {
-      return false;
-    }
+		if (fetchError || !existingTokens || existingTokens.length === 0) {
+			return false;
+		}
 
-    const currentUseCount = existingTokens[0]?.use_count ?? 0;
+		const currentUseCount = existingTokens[0]?.use_count ?? 0;
 
-    const { error } = await supabase
-      .from("invoice_payment_tokens")
-      .update({
-        is_active: false,
-        used_at: new Date().toISOString(),
-        used_by_ip: ipAddress || null,
-        use_count: currentUseCount + 1,
-      })
-      .eq("token", token);
+		const { error } = await supabase
+			.from("invoice_payment_tokens")
+			.update({
+				is_active: false,
+				used_at: new Date().toISOString(),
+				used_by_ip: ipAddress || null,
+				use_count: currentUseCount + 1,
+			})
+			.eq("token", token);
 
-    if (error) {
-      return false;
-    }
+		if (error) {
+			return false;
+		}
 
-    return true;
-  } catch (_error) {
-    return false;
-  }
+		return true;
+	} catch (_error) {
+		return false;
+	}
 }
 
 /**
@@ -182,34 +173,32 @@ export async function markTokenAsUsed(
  * @param invoiceId - UUID of the invoice
  * @returns Array of active payment tokens
  */
-export async function getInvoicePaymentTokens(
-  invoiceId: string
-): Promise<PaymentToken[]> {
-  try {
-    const supabase = await createClient();
+export async function getInvoicePaymentTokens(invoiceId: string): Promise<PaymentToken[]> {
+	try {
+		const supabase = await createClient();
 
-    if (!supabase) {
-      return [];
-    }
+		if (!supabase) {
+			return [];
+		}
 
-    const { data, error } = await supabase
-      .from("invoice_payment_tokens")
-      .select("token, expires_at")
-      .eq("invoice_id", invoiceId)
-      .eq("is_active", true)
-      .gt("expires_at", new Date().toISOString())
-      .order("created_at", { ascending: false });
+		const { data, error } = await supabase
+			.from("invoice_payment_tokens")
+			.select("token, expires_at")
+			.eq("invoice_id", invoiceId)
+			.eq("is_active", true)
+			.gt("expires_at", new Date().toISOString())
+			.order("created_at", { ascending: false });
 
-    if (error || !data) {
-      return [];
-    }
+		if (error || !data) {
+			return [];
+		}
 
-    return data.map((row) => ({
-      token: row.token,
-      expiresAt: row.expires_at,
-      paymentLink: `${emailConfig.appUrl}/pay/${invoiceId}?token=${row.token}`,
-    }));
-  } catch (_error) {
-    return [];
-  }
+		return data.map((row) => ({
+			token: row.token,
+			expiresAt: row.expires_at,
+			paymentLink: `${emailConfig.appUrl}/pay/${invoiceId}?token=${row.token}`,
+		}));
+	} catch (_error) {
+		return [];
+	}
 }

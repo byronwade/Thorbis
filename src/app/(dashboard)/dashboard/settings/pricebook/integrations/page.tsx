@@ -10,9 +10,9 @@ import { UintegrationsData } from "@/components/settings/integrations/integratio
 import { UintegrationsSkeleton } from "@/components/settings/integrations/integrations-skeleton";
 
 export default function UintegrationsPage() {
-  return (
-    <Suspense fallback={<UintegrationsSkeleton />}>
-      <UintegrationsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UintegrationsSkeleton />}>
+			<UintegrationsData />
+		</Suspense>
+	);
 }

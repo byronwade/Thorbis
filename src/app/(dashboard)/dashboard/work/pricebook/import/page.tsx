@@ -10,9 +10,9 @@ import { UimportData } from "@/components/work/import/import-data";
 import { UimportSkeleton } from "@/components/work/import/import-skeleton";
 
 export default function UimportPage() {
-  return (
-    <Suspense fallback={<UimportSkeleton />}>
-      <UimportData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UimportSkeleton />}>
+			<UimportData />
+		</Suspense>
+	);
 }

@@ -7,17 +7,17 @@ import { botIdProtectedRoutes } from "@/lib/security/botid-routes";
 let hasInitializedBotId = false;
 
 export function BotIdProvider() {
-  useEffect(() => {
-    if (hasInitializedBotId) {
-      return;
-    }
+	useEffect(() => {
+		if (hasInitializedBotId) {
+			return;
+		}
 
-    initBotId({
-      protect: botIdProtectedRoutes,
-    });
+		initBotId({
+			protect: botIdProtectedRoutes,
+		});
 
-    hasInitializedBotId = true;
-  }, []);
+		hasInitializedBotId = true;
+	}, []);
 
-  return null;
+	return null;
 }

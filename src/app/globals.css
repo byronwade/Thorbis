@@ -4,483 +4,483 @@
 
 /* iOS/Android Native Feel Optimizations */
 @supports (-webkit-touch-callout: none) {
-  /* iOS-specific styles */
-  html {
-    /* Prevent text selection on long press */
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
+	/* iOS-specific styles */
+	html {
+		/* Prevent text selection on long press */
+		-webkit-tap-highlight-color: transparent;
+		-webkit-touch-callout: none;
 
-    /* Smooth momentum scrolling */
-    -webkit-overflow-scrolling: touch;
+		/* Smooth momentum scrolling */
+		-webkit-overflow-scrolling: touch;
 
-    /* Safe area insets for notched devices */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
+		/* Safe area insets for notched devices */
+		padding-top: env(safe-area-inset-top);
+		padding-bottom: env(safe-area-inset-bottom);
+		padding-left: env(safe-area-inset-left);
+		padding-right: env(safe-area-inset-right);
+	}
 
-  body {
-    /* Prevent rubber band scrolling */
-    overscroll-behavior-y: none;
-  }
+	body {
+		/* Prevent rubber band scrolling */
+		overscroll-behavior-y: none;
+	}
 }
 
 /* Android-specific optimizations */
 @supports (-webkit-appearance: none) {
-  html {
-    /* Smooth scrolling on Android */
-    scroll-behavior: smooth;
-  }
+	html {
+		/* Smooth scrolling on Android */
+		scroll-behavior: smooth;
+	}
 }
 
 /* Touch-friendly interactions */
 @media (hover: none) and (pointer: coarse) {
-  /* Mobile/tablet touch devices */
-  button,
-  a,
-  [role="button"],
-  input[type="button"],
-  input[type="submit"] {
-    /* Remove hover effects, add active states */
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
+	/* Mobile/tablet touch devices */
+	button,
+	a,
+	[role="button"],
+	input[type="button"],
+	input[type="submit"] {
+		/* Remove hover effects, add active states */
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
 
-  button:active,
-  a:active,
-  [role="button"]:active {
-    opacity: 0.7;
-    transform: scale(0.98);
-    transition: all 0.1s ease;
-  }
+	button:active,
+	a:active,
+	[role="button"]:active {
+		opacity: 0.7;
+		transform: scale(0.98);
+		transition: all 0.1s ease;
+	}
 }
 
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-white: hsl(var(--surface-light));
-  --color-black: hsl(var(--surface-inverse));
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-header-bg: hsl(var(--header-bg));
-  --color-toolbar-bg: hsl(var(--toolbar-bg));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-  --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar: hsl(var(--sidebar));
-  --color-chart-5: hsl(var(--chart-5));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-1: hsl(var(--chart-1));
-  --color-ring: hsl(var(--ring));
-  --color-input: hsl(var(--input));
-  --color-border: hsl(var(--border));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-card: hsl(var(--card));
-  --color-success: hsl(var(--success));
-  --color-warning: hsl(var(--warning));
-  --color-info: hsl(var(--info));
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-white: hsl(var(--surface-light));
+	--color-black: hsl(var(--surface-inverse));
+	--font-sans: var(--font-geist-sans);
+	--font-mono: var(--font-geist-mono);
+	--color-header-bg: hsl(var(--header-bg));
+	--color-toolbar-bg: hsl(var(--toolbar-bg));
+	--color-sidebar-ring: hsl(var(--sidebar-ring));
+	--color-sidebar-border: hsl(var(--sidebar-border));
+	--color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+	--color-sidebar-accent: hsl(var(--sidebar-accent));
+	--color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+	--color-sidebar-primary: hsl(var(--sidebar-primary));
+	--color-sidebar-foreground: hsl(var(--sidebar-foreground));
+	--color-sidebar: hsl(var(--sidebar));
+	--color-chart-5: hsl(var(--chart-5));
+	--color-chart-4: hsl(var(--chart-4));
+	--color-chart-3: hsl(var(--chart-3));
+	--color-chart-2: hsl(var(--chart-2));
+	--color-chart-1: hsl(var(--chart-1));
+	--color-ring: hsl(var(--ring));
+	--color-input: hsl(var(--input));
+	--color-border: hsl(var(--border));
+	--color-destructive: hsl(var(--destructive));
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-accent-foreground: hsl(var(--accent-foreground));
+	--color-accent: hsl(var(--accent));
+	--color-muted-foreground: hsl(var(--muted-foreground));
+	--color-muted: hsl(var(--muted));
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+	--color-secondary: hsl(var(--secondary));
+	--color-primary-foreground: hsl(var(--primary-foreground));
+	--color-primary: hsl(var(--primary));
+	--color-popover-foreground: hsl(var(--popover-foreground));
+	--color-popover: hsl(var(--popover));
+	--color-card-foreground: hsl(var(--card-foreground));
+	--color-card: hsl(var(--card));
+	--color-success: hsl(var(--success));
+	--color-warning: hsl(var(--warning));
+	--color-info: hsl(var(--info));
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
 }
 
 .root-reset,
 :root {
-  --radius: 0.625rem;
-  --header-height: 3.5rem; /* 56px = theme(spacing.14) */
-  --footer-height: 0rem; /* Footer height for KB sidebar calculations */
-  --sidebar-width: 12rem;
-  --top-spacing: 1rem;
-  --font-geist-sans:
-    "Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system,
-    BlinkMacSystemFont, sans-serif;
-  --font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
+	--radius: 0.625rem;
+	--header-height: 3.5rem; /* 56px = theme(spacing.14) */
+	--footer-height: 0rem; /* Footer height for KB sidebar calculations */
+	--sidebar-width: 12rem;
+	--top-spacing: 1rem;
+	--font-geist-sans:
+		"Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system,
+		BlinkMacSystemFont, sans-serif;
+	--font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
 
-  /* Shadcn Neutral – clean minimalistic palette with electric blue accent */
-  --header-bg: 0 0% 100%;
-  --toolbar-bg: 0 0% 100%;
-  --background: 0 0% 96%;
+	/* Shadcn Neutral – clean minimalistic palette with electric blue accent */
+	--header-bg: 0 0% 100%;
+	--toolbar-bg: 0 0% 100%;
+	--background: 0 0% 96%;
 
-  --foreground: 0 0% 9%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 9%;
+	--foreground: 0 0% 9%;
+	--card: 0 0% 100%;
+	--card-foreground: 0 0% 9%;
+	--popover: 0 0% 100%;
+	--popover-foreground: 0 0% 9%;
 
-  --primary: 221 73% 56%;
-  --primary-foreground: 0 0% 100%;
+	--primary: 221 73% 56%;
+	--primary-foreground: 0 0% 100%;
 
-  --secondary: 0 0% 98%;
-  --secondary-foreground: 0 0% 12%;
+	--secondary: 0 0% 98%;
+	--secondary-foreground: 0 0% 12%;
 
-  --muted: 0 0% 98%;
-  --muted-foreground: 0 0% 45%;
+	--muted: 0 0% 98%;
+	--muted-foreground: 0 0% 45%;
 
-  --accent: 0 0% 98%;
-  --accent-foreground: 0 0% 12%;
+	--accent: 0 0% 98%;
+	--accent-foreground: 0 0% 12%;
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 100%;
-  --success: 142.1 76.2% 36.3%;
-  --warning: 47.9 95.8% 53.1%;
-  --info: 221 73% 56%;
+	--destructive: 0 84.2% 60.2%;
+	--destructive-foreground: 0 0% 100%;
+	--success: 142.1 76.2% 36.3%;
+	--warning: 47.9 95.8% 53.1%;
+	--info: 221 73% 56%;
 
-  --border: 0 0% 86%;
-  --input: 0 0% 86%;
-  --ring: 221 73% 56%;
+	--border: 0 0% 86%;
+	--input: 0 0% 86%;
+	--ring: 221 73% 56%;
 
-  --chart-1: 221 73% 56%;
-  --chart-2: 142.1 76.2% 36.3%;
-  --chart-3: 47.9 95.8% 53.1%;
-  --chart-4: 280 87.3% 65.3%;
-  --chart-5: 340 82.2% 52.5%;
+	--chart-1: 221 73% 56%;
+	--chart-2: 142.1 76.2% 36.3%;
+	--chart-3: 47.9 95.8% 53.1%;
+	--chart-4: 280 87.3% 65.3%;
+	--chart-5: 340 82.2% 52.5%;
 
-  --sidebar: 0 0% 100%;
-  --sidebar-foreground: 0 0% 9%;
-  --sidebar-primary: 221 73% 56%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 96%;
-  --sidebar-accent-foreground: 0 0% 12%;
-  --sidebar-border: 0 0% 91%;
-  --sidebar-ring: 221 73% 56%;
-  --surface-light: 0 0% 100%;
-  --surface-inverse: 0 0% 12%;
+	--sidebar: 0 0% 100%;
+	--sidebar-foreground: 0 0% 9%;
+	--sidebar-primary: 221 73% 56%;
+	--sidebar-primary-foreground: 0 0% 100%;
+	--sidebar-accent: 0 0% 96%;
+	--sidebar-accent-foreground: 0 0% 12%;
+	--sidebar-border: 0 0% 91%;
+	--sidebar-ring: 221 73% 56%;
+	--surface-light: 0 0% 100%;
+	--surface-inverse: 0 0% 12%;
 }
 
 .dark {
-  --header-bg: 0 0% 8%;
-  --toolbar-bg: 0 0% 8%;
-  --background: 0 0% 6%;
+	--header-bg: 0 0% 8%;
+	--toolbar-bg: 0 0% 8%;
+	--background: 0 0% 6%;
 
-  --foreground: 0 0% 95%;
-  --card: 0 0% 10%;
-  --card-foreground: 0 0% 95%;
-  --popover: 0 0% 10%;
-  --popover-foreground: 0 0% 95%;
+	--foreground: 0 0% 95%;
+	--card: 0 0% 10%;
+	--card-foreground: 0 0% 95%;
+	--popover: 0 0% 10%;
+	--popover-foreground: 0 0% 95%;
 
-  --primary: 221 73% 56%;
-  --primary-foreground: 0 0% 12%;
+	--primary: 221 73% 56%;
+	--primary-foreground: 0 0% 12%;
 
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 0 0% 95%;
+	--secondary: 0 0% 12%;
+	--secondary-foreground: 0 0% 95%;
 
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 60%;
+	--muted: 0 0% 12%;
+	--muted-foreground: 0 0% 60%;
 
-  --accent: 0 0% 12%;
-  --accent-foreground: 0 0% 95%;
+	--accent: 0 0% 12%;
+	--accent-foreground: 0 0% 95%;
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 95%;
-  --success: 142.1 70.6% 45.3%;
-  --warning: 47.9 95.8% 53.1%;
-  --info: 221 73% 56%;
+	--destructive: 0 62.8% 30.6%;
+	--destructive-foreground: 0 0% 95%;
+	--success: 142.1 70.6% 45.3%;
+	--warning: 47.9 95.8% 53.1%;
+	--info: 221 73% 56%;
 
-  --border: 0 0% 24%;
-  --input: 0 0% 24%;
-  --ring: 221 73% 56%;
+	--border: 0 0% 24%;
+	--input: 0 0% 24%;
+	--ring: 221 73% 56%;
 
-  --chart-1: 221 73% 56%;
-  --chart-2: 142.1 70.6% 45.3%;
-  --chart-3: 47.9 95.8% 53.1%;
-  --chart-4: 280 87.3% 65.3%;
-  --chart-5: 340 82.2% 52.5%;
+	--chart-1: 221 73% 56%;
+	--chart-2: 142.1 70.6% 45.3%;
+	--chart-3: 47.9 95.8% 53.1%;
+	--chart-4: 280 87.3% 65.3%;
+	--chart-5: 340 82.2% 52.5%;
 
-  --sidebar: 0 0% 8%;
-  --sidebar-foreground: 0 0% 95%;
-  --sidebar-primary: 221 73% 56%;
-  --sidebar-primary-foreground: 0 0% 12%;
-  --sidebar-accent: 0 0% 15%;
-  --sidebar-accent-foreground: 0 0% 95%;
-  --sidebar-border: 0 0% 18%;
-  --sidebar-ring: 221 73% 56%;
-  --surface-light: 0 0% 15%;
-  --surface-inverse: 0 0% 95%;
+	--sidebar: 0 0% 8%;
+	--sidebar-foreground: 0 0% 95%;
+	--sidebar-primary: 221 73% 56%;
+	--sidebar-primary-foreground: 0 0% 12%;
+	--sidebar-accent: 0 0% 15%;
+	--sidebar-accent-foreground: 0 0% 95%;
+	--sidebar-border: 0 0% 18%;
+	--sidebar-ring: 221 73% 56%;
+	--surface-light: 0 0% 15%;
+	--surface-inverse: 0 0% 95%;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+	* {
+		@apply border-border outline-ring/50;
+	}
 
-  /* Remove all shadows globally */
-  * {
-    box-shadow: none !important;
-  }
+	/* Remove all shadows globally */
+	* {
+		box-shadow: none !important;
+	}
 
-  /* Ensure borders are never thicker than 1px */
-  .border-2,
-  .border-4,
-  .border-8,
-  *[class*="border-2"],
-  *[class*="border-4"],
-  *[class*="border-8"] {
-    border-width: 1px !important;
-  }
+	/* Ensure borders are never thicker than 1px */
+	.border-2,
+	.border-4,
+	.border-8,
+	*[class*="border-2"],
+	*[class*="border-4"],
+	*[class*="border-8"] {
+		border-width: 1px !important;
+	}
 
-  html {
-    scroll-behavior: smooth;
-  }
+	html {
+		scroll-behavior: smooth;
+	}
 
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-  }
+	body {
+		background-color: hsl(var(--background));
+		color: hsl(var(--foreground));
+	}
 
-  /* Dashboard-specific fixed layout */
-  body:has([data-dashboard-layout]) {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    overscroll-behavior: none;
-  }
+	/* Dashboard-specific fixed layout */
+	body:has([data-dashboard-layout]) {
+		overflow: hidden;
+		position: fixed;
+		width: 100%;
+		height: 100vh;
+		overscroll-behavior: none;
+	}
 }
 
 @layer utilities {
-  /* Remove all shadows globally */
-  .shadow,
-  .shadow-sm,
-  .shadow-md,
-  .shadow-lg,
-  .shadow-xl,
-  .shadow-2xl,
-  .shadow-inner,
-  .shadow-none {
-    box-shadow: none !important;
-  }
+	/* Remove all shadows globally */
+	.shadow,
+	.shadow-sm,
+	.shadow-md,
+	.shadow-lg,
+	.shadow-xl,
+	.shadow-2xl,
+	.shadow-inner,
+	.shadow-none {
+		box-shadow: none !important;
+	}
 
-  /* Force all borders to be 1px max */
-  .border-2,
-  .border-4,
-  .border-8 {
-    border-width: 1px !important;
-  }
+	/* Force all borders to be 1px max */
+	.border-2,
+	.border-4,
+	.border-8 {
+		border-width: 1px !important;
+	}
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .extend-touch-target {
-    position: relative;
-  }
-  .extend-touch-target::before {
-    content: "";
-    position: absolute;
-    inset: -0.5rem;
-  }
-  .size-4\.5 {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.extend-touch-target {
+		position: relative;
+	}
+	.extend-touch-target::before {
+		content: "";
+		position: absolute;
+		inset: -0.5rem;
+	}
+	.size-4\.5 {
+		width: 1.125rem;
+		height: 1.125rem;
+	}
 
-  /* Thorbis AI Button Animation */
-  .animate-gradient-x {
-    background-size: 200% 200%;
-    animation: gradient-x 3s ease infinite;
-  }
+	/* Thorbis AI Button Animation */
+	.animate-gradient-x {
+		background-size: 200% 200%;
+		animation: gradient-x 3s ease infinite;
+	}
 
-  @keyframes gradient-x {
-    0%,
-    100% {
-      background-position: 0% 50%;
-    }
-    25% {
-      background-position: 100% 50%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-    75% {
-      background-position: 0% 100%;
-    }
-  }
+	@keyframes gradient-x {
+		0%,
+		100% {
+			background-position: 0% 50%;
+		}
+		25% {
+			background-position: 100% 50%;
+		}
+		50% {
+			background-position: 100% 100%;
+		}
+		75% {
+			background-position: 0% 100%;
+		}
+	}
 
-  /* Cursor Hover Gradient Animation for All Buttons */
-  .hover-gradient {
-    position: relative;
-    overflow: visible;
-  }
+	/* Cursor Hover Gradient Animation for All Buttons */
+	.hover-gradient {
+		position: relative;
+		overflow: visible;
+	}
 
-  .hover-gradient::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      hsl(var(--primary) / 0.18) 0%,
-      hsl(var(--primary) / 0.08) 35%,
-      transparent 65%
-    );
-    opacity: 0;
-    transition:
-      opacity 0.24s ease,
-      background 0.1s ease;
-    pointer-events: none;
-    z-index: 1;
-  }
+	.hover-gradient::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: radial-gradient(
+			circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+			hsl(var(--primary) / 0.18) 0%,
+			hsl(var(--primary) / 0.08) 35%,
+			transparent 65%
+		);
+		opacity: 0;
+		transition:
+			opacity 0.24s ease,
+			background 0.1s ease;
+		pointer-events: none;
+		z-index: 1;
+	}
 
-  .hover-gradient:hover::before {
-    opacity: 1;
-  }
+	.hover-gradient:hover::before {
+		opacity: 1;
+	}
 
-  /* Red gradient hover effect for logout button */
-  .logout-gradient {
-    position: relative;
-    overflow: visible;
-  }
+	/* Red gradient hover effect for logout button */
+	.logout-gradient {
+		position: relative;
+		overflow: visible;
+	}
 
-  .logout-gradient::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      hsl(var(--destructive) / 0.2) 0%,
-      hsl(var(--destructive) / 0.12) 30%,
-      hsl(var(--destructive) / 0.08) 60%,
-      transparent 70%
-    );
-    opacity: 0;
-    transition:
-      opacity 0.3s ease,
-      background 0.1s ease;
-    pointer-events: none;
-    z-index: 1;
-  }
+	.logout-gradient::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: radial-gradient(
+			circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+			hsl(var(--destructive) / 0.2) 0%,
+			hsl(var(--destructive) / 0.12) 30%,
+			hsl(var(--destructive) / 0.08) 60%,
+			transparent 70%
+		);
+		opacity: 0;
+		transition:
+			opacity 0.3s ease,
+			background 0.1s ease;
+		pointer-events: none;
+		z-index: 1;
+	}
 
-  .logout-gradient:hover::before {
-    opacity: 1;
-  }
+	.logout-gradient:hover::before {
+		opacity: 1;
+	}
 
-  /* Mobile-Specific Utilities */
-  .touch-target {
-    /* Minimum 44x44px touch target (iOS HIG) */
-    min-height: 44px;
-    min-width: 44px;
-  }
+	/* Mobile-Specific Utilities */
+	.touch-target {
+		/* Minimum 44x44px touch target (iOS HIG) */
+		min-height: 44px;
+		min-width: 44px;
+	}
 
-  .touch-target-md {
-    /* Recommended 48x48px touch target (Material Design) */
-    min-height: 48px;
-    min-width: 48px;
-  }
+	.touch-target-md {
+		/* Recommended 48x48px touch target (Material Design) */
+		min-height: 48px;
+		min-width: 48px;
+	}
 
-  /* Momentum scrolling for iOS */
-  .momentum-scroll {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-  }
+	/* Momentum scrolling for iOS */
+	.momentum-scroll {
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-y: contain;
+	}
 
-  /* Prevent pull-to-refresh on specific elements */
-  .no-pull-refresh {
-    overscroll-behavior-y: none;
-  }
+	/* Prevent pull-to-refresh on specific elements */
+	.no-pull-refresh {
+		overscroll-behavior-y: none;
+	}
 
-  /* Safe area spacing utilities */
-  .safe-top {
-    padding-top: env(safe-area-inset-top);
-  }
+	/* Safe area spacing utilities */
+	.safe-top {
+		padding-top: env(safe-area-inset-top);
+	}
 
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+	.safe-bottom {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
 
-  .safe-left {
-    padding-left: env(safe-area-inset-left);
-  }
+	.safe-left {
+		padding-left: env(safe-area-inset-left);
+	}
 
-  .safe-right {
-    padding-right: env(safe-area-inset-right);
-  }
+	.safe-right {
+		padding-right: env(safe-area-inset-right);
+	}
 
-  @media (min-width: 768px) {
-    [data-slot="sidebar"][data-variant="inset"][data-state="collapsed"]
-      ~ [data-slot="sidebar-inset"] {
-      margin-left: 1rem;
-    }
-  }
+	@media (min-width: 768px) {
+		[data-slot="sidebar"][data-variant="inset"][data-state="collapsed"]
+			~ [data-slot="sidebar-inset"] {
+			margin-left: 1rem;
+		}
+	}
 
-  /* Active touch feedback */
-  .touch-active:active {
-    opacity: 0.7;
-    transform: scale(0.98);
-    transition: all 0.1s ease;
-  }
+	/* Active touch feedback */
+	.touch-active:active {
+		opacity: 0.7;
+		transform: scale(0.98);
+		transition: all 0.1s ease;
+	}
 
-  /* Disable text selection for UI elements */
-  .no-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-  }
+	/* Disable text selection for UI elements */
+	.no-select {
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
+		-webkit-touch-callout: none;
+	}
 
-  /* Mobile-optimized scrollbar (thin) */
-  .mobile-scroll::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
+	/* Mobile-optimized scrollbar (thin) */
+	.mobile-scroll::-webkit-scrollbar {
+		width: 4px;
+		height: 4px;
+	}
 
-  .mobile-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
+	.mobile-scroll::-webkit-scrollbar-track {
+		background: transparent;
+	}
 
-  .mobile-scroll::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
-    border-radius: 2px;
-  }
+	.mobile-scroll::-webkit-scrollbar-thumb {
+		background: hsl(var(--border));
+		border-radius: 2px;
+	}
 
-  .mobile-scroll::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground));
-  }
+	.mobile-scroll::-webkit-scrollbar-thumb:hover {
+		background: hsl(var(--muted-foreground));
+	}
 
-  /* Native-feeling animations */
-  .native-transition {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+	/* Native-feeling animations */
+	.native-transition {
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
 
-  /* Haptic-style feedback */
-  .haptic-light:active {
-    transform: scale(0.99);
-  }
+	/* Haptic-style feedback */
+	.haptic-light:active {
+		transform: scale(0.99);
+	}
 
-  .haptic-medium:active {
-    transform: scale(0.97);
-  }
+	.haptic-medium:active {
+		transform: scale(0.97);
+	}
 
-  .haptic-heavy:active {
-    transform: scale(0.95);
-  }
+	.haptic-heavy:active {
+		transform: scale(0.95);
+	}
 }

@@ -22,45 +22,45 @@ import Link from "next/link";
 
 import { NavGrouped } from "@/components/layout/nav-grouped";
 import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+	SidebarGroup,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { AddWidgetDropdown } from "./add-widget-dropdown";
 import { PresetsDropdown } from "./presets-dropdown";
 import { useWidgetNavigation } from "./use-widget-navigation";
 
 export function JobDetailsNav() {
-  // Get navigation groups dynamically from visible widgets
-  const navigationGroups = useWidgetNavigation();
+	// Get navigation groups dynamically from visible widgets
+	const navigationGroups = useWidgetNavigation();
 
-  return (
-    <>
-      {/* Back Button */}
-      <SidebarGroup>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="/dashboard/work">
-                <ArrowLeft />
-                <span>Back to Jobs</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
+	return (
+		<>
+			{/* Back Button */}
+			<SidebarGroup>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton asChild>
+							<Link href="/dashboard/work">
+								<ArrowLeft />
+								<span>Back to Jobs</span>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarGroup>
 
-      {/* Layout Controls */}
-      <SidebarGroup>
-        <SidebarGroupLabel>Layout</SidebarGroupLabel>
-        <AddWidgetDropdown />
-        <PresetsDropdown />
-      </SidebarGroup>
+			{/* Layout Controls */}
+			<SidebarGroup>
+				<SidebarGroupLabel>Layout</SidebarGroupLabel>
+				<AddWidgetDropdown />
+				<PresetsDropdown />
+			</SidebarGroup>
 
-      {/* Widget Navigation */}
-      <NavGrouped groups={navigationGroups} />
-    </>
-  );
+			{/* Widget Navigation */}
+			<NavGrouped groups={navigationGroups} />
+		</>
+	);
 }

@@ -13,9 +13,9 @@ import { AlertsData } from "@/components/inventory/alerts/alerts-data";
 import { AlertsSkeleton } from "@/components/inventory/alerts/alerts-skeleton";
 
 export default function LowStockAlertsPage() {
-  return (
-    <Suspense fallback={<AlertsSkeleton />}>
-      <AlertsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<AlertsSkeleton />}>
+			<AlertsData />
+		</Suspense>
+	);
 }

@@ -11,16 +11,16 @@
  */
 
 import {
-  Archive,
-  BarChart3,
-  Copy,
-  Download,
-  FileText,
-  MoreVertical,
-  Printer,
-  Receipt,
-  Share2,
-  Tags,
+	Archive,
+	BarChart3,
+	Copy,
+	Download,
+	FileText,
+	MoreVertical,
+	Printer,
+	Receipt,
+	Share2,
+	Tags,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -28,290 +28,270 @@ import { archiveJob } from "@/actions/jobs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
 
 type JobDetailToolbarProps = {
-  job?: any;
-  customer?: any;
-  metrics?: any;
-  timeEntries?: any[];
-  teamAssignments?: any[];
-  invoices?: any[];
-  payments?: any[];
-  jobMaterials?: any[];
+	job?: any;
+	customer?: any;
+	metrics?: any;
+	timeEntries?: any[];
+	teamAssignments?: any[];
+	invoices?: any[];
+	payments?: any[];
+	jobMaterials?: any[];
 };
 
 export function JobDetailToolbar({
-  job,
-  customer,
-  metrics,
-  timeEntries = [],
-  teamAssignments = [],
-  invoices = [],
-  payments = [],
-  jobMaterials = [],
+	job,
+	customer,
+	metrics,
+	timeEntries = [],
+	teamAssignments = [],
+	invoices = [],
+	payments = [],
+	jobMaterials = [],
 }: JobDetailToolbarProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { toast } = useToast();
-  const jobId = pathname?.split("/").pop();
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [isArchiving, setIsArchiving] = useState(false);
-  const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
-  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+	const pathname = usePathname();
+	const router = useRouter();
+	const { toast } = useToast();
+	const jobId = pathname?.split("/").pop();
+	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+	const [isArchiving, setIsArchiving] = useState(false);
+	const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
+	const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
 
-  // Calculate tag count
-  const customerTags = (customer?.tags as string[]) || [];
-  const jobTags =
-    ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
-  const tagCount = customerTags.length + jobTags.length;
+	// Calculate tag count
+	const customerTags = (customer?.tags as string[]) || [];
+	const jobTags = ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
+	const tagCount = customerTags.length + jobTags.length;
 
-  const handleArchive = async () => {
-    if (!jobId) {
-      toast.error("Job ID not found");
-      return;
-    }
+	const handleArchive = async () => {
+		if (!jobId) {
+			toast.error("Job ID not found");
+			return;
+		}
 
-    setIsArchiving(true);
-    try {
-      const result = await archiveJob(jobId);
-      if (result.success) {
-        toast.success("Job archived successfully");
-        setIsArchiveDialogOpen(false);
-        router.push("/dashboard/work");
-        router.refresh();
-      } else {
-        toast.error(result.error || "Failed to archive job");
-      }
-    } catch (_error) {
-      toast.error("Failed to archive job");
-    } finally {
-      setIsArchiving(false);
-    }
-  };
+		setIsArchiving(true);
+		try {
+			const result = await archiveJob(jobId);
+			if (result.success) {
+				toast.success("Job archived successfully");
+				setIsArchiveDialogOpen(false);
+				router.push("/dashboard/work");
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to archive job");
+			}
+		} catch (_error) {
+			toast.error("Failed to archive job");
+		} finally {
+			setIsArchiving(false);
+		}
+	};
 
-  return (
-    <>
-      <div className="flex items-center gap-2">
-        {/* Quick Actions - Individual Buttons with consistent styling */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild size="sm" variant="outline">
-                <a href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
-                  <Receipt />
-                  <span className="hidden md:inline">Invoice</span>
-                </a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Create invoice from this job</p>
-            </TooltipContent>
-          </Tooltip>
+	return (
+		<>
+			<div className="flex items-center gap-2">
+				{/* Quick Actions - Individual Buttons with consistent styling */}
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button asChild size="sm" variant="outline">
+								<a href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
+									<Receipt />
+									<span className="hidden md:inline">Invoice</span>
+								</a>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Create invoice from this job</p>
+						</TooltipContent>
+					</Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild size="sm" variant="outline">
-                <a href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
-                  <FileText />
-                  <span className="hidden md:inline">Estimate</span>
-                </a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Create estimate from this job</p>
-            </TooltipContent>
-          </Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button asChild size="sm" variant="outline">
+								<a href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
+									<FileText />
+									<span className="hidden md:inline">Estimate</span>
+								</a>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Create estimate from this job</p>
+						</TooltipContent>
+					</Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild size="sm" variant="outline">
-                <a href={`/dashboard/work/new?cloneFrom=${jobId}`}>
-                  <Copy />
-                  <span className="hidden lg:inline">Clone</span>
-                </a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Duplicate this job</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button asChild size="sm" variant="outline">
+								<a href={`/dashboard/work/new?cloneFrom=${jobId}`}>
+									<Copy />
+									<span className="hidden lg:inline">Clone</span>
+								</a>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Duplicate this job</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
-        {/* Separator before Tags */}
-        <Separator className="h-8" orientation="vertical" />
+				{/* Separator before Tags */}
+				<Separator className="h-8" orientation="vertical" />
 
-        {/* Tag Management */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="h-8 gap-1.5"
-                onClick={() => setIsTagDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Tags className="size-3.5" />
-                <span className="hidden lg:inline">Tags</span>
-                {tagCount > 0 && (
-                  <Badge className="ml-1 h-5 px-1.5" variant="secondary">
-                    {tagCount}
-                  </Badge>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Manage tags</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+				{/* Tag Management */}
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button className="h-8 gap-1.5" onClick={() => setIsTagDialogOpen(true)} size="sm" variant="outline">
+								<Tags className="size-3.5" />
+								<span className="hidden lg:inline">Tags</span>
+								{tagCount > 0 && (
+									<Badge className="ml-1 h-5 px-1.5" variant="secondary">
+										{tagCount}
+									</Badge>
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Manage tags</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
-        {/* Archive Button - Red/Destructive */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
-                onClick={() => setIsArchiveDialogOpen(true)}
-                size="sm"
-                variant="outline"
-              >
-                <Archive className="size-3.5" />
-                <span className="hidden lg:inline">Archive</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Archive this job</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+				{/* Archive Button - Red/Destructive */}
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								onClick={() => setIsArchiveDialogOpen(true)}
+								size="sm"
+								variant="outline"
+							>
+								<Archive className="size-3.5" />
+								<span className="hidden lg:inline">Archive</span>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Archive this job</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
-        {/* Ellipsis Menu - Includes Statistics + Export/Print/Share */}
-        <Separator className="h-8" orientation="vertical" />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon-sm" variant="outline">
-              <MoreVertical />
-              <span className="sr-only">More actions</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-              Actions
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+				{/* Ellipsis Menu - Includes Statistics + Export/Print/Share */}
+				<Separator className="h-8" orientation="vertical" />
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button size="icon-sm" variant="outline">
+							<MoreVertical />
+							<span className="sr-only">More actions</span>
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end" className="w-56">
+						<DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+							Actions
+						</DropdownMenuLabel>
+						<DropdownMenuSeparator />
 
-            {/* Statistics - Only if available */}
-            {job && metrics && (
-              <>
-                <DropdownMenuItem onClick={() => setIsStatisticsOpen(true)}>
-                  <BarChart3 className="mr-2 size-3.5" />
-                  View Statistics
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
+						{/* Statistics - Only if available */}
+						{job && metrics && (
+							<>
+								<DropdownMenuItem onClick={() => setIsStatisticsOpen(true)}>
+									<BarChart3 className="mr-2 size-3.5" />
+									View Statistics
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
+							</>
+						)}
 
-            {/* Export/Print/Share */}
-            <DropdownMenuItem>
-              <Download className="mr-2 size-3.5" />
-              Export to CSV
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Printer className="mr-2 size-3.5" />
-              Print Job Details
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Share2 className="mr-2 size-3.5" />
-              Share Job Link
-            </DropdownMenuItem>
+						{/* Export/Print/Share */}
+						<DropdownMenuItem>
+							<Download className="mr-2 size-3.5" />
+							Export to CSV
+						</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Printer className="mr-2 size-3.5" />
+							Print Job Details
+						</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Share2 className="mr-2 size-3.5" />
+							Share Job Link
+						</DropdownMenuItem>
 
-            {/* Destructive Actions */}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+						{/* Destructive Actions */}
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
 
-      {/* Archive Confirmation Dialog */}
-      <Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Job</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to archive this job? Archived jobs can be
-              restored within 90 days. Completed or invoiced jobs cannot be
-              archived.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              disabled={isArchiving}
-              onClick={() => setIsArchiveDialogOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={isArchiving}
-              onClick={handleArchive}
-              variant="destructive"
-            >
-              {isArchiving ? "Archiving..." : "Archive Job"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+			{/* Archive Confirmation Dialog */}
+			<Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Archive Job</DialogTitle>
+						<DialogDescription>
+							Are you sure you want to archive this job? Archived jobs can be restored within 90 days. Completed or
+							invoiced jobs cannot be archived.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+							Cancel
+						</Button>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+							{isArchiving ? "Archiving..." : "Archive Job"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
-      {/* Statistics Sheet */}
-      {job && metrics && (
-        <JobStatisticsSheet
-          invoices={invoices}
-          job={job}
-          jobMaterials={jobMaterials}
-          metrics={metrics}
-          onOpenChange={setIsStatisticsOpen}
-          open={isStatisticsOpen}
-          payments={payments}
-          teamAssignments={teamAssignments}
-          timeEntries={timeEntries}
-        />
-      )}
+			{/* Statistics Sheet */}
+			{job && metrics && (
+				<JobStatisticsSheet
+					invoices={invoices}
+					job={job}
+					jobMaterials={jobMaterials}
+					metrics={metrics}
+					onOpenChange={setIsStatisticsOpen}
+					open={isStatisticsOpen}
+					payments={payments}
+					teamAssignments={teamAssignments}
+					timeEntries={timeEntries}
+				/>
+			)}
 
-      {/* Tag Manager Dialog */}
-      <TagManagerDialog
-        customerId={customer?.id}
-        customerTags={customerTags}
-        jobId={job?.id}
-        jobTags={jobTags}
-        onOpenChange={setIsTagDialogOpen}
-        onUpdate={() => {
-          router.refresh();
-        }}
-        open={isTagDialogOpen}
-      />
-    </>
-  );
+			{/* Tag Manager Dialog */}
+			<TagManagerDialog
+				customerId={customer?.id}
+				customerTags={customerTags}
+				jobId={job?.id}
+				jobTags={jobTags}
+				onOpenChange={setIsTagDialogOpen}
+				onUpdate={() => {
+					router.refresh();
+				}}
+				open={isTagDialogOpen}
+			/>
+		</>
+	);
 }

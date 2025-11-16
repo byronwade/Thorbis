@@ -17,15 +17,15 @@ import { z } from "zod";
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
 export const TimeZoneSchema = z.object({
-  timeZoneId: z.string(), // e.g., "America/New_York"
-  timeZoneName: z.string(), // e.g., "Eastern Daylight Time"
-  rawOffset: z.number(), // Offset from UTC in seconds (not including DST)
-  dstOffset: z.number(), // DST offset in seconds
-  totalOffset: z.number(), // Total offset in seconds (rawOffset + dstOffset)
-  totalOffsetHours: z.number(), // Total offset in hours (for display)
-  isDST: z.boolean(), // Whether DST is currently in effect
-  dataSource: z.string(),
-  enrichedAt: z.string(),
+	timeZoneId: z.string(), // e.g., "America/New_York"
+	timeZoneName: z.string(), // e.g., "Eastern Daylight Time"
+	rawOffset: z.number(), // Offset from UTC in seconds (not including DST)
+	dstOffset: z.number(), // DST offset in seconds
+	totalOffset: z.number(), // Total offset in seconds (rawOffset + dstOffset)
+	totalOffsetHours: z.number(), // Total offset in hours (for display)
+	isDST: z.boolean(), // Whether DST is currently in effect
+	dataSource: z.string(),
+	enrichedAt: z.string(),
 });
 
 export type TimeZoneInfo = z.infer<typeof TimeZoneSchema>;
@@ -37,104 +37,99 @@ const COORDINATE_PRECISION = 4;
 
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
 export class TimeZoneService {
-  private readonly apiKey: string | undefined;
-  private readonly cache: Map<
-    string,
-    { data: TimeZoneInfo; timestamp: number }
-  > = new Map();
-  private readonly cacheTTL = CACHE_TTL_MS;
+	private readonly apiKey: string | undefined;
+	private readonly cache: Map<string, { data: TimeZoneInfo; timestamp: number }> = new Map();
+	private readonly cacheTTL = CACHE_TTL_MS;
 
-  constructor() {
-    this.apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  }
+	constructor() {
+		this.apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+	}
 
-  async getTimeZone(lat: number, lon: number): Promise<TimeZoneInfo | null> {
-    if (!this.apiKey) {
-      return null;
-    }
+	async getTimeZone(lat: number, lon: number): Promise<TimeZoneInfo | null> {
+		if (!this.apiKey) {
+			return null;
+		}
 
-    const cacheKey = `timezone:${lat.toFixed(COORDINATE_PRECISION)},${lon.toFixed(COORDINATE_PRECISION)}`;
-    const cached = this.cache.get(cacheKey);
+		const cacheKey = `timezone:${lat.toFixed(COORDINATE_PRECISION)},${lon.toFixed(COORDINATE_PRECISION)}`;
+		const cached = this.cache.get(cacheKey);
 
-    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      return cached.data;
-    }
+		if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
+			return cached.data;
+		}
 
-    try {
-      // Google Time Zone API requires a timestamp to calculate DST correctly
-      const timestamp = Math.floor(Date.now() / MS_TO_SECONDS);
+		try {
+			// Google Time Zone API requires a timestamp to calculate DST correctly
+			const timestamp = Math.floor(Date.now() / MS_TO_SECONDS);
 
-      const url = `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lon}&timestamp=${timestamp}&key=${this.apiKey}`;
+			const url = `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lon}&timestamp=${timestamp}&key=${this.apiKey}`;
 
-      const res = await fetch(url, {
-        headers: { "User-Agent": USER_AGENT },
-      });
+			const res = await fetch(url, {
+				headers: { "User-Agent": USER_AGENT },
+			});
 
-      if (!res.ok) {
-        return null;
-      }
+			if (!res.ok) {
+				return null;
+			}
 
-      const data = await res.json();
+			const data = await res.json();
 
-      if (data.status !== "OK") {
-        return null;
-      }
+			if (data.status !== "OK") {
+				return null;
+			}
 
-      const totalOffset = data.rawOffset + data.dstOffset;
-      const totalOffsetHours = totalOffset / SECONDS_TO_HOURS;
-      const isDST = data.dstOffset !== 0;
+			const totalOffset = data.rawOffset + data.dstOffset;
+			const totalOffsetHours = totalOffset / SECONDS_TO_HOURS;
+			const isDST = data.dstOffset !== 0;
 
-      const timeZone: TimeZoneInfo = {
-        timeZoneId: data.timeZoneId,
-        timeZoneName: data.timeZoneName,
-        rawOffset: data.rawOffset,
-        dstOffset: data.dstOffset,
-        totalOffset,
-        totalOffsetHours,
-        isDST,
-        dataSource: "google-timezone",
-        enrichedAt: new Date().toISOString(),
-      };
+			const timeZone: TimeZoneInfo = {
+				timeZoneId: data.timeZoneId,
+				timeZoneName: data.timeZoneName,
+				rawOffset: data.rawOffset,
+				dstOffset: data.dstOffset,
+				totalOffset,
+				totalOffsetHours,
+				isDST,
+				dataSource: "google-timezone",
+				enrichedAt: new Date().toISOString(),
+			};
 
-      this.cache.set(cacheKey, { data: timeZone, timestamp: Date.now() });
+			this.cache.set(cacheKey, { data: timeZone, timestamp: Date.now() });
 
-      return timeZone;
-    } catch (_error) {
-      return null;
-    }
-  }
+			return timeZone;
+		} catch (_error) {
+			return null;
+		}
+	}
 
-  /**
-   * Format time zone offset for display
-   */
-  formatOffset(totalOffsetHours: number): string {
-    const sign = totalOffsetHours >= 0 ? "+" : "-";
-    const absHours = Math.abs(totalOffsetHours);
-    const hours = Math.floor(absHours);
-    const minutes = Math.round((absHours - hours) * 60);
+	/**
+	 * Format time zone offset for display
+	 */
+	formatOffset(totalOffsetHours: number): string {
+		const sign = totalOffsetHours >= 0 ? "+" : "-";
+		const absHours = Math.abs(totalOffsetHours);
+		const hours = Math.floor(absHours);
+		const minutes = Math.round((absHours - hours) * 60);
 
-    if (minutes === 0) {
-      return `UTC${sign}${hours}`;
-    }
-    return `UTC${sign}${hours}:${minutes.toString().padStart(2, "0")}`;
-  }
+		if (minutes === 0) {
+			return `UTC${sign}${hours}`;
+		}
+		return `UTC${sign}${hours}:${minutes.toString().padStart(2, "0")}`;
+	}
 
-  /**
-   * Get current local time for a timezone
-   */
-  getCurrentLocalTime(timeZoneId: string): Date {
-    return new Date(
-      new Date().toLocaleString("en-US", { timeZone: timeZoneId })
-    );
-  }
+	/**
+	 * Get current local time for a timezone
+	 */
+	getCurrentLocalTime(timeZoneId: string): Date {
+		return new Date(new Date().toLocaleString("en-US", { timeZone: timeZoneId }));
+	}
 
-  /**
-   * Check if location is in same timezone as user
-   */
-  isSameTimeZone(locationTimeZoneId: string): boolean {
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return locationTimeZoneId === userTimeZone;
-  }
+	/**
+	 * Check if location is in same timezone as user
+	 */
+	isSameTimeZone(locationTimeZoneId: string): boolean {
+		const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		return locationTimeZoneId === userTimeZone;
+	}
 }
 
 export const timeZoneService = new TimeZoneService();

@@ -15,19 +15,17 @@ import { PurchaseOrdersSkeleton } from "@/components/work/purchase-orders/purcha
 import { PurchaseOrdersStats } from "@/components/work/purchase-orders/purchase-orders-stats";
 
 export default function PurchaseOrdersPage() {
-  return (
-    <>
-      {/* Stats - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <PurchaseOrdersStats />
-      </Suspense>
+	return (
+		<>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<PurchaseOrdersStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <Suspense fallback={<PurchaseOrdersSkeleton />}>
-        <PurchaseOrdersData />
-      </Suspense>
-    </>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<Suspense fallback={<PurchaseOrdersSkeleton />}>
+				<PurchaseOrdersData />
+			</Suspense>
+		</>
+	);
 }

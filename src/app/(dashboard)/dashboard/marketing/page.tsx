@@ -17,16 +17,16 @@ import { MarketingData } from "@/components/marketing/marketing-data";
 import { MarketingSkeleton } from "@/components/marketing/marketing-skeleton";
 
 export default function MarketingPage() {
-  // Show Coming Soon in production, PPR leads dashboard in development
-  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
+	// Show Coming Soon in production, PPR leads dashboard in development
+	const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
 
-  if (isProduction) {
-    return <MarketingComingSoon />;
-  }
+	if (isProduction) {
+		return <MarketingComingSoon />;
+	}
 
-  return (
-    <Suspense fallback={<MarketingSkeleton />}>
-      <MarketingData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<MarketingSkeleton />}>
+			<MarketingData />
+		</Suspense>
+	);
 }

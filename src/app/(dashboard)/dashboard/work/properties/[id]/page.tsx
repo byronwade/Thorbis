@@ -25,17 +25,17 @@ import { PropertyDetailData } from "@/components/properties/property-details/pro
 import { PropertyDetailSkeleton } from "@/components/properties/property-details/property-detail-skeleton";
 
 type PropertyPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
+	params: Promise<{
+		id: string;
+	}>;
 };
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
-  const { id: propertyId } = await params;
+	const { id: propertyId } = await params;
 
-  return (
-    <Suspense fallback={<PropertyDetailSkeleton />}>
-      <PropertyDetailData propertyId={propertyId} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PropertyDetailSkeleton />}>
+			<PropertyDetailData propertyId={propertyId} />
+		</Suspense>
+	);
 }

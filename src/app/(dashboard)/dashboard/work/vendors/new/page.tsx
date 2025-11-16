@@ -10,9 +10,9 @@ import { WorkNewData } from "@/components/work/new/new-data";
 import { WorkNewSkeleton } from "@/components/work/new/new-skeleton";
 
 export default function WorkVendorsNewPage() {
-  return (
-    <Suspense fallback={<WorkNewSkeleton />}>
-      <WorkNewData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<WorkNewSkeleton />}>
+			<WorkNewData />
+		</Suspense>
+	);
 }

@@ -20,22 +20,20 @@ import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 export const revalidate = 300;
 
 export default function BusinessIntelligencePage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Business Intelligence</h1>
-        <p className="text-muted-foreground">
-          Comprehensive business reporting and analytics
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			<div>
+				<h1 className="font-semibold text-2xl">Business Intelligence</h1>
+				<p className="text-muted-foreground">Comprehensive business reporting and analytics</p>
+			</div>
 
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <ReportsStats />
-      </Suspense>
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<ReportsStats />
+			</Suspense>
 
-      <Suspense fallback={<ReportsSkeleton />}>
-        <ReportsData />
-      </Suspense>
-    </div>
-  );
+			<Suspense fallback={<ReportsSkeleton />}>
+				<ReportsData />
+			</Suspense>
+		</div>
+	);
 }

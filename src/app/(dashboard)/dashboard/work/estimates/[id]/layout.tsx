@@ -11,40 +11,34 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function EstimatesDetailLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const config: UnifiedLayoutConfig = {
-    structure: {
-      maxWidth: "7xl",
-      padding: "lg",
-      gap: "none",
-      fixedHeight: false,
-      variant: "detail",
-      background: "default",
-      insetPadding: "none",
-    },
-    header: {
-      show: true,
-    },
-    toolbar: {
-      show: true,
-      back: (
-        <DetailBackButton href="/dashboard/work/estimates" label="Estimates" />
-      ),
-      // TODO: Create EstimateDetailToolbar component
-      // actions: <EstimateDetailToolbar />,
-    },
-    sidebar: {
-      show: false,
-    },
-  };
+export default function EstimatesDetailLayout({ children }: { children: ReactNode }) {
+	const config: UnifiedLayoutConfig = {
+		structure: {
+			maxWidth: "7xl",
+			padding: "lg",
+			gap: "none",
+			fixedHeight: false,
+			variant: "detail",
+			background: "default",
+			insetPadding: "none",
+		},
+		header: {
+			show: true,
+		},
+		toolbar: {
+			show: true,
+			back: <DetailBackButton href="/dashboard/work/estimates" label="Estimates" />,
+			// TODO: Create EstimateDetailToolbar component
+			// actions: <EstimateDetailToolbar />,
+		},
+		sidebar: {
+			show: false,
+		},
+	};
 
-  return (
-    <SectionLayout config={config} pathname="/dashboard/work/estimates/[id]">
-      {children}
-    </SectionLayout>
-  );
+	return (
+		<SectionLayout config={config} pathname="/dashboard/work/estimates/[id]">
+			{children}
+		</SectionLayout>
+	);
 }

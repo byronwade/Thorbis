@@ -16,17 +16,17 @@ import { WelcomeData } from "@/components/onboarding/welcome-data";
 import { WelcomeSkeleton } from "@/components/onboarding/welcome-skeleton";
 
 type WelcomePageProps = {
-  searchParams: Promise<{ new?: string }>;
+	searchParams: Promise<{ new?: string }>;
 };
 
 export default async function WelcomePage({ searchParams }: WelcomePageProps) {
-  // Parse search params for the data component
-  const params = await searchParams;
-  const isCreatingNewCompany = params.new === "true";
+	// Parse search params for the data component
+	const params = await searchParams;
+	const isCreatingNewCompany = params.new === "true";
 
-  return (
-    <Suspense fallback={<WelcomeSkeleton />}>
-      <WelcomeData isCreatingNewCompany={isCreatingNewCompany} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<WelcomeSkeleton />}>
+			<WelcomeData isCreatingNewCompany={isCreatingNewCompany} />
+		</Suspense>
+	);
 }

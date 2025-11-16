@@ -11,51 +11,34 @@ import { KanbanView } from "./kanban-view";
 import { MonthlyView } from "./monthly-view";
 
 type SchedulePageClientProps = {
-  initialData?: ScheduleBootstrapSerialized;
-  bootstrapError?: string | null;
+	initialData?: ScheduleBootstrapSerialized;
+	bootstrapError?: string | null;
 };
 
-export function SchedulePageClient({
-  initialData,
-  bootstrapError,
-}: SchedulePageClientProps) {
-  const hydrateFromServer = useScheduleStore(
-    (state) => state.hydrateFromServer
-  );
-  const { viewMode } = useScheduleViewStore();
-  const payload = useMemo(
-    () => (initialData ? deserializeScheduleBootstrap(initialData) : null),
-    [initialData]
-  );
+export function SchedulePageClient({ initialData, bootstrapError }: SchedulePageClientProps) {
+	const hydrateFromServer = useScheduleStore((state) => state.hydrateFromServer);
+	const { viewMode } = useScheduleViewStore();
+	const payload = useMemo(() => (initialData ? deserializeScheduleBootstrap(initialData) : null), [initialData]);
 
-  useEffect(() => {
-    if (payload) {
-      hydrateFromServer(payload);
-    }
-  }, [hydrateFromServer, payload]);
+	useEffect(() => {
+		if (payload) {
+			hydrateFromServer(payload);
+		}
+	}, [hydrateFromServer, payload]);
 
-  return (
-    <div className="m-0 flex h-full w-full flex-1 flex-col overflow-hidden p-0">
-      {bootstrapError && (
-        <Alert
-          className="mx-4 mt-2 mb-4 max-w-2xl self-center"
-          variant="destructive"
-        >
-          <AlertTitle>Live schedule data unavailable</AlertTitle>
-          <AlertDescription>
-            {bootstrapError}. Showing the scheduler without preloaded jobs—use
-            the refresh controls after fixing the issue.
-          </AlertDescription>
-        </Alert>
-      )}
+	return (
+		<div className="m-0 flex h-full w-full flex-1 flex-col overflow-hidden p-0">
+			{bootstrapError && (
+				<Alert className="mx-4 mt-2 mb-4 max-w-2xl self-center" variant="destructive">
+					<AlertTitle>Live schedule data unavailable</AlertTitle>
+					<AlertDescription>
+						{bootstrapError}. Showing the scheduler without preloaded jobs—use the refresh controls after fixing the
+						issue.
+					</AlertDescription>
+				</Alert>
+			)}
 
-      {viewMode === "month" ? (
-        <MonthlyView />
-      ) : viewMode === "week" ? (
-        <KanbanView />
-      ) : (
-        <DispatchTimeline />
-      )}
-    </div>
-  );
+			{viewMode === "month" ? <MonthlyView /> : viewMode === "week" ? <KanbanView /> : <DispatchTimeline />}
+		</div>
+	);
 }

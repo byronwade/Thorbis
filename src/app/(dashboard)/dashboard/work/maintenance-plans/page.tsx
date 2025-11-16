@@ -13,9 +13,9 @@ import { MaintenancePlansData } from "@/components/work/maintenance-plans/mainte
 import { MaintenancePlansSkeleton } from "@/components/work/maintenance-plans/maintenance-plans-skeleton";
 
 export default function MaintenancePlansPage() {
-  return (
-    <Suspense fallback={<MaintenancePlansSkeleton />}>
-      <MaintenancePlansData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<MaintenancePlansSkeleton />}>
+			<MaintenancePlansData />
+		</Suspense>
+	);
 }

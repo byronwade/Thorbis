@@ -10,9 +10,9 @@ import { UserviceUareasData } from "@/components/settings/service-areas/service-
 import { UserviceUareasSkeleton } from "@/components/settings/service-areas/service-areas-skeleton";
 
 export default function UserviceUareasPage() {
-  return (
-    <Suspense fallback={<UserviceUareasSkeleton />}>
-      <UserviceUareasData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UserviceUareasSkeleton />}>
+			<UserviceUareasData />
+		</Suspense>
+	);
 }

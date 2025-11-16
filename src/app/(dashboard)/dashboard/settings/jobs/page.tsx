@@ -10,9 +10,9 @@ import { UjobsData } from "@/components/settings/jobs/jobs-data";
 import { UjobsSkeleton } from "@/components/settings/jobs/jobs-skeleton";
 
 export default function UjobsPage() {
-  return (
-    <Suspense fallback={<UjobsSkeleton />}>
-      <UjobsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UjobsSkeleton />}>
+			<UjobsData />
+		</Suspense>
+	);
 }

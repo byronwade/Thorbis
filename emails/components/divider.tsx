@@ -11,22 +11,22 @@ import { Hr } from "@react-email/components";
 import { EMAIL_COLORS } from "../theme";
 
 type DividerProps = {
-  style?: React.CSSProperties;
+	style?: React.CSSProperties;
 };
 
 export function Divider({ style }: DividerProps) {
-  return (
-    <Hr
-      style={{
-        ...dividerStyle,
-        ...style,
-      }}
-    />
-  );
+	return (
+		<Hr
+			style={{
+				...dividerStyle,
+				...style,
+			}}
+		/>
+	);
 }
 
 const dividerStyle = {
-  border: "none",
-  borderTop: `1px solid ${EMAIL_COLORS.border}`,
-  margin: "24px 0",
+	border: "none",
+	borderTop: `1px solid ${EMAIL_COLORS.border}`,
+	margin: "24px 0",
 };

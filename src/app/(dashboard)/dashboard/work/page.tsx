@@ -20,17 +20,17 @@ import { JobsStats } from "@/components/work/jobs/jobs-stats";
 // export const experimental_ppr = true;
 
 export default function JobsPage() {
-  return (
-    <div className="flex h-full flex-col">
-      {/* Job Flow Pipeline - Static for now */}
-      <JobsStats />
+	return (
+		<div className="flex h-full flex-col">
+			{/* Job Flow Pipeline - Static for now */}
+			<JobsStats />
 
-      {/* Jobs Table - Streams in after shell */}
-      <div className="flex-1 overflow-hidden">
-        <Suspense fallback={<JobsSkeleton />}>
-          <JobsData />
-        </Suspense>
-      </div>
-    </div>
-  );
+			{/* Jobs Table - Streams in after shell */}
+			<div className="flex-1 overflow-hidden">
+				<Suspense fallback={<JobsSkeleton />}>
+					<JobsData />
+				</Suspense>
+			</div>
+		</div>
+	);
 }

@@ -22,25 +22,23 @@ import { JobStatusStats } from "@/components/jobs/status/job-status-stats";
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function JobStatusPage() {
-  return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="font-bold text-3xl tracking-tight">Job Status</h1>
-        <p className="text-muted-foreground">
-          Track job progress, status updates, and completion metrics
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Page header */}
+			<div>
+				<h1 className="font-bold text-3xl tracking-tight">Job Status</h1>
+				<p className="text-muted-foreground">Track job progress, status updates, and completion metrics</p>
+			</div>
 
-      {/* Stats - Streams in first */}
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <JobStatusStats />
-      </Suspense>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<JobStatusStats />
+			</Suspense>
 
-      {/* Job status data - Streams in second */}
-      <Suspense fallback={<JobStatusSkeleton />}>
-        <JobStatusData />
-      </Suspense>
-    </div>
-  );
+			{/* Job status data - Streams in second */}
+			<Suspense fallback={<JobStatusSkeleton />}>
+				<JobStatusData />
+			</Suspense>
+		</div>
+	);
 }

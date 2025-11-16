@@ -10,9 +10,9 @@ import { UvendorsData } from "@/components/inventory/vendors/vendors-data";
 import { UvendorsSkeleton } from "@/components/inventory/vendors/vendors-skeleton";
 
 export default function UvendorsPage() {
-  return (
-    <Suspense fallback={<UvendorsSkeleton />}>
-      <UvendorsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UvendorsSkeleton />}>
+			<UvendorsData />
+		</Suspense>
+	);
 }

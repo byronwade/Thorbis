@@ -28,62 +28,55 @@
 import { toast as sonnerToast } from "sonner";
 
 export function useToast() {
-  return {
-    toast: {
-      success: (message: string, options?: any) =>
-        sonnerToast.success(message, {
-          duration: 3000,
-          ...options,
-        }),
+	return {
+		toast: {
+			success: (message: string, options?: any) =>
+				sonnerToast.success(message, {
+					duration: 3000,
+					...options,
+				}),
 
-      error: (message: string, options?: any) =>
-        sonnerToast.error(message, {
-          duration: 5000,
-          ...options,
-        }),
+			error: (message: string, options?: any) =>
+				sonnerToast.error(message, {
+					duration: 5000,
+					...options,
+				}),
 
-      loading: (message: string, options?: any) =>
-        sonnerToast.loading(message, options),
+			loading: (message: string, options?: any) => sonnerToast.loading(message, options),
 
-      info: (message: string, options?: any) =>
-        sonnerToast.info(message, {
-          duration: 3000,
-          ...options,
-        }),
+			info: (message: string, options?: any) =>
+				sonnerToast.info(message, {
+					duration: 3000,
+					...options,
+				}),
 
-      warning: (message: string, options?: any) =>
-        sonnerToast.warning(message, {
-          duration: 4000,
-          ...options,
-        }),
+			warning: (message: string, options?: any) =>
+				sonnerToast.warning(message, {
+					duration: 4000,
+					...options,
+				}),
 
-      promise: <T>(
-        promise: Promise<T>,
-        messages: {
-          loading: string;
-          success: string | ((data: T) => string);
-          error: string | ((error: any) => string);
-        }
-      ) => sonnerToast.promise(promise, messages),
+			promise: <T>(
+				promise: Promise<T>,
+				messages: {
+					loading: string;
+					success: string | ((data: T) => string);
+					error: string | ((error: any) => string);
+				}
+			) => sonnerToast.promise(promise, messages),
 
-      dismiss: (id?: string | number) => {
-        sonnerToast.dismiss(id);
-      },
+			dismiss: (id?: string | number) => {
+				sonnerToast.dismiss(id);
+			},
 
-      // Shorthand for Server Action responses
-      fromActionResult: (result: {
-        success: boolean;
-        error?: string;
-        message?: string;
-      }) => {
-        if (result.success) {
-          sonnerToast.success(
-            result.message || "Operation completed successfully"
-          );
-        } else {
-          sonnerToast.error(result.error || "Operation failed");
-        }
-      },
-    },
-  };
+			// Shorthand for Server Action responses
+			fromActionResult: (result: { success: boolean; error?: string; message?: string }) => {
+				if (result.success) {
+					sonnerToast.success(result.message || "Operation completed successfully");
+				} else {
+					sonnerToast.error(result.error || "Operation failed");
+				}
+			},
+		},
+	};
 }

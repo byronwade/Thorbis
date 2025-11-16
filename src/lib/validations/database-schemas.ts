@@ -22,63 +22,56 @@ import { z } from "zod";
 // ============================================================================
 
 export const customerInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  user_id: z.string().uuid().optional().nullable(),
-  type: z
-    .enum(["residential", "commercial", "industrial"])
-    .default("residential"),
-  first_name: z.string().min(1, "First name is required").max(100),
-  last_name: z.string().min(1, "Last name is required").max(100),
-  company_name: z.string().max(200).optional().nullable(),
-  email: z.string().email("Invalid email address").optional().nullable(),
-  phone: z.string().max(20).optional().nullable(),
-  alternate_phone: z.string().max(20).optional().nullable(),
-  address: z.string().max(500).optional().nullable(),
-  city: z.string().max(100).optional().nullable(),
-  state: z.string().max(2).optional().nullable(),
-  zip: z.string().max(10).optional().nullable(),
-  latitude: z.number().optional().nullable(),
-  longitude: z.number().optional().nullable(),
-  status: z.enum(["active", "inactive", "blocked"]).default("active"),
-  source: z.string().max(100).optional().nullable(),
-  referred_by: z.string().uuid().optional().nullable(),
-  notes: z.string().optional().nullable(),
-  tags: z.array(z.string()).optional().nullable(),
-  total_revenue: z.number().int().default(0),
-  total_jobs: z.number().int().default(0),
-  outstanding_balance: z.number().int().default(0),
-  lifetime_value: z.number().int().default(0),
-  average_job_value: z.number().int().default(0),
-  last_job_date: z.date().optional().nullable(),
-  next_service_due: z.date().optional().nullable(),
-  portal_enabled: z.boolean().default(false),
-  portal_invited_at: z.date().optional().nullable(),
-  portal_last_login: z.date().optional().nullable(),
-  billing_same_as_service: z.boolean().default(true),
-  billing_address: z.string().max(500).optional().nullable(),
-  billing_city: z.string().max(100).optional().nullable(),
-  billing_state: z.string().max(2).optional().nullable(),
-  billing_zip: z.string().max(10).optional().nullable(),
-  tax_exempt: z.boolean().default(false),
-  tax_id: z.string().max(50).optional().nullable(),
-  preferred_contact_method: z
-    .enum(["email", "phone", "sms", "any"])
-    .optional()
-    .nullable(),
-  do_not_disturb: z.boolean().default(false),
-  marketing_opt_in: z.boolean().default(true),
+	company_id: z.string().uuid(),
+	user_id: z.string().uuid().optional().nullable(),
+	type: z.enum(["residential", "commercial", "industrial"]).default("residential"),
+	first_name: z.string().min(1, "First name is required").max(100),
+	last_name: z.string().min(1, "Last name is required").max(100),
+	company_name: z.string().max(200).optional().nullable(),
+	email: z.string().email("Invalid email address").optional().nullable(),
+	phone: z.string().max(20).optional().nullable(),
+	alternate_phone: z.string().max(20).optional().nullable(),
+	address: z.string().max(500).optional().nullable(),
+	city: z.string().max(100).optional().nullable(),
+	state: z.string().max(2).optional().nullable(),
+	zip: z.string().max(10).optional().nullable(),
+	latitude: z.number().optional().nullable(),
+	longitude: z.number().optional().nullable(),
+	status: z.enum(["active", "inactive", "blocked"]).default("active"),
+	source: z.string().max(100).optional().nullable(),
+	referred_by: z.string().uuid().optional().nullable(),
+	notes: z.string().optional().nullable(),
+	tags: z.array(z.string()).optional().nullable(),
+	total_revenue: z.number().int().default(0),
+	total_jobs: z.number().int().default(0),
+	outstanding_balance: z.number().int().default(0),
+	lifetime_value: z.number().int().default(0),
+	average_job_value: z.number().int().default(0),
+	last_job_date: z.date().optional().nullable(),
+	next_service_due: z.date().optional().nullable(),
+	portal_enabled: z.boolean().default(false),
+	portal_invited_at: z.date().optional().nullable(),
+	portal_last_login: z.date().optional().nullable(),
+	billing_same_as_service: z.boolean().default(true),
+	billing_address: z.string().max(500).optional().nullable(),
+	billing_city: z.string().max(100).optional().nullable(),
+	billing_state: z.string().max(2).optional().nullable(),
+	billing_zip: z.string().max(10).optional().nullable(),
+	tax_exempt: z.boolean().default(false),
+	tax_id: z.string().max(50).optional().nullable(),
+	preferred_contact_method: z.enum(["email", "phone", "sms", "any"]).optional().nullable(),
+	do_not_disturb: z.boolean().default(false),
+	marketing_opt_in: z.boolean().default(true),
 });
 
-export const customerUpdateSchema = customerInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const customerUpdateSchema = customerInsertSchema.partial().omit({ company_id: true });
 
 export const customerSelectSchema = customerInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
 });
 
 // ============================================================================
@@ -86,54 +79,50 @@ export const customerSelectSchema = customerInsertSchema.extend({
 // ============================================================================
 
 export const communicationInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  customer_id: z.string().uuid().optional().nullable(),
-  job_id: z.string().uuid().optional().nullable(),
-  invoice_id: z.string().uuid().optional().nullable(),
-  user_id: z.string().uuid().optional().nullable(),
-  type: z.enum(["email", "sms", "phone", "chat", "note"]),
-  direction: z.enum(["inbound", "outbound"]),
-  status: z
-    .enum(["draft", "queued", "sending", "sent", "delivered", "failed", "read"])
-    .default("draft"),
-  subject: z.string().max(500).optional().nullable(),
-  body: z.string().optional().nullable(),
-  from_email: z.string().email().optional().nullable(),
-  to_email: z.string().email().optional().nullable(),
-  from_phone: z.string().max(20).optional().nullable(),
-  to_phone: z.string().max(20).optional().nullable(),
-  cc: z.array(z.string().email()).optional().nullable(),
-  bcc: z.array(z.string().email()).optional().nullable(),
-  thread_id: z.string().uuid().optional().nullable(),
-  parent_id: z.string().uuid().optional().nullable(),
-  scheduled_for: z.date().optional().nullable(),
-  sent_at: z.date().optional().nullable(),
-  delivered_at: z.date().optional().nullable(),
-  read_at: z.date().optional().nullable(),
-  failed_at: z.date().optional().nullable(),
-  failure_reason: z.string().optional().nullable(),
-  retry_count: z.number().int().default(0),
-  open_count: z.number().int().default(0),
-  click_count: z.number().int().default(0),
-  call_duration: z.number().int().optional().nullable(),
-  call_recording_url: z.string().url().optional().nullable(),
-  call_transcription: z.string().optional().nullable(),
-  internal_note: z.boolean().default(false),
-  pinned: z.boolean().default(false),
-  tags: z.array(z.string()).optional().nullable(),
-  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+	company_id: z.string().uuid(),
+	customer_id: z.string().uuid().optional().nullable(),
+	job_id: z.string().uuid().optional().nullable(),
+	invoice_id: z.string().uuid().optional().nullable(),
+	user_id: z.string().uuid().optional().nullable(),
+	type: z.enum(["email", "sms", "phone", "chat", "note"]),
+	direction: z.enum(["inbound", "outbound"]),
+	status: z.enum(["draft", "queued", "sending", "sent", "delivered", "failed", "read"]).default("draft"),
+	subject: z.string().max(500).optional().nullable(),
+	body: z.string().optional().nullable(),
+	from_email: z.string().email().optional().nullable(),
+	to_email: z.string().email().optional().nullable(),
+	from_phone: z.string().max(20).optional().nullable(),
+	to_phone: z.string().max(20).optional().nullable(),
+	cc: z.array(z.string().email()).optional().nullable(),
+	bcc: z.array(z.string().email()).optional().nullable(),
+	thread_id: z.string().uuid().optional().nullable(),
+	parent_id: z.string().uuid().optional().nullable(),
+	scheduled_for: z.date().optional().nullable(),
+	sent_at: z.date().optional().nullable(),
+	delivered_at: z.date().optional().nullable(),
+	read_at: z.date().optional().nullable(),
+	failed_at: z.date().optional().nullable(),
+	failure_reason: z.string().optional().nullable(),
+	retry_count: z.number().int().default(0),
+	open_count: z.number().int().default(0),
+	click_count: z.number().int().default(0),
+	call_duration: z.number().int().optional().nullable(),
+	call_recording_url: z.string().url().optional().nullable(),
+	call_transcription: z.string().optional().nullable(),
+	internal_note: z.boolean().default(false),
+	pinned: z.boolean().default(false),
+	tags: z.array(z.string()).optional().nullable(),
+	metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
-export const communicationUpdateSchema = communicationInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const communicationUpdateSchema = communicationInsertSchema.partial().omit({ company_id: true });
 
 export const communicationSelectSchema = communicationInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
 });
 
 // ============================================================================
@@ -141,75 +130,52 @@ export const communicationSelectSchema = communicationInsertSchema.extend({
 // ============================================================================
 
 export const paymentInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  customer_id: z.string().uuid(),
-  invoice_id: z.string().uuid().optional().nullable(),
-  job_id: z.string().uuid().optional().nullable(),
-  payment_number: z.string().min(1, "Payment number is required").max(50),
-  amount: z.number().int().min(1, "Amount must be greater than 0"), // In cents
-  currency: z.string().length(3).default("USD"),
-  payment_method: z.enum([
-    "cash",
-    "check",
-    "credit_card",
-    "debit_card",
-    "ach",
-    "wire",
-    "venmo",
-    "paypal",
-    "other",
-  ]),
-  payment_type: z.enum(["payment", "refund", "credit"]).default("payment"),
-  status: z
-    .enum([
-      "pending",
-      "processing",
-      "completed",
-      "failed",
-      "refunded",
-      "partially_refunded",
-      "cancelled",
-    ])
-    .default("pending"),
-  card_brand: z
-    .enum(["visa", "mastercard", "amex", "discover"])
-    .optional()
-    .nullable(),
-  card_last4: z.string().length(4).optional().nullable(),
-  card_exp_month: z.number().int().min(1).max(12).optional().nullable(),
-  card_exp_year: z.number().int().min(2024).optional().nullable(),
-  check_number: z.string().max(50).optional().nullable(),
-  transaction_id: z.string().max(200).optional().nullable(),
-  processor: z.string().max(50).optional().nullable(),
-  processor_name: z.string().max(50).optional().nullable(),
-  processor_transaction_id: z.string().max(200).optional().nullable(),
-  processor_fee: z.number().int().default(0),
-  net_amount: z.number().int().default(0),
-  processor_metadata: z.record(z.string(), z.unknown()).optional().nullable(),
-  processor_response: z.record(z.string(), z.unknown()).optional().nullable(),
-  refunded_amount: z.number().int().default(0),
-  original_payment_id: z.string().uuid().optional().nullable(),
-  refund_reason: z.string().optional().nullable(),
-  notes: z.string().optional().nullable(),
-  is_reconciled: z.boolean().default(false),
-  reconciled_at: z.date().optional().nullable(),
-  reconciled_by: z.string().uuid().optional().nullable(),
-  deposit_date: z.date().optional().nullable(),
-  bank_account_id: z.string().uuid().optional().nullable(),
-  processed_at: z.date().optional().nullable(),
-  processed_by: z.string().uuid().optional().nullable(),
+	company_id: z.string().uuid(),
+	customer_id: z.string().uuid(),
+	invoice_id: z.string().uuid().optional().nullable(),
+	job_id: z.string().uuid().optional().nullable(),
+	payment_number: z.string().min(1, "Payment number is required").max(50),
+	amount: z.number().int().min(1, "Amount must be greater than 0"), // In cents
+	currency: z.string().length(3).default("USD"),
+	payment_method: z.enum(["cash", "check", "credit_card", "debit_card", "ach", "wire", "venmo", "paypal", "other"]),
+	payment_type: z.enum(["payment", "refund", "credit"]).default("payment"),
+	status: z
+		.enum(["pending", "processing", "completed", "failed", "refunded", "partially_refunded", "cancelled"])
+		.default("pending"),
+	card_brand: z.enum(["visa", "mastercard", "amex", "discover"]).optional().nullable(),
+	card_last4: z.string().length(4).optional().nullable(),
+	card_exp_month: z.number().int().min(1).max(12).optional().nullable(),
+	card_exp_year: z.number().int().min(2024).optional().nullable(),
+	check_number: z.string().max(50).optional().nullable(),
+	transaction_id: z.string().max(200).optional().nullable(),
+	processor: z.string().max(50).optional().nullable(),
+	processor_name: z.string().max(50).optional().nullable(),
+	processor_transaction_id: z.string().max(200).optional().nullable(),
+	processor_fee: z.number().int().default(0),
+	net_amount: z.number().int().default(0),
+	processor_metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+	processor_response: z.record(z.string(), z.unknown()).optional().nullable(),
+	refunded_amount: z.number().int().default(0),
+	original_payment_id: z.string().uuid().optional().nullable(),
+	refund_reason: z.string().optional().nullable(),
+	notes: z.string().optional().nullable(),
+	is_reconciled: z.boolean().default(false),
+	reconciled_at: z.date().optional().nullable(),
+	reconciled_by: z.string().uuid().optional().nullable(),
+	deposit_date: z.date().optional().nullable(),
+	bank_account_id: z.string().uuid().optional().nullable(),
+	processed_at: z.date().optional().nullable(),
+	processed_by: z.string().uuid().optional().nullable(),
 });
 
-export const paymentUpdateSchema = paymentInsertSchema
-  .partial()
-  .omit({ company_id: true, payment_number: true });
+export const paymentUpdateSchema = paymentInsertSchema.partial().omit({ company_id: true, payment_number: true });
 
 export const paymentSelectSchema = paymentInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
 });
 
 // ============================================================================
@@ -217,54 +183,47 @@ export const paymentSelectSchema = paymentInsertSchema.extend({
 // ============================================================================
 
 export const equipmentInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  customer_id: z.string().uuid(),
-  property_id: z.string().uuid().optional().nullable(),
-  equipment_number: z.string().min(1, "Equipment number is required").max(50),
-  type: z.enum(["hvac", "plumbing", "electrical", "appliance", "other"]),
-  category: z.string().max(100).optional().nullable(),
-  manufacturer: z.string().max(100).optional().nullable(),
-  model: z.string().max(100).optional().nullable(),
-  serial_number: z.string().max(100).optional().nullable(),
-  year: z.number().int().min(1900).max(2100).optional().nullable(),
-  install_date: z.date().optional().nullable(),
-  location: z.string().max(200).optional().nullable(),
-  size: z.string().max(50).optional().nullable(),
-  capacity: z.string().max(50).optional().nullable(),
-  fuel_type: z.string().max(50).optional().nullable(),
-  efficiency_rating: z.string().max(50).optional().nullable(),
-  warranty_expiration: z.date().optional().nullable(),
-  is_under_warranty: z.boolean().default(false),
-  warranty_provider: z.string().max(100).optional().nullable(),
-  warranty_notes: z.string().optional().nullable(),
-  purchase_price: z.number().int().optional().nullable(),
-  current_value: z.number().int().optional().nullable(),
-  status: z
-    .enum(["active", "inactive", "retired", "warranty", "needs_service"])
-    .default("active"),
-  condition: z
-    .enum(["excellent", "good", "fair", "poor"])
-    .optional()
-    .nullable(),
-  last_service_date: z.date().optional().nullable(),
-  next_service_due: z.date().optional().nullable(),
-  service_interval_months: z.number().int().optional().nullable(),
-  service_plan_id: z.string().uuid().optional().nullable(),
-  notes: z.string().optional().nullable(),
-  tags: z.array(z.string()).optional().nullable(),
-  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+	company_id: z.string().uuid(),
+	customer_id: z.string().uuid(),
+	property_id: z.string().uuid().optional().nullable(),
+	equipment_number: z.string().min(1, "Equipment number is required").max(50),
+	type: z.enum(["hvac", "plumbing", "electrical", "appliance", "other"]),
+	category: z.string().max(100).optional().nullable(),
+	manufacturer: z.string().max(100).optional().nullable(),
+	model: z.string().max(100).optional().nullable(),
+	serial_number: z.string().max(100).optional().nullable(),
+	year: z.number().int().min(1900).max(2100).optional().nullable(),
+	install_date: z.date().optional().nullable(),
+	location: z.string().max(200).optional().nullable(),
+	size: z.string().max(50).optional().nullable(),
+	capacity: z.string().max(50).optional().nullable(),
+	fuel_type: z.string().max(50).optional().nullable(),
+	efficiency_rating: z.string().max(50).optional().nullable(),
+	warranty_expiration: z.date().optional().nullable(),
+	is_under_warranty: z.boolean().default(false),
+	warranty_provider: z.string().max(100).optional().nullable(),
+	warranty_notes: z.string().optional().nullable(),
+	purchase_price: z.number().int().optional().nullable(),
+	current_value: z.number().int().optional().nullable(),
+	status: z.enum(["active", "inactive", "retired", "warranty", "needs_service"]).default("active"),
+	condition: z.enum(["excellent", "good", "fair", "poor"]).optional().nullable(),
+	last_service_date: z.date().optional().nullable(),
+	next_service_due: z.date().optional().nullable(),
+	service_interval_months: z.number().int().optional().nullable(),
+	service_plan_id: z.string().uuid().optional().nullable(),
+	notes: z.string().optional().nullable(),
+	tags: z.array(z.string()).optional().nullable(),
+	metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
-export const equipmentUpdateSchema = equipmentInsertSchema
-  .partial()
-  .omit({ company_id: true, equipment_number: true });
+export const equipmentUpdateSchema = equipmentInsertSchema.partial().omit({ company_id: true, equipment_number: true });
 
 export const equipmentSelectSchema = equipmentInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
 });
 
 // ============================================================================
@@ -272,60 +231,47 @@ export const equipmentSelectSchema = equipmentInsertSchema.extend({
 // ============================================================================
 
 export const scheduleInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  customer_id: z.string().uuid().optional().nullable(),
-  job_id: z.string().uuid().optional().nullable(),
-  assigned_to: z.string().uuid().optional().nullable(),
-  type: z
-    .enum(["appointment", "task", "event", "block", "callback"])
-    .default("appointment"),
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().optional().nullable(),
-  start_time: z.date(),
-  end_time: z.date(),
-  duration: z.number().int().min(15), // In minutes
-  all_day: z.boolean().default(false),
-  status: z
-    .enum([
-      "scheduled",
-      "confirmed",
-      "in_progress",
-      "completed",
-      "cancelled",
-      "no_show",
-    ])
-    .default("scheduled"),
-  priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
-  location: z.string().max(500).optional().nullable(),
-  latitude: z.number().optional().nullable(),
-  longitude: z.number().optional().nullable(),
-  is_recurring: z.boolean().default(false),
-  recurrence_rule: z.record(z.string(), z.unknown()).optional().nullable(),
-  parent_schedule_id: z.string().uuid().optional().nullable(),
-  color: z.string().max(7).optional().nullable(),
-  reminder_enabled: z.boolean().default(true),
-  reminder_sent: z.boolean().default(false),
-  reminder_hours_before: z.number().int().default(24),
-  notes: z.string().optional().nullable(),
-  tags: z.array(z.string()).optional().nullable(),
-  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
-  // Dispatch and completion tracking
-  dispatch_time: z.union([z.date(), z.string()]).optional().nullable(),
-  actual_start_time: z.union([z.date(), z.string()]).optional().nullable(),
-  actual_end_time: z.union([z.date(), z.string()]).optional().nullable(),
-  actual_duration: z.number().int().optional().nullable(),
+	company_id: z.string().uuid(),
+	customer_id: z.string().uuid().optional().nullable(),
+	job_id: z.string().uuid().optional().nullable(),
+	assigned_to: z.string().uuid().optional().nullable(),
+	type: z.enum(["appointment", "task", "event", "block", "callback"]).default("appointment"),
+	title: z.string().min(1, "Title is required").max(200),
+	description: z.string().optional().nullable(),
+	start_time: z.date(),
+	end_time: z.date(),
+	duration: z.number().int().min(15), // In minutes
+	all_day: z.boolean().default(false),
+	status: z.enum(["scheduled", "confirmed", "in_progress", "completed", "cancelled", "no_show"]).default("scheduled"),
+	priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
+	location: z.string().max(500).optional().nullable(),
+	latitude: z.number().optional().nullable(),
+	longitude: z.number().optional().nullable(),
+	is_recurring: z.boolean().default(false),
+	recurrence_rule: z.record(z.string(), z.unknown()).optional().nullable(),
+	parent_schedule_id: z.string().uuid().optional().nullable(),
+	color: z.string().max(7).optional().nullable(),
+	reminder_enabled: z.boolean().default(true),
+	reminder_sent: z.boolean().default(false),
+	reminder_hours_before: z.number().int().default(24),
+	notes: z.string().optional().nullable(),
+	tags: z.array(z.string()).optional().nullable(),
+	metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+	// Dispatch and completion tracking
+	dispatch_time: z.union([z.date(), z.string()]).optional().nullable(),
+	actual_start_time: z.union([z.date(), z.string()]).optional().nullable(),
+	actual_end_time: z.union([z.date(), z.string()]).optional().nullable(),
+	actual_duration: z.number().int().optional().nullable(),
 });
 
-export const scheduleUpdateSchema = scheduleInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const scheduleUpdateSchema = scheduleInsertSchema.partial().omit({ company_id: true });
 
 export const scheduleSelectSchema = scheduleInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
 });
 
 // ============================================================================
@@ -333,33 +279,28 @@ export const scheduleSelectSchema = scheduleInsertSchema.extend({
 // ============================================================================
 
 export const tagInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  name: z.string().min(1, "Tag name is required").max(50),
-  slug: z.string().min(1).max(60),
-  description: z.string().max(500).optional().nullable(),
-  category: z
-    .enum(["customer", "job", "equipment", "communication", "general"])
-    .optional()
-    .nullable(),
-  color: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color")
-    .optional()
-    .nullable(),
-  icon: z.string().max(50).optional().nullable(),
-  usage_count: z.number().int().default(0),
-  is_system: z.boolean().default(false),
-  is_active: z.boolean().default(true),
+	company_id: z.string().uuid(),
+	name: z.string().min(1, "Tag name is required").max(50),
+	slug: z.string().min(1).max(60),
+	description: z.string().max(500).optional().nullable(),
+	category: z.enum(["customer", "job", "equipment", "communication", "general"]).optional().nullable(),
+	color: z
+		.string()
+		.regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color")
+		.optional()
+		.nullable(),
+	icon: z.string().max(50).optional().nullable(),
+	usage_count: z.number().int().default(0),
+	is_system: z.boolean().default(false),
+	is_active: z.boolean().default(true),
 });
 
-export const tagUpdateSchema = tagInsertSchema
-  .partial()
-  .omit({ company_id: true, slug: true });
+export const tagUpdateSchema = tagInsertSchema.partial().omit({ company_id: true, slug: true });
 
 export const tagSelectSchema = tagInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
 });
 
 // ============================================================================
@@ -367,46 +308,38 @@ export const tagSelectSchema = tagInsertSchema.extend({
 // ============================================================================
 
 export const attachmentInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  entity_type: z.enum([
-    "job",
-    "customer",
-    "invoice",
-    "equipment",
-    "communication",
-    "estimate",
-    "other",
-  ]),
-  entity_id: z.string().uuid(),
-  file_name: z.string().min(1, "File name is required").max(255),
-  file_size: z.number().int().min(1, "File size must be greater than 0"),
-  mime_type: z.string().min(1, "MIME type is required").max(100),
-  storage_url: z.string().url("Invalid storage URL"),
-  storage_path: z.string().max(500).optional().nullable(),
-  bucket: z.string().max(100).optional().nullable(),
-  is_image: z.boolean().default(false),
-  is_document: z.boolean().default(false),
-  is_public: z.boolean().default(false),
-  thumbnail_url: z.string().url().optional().nullable(),
-  width: z.number().int().optional().nullable(),
-  height: z.number().int().optional().nullable(),
-  alt_text: z.string().max(200).optional().nullable(),
-  description: z.string().max(500).optional().nullable(),
-  tags: z.array(z.string()).optional().nullable(),
-  uploaded_by: z.string().uuid().optional().nullable(),
-  uploaded_at: z.date().optional().nullable(),
+	company_id: z.string().uuid(),
+	entity_type: z.enum(["job", "customer", "invoice", "equipment", "communication", "estimate", "other"]),
+	entity_id: z.string().uuid(),
+	file_name: z.string().min(1, "File name is required").max(255),
+	file_size: z.number().int().min(1, "File size must be greater than 0"),
+	mime_type: z.string().min(1, "MIME type is required").max(100),
+	storage_url: z.string().url("Invalid storage URL"),
+	storage_path: z.string().max(500).optional().nullable(),
+	bucket: z.string().max(100).optional().nullable(),
+	is_image: z.boolean().default(false),
+	is_document: z.boolean().default(false),
+	is_public: z.boolean().default(false),
+	thumbnail_url: z.string().url().optional().nullable(),
+	width: z.number().int().optional().nullable(),
+	height: z.number().int().optional().nullable(),
+	alt_text: z.string().max(200).optional().nullable(),
+	description: z.string().max(500).optional().nullable(),
+	tags: z.array(z.string()).optional().nullable(),
+	uploaded_by: z.string().uuid().optional().nullable(),
+	uploaded_at: z.date().optional().nullable(),
 });
 
 export const attachmentUpdateSchema = attachmentInsertSchema
-  .partial()
-  .omit({ company_id: true, entity_type: true, entity_id: true });
+	.partial()
+	.omit({ company_id: true, entity_type: true, entity_id: true });
 
 export const attachmentSelectSchema = attachmentInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
 });
 
 // ============================================================================
@@ -446,48 +379,48 @@ export type AttachmentSelect = z.infer<typeof attachmentSelectSchema>;
 // ============================================================================
 
 export const jobTimeEntryInsertSchema = z.object({
-  job_id: z.string().uuid(),
-  company_id: z.string().uuid(),
-  user_id: z.string().uuid(),
-  clock_in: z.date(),
-  clock_out: z.date().optional().nullable(),
-  break_minutes: z.number().int().min(0).max(1439).default(0),
-  clock_in_location: z
-    .object({
-      lat: z.number(),
-      lng: z.number(),
-      accuracy: z.number().optional(),
-      address: z.string().optional(),
-    })
-    .optional()
-    .nullable(),
-  clock_out_location: z
-    .object({
-      lat: z.number(),
-      lng: z.number(),
-      accuracy: z.number().optional(),
-      address: z.string().optional(),
-    })
-    .optional()
-    .nullable(),
-  gps_verified: z.boolean().default(false),
-  entry_type: z.enum(["manual", "auto", "gps"]).default("manual"),
-  notes: z.string().optional().nullable(),
-  is_overtime: z.boolean().default(false),
-  is_billable: z.boolean().default(true),
-  hourly_rate: z.number().int().optional().nullable(),
-  metadata: z.any().optional().nullable(),
+	job_id: z.string().uuid(),
+	company_id: z.string().uuid(),
+	user_id: z.string().uuid(),
+	clock_in: z.date(),
+	clock_out: z.date().optional().nullable(),
+	break_minutes: z.number().int().min(0).max(1439).default(0),
+	clock_in_location: z
+		.object({
+			lat: z.number(),
+			lng: z.number(),
+			accuracy: z.number().optional(),
+			address: z.string().optional(),
+		})
+		.optional()
+		.nullable(),
+	clock_out_location: z
+		.object({
+			lat: z.number(),
+			lng: z.number(),
+			accuracy: z.number().optional(),
+			address: z.string().optional(),
+		})
+		.optional()
+		.nullable(),
+	gps_verified: z.boolean().default(false),
+	entry_type: z.enum(["manual", "auto", "gps"]).default("manual"),
+	notes: z.string().optional().nullable(),
+	is_overtime: z.boolean().default(false),
+	is_billable: z.boolean().default(true),
+	hourly_rate: z.number().int().optional().nullable(),
+	metadata: z.any().optional().nullable(),
 });
 
 export const jobTimeEntryUpdateSchema = jobTimeEntryInsertSchema
-  .partial()
-  .omit({ job_id: true, company_id: true, user_id: true });
+	.partial()
+	.omit({ job_id: true, company_id: true, user_id: true });
 
 export const jobTimeEntrySelectSchema = jobTimeEntryInsertSchema.extend({
-  id: z.string().uuid(),
-  total_hours: z.number().optional().nullable(),
-  created_at: z.date(),
-  updated_at: z.date(),
+	id: z.string().uuid(),
+	total_hours: z.number().optional().nullable(),
+	created_at: z.date(),
+	updated_at: z.date(),
 });
 
 // ============================================================================
@@ -495,54 +428,46 @@ export const jobTimeEntrySelectSchema = jobTimeEntryInsertSchema.extend({
 // ============================================================================
 
 export const jobPhotoInsertSchema = z.object({
-  job_id: z.string().uuid(),
-  company_id: z.string().uuid(),
-  uploaded_by: z.string().uuid(),
-  storage_path: z.string().min(1, "Storage path is required"),
-  thumbnail_path: z.string().optional().nullable(),
-  file_name: z.string().min(1, "File name is required").max(255),
-  file_size: z.number().int().min(1).max(52_428_800), // 50MB max
-  mime_type: z.string().optional().nullable(),
-  category: z.enum([
-    "before",
-    "during",
-    "after",
-    "issue",
-    "equipment",
-    "completion",
-    "other",
-  ]),
-  subcategory: z.string().max(100).optional().nullable(),
-  title: z.string().max(200).optional().nullable(),
-  description: z.string().optional().nullable(),
-  is_customer_visible: z.boolean().default(true),
-  is_required_photo: z.boolean().default(false),
-  photo_location: z
-    .object({
-      lat: z.number(),
-      lng: z.number(),
-      accuracy: z.number().optional(),
-      address: z.string().optional(),
-    })
-    .optional()
-    .nullable(),
-  taken_at: z.date().optional().nullable(),
-  device_info: z.any().optional().nullable(),
-  exif_data: z.any().optional().nullable(),
-  annotations: z.array(z.any()).optional().nullable(),
-  tags: z.array(z.string()).optional().nullable(),
-  display_order: z.number().int().default(0),
-  metadata: z.any().optional().nullable(),
+	job_id: z.string().uuid(),
+	company_id: z.string().uuid(),
+	uploaded_by: z.string().uuid(),
+	storage_path: z.string().min(1, "Storage path is required"),
+	thumbnail_path: z.string().optional().nullable(),
+	file_name: z.string().min(1, "File name is required").max(255),
+	file_size: z.number().int().min(1).max(52_428_800), // 50MB max
+	mime_type: z.string().optional().nullable(),
+	category: z.enum(["before", "during", "after", "issue", "equipment", "completion", "other"]),
+	subcategory: z.string().max(100).optional().nullable(),
+	title: z.string().max(200).optional().nullable(),
+	description: z.string().optional().nullable(),
+	is_customer_visible: z.boolean().default(true),
+	is_required_photo: z.boolean().default(false),
+	photo_location: z
+		.object({
+			lat: z.number(),
+			lng: z.number(),
+			accuracy: z.number().optional(),
+			address: z.string().optional(),
+		})
+		.optional()
+		.nullable(),
+	taken_at: z.date().optional().nullable(),
+	device_info: z.any().optional().nullable(),
+	exif_data: z.any().optional().nullable(),
+	annotations: z.array(z.any()).optional().nullable(),
+	tags: z.array(z.string()).optional().nullable(),
+	display_order: z.number().int().default(0),
+	metadata: z.any().optional().nullable(),
 });
 
 export const jobPhotoUpdateSchema = jobPhotoInsertSchema
-  .partial()
-  .omit({ job_id: true, company_id: true, uploaded_by: true });
+	.partial()
+	.omit({ job_id: true, company_id: true, uploaded_by: true });
 
 export const jobPhotoSelectSchema = jobPhotoInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
 });
 
 // ============================================================================
@@ -550,98 +475,79 @@ export const jobPhotoSelectSchema = jobPhotoInsertSchema.extend({
 // ============================================================================
 
 export const jobWorkflowStageInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  stage_name: z.string().min(1, "Stage name is required").max(100),
-  stage_key: z.string().min(1, "Stage key is required").max(100),
-  display_order: z.number().int().min(0).default(0),
-  stage_color: z.string().max(20).optional().nullable(),
-  stage_icon: z.string().max(50).optional().nullable(),
-  is_start_stage: z.boolean().default(false),
-  is_end_stage: z.boolean().default(false),
-  requires_approval: z.boolean().default(false),
-  approval_roles: z.array(z.any()).optional().nullable(),
-  required_fields: z.array(z.string()).optional().nullable(),
-  required_photos_count: z.number().int().min(0).default(0),
-  required_time_entry: z.boolean().default(false),
-  auto_send_email: z.boolean().default(false),
-  email_template_id: z.string().uuid().optional().nullable(),
-  auto_send_sms: z.boolean().default(false),
-  sms_template_id: z.string().uuid().optional().nullable(),
-  auto_create_invoice: z.boolean().default(false),
-  allowed_next_stages: z.array(z.string()).optional().nullable(),
-  industry_type: z.string().max(50).optional().nullable(),
-  is_active: z.boolean().default(true),
-  metadata: z.any().optional().nullable(),
+	company_id: z.string().uuid(),
+	stage_name: z.string().min(1, "Stage name is required").max(100),
+	stage_key: z.string().min(1, "Stage key is required").max(100),
+	display_order: z.number().int().min(0).default(0),
+	stage_color: z.string().max(20).optional().nullable(),
+	stage_icon: z.string().max(50).optional().nullable(),
+	is_start_stage: z.boolean().default(false),
+	is_end_stage: z.boolean().default(false),
+	requires_approval: z.boolean().default(false),
+	approval_roles: z.array(z.any()).optional().nullable(),
+	required_fields: z.array(z.string()).optional().nullable(),
+	required_photos_count: z.number().int().min(0).default(0),
+	required_time_entry: z.boolean().default(false),
+	auto_send_email: z.boolean().default(false),
+	email_template_id: z.string().uuid().optional().nullable(),
+	auto_send_sms: z.boolean().default(false),
+	sms_template_id: z.string().uuid().optional().nullable(),
+	auto_create_invoice: z.boolean().default(false),
+	allowed_next_stages: z.array(z.string()).optional().nullable(),
+	industry_type: z.string().max(50).optional().nullable(),
+	is_active: z.boolean().default(true),
+	metadata: z.any().optional().nullable(),
 });
 
-export const jobWorkflowStageUpdateSchema = jobWorkflowStageInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const jobWorkflowStageUpdateSchema = jobWorkflowStageInsertSchema.partial().omit({ company_id: true });
 
-export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
-  {
-    id: z.string().uuid(),
-    created_at: z.date(),
-    updated_at: z.date(),
-  }
-);
+export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend({
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+});
 
 // ============================================================================
 // JOB SIGNATURES
 // ============================================================================
 
 export const jobSignatureInsertSchema = z.object({
-  job_id: z.string().uuid(),
-  company_id: z.string().uuid(),
-  signature_type: z.enum([
-    "customer",
-    "technician",
-    "inspector",
-    "supervisor",
-    "other",
-  ]),
-  signer_name: z.string().min(1, "Signer name is required").max(200),
-  signer_email: z.string().email().optional().nullable(),
-  signer_phone: z.string().max(20).optional().nullable(),
-  signer_role: z.string().max(100).optional().nullable(),
-  signature_data_url: z.string().min(1, "Signature data is required"),
-  signature_hash: z.string().optional().nullable(),
-  signed_at: z.date().default(() => new Date()),
-  signed_location: z
-    .object({
-      lat: z.number(),
-      lng: z.number(),
-      accuracy: z.number().optional(),
-      address: z.string().optional(),
-    })
-    .optional()
-    .nullable(),
-  ip_address: z.string().max(45).optional().nullable(),
-  user_agent: z.string().optional().nullable(),
-  device_info: z.any().optional().nullable(),
-  document_type: z.enum([
-    "job_completion",
-    "estimate",
-    "change_order",
-    "work_authorization",
-    "inspection",
-    "other",
-  ]),
-  document_content: z.any().optional().nullable(),
-  agreement_text: z.string().optional().nullable(),
-  is_verified: z.boolean().default(false),
-  verified_at: z.date().optional().nullable(),
-  verified_by: z.string().uuid().optional().nullable(),
-  metadata: z.any().optional().nullable(),
+	job_id: z.string().uuid(),
+	company_id: z.string().uuid(),
+	signature_type: z.enum(["customer", "technician", "inspector", "supervisor", "other"]),
+	signer_name: z.string().min(1, "Signer name is required").max(200),
+	signer_email: z.string().email().optional().nullable(),
+	signer_phone: z.string().max(20).optional().nullable(),
+	signer_role: z.string().max(100).optional().nullable(),
+	signature_data_url: z.string().min(1, "Signature data is required"),
+	signature_hash: z.string().optional().nullable(),
+	signed_at: z.date().default(() => new Date()),
+	signed_location: z
+		.object({
+			lat: z.number(),
+			lng: z.number(),
+			accuracy: z.number().optional(),
+			address: z.string().optional(),
+		})
+		.optional()
+		.nullable(),
+	ip_address: z.string().max(45).optional().nullable(),
+	user_agent: z.string().optional().nullable(),
+	device_info: z.any().optional().nullable(),
+	document_type: z.enum(["job_completion", "estimate", "change_order", "work_authorization", "inspection", "other"]),
+	document_content: z.any().optional().nullable(),
+	agreement_text: z.string().optional().nullable(),
+	is_verified: z.boolean().default(false),
+	verified_at: z.date().optional().nullable(),
+	verified_by: z.string().uuid().optional().nullable(),
+	metadata: z.any().optional().nullable(),
 });
 
-export const jobSignatureUpdateSchema = jobSignatureInsertSchema
-  .partial()
-  .omit({ job_id: true, company_id: true });
+export const jobSignatureUpdateSchema = jobSignatureInsertSchema.partial().omit({ job_id: true, company_id: true });
 
 export const jobSignatureSelectSchema = jobSignatureInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
+	id: z.string().uuid(),
+	created_at: z.date(),
 });
 
 // ============================================================================
@@ -649,133 +555,114 @@ export const jobSignatureSelectSchema = jobSignatureInsertSchema.extend({
 // ============================================================================
 
 export const jobInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  job_number: z.string().min(1, "Job number is required").max(50),
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().optional().nullable(),
-  status: z
-    .enum([
-      "quoted",
-      "scheduled",
-      "in_progress",
-      "on_hold",
-      "completed",
-      "cancelled",
-    ])
-    .default("quoted"),
-  priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
-  job_type: z.string().max(100).optional().nullable(),
-  property_id: z.string().uuid(),
-  customer_id: z.string().uuid().optional().nullable(),
-  assigned_to: z.string().uuid().optional().nullable(),
-  primary_customer_id: z.string().uuid().optional().nullable(),
-  primary_property_id: z.string().uuid().optional().nullable(),
-  requires_multiple_properties: z.boolean().default(false),
-  requires_multiple_customers: z.boolean().default(false),
-  scheduled_start: z.date().optional().nullable(),
-  scheduled_end: z.date().optional().nullable(),
-  actual_start: z.date().optional().nullable(),
-  actual_end: z.date().optional().nullable(),
-  total_amount: z.number().int().default(0),
-  paid_amount: z.number().int().default(0),
-  notes: z.string().optional().nullable(),
-  metadata: z.any().optional().nullable(),
+	company_id: z.string().uuid(),
+	job_number: z.string().min(1, "Job number is required").max(50),
+	title: z.string().min(1, "Title is required").max(200),
+	description: z.string().optional().nullable(),
+	status: z.enum(["quoted", "scheduled", "in_progress", "on_hold", "completed", "cancelled"]).default("quoted"),
+	priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
+	job_type: z.string().max(100).optional().nullable(),
+	property_id: z.string().uuid(),
+	customer_id: z.string().uuid().optional().nullable(),
+	assigned_to: z.string().uuid().optional().nullable(),
+	primary_customer_id: z.string().uuid().optional().nullable(),
+	primary_property_id: z.string().uuid().optional().nullable(),
+	requires_multiple_properties: z.boolean().default(false),
+	requires_multiple_customers: z.boolean().default(false),
+	scheduled_start: z.date().optional().nullable(),
+	scheduled_end: z.date().optional().nullable(),
+	actual_start: z.date().optional().nullable(),
+	actual_end: z.date().optional().nullable(),
+	total_amount: z.number().int().default(0),
+	paid_amount: z.number().int().default(0),
+	notes: z.string().optional().nullable(),
+	metadata: z.any().optional().nullable(),
 
-  // Template & Workflow
-  template_id: z.string().uuid().optional().nullable(),
-  workflow_stage: z.string().max(100).optional().nullable(),
-  workflow_completed_stages: z.array(z.any()).optional().nullable(),
-  workflow_stage_changed_at: z.date().optional().nullable(),
+	// Template & Workflow
+	template_id: z.string().uuid().optional().nullable(),
+	workflow_stage: z.string().max(100).optional().nullable(),
+	workflow_completed_stages: z.array(z.any()).optional().nullable(),
+	workflow_stage_changed_at: z.date().optional().nullable(),
 
-  // Time Tracking
-  technician_clock_in: z.date().optional().nullable(),
-  technician_clock_out: z.date().optional().nullable(),
-  total_labor_hours: z.number().optional().nullable(),
-  estimated_labor_hours: z.number().optional().nullable(),
-  break_time_minutes: z.number().int().default(0),
+	// Time Tracking
+	technician_clock_in: z.date().optional().nullable(),
+	technician_clock_out: z.date().optional().nullable(),
+	total_labor_hours: z.number().optional().nullable(),
+	estimated_labor_hours: z.number().optional().nullable(),
+	break_time_minutes: z.number().int().default(0),
 
-  // Photos
-  before_photos: z.array(z.string()).optional().nullable(),
-  during_photos: z.array(z.string()).optional().nullable(),
-  after_photos: z.array(z.string()).optional().nullable(),
-  completion_photos_required: z.boolean().default(false),
-  completion_photos_count: z.number().int().default(0),
+	// Photos
+	before_photos: z.array(z.string()).optional().nullable(),
+	during_photos: z.array(z.string()).optional().nullable(),
+	after_photos: z.array(z.string()).optional().nullable(),
+	completion_photos_required: z.boolean().default(false),
+	completion_photos_count: z.number().int().default(0),
 
-  // Customer Interaction
-  customer_signature: z.any().optional().nullable(),
-  customer_approval_status: z
-    .enum(["pending", "approved", "rejected"])
-    .default("pending"),
-  customer_approval_timestamp: z.date().optional().nullable(),
-  customer_notes: z.string().optional().nullable(),
+	// Customer Interaction
+	customer_signature: z.any().optional().nullable(),
+	customer_approval_status: z.enum(["pending", "approved", "rejected"]).default("pending"),
+	customer_approval_timestamp: z.date().optional().nullable(),
+	customer_notes: z.string().optional().nullable(),
 
-  // Service Tracking
-  job_warranty_info: z.any().optional().nullable(),
-  job_service_agreement_id: z.string().uuid().optional().nullable(),
-  job_recurrence_id: z.string().uuid().optional().nullable(),
-  service_type: z.string().max(100).optional().nullable(),
+	// Service Tracking
+	job_warranty_info: z.any().optional().nullable(),
+	job_service_agreement_id: z.string().uuid().optional().nullable(),
+	job_recurrence_id: z.string().uuid().optional().nullable(),
+	service_type: z.string().max(100).optional().nullable(),
 
-  // Equipment
-  primary_equipment_id: z.string().uuid().optional().nullable(),
-  equipment_service_history: z.array(z.any()).optional().nullable(),
-  equipment_serviced: z.array(z.any()).optional().nullable(),
+	// Equipment
+	primary_equipment_id: z.string().uuid().optional().nullable(),
+	equipment_service_history: z.array(z.any()).optional().nullable(),
+	equipment_serviced: z.array(z.any()).optional().nullable(),
 
-  // Dispatch & Routing
-  dispatch_zone: z.string().max(100).optional().nullable(),
-  travel_time_minutes: z.number().int().optional().nullable(),
-  route_order: z.number().int().optional().nullable(),
-  previous_job_id: z.string().uuid().optional().nullable(),
-  next_job_id: z.string().uuid().optional().nullable(),
+	// Dispatch & Routing
+	dispatch_zone: z.string().max(100).optional().nullable(),
+	travel_time_minutes: z.number().int().optional().nullable(),
+	route_order: z.number().int().optional().nullable(),
+	previous_job_id: z.string().uuid().optional().nullable(),
+	next_job_id: z.string().uuid().optional().nullable(),
 
-  // Billing
-  invoice_generated_at: z.date().optional().nullable(),
-  payment_terms: z.string().max(200).optional().nullable(),
-  deposit_amount: z.number().int().default(0),
-  deposit_paid_at: z.date().optional().nullable(),
-  payment_due_date: z.date().optional().nullable(),
+	// Billing
+	invoice_generated_at: z.date().optional().nullable(),
+	payment_terms: z.string().max(200).optional().nullable(),
+	deposit_amount: z.number().int().default(0),
+	deposit_paid_at: z.date().optional().nullable(),
+	payment_due_date: z.date().optional().nullable(),
 
-  // Quality & Compliance
-  inspection_required: z.boolean().default(false),
-  inspection_completed_at: z.date().optional().nullable(),
-  quality_score: z.number().int().min(0).max(100).optional().nullable(),
-  customer_satisfaction_rating: z
-    .number()
-    .int()
-    .min(1)
-    .max(5)
-    .optional()
-    .nullable(),
-  quality_notes: z.string().optional().nullable(),
+	// Quality & Compliance
+	inspection_required: z.boolean().default(false),
+	inspection_completed_at: z.date().optional().nullable(),
+	quality_score: z.number().int().min(0).max(100).optional().nullable(),
+	customer_satisfaction_rating: z.number().int().min(1).max(5).optional().nullable(),
+	quality_notes: z.string().optional().nullable(),
 
-  // Internal Tracking
-  internal_priority_score: z.number().int().optional().nullable(),
-  requires_permit: z.boolean().default(false),
-  permit_obtained_at: z.date().optional().nullable(),
-  hazards_identified: z.string().optional().nullable(),
-  safety_notes: z.string().optional().nullable(),
+	// Internal Tracking
+	internal_priority_score: z.number().int().optional().nullable(),
+	requires_permit: z.boolean().default(false),
+	permit_obtained_at: z.date().optional().nullable(),
+	hazards_identified: z.string().optional().nullable(),
+	safety_notes: z.string().optional().nullable(),
 
-  // AI Fields
-  ai_categories: z.any().optional().nullable(),
-  ai_equipment: z.any().optional().nullable(),
-  ai_service_type: z.string().optional().nullable(),
-  ai_priority_score: z.number().int().optional().nullable(),
-  ai_tags: z.any().optional().nullable(),
-  ai_processed_at: z.date().optional().nullable(),
+	// AI Fields
+	ai_categories: z.any().optional().nullable(),
+	ai_equipment: z.any().optional().nullable(),
+	ai_service_type: z.string().optional().nullable(),
+	ai_priority_score: z.number().int().optional().nullable(),
+	ai_tags: z.any().optional().nullable(),
+	ai_processed_at: z.date().optional().nullable(),
 });
 
-export const jobUpdateSchema = jobInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const jobUpdateSchema = jobInsertSchema.partial().omit({ company_id: true });
 
 export const jobSelectSchema = jobInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().nullable(),
-  deleted_by: z.string().uuid().nullable(),
-  archived_at: z.date().nullable(),
-  permanent_delete_scheduled_at: z.date().nullable(),
-  search_vector: z.any().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().nullable(),
+	deleted_by: z.string().uuid().nullable(),
+	archived_at: z.date().nullable(),
+	permanent_delete_scheduled_at: z.date().nullable(),
+	search_vector: z.any().nullable(),
 });
 
 // ============================================================================
@@ -790,15 +677,9 @@ export type JobPhotoInsert = z.infer<typeof jobPhotoInsertSchema>;
 export type JobPhotoUpdate = z.infer<typeof jobPhotoUpdateSchema>;
 export type JobPhotoSelect = z.infer<typeof jobPhotoSelectSchema>;
 
-export type JobWorkflowStageInsert = z.infer<
-  typeof jobWorkflowStageInsertSchema
->;
-export type JobWorkflowStageUpdate = z.infer<
-  typeof jobWorkflowStageUpdateSchema
->;
-export type JobWorkflowStageSelect = z.infer<
-  typeof jobWorkflowStageSelectSchema
->;
+export type JobWorkflowStageInsert = z.infer<typeof jobWorkflowStageInsertSchema>;
+export type JobWorkflowStageUpdate = z.infer<typeof jobWorkflowStageUpdateSchema>;
+export type JobWorkflowStageSelect = z.infer<typeof jobWorkflowStageSelectSchema>;
 
 export type JobSignatureInsert = z.infer<typeof jobSignatureInsertSchema>;
 export type JobSignatureUpdate = z.infer<typeof jobSignatureUpdateSchema>;
@@ -813,56 +694,40 @@ export type JobSelect = z.infer<typeof jobSelectSchema>;
 // ============================================================================
 
 export const vendorInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  name: z.string().min(1, "Vendor name is required").max(200),
-  display_name: z.string().min(1, "Display name is required").max(200),
-  vendor_number: z.string().min(1, "Vendor number is required").max(50),
-  email: z.string().email("Invalid email address").optional().nullable(),
-  phone: z.string().max(20).optional().nullable(),
-  secondary_phone: z.string().max(20).optional().nullable(),
-  website: z.string().url("Invalid URL").optional().nullable(),
-  address: z.string().max(500).optional().nullable(),
-  address2: z.string().max(500).optional().nullable(),
-  city: z.string().max(100).optional().nullable(),
-  state: z.string().max(100).optional().nullable(),
-  zip_code: z.string().max(20).optional().nullable(),
-  country: z.string().max(100).default("USA"),
-  tax_id: z.string().max(50).optional().nullable(),
-  payment_terms: z
-    .enum(["net_15", "net_30", "net_60", "due_on_receipt", "custom"])
-    .default("net_30"),
-  credit_limit: z.number().int().min(0).default(0), // In cents
-  preferred_payment_method: z
-    .enum(["check", "ach", "credit_card", "wire"])
-    .optional()
-    .nullable(),
-  category: z
-    .enum([
-      "supplier",
-      "distributor",
-      "manufacturer",
-      "service_provider",
-      "other",
-    ])
-    .optional()
-    .nullable(),
-  tags: z.array(z.string()).optional().nullable(),
-  status: z.enum(["active", "inactive"]).default("active"),
-  notes: z.string().optional().nullable(),
-  internal_notes: z.string().optional().nullable(),
-  custom_fields: z.record(z.string(), z.any()).optional().nullable(),
+	company_id: z.string().uuid(),
+	name: z.string().min(1, "Vendor name is required").max(200),
+	display_name: z.string().min(1, "Display name is required").max(200),
+	vendor_number: z.string().min(1, "Vendor number is required").max(50),
+	email: z.string().email("Invalid email address").optional().nullable(),
+	phone: z.string().max(20).optional().nullable(),
+	secondary_phone: z.string().max(20).optional().nullable(),
+	website: z.string().url("Invalid URL").optional().nullable(),
+	address: z.string().max(500).optional().nullable(),
+	address2: z.string().max(500).optional().nullable(),
+	city: z.string().max(100).optional().nullable(),
+	state: z.string().max(100).optional().nullable(),
+	zip_code: z.string().max(20).optional().nullable(),
+	country: z.string().max(100).default("USA"),
+	tax_id: z.string().max(50).optional().nullable(),
+	payment_terms: z.enum(["net_15", "net_30", "net_60", "due_on_receipt", "custom"]).default("net_30"),
+	credit_limit: z.number().int().min(0).default(0), // In cents
+	preferred_payment_method: z.enum(["check", "ach", "credit_card", "wire"]).optional().nullable(),
+	category: z.enum(["supplier", "distributor", "manufacturer", "service_provider", "other"]).optional().nullable(),
+	tags: z.array(z.string()).optional().nullable(),
+	status: z.enum(["active", "inactive"]).default("active"),
+	notes: z.string().optional().nullable(),
+	internal_notes: z.string().optional().nullable(),
+	custom_fields: z.record(z.string(), z.any()).optional().nullable(),
 });
 
-export const vendorUpdateSchema = vendorInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const vendorUpdateSchema = vendorInsertSchema.partial().omit({ company_id: true });
 
 export const vendorSelectSchema = vendorInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date().optional().nullable(),
-  deleted_by: z.string().uuid().optional().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	deleted_at: z.date().optional().nullable(),
+	deleted_by: z.string().uuid().optional().nullable(),
 });
 
 // ============================================================================
@@ -870,65 +735,53 @@ export const vendorSelectSchema = vendorInsertSchema.extend({
 // ============================================================================
 
 export const purchaseOrderLineItemSchema = z.object({
-  id: z.string().uuid().optional(),
-  description: z.string().min(1, "Description is required"),
-  quantity: z.number().positive("Quantity must be positive"),
-  unit_price: z.number().nonnegative("Unit price must be non-negative"), // In cents
-  total: z.number().nonnegative("Total must be non-negative"), // In cents
+	id: z.string().uuid().optional(),
+	description: z.string().min(1, "Description is required"),
+	quantity: z.number().positive("Quantity must be positive"),
+	unit_price: z.number().nonnegative("Unit price must be non-negative"), // In cents
+	total: z.number().nonnegative("Total must be non-negative"), // In cents
 });
 
 export const purchaseOrderInsertSchema = z.object({
-  company_id: z.string().uuid(),
-  job_id: z.string().uuid().optional().nullable(),
-  estimate_id: z.string().uuid().optional().nullable(),
-  invoice_id: z.string().uuid().optional().nullable(),
-  requested_by: z.string().uuid(),
-  approved_by: z.string().uuid().optional().nullable(),
-  vendor_id: z.string().uuid().optional().nullable(),
-  vendor: z.string().min(1, "Vendor name is required").max(200),
-  vendor_email: z.string().email("Invalid email address").optional().nullable(),
-  vendor_phone: z.string().max(20).optional().nullable(),
-  po_number: z.string().min(1, "PO number is required").max(100),
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().optional().nullable(),
-  status: z
-    .enum([
-      "draft",
-      "pending_approval",
-      "approved",
-      "ordered",
-      "partially_received",
-      "received",
-      "cancelled",
-    ])
-    .default("draft"),
-  priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
-  line_items: z
-    .array(purchaseOrderLineItemSchema)
-    .min(1, "At least one line item is required"),
-  subtotal: z.number().int().nonnegative().default(0), // In cents
-  tax_amount: z.number().int().nonnegative().default(0), // In cents
-  shipping_amount: z.number().int().nonnegative().default(0), // In cents
-  total_amount: z.number().int().nonnegative().default(0), // In cents
-  expected_delivery: z.date().optional().nullable(),
-  actual_delivery: z.date().optional().nullable(),
-  delivery_address: z.string().max(500).optional().nullable(),
-  notes: z.string().optional().nullable(),
-  internal_notes: z.string().optional().nullable(),
-  auto_generated: z.boolean().default(false),
+	company_id: z.string().uuid(),
+	job_id: z.string().uuid().optional().nullable(),
+	estimate_id: z.string().uuid().optional().nullable(),
+	invoice_id: z.string().uuid().optional().nullable(),
+	requested_by: z.string().uuid(),
+	approved_by: z.string().uuid().optional().nullable(),
+	vendor_id: z.string().uuid().optional().nullable(),
+	vendor: z.string().min(1, "Vendor name is required").max(200),
+	vendor_email: z.string().email("Invalid email address").optional().nullable(),
+	vendor_phone: z.string().max(20).optional().nullable(),
+	po_number: z.string().min(1, "PO number is required").max(100),
+	title: z.string().min(1, "Title is required").max(200),
+	description: z.string().optional().nullable(),
+	status: z
+		.enum(["draft", "pending_approval", "approved", "ordered", "partially_received", "received", "cancelled"])
+		.default("draft"),
+	priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
+	line_items: z.array(purchaseOrderLineItemSchema).min(1, "At least one line item is required"),
+	subtotal: z.number().int().nonnegative().default(0), // In cents
+	tax_amount: z.number().int().nonnegative().default(0), // In cents
+	shipping_amount: z.number().int().nonnegative().default(0), // In cents
+	total_amount: z.number().int().nonnegative().default(0), // In cents
+	expected_delivery: z.date().optional().nullable(),
+	actual_delivery: z.date().optional().nullable(),
+	delivery_address: z.string().max(500).optional().nullable(),
+	notes: z.string().optional().nullable(),
+	internal_notes: z.string().optional().nullable(),
+	auto_generated: z.boolean().default(false),
 });
 
-export const purchaseOrderUpdateSchema = purchaseOrderInsertSchema
-  .partial()
-  .omit({ company_id: true });
+export const purchaseOrderUpdateSchema = purchaseOrderInsertSchema.partial().omit({ company_id: true });
 
 export const purchaseOrderSelectSchema = purchaseOrderInsertSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  approved_at: z.date().optional().nullable(),
-  ordered_at: z.date().optional().nullable(),
-  received_at: z.date().optional().nullable(),
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+	approved_at: z.date().optional().nullable(),
+	ordered_at: z.date().optional().nullable(),
+	received_at: z.date().optional().nullable(),
 });
 
 // ============================================================================

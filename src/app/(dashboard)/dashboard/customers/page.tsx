@@ -20,19 +20,17 @@ import { CustomersStats } from "@/components/customers/customers-stats";
 // export const experimental_ppr = true;
 
 export default function CustomersPage() {
-  return (
-    <>
-      {/* Statistics - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <CustomersStats />
-      </Suspense>
+	return (
+		<>
+			{/* Statistics - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<CustomersStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <Suspense fallback={<CustomersSkeleton />}>
-        <CustomersData />
-      </Suspense>
-    </>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<Suspense fallback={<CustomersSkeleton />}>
+				<CustomersData />
+			</Suspense>
+		</>
+	);
 }

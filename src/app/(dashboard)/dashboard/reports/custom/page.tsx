@@ -13,9 +13,9 @@ import { CustomReportsData } from "@/components/reports/custom/custom-reports-da
 import { CustomReportsSkeleton } from "@/components/reports/custom/custom-reports-skeleton";
 
 export default function CustomReportsPage() {
-  return (
-    <Suspense fallback={<CustomReportsSkeleton />}>
-      <CustomReportsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<CustomReportsSkeleton />}>
+			<CustomReportsData />
+		</Suspense>
+	);
 }

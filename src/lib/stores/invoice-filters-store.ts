@@ -13,43 +13,43 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type InvoiceFilters = {
-  archiveStatus: "active" | "all" | "archived";
-  status: string;
-  amountMin: string;
-  amountMax: string;
-  customerName: string;
-  invoiceNumber: string;
+	archiveStatus: "active" | "all" | "archived";
+	status: string;
+	amountMin: string;
+	amountMax: string;
+	customerName: string;
+	invoiceNumber: string;
 };
 
 const DEFAULT_FILTERS: InvoiceFilters = {
-  archiveStatus: "active",
-  status: "all",
-  amountMin: "",
-  amountMax: "",
-  customerName: "",
-  invoiceNumber: "",
+	archiveStatus: "active",
+	status: "all",
+	amountMin: "",
+	amountMax: "",
+	customerName: "",
+	invoiceNumber: "",
 };
 
 type InvoiceFiltersStore = {
-  filters: InvoiceFilters;
-  setFilters: (filters: Partial<InvoiceFilters>) => void;
-  resetFilters: () => void;
+	filters: InvoiceFilters;
+	setFilters: (filters: Partial<InvoiceFilters>) => void;
+	resetFilters: () => void;
 };
 
 export const useInvoiceFiltersStore = create<InvoiceFiltersStore>()(
-  persist(
-    (set) => ({
-      filters: DEFAULT_FILTERS,
+	persist(
+		(set) => ({
+			filters: DEFAULT_FILTERS,
 
-      setFilters: (newFilters) =>
-        set((state) => ({
-          filters: { ...state.filters, ...newFilters },
-        })),
+			setFilters: (newFilters) =>
+				set((state) => ({
+					filters: { ...state.filters, ...newFilters },
+				})),
 
-      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
-    }),
-    {
-      name: "invoice-filters",
-    }
-  )
+			resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+		}),
+		{
+			name: "invoice-filters",
+		}
+	)
 );

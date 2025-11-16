@@ -9,16 +9,12 @@ import { getMissionControlData } from "@/lib/dashboard/mission-control-data";
  * This component is wrapped in Suspense, so it doesn't block the initial page load.
  */
 export async function DashboardContent() {
-  // Fetch company ID and data server-side
-  const companyId = await getActiveCompanyId();
-  const dashboardData = companyId
-    ? await getMissionControlData(companyId)
-    : null;
+	// Fetch company ID and data server-side
+	const companyId = await getActiveCompanyId();
+	const dashboardData = companyId ? await getMissionControlData(companyId) : null;
 
-  // Capture the render timestamp so client components can format relative times
-  const renderedAt = Date.now();
+	// Capture the render timestamp so client components can format relative times
+	const renderedAt = Date.now();
 
-  return (
-    <RoleBasedDashboard dashboardData={dashboardData} renderedAt={renderedAt} />
-  );
+	return <RoleBasedDashboard dashboardData={dashboardData} renderedAt={renderedAt} />;
 }

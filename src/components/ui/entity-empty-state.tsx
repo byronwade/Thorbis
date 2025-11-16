@@ -17,48 +17,35 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 
 type EntityEmptyStateProps = {
-  /** Icon to display */
-  icon: LucideIcon;
-  /** Title text */
-  title: string;
-  /** Description text */
-  description?: string;
-  /** Optional action button/element */
-  action?: React.ReactNode;
-  /** Additional className */
-  className?: string;
+	/** Icon to display */
+	icon: LucideIcon;
+	/** Title text */
+	title: string;
+	/** Description text */
+	description?: string;
+	/** Optional action button/element */
+	action?: React.ReactNode;
+	/** Additional className */
+	className?: string;
 };
 
 /**
  * EntityEmptyState - Standardized empty state for entities
  */
-export function EntityEmptyState({
-  icon: Icon,
-  title,
-  description,
-  action,
-  className,
-}: EntityEmptyStateProps) {
-  return (
-    <Empty className={className}>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Icon className="size-8 text-muted-foreground" />
-        </EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
-        {description && <EmptyDescription>{description}</EmptyDescription>}
-      </EmptyHeader>
-      {action && <EmptyContent>{action}</EmptyContent>}
-    </Empty>
-  );
+export function EntityEmptyState({ icon: Icon, title, description, action, className }: EntityEmptyStateProps) {
+	return (
+		<Empty className={className}>
+			<EmptyHeader>
+				<EmptyMedia variant="icon">
+					<Icon className="size-8 text-muted-foreground" />
+				</EmptyMedia>
+				<EmptyTitle>{title}</EmptyTitle>
+				{description && <EmptyDescription>{description}</EmptyDescription>}
+			</EmptyHeader>
+			{action && <EmptyContent>{action}</EmptyContent>}
+		</Empty>
+	);
 }

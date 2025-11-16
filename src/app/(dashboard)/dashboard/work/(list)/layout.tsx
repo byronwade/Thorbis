@@ -12,34 +12,34 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  * Performance: Pure server component, no client JS needed
  */
 export default function WorkListLayout({ children }: { children: ReactNode }) {
-  const config: UnifiedLayoutConfig = {
-    structure: {
-      maxWidth: "full",
-      padding: "none",
-      gap: "none",
-      fixedHeight: true,
-      variant: "default",
-      background: "default",
-      insetPadding: "none",
-    },
-    header: {
-      show: true,
-    },
-    toolbar: {
-      show: true,
-      title: "Job Flow",
-      subtitle: "81 total jobs today",
-      actions: <WorkToolbarActions />,
-    },
-    sidebar: {
-      show: true,
-      variant: "standard",
-    },
-  };
+	const config: UnifiedLayoutConfig = {
+		structure: {
+			maxWidth: "full",
+			padding: "none",
+			gap: "none",
+			fixedHeight: true,
+			variant: "default",
+			background: "default",
+			insetPadding: "none",
+		},
+		header: {
+			show: true,
+		},
+		toolbar: {
+			show: true,
+			title: "Job Flow",
+			subtitle: "81 total jobs today",
+			actions: <WorkToolbarActions />,
+		},
+		sidebar: {
+			show: true,
+			variant: "standard",
+		},
+	};
 
-  return (
-    <SectionLayout config={config} pathname="/dashboard/work">
-      {children}
-    </SectionLayout>
-  );
+	return (
+		<SectionLayout config={config} pathname="/dashboard/work">
+			{children}
+		</SectionLayout>
+	);
 }

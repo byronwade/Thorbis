@@ -10,9 +10,9 @@ import { UavailabilityData } from "@/components/settings/availability/availabili
 import { UavailabilitySkeleton } from "@/components/settings/availability/availability-skeleton";
 
 export default function UavailabilityPage() {
-  return (
-    <Suspense fallback={<UavailabilitySkeleton />}>
-      <UavailabilityData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UavailabilitySkeleton />}>
+			<UavailabilityData />
+		</Suspense>
+	);
 }

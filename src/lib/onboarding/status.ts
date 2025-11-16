@@ -9,38 +9,33 @@ type ProgressRecord = Record<string, unknown> | null | undefined;
 const COMPLETION_STEPS = ["step5", "step4"];
 
 function isStepCompleted(step: unknown): boolean {
-  if (!step || typeof step !== "object") {
-    return false;
-  }
-  const record = step as Record<string, unknown>;
-  const completed = record.completed;
-  return completed === true;
+	if (!step || typeof step !== "object") {
+		return false;
+	}
+	const record = step as Record<string, unknown>;
+	const completed = record.completed;
+	return completed === true;
 }
 
 /**
  * Determine whether onboarding is complete based on stored progress metadata.
  */
-export function isOnboardingComplete(options: {
-  progress?: ProgressRecord;
-  completedAt?: string | null;
-}): boolean {
-  const { progress, completedAt } = options;
+export function isOnboardingComplete(options: { progress?: ProgressRecord; completedAt?: string | null }): boolean {
+	const { progress, completedAt } = options;
 
-  if (completedAt) {
-    return true;
-  }
+	if (completedAt) {
+		return true;
+	}
 
-  if (!progress || typeof progress !== "object") {
-    return false;
-  }
+	if (!progress || typeof progress !== "object") {
+		return false;
+	}
 
-  const progressRecord = progress as Record<string, unknown>;
+	const progressRecord = progress as Record<string, unknown>;
 
-  if (progressRecord.completed === true) {
-    return true;
-  }
+	if (progressRecord.completed === true) {
+		return true;
+	}
 
-  return COMPLETION_STEPS.some((stepKey) =>
-    isStepCompleted(progressRecord[stepKey])
-  );
+	return COMPLETION_STEPS.some((stepKey) => isStepCompleted(progressRecord[stepKey]));
 }

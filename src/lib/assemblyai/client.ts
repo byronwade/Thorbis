@@ -21,40 +21,36 @@ import "server-only";
 const ASSEMBLYAI_API_KEY = process.env.ASSEMBLYAI_API_KEY;
 const ASSEMBLYAI_API_URL = "https://api.assemblyai.com/v2";
 
-export type TranscriptionStatus =
-  | "queued"
-  | "processing"
-  | "completed"
-  | "error";
+export type TranscriptionStatus = "queued" | "processing" | "completed" | "error";
 
 export type TranscriptionResponse = {
-  id: string;
-  status: TranscriptionStatus;
-  audio_url: string;
-  text?: string;
-  words?: Array<{
-    text: string;
-    start: number;
-    end: number;
-    confidence: number;
-    speaker?: string;
-  }>;
-  utterances?: Array<{
-    text: string;
-    start: number;
-    end: number;
-    confidence: number;
-    speaker: string;
-  }>;
-  error?: string;
+	id: string;
+	status: TranscriptionStatus;
+	audio_url: string;
+	text?: string;
+	words?: Array<{
+		text: string;
+		start: number;
+		end: number;
+		confidence: number;
+		speaker?: string;
+	}>;
+	utterances?: Array<{
+		text: string;
+		start: number;
+		end: number;
+		confidence: number;
+		speaker: string;
+	}>;
+	error?: string;
 };
 
 export type TranscriptionRequest = {
-  audio_url: string;
-  speaker_labels?: boolean;
-  webhook_url?: string;
-  webhook_auth_header_name?: string;
-  webhook_auth_header_value?: string;
+	audio_url: string;
+	speaker_labels?: boolean;
+	webhook_url?: string;
+	webhook_auth_header_name?: string;
+	webhook_auth_header_value?: string;
 };
 
 /**
@@ -73,42 +69,42 @@ export type TranscriptionRequest = {
  * ```
  */
 export async function submitTranscription(
-  params: TranscriptionRequest
+	params: TranscriptionRequest
 ): Promise<{ success: boolean; data?: TranscriptionResponse; error?: string }> {
-  try {
-    if (!ASSEMBLYAI_API_KEY) {
-      throw new Error("ASSEMBLYAI_API_KEY is not configured");
-    }
+	try {
+		if (!ASSEMBLYAI_API_KEY) {
+			throw new Error("ASSEMBLYAI_API_KEY is not configured");
+		}
 
-    const response = await fetch(`${ASSEMBLYAI_API_URL}/transcript`, {
-      method: "POST",
-      headers: {
-        Authorization: ASSEMBLYAI_API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        audio_url: params.audio_url,
-        speaker_labels: params.speaker_labels ?? true, // Enable speaker diarization by default
-        webhook_url: params.webhook_url,
-        webhook_auth_header_name: params.webhook_auth_header_name,
-        webhook_auth_header_value: params.webhook_auth_header_value,
-      }),
-    });
+		const response = await fetch(`${ASSEMBLYAI_API_URL}/transcript`, {
+			method: "POST",
+			headers: {
+				Authorization: ASSEMBLYAI_API_KEY,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				audio_url: params.audio_url,
+				speaker_labels: params.speaker_labels ?? true, // Enable speaker diarization by default
+				webhook_url: params.webhook_url,
+				webhook_auth_header_name: params.webhook_auth_header_name,
+				webhook_auth_header_value: params.webhook_auth_header_value,
+			}),
+		});
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`AssemblyAI API error: ${response.status} - ${error}`);
-    }
+		if (!response.ok) {
+			const error = await response.text();
+			throw new Error(`AssemblyAI API error: ${response.status} - ${error}`);
+		}
 
-    const data = (await response.json()) as TranscriptionResponse;
+		const data = (await response.json()) as TranscriptionResponse;
 
-    return { success: true, data };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+		return { success: true, data };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
 }
 
 /**
@@ -126,35 +122,32 @@ export async function submitTranscription(
  * ```
  */
 export async function getTranscription(
-  transcriptionId: string
+	transcriptionId: string
 ): Promise<{ success: boolean; data?: TranscriptionResponse; error?: string }> {
-  try {
-    if (!ASSEMBLYAI_API_KEY) {
-      throw new Error("ASSEMBLYAI_API_KEY is not configured");
-    }
+	try {
+		if (!ASSEMBLYAI_API_KEY) {
+			throw new Error("ASSEMBLYAI_API_KEY is not configured");
+		}
 
-    const response = await fetch(
-      `${ASSEMBLYAI_API_URL}/transcript/${transcriptionId}`,
-      {
-        headers: {
-          Authorization: ASSEMBLYAI_API_KEY,
-        },
-      }
-    );
+		const response = await fetch(`${ASSEMBLYAI_API_URL}/transcript/${transcriptionId}`, {
+			headers: {
+				Authorization: ASSEMBLYAI_API_KEY,
+			},
+		});
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`AssemblyAI API error: ${response.status} - ${error}`);
-    }
+		if (!response.ok) {
+			const error = await response.text();
+			throw new Error(`AssemblyAI API error: ${response.status} - ${error}`);
+		}
 
-    const data = (await response.json()) as TranscriptionResponse;
-    return { success: true, data };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+		const data = (await response.json()) as TranscriptionResponse;
+		return { success: true, data };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
 }
 
 /**
@@ -174,18 +167,16 @@ export async function getTranscription(
  * ```
  */
 export function formatTranscriptWithSpeakers(
-  utterances?: Array<{
-    text: string;
-    speaker: string;
-  }>
+	utterances?: Array<{
+		text: string;
+		speaker: string;
+	}>
 ): string {
-  if (!utterances || utterances.length === 0) {
-    return "";
-  }
+	if (!utterances || utterances.length === 0) {
+		return "";
+	}
 
-  return utterances
-    .map((utterance) => `Speaker ${utterance.speaker}: ${utterance.text}`)
-    .join("\n\n");
+	return utterances.map((utterance) => `Speaker ${utterance.speaker}: ${utterance.text}`).join("\n\n");
 }
 
 /**
@@ -197,6 +188,6 @@ export function formatTranscriptWithSpeakers(
  * AssemblyAI Pricing: $0.25/hour = $0.004167/minute = $0.00006944/second
  */
 export function estimateTranscriptionCost(durationSeconds: number): number {
-  const COST_PER_SECOND = 0.000_069_44; // $0.25/hour
-  return durationSeconds * COST_PER_SECOND;
+	const COST_PER_SECOND = 0.000_069_44; // $0.25/hour
+	return durationSeconds * COST_PER_SECOND;
 }

@@ -10,9 +10,9 @@ import { UcustomerUintakeData } from "@/components/settings/customer-intake/cust
 import { UcustomerUintakeSkeleton } from "@/components/settings/customer-intake/customer-intake-skeleton";
 
 export default function UcustomerUintakePage() {
-  return (
-    <Suspense fallback={<UcustomerUintakeSkeleton />}>
-      <UcustomerUintakeData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UcustomerUintakeSkeleton />}>
+			<UcustomerUintakeData />
+		</Suspense>
+	);
 }

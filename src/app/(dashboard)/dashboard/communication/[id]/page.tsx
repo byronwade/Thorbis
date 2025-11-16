@@ -12,16 +12,12 @@ import { Suspense } from "react";
 import { CommunicationDetailData } from "@/components/communication/[id]/[id]-data";
 import { CommunicationDetailSkeleton } from "@/components/communication/[id]/[id]-skeleton";
 
-export default async function CommunicationDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function CommunicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params;
 
-  return (
-    <Suspense fallback={<CommunicationDetailSkeleton />}>
-      <CommunicationDetailData id={id} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<CommunicationDetailSkeleton />}>
+			<CommunicationDetailData id={id} />
+		</Suspense>
+	);
 }

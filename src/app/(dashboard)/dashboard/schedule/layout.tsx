@@ -11,6 +11,6 @@ import type { ReactNode } from "react";
  * Performance: Pure server component, minimal overhead
  */
 export default function ScheduleLayout({ children }: { children: ReactNode }) {
-  // Schedule has no chrome - just render children full-screen
-  return <>{children}</>;
+	// Schedule has no chrome - just render children full-screen
+	return <>{children}</>;
 }

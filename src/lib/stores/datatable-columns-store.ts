@@ -23,167 +23,163 @@ type EntityColumnOrder = string[]; // [columnKey1, columnKey2, ...]
 type AllEntitiesOrderState = Record<string, EntityColumnOrder>; // { entityType: [columnKey1, columnKey2, ...] }
 
 type DataTableColumnsStore = {
-  // State - all entity column visibility states
-  entities: AllEntitiesState;
+	// State - all entity column visibility states
+	entities: AllEntitiesState;
 
-  // State - all entity column order states
-  columnOrder: AllEntitiesOrderState;
+	// State - all entity column order states
+	columnOrder: AllEntitiesOrderState;
 
-  // Actions - Visibility
-  setColumnVisibility: (
-    entity: string,
-    columnKey: string,
-    visible: boolean
-  ) => void;
-  toggleColumn: (entity: string, columnKey: string) => void;
-  showAllColumns: (entity: string, columnKeys: string[]) => void;
-  hideAllColumns: (entity: string, columnKeys: string[]) => void;
-  isColumnVisible: (entity: string, columnKey: string) => boolean;
-  getVisibleColumns: (entity: string) => string[];
+	// Actions - Visibility
+	setColumnVisibility: (entity: string, columnKey: string, visible: boolean) => void;
+	toggleColumn: (entity: string, columnKey: string) => void;
+	showAllColumns: (entity: string, columnKeys: string[]) => void;
+	hideAllColumns: (entity: string, columnKeys: string[]) => void;
+	isColumnVisible: (entity: string, columnKey: string) => boolean;
+	getVisibleColumns: (entity: string) => string[];
 
-  // Actions - Ordering
-  setColumnOrder: (entity: string, columnOrder: string[]) => void;
-  getColumnOrder: (entity: string) => string[] | undefined;
-  reorderColumn: (entity: string, fromIndex: number, toIndex: number) => void;
-  resetColumnOrder: (entity: string) => void;
+	// Actions - Ordering
+	setColumnOrder: (entity: string, columnOrder: string[]) => void;
+	getColumnOrder: (entity: string) => string[] | undefined;
+	reorderColumn: (entity: string, fromIndex: number, toIndex: number) => void;
+	resetColumnOrder: (entity: string) => void;
 
-  // General Actions
-  resetEntity: (entity: string) => void;
-  initializeEntity: (entity: string, columns: string[]) => void;
+	// General Actions
+	resetEntity: (entity: string) => void;
+	initializeEntity: (entity: string, columns: string[]) => void;
 };
 
 // Initial state
 const initialState = {
-  entities: {},
-  columnOrder: {},
+	entities: {},
+	columnOrder: {},
 };
 
 // Create store with persistence
 export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
+	persist(
+		(set, get) => ({
+			...initialState,
 
-      // Visibility Actions
-      setColumnVisibility: (entity, columnKey, visible) =>
-        set((state) => ({
-          entities: {
-            ...state.entities,
-            [entity]: {
-              ...state.entities[entity],
-              [columnKey]: visible,
-            },
-          },
-        })),
+			// Visibility Actions
+			setColumnVisibility: (entity, columnKey, visible) =>
+				set((state) => ({
+					entities: {
+						...state.entities,
+						[entity]: {
+							...state.entities[entity],
+							[columnKey]: visible,
+						},
+					},
+				})),
 
-      toggleColumn: (entity, columnKey) => {
-        const current = get().isColumnVisible(entity, columnKey);
-        get().setColumnVisibility(entity, columnKey, !current);
-      },
+			toggleColumn: (entity, columnKey) => {
+				const current = get().isColumnVisible(entity, columnKey);
+				get().setColumnVisibility(entity, columnKey, !current);
+			},
 
-      showAllColumns: (entity, columnKeys) =>
-        set((state) => ({
-          entities: {
-            ...state.entities,
-            [entity]: columnKeys.reduce((acc, key) => {
-              acc[key] = true;
-              return acc;
-            }, {} as EntityColumnsState),
-          },
-        })),
+			showAllColumns: (entity, columnKeys) =>
+				set((state) => ({
+					entities: {
+						...state.entities,
+						[entity]: columnKeys.reduce((acc, key) => {
+							acc[key] = true;
+							return acc;
+						}, {} as EntityColumnsState),
+					},
+				})),
 
-      hideAllColumns: (entity, columnKeys) =>
-        set((state) => ({
-          entities: {
-            ...state.entities,
-            [entity]: columnKeys.reduce((acc, key) => {
-              acc[key] = false;
-              return acc;
-            }, {} as EntityColumnsState),
-          },
-        })),
+			hideAllColumns: (entity, columnKeys) =>
+				set((state) => ({
+					entities: {
+						...state.entities,
+						[entity]: columnKeys.reduce((acc, key) => {
+							acc[key] = false;
+							return acc;
+						}, {} as EntityColumnsState),
+					},
+				})),
 
-      isColumnVisible: (entity, columnKey) => {
-        const state = get();
-        // Default to true if not set
-        return state.entities[entity]?.[columnKey] ?? true;
-      },
+			isColumnVisible: (entity, columnKey) => {
+				const state = get();
+				// Default to true if not set
+				return state.entities[entity]?.[columnKey] ?? true;
+			},
 
-      getVisibleColumns: (entity) => {
-        const state = get();
-        const entityState = state.entities[entity] || {};
-        return Object.entries(entityState)
-          .filter(([, visible]) => visible)
-          .map(([key]) => key);
-      },
+			getVisibleColumns: (entity) => {
+				const state = get();
+				const entityState = state.entities[entity] || {};
+				return Object.entries(entityState)
+					.filter(([, visible]) => visible)
+					.map(([key]) => key);
+			},
 
-      // Ordering Actions
-      setColumnOrder: (entity, columnOrder) =>
-        set((state) => ({
-          columnOrder: {
-            ...state.columnOrder,
-            [entity]: columnOrder,
-          },
-        })),
+			// Ordering Actions
+			setColumnOrder: (entity, columnOrder) =>
+				set((state) => ({
+					columnOrder: {
+						...state.columnOrder,
+						[entity]: columnOrder,
+					},
+				})),
 
-      getColumnOrder: (entity) => {
-        const state = get();
-        return state.columnOrder[entity];
-      },
+			getColumnOrder: (entity) => {
+				const state = get();
+				return state.columnOrder[entity];
+			},
 
-      reorderColumn: (entity, fromIndex, toIndex) => {
-        const state = get();
-        const currentOrder = state.columnOrder[entity];
-        if (!currentOrder) {
-          return;
-        }
+			reorderColumn: (entity, fromIndex, toIndex) => {
+				const state = get();
+				const currentOrder = state.columnOrder[entity];
+				if (!currentOrder) {
+					return;
+				}
 
-        const newOrder = [...currentOrder];
-        const [removed] = newOrder.splice(fromIndex, 1);
-        newOrder.splice(toIndex, 0, removed);
+				const newOrder = [...currentOrder];
+				const [removed] = newOrder.splice(fromIndex, 1);
+				newOrder.splice(toIndex, 0, removed);
 
-        get().setColumnOrder(entity, newOrder);
-      },
+				get().setColumnOrder(entity, newOrder);
+			},
 
-      resetColumnOrder: (entity) =>
-        set((state) => {
-          const { [entity]: _, ...rest } = state.columnOrder;
-          return { columnOrder: rest };
-        }),
+			resetColumnOrder: (entity) =>
+				set((state) => {
+					const { [entity]: _, ...rest } = state.columnOrder;
+					return { columnOrder: rest };
+				}),
 
-      // General Actions
-      resetEntity: (entity) =>
-        set((state) => {
-          const { [entity]: _visibility, ...restEntities } = state.entities;
-          const { [entity]: _order, ...restOrder } = state.columnOrder;
-          return {
-            entities: restEntities,
-            columnOrder: restOrder,
-          };
-        }),
+			// General Actions
+			resetEntity: (entity) =>
+				set((state) => {
+					const { [entity]: _visibility, ...restEntities } = state.entities;
+					const { [entity]: _order, ...restOrder } = state.columnOrder;
+					return {
+						entities: restEntities,
+						columnOrder: restOrder,
+					};
+				}),
 
-      initializeEntity: (entity, columns) => {
-        const state = get();
-        if (!state.entities[entity]) {
-          set((currentState) => ({
-            entities: {
-              ...currentState.entities,
-              [entity]: columns.reduce((acc, key) => {
-                acc[key] = true;
-                return acc;
-              }, {} as EntityColumnsState),
-            },
-          }));
-        }
-        // Initialize column order if not set
-        if (!state.columnOrder[entity]) {
-          get().setColumnOrder(entity, columns);
-        }
-      },
-    }),
-    {
-      name: "datatable-columns-storage", // localStorage key
-      version: 2, // Increment version for new state structure
-    }
-  )
+			initializeEntity: (entity, columns) => {
+				const state = get();
+				if (!state.entities[entity]) {
+					set((currentState) => ({
+						entities: {
+							...currentState.entities,
+							[entity]: columns.reduce((acc, key) => {
+								acc[key] = true;
+								return acc;
+							}, {} as EntityColumnsState),
+						},
+					}));
+				}
+				// Initialize column order if not set
+				if (!state.columnOrder[entity]) {
+					get().setColumnOrder(entity, columns);
+				}
+			},
+		}),
+		{
+			name: "datatable-columns-storage", // localStorage key
+			version: 2, // Increment version for new state structure
+		}
+	)
 );

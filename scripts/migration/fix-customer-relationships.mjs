@@ -16,27 +16,22 @@ const __dirname = dirname(__filename);
 // Load environment variables
 config({ path: join(__dirname, "../.env.local") });
 
-const supabaseUrl =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!(supabaseUrl && supabaseKey)) {
-  console.error("❌ Missing Supabase credentials");
-  console.error(
-    "Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
-  );
-  process.exit(1);
+	console.error("❌ Missing Supabase credentials");
+	console.error("Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
+	process.exit(1);
 }
 
 console.log("🔧 Fixing customer relationship foreign keys...\n");
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
+	auth: {
+		persistSession: false,
+		autoRefreshToken: false,
+	},
 });
 
 const sql = `
@@ -70,48 +65,42 @@ NOTIFY pgrst, 'reload schema';
 `;
 
 try {
-  console.log("Executing SQL migration...");
+	console.log("Executing SQL migration...");
 
-  const { error } = await supabase
-    .rpc("exec_sql", { sql_string: sql })
-    .single();
+	const { error } = await supabase.rpc("exec_sql", { sql_string: sql }).single();
 
-  if (error) {
-    // Try alternative method - using REST API directly
-    console.log("Trying alternative method...");
+	if (error) {
+		// Try alternative method - using REST API directly
+		console.log("Trying alternative method...");
 
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-      },
-      body: JSON.stringify({ sql_string: sql }),
-    });
+		const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				apikey: supabaseKey,
+				Authorization: `Bearer ${supabaseKey}`,
+			},
+			body: JSON.stringify({ sql_string: sql }),
+		});
 
-    if (!response.ok) {
-      throw new Error(
-        `HTTP error! status: ${response.status} - ${await response.text()}`
-      );
-    }
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
+		}
 
-    console.log("✅ Migration completed successfully!");
-  } else {
-    console.log("✅ Migration completed successfully!");
-  }
+		console.log("✅ Migration completed successfully!");
+	} else {
+		console.log("✅ Migration completed successfully!");
+	}
 
-  console.log("\n📝 Changes applied:");
-  console.log("  • properties.customer_id now references customers.id");
-  console.log("  • jobs.customer_id now references customers.id");
-  console.log("  • estimates.customer_id now references customers.id");
-  console.log("\n🔄 Schema cache refreshed");
-  console.log("\n✨ You can now reload your jobs page!");
+	console.log("\n📝 Changes applied:");
+	console.log("  • properties.customer_id now references customers.id");
+	console.log("  • jobs.customer_id now references customers.id");
+	console.log("  • estimates.customer_id now references customers.id");
+	console.log("\n🔄 Schema cache refreshed");
+	console.log("\n✨ You can now reload your jobs page!");
 } catch (err) {
-  console.error("❌ Migration failed:", err.message);
-  console.error("\n📋 Please run the SQL manually in Supabase Dashboard:");
-  console.error(
-    "   SQL Editor → Paste contents of fix_customer_relationships.sql → Run"
-  );
-  process.exit(1);
+	console.error("❌ Migration failed:", err.message);
+	console.error("\n📋 Please run the SQL manually in Supabase Dashboard:");
+	console.error("   SQL Editor → Paste contents of fix_customer_relationships.sql → Run");
+	process.exit(1);
 }

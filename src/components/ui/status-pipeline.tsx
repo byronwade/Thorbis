@@ -16,15 +16,11 @@
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
 type StatusPipelineProps = {
-  stats: StatCard[];
-  variant?: "ticker" | "chart";
-  compact?: boolean;
+	stats: StatCard[];
+	variant?: "ticker" | "chart";
+	compact?: boolean;
 };
 
-export function StatusPipeline({
-  stats,
-  variant = "ticker",
-  compact = false,
-}: StatusPipelineProps) {
-  return <StatsCards compact={compact} stats={stats} variant={variant} />;
+export function StatusPipeline({ stats, variant = "ticker", compact = false }: StatusPipelineProps) {
+	return <StatsCards compact={compact} stats={stats} variant={variant} />;
 }

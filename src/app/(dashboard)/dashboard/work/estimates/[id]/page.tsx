@@ -15,16 +15,12 @@ import { Suspense } from "react";
 import { EstimateDetailData } from "@/components/work/estimates/estimate-detail-data";
 import { EstimateDetailSkeleton } from "@/components/work/estimates/estimate-detail-skeleton";
 
-export default async function EstimateDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id: estimateId } = await params;
+export default async function EstimateDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id: estimateId } = await params;
 
-  return (
-    <Suspense fallback={<EstimateDetailSkeleton />}>
-      <EstimateDetailData estimateId={estimateId} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<EstimateDetailSkeleton />}>
+			<EstimateDetailData estimateId={estimateId} />
+		</Suspense>
+	);
 }

@@ -9,103 +9,90 @@
  */
 
 import { DollarSign, TrendingDown, TrendingUp } from "lucide-react";
+import { formatCurrency, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
 import {
-  formatCurrency,
-  formatPercentage,
-  getTrendClass,
-} from "@/lib/utils/responsive-utils";
-import {
-  ResponsiveContent,
-  ResponsiveFlex,
-  ResponsiveIcon,
-  ResponsiveText,
-  ResponsiveWidgetWrapper,
-  ShowAt,
+	ResponsiveContent,
+	ResponsiveFlex,
+	ResponsiveIcon,
+	ResponsiveText,
+	ResponsiveWidgetWrapper,
+	ShowAt,
 } from "../responsive-widget-wrapper";
 
 type AvgTicketWidgetProps = {
-  data: {
-    value: number;
-    change: number;
-  };
+	data: {
+		value: number;
+		change: number;
+	};
 };
 
 export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
-  const isPositive = data.change >= 0;
-  const TrendIcon = isPositive ? TrendingUp : TrendingDown;
+	const isPositive = data.change >= 0;
+	const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
-  return (
-    <ResponsiveWidgetWrapper className="bg-gradient-to-br from-green-500/10 to-green-500/5">
-      <ResponsiveContent className="flex flex-col justify-between">
-        {/* FULL Stage: Complete title */}
-        <ShowAt stage="full">
-          <div className="flex items-center justify-between">
-            <ResponsiveText variant="title">Average Ticket</ResponsiveText>
-            <ResponsiveIcon>
-              <DollarSign className="text-success" />
-            </ResponsiveIcon>
-          </div>
-        </ShowAt>
+	return (
+		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-green-500/10 to-green-500/5">
+			<ResponsiveContent className="flex flex-col justify-between">
+				{/* FULL Stage: Complete title */}
+				<ShowAt stage="full">
+					<div className="flex items-center justify-between">
+						<ResponsiveText variant="title">Average Ticket</ResponsiveText>
+						<ResponsiveIcon>
+							<DollarSign className="text-success" />
+						</ResponsiveIcon>
+					</div>
+				</ShowAt>
 
-        {/* COMFORTABLE Stage: Abbreviated title */}
-        <ShowAt stage="comfortable">
-          <ResponsiveFlex className="justify-between">
-            <ResponsiveText
-              className="font-medium text-muted-foreground"
-              variant="body"
-            >
-              Avg Ticket
-            </ResponsiveText>
-            <ResponsiveIcon>
-              <DollarSign className="text-success" />
-            </ResponsiveIcon>
-          </ResponsiveFlex>
-        </ShowAt>
+				{/* COMFORTABLE Stage: Abbreviated title */}
+				<ShowAt stage="comfortable">
+					<ResponsiveFlex className="justify-between">
+						<ResponsiveText className="font-medium text-muted-foreground" variant="body">
+							Avg Ticket
+						</ResponsiveText>
+						<ResponsiveIcon>
+							<DollarSign className="text-success" />
+						</ResponsiveIcon>
+					</ResponsiveFlex>
+				</ShowAt>
 
-        {/* COMPACT Stage: Icon only */}
-        <ShowAt stage="compact">
-          <div className="flex justify-center">
-            <ResponsiveIcon>
-              <DollarSign className="text-success" />
-            </ResponsiveIcon>
-          </div>
-        </ShowAt>
+				{/* COMPACT Stage: Icon only */}
+				<ShowAt stage="compact">
+					<div className="flex justify-center">
+						<ResponsiveIcon>
+							<DollarSign className="text-success" />
+						</ResponsiveIcon>
+					</div>
+				</ShowAt>
 
-        {/* Main currency value */}
-        <div className="flex flex-col @[120px]:items-start items-center justify-center">
-          <ResponsiveText className="font-bold" variant="display">
-            {/* Show with $ on all sizes */}
-            <span className="@[120px]:inline hidden">
-              {formatCurrency(data.value, "comfortable")}
-            </span>
-            <span className="@[120px]:hidden">
-              {formatCurrency(data.value, "tiny")}
-            </span>
-          </ResponsiveText>
+				{/* Main currency value */}
+				<div className="flex flex-col @[120px]:items-start items-center justify-center">
+					<ResponsiveText className="font-bold" variant="display">
+						{/* Show with $ on all sizes */}
+						<span className="@[120px]:inline hidden">{formatCurrency(data.value, "comfortable")}</span>
+						<span className="@[120px]:hidden">{formatCurrency(data.value, "tiny")}</span>
+					</ResponsiveText>
 
-          {/* Trend indicator */}
-          <div className="mt-1">
-            {/* FULL + COMFORTABLE: Full trend */}
-            <ShowAt stage="full-comfortable">
-              <span
-                className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}
-              >
-                <TrendIcon className="size-4" />
-                {isPositive ? "+" : ""}
-                {formatPercentage(data.change, "comfortable")}
-              </span>
-            </ShowAt>
+					{/* Trend indicator */}
+					<div className="mt-1">
+						{/* FULL + COMFORTABLE: Full trend */}
+						<ShowAt stage="full-comfortable">
+							<span className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}>
+								<TrendIcon className="size-4" />
+								{isPositive ? "+" : ""}
+								{formatPercentage(data.change, "comfortable")}
+							</span>
+						</ShowAt>
 
-            {/* COMPACT: Compact trend */}
-            <ShowAt stage="compact">
-              <span className={`text-xs ${getTrendClass(data.change)}`}>
-                {isPositive ? "↑" : "↓"}
-                {formatPercentage(data.change, "compact")}
-              </span>
-            </ShowAt>
-          </div>
-        </div>
-      </ResponsiveContent>
-    </ResponsiveWidgetWrapper>
-  );
+						{/* COMPACT: Compact trend */}
+						<ShowAt stage="compact">
+							<span className={`text-xs ${getTrendClass(data.change)}`}>
+								{isPositive ? "↑" : "↓"}
+								{formatPercentage(data.change, "compact")}
+							</span>
+						</ShowAt>
+					</div>
+				</div>
+			</ResponsiveContent>
+		</ResponsiveWidgetWrapper>
+	);
 }

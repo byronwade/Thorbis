@@ -18,43 +18,43 @@ import { devtools, persist } from "zustand/middleware";
 // ============================================================================
 
 export type PaymentMethod =
-  | "all"
-  | "cash"
-  | "check"
-  | "credit_card"
-  | "debit_card"
-  | "ach"
-  | "wire"
-  | "venmo"
-  | "paypal"
-  | "other";
+	| "all"
+	| "cash"
+	| "check"
+	| "credit_card"
+	| "debit_card"
+	| "ach"
+	| "wire"
+	| "venmo"
+	| "paypal"
+	| "other";
 export type PaymentStatus =
-  | "all"
-  | "pending"
-  | "processing"
-  | "completed"
-  | "failed"
-  | "refunded"
-  | "partially_refunded"
-  | "cancelled";
+	| "all"
+	| "pending"
+	| "processing"
+	| "completed"
+	| "failed"
+	| "refunded"
+	| "partially_refunded"
+	| "cancelled";
 export type PaymentType = "all" | "payment" | "refund" | "credit";
 export type ViewMode = "table" | "grid" | "timeline";
 
 export type DateRange = {
-  from: Date | null;
-  to: Date | null;
+	from: Date | null;
+	to: Date | null;
 };
 
 export type PaymentFilters = {
-  search: string;
-  paymentMethod: PaymentMethod;
-  paymentStatus: PaymentStatus;
-  paymentType: PaymentType;
-  dateRange: DateRange;
-  amountRange: { min: number | null; max: number | null };
-  showReconciledOnly: boolean;
-  showUnreconciledOnly: boolean;
-  customerId: string | null;
+	search: string;
+	paymentMethod: PaymentMethod;
+	paymentStatus: PaymentStatus;
+	paymentType: PaymentType;
+	dateRange: DateRange;
+	amountRange: { min: number | null; max: number | null };
+	showReconciledOnly: boolean;
+	showUnreconciledOnly: boolean;
+	customerId: string | null;
 };
 
 // ============================================================================
@@ -62,42 +62,42 @@ export type PaymentFilters = {
 // ============================================================================
 
 type PaymentsStore = {
-  // View State
-  viewMode: ViewMode;
-  selectedPaymentIds: string[];
+	// View State
+	viewMode: ViewMode;
+	selectedPaymentIds: string[];
 
-  // Filters
-  filters: PaymentFilters;
+	// Filters
+	filters: PaymentFilters;
 
-  // Sidebar State
-  sidebarCollapsed: boolean;
-  activeSection: string | null;
+	// Sidebar State
+	sidebarCollapsed: boolean;
+	activeSection: string | null;
 
-  // Actions - View Mode
-  setViewMode: (mode: ViewMode) => void;
-  toggleSelection: (id: string) => void;
-  selectAll: (ids: string[]) => void;
-  clearSelection: () => void;
+	// Actions - View Mode
+	setViewMode: (mode: ViewMode) => void;
+	toggleSelection: (id: string) => void;
+	selectAll: (ids: string[]) => void;
+	clearSelection: () => void;
 
-  // Actions - Filters
-  setSearch: (search: string) => void;
-  setPaymentMethod: (method: PaymentMethod) => void;
-  setPaymentStatus: (status: PaymentStatus) => void;
-  setPaymentType: (type: PaymentType) => void;
-  setDateRange: (from: Date | null, to: Date | null) => void;
-  setAmountRange: (min: number | null, max: number | null) => void;
-  setShowReconciledOnly: (value: boolean) => void;
-  setShowUnreconciledOnly: (value: boolean) => void;
-  setCustomerId: (id: string | null) => void;
-  resetFilters: () => void;
-  hasActiveFilters: () => boolean;
+	// Actions - Filters
+	setSearch: (search: string) => void;
+	setPaymentMethod: (method: PaymentMethod) => void;
+	setPaymentStatus: (status: PaymentStatus) => void;
+	setPaymentType: (type: PaymentType) => void;
+	setDateRange: (from: Date | null, to: Date | null) => void;
+	setAmountRange: (min: number | null, max: number | null) => void;
+	setShowReconciledOnly: (value: boolean) => void;
+	setShowUnreconciledOnly: (value: boolean) => void;
+	setCustomerId: (id: string | null) => void;
+	resetFilters: () => void;
+	hasActiveFilters: () => boolean;
 
-  // Actions - Sidebar
-  toggleSidebar: () => void;
-  setActiveSection: (section: string | null) => void;
+	// Actions - Sidebar
+	toggleSidebar: () => void;
+	setActiveSection: (section: string | null) => void;
 
-  // Utility
-  reset: () => void;
+	// Utility
+	reset: () => void;
 };
 
 // ============================================================================
@@ -105,23 +105,23 @@ type PaymentsStore = {
 // ============================================================================
 
 const initialFilters: PaymentFilters = {
-  search: "",
-  paymentMethod: "all",
-  paymentStatus: "all",
-  paymentType: "all",
-  dateRange: { from: null, to: null },
-  amountRange: { min: null, max: null },
-  showReconciledOnly: false,
-  showUnreconciledOnly: false,
-  customerId: null,
+	search: "",
+	paymentMethod: "all",
+	paymentStatus: "all",
+	paymentType: "all",
+	dateRange: { from: null, to: null },
+	amountRange: { min: null, max: null },
+	showReconciledOnly: false,
+	showUnreconciledOnly: false,
+	customerId: null,
 };
 
 const initialState = {
-  viewMode: "table" as ViewMode,
-  selectedPaymentIds: [],
-  filters: initialFilters,
-  sidebarCollapsed: false,
-  activeSection: null,
+	viewMode: "table" as ViewMode,
+	selectedPaymentIds: [],
+	filters: initialFilters,
+	sidebarCollapsed: false,
+	activeSection: null,
 };
 
 // ============================================================================
@@ -129,123 +129,118 @@ const initialState = {
 // ============================================================================
 
 export const usePaymentsStore = create<PaymentsStore>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        ...initialState,
+	devtools(
+		persist(
+			(set, get) => ({
+				...initialState,
 
-        // View Mode Actions
-        setViewMode: (mode) => set({ viewMode: mode }),
+				// View Mode Actions
+				setViewMode: (mode) => set({ viewMode: mode }),
 
-        toggleSelection: (id) =>
-          set((state) => ({
-            selectedPaymentIds: state.selectedPaymentIds.includes(id)
-              ? state.selectedPaymentIds.filter((paymentId) => paymentId !== id)
-              : [...state.selectedPaymentIds, id],
-          })),
+				toggleSelection: (id) =>
+					set((state) => ({
+						selectedPaymentIds: state.selectedPaymentIds.includes(id)
+							? state.selectedPaymentIds.filter((paymentId) => paymentId !== id)
+							: [...state.selectedPaymentIds, id],
+					})),
 
-        selectAll: (ids) => set({ selectedPaymentIds: ids }),
+				selectAll: (ids) => set({ selectedPaymentIds: ids }),
 
-        clearSelection: () => set({ selectedPaymentIds: [] }),
+				clearSelection: () => set({ selectedPaymentIds: [] }),
 
-        // Filter Actions
-        setSearch: (search) =>
-          set((state) => ({
-            filters: { ...state.filters, search },
-          })),
+				// Filter Actions
+				setSearch: (search) =>
+					set((state) => ({
+						filters: { ...state.filters, search },
+					})),
 
-        setPaymentMethod: (paymentMethod) =>
-          set((state) => ({
-            filters: { ...state.filters, paymentMethod },
-          })),
+				setPaymentMethod: (paymentMethod) =>
+					set((state) => ({
+						filters: { ...state.filters, paymentMethod },
+					})),
 
-        setPaymentStatus: (paymentStatus) =>
-          set((state) => ({
-            filters: { ...state.filters, paymentStatus },
-          })),
+				setPaymentStatus: (paymentStatus) =>
+					set((state) => ({
+						filters: { ...state.filters, paymentStatus },
+					})),
 
-        setPaymentType: (paymentType) =>
-          set((state) => ({
-            filters: { ...state.filters, paymentType },
-          })),
+				setPaymentType: (paymentType) =>
+					set((state) => ({
+						filters: { ...state.filters, paymentType },
+					})),
 
-        setDateRange: (from, to) =>
-          set((state) => ({
-            filters: { ...state.filters, dateRange: { from, to } },
-          })),
+				setDateRange: (from, to) =>
+					set((state) => ({
+						filters: { ...state.filters, dateRange: { from, to } },
+					})),
 
-        setAmountRange: (min, max) =>
-          set((state) => ({
-            filters: { ...state.filters, amountRange: { min, max } },
-          })),
+				setAmountRange: (min, max) =>
+					set((state) => ({
+						filters: { ...state.filters, amountRange: { min, max } },
+					})),
 
-        setShowReconciledOnly: (value) =>
-          set((state) => ({
-            filters: {
-              ...state.filters,
-              showReconciledOnly: value,
-              showUnreconciledOnly: value
-                ? false
-                : state.filters.showUnreconciledOnly,
-            },
-          })),
+				setShowReconciledOnly: (value) =>
+					set((state) => ({
+						filters: {
+							...state.filters,
+							showReconciledOnly: value,
+							showUnreconciledOnly: value ? false : state.filters.showUnreconciledOnly,
+						},
+					})),
 
-        setShowUnreconciledOnly: (value) =>
-          set((state) => ({
-            filters: {
-              ...state.filters,
-              showUnreconciledOnly: value,
-              showReconciledOnly: value
-                ? false
-                : state.filters.showReconciledOnly,
-            },
-          })),
+				setShowUnreconciledOnly: (value) =>
+					set((state) => ({
+						filters: {
+							...state.filters,
+							showUnreconciledOnly: value,
+							showReconciledOnly: value ? false : state.filters.showReconciledOnly,
+						},
+					})),
 
-        setCustomerId: (customerId) =>
-          set((state) => ({
-            filters: { ...state.filters, customerId },
-          })),
+				setCustomerId: (customerId) =>
+					set((state) => ({
+						filters: { ...state.filters, customerId },
+					})),
 
-        resetFilters: () => set({ filters: initialFilters }),
+				resetFilters: () => set({ filters: initialFilters }),
 
-        hasActiveFilters: () => {
-          const state = get();
-          return (
-            state.filters.search !== "" ||
-            state.filters.paymentMethod !== "all" ||
-            state.filters.paymentStatus !== "all" ||
-            state.filters.paymentType !== "all" ||
-            state.filters.dateRange.from !== null ||
-            state.filters.dateRange.to !== null ||
-            state.filters.amountRange.min !== null ||
-            state.filters.amountRange.max !== null ||
-            state.filters.showReconciledOnly ||
-            state.filters.showUnreconciledOnly ||
-            state.filters.customerId !== null
-          );
-        },
+				hasActiveFilters: () => {
+					const state = get();
+					return (
+						state.filters.search !== "" ||
+						state.filters.paymentMethod !== "all" ||
+						state.filters.paymentStatus !== "all" ||
+						state.filters.paymentType !== "all" ||
+						state.filters.dateRange.from !== null ||
+						state.filters.dateRange.to !== null ||
+						state.filters.amountRange.min !== null ||
+						state.filters.amountRange.max !== null ||
+						state.filters.showReconciledOnly ||
+						state.filters.showUnreconciledOnly ||
+						state.filters.customerId !== null
+					);
+				},
 
-        // Sidebar Actions
-        toggleSidebar: () =>
-          set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+				// Sidebar Actions
+				toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
-        setActiveSection: (section) => set({ activeSection: section }),
+				setActiveSection: (section) => set({ activeSection: section }),
 
-        // Reset
-        reset: () => set(initialState),
-      }),
-      {
-        name: "payments-storage",
-        partialize: (state) => ({
-          viewMode: state.viewMode,
-          filters: state.filters,
-          sidebarCollapsed: state.sidebarCollapsed,
-        }),
-        // PERFORMANCE: Skip hydration to prevent SSR mismatches
-        // Allows Next.js to generate static pages without Zustand errors
-        skipHydration: true,
-      }
-    ),
-    { name: "PaymentsStore" }
-  )
+				// Reset
+				reset: () => set(initialState),
+			}),
+			{
+				name: "payments-storage",
+				partialize: (state) => ({
+					viewMode: state.viewMode,
+					filters: state.filters,
+					sidebarCollapsed: state.sidebarCollapsed,
+				}),
+				// PERFORMANCE: Skip hydration to prevent SSR mismatches
+				// Allows Next.js to generate static pages without Zustand errors
+				skipHydration: true,
+			}
+		),
+		{ name: "PaymentsStore" }
+	)
 );

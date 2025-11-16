@@ -15,19 +15,17 @@ import { ContractsSkeleton } from "@/components/work/contracts/contracts-skeleto
 import { ContractsStats } from "@/components/work/contracts/contracts-stats";
 
 export default function ContractsPage() {
-  return (
-    <>
-      {/* Stats - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <ContractsStats />
-      </Suspense>
+	return (
+		<>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<ContractsStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <Suspense fallback={<ContractsSkeleton />}>
-        <ContractsData />
-      </Suspense>
-    </>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<Suspense fallback={<ContractsSkeleton />}>
+				<ContractsData />
+			</Suspense>
+		</>
+	);
 }

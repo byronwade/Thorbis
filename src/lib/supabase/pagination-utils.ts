@@ -39,67 +39,65 @@ import type { PaginationParams } from "@/lib/hooks/use-server-pagination";
  * ```
  */
 export async function buildPaginatedQuery<T>(
-  query: any,
-  params: PaginationParams,
-  searchColumns?: string[]
+	query: any,
+	params: PaginationParams,
+	searchColumns?: string[]
 ): Promise<{ data: T[]; count: number }> {
-  const { page, pageSize, sortBy, sortDirection, filters, search } = params;
+	const { page, pageSize, sortBy, sortDirection, filters, search } = params;
 
-  // Start with base query
-  let queryBuilder = query;
+	// Start with base query
+	let queryBuilder = query;
 
-  // Apply filters
-  if (filters) {
-    for (const [key, value] of Object.entries(filters)) {
-      if (value !== undefined && value !== null && value !== "") {
-        if (Array.isArray(value)) {
-          queryBuilder = queryBuilder.in(key, value);
-        } else {
-          queryBuilder = queryBuilder.eq(key, value);
-        }
-      }
-    }
-  }
+	// Apply filters
+	if (filters) {
+		for (const [key, value] of Object.entries(filters)) {
+			if (value !== undefined && value !== null && value !== "") {
+				if (Array.isArray(value)) {
+					queryBuilder = queryBuilder.in(key, value);
+				} else {
+					queryBuilder = queryBuilder.eq(key, value);
+				}
+			}
+		}
+	}
 
-  // Apply search
-  if (search && searchColumns && searchColumns.length > 0) {
-    // Build OR condition for searching across multiple columns
-    const searchConditions = searchColumns
-      .map((col) => `${col}.ilike.%${search}%`)
-      .join(",");
-    queryBuilder = queryBuilder.or(searchConditions);
-  }
+	// Apply search
+	if (search && searchColumns && searchColumns.length > 0) {
+		// Build OR condition for searching across multiple columns
+		const searchConditions = searchColumns.map((col) => `${col}.ilike.%${search}%`).join(",");
+		queryBuilder = queryBuilder.or(searchConditions);
+	}
 
-  // Get total count (before pagination)
-  const countQuery = queryBuilder;
-  const { count } = await countQuery.select("*", {
-    count: "exact",
-    head: true,
-  });
+	// Get total count (before pagination)
+	const countQuery = queryBuilder;
+	const { count } = await countQuery.select("*", {
+		count: "exact",
+		head: true,
+	});
 
-  // Apply sorting
-  if (sortBy) {
-    queryBuilder = queryBuilder.order(sortBy, {
-      ascending: sortDirection === "asc",
-    });
-  }
+	// Apply sorting
+	if (sortBy) {
+		queryBuilder = queryBuilder.order(sortBy, {
+			ascending: sortDirection === "asc",
+		});
+	}
 
-  // Apply pagination
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-  queryBuilder = queryBuilder.range(from, to);
+	// Apply pagination
+	const from = (page - 1) * pageSize;
+	const to = from + pageSize - 1;
+	queryBuilder = queryBuilder.range(from, to);
 
-  // Execute query
-  const { data, error } = await queryBuilder;
+	// Execute query
+	const { data, error } = await queryBuilder;
 
-  if (error) {
-    throw new Error(`Database query failed: ${error.message}`);
-  }
+	if (error) {
+		throw new Error(`Database query failed: ${error.message}`);
+	}
 
-  return {
-    data: data || [],
-    count: count || 0,
-  };
+	return {
+		data: data || [],
+		count: count || 0,
+	};
 }
 
 /**
@@ -115,68 +113,65 @@ export async function buildPaginatedQuery<T>(
  * ```
  */
 export type FilterOperator =
-  | "eq" // equals
-  | "neq" // not equals
-  | "gt" // greater than
-  | "gte" // greater than or equal
-  | "lt" // less than
-  | "lte" // less than or equal
-  | "in" // in array
-  | "is" // is null/not null
-  | "like" // pattern match
-  | "ilike"; // case-insensitive pattern match
+	| "eq" // equals
+	| "neq" // not equals
+	| "gt" // greater than
+	| "gte" // greater than or equal
+	| "lt" // less than
+	| "lte" // less than or equal
+	| "in" // in array
+	| "is" // is null/not null
+	| "like" // pattern match
+	| "ilike"; // case-insensitive pattern match
 
 export type AdvancedFilter = {
-  operator: FilterOperator;
-  value: any;
+	operator: FilterOperator;
+	value: any;
 };
 
 export type AdvancedFilters = Record<string, AdvancedFilter>;
 
-export function applyAdvancedFilters(
-  query: any,
-  filters: AdvancedFilters
-): any {
-  let queryBuilder = query;
+export function applyAdvancedFilters(query: any, filters: AdvancedFilters): any {
+	let queryBuilder = query;
 
-  for (const [column, filter] of Object.entries(filters)) {
-    const { operator, value } = filter;
+	for (const [column, filter] of Object.entries(filters)) {
+		const { operator, value } = filter;
 
-    switch (operator) {
-      case "eq":
-        queryBuilder = queryBuilder.eq(column, value);
-        break;
-      case "neq":
-        queryBuilder = queryBuilder.neq(column, value);
-        break;
-      case "gt":
-        queryBuilder = queryBuilder.gt(column, value);
-        break;
-      case "gte":
-        queryBuilder = queryBuilder.gte(column, value);
-        break;
-      case "lt":
-        queryBuilder = queryBuilder.lt(column, value);
-        break;
-      case "lte":
-        queryBuilder = queryBuilder.lte(column, value);
-        break;
-      case "in":
-        queryBuilder = queryBuilder.in(column, value);
-        break;
-      case "is":
-        queryBuilder = queryBuilder.is(column, value);
-        break;
-      case "like":
-        queryBuilder = queryBuilder.like(column, value);
-        break;
-      case "ilike":
-        queryBuilder = queryBuilder.ilike(column, value);
-        break;
-    }
-  }
+		switch (operator) {
+			case "eq":
+				queryBuilder = queryBuilder.eq(column, value);
+				break;
+			case "neq":
+				queryBuilder = queryBuilder.neq(column, value);
+				break;
+			case "gt":
+				queryBuilder = queryBuilder.gt(column, value);
+				break;
+			case "gte":
+				queryBuilder = queryBuilder.gte(column, value);
+				break;
+			case "lt":
+				queryBuilder = queryBuilder.lt(column, value);
+				break;
+			case "lte":
+				queryBuilder = queryBuilder.lte(column, value);
+				break;
+			case "in":
+				queryBuilder = queryBuilder.in(column, value);
+				break;
+			case "is":
+				queryBuilder = queryBuilder.is(column, value);
+				break;
+			case "like":
+				queryBuilder = queryBuilder.like(column, value);
+				break;
+			case "ilike":
+				queryBuilder = queryBuilder.ilike(column, value);
+				break;
+		}
+	}
 
-  return queryBuilder;
+	return queryBuilder;
 }
 
 /**
@@ -197,42 +192,42 @@ export function applyAdvancedFilters(
  * ```
  */
 export async function fetchPaginatedData<T>(
-  supabase: SupabaseClient,
-  tableName: string,
-  params: PaginationParams,
-  searchColumns?: string[],
-  options: {
-    retries?: number;
-    retryDelay?: number;
-    select?: string;
-  } = {}
+	supabase: SupabaseClient,
+	tableName: string,
+	params: PaginationParams,
+	searchColumns?: string[],
+	options: {
+		retries?: number;
+		retryDelay?: number;
+		select?: string;
+	} = {}
 ): Promise<{ data: T[]; totalCount: number }> {
-  const { retries = 0, retryDelay = 1000, select = "*" } = options;
+	const { retries = 0, retryDelay = 1000, select = "*" } = options;
 
-  let lastError: Error | null = null;
-  let attempt = 0;
+	let lastError: Error | null = null;
+	let attempt = 0;
 
-  while (attempt <= retries) {
-    try {
-      const query = supabase.from(tableName).select(select, { count: "exact" });
+	while (attempt <= retries) {
+		try {
+			const query = supabase.from(tableName).select(select, { count: "exact" });
 
-      const result = await buildPaginatedQuery<T>(query, params, searchColumns);
+			const result = await buildPaginatedQuery<T>(query, params, searchColumns);
 
-      return {
-        data: result.data,
-        totalCount: result.count,
-      };
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error("Unknown error");
-      attempt++;
+			return {
+				data: result.data,
+				totalCount: result.count,
+			};
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error("Unknown error");
+			attempt++;
 
-      if (attempt <= retries) {
-        await new Promise((resolve) => setTimeout(resolve, retryDelay));
-      }
-    }
-  }
+			if (attempt <= retries) {
+				await new Promise((resolve) => setTimeout(resolve, retryDelay));
+			}
+		}
+	}
 
-  throw lastError || new Error("Failed to fetch data");
+	throw lastError || new Error("Failed to fetch data");
 }
 
 /**
@@ -257,18 +252,15 @@ export async function fetchPaginatedData<T>(
  * ```
  */
 export function createTableFetcher<T>(
-  tableName: string,
-  searchColumns?: string[],
-  options?: {
-    select?: string;
-    retries?: number;
-  }
+	tableName: string,
+	searchColumns?: string[],
+	options?: {
+		select?: string;
+		retries?: number;
+	}
 ) {
-  return async (
-    supabase: SupabaseClient,
-    params: PaginationParams
-  ): Promise<{ data: T[]; totalCount: number }> =>
-    fetchPaginatedData<T>(supabase, tableName, params, searchColumns, options);
+	return async (supabase: SupabaseClient, params: PaginationParams): Promise<{ data: T[]; totalCount: number }> =>
+		fetchPaginatedData<T>(supabase, tableName, params, searchColumns, options);
 }
 
 /**
@@ -278,24 +270,24 @@ export function createTableFetcher<T>(
  * Use estimated count for better performance.
  */
 export async function getEstimatedCount(
-  supabase: SupabaseClient,
-  tableName: string,
-  filters?: Record<string, any>
+	supabase: SupabaseClient,
+	tableName: string,
+	filters?: Record<string, any>
 ): Promise<number> {
-  let query = supabase.from(tableName).select("*", {
-    count: "estimated",
-    head: true,
-  });
+	let query = supabase.from(tableName).select("*", {
+		count: "estimated",
+		head: true,
+	});
 
-  // Apply filters
-  if (filters) {
-    for (const [key, value] of Object.entries(filters)) {
-      if (value !== undefined && value !== null && value !== "") {
-        query = query.eq(key, value);
-      }
-    }
-  }
+	// Apply filters
+	if (filters) {
+		for (const [key, value] of Object.entries(filters)) {
+			if (value !== undefined && value !== null && value !== "") {
+				query = query.eq(key, value);
+			}
+		}
+	}
 
-  const { count } = await query;
-  return count || 0;
+	const { count } = await query;
+	return count || 0;
 }

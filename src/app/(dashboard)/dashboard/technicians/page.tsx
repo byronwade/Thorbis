@@ -16,22 +16,20 @@ import { TechniciansStats } from "@/components/technicians/technicians-stats";
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function TechnicianManagementPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Technician Management</h1>
-        <p className="text-muted-foreground">
-          Manage technicians, skills, and performance
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			<div>
+				<h1 className="font-semibold text-2xl">Technician Management</h1>
+				<p className="text-muted-foreground">Manage technicians, skills, and performance</p>
+			</div>
 
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <TechniciansStats />
-      </Suspense>
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<TechniciansStats />
+			</Suspense>
 
-      <Suspense fallback={<TechniciansSkeleton />}>
-        <TechniciansData />
-      </Suspense>
-    </div>
-  );
+			<Suspense fallback={<TechniciansSkeleton />}>
+				<TechniciansData />
+			</Suspense>
+		</div>
+	);
 }

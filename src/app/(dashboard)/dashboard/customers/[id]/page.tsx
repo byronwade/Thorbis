@@ -19,27 +19,19 @@ import { CustomerDetailData } from "@/components/customers/customer-detail-data"
 import { CustomerDetailSkeleton } from "@/components/customers/customer-detail-skeleton";
 
 // Custom metadata for this page
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  return {
-    title: "Customer Details",
-  };
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params;
+	return {
+		title: "Customer Details",
+	};
 }
 
-export default async function CustomerDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function CustomerDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params;
 
-  return (
-    <Suspense fallback={<CustomerDetailSkeleton />}>
-      <CustomerDetailData customerId={id} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<CustomerDetailSkeleton />}>
+			<CustomerDetailData customerId={id} />
+		</Suspense>
+	);
 }

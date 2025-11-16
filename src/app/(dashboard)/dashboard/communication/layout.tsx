@@ -11,39 +11,35 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function CommunicationLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  // Communication section configuration
-  const config: UnifiedLayoutConfig = {
-    structure: {
-      maxWidth: "full",
-      padding: "none",
-      gap: "none",
-      fixedHeight: true,
-      variant: "default",
-      background: "default",
-      insetPadding: "none",
-    },
-    header: {
-      show: true,
-    },
-    toolbar: {
-      show: true,
-      title: "Communications",
-      actions: <CommunicationToolbarActions />,
-    },
-    sidebar: {
-      show: true,
-      variant: "standard",
-    },
-  };
+export default function CommunicationLayout({ children }: { children: ReactNode }) {
+	// Communication section configuration
+	const config: UnifiedLayoutConfig = {
+		structure: {
+			maxWidth: "full",
+			padding: "none",
+			gap: "none",
+			fixedHeight: true,
+			variant: "default",
+			background: "default",
+			insetPadding: "none",
+		},
+		header: {
+			show: true,
+		},
+		toolbar: {
+			show: true,
+			title: "Communications",
+			actions: <CommunicationToolbarActions />,
+		},
+		sidebar: {
+			show: true,
+			variant: "standard",
+		},
+	};
 
-  return (
-    <SectionLayout config={config} pathname="/dashboard/communication">
-      {children}
-    </SectionLayout>
-  );
+	return (
+		<SectionLayout config={config} pathname="/dashboard/communication">
+			{children}
+		</SectionLayout>
+	);
 }

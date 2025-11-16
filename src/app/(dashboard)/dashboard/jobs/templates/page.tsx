@@ -22,26 +22,25 @@ import { JobTemplatesStats } from "@/components/jobs/templates/job-templates-sta
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function JobTemplatesPage() {
-  return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="font-bold text-3xl tracking-tight">Job Templates</h1>
-        <p className="text-muted-foreground">
-          Manage job templates, service packages, and standardized work
-          procedures
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Page header */}
+			<div>
+				<h1 className="font-bold text-3xl tracking-tight">Job Templates</h1>
+				<p className="text-muted-foreground">
+					Manage job templates, service packages, and standardized work procedures
+				</p>
+			</div>
 
-      {/* Stats - Streams in first */}
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <JobTemplatesStats />
-      </Suspense>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<JobTemplatesStats />
+			</Suspense>
 
-      {/* Template data - Streams in second */}
-      <Suspense fallback={<JobTemplatesSkeleton />}>
-        <JobTemplatesData />
-      </Suspense>
-    </div>
-  );
+			{/* Template data - Streams in second */}
+			<Suspense fallback={<JobTemplatesSkeleton />}>
+				<JobTemplatesData />
+			</Suspense>
+		</div>
+	);
 }

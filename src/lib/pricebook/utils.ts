@@ -10,7 +10,7 @@
  * Example: "Heat Pumps" -> "heat-pumps"
  */
 export function categoryToSlug(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, "-");
+	return name.toLowerCase().replace(/\s+/g, "-");
 }
 
 /**
@@ -18,10 +18,10 @@ export function categoryToSlug(name: string): string {
  * Example: "heat-pumps" -> "Heat Pumps"
  */
 export function slugToCategory(slug: string): string {
-  return slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+	return slug
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
 }
 
 /**
@@ -29,10 +29,10 @@ export function slugToCategory(slug: string): string {
  * Example: ["HVAC", "Heating"] -> "/dashboard/work/pricebook/c/hvac/heating"
  */
 export function buildCategoryUrl(path: string[]): string {
-  if (path.length === 0) {
-    return "/dashboard/work/pricebook";
-  }
-  return `/dashboard/work/pricebook/c/${path.map(categoryToSlug).join("/")}`;
+	if (path.length === 0) {
+		return "/dashboard/work/pricebook";
+	}
+	return `/dashboard/work/pricebook/c/${path.map(categoryToSlug).join("/")}`;
 }
 
 /**
@@ -40,5 +40,5 @@ export function buildCategoryUrl(path: string[]): string {
  * Example: ["hvac", "heating"] -> ["HVAC", "Heating"]
  */
 export function parseCategoryPath(slugs: string[]): string[] {
-  return slugs.map(slugToCategory);
+	return slugs.map(slugToCategory);
 }

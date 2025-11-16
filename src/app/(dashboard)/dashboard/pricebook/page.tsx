@@ -22,25 +22,23 @@ import { PricebookStats } from "@/components/pricebook/pricebook-stats";
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function PriceBookDashboardPage() {
-  return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="font-semibold text-2xl">Price Book Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage service pricing, parts costs, and standardized rates
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Page header */}
+			<div>
+				<h1 className="font-semibold text-2xl">Price Book Dashboard</h1>
+				<p className="text-muted-foreground">Manage service pricing, parts costs, and standardized rates</p>
+			</div>
 
-      {/* Stats - Streams in first */}
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <PricebookStats />
-      </Suspense>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<PricebookStats />
+			</Suspense>
 
-      {/* Dashboard content - Streams in second */}
-      <Suspense fallback={<PricebookSkeleton />}>
-        <PricebookData />
-      </Suspense>
-    </div>
-  );
+			{/* Dashboard content - Streams in second */}
+			<Suspense fallback={<PricebookSkeleton />}>
+				<PricebookData />
+			</Suspense>
+		</div>
+	);
 }

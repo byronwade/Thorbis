@@ -5,25 +5,25 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function UserviceUagreementsStats() {
-  const supabase = await createClient();
-  if (!supabase) {
-    return notFound();
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		return notFound();
+	}
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return notFound();
-  }
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		return notFound();
+	}
 
-  const activeCompanyId = await getActiveCompanyId();
-  if (!activeCompanyId) {
-    return notFound();
-  }
+	const activeCompanyId = await getActiveCompanyId();
+	if (!activeCompanyId) {
+		return notFound();
+	}
 
-  // TODO: Move stats logic from original page
-  const stats: StatCard[] = [];
+	// TODO: Move stats logic from original page
+	const stats: StatCard[] = [];
 
-  return <StatusPipeline compact stats={stats} />;
+	return <StatusPipeline compact stats={stats} />;
 }

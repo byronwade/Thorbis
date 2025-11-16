@@ -11,5 +11,5 @@ import { WorkSectionLayout } from "@/components/layout/work-section-layout";
  * Detail pages (like /dashboard/work/[id]) have their own nested layouts.
  */
 export default function WorkLayout({ children }: { children: ReactNode }) {
-  return <WorkSectionLayout>{children}</WorkSectionLayout>;
+	return <WorkSectionLayout>{children}</WorkSectionLayout>;
 }

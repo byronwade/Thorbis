@@ -13,9 +13,9 @@ import { ProfilesData } from "@/components/technicians/profiles/profiles-data";
 import { ProfilesSkeleton } from "@/components/technicians/profiles/profiles-skeleton";
 
 export default function TechnicianProfilesPage() {
-  return (
-    <Suspense fallback={<ProfilesSkeleton />}>
-      <ProfilesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<ProfilesSkeleton />}>
+			<ProfilesData />
+		</Suspense>
+	);
 }

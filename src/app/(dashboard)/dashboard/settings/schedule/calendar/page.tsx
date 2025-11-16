@@ -10,9 +10,9 @@ import { UcalendarData } from "@/components/settings/calendar/calendar-data";
 import { UcalendarSkeleton } from "@/components/settings/calendar/calendar-skeleton";
 
 export default function UcalendarPage() {
-  return (
-    <Suspense fallback={<UcalendarSkeleton />}>
-      <UcalendarData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UcalendarSkeleton />}>
+			<UcalendarData />
+		</Suspense>
+	);
 }

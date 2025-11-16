@@ -10,9 +10,9 @@ import { UteamData } from "@/components/settings/team/team-data";
 import { UteamSkeleton } from "@/components/settings/team/team-skeleton";
 
 export default function UteamPage() {
-  return (
-    <Suspense fallback={<UteamSkeleton />}>
-      <UteamData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UteamSkeleton />}>
+			<UteamData />
+		</Suspense>
+	);
 }

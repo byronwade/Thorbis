@@ -26,49 +26,43 @@ import { TopPerformerWidget } from "./widgets/top-performer-widget";
 import { WeeklyStatsWidget } from "./widgets/weekly-stats-widget";
 
 type WidgetRendererProps = {
-  widget: Widget;
-  data: Record<string, unknown>;
+	widget: Widget;
+	data: Record<string, unknown>;
 };
 
 export function WidgetRenderer({ widget, data }: WidgetRendererProps) {
-  switch (widget.type) {
-    case "leaderboard":
-      return (
-        <LeaderboardWidget data={{ technicians: data.technicians as never }} />
-      );
-    case "company-goals":
-      return <CompanyGoalsWidget data={data.companyGoals as never} />;
-    case "top-performer":
-      return <TopPerformerWidget data={data.topPerformer as never} />;
-    case "revenue-chart":
-      return <RevenueChartWidget data={data.revenueTrend as never} />;
-    case "jobs-completed":
-      return <JobsCompletedWidget data={data.jobsCompleted as never} />;
-    case "avg-ticket":
-      return <AvgTicketWidget data={data.avgTicket as never} />;
-    case "customer-rating":
-      return <CustomerRatingWidget data={data.customerRating as never} />;
-    case "daily-stats":
-      return <DailyStatsWidget data={data.dailyStats as never} />;
-    case "weekly-stats":
-      return <WeeklyStatsWidget data={data.weeklyStats as never} />;
-    case "monthly-stats":
-      return <MonthlyStatsWidget data={data.monthlyStats as never} />;
-    case "inspirational-quote":
-      return <InspirationalQuoteWidget />;
-    case "bonus-tracker":
-      return <BonusTrackerWidget data={data.bonusTracker as never} />;
-    case "prize-wheel":
-      return (
-        <PrizeWheelWidget currentPrize={(data.prizeOptions as never)?.[0]} />
-      );
-    case "performance-scale":
-      return <PerformanceScaleWidget data={data.performanceScale as never} />;
-    case "company-randomizer":
-      return (
-        <CompanyRandomizerWidget selected={data.randomizerCategory as never} />
-      );
-    default:
-      return null;
-  }
+	switch (widget.type) {
+		case "leaderboard":
+			return <LeaderboardWidget data={{ technicians: data.technicians as never }} />;
+		case "company-goals":
+			return <CompanyGoalsWidget data={data.companyGoals as never} />;
+		case "top-performer":
+			return <TopPerformerWidget data={data.topPerformer as never} />;
+		case "revenue-chart":
+			return <RevenueChartWidget data={data.revenueTrend as never} />;
+		case "jobs-completed":
+			return <JobsCompletedWidget data={data.jobsCompleted as never} />;
+		case "avg-ticket":
+			return <AvgTicketWidget data={data.avgTicket as never} />;
+		case "customer-rating":
+			return <CustomerRatingWidget data={data.customerRating as never} />;
+		case "daily-stats":
+			return <DailyStatsWidget data={data.dailyStats as never} />;
+		case "weekly-stats":
+			return <WeeklyStatsWidget data={data.weeklyStats as never} />;
+		case "monthly-stats":
+			return <MonthlyStatsWidget data={data.monthlyStats as never} />;
+		case "inspirational-quote":
+			return <InspirationalQuoteWidget />;
+		case "bonus-tracker":
+			return <BonusTrackerWidget data={data.bonusTracker as never} />;
+		case "prize-wheel":
+			return <PrizeWheelWidget currentPrize={(data.prizeOptions as never)?.[0]} />;
+		case "performance-scale":
+			return <PerformanceScaleWidget data={data.performanceScale as never} />;
+		case "company-randomizer":
+			return <CompanyRandomizerWidget selected={data.randomizerCategory as never} />;
+		default:
+			return null;
+	}
 }

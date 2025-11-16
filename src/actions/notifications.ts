@@ -20,21 +20,19 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
-  type CreateNotificationInput,
-  CreateNotificationSchema,
-  type GetNotificationsInput,
-  GetNotificationsSchema,
-  type NotificationPreference,
-  NotificationPreferenceSchema,
+	type CreateNotificationInput,
+	CreateNotificationSchema,
+	type GetNotificationsInput,
+	GetNotificationsSchema,
+	type NotificationPreference,
+	NotificationPreferenceSchema,
 } from "@/lib/notifications/types";
 import { createClient } from "@/lib/supabase/server";
 
 // NOTE: Type re-exports removed to comply with Next.js 16 "use server" restrictions
 // Import types directly from @/lib/notifications/types instead
 
-const UpdateNotificationPreferencesSchema = z.array(
-  NotificationPreferenceSchema
-);
+const UpdateNotificationPreferencesSchema = z.array(NotificationPreferenceSchema);
 
 // =====================================================================================
 // Helper Functions
@@ -44,46 +42,46 @@ const UpdateNotificationPreferencesSchema = z.array(
  * Get authenticated user and company context
  */
 async function getAuthContext(): Promise<{
-  userId: string;
-  companyId: string;
-  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>;
+	userId: string;
+	companyId: string;
+	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>;
 }> {
-  const supabase = await createClient();
+	const supabase = await createClient();
 
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+	const {
+		data: { user },
+		error: authError,
+	} = await supabase.auth.getUser();
 
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
+	if (authError || !user) {
+		throw new Error("Not authenticated");
+	}
 
-  // Get user's active company from team_members
-  const { data: teamMember, error: teamError } = await supabase
-    .from("team_members")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .maybeSingle();
+	// Get user's active company from team_members
+	const { data: teamMember, error: teamError } = await supabase
+		.from("team_members")
+		.select("company_id")
+		.eq("user_id", user.id)
+		.eq("status", "active")
+		.maybeSingle();
 
-  if (teamError) {
-    throw new Error("Failed to fetch user company");
-  }
+	if (teamError) {
+		throw new Error("Failed to fetch user company");
+	}
 
-  if (!teamMember) {
-    throw new Error("No active company found");
-  }
+	if (!teamMember) {
+		throw new Error("No active company found");
+	}
 
-  return {
-    userId: user.id,
-    companyId: teamMember.company_id,
-    supabase,
-  };
+	return {
+		userId: user.id,
+		companyId: teamMember.company_id,
+		supabase,
+	};
 }
 
 // =====================================================================================
@@ -96,90 +94,85 @@ async function getAuthContext(): Promise<{
  * @param options - Filtering and pagination options
  * @returns Array of notifications and total count
  */
-export async function getNotifications(
-  options?: Partial<GetNotificationsInput>
-) {
-  try {
-    // Notifications are user-specific, not company-specific
-    // So we don't need the full auth context with company
-    const supabase = await createClient();
+export async function getNotifications(options?: Partial<GetNotificationsInput>) {
+	try {
+		// Notifications are user-specific, not company-specific
+		// So we don't need the full auth context with company
+		const supabase = await createClient();
 
-    if (!supabase) {
-      throw new Error("Supabase client not configured");
-    }
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+		const {
+			data: { user },
+			error: authError,
+		} = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      throw new Error("Not authenticated");
-    }
+		if (authError || !user) {
+			throw new Error("Not authenticated");
+		}
 
-    const userId = user.id;
+		const userId = user.id;
 
-    // Validate input
-    const validatedOptions = GetNotificationsSchema.parse(options || {});
+		// Validate input
+		const validatedOptions = GetNotificationsSchema.parse(options || {});
 
-    // Build query
-    let query = supabase
-      .from("notifications")
-      .select("*", { count: "exact" })
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+		// Build query
+		let query = supabase
+			.from("notifications")
+			.select("*", { count: "exact" })
+			.eq("user_id", userId)
+			.order("created_at", { ascending: false });
 
-    // Apply filters
-    if (validatedOptions.unreadOnly) {
-      query = query.eq("read", false);
-    }
+		// Apply filters
+		if (validatedOptions.unreadOnly) {
+			query = query.eq("read", false);
+		}
 
-    if (validatedOptions.type) {
-      query = query.eq("type", validatedOptions.type);
-    }
+		if (validatedOptions.type) {
+			query = query.eq("type", validatedOptions.type);
+		}
 
-    if (validatedOptions.priority) {
-      query = query.eq("priority", validatedOptions.priority);
-    }
+		if (validatedOptions.priority) {
+			query = query.eq("priority", validatedOptions.priority);
+		}
 
-    // Apply pagination
-    query = query.range(
-      validatedOptions.offset,
-      validatedOptions.offset + validatedOptions.limit - 1
-    );
+		// Apply pagination
+		query = query.range(validatedOptions.offset, validatedOptions.offset + validatedOptions.limit - 1);
 
-    const { data, error, count } = await query;
+		const { data, error, count } = await query;
 
-    if (error) {
-      return {
-        success: false,
-        error: "Failed to fetch notifications",
-        data: [],
-        count: 0,
-      };
-    }
+		if (error) {
+			return {
+				success: false,
+				error: "Failed to fetch notifications",
+				data: [],
+				count: 0,
+			};
+		}
 
-    return {
-      success: true,
-      data: data || [],
-      count: count || 0,
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-        data: [],
-        count: 0,
-      };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-      data: [],
-      count: 0,
-    };
-  }
+		return {
+			success: true,
+			data: data || [],
+			count: count || 0,
+		};
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation error",
+				data: [],
+				count: 0,
+			};
+		}
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+			data: [],
+			count: 0,
+		};
+	}
 }
 
 /**
@@ -188,33 +181,30 @@ export async function getNotifications(
  * @returns Number of unread notifications
  */
 export async function getUnreadCount() {
-  try {
-    const { userId, supabase } = await getAuthContext();
+	try {
+		const { userId, supabase } = await getAuthContext();
 
-    // Use the database function for optimized counting
-    const { data, error } = await supabase.rpc(
-      "get_unread_notification_count",
-      {
-        p_user_id: userId,
-      }
-    );
+		// Use the database function for optimized counting
+		const { data, error } = await supabase.rpc("get_unread_notification_count", {
+			p_user_id: userId,
+		});
 
-    if (error) {
-      return {
-        success: false,
-        error: "Failed to fetch unread count",
-        count: 0,
-      };
-    }
+		if (error) {
+			return {
+				success: false,
+				error: "Failed to fetch unread count",
+				count: 0,
+			};
+		}
 
-    return { success: true, count: data || 0 };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-      count: 0,
-    };
-  }
+		return { success: true, count: data || 0 };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+			count: 0,
+		};
+	}
 }
 
 /**
@@ -224,49 +214,49 @@ export async function getUnreadCount() {
  * @returns Created notification
  */
 export async function createNotification(input: CreateNotificationInput) {
-  try {
-    const { supabase } = await getAuthContext();
+	try {
+		const { supabase } = await getAuthContext();
 
-    // Validate input
-    const validatedData = CreateNotificationSchema.parse(input);
+		// Validate input
+		const validatedData = CreateNotificationSchema.parse(input);
 
-    const { data, error } = await supabase
-      .from("notifications")
-      .insert({
-        user_id: validatedData.userId,
-        company_id: validatedData.companyId,
-        type: validatedData.type,
-        priority: validatedData.priority,
-        title: validatedData.title,
-        message: validatedData.message,
-        action_url: validatedData.actionUrl,
-        action_label: validatedData.actionLabel,
-        metadata: validatedData.metadata || {},
-      })
-      .select()
-      .single();
+		const { data, error } = await supabase
+			.from("notifications")
+			.insert({
+				user_id: validatedData.userId,
+				company_id: validatedData.companyId,
+				type: validatedData.type,
+				priority: validatedData.priority,
+				title: validatedData.title,
+				message: validatedData.message,
+				action_url: validatedData.actionUrl,
+				action_label: validatedData.actionLabel,
+				metadata: validatedData.metadata || {},
+			})
+			.select()
+			.single();
 
-    if (error) {
-      return { success: false, error: "Failed to create notification" };
-    }
+		if (error) {
+			return { success: false, error: "Failed to create notification" };
+		}
 
-    // Revalidate paths where notifications appear
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/notifications");
+		// Revalidate paths where notifications appear
+		revalidatePath("/dashboard");
+		revalidatePath("/dashboard/notifications");
 
-    return { success: true, data };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-    };
-  }
+		return { success: true, data };
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation error",
+			};
+		}
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+		};
+	}
 }
 
 /**
@@ -276,39 +266,39 @@ export async function createNotification(input: CreateNotificationInput) {
  * @returns Success status
  */
 export async function markAsRead(notificationId: string) {
-  try {
-    const { userId, supabase } = await getAuthContext();
+	try {
+		const { userId, supabase } = await getAuthContext();
 
-    // Validate UUID
-    const idSchema = z.string().uuid("Invalid notification ID");
-    const validatedId = idSchema.parse(notificationId);
+		// Validate UUID
+		const idSchema = z.string().uuid("Invalid notification ID");
+		const validatedId = idSchema.parse(notificationId);
 
-    const { error } = await supabase
-      .from("notifications")
-      .update({ read: true })
-      .eq("id", validatedId)
-      .eq("user_id", userId); // Ensure user owns the notification
+		const { error } = await supabase
+			.from("notifications")
+			.update({ read: true })
+			.eq("id", validatedId)
+			.eq("user_id", userId); // Ensure user owns the notification
 
-    if (error) {
-      return { success: false, error: "Failed to mark notification as read" };
-    }
+		if (error) {
+			return { success: false, error: "Failed to mark notification as read" };
+		}
 
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/notifications");
+		revalidatePath("/dashboard");
+		revalidatePath("/dashboard/notifications");
 
-    return { success: true };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-    };
-  }
+		return { success: true };
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation error",
+			};
+		}
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+		};
+	}
 }
 
 /**
@@ -317,33 +307,33 @@ export async function markAsRead(notificationId: string) {
  * @returns Number of notifications marked as read
  */
 export async function markAllAsRead() {
-  try {
-    const { userId, supabase } = await getAuthContext();
+	try {
+		const { userId, supabase } = await getAuthContext();
 
-    // Use the database function for bulk operation
-    const { data, error } = await supabase.rpc("mark_all_notifications_read", {
-      p_user_id: userId,
-    });
+		// Use the database function for bulk operation
+		const { data, error } = await supabase.rpc("mark_all_notifications_read", {
+			p_user_id: userId,
+		});
 
-    if (error) {
-      return {
-        success: false,
-        error: "Failed to mark all notifications as read",
-        count: 0,
-      };
-    }
+		if (error) {
+			return {
+				success: false,
+				error: "Failed to mark all notifications as read",
+				count: 0,
+			};
+		}
 
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/notifications");
+		revalidatePath("/dashboard");
+		revalidatePath("/dashboard/notifications");
 
-    return { success: true, count: data || 0 };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-      count: 0,
-    };
-  }
+		return { success: true, count: data || 0 };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+			count: 0,
+		};
+	}
 }
 
 /**
@@ -353,39 +343,39 @@ export async function markAllAsRead() {
  * @returns Success status
  */
 export async function markAsUnread(notificationId: string) {
-  try {
-    const { userId, supabase } = await getAuthContext();
+	try {
+		const { userId, supabase } = await getAuthContext();
 
-    // Validate UUID
-    const idSchema = z.string().uuid("Invalid notification ID");
-    const validatedId = idSchema.parse(notificationId);
+		// Validate UUID
+		const idSchema = z.string().uuid("Invalid notification ID");
+		const validatedId = idSchema.parse(notificationId);
 
-    const { error } = await supabase
-      .from("notifications")
-      .update({ read: false })
-      .eq("id", validatedId)
-      .eq("user_id", userId); // Ensure user owns the notification
+		const { error } = await supabase
+			.from("notifications")
+			.update({ read: false })
+			.eq("id", validatedId)
+			.eq("user_id", userId); // Ensure user owns the notification
 
-    if (error) {
-      return { success: false, error: "Failed to mark notification as unread" };
-    }
+		if (error) {
+			return { success: false, error: "Failed to mark notification as unread" };
+		}
 
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/notifications");
+		revalidatePath("/dashboard");
+		revalidatePath("/dashboard/notifications");
 
-    return { success: true };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-    };
-  }
+		return { success: true };
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation error",
+			};
+		}
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+		};
+	}
 }
 
 /**
@@ -395,39 +385,35 @@ export async function markAsUnread(notificationId: string) {
  * @returns Success status
  */
 export async function deleteNotification(notificationId: string) {
-  try {
-    const { userId, supabase } = await getAuthContext();
+	try {
+		const { userId, supabase } = await getAuthContext();
 
-    // Validate UUID
-    const idSchema = z.string().uuid("Invalid notification ID");
-    const validatedId = idSchema.parse(notificationId);
+		// Validate UUID
+		const idSchema = z.string().uuid("Invalid notification ID");
+		const validatedId = idSchema.parse(notificationId);
 
-    const { error } = await supabase
-      .from("notifications")
-      .delete()
-      .eq("id", validatedId)
-      .eq("user_id", userId); // Ensure user owns the notification
+		const { error } = await supabase.from("notifications").delete().eq("id", validatedId).eq("user_id", userId); // Ensure user owns the notification
 
-    if (error) {
-      return { success: false, error: "Failed to delete notification" };
-    }
+		if (error) {
+			return { success: false, error: "Failed to delete notification" };
+		}
 
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/notifications");
+		revalidatePath("/dashboard");
+		revalidatePath("/dashboard/notifications");
 
-    return { success: true };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-    };
-  }
+		return { success: true };
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation error",
+			};
+		}
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+		};
+	}
 }
 
 // =====================================================================================
@@ -440,31 +426,31 @@ export async function deleteNotification(notificationId: string) {
  * @returns Array of notification preferences
  */
 export async function getNotificationPreferences() {
-  try {
-    const { userId, companyId, supabase } = await getAuthContext();
+	try {
+		const { userId, companyId, supabase } = await getAuthContext();
 
-    const { data, error } = await supabase
-      .from("notification_preferences")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("company_id", companyId);
+		const { data, error } = await supabase
+			.from("notification_preferences")
+			.select("*")
+			.eq("user_id", userId)
+			.eq("company_id", companyId);
 
-    if (error) {
-      return {
-        success: false,
-        error: "Failed to fetch notification preferences",
-        data: [],
-      };
-    }
+		if (error) {
+			return {
+				success: false,
+				error: "Failed to fetch notification preferences",
+				data: [],
+			};
+		}
 
-    return { success: true, data: data || [] };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-      data: [],
-    };
-  }
+		return { success: true, data: data || [] };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+			data: [],
+		};
+	}
 }
 
 /**
@@ -473,56 +459,47 @@ export async function getNotificationPreferences() {
  * @param preferences - Array of notification preference settings
  * @returns Success status
  */
-export async function updateNotificationPreferences(
-  preferences: NotificationPreference[]
-) {
-  try {
-    const { userId, companyId, supabase } = await getAuthContext();
+export async function updateNotificationPreferences(preferences: NotificationPreference[]) {
+	try {
+		const { userId, companyId, supabase } = await getAuthContext();
 
-    // Validate input
-    const validatedPreferences =
-      UpdateNotificationPreferencesSchema.parse(preferences);
+		// Validate input
+		const validatedPreferences = UpdateNotificationPreferencesSchema.parse(preferences);
 
-    // Delete existing preferences
-    await supabase
-      .from("notification_preferences")
-      .delete()
-      .eq("user_id", userId)
-      .eq("company_id", companyId);
+		// Delete existing preferences
+		await supabase.from("notification_preferences").delete().eq("user_id", userId).eq("company_id", companyId);
 
-    // Insert new preferences
-    const preferencesToInsert = validatedPreferences.map((pref) => ({
-      user_id: userId,
-      company_id: companyId,
-      channel: pref.channel,
-      event_type: pref.eventType,
-      enabled: pref.enabled,
-    }));
+		// Insert new preferences
+		const preferencesToInsert = validatedPreferences.map((pref) => ({
+			user_id: userId,
+			company_id: companyId,
+			channel: pref.channel,
+			event_type: pref.eventType,
+			enabled: pref.enabled,
+		}));
 
-    const { error } = await supabase
-      .from("notification_preferences")
-      .insert(preferencesToInsert);
+		const { error } = await supabase.from("notification_preferences").insert(preferencesToInsert);
 
-    if (error) {
-      return {
-        success: false,
-        error: "Failed to update notification preferences",
-      };
-    }
+		if (error) {
+			return {
+				success: false,
+				error: "Failed to update notification preferences",
+			};
+		}
 
-    revalidatePath("/dashboard/settings/profile/notifications");
+		revalidatePath("/dashboard/settings/profile/notifications");
 
-    return { success: true };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error",
-      };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "An error occurred",
-    };
-  }
+		return { success: true };
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation error",
+			};
+		}
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "An error occurred",
+		};
+	}
 }

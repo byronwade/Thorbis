@@ -10,9 +10,9 @@ import { UexportData } from "@/components/work/export/export-data";
 import { UexportSkeleton } from "@/components/work/export/export-skeleton";
 
 export default function UexportPage() {
-  return (
-    <Suspense fallback={<UexportSkeleton />}>
-      <UexportData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UexportSkeleton />}>
+			<UexportData />
+		</Suspense>
+	);
 }

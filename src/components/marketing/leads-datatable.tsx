@@ -5,353 +5,311 @@
  * Full-width Gmail-style table for displaying leads matching work pages pattern
  */
 
-import {
-  Mail,
-  MessageSquare,
-  MoreHorizontal,
-  Phone,
-  TrendingUp,
-  UserPlus,
-} from "lucide-react";
+import { Mail, MessageSquare, MoreHorizontal, Phone, TrendingUp, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  type BulkAction,
-  type ColumnDef,
-  FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
-export type LeadSource =
-  | "google-ads"
-  | "thumbtack"
-  | "website-form"
-  | "facebook-ads"
-  | "referral";
+export type LeadSource = "google-ads" | "thumbtack" | "website-form" | "facebook-ads" | "referral";
 export type LeadScore = "hot" | "warm" | "cold";
 export type LeadStage = "new" | "contacted" | "qualified" | "customer" | "lost";
 
 export type Lead = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  source: LeadSource;
-  score: LeadScore;
-  stage: LeadStage;
-  value: number;
-  createdAt: Date;
-  lastContact: Date | null;
+	id: string;
+	name: string;
+	email: string;
+	phone: string;
+	source: LeadSource;
+	score: LeadScore;
+	stage: LeadStage;
+	value: number;
+	createdAt: Date;
+	lastContact: Date | null;
 };
 
 type LeadsDataTableProps = {
-  leads: Lead[];
-  itemsPerPage?: number;
+	leads: Lead[];
+	itemsPerPage?: number;
 };
 
 function formatTimeAgo(date: Date): string {
-  const hours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
-  if (hours < 1) {
-    return "Just now";
-  }
-  if (hours < 24) {
-    return `${hours}h ago`;
-  }
-  const days = Math.floor(hours / 24);
-  if (days < 7) {
-    return `${days}d ago`;
-  }
-  return date.toLocaleDateString();
+	const hours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
+	if (hours < 1) {
+		return "Just now";
+	}
+	if (hours < 24) {
+		return `${hours}h ago`;
+	}
+	const days = Math.floor(hours / 24);
+	if (days < 7) {
+		return `${days}d ago`;
+	}
+	return date.toLocaleDateString();
 }
 
 function getSourceLabel(source: LeadSource): string {
-  const labels: Record<LeadSource, string> = {
-    "google-ads": "Google Ads",
-    thumbtack: "Thumbtack",
-    "website-form": "Website",
-    "facebook-ads": "Facebook",
-    referral: "Referral",
-  };
-  return labels[source];
+	const labels: Record<LeadSource, string> = {
+		"google-ads": "Google Ads",
+		thumbtack: "Thumbtack",
+		"website-form": "Website",
+		"facebook-ads": "Facebook",
+		referral: "Referral",
+	};
+	return labels[source];
 }
 
 function getScoreBadge(score: LeadScore) {
-  const config = {
-    hot: {
-      className:
-        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
-      label: "HOT",
-    },
-    warm: {
-      className:
-        "border-warning/50 bg-warning/50 text-warning dark:border-warning/50 dark:bg-warning/30 dark:text-warning",
-      label: "WARM",
-    },
-    cold: {
-      className:
-        "border-primary/50 bg-primary/50 text-primary dark:border-primary/50 dark:bg-primary/30 dark:text-primary",
-      label: "COLD",
-    },
-  };
+	const config = {
+		hot: {
+			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			label: "HOT",
+		},
+		warm: {
+			className:
+				"border-warning/50 bg-warning/50 text-warning dark:border-warning/50 dark:bg-warning/30 dark:text-warning",
+			label: "WARM",
+		},
+		cold: {
+			className:
+				"border-primary/50 bg-primary/50 text-primary dark:border-primary/50 dark:bg-primary/30 dark:text-primary",
+			label: "COLD",
+		},
+	};
 
-  const scoreConfig = config[score];
+	const scoreConfig = config[score];
 
-  return (
-    <Badge
-      className={cn("font-medium text-xs", scoreConfig.className)}
-      variant="outline"
-    >
-      <TrendingUp className="mr-1 h-3 w-3" />
-      {scoreConfig.label}
-    </Badge>
-  );
+	return (
+		<Badge className={cn("font-medium text-xs", scoreConfig.className)} variant="outline">
+			<TrendingUp className="mr-1 h-3 w-3" />
+			{scoreConfig.label}
+		</Badge>
+	);
 }
 
 function getStageBadge(stage: LeadStage) {
-  const config = {
-    new: {
-      className: "border-primary/50 bg-primary text-white hover:bg-primary",
-      label: "New",
-    },
-    contacted: {
-      className:
-        "border-border/50 bg-accent/50 text-accent-foreground dark:border-border/50 dark:bg-accent/30 dark:text-accent-foreground",
-      label: "Contacted",
-    },
-    qualified: {
-      className:
-        "border-success/50 bg-success/50 text-success dark:border-success/50 dark:bg-success/30 dark:text-success",
-      label: "Qualified",
-    },
-    customer: {
-      className: "border-success/50 bg-success text-white hover:bg-success",
-      label: "Customer",
-    },
-    lost: {
-      className:
-        "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
-      label: "Lost",
-    },
-  };
+	const config = {
+		new: {
+			className: "border-primary/50 bg-primary text-white hover:bg-primary",
+			label: "New",
+		},
+		contacted: {
+			className:
+				"border-border/50 bg-accent/50 text-accent-foreground dark:border-border/50 dark:bg-accent/30 dark:text-accent-foreground",
+			label: "Contacted",
+		},
+		qualified: {
+			className:
+				"border-success/50 bg-success/50 text-success dark:border-success/50 dark:bg-success/30 dark:text-success",
+			label: "Qualified",
+		},
+		customer: {
+			className: "border-success/50 bg-success text-white hover:bg-success",
+			label: "Customer",
+		},
+		lost: {
+			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			label: "Lost",
+		},
+	};
 
-  const stageConfig = config[stage];
+	const stageConfig = config[stage];
 
-  return (
-    <Badge
-      className={cn("font-medium text-xs", stageConfig.className)}
-      variant="outline"
-    >
-      {stageConfig.label}
-    </Badge>
-  );
+	return (
+		<Badge className={cn("font-medium text-xs", stageConfig.className)} variant="outline">
+			{stageConfig.label}
+		</Badge>
+	);
 }
 
-export function LeadsDataTable({
-  leads,
-  itemsPerPage = 50,
-}: LeadsDataTableProps) {
-  const columns: ColumnDef<Lead>[] = [
-    {
-      key: "name",
-      header: "Lead",
-      width: "w-48",
-      shrink: true,
-      render: (lead) => (
-        <div className="min-w-0">
-          <Link
-            className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
-            href={`/dashboard/marketing/leads/${lead.id}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {lead.name}
-          </Link>
-          {lead.lastContact && (
-            <div className="mt-0.5 text-muted-foreground text-xs leading-tight">
-              Last contact: {formatTimeAgo(lead.lastContact)}
-            </div>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "contact",
-      header: "Contact",
-      width: "flex-1",
-      render: (lead) => (
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1">
-            <Mail className="h-3 w-3 text-muted-foreground" />
-            <span className="text-muted-foreground text-xs leading-tight">
-              {lead.email}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Phone className="h-3 w-3 text-muted-foreground" />
-            <span className="text-muted-foreground text-xs leading-tight">
-              {lead.phone}
-            </span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: "source",
-      header: "Source",
-      width: "w-32",
-      shrink: true,
-      hideOnMobile: true,
-      render: (lead) => (
-        <Badge
-          className={cn(
-            "font-medium text-xs",
-            "border-border/50 bg-background text-muted-foreground"
-          )}
-          variant="outline"
-        >
-          {getSourceLabel(lead.source)}
-        </Badge>
-      ),
-    },
-    {
-      key: "score",
-      header: "Score",
-      width: "w-28",
-      shrink: true,
-      render: (lead) => getScoreBadge(lead.score),
-    },
-    {
-      key: "stage",
-      header: "Stage",
-      width: "w-32",
-      shrink: true,
-      hideOnMobile: true,
-      render: (lead) => getStageBadge(lead.stage),
-    },
-    {
-      key: "value",
-      header: "Est. Value",
-      width: "w-28",
-      shrink: true,
-      align: "right",
-      render: (lead) => (
-        <span className="font-semibold tabular-nums">
-          {formatCurrency(lead.value)}
-        </span>
-      ),
-    },
-    {
-      key: "createdAt",
-      header: "Created",
-      width: "w-24",
-      shrink: true,
-      hideOnMobile: true,
-      render: (lead) => (
-        <span className="text-muted-foreground text-xs tabular-nums leading-tight">
-          {formatTimeAgo(lead.createdAt)}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "",
-      width: "w-10",
-      shrink: true,
-      render: (_lead) => (
-        <div data-no-row-click>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="h-8 w-8" size="icon" variant="ghost">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                <Mail className="mr-2 h-4 w-4" />
-                Send Email
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Send Text
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                <Phone className="mr-2 h-4 w-4" />
-                Call Lead
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Convert to Job
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                View Details
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      ),
-    },
-  ];
+export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps) {
+	const columns: ColumnDef<Lead>[] = [
+		{
+			key: "name",
+			header: "Lead",
+			width: "w-48",
+			shrink: true,
+			render: (lead) => (
+				<div className="min-w-0">
+					<Link
+						className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+						href={`/dashboard/marketing/leads/${lead.id}`}
+						onClick={(e) => e.stopPropagation()}
+					>
+						{lead.name}
+					</Link>
+					{lead.lastContact && (
+						<div className="mt-0.5 text-muted-foreground text-xs leading-tight">
+							Last contact: {formatTimeAgo(lead.lastContact)}
+						</div>
+					)}
+				</div>
+			),
+		},
+		{
+			key: "contact",
+			header: "Contact",
+			width: "flex-1",
+			render: (lead) => (
+				<div className="flex flex-col gap-1">
+					<div className="flex items-center gap-1">
+						<Mail className="h-3 w-3 text-muted-foreground" />
+						<span className="text-muted-foreground text-xs leading-tight">{lead.email}</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<Phone className="h-3 w-3 text-muted-foreground" />
+						<span className="text-muted-foreground text-xs leading-tight">{lead.phone}</span>
+					</div>
+				</div>
+			),
+		},
+		{
+			key: "source",
+			header: "Source",
+			width: "w-32",
+			shrink: true,
+			hideOnMobile: true,
+			render: (lead) => (
+				<Badge
+					className={cn("font-medium text-xs", "border-border/50 bg-background text-muted-foreground")}
+					variant="outline"
+				>
+					{getSourceLabel(lead.source)}
+				</Badge>
+			),
+		},
+		{
+			key: "score",
+			header: "Score",
+			width: "w-28",
+			shrink: true,
+			render: (lead) => getScoreBadge(lead.score),
+		},
+		{
+			key: "stage",
+			header: "Stage",
+			width: "w-32",
+			shrink: true,
+			hideOnMobile: true,
+			render: (lead) => getStageBadge(lead.stage),
+		},
+		{
+			key: "value",
+			header: "Est. Value",
+			width: "w-28",
+			shrink: true,
+			align: "right",
+			render: (lead) => <span className="font-semibold tabular-nums">{formatCurrency(lead.value)}</span>,
+		},
+		{
+			key: "createdAt",
+			header: "Created",
+			width: "w-24",
+			shrink: true,
+			hideOnMobile: true,
+			render: (lead) => (
+				<span className="text-muted-foreground text-xs tabular-nums leading-tight">
+					{formatTimeAgo(lead.createdAt)}
+				</span>
+			),
+		},
+		{
+			key: "actions",
+			header: "",
+			width: "w-10",
+			shrink: true,
+			render: (_lead) => (
+				<div data-no-row-click>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button className="h-8 w-8" size="icon" variant="ghost">
+								<MoreHorizontal className="h-4 w-4" />
+								<span className="sr-only">Open menu</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Actions</DropdownMenuLabel>
+							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+								<Mail className="mr-2 h-4 w-4" />
+								Send Email
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+								<MessageSquare className="mr-2 h-4 w-4" />
+								Send Text
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+								<Phone className="mr-2 h-4 w-4" />
+								Call Lead
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+								<UserPlus className="mr-2 h-4 w-4" />
+								Convert to Job
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>View Details</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
+			),
+		},
+	];
 
-  const bulkActions: BulkAction[] = [
-    {
-      label: "Send Email",
-      icon: <Mail className="h-4 w-4" />,
-      onClick: (_selectedIds) => {},
-    },
-    {
-      label: "Send Text",
-      icon: <MessageSquare className="h-4 w-4" />,
-      onClick: (_selectedIds) => {},
-    },
-    {
-      label: "Call",
-      icon: <Phone className="h-4 w-4" />,
-      onClick: (_selectedIds) => {},
-    },
-  ];
+	const bulkActions: BulkAction[] = [
+		{
+			label: "Send Email",
+			icon: <Mail className="h-4 w-4" />,
+			onClick: (_selectedIds) => {},
+		},
+		{
+			label: "Send Text",
+			icon: <MessageSquare className="h-4 w-4" />,
+			onClick: (_selectedIds) => {},
+		},
+		{
+			label: "Call",
+			icon: <Phone className="h-4 w-4" />,
+			onClick: (_selectedIds) => {},
+		},
+	];
 
-  const handleRowClick = (lead: Lead) => {
-    window.location.href = `/dashboard/marketing/leads/${lead.id}`;
-  };
+	const handleRowClick = (lead: Lead) => {
+		window.location.href = `/dashboard/marketing/leads/${lead.id}`;
+	};
 
-  const searchFilter = (lead: Lead, query: string) => {
-    const searchStr = query.toLowerCase();
-    return (
-      lead.name.toLowerCase().includes(searchStr) ||
-      lead.email.toLowerCase().includes(searchStr) ||
-      lead.phone.includes(searchStr)
-    );
-  };
+	const searchFilter = (lead: Lead, query: string) => {
+		const searchStr = query.toLowerCase();
+		return (
+			lead.name.toLowerCase().includes(searchStr) ||
+			lead.email.toLowerCase().includes(searchStr) ||
+			lead.phone.includes(searchStr)
+		);
+	};
 
-  return (
-    <FullWidthDataTable
-      bulkActions={bulkActions}
-      columns={columns}
-      data={leads}
-      emptyIcon={
-        <UserPlus className="mx-auto h-12 w-12 text-muted-foreground" />
-      }
-      emptyMessage="No leads found"
-      enableSelection={true}
-      getItemId={(lead) => lead.id}
-      itemsPerPage={itemsPerPage}
-      onRefresh={() => window.location.reload()}
-      onRowClick={handleRowClick}
-      searchFilter={searchFilter}
-      searchPlaceholder="Search leads by name, email, or phone..."
-      showRefresh={false}
-    />
-  );
+	return (
+		<FullWidthDataTable
+			bulkActions={bulkActions}
+			columns={columns}
+			data={leads}
+			emptyIcon={<UserPlus className="mx-auto h-12 w-12 text-muted-foreground" />}
+			emptyMessage="No leads found"
+			enableSelection={true}
+			getItemId={(lead) => lead.id}
+			itemsPerPage={itemsPerPage}
+			onRefresh={() => window.location.reload()}
+			onRowClick={handleRowClick}
+			searchFilter={searchFilter}
+			searchPlaceholder="Search leads by name, email, or phone..."
+			showRefresh={false}
+		/>
+	);
 }

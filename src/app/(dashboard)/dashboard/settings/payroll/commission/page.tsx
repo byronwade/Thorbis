@@ -10,9 +10,9 @@ import { UcommissionData } from "@/components/settings/commission/commission-dat
 import { UcommissionSkeleton } from "@/components/settings/commission/commission-skeleton";
 
 export default function UcommissionPage() {
-  return (
-    <Suspense fallback={<UcommissionSkeleton />}>
-      <UcommissionData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UcommissionSkeleton />}>
+			<UcommissionData />
+		</Suspense>
+	);
 }

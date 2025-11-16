@@ -18,9 +18,9 @@ import { CommunicationSkeleton } from "@/components/communication/communication-
 // export const experimental_ppr = true;
 
 export default function CommunicationPage() {
-  return (
-    <Suspense fallback={<CommunicationSkeleton />}>
-      <CommunicationData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<CommunicationSkeleton />}>
+			<CommunicationData />
+		</Suspense>
+	);
 }

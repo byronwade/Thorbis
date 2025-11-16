@@ -22,9 +22,9 @@ const ACTIVE_COMPANY_COOKIE = "active_company_id";
  * Company Info
  */
 export type CompanyInfo = {
-  id: string;
-  name: string;
-  logo?: string | null;
+	id: string;
+	name: string;
+	logo?: string | null;
 };
 
 /**
@@ -36,20 +36,20 @@ export type CompanyInfo = {
  * @returns Company ID string or null if user has no companies
  */
 export async function getActiveCompanyId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const activeCompanyId = cookieStore.get(ACTIVE_COMPANY_COOKIE)?.value;
+	const cookieStore = await cookies();
+	const activeCompanyId = cookieStore.get(ACTIVE_COMPANY_COOKIE)?.value;
 
-  if (activeCompanyId) {
-    // Verify user still has access to this company
-    const hasAccess = await verifyCompanyAccess(activeCompanyId);
-    if (hasAccess) {
-      return activeCompanyId;
-    }
-  }
+	if (activeCompanyId) {
+		// Verify user still has access to this company
+		const hasAccess = await verifyCompanyAccess(activeCompanyId);
+		if (hasAccess) {
+			return activeCompanyId;
+		}
+	}
 
-  // Fall back to first available company
-  const companies = await getUserCompanies();
-  return companies[0]?.id || null;
+	// Fall back to first available company
+	const companies = await getUserCompanies();
+	return companies[0]?.id || null;
 }
 
 /**
@@ -60,24 +60,24 @@ export async function getActiveCompanyId(): Promise<string | null> {
  * @returns CompanyInfo object or null
  */
 export async function getActiveCompany(): Promise<CompanyInfo | null> {
-  const companyId = await getActiveCompanyId();
-  if (!companyId) {
-    return null;
-  }
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return null;
+	}
 
-  const supabase = await createClient();
-  if (!supabase) {
-    return null;
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		return null;
+	}
 
-  const { data: company } = await supabase
-    .from("companies")
-    .select("id, name, logo")
-    .eq("id", companyId)
-    .is("deleted_at", null) // Exclude archived companies
-    .single();
+	const { data: company } = await supabase
+		.from("companies")
+		.select("id, name, logo")
+		.eq("id", companyId)
+		.is("deleted_at", null) // Exclude archived companies
+		.single();
 
-  return company;
+	return company;
 }
 
 /**
@@ -90,21 +90,21 @@ export async function getActiveCompany(): Promise<CompanyInfo | null> {
  * @throws Error if user doesn't have access to this company
  */
 export async function setActiveCompany(companyId: string): Promise<void> {
-  // Verify access before switching
-  const hasAccess = await verifyCompanyAccess(companyId);
+	// Verify access before switching
+	const hasAccess = await verifyCompanyAccess(companyId);
 
-  if (!hasAccess) {
-    throw new Error("You don't have access to this company");
-  }
+	if (!hasAccess) {
+		throw new Error("You don't have access to this company");
+	}
 
-  const cookieStore = await cookies();
-  cookieStore.set(ACTIVE_COMPANY_COOKIE, companyId, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    path: "/",
-  });
+	const cookieStore = await cookies();
+	cookieStore.set(ACTIVE_COMPANY_COOKIE, companyId, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		maxAge: 60 * 60 * 24 * 30, // 30 days
+		path: "/",
+	});
 }
 
 /**
@@ -113,8 +113,8 @@ export async function setActiveCompany(companyId: string): Promise<void> {
  * Removes the active company cookie.
  */
 export async function clearActiveCompany(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(ACTIVE_COMPANY_COOKIE);
+	const cookieStore = await cookies();
+	cookieStore.delete(ACTIVE_COMPANY_COOKIE);
 }
 
 /**
@@ -125,20 +125,20 @@ export async function clearActiveCompany(): Promise<void> {
  * @returns Array of CompanyInfo objects
  */
 export async function getUserCompanies(): Promise<CompanyInfo[]> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return [];
-  }
+	const user = await getCurrentUser();
+	if (!user) {
+		return [];
+	}
 
-  const supabase = await createClient();
-  if (!supabase) {
-    return [];
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		return [];
+	}
 
-  const { data: memberships } = await supabase
-    .from("team_members")
-    .select(
-      `
+	const { data: memberships } = await supabase
+		.from("team_members")
+		.select(
+			`
       company_id,
       companies!inner (
         id,
@@ -147,20 +147,20 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
         deleted_at
       )
     `
-    )
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .is("companies.deleted_at", null); // Exclude archived companies
+		)
+		.eq("user_id", user.id)
+		.eq("status", "active")
+		.is("companies.deleted_at", null); // Exclude archived companies
 
-  if (!memberships) {
-    return [];
-  }
+	if (!memberships) {
+		return [];
+	}
 
-  return memberships.map((m: any) => ({
-    id: m.companies.id,
-    name: m.companies.name,
-    logo: m.companies.logo,
-  }));
+	return memberships.map((m: any) => ({
+		id: m.companies.id,
+		name: m.companies.name,
+		logo: m.companies.logo,
+	}));
 }
 
 /**
@@ -172,38 +172,38 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
  * @returns true if user has access, false otherwise
  */
 async function verifyCompanyAccess(companyId: string): Promise<boolean> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return false;
-  }
+	const user = await getCurrentUser();
+	if (!user) {
+		return false;
+	}
 
-  const supabase = await createClient();
-  if (!supabase) {
-    return false;
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		return false;
+	}
 
-  // Check if company exists and is not archived
-  const { data: company } = await supabase
-    .from("companies")
-    .select("id")
-    .eq("id", companyId)
-    .is("deleted_at", null) // Exclude archived companies
-    .single();
+	// Check if company exists and is not archived
+	const { data: company } = await supabase
+		.from("companies")
+		.select("id")
+		.eq("id", companyId)
+		.is("deleted_at", null) // Exclude archived companies
+		.single();
 
-  if (!company) {
-    return false;
-  }
+	if (!company) {
+		return false;
+	}
 
-  // Check if user has active membership
-  const { data } = await supabase
-    .from("team_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("company_id", companyId)
-    .eq("status", "active")
-    .single();
+	// Check if user has active membership
+	const { data } = await supabase
+		.from("team_members")
+		.select("id")
+		.eq("user_id", user.id)
+		.eq("company_id", companyId)
+		.eq("status", "active")
+		.single();
 
-  return !!data;
+	return !!data;
 }
 
 /**
@@ -216,13 +216,13 @@ async function verifyCompanyAccess(companyId: string): Promise<boolean> {
  * @throws Error if no active company
  */
 export async function requireActiveCompany(): Promise<string> {
-  const companyId = await getActiveCompanyId();
+	const companyId = await getActiveCompanyId();
 
-  if (!companyId) {
-    throw new Error("No active company selected. Please select a company.");
-  }
+	if (!companyId) {
+		throw new Error("No active company selected. Please select a company.");
+	}
 
-  return companyId;
+	return companyId;
 }
 
 /**
@@ -233,8 +233,8 @@ export async function requireActiveCompany(): Promise<string> {
  * @returns true if user has 2+ companies, false otherwise
  */
 export async function hasMultipleCompanies(): Promise<boolean> {
-  const companies = await getUserCompanies();
-  return companies.length > 1;
+	const companies = await getUserCompanies();
+	return companies.length > 1;
 }
 
 /**
@@ -246,51 +246,42 @@ export async function hasMultipleCompanies(): Promise<boolean> {
  * @returns true if company has active/trialing subscription, false otherwise
  */
 export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return false;
-  }
+	const user = await getCurrentUser();
+	if (!user) {
+		return false;
+	}
 
-  const supabase = await createClient();
-  if (!supabase) {
-    return false;
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		return false;
+	}
 
-  const activeCompanyId = await getActiveCompanyId();
-  if (!activeCompanyId) {
-    return false;
-  }
+	const activeCompanyId = await getActiveCompanyId();
+	if (!activeCompanyId) {
+		return false;
+	}
 
-  // Check the ACTIVE company's payment status
-  const { data: teamMember } = await supabase
-    .from("team_members")
-    .select(
-      "company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)"
-    )
-    .eq("user_id", user.id)
-    .eq("company_id", activeCompanyId)
-    .eq("status", "active")
-    .maybeSingle();
+	// Check the ACTIVE company's payment status
+	const { data: teamMember } = await supabase
+		.from("team_members")
+		.select("company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)")
+		.eq("user_id", user.id)
+		.eq("company_id", activeCompanyId)
+		.eq("status", "active")
+		.maybeSingle();
 
-  if (!teamMember) {
-    return false;
-  }
+	if (!teamMember) {
+		return false;
+	}
 
-  const companies = Array.isArray(teamMember.companies)
-    ? teamMember.companies[0]
-    : teamMember.companies;
-  const subscriptionStatus = companies?.stripe_subscription_status;
-  const subscriptionActive =
-    subscriptionStatus === "active" || subscriptionStatus === "trialing";
-  const onboardingProgress =
-    (companies?.onboarding_progress as Record<string, unknown>) || null;
-  const onboardingFinished = isOnboardingComplete({
-    progress: onboardingProgress,
-    completedAt: companies?.onboarding_completed_at ?? null,
-  });
+	const companies = Array.isArray(teamMember.companies) ? teamMember.companies[0] : teamMember.companies;
+	const subscriptionStatus = companies?.stripe_subscription_status;
+	const subscriptionActive = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+	const onboardingProgress = (companies?.onboarding_progress as Record<string, unknown>) || null;
+	const onboardingFinished = isOnboardingComplete({
+		progress: onboardingProgress,
+		completedAt: companies?.onboarding_completed_at ?? null,
+	});
 
-  return (
-    (subscriptionActive && onboardingFinished) ||
-    process.env.NODE_ENV === "development"
-  );
+	return (subscriptionActive && onboardingFinished) || process.env.NODE_ENV === "development";
 }

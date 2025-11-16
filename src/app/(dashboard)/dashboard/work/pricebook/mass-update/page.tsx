@@ -10,9 +10,9 @@ import { UmassUupdateData } from "@/components/work/mass-update/mass-update-data
 import { UmassUupdateSkeleton } from "@/components/work/mass-update/mass-update-skeleton";
 
 export default function UmassUupdatePage() {
-  return (
-    <Suspense fallback={<UmassUupdateSkeleton />}>
-      <UmassUupdateData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UmassUupdateSkeleton />}>
+			<UmassUupdateData />
+		</Suspense>
+	);
 }

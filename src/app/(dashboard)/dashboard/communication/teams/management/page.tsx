@@ -9,10 +9,5 @@
 import { TeamChat } from "@/components/communication/team-chat";
 
 export default function ManagementChannelPage() {
-  return (
-    <TeamChat
-      channelDescription="Management team discussions and strategic planning"
-      channelName="management"
-    />
-  );
+	return <TeamChat channelDescription="Management team discussions and strategic planning" channelName="management" />;
 }

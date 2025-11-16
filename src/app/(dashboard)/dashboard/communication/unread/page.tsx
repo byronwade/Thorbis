@@ -13,9 +13,9 @@ import { UnreadMessagesData } from "@/components/communication/unread/unread-dat
 import { UnreadMessagesSkeleton } from "@/components/communication/unread/unread-skeleton";
 
 export default function UnreadMessagesPage() {
-  return (
-    <Suspense fallback={<UnreadMessagesSkeleton />}>
-      <UnreadMessagesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UnreadMessagesSkeleton />}>
+			<UnreadMessagesData />
+		</Suspense>
+	);
 }

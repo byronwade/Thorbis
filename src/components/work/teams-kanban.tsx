@@ -12,137 +12,116 @@ import type { TeamMember } from "@/components/work/teams-table";
 type TeamMemberStatus = "active" | "invited" | "suspended";
 
 type TeamsKanbanItem = KanbanItemBase & {
-  member: TeamMember;
+	member: TeamMember;
 };
 
 const TEAM_COLUMNS: Array<{
-  id: TeamMemberStatus;
-  name: string;
-  accentColor: string;
+	id: TeamMemberStatus;
+	name: string;
+	accentColor: string;
 }> = [
-  { id: "active", name: "Active", accentColor: "#22C55E" },
-  { id: "invited", name: "Invited", accentColor: "#F59E0B" },
-  { id: "suspended", name: "Suspended", accentColor: "#EF4444" },
+	{ id: "active", name: "Active", accentColor: "#22C55E" },
+	{ id: "invited", name: "Invited", accentColor: "#F59E0B" },
+	{ id: "suspended", name: "Suspended", accentColor: "#EF4444" },
 ];
 
-const _columnLabel = new Map(
-  TEAM_COLUMNS.map((column) => [column.id, column.name])
-);
+const _columnLabel = new Map(TEAM_COLUMNS.map((column) => [column.id, column.name]));
 
 function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+	return name
+		.split(" ")
+		.map((n) => n[0])
+		.join("")
+		.toUpperCase();
 }
 
 function MemberCard({ item }: { item: TeamsKanbanItem }) {
-  const { member } = item;
+	const { member } = item;
 
-  return (
-    <div className="rounded-xl border border-border/70 bg-background p-4 shadow-sm transition-shadow hover:shadow-md">
-      <div className="flex items-start gap-3">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={member.avatar} />
-          <AvatarFallback className="text-xs">
-            {getInitials(member.name)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="truncate font-medium text-sm">{member.name}</p>
-              <p className="truncate text-muted-foreground text-xs">
-                {member.email}
-              </p>
-            </div>
-            <Link href={`/dashboard/work/team/${member.id}`}>
-              <Button
-                className="h-6 w-6"
-                size="icon"
-                type="button"
-                variant="ghost"
-              >
-                <ArrowUpRight className="h-3 w-3" />
-                <span className="sr-only">View member</span>
-              </Button>
-            </Link>
-          </div>
+	return (
+		<div className="rounded-xl border border-border/70 bg-background p-4 shadow-sm transition-shadow hover:shadow-md">
+			<div className="flex items-start gap-3">
+				<Avatar className="h-10 w-10">
+					<AvatarImage src={member.avatar} />
+					<AvatarFallback className="text-xs">{getInitials(member.name)}</AvatarFallback>
+				</Avatar>
+				<div className="min-w-0 flex-1">
+					<div className="flex items-start justify-between gap-2">
+						<div className="min-w-0">
+							<p className="truncate font-medium text-sm">{member.name}</p>
+							<p className="truncate text-muted-foreground text-xs">{member.email}</p>
+						</div>
+						<Link href={`/dashboard/work/team/${member.id}`}>
+							<Button className="h-6 w-6" size="icon" type="button" variant="ghost">
+								<ArrowUpRight className="h-3 w-3" />
+								<span className="sr-only">View member</span>
+							</Button>
+						</Link>
+					</div>
 
-          {member.jobTitle && (
-            <p className="mt-1 text-muted-foreground text-xs">
-              {member.jobTitle}
-            </p>
-          )}
+					{member.jobTitle && <p className="mt-1 text-muted-foreground text-xs">{member.jobTitle}</p>}
 
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {member.roleName && (
-              <Badge
-                className="text-xs"
-                style={{
-                  backgroundColor: member.roleColor || "#6b7280",
-                  color: "white",
-                }}
-                variant="secondary"
-              >
-                <Shield className="mr-1 h-3 w-3" />
-                {member.roleName}
-              </Badge>
-            )}
-            {member.departmentName && (
-              <Badge
-                className="text-xs"
-                style={{
-                  backgroundColor: member.departmentColor || "#6b7280",
-                  color: "white",
-                }}
-                variant="outline"
-              >
-                <Building2 className="mr-1 h-3 w-3" />
-                {member.departmentName}
-              </Badge>
-            )}
-          </div>
+					<div className="mt-3 flex flex-wrap items-center gap-2">
+						{member.roleName && (
+							<Badge
+								className="text-xs"
+								style={{
+									backgroundColor: member.roleColor || "#6b7280",
+									color: "white",
+								}}
+								variant="secondary"
+							>
+								<Shield className="mr-1 h-3 w-3" />
+								{member.roleName}
+							</Badge>
+						)}
+						{member.departmentName && (
+							<Badge
+								className="text-xs"
+								style={{
+									backgroundColor: member.departmentColor || "#6b7280",
+									color: "white",
+								}}
+								variant="outline"
+							>
+								<Building2 className="mr-1 h-3 w-3" />
+								{member.departmentName}
+							</Badge>
+						)}
+					</div>
 
-          <div className="mt-2 flex items-center gap-2 text-muted-foreground text-xs">
-            <User className="h-3 w-3" />
-            <span>Joined {member.joinedDate}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+					<div className="mt-2 flex items-center gap-2 text-muted-foreground text-xs">
+						<User className="h-3 w-3" />
+						<span>Joined {member.joinedDate}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export function TeamsKanban({ members }: { members: TeamMember[] }) {
-  return (
-    <EntityKanban<TeamMember, TeamMemberStatus>
-      columns={TEAM_COLUMNS}
-      data={members}
-      entityName="members"
-      mapToKanbanItem={(member) => ({
-        id: member.id,
-        columnId: member.status,
-        entity: member,
-        member,
-      })}
-      renderCard={(item) => (
-        <MemberCard
-          item={{ ...item, member: item.entity } as TeamsKanbanItem}
-        />
-      )}
-      renderDragOverlay={(item) => (
-        <div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-          <MemberCard
-            item={{ ...item, member: item.entity } as TeamsKanbanItem}
-          />
-        </div>
-      )}
-      updateEntityStatus={(member, newStatus) => ({
-        ...member,
-        status: newStatus,
-      })}
-    />
-  );
+	return (
+		<EntityKanban<TeamMember, TeamMemberStatus>
+			columns={TEAM_COLUMNS}
+			data={members}
+			entityName="members"
+			mapToKanbanItem={(member) => ({
+				id: member.id,
+				columnId: member.status,
+				entity: member,
+				member,
+			})}
+			renderCard={(item) => <MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />}
+			renderDragOverlay={(item) => (
+				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+					<MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />
+				</div>
+			)}
+			updateEntityStatus={(member, newStatus) => ({
+				...member,
+				status: newStatus,
+			})}
+		/>
+	);
 }

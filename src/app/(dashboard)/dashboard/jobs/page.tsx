@@ -14,11 +14,11 @@ import { JobsShell } from "@/components/jobs/jobs-shell";
 import { JobsSkeleton } from "@/components/jobs/jobs-skeleton";
 
 export default function JobsPage() {
-  return (
-    <JobsShell>
-      <Suspense fallback={<JobsSkeleton />}>
-        <JobsData />
-      </Suspense>
-    </JobsShell>
-  );
+	return (
+		<JobsShell>
+			<Suspense fallback={<JobsSkeleton />}>
+				<JobsData />
+			</Suspense>
+		</JobsShell>
+	);
 }

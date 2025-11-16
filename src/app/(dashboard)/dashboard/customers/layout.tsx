@@ -11,5 +11,5 @@ import { CustomersSectionLayout } from "@/components/customers/customers-section
  * Performance: Pure server component, no client JS needed for the wrapper
  */
 export default function CustomersLayout({ children }: { children: ReactNode }) {
-  return <CustomersSectionLayout>{children}</CustomersSectionLayout>;
+	return <CustomersSectionLayout>{children}</CustomersSectionLayout>;
 }

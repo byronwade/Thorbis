@@ -13,9 +13,9 @@ import { PricebookEquipmentData } from "@/components/pricebook/equipment/pricebo
 import { PricebookEquipmentSkeleton } from "@/components/pricebook/equipment/pricebook-equipment-skeleton";
 
 export default function EquipmentRatesPage() {
-  return (
-    <Suspense fallback={<PricebookEquipmentSkeleton />}>
-      <PricebookEquipmentData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PricebookEquipmentSkeleton />}>
+			<PricebookEquipmentData />
+		</Suspense>
+	);
 }

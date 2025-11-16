@@ -25,150 +25,139 @@
 import { notFound, redirect } from "next/navigation";
 import { InvoicePageContent } from "@/components/invoices/invoice-page-content";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
-import {
-  getActiveCompanyId,
-  isActiveCompanyOnboardingComplete,
-} from "@/lib/auth/company-context";
+import { getActiveCompanyId, isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { generateInvoiceStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
 type InvoiceDetailDataProps = {
-  invoiceId: string;
+	invoiceId: string;
 };
 
 export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
-  const supabase = await createClient();
+	const supabase = await createClient();
 
-  if (!supabase) {
-    return notFound();
-  }
+	if (!supabase) {
+		return notFound();
+	}
 
-  // Get current user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+	// Get current user
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
 
-  if (!user) {
-    return notFound();
-  }
+	if (!user) {
+		return notFound();
+	}
 
-  // Check if active company has completed onboarding (has payment)
-  const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
+	// Check if active company has completed onboarding (has payment)
+	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
-  if (!isOnboardingComplete) {
-    // User hasn't completed onboarding or doesn't have an active company with payment
-    // Redirect to onboarding for better UX
-    redirect("/dashboard/welcome");
-  }
+	if (!isOnboardingComplete) {
+		// User hasn't completed onboarding or doesn't have an active company with payment
+		// Redirect to onboarding for better UX
+		redirect("/dashboard/welcome");
+	}
 
-  // Get active company ID
-  const activeCompanyId = await getActiveCompanyId();
+	// Get active company ID
+	const activeCompanyId = await getActiveCompanyId();
 
-  if (!activeCompanyId) {
-    // Should not happen if onboarding is complete, but handle gracefully
-    redirect("/dashboard/welcome");
-  }
+	if (!activeCompanyId) {
+		// Should not happen if onboarding is complete, but handle gracefully
+		redirect("/dashboard/welcome");
+	}
 
-  // Fetch invoice
-  const { data: invoice, error: invoiceError } = await supabase
-    .from("invoices")
-    .select("*")
-    .eq("id", invoiceId)
-    .single();
+	// Fetch invoice
+	const { data: invoice, error: invoiceError } = await supabase
+		.from("invoices")
+		.select("*")
+		.eq("id", invoiceId)
+		.single();
 
-  if (invoiceError || !invoice) {
-    return notFound();
-  }
+	if (invoiceError || !invoice) {
+		return notFound();
+	}
 
-  // Verify company access
-  if (invoice.company_id !== activeCompanyId) {
-    return notFound();
-  }
+	// Verify company access
+	if (invoice.company_id !== activeCompanyId) {
+		return notFound();
+	}
 
-  // Fetch related data in parallel (including estimate and contract for workflow timeline)
-  const [
-    { data: customer },
-    { data: company },
-    { data: job },
-    { data: property },
-    { data: estimate },
-    { data: contract },
-    { data: paymentMethods },
-    { data: invoicePayments },
-    { data: activities },
-    { data: notes },
-    { data: attachments },
-  ] = await Promise.all([
-    // Fetch customer with full details
-    supabase
-      .from("customers")
-      .select("*")
-      .eq("id", invoice.customer_id)
-      .single(),
+	// Fetch related data in parallel (including estimate and contract for workflow timeline)
+	const [
+		{ data: customer },
+		{ data: company },
+		{ data: job },
+		{ data: property },
+		{ data: estimate },
+		{ data: contract },
+		{ data: paymentMethods },
+		{ data: invoicePayments },
+		{ data: activities },
+		{ data: notes },
+		{ data: attachments },
+	] = await Promise.all([
+		// Fetch customer with full details
+		supabase
+			.from("customers")
+			.select("*")
+			.eq("id", invoice.customer_id)
+			.single(),
 
-    // Fetch company
-    supabase
-      .from("companies")
-      .select("*")
-      .eq("id", activeCompanyId)
-      .single(),
+		// Fetch company
+		supabase
+			.from("companies")
+			.select("*")
+			.eq("id", activeCompanyId)
+			.single(),
 
-    // Fetch job (if linked)
-    invoice.job_id
-      ? supabase
-          .from("jobs")
-          .select("id, job_number, title, property_id")
-          .eq("id", invoice.job_id)
-          .single()
-      : Promise.resolve({ data: null, error: null }),
+		// Fetch job (if linked)
+		invoice.job_id
+			? supabase.from("jobs").select("id, job_number, title, property_id").eq("id", invoice.job_id).single()
+			: Promise.resolve({ data: null, error: null }),
 
-    // Fetch property (if job has one)
-    invoice.job_id
-      ? supabase
-          .from("jobs")
-          .select("property_id")
-          .eq("id", invoice.job_id)
-          .single()
-          .then(async ({ data: jobData }) => {
-            if (jobData?.property_id) {
-              return supabase
-                .from("properties")
-                .select("*")
-                .eq("id", jobData.property_id)
-                .single();
-            }
-            return { data: null, error: null };
-          })
-      : Promise.resolve({ data: null, error: null }),
+		// Fetch property (if job has one)
+		invoice.job_id
+			? supabase
+					.from("jobs")
+					.select("property_id")
+					.eq("id", invoice.job_id)
+					.single()
+					.then(async ({ data: jobData }) => {
+						if (jobData?.property_id) {
+							return supabase.from("properties").select("*").eq("id", jobData.property_id).single();
+						}
+						return { data: null, error: null };
+					})
+			: Promise.resolve({ data: null, error: null }),
 
-    // Fetch estimate that generated this invoice (for workflow timeline)
-    supabase
-      .from("estimates")
-      .select("id, estimate_number, created_at, status")
-      .eq("id", invoice.converted_from_estimate_id || "")
-      .maybeSingle(),
+		// Fetch estimate that generated this invoice (for workflow timeline)
+		supabase
+			.from("estimates")
+			.select("id, estimate_number, created_at, status")
+			.eq("id", invoice.converted_from_estimate_id || "")
+			.maybeSingle(),
 
-    // Fetch contract related to this invoice (for workflow timeline)
-    supabase
-      .from("contracts")
-      .select("id, contract_number, created_at, status, signed_at")
-      .eq("invoice_id", invoiceId)
-      .is("deleted_at", null)
-      .maybeSingle(),
+		// Fetch contract related to this invoice (for workflow timeline)
+		supabase
+			.from("contracts")
+			.select("id, contract_number, created_at, status, signed_at")
+			.eq("invoice_id", invoiceId)
+			.is("deleted_at", null)
+			.maybeSingle(),
 
-    // Fetch customer payment methods
-    supabase
-      .from("customer_payment_methods")
-      .select("*")
-      .eq("customer_id", invoice.customer_id)
-      .eq("is_active", true)
-      .order("is_default", { ascending: false }),
+		// Fetch customer payment methods
+		supabase
+			.from("customer_payment_methods")
+			.select("*")
+			.eq("customer_id", invoice.customer_id)
+			.eq("is_active", true)
+			.order("is_default", { ascending: false }),
 
-    // Fetch payments applied to this invoice via invoice_payments junction table
-    supabase
-      .from("invoice_payments")
-      .select(
-        `
+		// Fetch payments applied to this invoice via invoice_payments junction table
+		supabase
+			.from("invoice_payments")
+			.select(
+				`
         id,
         amount_applied,
         applied_at,
@@ -194,15 +183,15 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
           notes
         )
       `
-      )
-      .eq("invoice_id", invoiceId)
-      .order("applied_at", { ascending: false }),
+			)
+			.eq("invoice_id", invoiceId)
+			.order("applied_at", { ascending: false }),
 
-    // Fetch activity log for this invoice
-    supabase
-      .from("activity_log")
-      .select(
-        `
+		// Fetch activity log for this invoice
+		supabase
+			.from("activity_log")
+			.select(
+				`
         *,
         user:users!user_id(
           id,
@@ -211,111 +200,105 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
           last_name
         )
       `
-      )
-      .eq("entity_type", "invoice")
-      .eq("entity_id", invoiceId)
-      .order("created_at", { ascending: false })
-      .limit(50),
+			)
+			.eq("entity_type", "invoice")
+			.eq("entity_id", invoiceId)
+			.order("created_at", { ascending: false })
+			.limit(50),
 
-    // Fetch notes for this invoice
-    supabase
-      .from("notes")
-      .select("*")
-      .eq("entity_type", "invoice")
-      .eq("entity_id", invoiceId)
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false }),
+		// Fetch notes for this invoice
+		supabase
+			.from("notes")
+			.select("*")
+			.eq("entity_type", "invoice")
+			.eq("entity_id", invoiceId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false }),
 
-    // Fetch attachments for this invoice
-    supabase
-      .from("attachments")
-      .select("*")
-      .eq("entity_type", "invoice")
-      .eq("entity_id", invoiceId)
-      .order("created_at", { ascending: false }),
-  ]);
+		// Fetch attachments for this invoice
+		supabase
+			.from("attachments")
+			.select("*")
+			.eq("entity_type", "invoice")
+			.eq("entity_id", invoiceId)
+			.order("created_at", { ascending: false }),
+	]);
 
-  const invoiceCommunicationFilters: string[] = [`invoice_id.eq.${invoiceId}`];
-  if (invoice.customer_id) {
-    invoiceCommunicationFilters.push(`customer_id.eq.${invoice.customer_id}`);
-  }
-  if (invoice.job_id) {
-    invoiceCommunicationFilters.push(`job_id.eq.${invoice.job_id}`);
-  }
+	const invoiceCommunicationFilters: string[] = [`invoice_id.eq.${invoiceId}`];
+	if (invoice.customer_id) {
+		invoiceCommunicationFilters.push(`customer_id.eq.${invoice.customer_id}`);
+	}
+	if (invoice.job_id) {
+		invoiceCommunicationFilters.push(`job_id.eq.${invoice.job_id}`);
+	}
 
-  let invoiceCommunicationsQuery = supabase
-    .from("communications")
-    .select(
-      `
+	let invoiceCommunicationsQuery = supabase
+		.from("communications")
+		.select(
+			`
         *,
         customer:customers!customer_id(id, first_name, last_name)
       `
-    )
-    .eq("company_id", activeCompanyId)
-    .order("created_at", { ascending: false })
-    .limit(50);
+		)
+		.eq("company_id", activeCompanyId)
+		.order("created_at", { ascending: false })
+		.limit(50);
 
-  if (invoiceCommunicationFilters.length > 1) {
-    invoiceCommunicationsQuery = invoiceCommunicationsQuery.or(
-      invoiceCommunicationFilters.join(",")
-    );
-  } else {
-    invoiceCommunicationsQuery = invoiceCommunicationsQuery.eq(
-      "invoice_id",
-      invoiceId
-    );
-  }
+	if (invoiceCommunicationFilters.length > 1) {
+		invoiceCommunicationsQuery = invoiceCommunicationsQuery.or(invoiceCommunicationFilters.join(","));
+	} else {
+		invoiceCommunicationsQuery = invoiceCommunicationsQuery.eq("invoice_id", invoiceId);
+	}
 
-  const { data: invoiceCommunications, error: invoiceCommunicationsError } =
-    await invoiceCommunicationsQuery;
+	const { data: invoiceCommunications, error: invoiceCommunicationsError } = await invoiceCommunicationsQuery;
 
-  if (invoiceCommunicationsError) {
-  }
+	if (invoiceCommunicationsError) {
+	}
 
-  const communications =
-    (invoiceCommunications || []).filter((record, index, self) => {
-      if (!record?.id) {
-        return false;
-      }
-      return self.findIndex((entry) => entry.id === record.id) === index;
-    }) ?? [];
+	const communications =
+		(invoiceCommunications || []).filter((record, index, self) => {
+			if (!record?.id) {
+				return false;
+			}
+			return self.findIndex((entry) => entry.id === record.id) === index;
+		}) ?? [];
 
-  // Calculate metrics for stats bar
-  const metrics = {
-    totalAmount: invoice.total_amount || 0,
-    paidAmount: invoice.paid_amount || 0,
-    balanceAmount: invoice.balance_amount || 0,
-    dueDate: invoice.due_date,
-    status: invoice.status,
-    createdAt: invoice.created_at,
-  };
+	// Calculate metrics for stats bar
+	const metrics = {
+		totalAmount: invoice.total_amount || 0,
+		paidAmount: invoice.paid_amount || 0,
+		balanceAmount: invoice.balance_amount || 0,
+		dueDate: invoice.due_date,
+		status: invoice.status,
+		createdAt: invoice.created_at,
+	};
 
-  // Generate stats for toolbar
-  const stats = generateInvoiceStats(metrics);
+	// Generate stats for toolbar
+	const stats = generateInvoiceStats(metrics);
 
-  const invoiceData = {
-    invoice,
-    customer,
-    company,
-    job,
-    property,
-    estimate, // for workflow timeline
-    contract, // for workflow timeline
-    paymentMethods: paymentMethods || [],
-    invoicePayments: invoicePayments || [],
-    notes: notes || [],
-    activities: activities || [],
-    attachments: attachments || [],
-    communications,
-  };
+	const invoiceData = {
+		invoice,
+		customer,
+		company,
+		job,
+		property,
+		estimate, // for workflow timeline
+		contract, // for workflow timeline
+		paymentMethods: paymentMethods || [],
+		invoicePayments: invoicePayments || [],
+		notes: notes || [],
+		activities: activities || [],
+		attachments: attachments || [],
+		communications,
+	};
 
-  return (
-    <ToolbarStatsProvider stats={stats}>
-      <div className="flex h-full w-full flex-col overflow-auto">
-        <div className="mx-auto w-full max-w-7xl">
-          <InvoicePageContent entityData={invoiceData} metrics={metrics} />
-        </div>
-      </div>
-    </ToolbarStatsProvider>
-  );
+	return (
+		<ToolbarStatsProvider stats={stats}>
+			<div className="flex h-full w-full flex-col overflow-auto">
+				<div className="mx-auto w-full max-w-7xl">
+					<InvoicePageContent entityData={invoiceData} metrics={metrics} />
+				</div>
+			</div>
+		</ToolbarStatsProvider>
+	);
 }

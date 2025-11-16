@@ -10,9 +10,9 @@ import { UpushData } from "@/components/settings/push/push-data";
 import { UpushSkeleton } from "@/components/settings/push/push-skeleton";
 
 export default function UpushPage() {
-  return (
-    <Suspense fallback={<UpushSkeleton />}>
-      <UpushData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UpushSkeleton />}>
+			<UpushData />
+		</Suspense>
+	);
 }

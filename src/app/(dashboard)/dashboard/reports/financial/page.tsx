@@ -13,9 +13,9 @@ import { FinancialReportsData } from "@/components/reports/financial/financial-r
 import { FinancialReportsSkeleton } from "@/components/reports/financial/financial-reports-skeleton";
 
 export default function FinancialReportsPage() {
-  return (
-    <Suspense fallback={<FinancialReportsSkeleton />}>
-      <FinancialReportsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<FinancialReportsSkeleton />}>
+			<FinancialReportsData />
+		</Suspense>
+	);
 }

@@ -19,9 +19,9 @@ import { LeadsData } from "@/components/marketing/leads/leads-data";
 import { LeadsSkeleton } from "@/components/marketing/leads/leads-skeleton";
 
 export default function LeadsPage() {
-  return (
-    <Suspense fallback={<LeadsSkeleton />}>
-      <LeadsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<LeadsSkeleton />}>
+			<LeadsData />
+		</Suspense>
+	);
 }

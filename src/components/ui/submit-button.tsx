@@ -31,107 +31,107 @@ import { cn } from "@/lib/utils";
 type BaseButtonProps = React.ComponentProps<typeof Button>;
 
 export interface SubmitButtonProps extends Omit<BaseButtonProps, "type"> {
-  /**
-   * Loading text to show while submitting
-   */
-  loadingText?: string;
+	/**
+	 * Loading text to show while submitting
+	 */
+	loadingText?: string;
 
-  /**
-   * Success text to show on successful submission
-   */
-  successText?: string;
+	/**
+	 * Success text to show on successful submission
+	 */
+	successText?: string;
 
-  /**
-   * Show success state for this duration (ms)
-   */
-  successDuration?: number;
+	/**
+	 * Show success state for this duration (ms)
+	 */
+	successDuration?: number;
 
-  /**
-   * Custom loading icon
-   */
-  loadingIcon?: React.ReactNode;
+	/**
+	 * Custom loading icon
+	 */
+	loadingIcon?: React.ReactNode;
 
-  /**
-   * Custom success icon
-   */
-  successIcon?: React.ReactNode;
+	/**
+	 * Custom success icon
+	 */
+	successIcon?: React.ReactNode;
 
-  /**
-   * Custom error icon
-   */
-  errorIcon?: React.ReactNode;
+	/**
+	 * Custom error icon
+	 */
+	errorIcon?: React.ReactNode;
 }
 
 export function SubmitButton({
-  children,
-  loadingText,
-  successText,
-  successDuration = 2000,
-  loadingIcon,
-  successIcon,
-  errorIcon,
-  className,
-  disabled,
-  ...props
+	children,
+	loadingText,
+	successText,
+	successDuration = 2000,
+	loadingIcon,
+	successIcon,
+	errorIcon,
+	className,
+	disabled,
+	...props
 }: SubmitButtonProps) {
-  const { pending } = useFormStatus();
-  const [showSuccess, setShowSuccess] = React.useState(false);
-  const [showError, setShowError] = React.useState(false);
+	const { pending } = useFormStatus();
+	const [showSuccess, setShowSuccess] = React.useState(false);
+	const [showError, setShowError] = React.useState(false);
 
-  // Reset success state after duration
-  React.useEffect(() => {
-    if (showSuccess) {
-      const timeout = setTimeout(() => {
-        setShowSuccess(false);
-      }, successDuration);
-      return () => clearTimeout(timeout);
-    }
-  }, [showSuccess, successDuration]);
+	// Reset success state after duration
+	React.useEffect(() => {
+		if (showSuccess) {
+			const timeout = setTimeout(() => {
+				setShowSuccess(false);
+			}, successDuration);
+			return () => clearTimeout(timeout);
+		}
+	}, [showSuccess, successDuration]);
 
-  // Auto-clear error state after a delay
-  React.useEffect(() => {
-    if (showError) {
-      const timeout = setTimeout(() => {
-        setShowError(false);
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [showError]);
+	// Auto-clear error state after a delay
+	React.useEffect(() => {
+		if (showError) {
+			const timeout = setTimeout(() => {
+				setShowError(false);
+			}, 3000);
+			return () => clearTimeout(timeout);
+		}
+	}, [showError]);
 
-  const isDisabled = disabled || pending || showSuccess;
+	const isDisabled = disabled || pending || showSuccess;
 
-  return (
-    <Button
-      className={cn(
-        "transition-all duration-200",
-        showSuccess && "bg-success hover:bg-success",
-        showError && "animate-shake bg-destructive",
-        className
-      )}
-      disabled={isDisabled}
-      type="submit"
-      {...props}
-    >
-      {pending ? (
-        <>
-          {loadingIcon || <Loader2 className="mr-2 size-4 animate-spin" />}
-          {loadingText || children}
-        </>
-      ) : showSuccess ? (
-        <>
-          {successIcon || <Check className="mr-2 size-4" />}
-          {successText || "Success!"}
-        </>
-      ) : showError ? (
-        <>
-          {errorIcon || <AlertCircle className="mr-2 size-4" />}
-          Error
-        </>
-      ) : (
-        children
-      )}
-    </Button>
-  );
+	return (
+		<Button
+			className={cn(
+				"transition-all duration-200",
+				showSuccess && "bg-success hover:bg-success",
+				showError && "animate-shake bg-destructive",
+				className
+			)}
+			disabled={isDisabled}
+			type="submit"
+			{...props}
+		>
+			{pending ? (
+				<>
+					{loadingIcon || <Loader2 className="mr-2 size-4 animate-spin" />}
+					{loadingText || children}
+				</>
+			) : showSuccess ? (
+				<>
+					{successIcon || <Check className="mr-2 size-4" />}
+					{successText || "Success!"}
+				</>
+			) : showError ? (
+				<>
+					{errorIcon || <AlertCircle className="mr-2 size-4" />}
+					Error
+				</>
+			) : (
+				children
+			)}
+		</Button>
+	);
 }
 
 /**
@@ -141,12 +141,12 @@ export function SubmitButton({
  * (e.g., after receiving a response from a Server Action)
  */
 export function ControlledSubmitButton({
-  success,
-  error,
-  ...props
+	success,
+	error,
+	...props
 }: SubmitButtonProps & {
-  success?: boolean;
-  error?: boolean;
+	success?: boolean;
+	error?: boolean;
 }) {
-  return <SubmitButton {...props} />;
+	return <SubmitButton {...props} />;
 }

@@ -10,9 +10,9 @@ import { UcustomerUportalData } from "@/components/settings/customer-portal/cust
 import { UcustomerUportalSkeleton } from "@/components/settings/customer-portal/customer-portal-skeleton";
 
 export default function UcustomerUportalPage() {
-  return (
-    <Suspense fallback={<UcustomerUportalSkeleton />}>
-      <UcustomerUportalData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UcustomerUportalSkeleton />}>
+			<UcustomerUportalData />
+		</Suspense>
+	);
 }

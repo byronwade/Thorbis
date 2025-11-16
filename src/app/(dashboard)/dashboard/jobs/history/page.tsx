@@ -22,25 +22,23 @@ import { JobHistoryStats } from "@/components/jobs/history/job-history-stats";
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function JobHistoryPage() {
-  return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="font-bold text-3xl tracking-tight">Job History</h1>
-        <p className="text-muted-foreground">
-          Complete job history, completed services, and performance analytics
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Page header */}
+			<div>
+				<h1 className="font-bold text-3xl tracking-tight">Job History</h1>
+				<p className="text-muted-foreground">Complete job history, completed services, and performance analytics</p>
+			</div>
 
-      {/* Stats - Streams in first */}
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <JobHistoryStats />
-      </Suspense>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<JobHistoryStats />
+			</Suspense>
 
-      {/* Job history data - Streams in second */}
-      <Suspense fallback={<JobHistorySkeleton />}>
-        <JobHistoryData />
-      </Suspense>
-    </div>
-  );
+			{/* Job history data - Streams in second */}
+			<Suspense fallback={<JobHistorySkeleton />}>
+				<JobHistoryData />
+			</Suspense>
+		</div>
+	);
 }

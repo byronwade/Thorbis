@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { shouldRenderHeader } from "@/lib/layout/dashboard-routes";
 
 type ConditionalHeaderProps = {
-  children: ReactNode;
+	children: ReactNode;
 };
 
 /**
@@ -18,12 +18,12 @@ type ConditionalHeaderProps = {
  * without requiring a hard refresh.
  */
 export function ConditionalHeader({ children }: ConditionalHeaderProps) {
-  const pathname = usePathname() ?? "";
-  const showHeader = shouldRenderHeader(pathname);
+	const pathname = usePathname() ?? "";
+	const showHeader = shouldRenderHeader(pathname);
 
-  if (!showHeader) {
-    return null;
-  }
+	if (!showHeader) {
+		return null;
+	}
 
-  return <>{children}</>;
+	return <>{children}</>;
 }

@@ -15,16 +15,12 @@ import { Suspense } from "react";
 import { VendorDetailData } from "@/components/work/vendors/vendor-detail-data";
 import { VendorDetailSkeleton } from "@/components/work/vendors/vendor-detail-skeleton";
 
-export default async function WorkVendorDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id: vendorId } = await params;
+export default async function WorkVendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id: vendorId } = await params;
 
-  return (
-    <Suspense fallback={<VendorDetailSkeleton />}>
-      <VendorDetailData vendorId={vendorId} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<VendorDetailSkeleton />}>
+			<VendorDetailData vendorId={vendorId} />
+		</Suspense>
+	);
 }

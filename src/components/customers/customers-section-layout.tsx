@@ -7,13 +7,13 @@ import { SectionLayout } from "@/components/layout/section-layout";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 type CustomersSectionLayoutProps = {
-  children: ReactNode;
+	children: ReactNode;
 };
 
 // Define patterns for routes that should NOT have the main customers layout
 // These are typically detail pages that have their own specific layouts
 const DETAIL_PAGE_PATTERNS = [
-  /^\/dashboard\/customers\/[^/]+$/, // Customer detail page
+	/^\/dashboard\/customers\/[^/]+$/, // Customer detail page
 ];
 
 /**
@@ -24,50 +24,46 @@ const DETAIL_PAGE_PATTERNS = [
  *
  * This prevents nested layouts from composing incorrectly.
  */
-export function CustomersSectionLayout({
-  children,
-}: CustomersSectionLayoutProps) {
-  const pathname = usePathname() ?? "";
+export function CustomersSectionLayout({ children }: CustomersSectionLayoutProps) {
+	const pathname = usePathname() ?? "";
 
-  // Check if the current pathname matches any detail page pattern
-  const isDetailPage = DETAIL_PAGE_PATTERNS.some((pattern) =>
-    pattern.test(pathname)
-  );
+	// Check if the current pathname matches any detail page pattern
+	const isDetailPage = DETAIL_PAGE_PATTERNS.some((pattern) => pattern.test(pathname));
 
-  // If it's a detail page, just render children (the specific detail layout will apply)
-  if (isDetailPage) {
-    return <>{children}</>;
-  }
+	// If it's a detail page, just render children (the specific detail layout will apply)
+	if (isDetailPage) {
+		return <>{children}</>;
+	}
 
-  // Otherwise, apply the main customers section layout
-  const config: UnifiedLayoutConfig = {
-    structure: {
-      maxWidth: "full",
-      padding: "none",
-      gap: "none",
-      fixedHeight: true,
-      variant: "default",
-      background: "default",
-      insetPadding: "none",
-    },
-    header: {
-      show: true,
-    },
-    toolbar: {
-      show: true,
-      title: "Customers",
-      subtitle: "Manage customer relationships and contacts",
-      actions: <CustomersToolbarActions />,
-    },
-    sidebar: {
-      show: true,
-      variant: "standard",
-    },
-  };
+	// Otherwise, apply the main customers section layout
+	const config: UnifiedLayoutConfig = {
+		structure: {
+			maxWidth: "full",
+			padding: "none",
+			gap: "none",
+			fixedHeight: true,
+			variant: "default",
+			background: "default",
+			insetPadding: "none",
+		},
+		header: {
+			show: true,
+		},
+		toolbar: {
+			show: true,
+			title: "Customers",
+			subtitle: "Manage customer relationships and contacts",
+			actions: <CustomersToolbarActions />,
+		},
+		sidebar: {
+			show: true,
+			variant: "standard",
+		},
+	};
 
-  return (
-    <SectionLayout config={config} pathname={pathname}>
-      {children}
-    </SectionLayout>
-  );
+	return (
+		<SectionLayout config={config} pathname={pathname}>
+			{children}
+		</SectionLayout>
+	);
 }

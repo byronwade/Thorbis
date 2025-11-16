@@ -15,19 +15,17 @@ import { VendorsSkeleton } from "@/components/work/vendors/vendors-skeleton";
 import { VendorsStats } from "@/components/work/vendors/vendors-stats";
 
 export default function WorkVendorsPage() {
-  return (
-    <>
-      {/* Stats - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <VendorsStats />
-      </Suspense>
+	return (
+		<>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<VendorsStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <Suspense fallback={<VendorsSkeleton />}>
-        <VendorsData />
-      </Suspense>
-    </>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<Suspense fallback={<VendorsSkeleton />}>
+				<VendorsData />
+			</Suspense>
+		</>
+	);
 }

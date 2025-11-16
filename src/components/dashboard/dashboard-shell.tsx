@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 type DashboardShellProps = {
-  children: ReactNode;
+	children: ReactNode;
 };
 
 /**
@@ -14,10 +14,10 @@ type DashboardShellProps = {
  * readable layout for the dashboard content.
  */
 export function DashboardShell({ children }: DashboardShellProps) {
-  return (
-    <div className="mx-auto flex h-full w-full max-w-7xl flex-col gap-6 p-6">
-      {/* Dynamic content slots */}
-      {children}
-    </div>
-  );
+	return (
+		<div className="mx-auto flex h-full w-full max-w-7xl flex-col gap-6 p-6">
+			{/* Dynamic content slots */}
+			{children}
+		</div>
+	);
 }

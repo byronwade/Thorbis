@@ -10,9 +10,9 @@ import { UnotificationsData } from "@/components/settings/notifications/notifica
 import { UnotificationsSkeleton } from "@/components/settings/notifications/notifications-skeleton";
 
 export default function UnotificationsPage() {
-  return (
-    <Suspense fallback={<UnotificationsSkeleton />}>
-      <UnotificationsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UnotificationsSkeleton />}>
+			<UnotificationsData />
+		</Suspense>
+	);
 }

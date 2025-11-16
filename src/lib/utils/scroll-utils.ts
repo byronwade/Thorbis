@@ -13,21 +13,21 @@
  * @returns boolean - True if widget was found and scrolled to, false otherwise
  */
 export function scrollToWidget(
-  widgetId: string,
-  options: ScrollIntoViewOptions = {
-    behavior: "smooth",
-    block: "start",
-    inline: "nearest",
-  }
+	widgetId: string,
+	options: ScrollIntoViewOptions = {
+		behavior: "smooth",
+		block: "start",
+		inline: "nearest",
+	}
 ): boolean {
-  const element = document.getElementById(`widget-${widgetId}`);
+	const element = document.getElementById(`widget-${widgetId}`);
 
-  if (!element) {
-    return false;
-  }
+	if (!element) {
+		return false;
+	}
 
-  element.scrollIntoView(options);
-  return true;
+	element.scrollIntoView(options);
+	return true;
 }
 
 /**
@@ -37,31 +37,31 @@ export function scrollToWidget(
  * @returns Position object with top, bottom, height, and percentage from top
  */
 export function getWidgetPosition(widgetId: string): {
-  top: number;
-  bottom: number;
-  height: number;
-  percentageFromTop: number;
+	top: number;
+	bottom: number;
+	height: number;
+	percentageFromTop: number;
 } | null {
-  const element = document.getElementById(`widget-${widgetId}`);
+	const element = document.getElementById(`widget-${widgetId}`);
 
-  if (!element) {
-    return null;
-  }
+	if (!element) {
+		return null;
+	}
 
-  const rect = element.getBoundingClientRect();
-  const scrollTop = window.scrollY || document.documentElement.scrollTop;
-  const documentHeight = document.documentElement.scrollHeight;
+	const rect = element.getBoundingClientRect();
+	const scrollTop = window.scrollY || document.documentElement.scrollTop;
+	const documentHeight = document.documentElement.scrollHeight;
 
-  const top = rect.top + scrollTop;
-  const bottom = top + rect.height;
-  const percentageFromTop = (top / documentHeight) * 100;
+	const top = rect.top + scrollTop;
+	const bottom = top + rect.height;
+	const percentageFromTop = (top / documentHeight) * 100;
 
-  return {
-    top,
-    bottom,
-    height: rect.height,
-    percentageFromTop,
-  };
+	return {
+		top,
+		bottom,
+		height: rect.height,
+		percentageFromTop,
+	};
 }
 
 /**
@@ -71,21 +71,21 @@ export function getWidgetPosition(widgetId: string): {
  * @returns Array of widget positions with IDs
  */
 export function getAllWidgetPositions(widgetIds: string[]): Array<{
-  id: string;
-  top: number;
-  bottom: number;
-  height: number;
-  percentageFromTop: number;
+	id: string;
+	top: number;
+	bottom: number;
+	height: number;
+	percentageFromTop: number;
 }> {
-  const positions = widgetIds
-    .map((id) => {
-      const position = getWidgetPosition(id);
-      return position ? { id, ...position } : null;
-    })
-    .filter((p): p is NonNullable<typeof p> => p !== null);
+	const positions = widgetIds
+		.map((id) => {
+			const position = getWidgetPosition(id);
+			return position ? { id, ...position } : null;
+		})
+		.filter((p): p is NonNullable<typeof p> => p !== null);
 
-  // Sort by vertical position (top to bottom)
-  return positions.sort((a, b) => a.top - b.top);
+	// Sort by vertical position (top to bottom)
+	return positions.sort((a, b) => a.top - b.top);
 }
 
 /**
@@ -94,15 +94,15 @@ export function getAllWidgetPositions(widgetIds: string[]): Array<{
  * @returns number - Percentage scrolled (0-100)
  */
 export function getScrollPercentage(): number {
-  const scrollTop = window.scrollY || document.documentElement.scrollTop;
-  const scrollHeight = document.documentElement.scrollHeight;
-  const clientHeight = document.documentElement.clientHeight;
+	const scrollTop = window.scrollY || document.documentElement.scrollTop;
+	const scrollHeight = document.documentElement.scrollHeight;
+	const clientHeight = document.documentElement.clientHeight;
 
-  if (scrollHeight === clientHeight) {
-    return 0; // No scrolling possible
-  }
+	if (scrollHeight === clientHeight) {
+		return 0; // No scrolling possible
+	}
 
-  return (scrollTop / (scrollHeight - clientHeight)) * 100;
+	return (scrollTop / (scrollHeight - clientHeight)) * 100;
 }
 
 /**
@@ -113,22 +113,20 @@ export function getScrollPercentage(): number {
  * @returns boolean - True if widget is visible, false otherwise
  */
 export function isWidgetInViewport(widgetId: string, threshold = 0.5): boolean {
-  const element = document.getElementById(`widget-${widgetId}`);
+	const element = document.getElementById(`widget-${widgetId}`);
 
-  if (!element) {
-    return false;
-  }
+	if (!element) {
+		return false;
+	}
 
-  const rect = element.getBoundingClientRect();
-  const windowHeight =
-    window.innerHeight || document.documentElement.clientHeight;
+	const rect = element.getBoundingClientRect();
+	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 
-  // Calculate how much of the element is visible
-  const visibleHeight =
-    Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
-  const visiblePercentage = visibleHeight / rect.height;
+	// Calculate how much of the element is visible
+	const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
+	const visiblePercentage = visibleHeight / rect.height;
 
-  return visiblePercentage >= threshold;
+	return visiblePercentage >= threshold;
 }
 
 /**
@@ -138,18 +136,15 @@ export function isWidgetInViewport(widgetId: string, threshold = 0.5): boolean {
  * @param widgetIds - Array of all widget IDs in order
  * @returns boolean - True if scrolled to next widget, false if at end
  */
-export function scrollToNextWidget(
-  currentWidgetId: string,
-  widgetIds: string[]
-): boolean {
-  const currentIndex = widgetIds.indexOf(currentWidgetId);
+export function scrollToNextWidget(currentWidgetId: string, widgetIds: string[]): boolean {
+	const currentIndex = widgetIds.indexOf(currentWidgetId);
 
-  if (currentIndex === -1 || currentIndex === widgetIds.length - 1) {
-    return false; // Widget not found or already at last widget
-  }
+	if (currentIndex === -1 || currentIndex === widgetIds.length - 1) {
+		return false; // Widget not found or already at last widget
+	}
 
-  const nextWidgetId = widgetIds[currentIndex + 1];
-  return scrollToWidget(nextWidgetId);
+	const nextWidgetId = widgetIds[currentIndex + 1];
+	return scrollToWidget(nextWidgetId);
 }
 
 /**
@@ -159,16 +154,13 @@ export function scrollToNextWidget(
  * @param widgetIds - Array of all widget IDs in order
  * @returns boolean - True if scrolled to previous widget, false if at start
  */
-export function scrollToPreviousWidget(
-  currentWidgetId: string,
-  widgetIds: string[]
-): boolean {
-  const currentIndex = widgetIds.indexOf(currentWidgetId);
+export function scrollToPreviousWidget(currentWidgetId: string, widgetIds: string[]): boolean {
+	const currentIndex = widgetIds.indexOf(currentWidgetId);
 
-  if (currentIndex <= 0) {
-    return false; // Widget not found or already at first widget
-  }
+	if (currentIndex <= 0) {
+		return false; // Widget not found or already at first widget
+	}
 
-  const previousWidgetId = widgetIds[currentIndex - 1];
-  return scrollToWidget(previousWidgetId);
+	const previousWidgetId = widgetIds[currentIndex - 1];
+	return scrollToWidget(previousWidgetId);
 }

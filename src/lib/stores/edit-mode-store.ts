@@ -8,18 +8,18 @@
 import { create } from "zustand";
 
 type EditModeStore = {
-  isEditMode: boolean;
-  setIsEditMode: (value: boolean) => void;
-  toggleEditMode: () => void;
-  reset: () => void;
+	isEditMode: boolean;
+	setIsEditMode: (value: boolean) => void;
+	toggleEditMode: () => void;
+	reset: () => void;
 };
 
 export const useEditModeStore = create<EditModeStore>((set) => ({
-  isEditMode: false,
+	isEditMode: false,
 
-  setIsEditMode: (value) => set({ isEditMode: value }),
+	setIsEditMode: (value) => set({ isEditMode: value }),
 
-  toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
+	toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
 
-  reset: () => set({ isEditMode: false }),
+	reset: () => set({ isEditMode: false }),
 }));

@@ -20,23 +20,20 @@ import { Suspense } from "react";
 // Lazy load the heavy IncomingCallNotification component
 // Client-only because it uses browser APIs and WebRTC
 const IncomingCallNotification = dynamic(
-  () =>
-    import("@/components/layout/incoming-call-notification").then(
-      (mod) => mod.IncomingCallNotification
-    ),
-  {
-    loading: () => null, // No loading UI needed, it's invisible until there's a call
-    ssr: false, // Prevent server rendering to avoid hydration mismatches
-  }
+	() => import("@/components/layout/incoming-call-notification").then((mod) => mod.IncomingCallNotification),
+	{
+		loading: () => null, // No loading UI needed, it's invisible until there's a call
+		ssr: false, // Prevent server rendering to avoid hydration mismatches
+	}
 );
 
 /**
  * Wrapper component that lazy-loads the incoming call notification
  */
 export function IncomingCallNotificationWrapper() {
-  return (
-    <Suspense fallback={null}>
-      <IncomingCallNotification />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={null}>
+			<IncomingCallNotification />
+		</Suspense>
+	);
 }

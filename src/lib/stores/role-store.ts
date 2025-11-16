@@ -20,21 +20,21 @@ import type { UserRole } from "@/types/roles";
 import { USER_ROLES } from "@/types/roles";
 
 type RoleStore = {
-  role: UserRole;
-  isLoading: boolean;
-  isDevelopmentOverride: boolean; // True if using dev mode override
-  actualRole: UserRole | null; // Role from database
-  setRole: (role: UserRole) => void;
-  setActualRole: (role: UserRole | null) => void;
-  clearDevelopmentOverride: () => void;
-  reset: () => void;
+	role: UserRole;
+	isLoading: boolean;
+	isDevelopmentOverride: boolean; // True if using dev mode override
+	actualRole: UserRole | null; // Role from database
+	setRole: (role: UserRole) => void;
+	setActualRole: (role: UserRole | null) => void;
+	clearDevelopmentOverride: () => void;
+	reset: () => void;
 };
 
 const initialState = {
-  role: USER_ROLES.OWNER as UserRole,
-  isLoading: false,
-  isDevelopmentOverride: false,
-  actualRole: null,
+	role: USER_ROLES.OWNER as UserRole,
+	isLoading: false,
+	isDevelopmentOverride: false,
+	actualRole: null,
 };
 
 /**
@@ -43,67 +43,65 @@ const initialState = {
 const isDevelopment = process.env.NODE_ENV === "development";
 
 export const useRoleStore = create<RoleStore>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        ...initialState,
+	devtools(
+		persist(
+			(set, get) => ({
+				...initialState,
 
-        /**
-         * Set role (development mode override)
-         * This is used by the development settings page
-         */
-        setRole: (role) =>
-          set({
-            role,
-            isDevelopmentOverride: true,
-          }),
+				/**
+				 * Set role (development mode override)
+				 * This is used by the development settings page
+				 */
+				setRole: (role) =>
+					set({
+						role,
+						isDevelopmentOverride: true,
+					}),
 
-        /**
-         * Set actual role from database
-         * This is set when fetching user's real role
-         */
-        setActualRole: (actualRole) => {
-          const state = get();
+				/**
+				 * Set actual role from database
+				 * This is set when fetching user's real role
+				 */
+				setActualRole: (actualRole) => {
+					const state = get();
 
-          // If no development override, use actual role
-          if (state.isDevelopmentOverride && isDevelopment) {
-            // Keep development override but store actual role
-            set({ actualRole });
-          } else {
-            set({
-              actualRole,
-              role: actualRole || USER_ROLES.OWNER,
-              isDevelopmentOverride: false,
-            });
-          }
-        },
+					// If no development override, use actual role
+					if (state.isDevelopmentOverride && isDevelopment) {
+						// Keep development override but store actual role
+						set({ actualRole });
+					} else {
+						set({
+							actualRole,
+							role: actualRole || USER_ROLES.OWNER,
+							isDevelopmentOverride: false,
+						});
+					}
+				},
 
-        /**
-         * Clear development override and use actual role
-         */
-        clearDevelopmentOverride: () => {
-          const state = get();
-          set({
-            role: state.actualRole || USER_ROLES.OWNER,
-            isDevelopmentOverride: false,
-          });
-        },
+				/**
+				 * Clear development override and use actual role
+				 */
+				clearDevelopmentOverride: () => {
+					const state = get();
+					set({
+						role: state.actualRole || USER_ROLES.OWNER,
+						isDevelopmentOverride: false,
+					});
+				},
 
-        reset: () => set(initialState),
-      }),
-      {
-        name: "thorbis_dev_role", // localStorage key
-        partialize: (state) => ({
-          // Only persist in development mode
-          role: isDevelopment ? state.role : undefined,
-          isDevelopmentOverride: isDevelopment
-            ? state.isDevelopmentOverride
-            : false,
-        }),
-      }
-    ),
-    { name: "RoleStore" } // DevTools name
-  )
+				reset: () => set(initialState),
+			}),
+			{
+				name: "thorbis_dev_role", // localStorage key
+				partialize: (state) => ({
+					// Only persist in development mode
+					role: isDevelopment ? state.role : undefined,
+					isDevelopmentOverride: isDevelopment ? state.isDevelopmentOverride : false,
+				}),
+			}
+		),
+		{ name: "RoleStore" } // DevTools name
+	)
 );
 
 /**
@@ -121,14 +119,14 @@ export const useRoleStore = create<RoleStore>()(
  * ```
  */
 export async function initializeRoleFromDatabase() {
-  try {
-    // Import dynamically to avoid circular dependencies
-    const { getCurrentUserRole } = await import("@/actions/roles");
+	try {
+		// Import dynamically to avoid circular dependencies
+		const { getCurrentUserRole } = await import("@/actions/roles");
 
-    const result = await getCurrentUserRole();
+		const result = await getCurrentUserRole();
 
-    if (result.success && result.data) {
-      useRoleStore.getState().setActualRole(result.data);
-    }
-  } catch (_error) {}
+		if (result.success && result.data) {
+			useRoleStore.getState().setActualRole(result.data);
+		}
+	} catch (_error) {}
 }

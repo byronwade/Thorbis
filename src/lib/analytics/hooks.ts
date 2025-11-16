@@ -23,11 +23,11 @@ import type { AnalyticsEvent } from "./types";
  * });
  */
 export function useAnalytics() {
-  const track = useCallback((event: AnalyticsEvent) => {
-    trackEvent(event);
-  }, []);
+	const track = useCallback((event: AnalyticsEvent) => {
+		trackEvent(event);
+	}, []);
 
-  return { track };
+	return { track };
 }
 
 /**
@@ -37,13 +37,13 @@ export function useAnalytics() {
  * usePageView(); // Automatically tracks page views on route changes
  */
 export function usePageView(): void {
-  const pathname = usePathname();
+	const pathname = usePathname();
 
-  useEffect(() => {
-    if (pathname) {
-      trackPageView(pathname, document.title);
-    }
-  }, [pathname]);
+	useEffect(() => {
+		if (pathname) {
+			trackPageView(pathname, document.title);
+		}
+	}, [pathname]);
 }
 
 /**
@@ -62,77 +62,77 @@ export function usePageView(): void {
  * };
  */
 export function useFormTracking(formType: string) {
-  const track = useCallback((event: AnalyticsEvent) => {
-    trackEvent(event);
-  }, []);
+	const track = useCallback((event: AnalyticsEvent) => {
+		trackEvent(event);
+	}, []);
 
-  const trackFormStart = useCallback(() => {
-    track({
-      name: "form.started",
-      properties: { formType },
-    });
-  }, [formType, track]);
+	const trackFormStart = useCallback(() => {
+		track({
+			name: "form.started",
+			properties: { formType },
+		});
+	}, [formType, track]);
 
-  const trackFormSubmit = useCallback(
-    (properties?: { success?: boolean; errorCount?: number }) => {
-      track({
-        name: "form.submitted",
-        properties: {
-          formType,
-          ...properties,
-        },
-      });
-    },
-    [formType, track]
-  );
+	const trackFormSubmit = useCallback(
+		(properties?: { success?: boolean; errorCount?: number }) => {
+			track({
+				name: "form.submitted",
+				properties: {
+					formType,
+					...properties,
+				},
+			});
+		},
+		[formType, track]
+	);
 
-  const trackFormAbandon = useCallback(
-    (properties?: { fieldsCompleted?: number; totalFields?: number }) => {
-      track({
-        name: "form.abandoned",
-        properties: {
-          formType,
-          ...properties,
-        },
-      });
-    },
-    [formType, track]
-  );
+	const trackFormAbandon = useCallback(
+		(properties?: { fieldsCompleted?: number; totalFields?: number }) => {
+			track({
+				name: "form.abandoned",
+				properties: {
+					formType,
+					...properties,
+				},
+			});
+		},
+		[formType, track]
+	);
 
-  const trackFieldFocus = useCallback(
-    (fieldName: string) => {
-      track({
-        name: "form.field_focused",
-        properties: {
-          formType,
-          fieldName,
-        },
-      });
-    },
-    [formType, track]
-  );
+	const trackFieldFocus = useCallback(
+		(fieldName: string) => {
+			track({
+				name: "form.field_focused",
+				properties: {
+					formType,
+					fieldName,
+				},
+			});
+		},
+		[formType, track]
+	);
 
-  const trackValidationError = useCallback(
-    (fieldName: string, errorType: string) => {
-      track({
-        name: "form.validation_error",
-        properties: {
-          formType,
-          fieldName,
-          errorType,
-        },
-      });
-    },
-    [formType, track]
-  );
+	const trackValidationError = useCallback(
+		(fieldName: string, errorType: string) => {
+			track({
+				name: "form.validation_error",
+				properties: {
+					formType,
+					fieldName,
+					errorType,
+				},
+			});
+		},
+		[formType, track]
+	);
 
-  return {
-    trackFormStart,
-    trackFormSubmit,
-    trackFormAbandon,
-    trackFieldFocus,
-    trackValidationError,
-  };
+	return {
+		trackFormStart,
+		trackFormSubmit,
+		trackFormAbandon,
+		trackFieldFocus,
+		trackValidationError,
+	};
 }
 
 /**
@@ -144,49 +144,46 @@ export function useFormTracking(formType: string) {
  * trackFeatureUse("bulk_edit", { itemCount: 10 });
  */
 export function useFeatureTracking() {
-  const track = useCallback((event: AnalyticsEvent) => {
-    trackEvent(event);
-  }, []);
+	const track = useCallback((event: AnalyticsEvent) => {
+		trackEvent(event);
+	}, []);
 
-  const trackFeatureUse = useCallback(
-    (
-      featureName: string,
-      properties?: {
-        firstTime?: boolean;
-        context?: string;
-      }
-    ) => {
-      track({
-        name: "feature.used",
-        properties: {
-          featureName,
-          ...properties,
-        },
-      });
-    },
-    [track]
-  );
+	const trackFeatureUse = useCallback(
+		(
+			featureName: string,
+			properties?: {
+				firstTime?: boolean;
+				context?: string;
+			}
+		) => {
+			track({
+				name: "feature.used",
+				properties: {
+					featureName,
+					...properties,
+				},
+			});
+		},
+		[track]
+	);
 
-  const trackFeatureDiscovery = useCallback(
-    (
-      featureName: string,
-      source: "tooltip" | "tour" | "notification" | "search"
-    ) => {
-      track({
-        name: "feature.discovered",
-        properties: {
-          featureName,
-          source,
-        },
-      });
-    },
-    [track]
-  );
+	const trackFeatureDiscovery = useCallback(
+		(featureName: string, source: "tooltip" | "tour" | "notification" | "search") => {
+			track({
+				name: "feature.discovered",
+				properties: {
+					featureName,
+					source,
+				},
+			});
+		},
+		[track]
+	);
 
-  return {
-    trackFeatureUse,
-    trackFeatureDiscovery,
-  };
+	return {
+		trackFeatureUse,
+		trackFeatureDiscovery,
+	};
 }
 
 /**
@@ -198,57 +195,53 @@ export function useFeatureTracking() {
  * trackModalOpen("job-details");
  */
 export function useUITracking() {
-  const track = useCallback((event: AnalyticsEvent) => {
-    trackEvent(event);
-  }, []);
+	const track = useCallback((event: AnalyticsEvent) => {
+		trackEvent(event);
+	}, []);
 
-  const trackModalOpen = useCallback(
-    (modalType: string, trigger?: string) => {
-      track({
-        name: "ui.modal_opened",
-        properties: {
-          modalType,
-          trigger,
-        },
-      });
-    },
-    [track]
-  );
+	const trackModalOpen = useCallback(
+		(modalType: string, trigger?: string) => {
+			track({
+				name: "ui.modal_opened",
+				properties: {
+					modalType,
+					trigger,
+				},
+			});
+		},
+		[track]
+	);
 
-  const trackModalClose = useCallback(
-    (
-      modalType: string,
-      action: "submit" | "cancel" | "dismiss",
-      duration?: number
-    ) => {
-      track({
-        name: "ui.modal_closed",
-        properties: {
-          modalType,
-          action,
-          duration,
-        },
-      });
-    },
-    [track]
-  );
+	const trackModalClose = useCallback(
+		(modalType: string, action: "submit" | "cancel" | "dismiss", duration?: number) => {
+			track({
+				name: "ui.modal_closed",
+				properties: {
+					modalType,
+					action,
+					duration,
+				},
+			});
+		},
+		[track]
+	);
 
-  const trackTabSwitch = useCallback(
-    (tabName: string, section?: string) => {
-      track({
-        name: "ui.tab_switched",
-        properties: {
-          tabName,
-          section,
-        },
-      });
-    },
-    [track]
-  );
+	const trackTabSwitch = useCallback(
+		(tabName: string, section?: string) => {
+			track({
+				name: "ui.tab_switched",
+				properties: {
+					tabName,
+					section,
+				},
+			});
+		},
+		[track]
+	);
 
-  return {
-    trackModalOpen,
-    trackModalClose,
-    trackTabSwitch,
-  };
+	return {
+		trackModalOpen,
+		trackModalClose,
+		trackTabSwitch,
+	};
 }

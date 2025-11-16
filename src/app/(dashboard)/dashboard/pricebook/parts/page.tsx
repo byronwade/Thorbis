@@ -13,9 +13,9 @@ import { PricebookPartsData } from "@/components/pricebook/parts/pricebook-parts
 import { PricebookPartsSkeleton } from "@/components/pricebook/parts/pricebook-parts-skeleton";
 
 export default function PartsMaterialsPage() {
-  return (
-    <Suspense fallback={<PricebookPartsSkeleton />}>
-      <PricebookPartsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PricebookPartsSkeleton />}>
+			<PricebookPartsData />
+		</Suspense>
+	);
 }

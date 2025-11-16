@@ -10,9 +10,9 @@ import { UusageData } from "@/components/settings/usage/usage-data";
 import { UusageSkeleton } from "@/components/settings/usage/usage-skeleton";
 
 export default function UusagePage() {
-  return (
-    <Suspense fallback={<UusageSkeleton />}>
-      <UusageData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UusageSkeleton />}>
+			<UusageData />
+		</Suspense>
+	);
 }

@@ -12,17 +12,17 @@ import { CustomFieldsContent } from "./custom-fields-content";
  */
 
 export const metadata = {
-  title: "Custom Fields - Customer Settings",
-  description: "Add custom fields to collect additional customer information",
+	title: "Custom Fields - Customer Settings",
+	description: "Add custom fields to collect additional customer information",
 };
 
 export default async function CustomFieldsPage() {
-  const result = await getCustomFields();
-  const initialFields = result.success ? result.data : [];
+	const result = await getCustomFields();
+	const initialFields = result.success ? result.data : [];
 
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CustomFieldsContent initialFields={initialFields} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<CustomFieldsContent initialFields={initialFields} />
+		</Suspense>
+	);
 }

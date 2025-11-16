@@ -10,14 +10,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Thorbis",
-  description: "Professional service management platform",
+	title: "Thorbis",
+	description: "Professional service management platform",
 };
 
-export default function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div className="min-h-screen bg-background">{children}</div>;
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
+	return <div className="min-h-screen bg-background">{children}</div>;
 }

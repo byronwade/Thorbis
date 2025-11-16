@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 type ContractDetailShellProps = {
-  children: ReactNode;
+	children: ReactNode;
 };
 
 /**
@@ -11,9 +11,9 @@ type ContractDetailShellProps = {
  * Contains only static layout elements - no data fetching.
  */
 export function ContractDetailShell({ children }: ContractDetailShellProps) {
-  return (
-    <div className="flex h-full w-full flex-col overflow-auto">
-      <div className="mx-auto w-full max-w-7xl">{children}</div>
-    </div>
-  );
+	return (
+		<div className="flex h-full w-full flex-col overflow-auto">
+			<div className="mx-auto w-full max-w-7xl">{children}</div>
+		</div>
+	);
 }

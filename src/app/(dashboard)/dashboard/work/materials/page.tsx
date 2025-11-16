@@ -15,19 +15,17 @@ import { MaterialsSkeleton } from "@/components/work/materials/materials-skeleto
 import { MaterialsStats } from "@/components/work/materials/materials-stats";
 
 export default function MaterialsPage() {
-  return (
-    <>
-      {/* Stats - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <MaterialsStats />
-      </Suspense>
+	return (
+		<>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<MaterialsStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <Suspense fallback={<MaterialsSkeleton />}>
-        <MaterialsData />
-      </Suspense>
-    </>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<Suspense fallback={<MaterialsSkeleton />}>
+				<MaterialsData />
+			</Suspense>
+		</>
+	);
 }

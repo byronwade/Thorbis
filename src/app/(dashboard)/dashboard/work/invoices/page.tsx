@@ -21,19 +21,17 @@ import { WorkPageLayout } from "@/components/work/work-page-layout";
 // export const experimental_ppr = true;
 
 export default function InvoicesPage() {
-  return (
-    <WorkPageLayout
-      stats={
-        <Suspense
-          fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-        >
-          <InvoicesStats />
-        </Suspense>
-      }
-    >
-      <Suspense fallback={<InvoicesSkeleton />}>
-        <InvoicesData />
-      </Suspense>
-    </WorkPageLayout>
-  );
+	return (
+		<WorkPageLayout
+			stats={
+				<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+					<InvoicesStats />
+				</Suspense>
+			}
+		>
+			<Suspense fallback={<InvoicesSkeleton />}>
+				<InvoicesData />
+			</Suspense>
+		</WorkPageLayout>
+	);
 }

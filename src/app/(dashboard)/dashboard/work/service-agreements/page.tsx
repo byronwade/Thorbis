@@ -13,9 +13,9 @@ import { ServiceAgreementsData } from "@/components/work/service-agreements/serv
 import { ServiceAgreementsSkeleton } from "@/components/work/service-agreements/service-agreements-skeleton";
 
 export default function ServiceAgreementsPage() {
-  return (
-    <Suspense fallback={<ServiceAgreementsSkeleton />}>
-      <ServiceAgreementsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<ServiceAgreementsSkeleton />}>
+			<ServiceAgreementsData />
+		</Suspense>
+	);
 }

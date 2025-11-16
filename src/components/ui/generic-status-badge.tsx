@@ -17,57 +17,47 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export type StatusConfig = {
-  [key: string]: {
-    label: string;
-    className: string;
-    variant?: "default" | "secondary" | "destructive" | "outline";
-  };
+	[key: string]: {
+		label: string;
+		className: string;
+		variant?: "default" | "secondary" | "destructive" | "outline";
+	};
 };
 
 type GenericStatusBadgeProps = {
-  /** The status value to display */
-  status: string;
-  /** Configuration map: status -> { label, className, variant? } */
-  config: StatusConfig;
-  /** Default status to use if status not found in config */
-  defaultStatus?: string;
-  /** Additional className to apply */
-  className?: string;
-  /** Badge variant (overrides config variant) */
-  variant?: "default" | "secondary" | "destructive" | "outline";
+	/** The status value to display */
+	status: string;
+	/** Configuration map: status -> { label, className, variant? } */
+	config: StatusConfig;
+	/** Default status to use if status not found in config */
+	defaultStatus?: string;
+	/** Additional className to apply */
+	className?: string;
+	/** Badge variant (overrides config variant) */
+	variant?: "default" | "secondary" | "destructive" | "outline";
 };
 
 /**
  * GenericStatusBadge - Displays a badge based on status configuration
  */
-export function GenericStatusBadge({
-  status,
-  config,
-  defaultStatus,
-  className,
-  variant,
-}: GenericStatusBadgeProps) {
-  const statusConfig =
-    config[status] || (defaultStatus ? config[defaultStatus] : null);
+export function GenericStatusBadge({ status, config, defaultStatus, className, variant }: GenericStatusBadgeProps) {
+	const statusConfig = config[status] || (defaultStatus ? config[defaultStatus] : null);
 
-  if (!statusConfig) {
-    // Fallback if status not found and no default
-    return (
-      <Badge
-        className={cn("font-medium text-xs", className)}
-        variant={variant || "outline"}
-      >
-        {status}
-      </Badge>
-    );
-  }
+	if (!statusConfig) {
+		// Fallback if status not found and no default
+		return (
+			<Badge className={cn("font-medium text-xs", className)} variant={variant || "outline"}>
+				{status}
+			</Badge>
+		);
+	}
 
-  return (
-    <Badge
-      className={cn("font-medium text-xs", statusConfig.className, className)}
-      variant={variant || statusConfig.variant || "outline"}
-    >
-      {statusConfig.label}
-    </Badge>
-  );
+	return (
+		<Badge
+			className={cn("font-medium text-xs", statusConfig.className, className)}
+			variant={variant || statusConfig.variant || "outline"}
+		>
+			{statusConfig.label}
+		</Badge>
+	);
 }

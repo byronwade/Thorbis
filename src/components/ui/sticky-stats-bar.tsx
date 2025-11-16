@@ -12,103 +12,92 @@
  */
 
 import type { ReactElement } from "react";
-import {
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { cloneElement, isValidElement, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type StickyStatsBarProps = {
-  children: ReactElement;
-  className?: string;
+	children: ReactElement;
+	className?: string;
 };
 
 export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+	const [isScrolled, setIsScrolled] = useState(false);
+	const sentinelRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) {
-      return;
-    }
+	useEffect(() => {
+		const sentinel = sentinelRef.current;
+		if (!sentinel) {
+			return;
+		}
 
-    // Find the scrollable parent container
-    const findScrollableParent = (element: HTMLElement): HTMLElement | null => {
-      let parent = element.parentElement;
+		// Find the scrollable parent container
+		const findScrollableParent = (element: HTMLElement): HTMLElement | null => {
+			let parent = element.parentElement;
 
-      while (parent) {
-        const { overflow, overflowY } = window.getComputedStyle(parent);
-        const isScrollable =
-          overflow === "auto" ||
-          overflow === "scroll" ||
-          overflowY === "auto" ||
-          overflowY === "scroll";
+			while (parent) {
+				const { overflow, overflowY } = window.getComputedStyle(parent);
+				const isScrollable =
+					overflow === "auto" || overflow === "scroll" || overflowY === "auto" || overflowY === "scroll";
 
-        if (isScrollable && parent.scrollHeight > parent.clientHeight) {
-          return parent;
-        }
+				if (isScrollable && parent.scrollHeight > parent.clientHeight) {
+					return parent;
+				}
 
-        parent = parent.parentElement;
-      }
+				parent = parent.parentElement;
+			}
 
-      return null;
-    };
+			return null;
+		};
 
-    const scrollContainer = findScrollableParent(sentinel);
+		const scrollContainer = findScrollableParent(sentinel);
 
-    // Use Intersection Observer to detect when the sentinel leaves the visible area
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // Only set scrolled to true if we're actually at the top edge
-        // entry.boundingClientRect.top < 0 means the sentinel has scrolled above the container
-        if (entry.isIntersecting) {
-          // Sentinel is visible, we're at the top
-          setIsScrolled(false);
-        } else if (entry.boundingClientRect.top < 0) {
-          // Sentinel has scrolled above the viewport, we've scrolled down
-          setIsScrolled(true);
-        }
-      },
-      {
-        root: scrollContainer, // Use the scroll container as root instead of viewport
-        threshold: 0, // Trigger as soon as any part is visible/hidden
-        rootMargin: "0px", // No margin adjustment
-      }
-    );
+		// Use Intersection Observer to detect when the sentinel leaves the visible area
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				// Only set scrolled to true if we're actually at the top edge
+				// entry.boundingClientRect.top < 0 means the sentinel has scrolled above the container
+				if (entry.isIntersecting) {
+					// Sentinel is visible, we're at the top
+					setIsScrolled(false);
+				} else if (entry.boundingClientRect.top < 0) {
+					// Sentinel has scrolled above the viewport, we've scrolled down
+					setIsScrolled(true);
+				}
+			},
+			{
+				root: scrollContainer, // Use the scroll container as root instead of viewport
+				threshold: 0, // Trigger as soon as any part is visible/hidden
+				rootMargin: "0px", // No margin adjustment
+			}
+		);
 
-    observer.observe(sentinel);
+		observer.observe(sentinel);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+		return () => {
+			observer.disconnect();
+		};
+	}, []);
 
-  // Clone the child element and pass the compact prop if it's a valid React element
-  const childWithProps = isValidElement(children)
-    ? cloneElement(children, { compact: isScrolled } as any)
-    : children;
+	// Clone the child element and pass the compact prop if it's a valid React element
+	const childWithProps = isValidElement(children) ? cloneElement(children, { compact: isScrolled } as any) : children;
 
-  return (
-    <>
-      {/* Sentinel element - minimal height, used to detect scroll */}
-      <div aria-hidden="true" className="h-px w-full" ref={sentinelRef} />
+	return (
+		<>
+			{/* Sentinel element - minimal height, used to detect scroll */}
+			<div aria-hidden="true" className="h-px w-full" ref={sentinelRef} />
 
-      {/* Stats bar container - no margins or padding */}
-      <div
-        className={cn(
-          "top-0 z-40 w-full bg-background transition-all duration-300 ease-in-out",
-          isScrolled && "sticky shadow-md",
-          className
-        )}
-        ref={containerRef}
-      >
-        {childWithProps}
-      </div>
-    </>
-  );
+			{/* Stats bar container - no margins or padding */}
+			<div
+				className={cn(
+					"top-0 z-40 w-full bg-background transition-all duration-300 ease-in-out",
+					isScrolled && "sticky shadow-md",
+					className
+				)}
+				ref={containerRef}
+			>
+				{childWithProps}
+			</div>
+		</>
+	);
 }

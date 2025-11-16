@@ -13,13 +13,10 @@
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
 type EntityStatsBarProps = {
-  stats: StatCard[];
-  compact?: boolean;
+	stats: StatCard[];
+	compact?: boolean;
 };
 
-export function EntityStatsBar({
-  stats,
-  compact = false,
-}: EntityStatsBarProps) {
-  return <StatsCards compact={compact} stats={stats} variant="ticker" />;
+export function EntityStatsBar({ stats, compact = false }: EntityStatsBarProps) {
+	return <StatsCards compact={compact} stats={stats} variant="ticker" />;
 }

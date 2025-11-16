@@ -13,18 +13,14 @@ import { ContractDetailData } from "@/components/work/contracts/contract-detail-
 import { ContractDetailShell } from "@/components/work/contracts/contract-detail-shell";
 import { ContractDetailSkeleton } from "@/components/work/contracts/contract-detail-skeleton";
 
-export default async function ContractDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id: contractId } = await params;
+export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id: contractId } = await params;
 
-  return (
-    <ContractDetailShell>
-      <Suspense fallback={<ContractDetailSkeleton />}>
-        <ContractDetailData contractId={contractId} />
-      </Suspense>
-    </ContractDetailShell>
-  );
+	return (
+		<ContractDetailShell>
+			<Suspense fallback={<ContractDetailSkeleton />}>
+				<ContractDetailData contractId={contractId} />
+			</Suspense>
+		</ContractDetailShell>
+	);
 }

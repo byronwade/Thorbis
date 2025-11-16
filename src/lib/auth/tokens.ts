@@ -19,8 +19,8 @@ import { createClient } from "@/lib/supabase/server";
  * Generate a secure random token
  */
 function generateSecureToken(): string {
-  // Generate 32 bytes of random data and convert to hex string (64 characters)
-  return randomBytes(32).toString("hex");
+	// Generate 32 bytes of random data and convert to hex string (64 characters)
+	return randomBytes(32).toString("hex");
 }
 
 /**
@@ -31,32 +31,32 @@ function generateSecureToken(): string {
  * @param expiresInHours - Token expiration in hours (default: 24)
  */
 export async function createEmailVerificationToken(
-  email: string,
-  userId?: string,
-  expiresInHours = 24
+	email: string,
+	userId?: string,
+	expiresInHours = 24
 ): Promise<{ token: string; expiresAt: Date }> {
-  const token = generateSecureToken();
-  const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
+	const token = generateSecureToken();
+	const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
 
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 
-  const { error } = await supabase.from("verification_tokens").insert({
-    token,
-    email,
-    type: "email_verification",
-    user_id: userId,
-    expires_at: expiresAt.toISOString(),
-    used: false,
-  });
+	const { error } = await supabase.from("verification_tokens").insert({
+		token,
+		email,
+		type: "email_verification",
+		user_id: userId,
+		expires_at: expiresAt.toISOString(),
+		used: false,
+	});
 
-  if (error) {
-    throw new Error(`Failed to create verification token: ${error.message}`);
-  }
+	if (error) {
+		throw new Error(`Failed to create verification token: ${error.message}`);
+	}
 
-  return { token, expiresAt };
+	return { token, expiresAt };
 }
 
 /**
@@ -66,30 +66,30 @@ export async function createEmailVerificationToken(
  * @param expiresInHours - Token expiration in hours (default: 1)
  */
 export async function createPasswordResetToken(
-  email: string,
-  expiresInHours = 1
+	email: string,
+	expiresInHours = 1
 ): Promise<{ token: string; expiresAt: Date }> {
-  const token = generateSecureToken();
-  const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
+	const token = generateSecureToken();
+	const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
 
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 
-  const { error } = await supabase.from("verification_tokens").insert({
-    token,
-    email,
-    type: "password_reset",
-    expires_at: expiresAt.toISOString(),
-    used: false,
-  });
+	const { error } = await supabase.from("verification_tokens").insert({
+		token,
+		email,
+		type: "password_reset",
+		expires_at: expiresAt.toISOString(),
+		used: false,
+	});
 
-  if (error) {
-    throw new Error(`Failed to create password reset token: ${error.message}`);
-  }
+	if (error) {
+		throw new Error(`Failed to create password reset token: ${error.message}`);
+	}
 
-  return { token, expiresAt };
+	return { token, expiresAt };
 }
 
 /**
@@ -99,30 +99,30 @@ export async function createPasswordResetToken(
  * @param expiresInMinutes - Token expiration in minutes (default: 15)
  */
 export async function createMagicLinkToken(
-  email: string,
-  expiresInMinutes = 15
+	email: string,
+	expiresInMinutes = 15
 ): Promise<{ token: string; expiresAt: Date }> {
-  const token = generateSecureToken();
-  const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+	const token = generateSecureToken();
+	const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
 
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 
-  const { error } = await supabase.from("verification_tokens").insert({
-    token,
-    email,
-    type: "magic_link",
-    expires_at: expiresAt.toISOString(),
-    used: false,
-  });
+	const { error } = await supabase.from("verification_tokens").insert({
+		token,
+		email,
+		type: "magic_link",
+		expires_at: expiresAt.toISOString(),
+		used: false,
+	});
 
-  if (error) {
-    throw new Error(`Failed to create magic link token: ${error.message}`);
-  }
+	if (error) {
+		throw new Error(`Failed to create magic link token: ${error.message}`);
+	}
 
-  return { token, expiresAt };
+	return { token, expiresAt };
 }
 
 /**
@@ -133,64 +133,61 @@ export async function createMagicLinkToken(
  * @returns Token data if valid, null if invalid/expired/used
  */
 export async function verifyAndConsumeToken(
-  token: string,
-  type: "email_verification" | "password_reset" | "magic_link"
+	token: string,
+	type: "email_verification" | "password_reset" | "magic_link"
 ) {
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
-  const now = new Date().toISOString();
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
+	const now = new Date().toISOString();
 
-  // Find unused, non-expired token
-  const { data: tokenRecord, error: selectError } = await supabase
-    .from("verification_tokens")
-    .select("*")
-    .eq("token", token)
-    .eq("type", type)
-    .eq("used", false)
-    .gt("expires_at", now)
-    .limit(1)
-    .single();
+	// Find unused, non-expired token
+	const { data: tokenRecord, error: selectError } = await supabase
+		.from("verification_tokens")
+		.select("*")
+		.eq("token", token)
+		.eq("type", type)
+		.eq("used", false)
+		.gt("expires_at", now)
+		.limit(1)
+		.single();
 
-  if (selectError || !tokenRecord) {
-    return null;
-  }
+	if (selectError || !tokenRecord) {
+		return null;
+	}
 
-  // Mark token as used
-  const { error: updateError } = await supabase
-    .from("verification_tokens")
-    .update({
-      used: true,
-      used_at: now,
-    })
-    .eq("id", tokenRecord.id);
+	// Mark token as used
+	const { error: updateError } = await supabase
+		.from("verification_tokens")
+		.update({
+			used: true,
+			used_at: now,
+		})
+		.eq("id", tokenRecord.id);
 
-  if (updateError) {
-    throw new Error(`Failed to consume token: ${updateError.message}`);
-  }
+	if (updateError) {
+		throw new Error(`Failed to consume token: ${updateError.message}`);
+	}
 
-  return tokenRecord;
+	return tokenRecord;
 }
 
 /**
  * Delete expired tokens (cleanup)
  */
 export async function cleanupExpiredTokens() {
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
-  const now = new Date().toISOString();
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
+	const now = new Date().toISOString();
 
-  const { error } = await supabase
-    .from("verification_tokens")
-    .delete()
-    .lt("expires_at", now);
+	const { error } = await supabase.from("verification_tokens").delete().lt("expires_at", now);
 
-  if (error) {
-    throw new Error(`Failed to cleanup expired tokens: ${error.message}`);
-  }
+	if (error) {
+		throw new Error(`Failed to cleanup expired tokens: ${error.message}`);
+	}
 }
 
 /**
@@ -200,23 +197,23 @@ export async function cleanupExpiredTokens() {
  * @param type - Optional: specific token type to delete
  */
 export async function deleteTokensForEmail(
-  email: string,
-  type?: "email_verification" | "password_reset" | "magic_link"
+	email: string,
+	type?: "email_verification" | "password_reset" | "magic_link"
 ) {
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error("Supabase client not configured");
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 
-  let query = supabase.from("verification_tokens").delete().eq("email", email);
+	let query = supabase.from("verification_tokens").delete().eq("email", email);
 
-  if (type) {
-    query = query.eq("type", type);
-  }
+	if (type) {
+		query = query.eq("type", type);
+	}
 
-  const { error } = await query;
+	const { error } = await query;
 
-  if (error) {
-    throw new Error(`Failed to delete tokens: ${error.message}`);
-  }
+	if (error) {
+		throw new Error(`Failed to delete tokens: ${error.message}`);
+	}
 }

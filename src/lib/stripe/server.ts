@@ -21,16 +21,16 @@ import Stripe from "stripe";
  * SECURITY: This uses the secret key and must only be called server-side
  */
 function getStripeServer(): Stripe | null {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
+	const secretKey = process.env.STRIPE_SECRET_KEY;
 
-  if (!secretKey) {
-    return null;
-  }
+	if (!secretKey) {
+		return null;
+	}
 
-  return new Stripe(secretKey, {
-    apiVersion: "2025-10-29.clover",
-    typescript: true,
-  });
+	return new Stripe(secretKey, {
+		apiVersion: "2025-10-29.clover",
+		typescript: true,
+	});
 }
 
 // Export singleton instance
@@ -42,39 +42,35 @@ export const stripe = getStripeServer();
  * Creates a customer in Stripe if they don't have one yet
  * Links customer to user via metadata
  */
-export async function getOrCreateStripeCustomer(
-  userId: string,
-  email: string,
-  name?: string
-): Promise<string | null> {
-  if (!stripe) {
-    return null;
-  }
+export async function getOrCreateStripeCustomer(userId: string, email: string, name?: string): Promise<string | null> {
+	if (!stripe) {
+		return null;
+	}
 
-  try {
-    // Check if customer already exists
-    const customers = await stripe.customers.list({
-      email,
-      limit: 1,
-    });
+	try {
+		// Check if customer already exists
+		const customers = await stripe.customers.list({
+			email,
+			limit: 1,
+		});
 
-    if (customers.data.length > 0) {
-      return customers.data[0].id;
-    }
+		if (customers.data.length > 0) {
+			return customers.data[0].id;
+		}
 
-    // Create new customer
-    const customer = await stripe.customers.create({
-      email,
-      name,
-      metadata: {
-        user_id: userId,
-      },
-    });
+		// Create new customer
+		const customer = await stripe.customers.create({
+			email,
+			name,
+			metadata: {
+				user_id: userId,
+			},
+		});
 
-    return customer.id;
-  } catch (_error) {
-    return null;
-  }
+		return customer.id;
+	} catch (_error) {
+		return null;
+	}
 }
 
 /**
@@ -84,70 +80,70 @@ export async function getOrCreateStripeCustomer(
  * For additional organizations: Base plan + Additional org addon
  */
 export async function createCheckoutSession({
-  customerId,
-  companyId,
-  isAdditionalOrg,
-  successUrl,
-  cancelUrl,
-  phoneNumber,
+	customerId,
+	companyId,
+	isAdditionalOrg,
+	successUrl,
+	cancelUrl,
+	phoneNumber,
 }: {
-  customerId: string;
-  companyId: string;
-  isAdditionalOrg: boolean;
-  successUrl: string;
-  cancelUrl: string;
-  phoneNumber?: string;
+	customerId: string;
+	companyId: string;
+	isAdditionalOrg: boolean;
+	successUrl: string;
+	cancelUrl: string;
+	phoneNumber?: string;
 }): Promise<string | null> {
-  if (!stripe) {
-    return null;
-  }
+	if (!stripe) {
+		return null;
+	}
 
-  try {
-    const basePriceId = process.env.STRIPE_PRICE_ID_BASE_PLAN;
-    const additionalOrgPriceId = process.env.STRIPE_PRICE_ID_ADDITIONAL_ORG;
+	try {
+		const basePriceId = process.env.STRIPE_PRICE_ID_BASE_PLAN;
+		const additionalOrgPriceId = process.env.STRIPE_PRICE_ID_ADDITIONAL_ORG;
 
-    if (!basePriceId) {
-      return null;
-    }
+		if (!basePriceId) {
+			return null;
+		}
 
-    // Build line items
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-      {
-        price: basePriceId,
-        quantity: 1,
-      },
-    ];
+		// Build line items
+		const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+			{
+				price: basePriceId,
+				quantity: 1,
+			},
+		];
 
-    // Add additional organization fee if this is not the first org
-    if (isAdditionalOrg && additionalOrgPriceId) {
-      lineItems.push({
-        price: additionalOrgPriceId,
-        quantity: 1,
-      });
-    }
+		// Add additional organization fee if this is not the first org
+		if (isAdditionalOrg && additionalOrgPriceId) {
+			lineItems.push({
+				price: additionalOrgPriceId,
+				quantity: 1,
+			});
+		}
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: "subscription",
-      line_items: lineItems,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      metadata: {
-        company_id: companyId,
-        is_additional_org: isAdditionalOrg.toString(),
-        ...(phoneNumber && { phone_number: phoneNumber }),
-      },
-      subscription_data: {
-        metadata: {
-          company_id: companyId,
-        },
-      },
-    });
+		const session = await stripe.checkout.sessions.create({
+			customer: customerId,
+			mode: "subscription",
+			line_items: lineItems,
+			success_url: successUrl,
+			cancel_url: cancelUrl,
+			metadata: {
+				company_id: companyId,
+				is_additional_org: isAdditionalOrg.toString(),
+				...(phoneNumber && { phone_number: phoneNumber }),
+			},
+			subscription_data: {
+				metadata: {
+					company_id: companyId,
+				},
+			},
+		});
 
-    return session.url;
-  } catch (_error) {
-    return null;
-  }
+		return session.url;
+	} catch (_error) {
+		return null;
+	}
 }
 
 /**
@@ -155,24 +151,21 @@ export async function createCheckoutSession({
  *
  * Allows users to manage their subscription, payment methods, and billing history
  */
-export async function createBillingPortalSession(
-  customerId: string,
-  returnUrl: string
-): Promise<string | null> {
-  if (!stripe) {
-    return null;
-  }
+export async function createBillingPortalSession(customerId: string, returnUrl: string): Promise<string | null> {
+	if (!stripe) {
+		return null;
+	}
 
-  try {
-    const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: returnUrl,
-    });
+	try {
+		const session = await stripe.billingPortal.sessions.create({
+			customer: customerId,
+			return_url: returnUrl,
+		});
 
-    return session.url;
-  } catch (_error) {
-    return null;
-  }
+		return session.url;
+	} catch (_error) {
+		return null;
+	}
 }
 
 /**
@@ -180,22 +173,20 @@ export async function createBillingPortalSession(
  *
  * Cancels subscription at the end of the current billing period
  */
-export async function cancelSubscription(
-  subscriptionId: string
-): Promise<boolean> {
-  if (!stripe) {
-    return false;
-  }
+export async function cancelSubscription(subscriptionId: string): Promise<boolean> {
+	if (!stripe) {
+		return false;
+	}
 
-  try {
-    await stripe.subscriptions.update(subscriptionId, {
-      cancel_at_period_end: true,
-    });
+	try {
+		await stripe.subscriptions.update(subscriptionId, {
+			cancel_at_period_end: true,
+		});
 
-    return true;
-  } catch (_error) {
-    return false;
-  }
+		return true;
+	} catch (_error) {
+		return false;
+	}
 }
 
 /**
@@ -203,62 +194,56 @@ export async function cancelSubscription(
  *
  * Removes the cancellation flag from a subscription
  */
-export async function reactivateSubscription(
-  subscriptionId: string
-): Promise<boolean> {
-  if (!stripe) {
-    return false;
-  }
+export async function reactivateSubscription(subscriptionId: string): Promise<boolean> {
+	if (!stripe) {
+		return false;
+	}
 
-  try {
-    await stripe.subscriptions.update(subscriptionId, {
-      cancel_at_period_end: false,
-    });
+	try {
+		await stripe.subscriptions.update(subscriptionId, {
+			cancel_at_period_end: false,
+		});
 
-    return true;
-  } catch (_error) {
-    return false;
-  }
+		return true;
+	} catch (_error) {
+		return false;
+	}
 }
 
 /**
  * Get subscription details
  */
-export async function getSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription | null> {
-  if (!stripe) {
-    return null;
-  }
+export async function getSubscription(subscriptionId: string): Promise<Stripe.Subscription | null> {
+	if (!stripe) {
+		return null;
+	}
 
-  try {
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    return subscription;
-  } catch (_error) {
-    return null;
-  }
+	try {
+		const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+		return subscription;
+	} catch (_error) {
+		return null;
+	}
 }
 
 /**
  * List all subscriptions for a customer
  */
-export async function listCustomerSubscriptions(
-  customerId: string
-): Promise<Stripe.Subscription[]> {
-  if (!stripe) {
-    return [];
-  }
+export async function listCustomerSubscriptions(customerId: string): Promise<Stripe.Subscription[]> {
+	if (!stripe) {
+		return [];
+	}
 
-  try {
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "all",
-    });
+	try {
+		const subscriptions = await stripe.subscriptions.list({
+			customer: customerId,
+			status: "all",
+		});
 
-    return subscriptions.data;
-  } catch (_error) {
-    return [];
-  }
+		return subscriptions.data;
+	} catch (_error) {
+		return [];
+	}
 }
 
 /**
@@ -267,29 +252,26 @@ export async function listCustomerSubscriptions(
  * Attaches a payment method collected via Stripe Elements to a customer
  * and sets it as the default payment method
  */
-export async function attachPaymentMethodToCustomer(
-  paymentMethodId: string,
-  customerId: string
-): Promise<boolean> {
-  if (!stripe) {
-    return false;
-  }
+export async function attachPaymentMethodToCustomer(paymentMethodId: string, customerId: string): Promise<boolean> {
+	if (!stripe) {
+		return false;
+	}
 
-  try {
-    // Attach payment method to customer
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customerId,
-    });
+	try {
+		// Attach payment method to customer
+		await stripe.paymentMethods.attach(paymentMethodId, {
+			customer: customerId,
+		});
 
-    // Set as default payment method
-    await stripe.customers.update(customerId, {
-      invoice_settings: {
-        default_payment_method: paymentMethodId,
-      },
-    });
+		// Set as default payment method
+		await stripe.customers.update(customerId, {
+			invoice_settings: {
+				default_payment_method: paymentMethodId,
+			},
+		});
 
-    return true;
-  } catch (_error) {
-    return false;
-  }
+		return true;
+	} catch (_error) {
+		return false;
+	}
 }

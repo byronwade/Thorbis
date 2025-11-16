@@ -10,9 +10,9 @@ import { UcommunicationsData } from "@/components/settings/communications/commun
 import { UcommunicationsSkeleton } from "@/components/settings/communications/communications-skeleton";
 
 export default function UcommunicationsPage() {
-  return (
-    <Suspense fallback={<UcommunicationsSkeleton />}>
-      <UcommunicationsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UcommunicationsSkeleton />}>
+			<UcommunicationsData />
+		</Suspense>
+	);
 }

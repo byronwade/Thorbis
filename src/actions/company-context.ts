@@ -8,26 +8,21 @@
  */
 
 import { revalidatePath } from "next/cache";
-import {
-  clearActiveCompany,
-  getActiveCompany,
-  getUserCompanies,
-  setActiveCompany,
-} from "@/lib/auth/company-context";
+import { clearActiveCompany, getActiveCompany, getUserCompanies, setActiveCompany } from "@/lib/auth/company-context";
 
 /**
  * Action Result Type
  */
 type ActionResult<T = void> =
-  | {
-      success: true;
-      data?: T;
-      message?: string;
-    }
-  | {
-      success: false;
-      error: string;
-    };
+	| {
+			success: true;
+			data?: T;
+			message?: string;
+	  }
+	| {
+			success: false;
+			error: string;
+	  };
 
 /**
  * Switch Company
@@ -38,26 +33,23 @@ type ActionResult<T = void> =
  * @param companyId - Company ID to switch to
  * @returns ActionResult indicating success or failure
  */
-export async function switchCompany(
-  companyId: string
-): Promise<ActionResult<void>> {
-  try {
-    await setActiveCompany(companyId);
+export async function switchCompany(companyId: string): Promise<ActionResult<void>> {
+	try {
+		await setActiveCompany(companyId);
 
-    // Revalidate everything to ensure all company-scoped data is refreshed
-    revalidatePath("/", "layout");
+		// Revalidate everything to ensure all company-scoped data is refreshed
+		revalidatePath("/", "layout");
 
-    return {
-      success: true,
-      message: "Company switched successfully",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to switch company",
-    };
-  }
+		return {
+			success: true,
+			message: "Company switched successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Failed to switch company",
+		};
+	}
 }
 
 /**
@@ -69,23 +61,20 @@ export async function switchCompany(
  * @returns ActionResult indicating success or failure
  */
 export async function clearCompany(): Promise<ActionResult<void>> {
-  try {
-    await clearActiveCompany();
-    revalidatePath("/", "layout");
+	try {
+		await clearActiveCompany();
+		revalidatePath("/", "layout");
 
-    return {
-      success: true,
-      message: "Company context cleared",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to clear company context",
-    };
-  }
+		return {
+			success: true,
+			message: "Company context cleared",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Failed to clear company context",
+		};
+	}
 }
 
 /**
@@ -96,22 +85,20 @@ export async function clearCompany(): Promise<ActionResult<void>> {
  *
  * @returns ActionResult with array of companies
  */
-export async function getCompanies(): Promise<
-  ActionResult<Array<{ id: string; name: string; logo?: string | null }>>
-> {
-  try {
-    const companies = await getUserCompanies();
+export async function getCompanies(): Promise<ActionResult<Array<{ id: string; name: string; logo?: string | null }>>> {
+	try {
+		const companies = await getUserCompanies();
 
-    return {
-      success: true,
-      data: companies,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to get companies",
-    };
-  }
+		return {
+			success: true,
+			data: companies,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Failed to get companies",
+		};
+	}
 }
 
 /**
@@ -122,20 +109,19 @@ export async function getCompanies(): Promise<
  * @returns ActionResult with company details or null
  */
 export async function getActiveCompanyDetails(): Promise<
-  ActionResult<{ id: string; name: string; logo?: string | null } | null>
+	ActionResult<{ id: string; name: string; logo?: string | null } | null>
 > {
-  try {
-    const company = await getActiveCompany();
+	try {
+		const company = await getActiveCompany();
 
-    return {
-      success: true,
-      data: company,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to get active company",
-    };
-  }
+		return {
+			success: true,
+			data: company,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Failed to get active company",
+		};
+	}
 }

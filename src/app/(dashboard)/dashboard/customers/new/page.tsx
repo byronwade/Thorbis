@@ -18,5 +18,5 @@
 import { IntelligentCustomerWizard } from "@/components/customers/intelligent-customer-wizard";
 
 export default function NewCustomerPage() {
-  return <IntelligentCustomerWizard />;
+	return <IntelligentCustomerWizard />;
 }

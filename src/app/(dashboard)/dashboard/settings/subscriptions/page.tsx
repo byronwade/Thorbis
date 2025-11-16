@@ -10,9 +10,9 @@ import { UsubscriptionsData } from "@/components/settings/subscriptions/subscrip
 import { UsubscriptionsSkeleton } from "@/components/settings/subscriptions/subscriptions-skeleton";
 
 export default function UsubscriptionsPage() {
-  return (
-    <Suspense fallback={<UsubscriptionsSkeleton />}>
-      <UsubscriptionsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UsubscriptionsSkeleton />}>
+			<UsubscriptionsData />
+		</Suspense>
+	);
 }

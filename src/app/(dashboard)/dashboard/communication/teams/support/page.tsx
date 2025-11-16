@@ -9,10 +9,5 @@
 import { TeamChat } from "@/components/communication/team-chat";
 
 export default function SupportChannelPage() {
-  return (
-    <TeamChat
-      channelDescription="Customer support coordination and ticket discussions"
-      channelName="support"
-    />
-  );
+	return <TeamChat channelDescription="Customer support coordination and ticket discussions" channelName="support" />;
 }

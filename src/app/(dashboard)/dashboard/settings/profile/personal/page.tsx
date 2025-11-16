@@ -10,9 +10,9 @@ import { UpersonalData } from "@/components/settings/personal/personal-data";
 import { UpersonalSkeleton } from "@/components/settings/personal/personal-skeleton";
 
 export default function UpersonalPage() {
-  return (
-    <Suspense fallback={<UpersonalSkeleton />}>
-      <UpersonalData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UpersonalSkeleton />}>
+			<UpersonalData />
+		</Suspense>
+	);
 }

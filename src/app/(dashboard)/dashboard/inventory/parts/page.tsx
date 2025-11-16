@@ -13,9 +13,9 @@ import { PartsData } from "@/components/inventory/parts/parts-data";
 import { PartsSkeleton } from "@/components/inventory/parts/parts-skeleton";
 
 export default function PartsMaterialsPage() {
-  return (
-    <Suspense fallback={<PartsSkeleton />}>
-      <PartsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PartsSkeleton />}>
+			<PartsData />
+		</Suspense>
+	);
 }

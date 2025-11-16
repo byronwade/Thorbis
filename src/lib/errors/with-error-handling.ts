@@ -17,18 +17,18 @@ export { ActionError, ERROR_CODES } from "./action-error";
  * All Server Actions should return this type for consistency
  */
 export type ActionResult<T = void> =
-  | {
-      success: true;
-      data: T;
-      message?: string;
-      error?: string;
-    }
-  | {
-      success: false;
-      error: string;
-      code?: string;
-      details?: Record<string, any>;
-    };
+	| {
+			success: true;
+			data: T;
+			message?: string;
+			error?: string;
+	  }
+	| {
+			success: false;
+			error: string;
+			code?: string;
+			details?: Record<string, any>;
+	  };
 
 /**
  * Wrap Server Action with Error Handling
@@ -56,68 +56,62 @@ export type ActionResult<T = void> =
  *   });
  * }
  */
-export async function withErrorHandling<T>(
-  fn: () => Promise<T>
-): Promise<ActionResult<T>> {
-  try {
-    const data = await fn();
-    return { success: true, data };
-  } catch (error) {
-    // Handle ActionError (our custom errors)
-    if (error instanceof ActionError) {
-      // Log authorization errors as warnings since they're expected in some cases
-      // (e.g., user not part of a company, insufficient permissions)
-      const isExpectedAuthError =
-        error.code === ERROR_CODES.AUTH_FORBIDDEN ||
-        error.code === ERROR_CODES.AUTH_UNAUTHORIZED;
+export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
+	try {
+		const data = await fn();
+		return { success: true, data };
+	} catch (error) {
+		// Handle ActionError (our custom errors)
+		if (error instanceof ActionError) {
+			// Log authorization errors as warnings since they're expected in some cases
+			// (e.g., user not part of a company, insufficient permissions)
+			const isExpectedAuthError =
+				error.code === ERROR_CODES.AUTH_FORBIDDEN || error.code === ERROR_CODES.AUTH_UNAUTHORIZED;
 
-      if (isExpectedAuthError) {
-        // Only log in development, or as a warning
-        if (process.env.NODE_ENV === "development") {
-        }
-      } else {
-      }
+			if (isExpectedAuthError) {
+				// Only log in development, or as a warning
+				if (process.env.NODE_ENV === "development") {
+				}
+			} else {
+			}
 
-      return {
-        success: false,
-        error: error.message,
-        code: error.code,
-        ...(error.details && { details: error.details }),
-      };
-    }
+			return {
+				success: false,
+				error: error.message,
+				code: error.code,
+				...(error.details && { details: error.details }),
+			};
+		}
 
-    // Handle Zod validation errors
-    if (error instanceof ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation failed",
-        code: ERROR_CODES.VALIDATION_FAILED,
-        details: {
-          issues: error.issues.map((issue) => ({
-            field: issue.path.join("."),
-            message: issue.message,
-          })),
-        },
-      };
-    }
+		// Handle Zod validation errors
+		if (error instanceof ZodError) {
+			return {
+				success: false,
+				error: error.issues[0]?.message || "Validation failed",
+				code: ERROR_CODES.VALIDATION_FAILED,
+				details: {
+					issues: error.issues.map((issue) => ({
+						field: issue.path.join("."),
+						message: issue.message,
+					})),
+				},
+			};
+		}
 
-    // Handle standard JavaScript errors
-    if (error instanceof Error) {
-      return {
-        success: false,
-        error:
-          process.env.NODE_ENV === "development"
-            ? error.message
-            : "An unexpected error occurred",
-        code: ERROR_CODES.INTERNAL_SERVER_ERROR,
-      };
-    }
-    return {
-      success: false,
-      error: "An unexpected error occurred",
-      code: ERROR_CODES.UNKNOWN_ERROR,
-    };
-  }
+		// Handle standard JavaScript errors
+		if (error instanceof Error) {
+			return {
+				success: false,
+				error: process.env.NODE_ENV === "development" ? error.message : "An unexpected error occurred",
+				code: ERROR_CODES.INTERNAL_SERVER_ERROR,
+			};
+		}
+		return {
+			success: false,
+			error: "An unexpected error occurred",
+			code: ERROR_CODES.UNKNOWN_ERROR,
+		};
+	}
 }
 
 /**
@@ -126,11 +120,11 @@ export async function withErrorHandling<T>(
  * Helper to create consistent success responses
  */
 export function successResult<T>(data: T, message?: string): ActionResult<T> {
-  return {
-    success: true,
-    data,
-    ...(message && { message }),
-  };
+	return {
+		success: true,
+		data,
+		...(message && { message }),
+	};
 }
 
 /**
@@ -138,17 +132,13 @@ export function successResult<T>(data: T, message?: string): ActionResult<T> {
  *
  * Helper to create consistent error responses
  */
-export function errorResult(
-  error: string,
-  code?: string,
-  details?: Record<string, any>
-): ActionResult<never> {
-  return {
-    success: false,
-    error,
-    ...(code && { code }),
-    ...(details && { details }),
-  };
+export function errorResult(error: string, code?: string, details?: Record<string, any>): ActionResult<never> {
+	return {
+		success: false,
+		error,
+		...(code && { code }),
+		...(details && { details }),
+	};
 }
 
 /**
@@ -156,16 +146,10 @@ export function errorResult(
  *
  * Helper to check if Supabase client exists and throw ActionError if not
  */
-export function assertSupabase<T>(
-  supabase: T | null | undefined
-): asserts supabase is T {
-  if (!supabase) {
-    throw new ActionError(
-      "Database connection failed",
-      ERROR_CODES.DB_CONNECTION_ERROR,
-      500
-    );
-  }
+export function assertSupabase<T>(supabase: T | null | undefined): asserts supabase is T {
+	if (!supabase) {
+		throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR, 500);
+	}
 }
 
 /**
@@ -173,16 +157,10 @@ export function assertSupabase<T>(
  *
  * Helper to check authentication and throw ActionError if not authenticated
  */
-export function assertAuthenticated(
-  userId: string | undefined
-): asserts userId is string {
-  if (!userId) {
-    throw new ActionError(
-      "You must be logged in to perform this action",
-      ERROR_CODES.AUTH_UNAUTHORIZED,
-      401
-    );
-  }
+export function assertAuthenticated(userId: string | undefined): asserts userId is string {
+	if (!userId) {
+		throw new ActionError("You must be logged in to perform this action", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
+	}
 }
 
 /**
@@ -190,17 +168,10 @@ export function assertAuthenticated(
  *
  * Helper to check if resource exists and throw ActionError if not
  */
-export function assertExists<T>(
-  resource: T | null | undefined,
-  resourceName: string
-): asserts resource is T {
-  if (!resource) {
-    throw new ActionError(
-      `${resourceName} not found`,
-      ERROR_CODES.DB_RECORD_NOT_FOUND,
-      404
-    );
-  }
+export function assertExists<T>(resource: T | null | undefined, resourceName: string): asserts resource is T {
+	if (!resource) {
+		throw new ActionError(`${resourceName} not found`, ERROR_CODES.DB_RECORD_NOT_FOUND, 404);
+	}
 }
 
 /**
@@ -208,15 +179,8 @@ export function assertExists<T>(
  *
  * Helper to check permissions and throw ActionError if not authorized
  */
-export function assertPermission(
-  hasPermission: boolean,
-  resourceName: string
-): asserts hasPermission {
-  if (!hasPermission) {
-    throw new ActionError(
-      `You don't have permission to access this ${resourceName}`,
-      ERROR_CODES.AUTH_FORBIDDEN,
-      403
-    );
-  }
+export function assertPermission(hasPermission: boolean, resourceName: string): asserts hasPermission {
+	if (!hasPermission) {
+		throw new ActionError(`You don't have permission to access this ${resourceName}`, ERROR_CODES.AUTH_FORBIDDEN, 403);
+	}
 }

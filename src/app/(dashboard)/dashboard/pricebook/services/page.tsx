@@ -13,9 +13,9 @@ import { ServicesData } from "@/components/pricebook/services/services-data";
 import { ServicesSkeleton } from "@/components/pricebook/services/services-skeleton";
 
 export default function ServicePricingPage() {
-  return (
-    <Suspense fallback={<ServicesSkeleton />}>
-      <ServicesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<ServicesSkeleton />}>
+			<ServicesData />
+		</Suspense>
+	);
 }

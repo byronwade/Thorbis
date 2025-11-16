@@ -10,9 +10,9 @@ import { UbookingData } from "@/components/settings/booking/booking-data";
 import { UbookingSkeleton } from "@/components/settings/booking/booking-skeleton";
 
 export default function UbookingPage() {
-  return (
-    <Suspense fallback={<UbookingSkeleton />}>
-      <UbookingData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UbookingSkeleton />}>
+			<UbookingData />
+		</Suspense>
+	);
 }

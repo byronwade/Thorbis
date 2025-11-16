@@ -12,37 +12,37 @@ import { useEffect, useState } from "react";
 import { JobDetailToolbar } from "./job-detail-toolbar";
 
 export function JobDetailToolbarWrapper() {
-  const params = useParams();
-  const jobId = params?.id as string;
-  const [jobData, setJobData] = useState<any>(null);
+	const params = useParams();
+	const jobId = params?.id as string;
+	const [jobData, setJobData] = useState<any>(null);
 
-  useEffect(() => {
-    // Fetch job data when component mounts
-    async function fetchJobData() {
-      try {
-        const response = await fetch(`/api/jobs/${jobId}/toolbar-data`);
-        if (response.ok) {
-          const data = await response.json();
-          setJobData(data);
-        }
-      } catch (_error) {}
-    }
+	useEffect(() => {
+		// Fetch job data when component mounts
+		async function fetchJobData() {
+			try {
+				const response = await fetch(`/api/jobs/${jobId}/toolbar-data`);
+				if (response.ok) {
+					const data = await response.json();
+					setJobData(data);
+				}
+			} catch (_error) {}
+		}
 
-    if (jobId) {
-      fetchJobData();
-    }
-  }, [jobId]);
+		if (jobId) {
+			fetchJobData();
+		}
+	}, [jobId]);
 
-  return (
-    <JobDetailToolbar
-      customer={jobData?.customer}
-      invoices={jobData?.invoices || []}
-      job={jobData?.job}
-      jobMaterials={jobData?.jobMaterials || []}
-      metrics={jobData?.metrics}
-      payments={jobData?.payments || []}
-      teamAssignments={jobData?.teamAssignments || []}
-      timeEntries={jobData?.timeEntries || []}
-    />
-  );
+	return (
+		<JobDetailToolbar
+			customer={jobData?.customer}
+			invoices={jobData?.invoices || []}
+			job={jobData?.job}
+			jobMaterials={jobData?.jobMaterials || []}
+			metrics={jobData?.metrics}
+			payments={jobData?.payments || []}
+			teamAssignments={jobData?.teamAssignments || []}
+			timeEntries={jobData?.timeEntries || []}
+		/>
+	);
 }

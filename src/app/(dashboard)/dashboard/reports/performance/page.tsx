@@ -13,9 +13,9 @@ import { PerformanceReportsData } from "@/components/reports/performance/perform
 import { PerformanceReportsSkeleton } from "@/components/reports/performance/performance-reports-skeleton";
 
 export default function PerformanceReportsPage() {
-  return (
-    <Suspense fallback={<PerformanceReportsSkeleton />}>
-      <PerformanceReportsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PerformanceReportsSkeleton />}>
+			<PerformanceReportsData />
+		</Suspense>
+	);
 }

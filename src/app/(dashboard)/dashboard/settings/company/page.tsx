@@ -10,9 +10,9 @@ import { UcompanyData } from "@/components/settings/company/company-data";
 import { UcompanySkeleton } from "@/components/settings/company/company-skeleton";
 
 export default function UcompanyPage() {
-  return (
-    <Suspense fallback={<UcompanySkeleton />}>
-      <UcompanyData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UcompanySkeleton />}>
+			<UcompanyData />
+		</Suspense>
+	);
 }

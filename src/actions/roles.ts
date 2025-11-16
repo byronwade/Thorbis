@@ -11,12 +11,12 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
-  getUserRole,
-  hasPermission,
-  hasRole,
-  isCompanyOwner,
-  type Permission,
-  type UserRole,
+	getUserRole,
+	hasPermission,
+	hasRole,
+	isCompanyOwner,
+	type Permission,
+	type UserRole,
 } from "@/lib/auth/permissions";
 import { withErrorHandling } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
@@ -26,21 +26,14 @@ import { createClient } from "@/lib/supabase/server";
 // ============================================================================
 
 const updateRoleSchema = z.object({
-  teamMemberId: z.string().uuid(),
-  newRole: z.enum([
-    "owner",
-    "admin",
-    "manager",
-    "dispatcher",
-    "technician",
-    "csr",
-  ]),
-  reason: z.string().optional(),
+	teamMemberId: z.string().uuid(),
+	newRole: z.enum(["owner", "admin", "manager", "dispatcher", "technician", "csr"]),
+	reason: z.string().optional(),
 });
 
 const updatePermissionsSchema = z.object({
-  teamMemberId: z.string().uuid(),
-  permissions: z.record(z.string(), z.boolean()),
+	teamMemberId: z.string().uuid(),
+	permissions: z.record(z.string(), z.boolean()),
 });
 
 // ============================================================================
@@ -61,28 +54,28 @@ const updatePermissionsSchema = z.object({
  * ```
  */
 export async function getCurrentUserRole() {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    const role = await getUserRole(supabase, user.id, companyId);
+		const role = await getUserRole(supabase, user.id, companyId);
 
-    return role;
-  });
+		return role;
+	});
 }
 
 /**
@@ -100,33 +93,28 @@ export async function getCurrentUserRole() {
  * ```
  */
 export async function checkPermission(permission: Permission) {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    const hasPerm = await hasPermission(
-      supabase,
-      user.id,
-      permission,
-      companyId
-    );
+		const hasPerm = await hasPermission(supabase, user.id, permission, companyId);
 
-    return hasPerm;
-  });
+		return hasPerm;
+	});
 }
 
 /**
@@ -144,28 +132,28 @@ export async function checkPermission(permission: Permission) {
  * ```
  */
 export async function checkRole(role: UserRole) {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    const hasRoleResult = await hasRole(supabase, user.id, role, companyId);
+		const hasRoleResult = await hasRole(supabase, user.id, role, companyId);
 
-    return hasRoleResult;
-  });
+		return hasRoleResult;
+	});
 }
 
 /**
@@ -174,28 +162,28 @@ export async function checkRole(role: UserRole) {
  * @returns true if user is owner
  */
 export async function checkIsOwner() {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+		const isOwner = await isCompanyOwner(supabase, user.id, companyId);
 
-    return isOwner;
-  });
+		return isOwner;
+	});
 }
 
 // ============================================================================
@@ -219,75 +207,74 @@ export async function checkIsOwner() {
  * ```
  */
 export async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
-  return withErrorHandling(async () => {
-    // Validate input
-    const validated = updateRoleSchema.parse(input);
+	return withErrorHandling(async () => {
+		// Validate input
+		const validated = updateRoleSchema.parse(input);
 
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    // Check permission - only owners and admins can change roles
-    const canManageRoles =
-      (await isCompanyOwner(supabase, user.id, companyId)) ||
-      (await hasRole(supabase, user.id, "admin", companyId));
+		// Check permission - only owners and admins can change roles
+		const canManageRoles =
+			(await isCompanyOwner(supabase, user.id, companyId)) || (await hasRole(supabase, user.id, "admin", companyId));
 
-    if (!canManageRoles) {
-      throw new Error("Only owners and admins can change roles");
-    }
+		if (!canManageRoles) {
+			throw new Error("Only owners and admins can change roles");
+		}
 
-    // Get current role for audit log
-    const { data: currentMember } = await supabase
-      .from("team_members")
-      .select("role")
-      .eq("id", validated.teamMemberId)
-      .eq("company_id", companyId)
-      .single();
+		// Get current role for audit log
+		const { data: currentMember } = await supabase
+			.from("team_members")
+			.select("role")
+			.eq("id", validated.teamMemberId)
+			.eq("company_id", companyId)
+			.single();
 
-    if (!currentMember) {
-      throw new Error("Team member not found");
-    }
+		if (!currentMember) {
+			throw new Error("Team member not found");
+		}
 
-    // Update role
-    const { data: updatedMember, error } = await supabase
-      .from("team_members")
-      .update({ role: validated.newRole })
-      .eq("id", validated.teamMemberId)
-      .eq("company_id", companyId)
-      .select()
-      .single();
+		// Update role
+		const { data: updatedMember, error } = await supabase
+			.from("team_members")
+			.update({ role: validated.newRole })
+			.eq("id", validated.teamMemberId)
+			.eq("company_id", companyId)
+			.select()
+			.single();
 
-    if (error) {
-      throw new Error(error.message);
-    }
+		if (error) {
+			throw new Error(error.message);
+		}
 
-    // Log role change
-    await supabase.from("role_change_log").insert({
-      team_member_id: validated.teamMemberId,
-      changed_by: user.id,
-      old_role: currentMember.role,
-      new_role: validated.newRole,
-      reason: validated.reason,
-    });
+		// Log role change
+		await supabase.from("role_change_log").insert({
+			team_member_id: validated.teamMemberId,
+			changed_by: user.id,
+			old_role: currentMember.role,
+			new_role: validated.newRole,
+			reason: validated.reason,
+		});
 
-    revalidatePath("/dashboard/settings/team");
-    revalidatePath(`/dashboard/settings/team/${validated.teamMemberId}`);
+		revalidatePath("/dashboard/settings/team");
+		revalidatePath(`/dashboard/settings/team/${validated.teamMemberId}`);
 
-    return updatedMember;
-  });
+		return updatedMember;
+	});
 }
 
 /**
@@ -308,57 +295,54 @@ export async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchem
  * });
  * ```
  */
-export async function updateTeamMemberPermissions(
-  input: z.infer<typeof updatePermissionsSchema>
-) {
-  return withErrorHandling(async () => {
-    // Validate input
-    const validated = updatePermissionsSchema.parse(input);
+export async function updateTeamMemberPermissions(input: z.infer<typeof updatePermissionsSchema>) {
+	return withErrorHandling(async () => {
+		// Validate input
+		const validated = updatePermissionsSchema.parse(input);
 
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    // Check permission
-    const canManagePermissions =
-      (await isCompanyOwner(supabase, user.id, companyId)) ||
-      (await hasRole(supabase, user.id, "admin", companyId));
+		// Check permission
+		const canManagePermissions =
+			(await isCompanyOwner(supabase, user.id, companyId)) || (await hasRole(supabase, user.id, "admin", companyId));
 
-    if (!canManagePermissions) {
-      throw new Error("Only owners and admins can change permissions");
-    }
+		if (!canManagePermissions) {
+			throw new Error("Only owners and admins can change permissions");
+		}
 
-    // Update permissions
-    const { data: updatedMember, error } = await supabase
-      .from("team_members")
-      .update({ permissions: validated.permissions })
-      .eq("id", validated.teamMemberId)
-      .eq("company_id", companyId)
-      .select()
-      .single();
+		// Update permissions
+		const { data: updatedMember, error } = await supabase
+			.from("team_members")
+			.update({ permissions: validated.permissions })
+			.eq("id", validated.teamMemberId)
+			.eq("company_id", companyId)
+			.select()
+			.single();
 
-    if (error) {
-      throw new Error(error.message);
-    }
+		if (error) {
+			throw new Error(error.message);
+		}
 
-    revalidatePath("/dashboard/settings/team");
-    revalidatePath(`/dashboard/settings/team/${validated.teamMemberId}`);
+		revalidatePath("/dashboard/settings/team");
+		revalidatePath(`/dashboard/settings/team/${validated.teamMemberId}`);
 
-    return updatedMember;
-  });
+		return updatedMember;
+	});
 }
 
 /**
@@ -367,21 +351,21 @@ export async function updateTeamMemberPermissions(
  * @returns List of team members with roles
  */
 export async function getTeamMembersWithRoles() {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    const { data, error } = await supabase
-      .from("team_members")
-      .select(
-        `
+		const { data, error } = await supabase
+			.from("team_members")
+			.select(
+				`
         *,
         users (
           id,
@@ -390,16 +374,16 @@ export async function getTeamMembersWithRoles() {
           avatar
         )
       `
-      )
-      .eq("company_id", companyId)
-      .order("created_at", { ascending: false });
+			)
+			.eq("company_id", companyId)
+			.order("created_at", { ascending: false });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+		if (error) {
+			throw new Error(error.message);
+		}
 
-    return data;
-  });
+		return data;
+	});
 }
 
 // ============================================================================
@@ -423,69 +407,66 @@ export async function getTeamMembersWithRoles() {
  * ```
  */
 export async function transferOwnership(input: {
-  newOwnerId: string;
-  password: string;
-  reason?: string;
-  ipAddress?: string;
-  userAgent?: string;
+	newOwnerId: string;
+	password: string;
+	reason?: string;
+	ipAddress?: string;
+	userAgent?: string;
 }) {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    // Verify user is current owner
-    const isOwner = await isCompanyOwner(supabase, user.id, companyId);
-    if (!isOwner) {
-      throw new Error("Only the current owner can transfer ownership");
-    }
+		// Verify user is current owner
+		const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+		if (!isOwner) {
+			throw new Error("Only the current owner can transfer ownership");
+		}
 
-    // Verify password
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email || "",
-      password: input.password,
-    });
+		// Verify password
+		const { error: signInError } = await supabase.auth.signInWithPassword({
+			email: user.email || "",
+			password: input.password,
+		});
 
-    if (signInError) {
-      throw new Error("Password verification failed");
-    }
+		if (signInError) {
+			throw new Error("Password verification failed");
+		}
 
-    // Call database function to transfer ownership
-    const { data: transferId, error } = await supabase.rpc(
-      "transfer_company_ownership",
-      {
-        p_company_id: companyId,
-        p_current_owner_id: user.id,
-        p_new_owner_id: input.newOwnerId,
-        p_reason: input.reason,
-        p_ip_address: input.ipAddress,
-        p_user_agent: input.userAgent,
-      }
-    );
+		// Call database function to transfer ownership
+		const { data: transferId, error } = await supabase.rpc("transfer_company_ownership", {
+			p_company_id: companyId,
+			p_current_owner_id: user.id,
+			p_new_owner_id: input.newOwnerId,
+			p_reason: input.reason,
+			p_ip_address: input.ipAddress,
+			p_user_agent: input.userAgent,
+		});
 
-    if (error) {
-      throw new Error(error.message || "Failed to transfer ownership");
-    }
+		if (error) {
+			throw new Error(error.message || "Failed to transfer ownership");
+		}
 
-    // Revalidate all relevant paths
-    revalidatePath("/dashboard/settings/team");
-    revalidatePath("/dashboard");
+		// Revalidate all relevant paths
+		revalidatePath("/dashboard/settings/team");
+		revalidatePath("/dashboard");
 
-    return transferId;
-  });
+		return transferId;
+	});
 }
 
 /**
@@ -495,52 +476,51 @@ export async function transferOwnership(input: {
  * @returns List of ownership transfers
  */
 export async function getOwnershipTransferHistory() {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			throw new Error("Not authenticated");
+		}
 
-    // Only owners and admins can view transfer history
-    const canView =
-      (await isCompanyOwner(supabase, user.id, companyId)) ||
-      (await hasRole(supabase, user.id, "admin", companyId));
+		// Only owners and admins can view transfer history
+		const canView =
+			(await isCompanyOwner(supabase, user.id, companyId)) || (await hasRole(supabase, user.id, "admin", companyId));
 
-    if (!canView) {
-      throw new Error("Only owners and admins can view transfer history");
-    }
+		if (!canView) {
+			throw new Error("Only owners and admins can view transfer history");
+		}
 
-    const { data, error } = await supabase
-      .from("ownership_transfers")
-      .select(
-        `
+		const { data, error } = await supabase
+			.from("ownership_transfers")
+			.select(
+				`
         *,
         previous_owner:users!ownership_transfers_previous_owner_id_fkey(id, name, email),
         new_owner:users!ownership_transfers_new_owner_id_fkey(id, name, email),
         initiated_by_user:users!ownership_transfers_initiated_by_fkey(id, name, email)
       `
-      )
-      .eq("company_id", companyId)
-      .order("created_at", { ascending: false });
+			)
+			.eq("company_id", companyId)
+			.order("created_at", { ascending: false });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+		if (error) {
+			throw new Error(error.message);
+		}
 
-    return data;
-  });
+		return data;
+	});
 }
 
 /**
@@ -551,46 +531,41 @@ export async function getOwnershipTransferHistory() {
  * @returns Object with canDelete boolean and reason if not allowed
  */
 export async function canDeleteTeamMember(teamMemberId: string) {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new Error("Database connection not available");
-    }
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Database connection not available");
+		}
 
-    const companyId = await getActiveCompanyId();
-    if (!companyId) {
-      throw new Error("No active company");
-    }
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new Error("No active company");
+		}
 
-    // Get team member details
-    const { data: teamMember, error } = await supabase
-      .from("team_members")
-      .select("user_id, role")
-      .eq("id", teamMemberId)
-      .eq("company_id", companyId)
-      .single();
+		// Get team member details
+		const { data: teamMember, error } = await supabase
+			.from("team_members")
+			.select("user_id, role")
+			.eq("id", teamMemberId)
+			.eq("company_id", companyId)
+			.single();
 
-    if (error || !teamMember) {
-      throw new Error("Team member not found");
-    }
+		if (error || !teamMember) {
+			throw new Error("Team member not found");
+		}
 
-    // Check if user is company owner
-    const { data: company } = await supabase
-      .from("companies")
-      .select("owner_id")
-      .eq("id", companyId)
-      .single();
+		// Check if user is company owner
+		const { data: company } = await supabase.from("companies").select("owner_id").eq("id", companyId).single();
 
-    if (company && company.owner_id === teamMember.user_id) {
-      return {
-        canDelete: false,
-        reason:
-          "Cannot delete company owner. Transfer ownership first before removing this team member.",
-      };
-    }
+		if (company && company.owner_id === teamMember.user_id) {
+			return {
+				canDelete: false,
+				reason: "Cannot delete company owner. Transfer ownership first before removing this team member.",
+			};
+		}
 
-    return {
-      canDelete: true,
-    };
-  });
+		return {
+			canDelete: true,
+		};
+	});
 }

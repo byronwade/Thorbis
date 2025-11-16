@@ -9,19 +9,15 @@
  */
 
 export default function CertificationTrackingPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Certification Tracking</h1>
-        <p className="text-muted-foreground">
-          Track technician certifications and renewals
-        </p>
-      </div>
-      <div className="rounded-lg border p-6">
-        <p className="text-muted-foreground">
-          Certification Tracking system coming soon...
-        </p>
-      </div>
-    </div>
-  );
+	return (
+		<div className="space-y-6">
+			<div>
+				<h1 className="font-semibold text-2xl">Certification Tracking</h1>
+				<p className="text-muted-foreground">Track technician certifications and renewals</p>
+			</div>
+			<div className="rounded-lg border p-6">
+				<p className="text-muted-foreground">Certification Tracking system coming soon...</p>
+			</div>
+		</div>
+	);
 }

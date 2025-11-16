@@ -39,9 +39,9 @@ export type { UserStore } from "./user-store";
 export { userSelectors, useUserStore } from "./user-store";
 export { useViewStore, type ViewFilters, type ZoomLevel } from "./view-store";
 export {
-  useSetWorkView,
-  useWorkView,
-  useWorkViewStore,
+	useSetWorkView,
+	useWorkView,
+	useWorkViewStore,
 } from "./work-view-store";
 
 /**
@@ -49,14 +49,14 @@ export {
  * Useful for logout or clearing all state
  */
 export const resetAllStores = () => {
-  const stores = [
-    require("./user-store").useUserStore,
-    require("./ui-store").useUIStore,
-    require("./posts-store").usePostsStore,
-    require("./chat-store").useChatStore,
-  ];
+	const stores = [
+		require("./user-store").useUserStore,
+		require("./ui-store").useUIStore,
+		require("./posts-store").usePostsStore,
+		require("./chat-store").useChatStore,
+	];
 
-  for (const store of stores) {
-    store.getState().reset?.();
-  }
+	for (const store of stores) {
+		store.getState().reset?.();
+	}
 };

@@ -10,9 +10,9 @@ import { UrolesData } from "@/components/settings/roles/roles-data";
 import { UrolesSkeleton } from "@/components/settings/roles/roles-skeleton";
 
 export default function UrolesPage() {
-  return (
-    <Suspense fallback={<UrolesSkeleton />}>
-      <UrolesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UrolesSkeleton />}>
+			<UrolesData />
+		</Suspense>
+	);
 }

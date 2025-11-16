@@ -10,9 +10,9 @@ import { UteamUschedulingData } from "@/components/settings/team-scheduling/team
 import { UteamUschedulingSkeleton } from "@/components/settings/team-scheduling/team-scheduling-skeleton";
 
 export default function UteamUschedulingPage() {
-  return (
-    <Suspense fallback={<UteamUschedulingSkeleton />}>
-      <UteamUschedulingData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UteamUschedulingSkeleton />}>
+			<UteamUschedulingData />
+		</Suspense>
+	);
 }

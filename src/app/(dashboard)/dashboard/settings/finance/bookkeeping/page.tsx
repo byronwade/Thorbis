@@ -8,11 +8,11 @@ import { SettingsComingSoon } from "@/components/settings/settings-coming-soon";
  */
 
 export default function BookkeepingSettingsPage() {
-  return (
-    <SettingsComingSoon
-      description="Configure your bookkeeping preferences, reconciliation rules, and transaction categorization."
-      icon={<BookOpen className="size-10 text-primary" strokeWidth={1.5} />}
-      title="Bookkeeping Settings"
-    />
-  );
+	return (
+		<SettingsComingSoon
+			description="Configure your bookkeeping preferences, reconciliation rules, and transaction categorization."
+			icon={<BookOpen className="size-10 text-primary" strokeWidth={1.5} />}
+			title="Bookkeeping Settings"
+		/>
+	);
 }

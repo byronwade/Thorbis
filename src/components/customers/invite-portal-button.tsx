@@ -16,66 +16,61 @@ import { inviteToPortal } from "@/actions/customers";
 import { Button } from "@/components/ui/button";
 
 type InvitePortalButtonProps = {
-  customerId: string;
-  customerName: string;
-  portalEnabled: boolean;
-  portalInvitedAt: string | null;
+	customerId: string;
+	customerName: string;
+	portalEnabled: boolean;
+	portalInvitedAt: string | null;
 };
 
 export function InvitePortalButton({
-  customerId,
-  customerName,
-  portalEnabled,
-  portalInvitedAt,
+	customerId,
+	customerName,
+	portalEnabled,
+	portalInvitedAt,
 }: InvitePortalButtonProps) {
-  const [isInviting, setIsInviting] = useState(false);
-  const [isInvited, setIsInvited] = useState(portalEnabled);
+	const [isInviting, setIsInviting] = useState(false);
+	const [isInvited, setIsInvited] = useState(portalEnabled);
 
-  async function handleInvite() {
-    setIsInviting(true);
+	async function handleInvite() {
+		setIsInviting(true);
 
-    try {
-      const result = await inviteToPortal(customerId);
+		try {
+			const result = await inviteToPortal(customerId);
 
-      if (result.success) {
-        setIsInvited(true);
-      } else {
-        alert(result.error || "Failed to send portal invitation");
-      }
-    } catch (_error) {
-      alert("An unexpected error occurred");
-    } finally {
-      setIsInviting(false);
-    }
-  }
+			if (result.success) {
+				setIsInvited(true);
+			} else {
+				alert(result.error || "Failed to send portal invitation");
+			}
+		} catch (_error) {
+			alert("An unexpected error occurred");
+		} finally {
+			setIsInviting(false);
+		}
+	}
 
-  if (isInvited) {
-    return (
-      <Button className="w-full" disabled variant="outline">
-        <Check className="mr-2 size-4 text-success" />
-        Portal Invited
-      </Button>
-    );
-  }
+	if (isInvited) {
+		return (
+			<Button className="w-full" disabled variant="outline">
+				<Check className="mr-2 size-4 text-success" />
+				Portal Invited
+			</Button>
+		);
+	}
 
-  return (
-    <Button
-      className="w-full"
-      disabled={isInviting}
-      onClick={handleInvite}
-      variant="outline"
-    >
-      {isInviting ? (
-        <>
-          <Loader2 className="mr-2 size-4 animate-spin" />
-          Sending Invitation...
-        </>
-      ) : (
-        <>
-          <KeyRound className="mr-2 size-4" />
-          Invite to Portal
-        </>
-      )}
-    </Button>
-  );
+	return (
+		<Button className="w-full" disabled={isInviting} onClick={handleInvite} variant="outline">
+			{isInviting ? (
+				<>
+					<Loader2 className="mr-2 size-4 animate-spin" />
+					Sending Invitation...
+				</>
+			) : (
+				<>
+					<KeyRound className="mr-2 size-4" />
+					Invite to Portal
+				</>
+			)}
+		</Button>
+	);
 }

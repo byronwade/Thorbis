@@ -39,10 +39,10 @@ const CSRF_FORM_FIELD = "csrf_token";
  * CSRF Error
  */
 export class CSRFError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "CSRFError";
-  }
+	constructor(message: string) {
+		super(message);
+		this.name = "CSRFError";
+	}
 }
 
 /**
@@ -54,18 +54,18 @@ export class CSRFError extends Error {
  * @returns The generated CSRF token (for including in forms)
  */
 export async function generateCSRFToken(): Promise<string> {
-  const token = randomBytes(32).toString("hex");
-  const cookieStore = await cookies();
+	const token = randomBytes(32).toString("hex");
+	const cookieStore = await cookies();
 
-  cookieStore.set(CSRF_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24, // 24 hours
-    path: "/",
-  });
+	cookieStore.set(CSRF_TOKEN_COOKIE, token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "strict",
+		maxAge: 60 * 60 * 24, // 24 hours
+		path: "/",
+	});
 
-  return token;
+	return token;
 }
 
 /**
@@ -77,15 +77,15 @@ export async function generateCSRFToken(): Promise<string> {
  * @returns Current CSRF token or new token if none exists
  */
 export async function getCSRFToken(): Promise<string> {
-  const cookieStore = await cookies();
-  const existingToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
+	const cookieStore = await cookies();
+	const existingToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
 
-  if (existingToken) {
-    return existingToken;
-  }
+	if (existingToken) {
+		return existingToken;
+	}
 
-  // Generate new token if none exists
-  return generateCSRFToken();
+	// Generate new token if none exists
+	return generateCSRFToken();
 }
 
 /**
@@ -105,41 +105,35 @@ export async function getCSRFToken(): Promise<string> {
  * }
  */
 export async function verifyCSRFToken(formData?: FormData): Promise<void> {
-  const cookieStore = await cookies();
-  const headersList = await headers();
+	const cookieStore = await cookies();
+	const headersList = await headers();
 
-  const cookieToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
+	const cookieToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
 
-  // Get token from header or form field
-  let submittedToken: string | null = null;
+	// Get token from header or form field
+	let submittedToken: string | null = null;
 
-  // Check header first (for fetch requests)
-  submittedToken = headersList.get(CSRF_HEADER);
+	// Check header first (for fetch requests)
+	submittedToken = headersList.get(CSRF_HEADER);
 
-  // Fall back to form field (for form submissions)
-  if (!submittedToken && formData) {
-    submittedToken = formData.get(CSRF_FORM_FIELD) as string | null;
-  }
+	// Fall back to form field (for form submissions)
+	if (!submittedToken && formData) {
+		submittedToken = formData.get(CSRF_FORM_FIELD) as string | null;
+	}
 
-  // Validate
-  if (!cookieToken) {
-    throw new CSRFError(
-      "CSRF token missing from cookies. Please refresh the page and try again."
-    );
-  }
+	// Validate
+	if (!cookieToken) {
+		throw new CSRFError("CSRF token missing from cookies. Please refresh the page and try again.");
+	}
 
-  if (!submittedToken) {
-    throw new CSRFError(
-      "CSRF token missing from request. Please ensure the form includes a CSRF token."
-    );
-  }
+	if (!submittedToken) {
+		throw new CSRFError("CSRF token missing from request. Please ensure the form includes a CSRF token.");
+	}
 
-  // Constant-time comparison to prevent timing attacks
-  if (!constantTimeCompare(cookieToken, submittedToken)) {
-    throw new CSRFError(
-      "Invalid CSRF token. This request may be forged. Please refresh the page and try again."
-    );
-  }
+	// Constant-time comparison to prevent timing attacks
+	if (!constantTimeCompare(cookieToken, submittedToken)) {
+		throw new CSRFError("Invalid CSRF token. This request may be forged. Please refresh the page and try again.");
+	}
 }
 
 /**
@@ -153,17 +147,17 @@ export async function verifyCSRFToken(formData?: FormData): Promise<void> {
  * @returns true if strings are equal, false otherwise
  */
 function constantTimeCompare(a: string, b: string): boolean {
-  // If lengths don't match, still do comparison to prevent timing leak
-  if (a.length !== b.length) {
-    return false;
-  }
+	// If lengths don't match, still do comparison to prevent timing leak
+	if (a.length !== b.length) {
+		return false;
+	}
 
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
+	let result = 0;
+	for (let i = 0; i < a.length; i++) {
+		result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+	}
 
-  return result === 0;
+	return result === 0;
 }
 
 /**
@@ -183,16 +177,14 @@ function constantTimeCompare(a: string, b: string): boolean {
  * );
  * ```
  */
-export function withCSRFProtection<T extends any[], R>(
-  fn: (...args: T) => Promise<R>
-): (...args: T) => Promise<R> {
-  return async (...args: T): Promise<R> => {
-    // Check if first argument is FormData
-    const formData = args[0] instanceof FormData ? args[0] : undefined;
+export function withCSRFProtection<T extends any[], R>(fn: (...args: T) => Promise<R>): (...args: T) => Promise<R> {
+	return async (...args: T): Promise<R> => {
+		// Check if first argument is FormData
+		const formData = args[0] instanceof FormData ? args[0] : undefined;
 
-    await verifyCSRFToken(formData);
-    return fn(...args);
-  };
+		await verifyCSRFToken(formData);
+		return fn(...args);
+	};
 }
 
 /**
@@ -204,7 +196,7 @@ export function withCSRFProtection<T extends any[], R>(
  * @returns New CSRF token
  */
 export async function rotateCSRFToken(): Promise<string> {
-  return generateCSRFToken();
+	return generateCSRFToken();
 }
 
 /**
@@ -214,6 +206,6 @@ export async function rotateCSRFToken(): Promise<string> {
  * Use this on logout.
  */
 export async function clearCSRFToken(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(CSRF_TOKEN_COOKIE);
+	const cookieStore = await cookies();
+	cookieStore.delete(CSRF_TOKEN_COOKIE);
 }

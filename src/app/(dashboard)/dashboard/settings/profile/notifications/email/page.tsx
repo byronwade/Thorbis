@@ -10,9 +10,9 @@ import { UemailData } from "@/components/settings/email/email-data";
 import { UemailSkeleton } from "@/components/settings/email/email-skeleton";
 
 export default function UemailPage() {
-  return (
-    <Suspense fallback={<UemailSkeleton />}>
-      <UemailData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UemailSkeleton />}>
+			<UemailData />
+		</Suspense>
+	);
 }

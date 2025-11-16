@@ -9,10 +9,5 @@
 import { TeamChat } from "@/components/communication/team-chat";
 
 export default function SalesChannelPage() {
-  return (
-    <TeamChat
-      channelDescription="Sales team coordination, leads, and opportunities"
-      channelName="sales"
-    />
-  );
+	return <TeamChat channelDescription="Sales team coordination, leads, and opportunities" channelName="sales" />;
 }

@@ -22,25 +22,23 @@ import { WorkOrdersStats } from "@/components/jobs/work-orders/work-orders-stats
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function WorkOrdersPage() {
-  return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="font-bold text-3xl tracking-tight">Work Orders</h1>
-        <p className="text-muted-foreground">
-          Manage work orders, service requests, and job documentation
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Page header */}
+			<div>
+				<h1 className="font-bold text-3xl tracking-tight">Work Orders</h1>
+				<p className="text-muted-foreground">Manage work orders, service requests, and job documentation</p>
+			</div>
 
-      {/* Stats - Streams in first */}
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <WorkOrdersStats />
-      </Suspense>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<WorkOrdersStats />
+			</Suspense>
 
-      {/* Work orders data - Streams in second */}
-      <Suspense fallback={<WorkOrdersSkeleton />}>
-        <WorkOrdersData />
-      </Suspense>
-    </div>
-  );
+			{/* Work orders data - Streams in second */}
+			<Suspense fallback={<WorkOrdersSkeleton />}>
+				<WorkOrdersData />
+			</Suspense>
+		</div>
+	);
 }

@@ -10,8 +10,8 @@
 import { usePageView } from "@/lib/analytics/hooks";
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  // Automatically track page views
-  usePageView();
+	// Automatically track page views
+	usePageView();
 
-  return <>{children}</>;
+	return <>{children}</>;
 }

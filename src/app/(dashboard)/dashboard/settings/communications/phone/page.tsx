@@ -10,9 +10,9 @@ import { UphoneData } from "@/components/settings/phone/phone-data";
 import { UphoneSkeleton } from "@/components/settings/phone/phone-skeleton";
 
 export default function UphonePage() {
-  return (
-    <Suspense fallback={<UphoneSkeleton />}>
-      <UphoneData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UphoneSkeleton />}>
+			<UphoneData />
+		</Suspense>
+	);
 }

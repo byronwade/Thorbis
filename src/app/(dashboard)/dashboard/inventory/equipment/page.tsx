@@ -13,9 +13,9 @@ import { EquipmentData } from "@/components/inventory/equipment/equipment-data";
 import { EquipmentSkeleton } from "@/components/inventory/equipment/equipment-skeleton";
 
 export default function EquipmentTrackingPage() {
-  return (
-    <Suspense fallback={<EquipmentSkeleton />}>
-      <EquipmentData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<EquipmentSkeleton />}>
+			<EquipmentData />
+		</Suspense>
+	);
 }

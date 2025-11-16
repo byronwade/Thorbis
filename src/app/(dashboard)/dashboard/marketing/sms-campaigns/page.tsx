@@ -19,9 +19,9 @@ import { SmsCampaignsData } from "@/components/marketing/sms-campaigns/sms-campa
 import { SmsCampaignsSkeleton } from "@/components/marketing/sms-campaigns/sms-campaigns-skeleton";
 
 export default function SMSCampaignsPage() {
-  return (
-    <Suspense fallback={<SmsCampaignsSkeleton />}>
-      <SmsCampaignsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<SmsCampaignsSkeleton />}>
+			<SmsCampaignsData />
+		</Suspense>
+	);
 }

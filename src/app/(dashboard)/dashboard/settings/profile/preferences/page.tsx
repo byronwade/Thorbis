@@ -10,9 +10,9 @@ import { UpreferencesData } from "@/components/settings/preferences/preferences-
 import { UpreferencesSkeleton } from "@/components/settings/preferences/preferences-skeleton";
 
 export default function UpreferencesPage() {
-  return (
-    <Suspense fallback={<UpreferencesSkeleton />}>
-      <UpreferencesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UpreferencesSkeleton />}>
+			<UpreferencesData />
+		</Suspense>
+	);
 }

@@ -10,9 +10,9 @@ import { UpropertiesData } from "@/components/work/properties/properties-data";
 import { UpropertiesSkeleton } from "@/components/work/properties/properties-skeleton";
 
 export default function UpropertiesPage() {
-  return (
-    <Suspense fallback={<UpropertiesSkeleton />}>
-      <UpropertiesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UpropertiesSkeleton />}>
+			<UpropertiesData />
+		</Suspense>
+	);
 }

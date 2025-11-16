@@ -14,24 +14,22 @@ const secret = process.env[`PLAID_SECRET_${environmentRaw.toUpperCase()}`];
 
 // Validate configuration
 if (!clientId) {
-  throw new Error("PLAID_CLIENT_ID is not defined in environment variables");
+	throw new Error("PLAID_CLIENT_ID is not defined in environment variables");
 }
 
 if (!secret) {
-  throw new Error(
-    `PLAID_SECRET_${environmentRaw.toUpperCase()} is not defined in environment variables`
-  );
+	throw new Error(`PLAID_SECRET_${environmentRaw.toUpperCase()} is not defined in environment variables`);
 }
 
 // Create Plaid configuration
 const configuration = new Configuration({
-  basePath: PlaidEnvironments[environment],
-  baseOptions: {
-    headers: {
-      "PLAID-CLIENT-ID": clientId,
-      "PLAID-SECRET": secret,
-    },
-  },
+	basePath: PlaidEnvironments[environment],
+	baseOptions: {
+		headers: {
+			"PLAID-CLIENT-ID": clientId,
+			"PLAID-SECRET": secret,
+		},
+	},
 });
 
 // Export singleton Plaid API client

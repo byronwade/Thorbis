@@ -5,13 +5,13 @@ import { createClient } from "@/lib/supabase/server";
  * This uses Supabase directly instead of Drizzle ORM
  */
 export async function getSupabaseClient() {
-  const supabase = await createClient();
-  if (!supabase) {
-    throw new Error(
-      "Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables."
-    );
-  }
-  return supabase;
+	const supabase = await createClient();
+	if (!supabase) {
+		throw new Error(
+			"Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables."
+		);
+	}
+	return supabase;
 }
 
 /**
@@ -20,8 +20,8 @@ export async function getSupabaseClient() {
  * but database operations should use Supabase client directly
  */
 export type {
-  NewPost,
-  NewUser,
-  Post,
-  User,
+	NewPost,
+	NewUser,
+	Post,
+	User,
 } from "./schema";

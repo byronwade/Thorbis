@@ -10,9 +10,9 @@ import { UsmsData } from "@/components/settings/sms/sms-data";
 import { UsmsSkeleton } from "@/components/settings/sms/sms-skeleton";
 
 export default function UsmsPage() {
-  return (
-    <Suspense fallback={<UsmsSkeleton />}>
-      <UsmsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UsmsSkeleton />}>
+			<UsmsData />
+		</Suspense>
+	);
 }

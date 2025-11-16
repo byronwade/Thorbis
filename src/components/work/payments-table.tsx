@@ -12,421 +12,389 @@
  * - Click to view payment details
  */
 
-import {
-  Archive,
-  CreditCard,
-  Edit,
-  Eye,
-  MoreHorizontal,
-  Plus,
-} from "lucide-react";
+import { Archive, CreditCard, Edit, Eye, MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  type BulkAction,
-  type ColumnDef,
-  FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
 
 type Payment = {
-  id: string;
-  payment_number: string;
-  amount: number;
-  payment_method: string;
-  status: string;
-  processed_at?: string | Date | null;
-  customer?: {
-    first_name?: string | null;
-    last_name?: string | null;
-    display_name?: string | null;
-  } | null;
-  invoice_id?: string | null;
-  job_id?: string | null;
-  archived_at?: string | null;
-  deleted_at?: string | null;
+	id: string;
+	payment_number: string;
+	amount: number;
+	payment_method: string;
+	status: string;
+	processed_at?: string | Date | null;
+	customer?: {
+		first_name?: string | null;
+		last_name?: string | null;
+		display_name?: string | null;
+	} | null;
+	invoice_id?: string | null;
+	job_id?: string | null;
+	archived_at?: string | null;
+	deleted_at?: string | null;
 };
 
 type PaymentsTableProps = {
-  payments: Payment[];
-  itemsPerPage?: number;
-  onPaymentClick?: (payment: Payment) => void;
-  showRefresh?: boolean;
+	payments: Payment[];
+	itemsPerPage?: number;
+	onPaymentClick?: (payment: Payment) => void;
+	showRefresh?: boolean;
 };
 
 function formatCurrency(cents: number | null): string {
-  if (cents === null) {
-    return "$0.00";
-  }
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+	if (cents === null) {
+		return "$0.00";
+	}
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+	}).format(cents / 100);
 }
 
 function formatDate(date: Date | string | null | undefined): string {
-  if (!date) {
-    return "—";
-  }
-  const d = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(d);
+	if (!date) {
+		return "—";
+	}
+	const d = typeof date === "string" ? new Date(date) : date;
+	return new Intl.DateTimeFormat("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	}).format(d);
 }
 
 function getStatusBadge(status: string) {
-  const variants: Record<
-    string,
-    {
-      className: string;
-      label: string;
-    }
-  > = {
-    pending: {
-      className:
-        "border-warning bg-warning text-warning hover:bg-warning dark:border-warning dark:bg-warning/50 dark:text-warning",
-      label: "Pending",
-    },
-    processing: {
-      className:
-        "border-primary bg-primary text-primary hover:bg-primary dark:border-primary dark:bg-primary/50 dark:text-primary",
-      label: "Processing",
-    },
-    completed: {
-      className: "border-success/50 bg-success text-white hover:bg-success",
-      label: "Completed",
-    },
-    failed: {
-      className:
-        "border-destructive/50 bg-destructive text-white hover:bg-destructive",
-      label: "Failed",
-    },
-    refunded: {
-      className: "border-warning/50 bg-warning text-white hover:bg-warning",
-      label: "Refunded",
-    },
-    partially_refunded: {
-      className:
-        "border-warning bg-warning text-warning hover:bg-warning dark:border-warning dark:bg-warning/50 dark:text-warning",
-      label: "Partially Refunded",
-    },
-    cancelled: {
-      className: "border-border/50 bg-secondary0 text-white hover:bg-accent",
-      label: "Cancelled",
-    },
-  };
+	const variants: Record<
+		string,
+		{
+			className: string;
+			label: string;
+		}
+	> = {
+		pending: {
+			className:
+				"border-warning bg-warning text-warning hover:bg-warning dark:border-warning dark:bg-warning/50 dark:text-warning",
+			label: "Pending",
+		},
+		processing: {
+			className:
+				"border-primary bg-primary text-primary hover:bg-primary dark:border-primary dark:bg-primary/50 dark:text-primary",
+			label: "Processing",
+		},
+		completed: {
+			className: "border-success/50 bg-success text-white hover:bg-success",
+			label: "Completed",
+		},
+		failed: {
+			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			label: "Failed",
+		},
+		refunded: {
+			className: "border-warning/50 bg-warning text-white hover:bg-warning",
+			label: "Refunded",
+		},
+		partially_refunded: {
+			className:
+				"border-warning bg-warning text-warning hover:bg-warning dark:border-warning dark:bg-warning/50 dark:text-warning",
+			label: "Partially Refunded",
+		},
+		cancelled: {
+			className: "border-border/50 bg-secondary0 text-white hover:bg-accent",
+			label: "Cancelled",
+		},
+	};
 
-  const config = variants[status] || {
-    className: "border-border/50 bg-background text-muted-foreground",
-    label: status,
-  };
+	const config = variants[status] || {
+		className: "border-border/50 bg-background text-muted-foreground",
+		label: status,
+	};
 
-  return (
-    <Badge
-      className={cn("font-medium text-xs", config.className)}
-      variant="outline"
-    >
-      {config.label}
-    </Badge>
-  );
+	return (
+		<Badge className={cn("font-medium text-xs", config.className)} variant="outline">
+			{config.label}
+		</Badge>
+	);
 }
 
 function getPaymentMethodLabel(method: string): string {
-  const labels: Record<string, string> = {
-    cash: "Cash",
-    check: "Check",
-    credit_card: "Credit Card",
-    debit_card: "Debit Card",
-    ach: "ACH",
-    wire: "Wire Transfer",
-    venmo: "Venmo",
-    paypal: "PayPal",
-    other: "Other",
-  };
-  return labels[method] || method;
+	const labels: Record<string, string> = {
+		cash: "Cash",
+		check: "Check",
+		credit_card: "Credit Card",
+		debit_card: "Debit Card",
+		ach: "ACH",
+		wire: "Wire Transfer",
+		venmo: "Venmo",
+		paypal: "PayPal",
+		other: "Other",
+	};
+	return labels[method] || method;
 }
 
 function getCustomerName(payment: Payment): string {
-  if (payment.customer?.display_name) {
-    return payment.customer.display_name;
-  }
-  if (payment.customer?.first_name || payment.customer?.last_name) {
-    return `${payment.customer.first_name || ""} ${payment.customer.last_name || ""}`.trim();
-  }
-  return "Unknown Customer";
+	if (payment.customer?.display_name) {
+		return payment.customer.display_name;
+	}
+	if (payment.customer?.first_name || payment.customer?.last_name) {
+		return `${payment.customer.first_name || ""} ${payment.customer.last_name || ""}`.trim();
+	}
+	return "Unknown Customer";
 }
 
 export function PaymentsTable({
-  payments,
-  itemsPerPage = 50,
-  onPaymentClick,
-  showRefresh = false,
+	payments,
+	itemsPerPage = 50,
+	onPaymentClick,
+	showRefresh = false,
 }: PaymentsTableProps) {
-  // Archive filter state
-  const archiveFilter = useArchiveStore((state) => state.filters.payments);
+	// Archive filter state
+	const archiveFilter = useArchiveStore((state) => state.filters.payments);
 
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
-  const [itemToArchive, setItemToArchive] = useState<string | null>(null);
+	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
-  // Filter payments based on archive status
-  const filteredPayments = payments.filter((payment) => {
-    const isArchived = Boolean(payment.archived_at || payment.deleted_at);
-    if (archiveFilter === "active") {
-      return !isArchived;
-    }
-    if (archiveFilter === "archived") {
-      return isArchived;
-    }
-    return true; // "all"
-  });
+	// Filter payments based on archive status
+	const filteredPayments = payments.filter((payment) => {
+		const isArchived = Boolean(payment.archived_at || payment.deleted_at);
+		if (archiveFilter === "active") {
+			return !isArchived;
+		}
+		if (archiveFilter === "archived") {
+			return isArchived;
+		}
+		return true; // "all"
+	});
 
-  const columns: ColumnDef<Payment>[] = [
-    {
-      key: "payment_number",
-      header: "Payment #",
-      width: "w-36",
-      shrink: true,
-      sortable: true,
-      render: (payment) => (
-        <Link
-          className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
-          href={`/dashboard/work/payments/${payment.id}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {payment.payment_number}
-        </Link>
-      ),
-    },
-    {
-      key: "customer",
-      header: "Customer",
-      width: "w-48",
-      shrink: true,
-      sortable: true,
-      hideable: false, // CRITICAL: Always show customer for quick identification
-      render: (payment) => (
-        <span className="text-muted-foreground text-sm">
-          {getCustomerName(payment)}
-        </span>
-      ),
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      width: "w-32",
-      shrink: true,
-      align: "right",
-      sortable: true,
-      hideable: false, // CRITICAL: Financial data essential
-      render: (payment) => (
-        <span className="font-semibold tabular-nums">
-          {formatCurrency(payment.amount)}
-        </span>
-      ),
-    },
-    {
-      key: "payment_method",
-      header: "Method",
-      width: "w-32",
-      shrink: true,
-      hideOnMobile: true,
-      sortable: true,
-      hideable: true,
-      render: (payment) => (
-        <span className="text-muted-foreground text-sm">
-          {getPaymentMethodLabel(payment.payment_method)}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      width: "w-32",
-      shrink: true,
-      sortable: true,
-      hideable: false, // CRITICAL: Status key for action items
-      render: (payment) => getStatusBadge(payment.status),
-    },
-    {
-      key: "processed_at",
-      header: "Date",
-      width: "w-32",
-      shrink: true,
-      sortable: true,
-      hideOnMobile: true,
-      hideable: true,
-      render: (payment) => (
-        <span className="text-muted-foreground text-sm tabular-nums">
-          {formatDate(payment.processed_at)}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "",
-      width: "w-10",
-      shrink: true,
-      render: (payment) => (
-        <div data-no-row-click>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <MoreHorizontal className="size-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/work/payments/${payment.id}`}>
-                  <Eye className="mr-2 size-4" />
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/work/payments/${payment.id}/edit`}>
-                  <Edit className="mr-2 size-4" />
-                  Edit Payment
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={() => {
-                  setItemToArchive(payment.id);
-                  setIsArchiveDialogOpen(true);
-                }}
-              >
-                <Archive className="mr-2 size-4" />
-                Archive Payment
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      ),
-    },
-  ];
+	const columns: ColumnDef<Payment>[] = [
+		{
+			key: "payment_number",
+			header: "Payment #",
+			width: "w-36",
+			shrink: true,
+			sortable: true,
+			render: (payment) => (
+				<Link
+					className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+					href={`/dashboard/work/payments/${payment.id}`}
+					onClick={(e) => e.stopPropagation()}
+				>
+					{payment.payment_number}
+				</Link>
+			),
+		},
+		{
+			key: "customer",
+			header: "Customer",
+			width: "w-48",
+			shrink: true,
+			sortable: true,
+			hideable: false, // CRITICAL: Always show customer for quick identification
+			render: (payment) => <span className="text-muted-foreground text-sm">{getCustomerName(payment)}</span>,
+		},
+		{
+			key: "amount",
+			header: "Amount",
+			width: "w-32",
+			shrink: true,
+			align: "right",
+			sortable: true,
+			hideable: false, // CRITICAL: Financial data essential
+			render: (payment) => <span className="font-semibold tabular-nums">{formatCurrency(payment.amount)}</span>,
+		},
+		{
+			key: "payment_method",
+			header: "Method",
+			width: "w-32",
+			shrink: true,
+			hideOnMobile: true,
+			sortable: true,
+			hideable: true,
+			render: (payment) => (
+				<span className="text-muted-foreground text-sm">{getPaymentMethodLabel(payment.payment_method)}</span>
+			),
+		},
+		{
+			key: "status",
+			header: "Status",
+			width: "w-32",
+			shrink: true,
+			sortable: true,
+			hideable: false, // CRITICAL: Status key for action items
+			render: (payment) => getStatusBadge(payment.status),
+		},
+		{
+			key: "processed_at",
+			header: "Date",
+			width: "w-32",
+			shrink: true,
+			sortable: true,
+			hideOnMobile: true,
+			hideable: true,
+			render: (payment) => (
+				<span className="text-muted-foreground text-sm tabular-nums">{formatDate(payment.processed_at)}</span>
+			),
+		},
+		{
+			key: "actions",
+			header: "",
+			width: "w-10",
+			shrink: true,
+			render: (payment) => (
+				<div data-no-row-click>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button size="icon" variant="ghost">
+								<MoreHorizontal className="size-4" />
+								<span className="sr-only">Open menu</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Actions</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem asChild>
+								<Link href={`/dashboard/work/payments/${payment.id}`}>
+									<Eye className="mr-2 size-4" />
+									View Details
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
+								<Link href={`/dashboard/work/payments/${payment.id}/edit`}>
+									<Edit className="mr-2 size-4" />
+									Edit Payment
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								className="text-destructive"
+								onClick={() => {
+									setItemToArchive(payment.id);
+									setIsArchiveDialogOpen(true);
+								}}
+							>
+								<Archive className="mr-2 size-4" />
+								Archive Payment
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
+			),
+		},
+	];
 
-  // Bulk actions
-  const bulkActions: BulkAction[] = [
-    {
-      label: "Export Selected",
-      icon: <Archive className="h-4 w-4" />,
-      onClick: async (_selectedIds) => {},
-    },
-  ];
+	// Bulk actions
+	const bulkActions: BulkAction[] = [
+		{
+			label: "Export Selected",
+			icon: <Archive className="h-4 w-4" />,
+			onClick: async (_selectedIds) => {},
+		},
+	];
 
-  // Search filter function
-  const searchFilter = (payment: Payment, query: string) => {
-    const searchStr = query.toLowerCase();
+	// Search filter function
+	const searchFilter = (payment: Payment, query: string) => {
+		const searchStr = query.toLowerCase();
 
-    return (
-      payment.payment_number.toLowerCase().includes(searchStr) ||
-      payment.status.toLowerCase().includes(searchStr) ||
-      payment.payment_method.toLowerCase().includes(searchStr) ||
-      getCustomerName(payment).toLowerCase().includes(searchStr)
-    );
-  };
+		return (
+			payment.payment_number.toLowerCase().includes(searchStr) ||
+			payment.status.toLowerCase().includes(searchStr) ||
+			payment.payment_method.toLowerCase().includes(searchStr) ||
+			getCustomerName(payment).toLowerCase().includes(searchStr)
+		);
+	};
 
-  const handleRowClick = (payment: Payment) => {
-    if (onPaymentClick) {
-      onPaymentClick(payment);
-    } else {
-      window.location.href = `/dashboard/work/payments/${payment.id}`;
-    }
-  };
+	const handleRowClick = (payment: Payment) => {
+		if (onPaymentClick) {
+			onPaymentClick(payment);
+		} else {
+			window.location.href = `/dashboard/work/payments/${payment.id}`;
+		}
+	};
 
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+	const handleRefresh = () => {
+		window.location.reload();
+	};
 
-  const handleAddPayment = () => {
-    window.location.href = "/dashboard/work/payments/new";
-  };
+	const handleAddPayment = () => {
+		window.location.href = "/dashboard/work/payments/new";
+	};
 
-  return (
-    <>
-      <FullWidthDataTable
-        bulkActions={bulkActions}
-        columns={columns}
-        data={filteredPayments}
-        emptyAction={
-          <Button onClick={handleAddPayment} size="sm">
-            <Plus className="mr-2 size-4" />
-            Record Payment
-          </Button>
-        }
-        emptyIcon={<CreditCard className="h-8 w-8 text-muted-foreground" />}
-        emptyMessage="No payments found"
-        enableSelection={true}
-        entity="payments"
-        getItemId={(payment) => payment.id}
-        isArchived={(payment) =>
-          Boolean(payment.archived_at || payment.deleted_at)
-        }
-        itemsPerPage={itemsPerPage}
-        onRefresh={handleRefresh}
-        onRowClick={handleRowClick}
-        searchFilter={searchFilter}
-        searchPlaceholder="Search payments by number, customer, or method..."
-        showArchived={archiveFilter !== "active"}
-        showRefresh={showRefresh}
-      />
+	return (
+		<>
+			<FullWidthDataTable
+				bulkActions={bulkActions}
+				columns={columns}
+				data={filteredPayments}
+				emptyAction={
+					<Button onClick={handleAddPayment} size="sm">
+						<Plus className="mr-2 size-4" />
+						Record Payment
+					</Button>
+				}
+				emptyIcon={<CreditCard className="h-8 w-8 text-muted-foreground" />}
+				emptyMessage="No payments found"
+				enableSelection={true}
+				entity="payments"
+				getItemId={(payment) => payment.id}
+				isArchived={(payment) => Boolean(payment.archived_at || payment.deleted_at)}
+				itemsPerPage={itemsPerPage}
+				onRefresh={handleRefresh}
+				onRowClick={handleRowClick}
+				searchFilter={searchFilter}
+				searchPlaceholder="Search payments by number, customer, or method..."
+				showArchived={archiveFilter !== "active"}
+				showRefresh={showRefresh}
+			/>
 
-      {/* Archive Payment Dialog */}
-      <AlertDialog
-        onOpenChange={setIsArchiveDialogOpen}
-        open={isArchiveDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Archive Payment?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This payment will be archived and can be restored within 90 days.
-              After 90 days, it will be permanently deleted.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={async () => {
-                if (itemToArchive) {
-                  const { archivePayment } = await import("@/actions/payments");
-                  await archivePayment(itemToArchive);
-                  window.location.reload();
-                }
-              }}
-            >
-              Archive
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
+			{/* Archive Payment Dialog */}
+			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Archive Payment?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This payment will be archived and can be restored within 90 days. After 90 days, it will be permanently
+							deleted.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={async () => {
+								if (itemToArchive) {
+									const { archivePayment } = await import("@/actions/payments");
+									await archivePayment(itemToArchive);
+									window.location.reload();
+								}
+							}}
+						>
+							Archive
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
+	);
 }

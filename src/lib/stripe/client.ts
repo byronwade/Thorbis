@@ -18,15 +18,15 @@ let stripePromise: Promise<Stripe | null> | null = null;
  * Safe to call multiple times - only loads once
  */
 export function getStripe(): Promise<Stripe | null> {
-  if (!stripePromise) {
-    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+	if (!stripePromise) {
+		const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
-    if (!publishableKey) {
-      return Promise.resolve(null);
-    }
+		if (!publishableKey) {
+			return Promise.resolve(null);
+		}
 
-    stripePromise = loadStripe(publishableKey);
-  }
+		stripePromise = loadStripe(publishableKey);
+	}
 
-  return stripePromise;
+	return stripePromise;
 }

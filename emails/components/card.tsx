@@ -13,36 +13,36 @@ import type { ReactNode } from "react";
 import { EMAIL_COLORS } from "../theme";
 
 type CardProps = {
-  children: ReactNode;
-  title?: string;
-  style?: React.CSSProperties;
+	children: ReactNode;
+	title?: string;
+	style?: React.CSSProperties;
 };
 
 export function Card({ children, title, style }: CardProps) {
-  return (
-    <Section
-      style={{
-        ...cardStyle,
-        ...style,
-      }}
-    >
-      {title && <Text style={titleStyle}>{title}</Text>}
-      {children}
-    </Section>
-  );
+	return (
+		<Section
+			style={{
+				...cardStyle,
+				...style,
+			}}
+		>
+			{title && <Text style={titleStyle}>{title}</Text>}
+			{children}
+		</Section>
+	);
 }
 
 const cardStyle = {
-  backgroundColor: EMAIL_COLORS.surface,
-  border: `1px solid ${EMAIL_COLORS.border}`,
-  borderRadius: "8px",
-  padding: "24px",
-  margin: "16px 0",
+	backgroundColor: EMAIL_COLORS.surface,
+	border: `1px solid ${EMAIL_COLORS.border}`,
+	borderRadius: "8px",
+	padding: "24px",
+	margin: "16px 0",
 };
 
 const titleStyle = {
-  fontSize: "18px",
-  fontWeight: "600",
-  color: EMAIL_COLORS.heading,
-  margin: "0 0 16px 0",
+	fontSize: "18px",
+	fontWeight: "600",
+	color: EMAIL_COLORS.heading,
+	margin: "0 0 16px 0",
 };

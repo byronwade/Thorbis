@@ -17,54 +17,54 @@ import { IncomingCallNotificationWrapper } from "@/components/layout/incoming-ca
  * Performance: Instant header, progressive content loading
  */
 export default function DashboardLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <>
-      {/* Header with company context - wrapped in Suspense for PPR */}
-      <Suspense fallback={<HeaderSkeleton />}>
-        <AppHeader />
-      </Suspense>
+	return (
+		<>
+			{/* Header with company context - wrapped in Suspense for PPR */}
+			<Suspense fallback={<HeaderSkeleton />}>
+				<AppHeader />
+			</Suspense>
 
-      {/* Incoming call notifications */}
-      <IncomingCallNotificationWrapper />
+			{/* Incoming call notifications */}
+			<IncomingCallNotificationWrapper />
 
-      {/* Auth wrapper handles redirects but doesn't block rendering */}
-      <Suspense fallback={null}>
-        <DashboardAuthWrapper />
-      </Suspense>
+			{/* Auth wrapper handles redirects but doesn't block rendering */}
+			<Suspense fallback={null}>
+				<DashboardAuthWrapper />
+			</Suspense>
 
-      {/* Page content - each page has its own Suspense boundaries */}
-      {children}
-    </>
-  );
+			{/* Page content - each page has its own Suspense boundaries */}
+			{children}
+		</>
+	);
 }
 
 // Header skeleton - renders instantly while header loads
 function HeaderSkeleton() {
-  return (
-    <header className="sticky top-0 z-50 w-full border-border/40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center px-4">
-        <div className="flex flex-1 items-center gap-4">
-          {/* Logo skeleton */}
-          <div className="h-8 w-32 animate-pulse rounded bg-muted" />
+	return (
+		<header className="sticky top-0 z-50 w-full border-border/40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+			<div className="flex h-14 items-center px-4">
+				<div className="flex flex-1 items-center gap-4">
+					{/* Logo skeleton */}
+					<div className="h-8 w-32 animate-pulse rounded bg-muted" />
 
-          {/* Nav skeleton */}
-          <div className="hidden md:flex md:gap-2">
-            <div className="h-8 w-20 animate-pulse rounded bg-muted" />
-            <div className="h-8 w-20 animate-pulse rounded bg-muted" />
-            <div className="h-8 w-20 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
+					{/* Nav skeleton */}
+					<div className="hidden md:flex md:gap-2">
+						<div className="h-8 w-20 animate-pulse rounded bg-muted" />
+						<div className="h-8 w-20 animate-pulse rounded bg-muted" />
+						<div className="h-8 w-20 animate-pulse rounded bg-muted" />
+					</div>
+				</div>
 
-        {/* Right side skeleton */}
-        <div className="flex items-center gap-2">
-          <div className="size-8 animate-pulse rounded-full bg-muted" />
-          <div className="size-8 animate-pulse rounded-full bg-muted" />
-        </div>
-      </div>
-    </header>
-  );
+				{/* Right side skeleton */}
+				<div className="flex items-center gap-2">
+					<div className="size-8 animate-pulse rounded-full bg-muted" />
+					<div className="size-8 animate-pulse rounded-full bg-muted" />
+				</div>
+			</div>
+		</header>
+	);
 }

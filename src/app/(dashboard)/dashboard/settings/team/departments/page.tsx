@@ -10,9 +10,9 @@ import { UdepartmentsData } from "@/components/settings/departments/departments-
 import { UdepartmentsSkeleton } from "@/components/settings/departments/departments-skeleton";
 
 export default function UdepartmentsPage() {
-  return (
-    <Suspense fallback={<UdepartmentsSkeleton />}>
-      <UdepartmentsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UdepartmentsSkeleton />}>
+			<UdepartmentsData />
+		</Suspense>
+	);
 }

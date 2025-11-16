@@ -19,11 +19,11 @@ import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 // export const experimental_ppr = true;
 
 export default function DashboardPage() {
-  return (
-    <DashboardShell>
-      <Suspense fallback={<DashboardSkeleton />}>
-        <DashboardContent />
-      </Suspense>
-    </DashboardShell>
-  );
+	return (
+		<DashboardShell>
+			<Suspense fallback={<DashboardSkeleton />}>
+				<DashboardContent />
+			</Suspense>
+		</DashboardShell>
+	);
 }

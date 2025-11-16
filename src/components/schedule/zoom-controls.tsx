@@ -17,86 +17,64 @@ import { useViewStore } from "@/lib/stores/view-store";
  */
 
 export function ZoomControls() {
-  const { zoom, setZoom, zoomIn, zoomOut, resetZoom } = useViewStore();
+	const { zoom, setZoom, zoomIn, zoomOut, resetZoom } = useViewStore();
 
-  // Calculate zoom level description
-  const getZoomDescription = (zoomLevel: number): string => {
-    if (zoomLevel < 50) {
-      return "Year/Quarter";
-    }
-    if (zoomLevel < 100) {
-      return "Monthly";
-    }
-    if (zoomLevel < 200) {
-      return "Weekly";
-    }
-    if (zoomLevel < 400) {
-      return "Daily";
-    }
-    return "Hourly";
-  };
+	// Calculate zoom level description
+	const getZoomDescription = (zoomLevel: number): string => {
+		if (zoomLevel < 50) {
+			return "Year/Quarter";
+		}
+		if (zoomLevel < 100) {
+			return "Monthly";
+		}
+		if (zoomLevel < 200) {
+			return "Weekly";
+		}
+		if (zoomLevel < 400) {
+			return "Daily";
+		}
+		return "Hourly";
+	};
 
-  const handleSliderChange = (value: number[]) => {
-    setZoom(value[0]);
-  };
+	const handleSliderChange = (value: number[]) => {
+		setZoom(value[0]);
+	};
 
-  return (
-    <div className="flex items-center gap-2">
-      {/* Zoom Out Button */}
-      <Button
-        className="h-8 w-8"
-        disabled={zoom <= 5}
-        onClick={zoomOut}
-        size="icon"
-        title="Zoom Out"
-        variant="ghost"
-      >
-        <Minus className="h-4 w-4" />
-      </Button>
+	return (
+		<div className="flex items-center gap-2">
+			{/* Zoom Out Button */}
+			<Button className="h-8 w-8" disabled={zoom <= 5} onClick={zoomOut} size="icon" title="Zoom Out" variant="ghost">
+				<Minus className="h-4 w-4" />
+			</Button>
 
-      {/* Zoom Slider */}
-      <div className="flex w-32 items-center gap-2">
-        <Slider
-          className="flex-1"
-          max={500}
-          min={5}
-          onValueChange={handleSliderChange}
-          step={5}
-          title={`Zoom: ${Math.round(zoom)}%`}
-          value={[zoom]}
-        />
-      </div>
+			{/* Zoom Slider */}
+			<div className="flex w-32 items-center gap-2">
+				<Slider
+					className="flex-1"
+					max={500}
+					min={5}
+					onValueChange={handleSliderChange}
+					step={5}
+					title={`Zoom: ${Math.round(zoom)}%`}
+					value={[zoom]}
+				/>
+			</div>
 
-      {/* Zoom In Button */}
-      <Button
-        className="h-8 w-8"
-        disabled={zoom >= 500}
-        onClick={zoomIn}
-        size="icon"
-        title="Zoom In"
-        variant="ghost"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+			{/* Zoom In Button */}
+			<Button className="h-8 w-8" disabled={zoom >= 500} onClick={zoomIn} size="icon" title="Zoom In" variant="ghost">
+				<Plus className="h-4 w-4" />
+			</Button>
 
-      {/* Zoom Level Indicator */}
-      <div className="flex min-w-[140px] items-center gap-2 rounded-md border bg-muted/50 px-2 py-1">
-        <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="font-medium text-muted-foreground text-xs">
-          {getZoomDescription(zoom)}
-        </span>
-      </div>
+			{/* Zoom Level Indicator */}
+			<div className="flex min-w-[140px] items-center gap-2 rounded-md border bg-muted/50 px-2 py-1">
+				<Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+				<span className="font-medium text-muted-foreground text-xs">{getZoomDescription(zoom)}</span>
+			</div>
 
-      {/* Reset Zoom Button */}
-      <Button
-        className="h-8 px-2 text-xs"
-        onClick={resetZoom}
-        size="sm"
-        title="Reset to 100%"
-        variant="ghost"
-      >
-        {Math.round(zoom)}%
-      </Button>
-    </div>
-  );
+			{/* Reset Zoom Button */}
+			<Button className="h-8 px-2 text-xs" onClick={resetZoom} size="sm" title="Reset to 100%" variant="ghost">
+				{Math.round(zoom)}%
+			</Button>
+		</div>
+	);
 }

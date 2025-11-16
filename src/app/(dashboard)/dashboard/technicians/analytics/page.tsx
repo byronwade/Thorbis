@@ -13,9 +13,9 @@ import { TechnicianAnalyticsData } from "@/components/technicians/analytics/tech
 import { TechnicianAnalyticsSkeleton } from "@/components/technicians/analytics/technician-analytics-skeleton";
 
 export default function TechnicianAnalyticsPage() {
-  return (
-    <Suspense fallback={<TechnicianAnalyticsSkeleton />}>
-      <TechnicianAnalyticsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<TechnicianAnalyticsSkeleton />}>
+			<TechnicianAnalyticsData />
+		</Suspense>
+	);
 }

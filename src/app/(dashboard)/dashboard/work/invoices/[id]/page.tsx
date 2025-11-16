@@ -19,27 +19,19 @@ import { Suspense } from "react";
 import { InvoiceDetailData } from "@/components/invoices/invoice-detail-data";
 import { InvoiceDetailSkeleton } from "@/components/invoices/invoice-detail-skeleton";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  return {
-    title: "Invoice Details",
-  };
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params;
+	return {
+		title: "Invoice Details",
+	};
 }
 
-export default async function InvoiceDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id: invoiceId } = await params;
+export default async function InvoiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+	const { id: invoiceId } = await params;
 
-  return (
-    <Suspense fallback={<InvoiceDetailSkeleton />}>
-      <InvoiceDetailData invoiceId={invoiceId} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<InvoiceDetailSkeleton />}>
+			<InvoiceDetailData invoiceId={invoiceId} />
+		</Suspense>
+	);
 }

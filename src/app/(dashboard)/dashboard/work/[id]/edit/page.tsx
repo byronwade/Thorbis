@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 type EditJobPageProps = {
-  params: Promise<{ id: string }>;
+	params: Promise<{ id: string }>;
 };
 
 /**
@@ -12,7 +12,7 @@ type EditJobPageProps = {
  * edit experience is implemented, this file can be replaced with the real UI.
  */
 export default async function EditJobPage({ params }: EditJobPageProps) {
-  const { id } = await params;
+	const { id } = await params;
 
-  redirect(`/dashboard/work/${id}`);
+	redirect(`/dashboard/work/${id}`);
 }

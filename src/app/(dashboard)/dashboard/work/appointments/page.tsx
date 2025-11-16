@@ -15,21 +15,19 @@ import { AppointmentsSkeleton } from "@/components/work/appointments/appointment
 import { AppointmentsStats } from "@/components/work/appointments/appointments-stats";
 
 export default function AppointmentsPage() {
-  return (
-    <div className="flex h-full flex-col">
-      {/* Stats - Streams in first */}
-      <Suspense
-        fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-      >
-        <AppointmentsStats />
-      </Suspense>
+	return (
+		<div className="flex h-full flex-col">
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<AppointmentsStats />
+			</Suspense>
 
-      {/* Table/Kanban - Streams in second */}
-      <div className="flex-1 overflow-hidden">
-        <Suspense fallback={<AppointmentsSkeleton />}>
-          <AppointmentsData />
-        </Suspense>
-      </div>
-    </div>
-  );
+			{/* Table/Kanban - Streams in second */}
+			<div className="flex-1 overflow-hidden">
+				<Suspense fallback={<AppointmentsSkeleton />}>
+					<AppointmentsData />
+				</Suspense>
+			</div>
+		</div>
+	);
 }

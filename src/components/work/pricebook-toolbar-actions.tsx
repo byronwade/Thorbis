@@ -17,16 +17,16 @@ import { Button } from "@/components/ui/button";
 import { LaborCalculatorModal } from "@/components/work/labor-calculator-modal";
 
 export function PriceBookToolbarActions() {
-  return (
-    <div className="flex items-center gap-2">
-      <LaborCalculatorModal />
-      <Button asChild size="default" variant="default">
-        <Link href="/dashboard/work/pricebook/new">
-          <Plus className="mr-2 size-4" />
-          Add Item
-        </Link>
-      </Button>
-      <ImportExportDropdown dataType="pricebook" />
-    </div>
-  );
+	return (
+		<div className="flex items-center gap-2">
+			<LaborCalculatorModal />
+			<Button asChild size="default" variant="default">
+				<Link href="/dashboard/work/pricebook/new">
+					<Plus className="mr-2 size-4" />
+					Add Item
+				</Link>
+			</Button>
+			<ImportExportDropdown dataType="pricebook" />
+		</div>
+	);
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 type TVDisplayShellProps = {
-  children: ReactNode;
+	children: ReactNode;
 };
 
 /**
@@ -15,10 +15,10 @@ type TVDisplayShellProps = {
  * client component hydrates.
  */
 export function TVDisplayShell({ children }: TVDisplayShellProps) {
-  return (
-    <div className="fixed inset-0 bg-background">
-      {/* Instant shell - shows immediately */}
-      {children}
-    </div>
-  );
+	return (
+		<div className="fixed inset-0 bg-background">
+			{/* Instant shell - shows immediately */}
+			{children}
+		</div>
+	);
 }

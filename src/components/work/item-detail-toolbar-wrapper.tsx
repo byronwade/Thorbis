@@ -11,10 +11,10 @@ import { useParams } from "next/navigation";
 import { ItemDetailToolbarActions } from "./item-detail-toolbar-actions";
 
 export function ItemDetailToolbarWrapper() {
-  const params = useParams();
-  const itemId = params?.id as string;
+	const params = useParams();
+	const itemId = params?.id as string;
 
-  // TODO: Could fetch item data here to get isActive status
-  // For now, default to active
-  return <ItemDetailToolbarActions isActive={true} itemId={itemId} />;
+	// TODO: Could fetch item data here to get isActive status
+	// For now, default to active
+	return <ItemDetailToolbarActions isActive={true} itemId={itemId} />;
 }

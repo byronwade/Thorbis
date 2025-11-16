@@ -10,9 +10,9 @@ import { InventoryVendorNewData } from "@/components/inventory/new/new-data";
 import { InventoryVendorNewSkeleton } from "@/components/inventory/new/new-skeleton";
 
 export default function InventoryVendorNewPage() {
-  return (
-    <Suspense fallback={<InventoryVendorNewSkeleton />}>
-      <InventoryVendorNewData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<InventoryVendorNewSkeleton />}>
+			<InventoryVendorNewData />
+		</Suspense>
+	);
 }

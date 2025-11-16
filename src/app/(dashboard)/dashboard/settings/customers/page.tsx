@@ -12,11 +12,11 @@ import { CustomersSettingsShell } from "@/components/settings/customers/customer
 import { CustomersSettingsSkeleton } from "@/components/settings/customers/customers-settings-skeleton";
 
 export default function CustomersSettingsPage() {
-  return (
-    <CustomersSettingsShell>
-      <Suspense fallback={<CustomersSettingsSkeleton />}>
-        <CustomersSettingsData />
-      </Suspense>
-    </CustomersSettingsShell>
-  );
+	return (
+		<CustomersSettingsShell>
+			<Suspense fallback={<CustomersSettingsSkeleton />}>
+				<CustomersSettingsData />
+			</Suspense>
+		</CustomersSettingsShell>
+	);
 }

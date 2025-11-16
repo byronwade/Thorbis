@@ -10,9 +10,9 @@ import { UdispatchUrulesData } from "@/components/settings/dispatch-rules/dispat
 import { UdispatchUrulesSkeleton } from "@/components/settings/dispatch-rules/dispatch-rules-skeleton";
 
 export default function UdispatchUrulesPage() {
-  return (
-    <Suspense fallback={<UdispatchUrulesSkeleton />}>
-      <UdispatchUrulesData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<UdispatchUrulesSkeleton />}>
+			<UdispatchUrulesData />
+		</Suspense>
+	);
 }

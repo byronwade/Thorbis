@@ -14,22 +14,22 @@ import { NotificationsList } from "@/components/notifications/notifications-list
 import { NotificationsListSkeleton } from "@/components/notifications/notifications-list-skeleton";
 
 export default function NotificationsPage() {
-  return (
-    <>
-      <AppToolbar
-        config={{
-          show: true,
-          title: "Notifications",
-          subtitle: "View and manage all your notifications",
-        }}
-        pathname="/dashboard/notifications"
-        showLeftSidebar={false}
-      />
-      <div className="container mx-auto px-4 py-6">
-        <Suspense fallback={<NotificationsListSkeleton />}>
-          <NotificationsList />
-        </Suspense>
-      </div>
-    </>
-  );
+	return (
+		<>
+			<AppToolbar
+				config={{
+					show: true,
+					title: "Notifications",
+					subtitle: "View and manage all your notifications",
+				}}
+				pathname="/dashboard/notifications"
+				showLeftSidebar={false}
+			/>
+			<div className="container mx-auto px-4 py-6">
+				<Suspense fallback={<NotificationsListSkeleton />}>
+					<NotificationsList />
+				</Suspense>
+			</div>
+		</>
+	);
 }

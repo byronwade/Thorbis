@@ -32,53 +32,47 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * User roles in the system
  * Matches the user_role ENUM in database
  */
-export type UserRole =
-  | "owner"
-  | "admin"
-  | "manager"
-  | "dispatcher"
-  | "technician"
-  | "csr";
+export type UserRole = "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr";
 
 /**
  * Permission keys for fine-grained access control
  */
 export type Permission =
-  // Manager permissions
-  | "view_reports"
-  | "manage_team"
-  | "approve_estimates"
-  | "handle_escalations"
-  // Dispatcher permissions
-  | "dispatch_jobs"
-  | "manage_schedule"
-  | "view_tech_locations"
-  // Technician permissions
-  | "update_job_status"
-  | "create_invoices"
-  | "upload_photos"
-  // CSR permissions
-  | "create_jobs"
-  | "schedule_appointments"
-  | "send_communications"
-  // View permissions
-  | "view_customers"
-  | "view_jobs"
-  | "view_schedule"
-  // Delete permissions
-  | "delete_jobs"
-  | "delete_customers"
-  | "delete_team_members";
+	// Manager permissions
+	| "view_reports"
+	| "manage_team"
+	| "approve_estimates"
+	| "handle_escalations"
+	// Dispatcher permissions
+	| "dispatch_jobs"
+	| "manage_schedule"
+	| "view_tech_locations"
+	// Technician permissions
+	| "update_job_status"
+	| "create_invoices"
+	| "upload_photos"
+	// CSR permissions
+	| "create_jobs"
+	| "schedule_appointments"
+	| "send_communications"
+	// View permissions
+	| "view_customers"
+	| "view_jobs"
+	| "view_schedule"
+	// Delete permissions
+	| "delete_jobs"
+	| "delete_customers"
+	| "delete_team_members";
 
 /**
  * Role configuration with permissions and metadata
  */
 export type RoleConfig = {
-  id: UserRole;
-  label: string;
-  description: string;
-  permissions: Permission[];
-  dashboardFeatures: string[];
+	id: UserRole;
+	label: string;
+	description: string;
+	permissions: Permission[];
+	dashboardFeatures: string[];
 };
 
 // ============================================================================
@@ -90,177 +84,167 @@ export type RoleConfig = {
  * Used for UI display and permission reference
  */
 export const ROLES: Record<UserRole, RoleConfig> = {
-  owner: {
-    id: "owner",
-    label: "Owner",
-    description:
-      "Full system access with focus on business financials and growth",
-    permissions: [
-      "view_reports",
-      "manage_team",
-      "approve_estimates",
-      "handle_escalations",
-      "dispatch_jobs",
-      "manage_schedule",
-      "view_tech_locations",
-      "update_job_status",
-      "create_invoices",
-      "upload_photos",
-      "create_jobs",
-      "schedule_appointments",
-      "send_communications",
-      "view_customers",
-      "view_jobs",
-      "view_schedule",
-      "delete_jobs",
-      "delete_customers",
-      "delete_team_members",
-    ],
-    dashboardFeatures: [
-      "financial-overview",
-      "profit-margins",
-      "cash-flow",
-      "business-growth",
-      "payroll-overview",
-      "all-reports",
-    ],
-  },
-  admin: {
-    id: "admin",
-    label: "Admin",
-    description: "System administration and configuration",
-    permissions: [
-      "view_reports",
-      "manage_team",
-      "approve_estimates",
-      "handle_escalations",
-      "dispatch_jobs",
-      "manage_schedule",
-      "view_tech_locations",
-      "update_job_status",
-      "create_invoices",
-      "upload_photos",
-      "create_jobs",
-      "schedule_appointments",
-      "send_communications",
-      "view_customers",
-      "view_jobs",
-      "view_schedule",
-      "delete_jobs",
-      "delete_customers",
-    ],
-    dashboardFeatures: [
-      "system-settings",
-      "user-management",
-      "integrations",
-      "audit-logs",
-    ],
-  },
-  manager: {
-    id: "manager",
-    label: "Manager",
-    description:
-      "Oversee team performance, customer satisfaction, and operations",
-    permissions: [
-      "view_reports",
-      "manage_team",
-      "approve_estimates",
-      "handle_escalations",
-      "dispatch_jobs",
-      "manage_schedule",
-      "view_tech_locations",
-      "update_job_status",
-      "create_invoices",
-      "upload_photos",
-      "create_jobs",
-      "schedule_appointments",
-      "send_communications",
-      "view_customers",
-      "view_jobs",
-      "view_schedule",
-      "delete_jobs",
-    ],
-    dashboardFeatures: [
-      "team-performance",
-      "customer-satisfaction",
-      "callback-queue",
-      "review-alerts",
-      "kpi-tracking",
-      "inventory-management",
-    ],
-  },
-  dispatcher: {
-    id: "dispatcher",
-    label: "Dispatcher",
-    description:
-      "Manage technician schedules, job assignments, and real-time operations",
-    permissions: [
-      "view_reports",
-      "dispatch_jobs",
-      "manage_schedule",
-      "view_tech_locations",
-      "update_job_status",
-      "create_jobs",
-      "schedule_appointments",
-      "send_communications",
-      "view_customers",
-      "view_jobs",
-      "view_schedule",
-    ],
-    dashboardFeatures: [
-      "dispatch-map",
-      "technician-locations",
-      "unassigned-jobs",
-      "emergency-queue",
-      "quick-dispatch",
-      "tech-status",
-    ],
-  },
-  technician: {
-    id: "technician",
-    label: "Technician",
-    description:
-      "View assigned jobs, update job status, and track personal performance",
-    permissions: [
-      "update_job_status",
-      "create_invoices",
-      "upload_photos",
-      "view_customers",
-      "view_jobs",
-      "view_schedule",
-    ],
-    dashboardFeatures: [
-      "my-schedule",
-      "active-job",
-      "my-earnings",
-      "my-performance",
-      "parts-inventory",
-      "time-tracking",
-    ],
-  },
-  csr: {
-    id: "csr",
-    label: "Customer Service Rep",
-    description:
-      "Handle customer calls, schedule appointments, and manage customer relationships",
-    permissions: [
-      "create_jobs",
-      "schedule_appointments",
-      "send_communications",
-      "create_invoices",
-      "view_customers",
-      "view_jobs",
-      "view_schedule",
-    ],
-    dashboardFeatures: [
-      "call-queue",
-      "booking-calendar",
-      "customer-search",
-      "follow-up-queue",
-      "estimate-pipeline",
-      "call-scripts",
-    ],
-  },
+	owner: {
+		id: "owner",
+		label: "Owner",
+		description: "Full system access with focus on business financials and growth",
+		permissions: [
+			"view_reports",
+			"manage_team",
+			"approve_estimates",
+			"handle_escalations",
+			"dispatch_jobs",
+			"manage_schedule",
+			"view_tech_locations",
+			"update_job_status",
+			"create_invoices",
+			"upload_photos",
+			"create_jobs",
+			"schedule_appointments",
+			"send_communications",
+			"view_customers",
+			"view_jobs",
+			"view_schedule",
+			"delete_jobs",
+			"delete_customers",
+			"delete_team_members",
+		],
+		dashboardFeatures: [
+			"financial-overview",
+			"profit-margins",
+			"cash-flow",
+			"business-growth",
+			"payroll-overview",
+			"all-reports",
+		],
+	},
+	admin: {
+		id: "admin",
+		label: "Admin",
+		description: "System administration and configuration",
+		permissions: [
+			"view_reports",
+			"manage_team",
+			"approve_estimates",
+			"handle_escalations",
+			"dispatch_jobs",
+			"manage_schedule",
+			"view_tech_locations",
+			"update_job_status",
+			"create_invoices",
+			"upload_photos",
+			"create_jobs",
+			"schedule_appointments",
+			"send_communications",
+			"view_customers",
+			"view_jobs",
+			"view_schedule",
+			"delete_jobs",
+			"delete_customers",
+		],
+		dashboardFeatures: ["system-settings", "user-management", "integrations", "audit-logs"],
+	},
+	manager: {
+		id: "manager",
+		label: "Manager",
+		description: "Oversee team performance, customer satisfaction, and operations",
+		permissions: [
+			"view_reports",
+			"manage_team",
+			"approve_estimates",
+			"handle_escalations",
+			"dispatch_jobs",
+			"manage_schedule",
+			"view_tech_locations",
+			"update_job_status",
+			"create_invoices",
+			"upload_photos",
+			"create_jobs",
+			"schedule_appointments",
+			"send_communications",
+			"view_customers",
+			"view_jobs",
+			"view_schedule",
+			"delete_jobs",
+		],
+		dashboardFeatures: [
+			"team-performance",
+			"customer-satisfaction",
+			"callback-queue",
+			"review-alerts",
+			"kpi-tracking",
+			"inventory-management",
+		],
+	},
+	dispatcher: {
+		id: "dispatcher",
+		label: "Dispatcher",
+		description: "Manage technician schedules, job assignments, and real-time operations",
+		permissions: [
+			"view_reports",
+			"dispatch_jobs",
+			"manage_schedule",
+			"view_tech_locations",
+			"update_job_status",
+			"create_jobs",
+			"schedule_appointments",
+			"send_communications",
+			"view_customers",
+			"view_jobs",
+			"view_schedule",
+		],
+		dashboardFeatures: [
+			"dispatch-map",
+			"technician-locations",
+			"unassigned-jobs",
+			"emergency-queue",
+			"quick-dispatch",
+			"tech-status",
+		],
+	},
+	technician: {
+		id: "technician",
+		label: "Technician",
+		description: "View assigned jobs, update job status, and track personal performance",
+		permissions: [
+			"update_job_status",
+			"create_invoices",
+			"upload_photos",
+			"view_customers",
+			"view_jobs",
+			"view_schedule",
+		],
+		dashboardFeatures: [
+			"my-schedule",
+			"active-job",
+			"my-earnings",
+			"my-performance",
+			"parts-inventory",
+			"time-tracking",
+		],
+	},
+	csr: {
+		id: "csr",
+		label: "Customer Service Rep",
+		description: "Handle customer calls, schedule appointments, and manage customer relationships",
+		permissions: [
+			"create_jobs",
+			"schedule_appointments",
+			"send_communications",
+			"create_invoices",
+			"view_customers",
+			"view_jobs",
+			"view_schedule",
+		],
+		dashboardFeatures: [
+			"call-queue",
+			"booking-calendar",
+			"customer-search",
+			"follow-up-queue",
+			"estimate-pipeline",
+			"call-scripts",
+		],
+	},
 };
 
 // ============================================================================
@@ -285,22 +269,22 @@ export const ROLES: Record<UserRole, RoleConfig> = {
  * ```
  */
 export async function hasRole(
-  supabase: SupabaseClient,
-  userId: string,
-  role: UserRole,
-  companyId: string
+	supabase: SupabaseClient,
+	userId: string,
+	role: UserRole,
+	companyId: string
 ): Promise<boolean> {
-  const { data, error } = await supabase.rpc("has_role", {
-    user_uuid: userId,
-    required_role: role,
-    company_uuid: companyId,
-  });
+	const { data, error } = await supabase.rpc("has_role", {
+		user_uuid: userId,
+		required_role: role,
+		company_uuid: companyId,
+	});
 
-  if (error) {
-    return false;
-  }
+	if (error) {
+		return false;
+	}
 
-  return data === true;
+	return data === true;
 }
 
 /**
@@ -323,22 +307,22 @@ export async function hasRole(
  * ```
  */
 export async function hasAnyRole(
-  supabase: SupabaseClient,
-  userId: string,
-  roles: UserRole[],
-  companyId: string
+	supabase: SupabaseClient,
+	userId: string,
+	roles: UserRole[],
+	companyId: string
 ): Promise<boolean> {
-  const { data, error } = await supabase.rpc("has_any_role", {
-    user_uuid: userId,
-    required_roles: roles,
-    company_uuid: companyId,
-  });
+	const { data, error } = await supabase.rpc("has_any_role", {
+		user_uuid: userId,
+		required_roles: roles,
+		company_uuid: companyId,
+	});
 
-  if (error) {
-    return false;
-  }
+	if (error) {
+		return false;
+	}
 
-  return data === true;
+	return data === true;
 }
 
 /**
@@ -356,20 +340,20 @@ export async function hasAnyRole(
  * ```
  */
 export async function getUserRole(
-  supabase: SupabaseClient,
-  userId: string,
-  companyId: string
+	supabase: SupabaseClient,
+	userId: string,
+	companyId: string
 ): Promise<UserRole | null> {
-  const { data, error } = await supabase.rpc("get_user_role", {
-    user_uuid: userId,
-    company_uuid: companyId,
-  });
+	const { data, error } = await supabase.rpc("get_user_role", {
+		user_uuid: userId,
+		company_uuid: companyId,
+	});
 
-  if (error) {
-    return null;
-  }
+	if (error) {
+		return null;
+	}
 
-  return data as UserRole | null;
+	return data as UserRole | null;
 }
 
 /**
@@ -390,22 +374,22 @@ export async function getUserRole(
  * ```
  */
 export async function hasPermission(
-  supabase: SupabaseClient,
-  userId: string,
-  permission: Permission,
-  companyId: string
+	supabase: SupabaseClient,
+	userId: string,
+	permission: Permission,
+	companyId: string
 ): Promise<boolean> {
-  const { data, error } = await supabase.rpc("has_permission", {
-    user_uuid: userId,
-    permission_key: permission,
-    company_uuid: companyId,
-  });
+	const { data, error } = await supabase.rpc("has_permission", {
+		user_uuid: userId,
+		permission_key: permission,
+		company_uuid: companyId,
+	});
 
-  if (error) {
-    return false;
-  }
+	if (error) {
+		return false;
+	}
 
-  return data === true;
+	return data === true;
 }
 
 /**
@@ -424,21 +408,17 @@ export async function hasPermission(
  * }
  * ```
  */
-export async function isCompanyOwner(
-  supabase: SupabaseClient,
-  userId: string,
-  companyId: string
-): Promise<boolean> {
-  const { data, error } = await supabase.rpc("is_company_owner", {
-    user_uuid: userId,
-    company_uuid: companyId,
-  });
+export async function isCompanyOwner(supabase: SupabaseClient, userId: string, companyId: string): Promise<boolean> {
+	const { data, error } = await supabase.rpc("is_company_owner", {
+		user_uuid: userId,
+		company_uuid: companyId,
+	});
 
-  if (error) {
-    return false;
-  }
+	if (error) {
+		return false;
+	}
 
-  return data === true;
+	return data === true;
 }
 
 // ============================================================================
@@ -458,7 +438,7 @@ export async function isCompanyOwner(
  * ```
  */
 export function getRolePermissions(role: UserRole): Permission[] {
-  return ROLES[role]?.permissions || [];
+	return ROLES[role]?.permissions || [];
 }
 
 /**
@@ -473,11 +453,8 @@ export function getRolePermissions(role: UserRole): Permission[] {
  * const canDelete = roleHasPermission("manager", "delete_jobs");
  * ```
  */
-export function roleHasPermission(
-  role: UserRole,
-  permission: Permission
-): boolean {
-  return ROLES[role]?.permissions.includes(permission);
+export function roleHasPermission(role: UserRole, permission: Permission): boolean {
+	return ROLES[role]?.permissions.includes(permission);
 }
 
 /**
@@ -493,5 +470,5 @@ export function roleHasPermission(
  * ```
  */
 export function getRoleConfig(role: UserRole): RoleConfig {
-  return ROLES[role];
+	return ROLES[role];
 }

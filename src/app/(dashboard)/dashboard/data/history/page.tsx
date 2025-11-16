@@ -9,12 +9,12 @@ import { ImportExportHistoryClient } from "@/components/data/import-export-histo
 import { getCurrentUser } from "@/lib/auth/session";
 
 export default async function HistoryPage() {
-  // Check authentication
-  const user = await getCurrentUser();
+	// Check authentication
+	const user = await getCurrentUser();
 
-  if (!user) {
-    redirect("/login?message=Please log in to view history");
-  }
+	if (!user) {
+		redirect("/login?message=Please log in to view history");
+	}
 
-  return <ImportExportHistoryClient />;
+	return <ImportExportHistoryClient />;
 }

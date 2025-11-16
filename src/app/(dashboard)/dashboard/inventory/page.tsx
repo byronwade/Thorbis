@@ -22,25 +22,23 @@ import { InventoryStats } from "@/components/inventory/inventory-stats";
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function InventoryDashboardPage() {
-  return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="font-semibold text-2xl">Inventory Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage inventory, parts, and equipment
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Page header */}
+			<div>
+				<h1 className="font-semibold text-2xl">Inventory Dashboard</h1>
+				<p className="text-muted-foreground">Manage inventory, parts, and equipment</p>
+			</div>
 
-      {/* Stats - Streams in first */}
-      <Suspense fallback={<StatsCardsSkeleton count={4} />}>
-        <InventoryStats />
-      </Suspense>
+			{/* Stats - Streams in first */}
+			<Suspense fallback={<StatsCardsSkeleton count={4} />}>
+				<InventoryStats />
+			</Suspense>
 
-      {/* Dashboard content - Streams in second */}
-      <Suspense fallback={<InventorySkeleton />}>
-        <InventoryData />
-      </Suspense>
-    </div>
-  );
+			{/* Dashboard content - Streams in second */}
+			<Suspense fallback={<InventorySkeleton />}>
+				<InventoryData />
+			</Suspense>
+		</div>
+	);
 }

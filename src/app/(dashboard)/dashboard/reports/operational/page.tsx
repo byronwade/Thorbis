@@ -13,9 +13,9 @@ import { OperationalReportsData } from "@/components/reports/operational/operati
 import { OperationalReportsSkeleton } from "@/components/reports/operational/operational-reports-skeleton";
 
 export default function OperationalReportsPage() {
-  return (
-    <Suspense fallback={<OperationalReportsSkeleton />}>
-      <OperationalReportsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<OperationalReportsSkeleton />}>
+			<OperationalReportsData />
+		</Suspense>
+	);
 }

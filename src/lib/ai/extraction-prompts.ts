@@ -82,71 +82,54 @@ NEW TRANSCRIPT PORTION:
 Update the extraction with any new information found. Maintain or update confidence scores. Only change fields that have new or contradicting information.`;
 
 export function formatTranscriptForExtraction(
-  entries: Array<{ speaker: string; text: string; timestamp: Date }>
+	entries: Array<{ speaker: string; text: string; timestamp: Date }>
 ): string {
-  return entries
-    .map((entry) => {
-      const time = entry.timestamp.toLocaleTimeString();
-      const speaker = entry.speaker === "csr" ? "CSR" : "Customer";
-      return `[${time}] ${speaker}: ${entry.text}`;
-    })
-    .join("\n");
+	return entries
+		.map((entry) => {
+			const time = entry.timestamp.toLocaleTimeString();
+			const speaker = entry.speaker === "csr" ? "CSR" : "Customer";
+			return `[${time}] ${speaker}: ${entry.text}`;
+		})
+		.join("\n");
 }
 
 export function getJobTypeFromDescription(description: string): string {
-  const lower = description.toLowerCase();
+	const lower = description.toLowerCase();
 
-  // HVAC
-  if (
-    lower.includes("heat") ||
-    lower.includes("furnace") ||
-    lower.includes("hot")
-  ) {
-    return "Heating Repair";
-  }
-  if (
-    lower.includes("cool") ||
-    lower.includes("ac") ||
-    lower.includes("air condition") ||
-    lower.includes("cold")
-  ) {
-    return "Cooling Repair";
-  }
-  if (lower.includes("hvac") || lower.includes("install")) {
-    return "HVAC Installation";
-  }
+	// HVAC
+	if (lower.includes("heat") || lower.includes("furnace") || lower.includes("hot")) {
+		return "Heating Repair";
+	}
+	if (lower.includes("cool") || lower.includes("ac") || lower.includes("air condition") || lower.includes("cold")) {
+		return "Cooling Repair";
+	}
+	if (lower.includes("hvac") || lower.includes("install")) {
+		return "HVAC Installation";
+	}
 
-  // Plumbing
-  if (
-    lower.includes("leak") ||
-    lower.includes("pipe") ||
-    lower.includes("water")
-  ) {
-    return "Plumbing Repair";
-  }
-  if (lower.includes("drain") || lower.includes("clog")) {
-    return "Drain Service";
-  }
+	// Plumbing
+	if (lower.includes("leak") || lower.includes("pipe") || lower.includes("water")) {
+		return "Plumbing Repair";
+	}
+	if (lower.includes("drain") || lower.includes("clog")) {
+		return "Drain Service";
+	}
 
-  // Electrical
-  if (
-    lower.includes("electric") ||
-    lower.includes("outlet") ||
-    lower.includes("wiring")
-  ) {
-    return "Electrical Repair";
-  }
+	// Electrical
+	if (lower.includes("electric") || lower.includes("outlet") || lower.includes("wiring")) {
+		return "Electrical Repair";
+	}
 
-  // General
-  if (lower.includes("mainten")) {
-    return "Maintenance";
-  }
-  if (lower.includes("inspect")) {
-    return "Inspection";
-  }
-  if (lower.includes("emergen") || lower.includes("urgent")) {
-    return "Emergency Service";
-  }
+	// General
+	if (lower.includes("mainten")) {
+		return "Maintenance";
+	}
+	if (lower.includes("inspect")) {
+		return "Inspection";
+	}
+	if (lower.includes("emergen") || lower.includes("urgent")) {
+		return "Emergency Service";
+	}
 
-  return "General Service";
+	return "General Service";
 }

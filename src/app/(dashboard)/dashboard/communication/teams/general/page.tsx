@@ -9,10 +9,5 @@
 import { TeamChat } from "@/components/communication/team-chat";
 
 export default function GeneralChannelPage() {
-  return (
-    <TeamChat
-      channelDescription="Company-wide announcements and general discussion"
-      channelName="general"
-    />
-  );
+	return <TeamChat channelDescription="Company-wide announcements and general discussion" channelName="general" />;
 }

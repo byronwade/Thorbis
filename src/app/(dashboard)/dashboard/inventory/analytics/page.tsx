@@ -13,9 +13,9 @@ import { InventoryAnalyticsData } from "@/components/inventory/analytics/invento
 import { InventoryAnalyticsSkeleton } from "@/components/inventory/analytics/inventory-analytics-skeleton";
 
 export default function InventoryAnalyticsPage() {
-  return (
-    <Suspense fallback={<InventoryAnalyticsSkeleton />}>
-      <InventoryAnalyticsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<InventoryAnalyticsSkeleton />}>
+			<InventoryAnalyticsData />
+		</Suspense>
+	);
 }

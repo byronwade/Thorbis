@@ -8,10 +8,10 @@ import type { Widget } from "../widget-types";
  * Recalculates whenever widgets change
  */
 export function useSlideDistribution(widgets: Widget[]): Slide[] {
-  return useMemo(() => {
-    if (widgets.length === 0) {
-      return [];
-    }
-    return optimizeSlideDistribution(widgets);
-  }, [widgets]);
+	return useMemo(() => {
+		if (widgets.length === 0) {
+			return [];
+		}
+		return optimizeSlideDistribution(widgets);
+	}, [widgets]);
 }

@@ -19,9 +19,9 @@ import { MarketingAnalyticsData } from "@/components/marketing/analytics/analyti
 import { MarketingAnalyticsSkeleton } from "@/components/marketing/analytics/analytics-skeleton";
 
 export default function MarketingAnalyticsPage() {
-  return (
-    <Suspense fallback={<MarketingAnalyticsSkeleton />}>
-      <MarketingAnalyticsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<MarketingAnalyticsSkeleton />}>
+			<MarketingAnalyticsData />
+		</Suspense>
+	);
 }

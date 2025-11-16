@@ -7,22 +7,22 @@
 export type PhotoCategory = "before" | "during" | "after" | "other";
 
 export type JobPhoto = {
-  id: string;
-  url: string;
-  thumbnailUrl?: string;
-  category: PhotoCategory;
-  caption?: string;
-  uploadedBy: string;
-  uploadedByName: string;
-  uploadedAt: Date;
-  gpsCoords?: {
-    lat: number;
-    lng: number;
-  };
-  metadata?: {
-    fileSize: number;
-    mimeType: string;
-    width: number;
-    height: number;
-  };
+	id: string;
+	url: string;
+	thumbnailUrl?: string;
+	category: PhotoCategory;
+	caption?: string;
+	uploadedBy: string;
+	uploadedByName: string;
+	uploadedAt: Date;
+	gpsCoords?: {
+		lat: number;
+		lng: number;
+	};
+	metadata?: {
+		fileSize: number;
+		mimeType: string;
+		width: number;
+		height: number;
+	};
 };

@@ -9,39 +9,39 @@ import { TemplateDownloadClient } from "@/components/data/template-download-clie
 import { getCurrentUser } from "@/lib/auth/session";
 
 type TemplatePageProps = {
-  params: {
-    type: string;
-  };
+	params: {
+		type: string;
+	};
 };
 
 export default async function TemplatePage({ params }: TemplatePageProps) {
-  // Check authentication
-  const user = await getCurrentUser();
+	// Check authentication
+	const user = await getCurrentUser();
 
-  if (!user) {
-    redirect("/login?message=Please log in to download templates");
-  }
+	if (!user) {
+		redirect("/login?message=Please log in to download templates");
+	}
 
-  // Validate data type
-  const validTypes = [
-    "jobs",
-    "invoices",
-    "estimates",
-    "contracts",
-    "purchase-orders",
-    "customers",
-    "pricebook",
-    "materials",
-    "equipment",
-    "schedule",
-    "maintenance-plans",
-    "service-agreements",
-    "service-tickets",
-  ];
+	// Validate data type
+	const validTypes = [
+		"jobs",
+		"invoices",
+		"estimates",
+		"contracts",
+		"purchase-orders",
+		"customers",
+		"pricebook",
+		"materials",
+		"equipment",
+		"schedule",
+		"maintenance-plans",
+		"service-agreements",
+		"service-tickets",
+	];
 
-  if (!validTypes.includes(params.type)) {
-    redirect("/dashboard");
-  }
+	if (!validTypes.includes(params.type)) {
+		redirect("/dashboard");
+	}
 
-  return <TemplateDownloadClient dataType={params.type} />;
+	return <TemplateDownloadClient dataType={params.type} />;
 }

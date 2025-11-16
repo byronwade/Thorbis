@@ -7,24 +7,24 @@ import { createClient } from "@/lib/supabase/server";
  * This is a server helper that can later be wired into a full PPR flow.
  */
 export async function InventoryVendorNewData() {
-  const supabase = await createClient();
-  if (!supabase) {
-    return notFound();
-  }
+	const supabase = await createClient();
+	if (!supabase) {
+		return notFound();
+	}
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return notFound();
-  }
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	if (!user) {
+		return notFound();
+	}
 
-  const activeCompanyId = await getActiveCompanyId();
-  if (!activeCompanyId) {
-    return notFound();
-  }
+	const activeCompanyId = await getActiveCompanyId();
+	if (!activeCompanyId) {
+		return notFound();
+	}
 
-  // TODO: Load any defaults or reference data needed for the vendor create form
+	// TODO: Load any defaults or reference data needed for the vendor create form
 
-  return <div>Inventory vendor creation data loader placeholder</div>;
+	return <div>Inventory vendor creation data loader placeholder</div>;
 }

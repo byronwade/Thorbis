@@ -13,9 +13,9 @@ import { PriceAnalyticsData } from "@/components/pricebook/analytics/price-analy
 import { PriceAnalyticsSkeleton } from "@/components/pricebook/analytics/price-analytics-skeleton";
 
 export default function PriceAnalyticsPage() {
-  return (
-    <Suspense fallback={<PriceAnalyticsSkeleton />}>
-      <PriceAnalyticsData />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<PriceAnalyticsSkeleton />}>
+			<PriceAnalyticsData />
+		</Suspense>
+	);
 }

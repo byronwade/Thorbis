@@ -11,9 +11,9 @@ import { AccountingSettingsClient } from "@/components/settings/finance/accounti
 import { AccountingSettingsSkeleton } from "@/components/settings/finance/accounting-settings-skeleton";
 
 export default function AccountingSettingsPage() {
-  return (
-    <Suspense fallback={<AccountingSettingsSkeleton />}>
-      <AccountingSettingsClient />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<AccountingSettingsSkeleton />}>
+			<AccountingSettingsClient />
+		</Suspense>
+	);
 }

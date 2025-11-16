@@ -20,85 +20,75 @@ import { getCategoryTree } from "@/lib/pricebook/category-tree-server";
 import { getCategoriesAtPath } from "@/lib/pricebook/category-tree-shared";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function CategoryPage({
-  params,
-}: {
-  params: Promise<{ slug: string[] }>;
-}) {
-  const { slug } = await params;
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string[] }> }) {
+	const { slug } = await params;
 
-  return (
-    <Suspense
-      fallback={
-        <div className="flex h-full items-center justify-center p-4">
-          <div className="text-muted-foreground text-sm">
-            Loading price book category...
-          </div>
-        </div>
-      }
-    >
-      <CategoryPageContent slug={slug} />
-    </Suspense>
-  );
+	return (
+		<Suspense
+			fallback={
+				<div className="flex h-full items-center justify-center p-4">
+					<div className="text-muted-foreground text-sm">Loading price book category...</div>
+				</div>
+			}
+		>
+			<CategoryPageContent slug={slug} />
+		</Suspense>
+	);
 }
 
 async function CategoryPageContent({ slug }: { slug: string[] }) {
-  const supabase = await createClient();
+	const supabase = await createClient();
 
-  if (!supabase) {
-    return notFound();
-  }
+	if (!supabase) {
+		return notFound();
+	}
 
-  // Decode URL segments to category names
-  const categoryPath = slug.map((segment) =>
-    segment
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  );
+	// Decode URL segments to category names
+	const categoryPath = slug.map((segment) =>
+		segment
+			.split("-")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ")
+	);
 
-  // Build the category path string (e.g., "HVAC > Heating > Furnaces")
-  const categoryPathString = categoryPath.join(" › ");
+	// Build the category path string (e.g., "HVAC > Heating > Furnaces")
+	const categoryPathString = categoryPath.join(" › ");
 
-  // Validate category exists in database
-  const { data: category, error: categoryError } = await supabase
-    .from("price_book_categories")
-    .select("id")
-    .eq("path", categoryPathString)
-    .eq("is_active", true)
-    .single();
+	// Validate category exists in database
+	const { data: category, error: categoryError } = await supabase
+		.from("price_book_categories")
+		.select("id")
+		.eq("path", categoryPathString)
+		.eq("is_active", true)
+		.single();
 
-  if (categoryError || !category) {
-    notFound();
-  }
+	if (categoryError || !category) {
+		notFound();
+	}
 
-  // Fetch price book items for this category
-  const { data: items, error: itemsError } = await supabase
-    .from("price_book_items")
-    .select("*")
-    .eq("category_id", category.id)
-    .eq("is_active", true)
-    .order("name", { ascending: true });
+	// Fetch price book items for this category
+	const { data: items, error: itemsError } = await supabase
+		.from("price_book_items")
+		.select("*")
+		.eq("category_id", category.id)
+		.eq("is_active", true)
+		.order("name", { ascending: true });
 
-  if (itemsError) {
-    throw new Error(`Failed to load price book items: ${itemsError.message}`);
-  }
+	if (itemsError) {
+		throw new Error(`Failed to load price book items: ${itemsError.message}`);
+	}
 
-  // Fetch full category tree and get subcategories at current path
-  const fullTree = await getCategoryTree();
-  const subcategories = getCategoriesAtPath(fullTree, categoryPath);
+	// Fetch full category tree and get subcategories at current path
+	const fullTree = await getCategoryTree();
+	const subcategories = getCategoriesAtPath(fullTree, categoryPath);
 
-  return (
-    <>
-      {/* Client component to sync URL with Zustand store */}
-      <CategoryNavigationSync categoryPath={categoryPath} />
+	return (
+		<>
+			{/* Client component to sync URL with Zustand store */}
+			<CategoryNavigationSync categoryPath={categoryPath} />
 
-      {/* Server component renders content with subcategories */}
-      <DrillDownView
-        categories={subcategories}
-        items={items || []}
-        itemsPerPage={50}
-      />
-    </>
-  );
+			{/* Server component renders content with subcategories */}
+			<DrillDownView categories={subcategories} items={items || []} itemsPerPage={50} />
+		</>
+	);
 }

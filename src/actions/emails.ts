@@ -12,23 +12,23 @@
 
 import { sendEmail } from "@/lib/email/email-sender";
 import type {
-  AppointmentReminderProps,
-  EmailSendResult,
-  EmailVerificationProps,
-  EstimateSentProps,
-  InvoiceSentProps,
-  JobCompleteProps,
-  JobConfirmationProps,
-  MagicLinkProps,
-  PasswordChangedProps,
-  PasswordResetProps,
-  PaymentReceivedProps,
-  PaymentReminderProps,
-  ReviewRequestProps,
-  ServiceReminderProps,
-  TechEnRouteProps,
-  WelcomeCustomerProps,
-  WelcomeEmailProps,
+	AppointmentReminderProps,
+	EmailSendResult,
+	EmailVerificationProps,
+	EstimateSentProps,
+	InvoiceSentProps,
+	JobCompleteProps,
+	JobConfirmationProps,
+	MagicLinkProps,
+	PasswordChangedProps,
+	PasswordResetProps,
+	PaymentReceivedProps,
+	PaymentReminderProps,
+	ReviewRequestProps,
+	ServiceReminderProps,
+	TechEnRouteProps,
+	WelcomeCustomerProps,
+	WelcomeEmailProps,
 } from "@/lib/email/email-types";
 import { EmailTemplate } from "@/lib/email/email-types";
 import EmailVerificationEmail from "../../emails/templates/auth/email-verification";
@@ -56,76 +56,61 @@ import TechEnRouteEmail from "../../emails/templates/jobs/tech-en-route";
 /**
  * Send welcome email to new user
  */
-export async function sendWelcomeEmail(
-  to: string,
-  props: WelcomeEmailProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Welcome to Thorbis!",
-    template: WelcomeEmail(props),
-    templateType: EmailTemplate.WELCOME,
-  });
+export async function sendWelcomeEmail(to: string, props: WelcomeEmailProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Welcome to Thorbis!",
+		template: WelcomeEmail(props),
+		templateType: EmailTemplate.WELCOME,
+	});
 }
 
 /**
  * Send email verification link
  */
-export async function sendEmailVerification(
-  to: string,
-  props: EmailVerificationProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Verify your email address",
-    template: EmailVerificationEmail(props),
-    templateType: EmailTemplate.EMAIL_VERIFICATION,
-  });
+export async function sendEmailVerification(to: string, props: EmailVerificationProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Verify your email address",
+		template: EmailVerificationEmail(props),
+		templateType: EmailTemplate.EMAIL_VERIFICATION,
+	});
 }
 
 /**
  * Send password reset email
  */
-export async function sendPasswordReset(
-  to: string,
-  props: PasswordResetProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Reset your password",
-    template: PasswordResetEmail(props),
-    templateType: EmailTemplate.PASSWORD_RESET,
-  });
+export async function sendPasswordReset(to: string, props: PasswordResetProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Reset your password",
+		template: PasswordResetEmail(props),
+		templateType: EmailTemplate.PASSWORD_RESET,
+	});
 }
 
 /**
  * Send password changed confirmation
  */
-export async function sendPasswordChanged(
-  to: string,
-  props: PasswordChangedProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Your password has been changed",
-    template: PasswordChangedEmail(props),
-    templateType: EmailTemplate.PASSWORD_CHANGED,
-  });
+export async function sendPasswordChanged(to: string, props: PasswordChangedProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Your password has been changed",
+		template: PasswordChangedEmail(props),
+		templateType: EmailTemplate.PASSWORD_CHANGED,
+	});
 }
 
 /**
  * Send magic link for passwordless authentication
  */
-export async function sendMagicLink(
-  to: string,
-  props: MagicLinkProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Sign in to Thorbis",
-    template: MagicLinkEmail(props),
-    templateType: EmailTemplate.MAGIC_LINK,
-  });
+export async function sendMagicLink(to: string, props: MagicLinkProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Sign in to Thorbis",
+		template: MagicLinkEmail(props),
+		templateType: EmailTemplate.MAGIC_LINK,
+	});
 }
 
 // =============================================================================
@@ -135,63 +120,51 @@ export async function sendMagicLink(
 /**
  * Send job confirmation email
  */
-export async function sendJobConfirmation(
-  to: string,
-  props: JobConfirmationProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: `Service Appointment Confirmed - ${props.jobType}`,
-    template: JobConfirmationEmail(props),
-    templateType: EmailTemplate.JOB_CONFIRMATION,
-    tags: [{ name: "job_number", value: props.jobNumber }],
-  });
+export async function sendJobConfirmation(to: string, props: JobConfirmationProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: `Service Appointment Confirmed - ${props.jobType}`,
+		template: JobConfirmationEmail(props),
+		templateType: EmailTemplate.JOB_CONFIRMATION,
+		tags: [{ name: "job_number", value: props.jobNumber }],
+	});
 }
 
 /**
  * Send appointment reminder (24h before)
  */
-export async function sendAppointmentReminder(
-  to: string,
-  props: AppointmentReminderProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Reminder: Your service appointment is tomorrow",
-    template: AppointmentReminderEmail(props),
-    templateType: EmailTemplate.APPOINTMENT_REMINDER,
-  });
+export async function sendAppointmentReminder(to: string, props: AppointmentReminderProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Reminder: Your service appointment is tomorrow",
+		template: AppointmentReminderEmail(props),
+		templateType: EmailTemplate.APPOINTMENT_REMINDER,
+	});
 }
 
 /**
  * Send technician en route notification
  */
-export async function sendTechEnRoute(
-  to: string,
-  props: TechEnRouteProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: `${props.technicianName} is on the way!`,
-    template: TechEnRouteEmail(props),
-    templateType: EmailTemplate.TECH_EN_ROUTE,
-  });
+export async function sendTechEnRoute(to: string, props: TechEnRouteProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: `${props.technicianName} is on the way!`,
+		template: TechEnRouteEmail(props),
+		templateType: EmailTemplate.TECH_EN_ROUTE,
+	});
 }
 
 /**
  * Send job completion notification
  */
-export async function sendJobComplete(
-  to: string,
-  props: JobCompleteProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Your service is complete!",
-    template: JobCompleteEmail(props),
-    templateType: EmailTemplate.JOB_COMPLETE,
-    tags: [{ name: "job_number", value: props.jobNumber }],
-  });
+export async function sendJobComplete(to: string, props: JobCompleteProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Your service is complete!",
+		template: JobCompleteEmail(props),
+		templateType: EmailTemplate.JOB_COMPLETE,
+		tags: [{ name: "job_number", value: props.jobNumber }],
+	});
 }
 
 // =============================================================================
@@ -201,77 +174,65 @@ export async function sendJobComplete(
 /**
  * Send invoice to customer
  */
-export async function sendInvoice(
-  to: string,
-  props: InvoiceSentProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: `Invoice ${props.invoiceNumber} from Thorbis`,
-    template: InvoiceSentEmail(props),
-    templateType: EmailTemplate.INVOICE_SENT,
-    tags: [
-      { name: "invoice_number", value: props.invoiceNumber },
-      { name: "amount", value: props.totalAmount },
-    ],
-  });
+export async function sendInvoice(to: string, props: InvoiceSentProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: `Invoice ${props.invoiceNumber} from Thorbis`,
+		template: InvoiceSentEmail(props),
+		templateType: EmailTemplate.INVOICE_SENT,
+		tags: [
+			{ name: "invoice_number", value: props.invoiceNumber },
+			{ name: "amount", value: props.totalAmount },
+		],
+	});
 }
 
 /**
  * Send payment confirmation
  */
-export async function sendPaymentReceived(
-  to: string,
-  props: PaymentReceivedProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Payment received - Thank you!",
-    template: PaymentReceivedEmail(props),
-    templateType: EmailTemplate.PAYMENT_RECEIVED,
-    tags: [
-      { name: "invoice_number", value: props.invoiceNumber },
-      { name: "amount", value: props.paymentAmount },
-    ],
-  });
+export async function sendPaymentReceived(to: string, props: PaymentReceivedProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Payment received - Thank you!",
+		template: PaymentReceivedEmail(props),
+		templateType: EmailTemplate.PAYMENT_RECEIVED,
+		tags: [
+			{ name: "invoice_number", value: props.invoiceNumber },
+			{ name: "amount", value: props.paymentAmount },
+		],
+	});
 }
 
 /**
  * Send payment reminder for overdue invoice
  */
-export async function sendPaymentReminder(
-  to: string,
-  props: PaymentReminderProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: `Payment reminder: Invoice ${props.invoiceNumber}`,
-    template: PaymentReminderEmail(props),
-    templateType: EmailTemplate.PAYMENT_REMINDER,
-    tags: [
-      { name: "invoice_number", value: props.invoiceNumber },
-      { name: "days_overdue", value: props.daysOverdue.toString() },
-    ],
-  });
+export async function sendPaymentReminder(to: string, props: PaymentReminderProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: `Payment reminder: Invoice ${props.invoiceNumber}`,
+		template: PaymentReminderEmail(props),
+		templateType: EmailTemplate.PAYMENT_REMINDER,
+		tags: [
+			{ name: "invoice_number", value: props.invoiceNumber },
+			{ name: "days_overdue", value: props.daysOverdue.toString() },
+		],
+	});
 }
 
 /**
  * Send estimate/quote to customer
  */
-export async function sendEstimate(
-  to: string,
-  props: EstimateSentProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: `Estimate ${props.estimateNumber} from Thorbis`,
-    template: EstimateSentEmail(props),
-    templateType: EmailTemplate.ESTIMATE_SENT,
-    tags: [
-      { name: "estimate_number", value: props.estimateNumber },
-      { name: "amount", value: props.totalAmount },
-    ],
-  });
+export async function sendEstimate(to: string, props: EstimateSentProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: `Estimate ${props.estimateNumber} from Thorbis`,
+		template: EstimateSentEmail(props),
+		templateType: EmailTemplate.ESTIMATE_SENT,
+		tags: [
+			{ name: "estimate_number", value: props.estimateNumber },
+			{ name: "amount", value: props.totalAmount },
+		],
+	});
 }
 
 // =============================================================================
@@ -281,45 +242,36 @@ export async function sendEstimate(
 /**
  * Send review request after job completion
  */
-export async function sendReviewRequest(
-  to: string,
-  props: ReviewRequestProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "How was your experience with Thorbis?",
-    template: ReviewRequestEmail(props),
-    templateType: EmailTemplate.REVIEW_REQUEST,
-    tags: [{ name: "job_number", value: props.jobNumber }],
-  });
+export async function sendReviewRequest(to: string, props: ReviewRequestProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "How was your experience with Thorbis?",
+		template: ReviewRequestEmail(props),
+		templateType: EmailTemplate.REVIEW_REQUEST,
+		tags: [{ name: "job_number", value: props.jobNumber }],
+	});
 }
 
 /**
  * Send service/maintenance reminder
  */
-export async function sendServiceReminder(
-  to: string,
-  props: ServiceReminderProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: `Time for your ${props.serviceName} service`,
-    template: ServiceReminderEmail(props),
-    templateType: EmailTemplate.SERVICE_REMINDER,
-  });
+export async function sendServiceReminder(to: string, props: ServiceReminderProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: `Time for your ${props.serviceName} service`,
+		template: ServiceReminderEmail(props),
+		templateType: EmailTemplate.SERVICE_REMINDER,
+	});
 }
 
 /**
  * Send welcome email to new customer
  */
-export async function sendWelcomeCustomer(
-  to: string,
-  props: WelcomeCustomerProps
-): Promise<EmailSendResult> {
-  return await sendEmail({
-    to,
-    subject: "Welcome to Thorbis!",
-    template: WelcomeCustomerEmail(props),
-    templateType: EmailTemplate.WELCOME_CUSTOMER,
-  });
+export async function sendWelcomeCustomer(to: string, props: WelcomeCustomerProps): Promise<EmailSendResult> {
+	return await sendEmail({
+		to,
+		subject: "Welcome to Thorbis!",
+		template: WelcomeCustomerEmail(props),
+		templateType: EmailTemplate.WELCOME_CUSTOMER,
+	});
 }

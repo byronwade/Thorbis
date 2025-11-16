@@ -9,19 +9,15 @@
  */
 
 export default function EquipmentAssignmentPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-semibold text-2xl">Equipment Assignment</h1>
-        <p className="text-muted-foreground">
-          Assign and track equipment to technicians
-        </p>
-      </div>
-      <div className="rounded-lg border p-6">
-        <p className="text-muted-foreground">
-          Equipment Assignment system coming soon...
-        </p>
-      </div>
-    </div>
-  );
+	return (
+		<div className="space-y-6">
+			<div>
+				<h1 className="font-semibold text-2xl">Equipment Assignment</h1>
+				<p className="text-muted-foreground">Assign and track equipment to technicians</p>
+			</div>
+			<div className="rounded-lg border p-6">
+				<p className="text-muted-foreground">Equipment Assignment system coming soon...</p>
+			</div>
+		</div>
+	);
 }
