@@ -97,6 +97,18 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	const jobRecord = jobData?.job ?? jobData ?? null;
 	const job = jobRecord as any;
 
+	// Early return if no job data
+	if (!job) {
+		return (
+			<div className="flex h-full items-center justify-center">
+				<div className="text-center">
+					<h2 className="text-xl font-semibold">Job Not Found</h2>
+					<p className="text-muted-foreground">This job may have been deleted or you don't have access to it.</p>
+				</div>
+			</div>
+		);
+	}
+
 	const router = useRouter();
 	const { toast } = useToast();
 	const [localJob, setLocalJob] = useState(() => {
@@ -1007,7 +1019,7 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		}
 	};
 
-	const headerBadges = [
+	const headerBadges = job ? [
 		<Badge className="font-mono text-xs" key="job-number" variant="secondary">
 			#{job.job_number}
 		</Badge>,
@@ -1025,7 +1037,7 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				{localJob.priority}
 			</Badge>
 		) : null,
-	].filter(Boolean);
+	].filter(Boolean) : [];
 
 	const handleArchiveJob = async () => {
 		setIsArchiving(true);
