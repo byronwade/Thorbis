@@ -96,7 +96,8 @@
       "Bash(pnpm biome check:*)",
       "Bash(npx @biomejs/biome:*)",
       "Bash(tree:*)",
-      "Bash(/tmp/fix-async.sh:*)"
+      "Bash(/tmp/fix-async.sh:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
