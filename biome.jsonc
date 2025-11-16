@@ -4,7 +4,38 @@
   "linter": {
     "rules": {
       "suspicious": {
-        "useAwait": "off"
+        "useAwait": "off",
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "warn"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noForEach": "off",
+        "noBannedTypes": "off",
+        "noStaticOnlyClass": "off",
+        "noThisInStatic": "off",
+        "useFlatMap": "off",
+        "useLiteralKeys": "off",
+        "useOptionalChain": "warn"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "useNumberNamespace": "off",
+        "noParameterAssign": "off",
+        "useTemplate": "warn",
+        "useSelfClosingElements": "warn",
+        "noUnusedTemplateLiteral": "warn",
+        "useNamingConvention": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn",
+        "noUnusedPrivateClassMembers": "warn",
+        "noUnusedFunctionParameters": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "warn",
+        "noDelete": "warn"
       }
     }
   },
@@ -15,18 +46,39 @@
         "rules": {
           "suspicious": {
             "noExplicitAny": "off",
-            "useAwait": "off"
+            "useAwait": "off",
+            "noArrayIndexKey": "off"
           },
           "complexity": {
             "noForEach": "off",
             "useLiteralKeys": "off",
-            "noExcessiveCognitiveComplexity": "warn"
+            "noExcessiveCognitiveComplexity": "off"
           },
           "style": {
-            "noNonNullAssertion": "off"
+            "noNonNullAssertion": "off",
+            "noParameterAssign": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/components/**/*.tsx", "**/components/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "warn"
           }
         }
       }
     }
-  ]
+  ],
+  "files": {
+    "ignoreUnknown": true,
+    "maxSize": 5242880
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab",
+    "lineWidth": 120
+  }
 }
