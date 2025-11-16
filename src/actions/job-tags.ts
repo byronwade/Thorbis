@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Job Tags Actions - Server Actions
  * Handle tag management for jobs and customers

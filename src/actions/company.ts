@@ -7,7 +7,6 @@
  * TypeScript checking is temporarily disabled until migrations are created.
  */
 
-// @ts-nocheck
 "use server";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -32,25 +31,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
-
-// TODO: team_members table doesn't exist in database - create migration
-type TeamMemberRow = {
-	id: string;
-	user_id: string;
-	company_id: string;
-	role: string;
-	status: string;
-	created_at: string;
-};
-
-// TODO: company_settings table doesn't exist in database - create migration
-type CompanySettingsRow = {
-	id: string;
-	company_id: string;
-	hours_of_operation: Record<string, unknown>;
-	created_at: string;
-	updated_at: string;
-};
+type TeamMemberRow = Database["public"]["Tables"]["team_members"]["Row"];
+type CompanySettingsRow = Database["public"]["Tables"]["company_settings"]["Row"];
 
 // Constants
 const ZIP_CODE_MIN_LENGTH = 5;
@@ -162,51 +144,48 @@ const parseHoursPayload = (value: FormDataEntryValue | null): HoursOfOperation =
 };
 
 async function _getActiveTeamMember(supabase: TypedSupabaseClient, userId: string): Promise<TeamMemberRow> {
-	// TODO: team_members table doesn't exist in database - create migration
-	throw new ActionError("Team members feature not yet implemented", ERROR_CODES.DB_RECORD_NOT_FOUND);
+	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+	const preferredCompanyId = await getActiveCompanyId();
 
-	// const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-	// const preferredCompanyId = await getActiveCompanyId();
+	if (preferredCompanyId) {
+		const { data: membership } = await supabase
+			.from("team_members")
+			.select("*")
+			.eq("user_id", userId)
+			.eq("company_id", preferredCompanyId)
+			.maybeSingle();
 
-	// if (preferredCompanyId) {
-	// 	const { data: membership } = await supabase
-	// 		.from("team_members")
-	// 		.select("*")
-	// 		.eq("user_id", userId)
-	// 		.eq("company_id", preferredCompanyId)
-	// 		.maybeSingle();
+		if (membership?.company_id) {
+			return membership;
+		}
+	}
 
-	// 	if (membership?.company_id) {
-	// 		return membership;
-	// 	}
-	// }
+	const { data: fallbackMembership } = await supabase
+		.from("team_members")
+		.select("*")
+		.eq("user_id", userId)
+		.eq("status", "active")
+		.order("updated_at", { ascending: false })
+		.limit(1)
+		.maybeSingle();
 
-	// const { data: fallbackMembership } = await supabase
-	// 	.from("team_members")
-	// 	.select("*")
-	// 	.eq("user_id", userId)
-	// 	.eq("status", "active")
-	// 	.order("updated_at", { ascending: false })
-	// 	.limit(1)
-	// 	.maybeSingle();
+	if (fallbackMembership?.company_id) {
+		return fallbackMembership;
+	}
 
-	// if (fallbackMembership?.company_id) {
-	// 	return fallbackMembership;
-	// }
+	const { data: anyStatusMembership } = await supabase
+		.from("team_members")
+		.select("*")
+		.eq("user_id", userId)
+		.order("updated_at", { ascending: false })
+		.limit(1)
+		.maybeSingle();
 
-	// const { data: anyStatusMembership } = await supabase
-	// 	.from("team_members")
-	// 	.select("*")
-	// 	.eq("user_id", userId)
-	// 	.order("updated_at", { ascending: false })
-	// 	.limit(1)
-	// 	.maybeSingle();
+	if (anyStatusMembership?.company_id) {
+		return anyStatusMembership;
+	}
 
-	// if (anyStatusMembership?.company_id) {
-	// 	return anyStatusMembership;
-	// }
-
-	// throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+	throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
 }
 
 // Schema for billing information
@@ -301,14 +280,11 @@ async function fetchCompanyAndSettings(
 		throw new ActionError(ERROR_MESSAGES.notFound("Company"), ERROR_CODES.DB_RECORD_NOT_FOUND);
 	}
 
-	// TODO: company_settings table doesn't exist - create migration
-	// const { data: settings } = await supabase
-	// 	.from("company_settings")
-	// 	.select("*")
-	// 	.eq("company_id", companyId)
-	// 	.single();
-	const settings: null | { hours_of_operation?: Record<string, { open?: string | null; close?: string | null }> } =
-		null;
+	const { data: settings } = await supabase
+		.from("company_settings")
+		.select("*")
+		.eq("company_id", companyId)
+		.single();
 
 	const hoursOfOperation = normalizeHoursFromSettings(
 		(settings?.hours_of_operation as Record<string, { open?: string | null; close?: string | null }>) ?? null

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Finance Settings Server Actions
  *

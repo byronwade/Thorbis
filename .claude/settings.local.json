@@ -140,7 +140,9 @@
       "Bash(if grep -q \"persist\" \"$file\")",
       "Bash(! grep -q \"skipHydration\" \"$file\")",
       "Bash(chmod:*)",
-      "Bash(/Users/byronwade/Stratos/fix-zustand-hydration.sh)"
+      "Bash(/Users/byronwade/Stratos/fix-zustand-hydration.sh)",
+      "Bash(curl:*)",
+      "Bash(git -C /Users/byronwade/Stratos log --oneline --all --graph)"
     ],
     "deny": [],
     "ask": []

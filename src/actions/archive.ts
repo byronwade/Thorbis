@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Archive Management Server Actions
  *

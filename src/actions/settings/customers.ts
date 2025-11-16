@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Customer Settings Server Actions
  *

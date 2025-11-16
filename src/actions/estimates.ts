@@ -5,7 +5,6 @@
  * customer interactions, and conversion to jobs.
  */
 
-// @ts-nocheck
 "use server";
 
 import { revalidatePath } from "next/cache";

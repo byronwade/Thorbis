@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use server";
 
 import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";

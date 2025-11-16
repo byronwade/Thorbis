@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Entity Tags Actions - Server Actions
  * Generic tag management for any entity type

@@ -7,7 +7,6 @@
  * TypeScript checking is temporarily disabled until migrations are created.
  */
 
-// @ts-nocheck
 "use server";
 
 import type { SupabaseClient, User } from "@supabase/supabase-js";
@@ -42,18 +41,7 @@ const acceptInvitationSchema = z.object({
 });
 
 type SupabaseServerClient = SupabaseClient<Database>;
-
-// TODO: team_invitations table doesn't exist in database - create migration
-// type InvitationRecord = Database["public"]["Tables"]["team_invitations"]["Row"];
-type InvitationRecord = {
-	id: string;
-	email: string;
-	company_id: string;
-	role: string;
-	created_at: string;
-	expires_at: string;
-	token: string;
-};
+type InvitationRecord = Database["public"]["Tables"]["team_invitations"]["Row"];
 
 /**
  * Accept a team invitation and create user account
@@ -110,26 +98,18 @@ export async function acceptTeamInvitation(formData: FormData): Promise<ActionRe
 }
 
 async function fetchInvitation(supabase: SupabaseServerClient, token: string): Promise<InvitationRecord> {
-	// TODO: team_invitations table doesn't exist - create migration
-	// const { data, error } = await supabase
-	// 	.from("team_invitations")
-	// 	.select("*")
-	// 	.eq("token", token)
-	// 	.is("used_at", null)
-	// 	.single();
+	const { data, error } = await supabase
+		.from("team_invitations")
+		.select("*")
+		.eq("token", token)
+		.is("used_at", null)
+		.single();
 
-	// if (error || !data) {
-	// 	throw new ActionError("Invalid or expired invitation", ERROR_CODES.DB_RECORD_NOT_FOUND, HTTP_STATUS.notFound);
-	// }
+	if (error || !data) {
+		throw new ActionError("Invalid or expired invitation", ERROR_CODES.DB_RECORD_NOT_FOUND, HTTP_STATUS.notFound);
+	}
 
-	// return data as InvitationRecord;
-
-	// Temporary stub until migration is created
-	throw new ActionError(
-		"Team invitations feature not yet implemented",
-		ERROR_CODES.DB_RECORD_NOT_FOUND,
-		HTTP_STATUS.notFound
-	);
+	return data as InvitationRecord;
 }
 
 function validateInvitation(invitation: InvitationRecord, email: string) {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Communication Settings Server Actions
  *

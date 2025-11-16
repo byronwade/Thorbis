@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Knowledge Base Server Actions
  *

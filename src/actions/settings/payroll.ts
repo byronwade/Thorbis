@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Payroll Settings Server Actions
  *

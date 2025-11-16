@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Invoices Server Actions
  *

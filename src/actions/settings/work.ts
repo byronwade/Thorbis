@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Work Settings Server Actions
  *

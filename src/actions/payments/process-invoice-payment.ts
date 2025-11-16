@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Process Invoice Payment Server Action
  *

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Invoice Email Template Settings Actions
  *
