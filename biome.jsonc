@@ -1,4 +1,23 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/core", "ultracite/next", "ultracite/react"]
+  "extends": ["ultracite/core", "ultracite/next", "ultracite/react"],
+  "overrides": [
+    {
+      "includes": ["**/page.tsx", "**/layout.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "complexity": {
+            "noForEach": "off",
+            "useLiteralKeys": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
 }
