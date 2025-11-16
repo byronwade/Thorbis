@@ -154,6 +154,7 @@ export class JobEnrichmentService {
 			let lon = job.lon;
 
 			if (lat && lon) {
+				// TODO: Handle error case
 			} else {
 				const fullAddress = `${job.address}, ${job.city}, ${job.state} ${job.zipCode}`;
 

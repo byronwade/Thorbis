@@ -64,7 +64,9 @@ export async function GET(request: Request) {
 					});
 					summary.voiceWebhookUpdated = true;
 				}
-			} catch (_error) {}
+			} catch (_error) {
+				console.error("Error:", _error);
+			}
 		} else {
 		}
 
@@ -84,7 +86,9 @@ export async function GET(request: Request) {
 					});
 					summary.messagingProfileUpdated = true;
 				}
-			} catch (_error) {}
+			} catch (_error) {
+				console.error("Error:", _error);
+			}
 		} else {
 		}
 
@@ -99,6 +103,7 @@ export async function GET(request: Request) {
 			.limit(50);
 
 		if (phoneError) {
+			// TODO: Handle error case
 		} else if (phoneNumbers?.length) {
 			summary.numbersChecked = phoneNumbers.length;
 
@@ -110,7 +115,9 @@ export async function GET(request: Request) {
 					await ensureMessagingBranding(companyId, {
 						supabase: serviceSupabase,
 					});
-				} catch (_error) {}
+				} catch (_error) {
+					console.error("Error:", _error);
+				}
 			}
 
 			for (const phone of phoneNumbers) {
@@ -127,7 +134,9 @@ export async function GET(request: Request) {
 					if (result.success) {
 						summary.numbersLinked = (summary.numbersLinked as number) + 1;
 					}
-				} catch (_error) {}
+				} catch (_error) {
+					console.error("Error:", _error);
+				}
 			}
 		}
 

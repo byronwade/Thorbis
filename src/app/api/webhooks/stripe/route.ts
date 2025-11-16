@@ -179,9 +179,13 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 			});
 
 			if (purchaseResult.success) {
+				// TODO: Handle error case
 			} else if ("error" in purchaseResult) {
+				// TODO: Handle error case
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	}
 
 	// Send team member invitations after payment is complete
@@ -191,10 +195,13 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 		if (invitationResult.success && invitationResult.data) {
 			if (invitationResult.data.failed > 0) {
+				// TODO: Handle error case
 			}
 		} else {
 		}
-	} catch (_error) {}
+	} catch (_error) {
+		console.error("Error:", _error);
+	}
 }
 
 /**

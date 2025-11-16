@@ -147,6 +147,7 @@ function CallWindowContent() {
 						} = await supabase.auth.getUser();
 
 						if (userError) {
+							// TODO: Handle error case
 						} else if (user) {
 							const { data: teamMembers, error: teamError } = await supabase
 								.from("team_members")
@@ -156,8 +157,10 @@ function CallWindowContent() {
 								.order("joined_at", { ascending: false });
 
 							if (teamError) {
+								// TODO: Handle error case
 							} else if (Array.isArray(teamMembers) && teamMembers.length > 0) {
 								if (teamMembers.length > 1) {
+									// TODO: Handle error case
 								}
 								const activeMembership = teamMembers[0];
 								if (activeMembership?.company_id) {
@@ -169,7 +172,9 @@ function CallWindowContent() {
 							}
 						} else {
 						}
-					} catch (_error) {}
+					} catch (_error) {
+						console.error("Error:", _error);
+					}
 				}
 
 				if (!resolvedCompanyId) {
@@ -193,6 +198,7 @@ function CallWindowContent() {
 					setCustomerData(result.data);
 				}
 			} catch (_error) {
+				console.error("Error:", _error);
 			} finally {
 				setIsLoadingCustomer(false);
 			}
@@ -230,6 +236,7 @@ function CallWindowContent() {
 				case "CALL_STATE_SYNC":
 					// Sync call state from main window
 					if (message.callData) {
+						// TODO: Handle error case
 					}
 					break;
 

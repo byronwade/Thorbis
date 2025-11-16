@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
 				});
 			}
 		} else if (skipSignatureVerification) {
+			// TODO: Handle error case
 		}
 
 		// Parse webhook payload
@@ -207,6 +208,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
 				.eq("telnyx_call_control_id", callData.call_control_id);
 
 			if (updateError) {
+				// TODO: Handle error case
 			} else {
 			}
 			break;
@@ -234,6 +236,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
 				.eq("telnyx_call_control_id", callData.call_control_id);
 
 			if (hangupError) {
+				// TODO: Handle error case
 			} else {
 			}
 			break;
@@ -264,6 +267,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
 				});
 
 				if (transcriptionResult.success) {
+					// TODO: Handle error case
 				} else {
 				}
 			}

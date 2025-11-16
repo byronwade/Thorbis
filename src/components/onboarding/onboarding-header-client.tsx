@@ -73,6 +73,7 @@ export function OnboardingHeaderClient({ userProfile, companies }: OnboardingHea
 				router.refresh();
 			}
 		} catch (_error) {
+			console.error("Error:", _error);
 		} finally {
 			setIsUpdatingStatus(false);
 		}

@@ -128,5 +128,7 @@ export async function initializeRoleFromDatabase() {
 		if (result.success && result.data) {
 			useRoleStore.getState().setActualRole(result.data);
 		}
-	} catch (_error) {}
+	} catch (_error) {
+		console.error("Error:", _error);
+	}
 }

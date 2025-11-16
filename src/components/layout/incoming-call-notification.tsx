@@ -1529,6 +1529,7 @@ export function IncomingCallNotification() {
 				} else {
 				}
 			} catch (_error) {
+				console.error("Error:", _error);
 			} finally {
 				setIsLoadingCredentials(false);
 			}
@@ -1648,7 +1649,9 @@ export function IncomingCallNotification() {
 				if (firstRow?.company_id) {
 					setCompanyId(firstRow.company_id);
 				}
-			} catch (_error) {}
+			} catch (_error) {
+				console.error("Error:", _error);
+			}
 		}
 		fetchCompanyId();
 	}, []);
@@ -1823,7 +1826,9 @@ export function IncomingCallNotification() {
 
 				window.open(url, "_blank", "noopener,noreferrer");
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleEndCall = async () => {
@@ -1839,7 +1844,9 @@ export function IncomingCallNotification() {
 			clearTranscript();
 			setIsRecording(false); // Reset recording state
 			sync.broadcastCallEnded();
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleVoicemail = async () => {
@@ -1852,7 +1859,9 @@ export function IncomingCallNotification() {
 		try {
 			await webrtc.endCall();
 			sync.broadcastCallEnded();
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleToggleMute = async () => {
@@ -1865,7 +1874,9 @@ export function IncomingCallNotification() {
 				await webrtc.muteCall();
 				sync.broadcastCallAction("mute");
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleToggleHold = async () => {
@@ -1878,7 +1889,9 @@ export function IncomingCallNotification() {
 				await webrtc.holdCall();
 				sync.broadcastCallAction("hold");
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleToggleRecording = async () => {
@@ -1904,13 +1917,17 @@ export function IncomingCallNotification() {
 				} else {
 				}
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleSendDTMF = async (digit: string) => {
 		try {
 			await webrtc.sendDTMF(digit);
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	const handleTransfer = () => {

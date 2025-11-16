@@ -40,6 +40,7 @@ export async function ContractsData() {
 		.order("created_at", { ascending: false });
 
 	if (error) {
+		// TODO: Handle error case
 	}
 
 	let contracts: Contract[] = [];

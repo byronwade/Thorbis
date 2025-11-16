@@ -132,7 +132,9 @@ export function NotificationsList() {
 				// Set up Supabase Realtime subscription
 				await subscribe(user.id);
 				setIsInitialized(true);
-			} catch (_error) {}
+			} catch (_error) {
+				console.error("Error:", _error);
+			}
 		}
 
 		if (!isInitialized) {
@@ -149,6 +151,7 @@ export function NotificationsList() {
 		optimisticMarkAsRead(id);
 		const result = await markAsReadAction(id);
 		if (!result.success) {
+			// TODO: Handle error case
 		}
 	};
 
@@ -157,6 +160,7 @@ export function NotificationsList() {
 		optimisticMarkAllAsRead();
 		const result = await markAllAsReadAction();
 		if (!result.success) {
+			// TODO: Handle error case
 		}
 	};
 
@@ -165,6 +169,7 @@ export function NotificationsList() {
 		optimisticDelete(id);
 		const result = await deleteNotificationAction(id);
 		if (!result.success) {
+			// TODO: Handle error case
 		}
 	};
 

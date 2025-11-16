@@ -82,6 +82,7 @@ export async function sendTeamMemberInvitations(
 				);
 
 				if (ownerError) {
+					// TODO: Handle error case
 				}
 				continue;
 			}

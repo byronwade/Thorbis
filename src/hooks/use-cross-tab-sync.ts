@@ -187,7 +187,9 @@ export function useCrossTabSync() {
 				try {
 					const message: CallSyncMessage = JSON.parse(e.newValue);
 					handleSyncMessage(message);
-				} catch (_error) {}
+				} catch (_error) {
+					console.error("Error:", _error);
+				}
 			}
 		};
 
@@ -233,7 +235,9 @@ export function useCrossTabSync() {
 					if (newState.state?.popoverWidth && newState.state.popoverWidth !== popoverWidth) {
 						actions.setPopoverWidth(newState.state.popoverWidth);
 					}
-				} catch (_error) {}
+				} catch (_error) {
+					console.error("Error:", _error);
+				}
 			}
 		};
 

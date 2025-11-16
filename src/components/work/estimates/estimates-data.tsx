@@ -53,6 +53,7 @@ export async function EstimatesData() {
 		.order("created_at", { ascending: false });
 
 	if (error) {
+		// TODO: Handle error case
 	}
 
 	// Transform data for table component

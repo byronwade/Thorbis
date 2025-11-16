@@ -131,6 +131,7 @@ export class LocationServices {
 			return GeocodingResultSchema.parse(result);
 		} catch (error: any) {
 			if (error.name === "TimeoutError" || error.name === "AbortError") {
+				// TODO: Handle error case
 			} else {
 			}
 			return null;
@@ -156,6 +157,7 @@ export class LocationServices {
 
 			if (!res.ok) {
 				if (res.status === 429) {
+					// TODO: Handle error case
 				}
 
 				return null;
@@ -186,6 +188,7 @@ export class LocationServices {
 			return GeocodingResultSchema.parse(result);
 		} catch (error: any) {
 			if (error.name === "TimeoutError" || error.name === "AbortError") {
+				// TODO: Handle error case
 			} else {
 			}
 			return null;
@@ -343,6 +346,7 @@ export class LocationServices {
 			if (!res.ok) {
 				// 404 just means no flood zone data available for this location (expected)
 				if (res.status === 404) {
+					// TODO: Handle error case
 				} else {
 				}
 				return null;

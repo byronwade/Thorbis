@@ -692,7 +692,9 @@ export async function saveOnboardingProgress(
 					serviceClient: serviceSupabase,
 				});
 				await startWorkflow(companyTrialWorkflow, [{ companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS }]);
-			} catch (_trialError) {}
+			} catch (_trialError) {
+				console.error("Error:", _trialError);
+			}
 		}
 
 		try {
@@ -701,7 +703,9 @@ export async function saveOnboardingProgress(
 			if (createdCompany) {
 				try {
 					await serviceSupabase.from("companies").delete().eq("id", companyId);
-				} catch (_cleanupError) {}
+				} catch (_cleanupError) {
+					console.error("Error:", _cleanupError);
+				}
 			}
 
 			return {
@@ -718,12 +722,17 @@ export async function saveOnboardingProgress(
 			});
 
 			if (!brandingResult.success) {
+				// TODO: Handle error case
 			}
-		} catch (_brandingError) {}
+		} catch (_brandingError) {
+			console.error("Error:", _brandingError);
+		}
 
 		try {
 			await autoConfigureEmailInfrastructure(serviceSupabase, companyId, data.orgWebsite);
-		} catch (_emailInfraError) {}
+		} catch (_emailInfraError) {
+			console.error("Error:", _emailInfraError);
+		}
 
 		const progressStep = typeof step === "number" ? step : 1;
 		const progressData = stepData ?? (progressStep === 1 ? step1Snapshot : {});
@@ -745,7 +754,9 @@ export async function saveOnboardingProgress(
 
 		try {
 			await companyContext.setActiveCompany(companyId);
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 
 		revalidatePath("/dashboard/welcome");
 		revalidatePath("/", "layout");
@@ -1053,6 +1064,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 				.single();
 
 			if (portRecordError) {
+				// TODO: Handle error case
 			}
 
 			const portingRequestId = portRecord?.id ?? null;
@@ -1087,6 +1099,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 				});
 
 				if (insertPhoneError) {
+					// TODO: Handle error case
 				}
 			}
 
@@ -1213,6 +1226,7 @@ export async function archiveIncompleteCompany(companyId: string): Promise<Onboa
 			.eq("company_id", companyId);
 
 		if (memberArchiveError) {
+			// TODO: Handle error case
 		}
 
 		const { getActiveCompanyId, clearActiveCompany } = await import("@/lib/auth/company-context");

@@ -133,7 +133,9 @@ export async function sendEmail({
 						next_retry_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
 					});
 				}
-			} catch (_logError) {}
+			} catch (_logError) {
+				console.error("Error:", _logError);
+			}
 
 			return {
 				success: false,

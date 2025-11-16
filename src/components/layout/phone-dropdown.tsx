@@ -260,6 +260,7 @@ export function PhoneDropdown({
 	// Debug button state - MUST be before any conditional returns
 	useEffect(() => {
 		if (open) {
+			// TODO: Handle error case
 		}
 	}, [open]);
 

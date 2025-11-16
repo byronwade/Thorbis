@@ -253,6 +253,7 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
 	const { data: invoiceCommunications, error: invoiceCommunicationsError } = await invoiceCommunicationsQuery;
 
 	if (invoiceCommunicationsError) {
+		// TODO: Handle error case
 	}
 
 	const communications =

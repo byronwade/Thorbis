@@ -71,6 +71,7 @@ export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<Action
 			if (isExpectedAuthError) {
 				// Only log in development, or as a warning
 				if (process.env.NODE_ENV === "development") {
+					// TODO: Handle error case
 				}
 			} else {
 			}

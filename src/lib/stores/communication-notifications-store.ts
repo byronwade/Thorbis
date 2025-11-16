@@ -385,7 +385,9 @@ export const useCommunicationNotificationsStore = create<CommunicationNotificati
 					const audio = new Audio("/sounds/notification.mp3");
 					audio.volume = 0.4;
 					audio.play().catch((_error) => {});
-				} catch (_error) {}
+				} catch (_error) {
+					console.error("Error:", _error);
+				}
 			},
 
 			requestDesktopNotificationPermission: async () => {
@@ -432,7 +434,9 @@ export const useCommunicationNotificationsStore = create<CommunicationNotificati
 						}
 						notification.close();
 					};
-				} catch (_error) {}
+				} catch (_error) {
+					console.error("Error:", _error);
+				}
 			},
 		}),
 		{ name: "CommunicationNotificationsStore" }

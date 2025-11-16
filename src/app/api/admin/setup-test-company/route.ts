@@ -111,6 +111,7 @@ export async function POST() {
 				.single();
 
 			if (propertyError) {
+				// TODO: Handle error case
 			} else {
 				property = prop;
 			}
@@ -136,6 +137,7 @@ export async function POST() {
 				.single();
 
 			if (jobError) {
+				// TODO: Handle error case
 			} else {
 				job = testJob;
 			}

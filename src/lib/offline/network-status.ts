@@ -42,7 +42,9 @@ export function useNetworkStatus(): NetworkStatus {
 		try {
 			const count = await countRecords("sync-queue");
 			setPendingOperations(count);
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 	};
 
 	// Use ref to prevent concurrent sync operations (CRITICAL FIX)
@@ -80,6 +82,7 @@ export function useNetworkStatus(): NetworkStatus {
 				setLastSync(new Date());
 				await updatePendingCount();
 			} catch (_error) {
+				console.error("Error:", _error);
 			} finally {
 				setIsSyncing(false);
 				isSyncingRef.current = false;
@@ -103,6 +106,7 @@ export function useNetworkStatus(): NetworkStatus {
 					setLastSync(new Date());
 					await updatePendingCount();
 				} catch (_error) {
+					console.error("Error:", _error);
 				} finally {
 					setIsSyncing(false);
 					isSyncingRef.current = false;

@@ -182,7 +182,9 @@ export function NotificationsDropdown() {
 				// Set up Supabase Realtime subscription
 				await subscribe(user.id);
 				setIsInitialized(true);
-			} catch (_error) {}
+			} catch (_error) {
+				console.error("Error:", _error);
+			}
 		}
 
 		if (!isInitialized) {

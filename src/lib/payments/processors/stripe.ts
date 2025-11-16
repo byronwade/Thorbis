@@ -47,6 +47,7 @@ export class StripeProcessor implements PaymentProcessor {
 			// WARNING: Stripe has limitations on high-value payments
 			// This should only be used for platform billing, not contractor payments
 			if (request.amount > 100_000) {
+				// TODO: Handle error case
 			}
 
 			const paymentIntent = await stripe.paymentIntents.create({

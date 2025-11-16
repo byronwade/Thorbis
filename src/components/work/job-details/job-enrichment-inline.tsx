@@ -174,6 +174,7 @@ export function JobEnrichmentInline({ enrichmentData: initialData, jobId, proper
 					setTravelTime(data);
 				}
 			} catch (_error) {
+				console.error("Error:", _error);
 			} finally {
 				setIsLoadingTravel(false);
 			}
@@ -190,6 +191,7 @@ export function JobEnrichmentInline({ enrichmentData: initialData, jobId, proper
 
 	// Log full data to console for debugging
 	if (enrichmentData) {
+		// TODO: Handle error case
 	}
 
 	const hasWeatherAlerts = weather?.hasActiveAlerts && weather?.alerts && weather.alerts.length > 0;

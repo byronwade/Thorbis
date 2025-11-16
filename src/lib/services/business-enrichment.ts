@@ -124,12 +124,16 @@ export class BusinessEnrichmentService {
 		// Try Google Places first
 		try {
 			placesData = await this.enrichWithGooglePlaces(businessName, address, city, state);
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 
 		// Try OpenCorporates for registration data
 		try {
 			corporatesData = await this.enrichWithOpenCorporates(businessName, state);
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 
 		// Combine results
 		if (!(placesData || corporatesData)) {

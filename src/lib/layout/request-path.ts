@@ -50,12 +50,14 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
 		const headerList = await headers();
 
 		if (process.env.NODE_ENV !== "production") {
+			// TODO: Handle error case
 		}
 
 		for (const headerName of INTERNAL_PATH_HEADERS) {
 			const candidate = sanitizePathCandidate(headerList.get(headerName));
 			if (candidate) {
 				if (process.env.NODE_ENV !== "production") {
+					// TODO: Handle error case
 				}
 				return candidate;
 			}
@@ -65,6 +67,7 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
 			const candidate = sanitizePathCandidate(headerList.get(headerName));
 			if (candidate) {
 				if (process.env.NODE_ENV !== "production") {
+					// TODO: Handle error case
 				}
 				return candidate;
 			}
@@ -74,11 +77,13 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
 		// We rely only on Next.js headers which are always accurate
 	} catch (_error) {
 		if (process.env.NODE_ENV !== "production") {
+			// TODO: Handle error case
 		}
 		// Ignore header access errors and fall back to default dashboard route
 	}
 
 	if (process.env.NODE_ENV !== "production") {
+		// TODO: Handle error case
 	}
 	return defaultPath;
 }

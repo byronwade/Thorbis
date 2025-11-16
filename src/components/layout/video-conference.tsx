@@ -143,7 +143,9 @@ export function VideoConferenceView({
 			await navigator.clipboard.writeText(call.meetingLink);
 			setLinkCopied(true);
 			setTimeout(() => setLinkCopied(false), 2000);
-		} catch (_err) {}
+		} catch (_err) {
+			console.error("Error:", _err);
+		}
 	};
 
 	// Minimized floating window - Vercel-inspired

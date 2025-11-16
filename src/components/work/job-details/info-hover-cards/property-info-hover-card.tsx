@@ -81,6 +81,7 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 					setTravelTime(data);
 				}
 			} catch (_error) {
+				console.error("Error:", _error);
 			} finally {
 				setIsLoadingTravel(false);
 			}

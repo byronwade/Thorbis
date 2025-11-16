@@ -84,21 +84,27 @@ export class SocialEnrichmentService {
 			if (linkedinProfile) {
 				profiles.linkedin = linkedinProfile;
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 
 		try {
 			const twitterProfile = await this.findTwitterProfile(fullName);
 			if (twitterProfile) {
 				profiles.twitter = twitterProfile;
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 
 		try {
 			const facebookProfile = await this.findFacebookProfile(email);
 			if (facebookProfile) {
 				profiles.facebook = facebookProfile;
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Error:", _error);
+		}
 
 		// Return null if no profiles found
 		if (Object.keys(profiles).length === 0) {

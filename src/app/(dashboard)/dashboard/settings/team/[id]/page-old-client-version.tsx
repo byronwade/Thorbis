@@ -353,6 +353,7 @@ export default function EmployeeProfilePage() {
 
 			setHasUnsavedChanges(false);
 		} catch (_error) {
+			console.error("Error:", _error);
 		} finally {
 			setIsSavingPermissions(false);
 		}

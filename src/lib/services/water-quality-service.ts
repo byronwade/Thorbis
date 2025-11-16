@@ -87,6 +87,7 @@ export class WaterQualityService {
 			if (!res.ok) {
 				// 406 (Not Acceptable) or 404 means no data available for this location (expected)
 				if (res.status === 404 || res.status === 406) {
+					// TODO: Handle error case
 				} else {
 				}
 				return null;

@@ -46,6 +46,7 @@ export function NavUser({
 				router.refresh();
 			}
 		} catch (_error) {
+			console.error("Error:", _error);
 		} finally {
 			setIsUpdatingStatus(false);
 		}

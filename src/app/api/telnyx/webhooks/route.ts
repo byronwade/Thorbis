@@ -157,6 +157,7 @@ async function handleCallInitiated(payload: any) {
 	});
 
 	if (error) {
+		// TODO: Handle error case
 	}
 }
 
@@ -182,6 +183,7 @@ async function handleCallAnswered(payload: any) {
 		.eq("call_sid", call_control_id || call_session_id);
 
 	if (error) {
+		// TODO: Handle error case
 	}
 
 	// TODO: Find available team member and assign call
@@ -230,6 +232,7 @@ async function handleCallHangup(payload: any) {
 		.eq("call_sid", call_control_id || call_session_id);
 
 	if (error) {
+		// TODO: Handle error case
 	}
 
 	// TODO: Decrement team_availability.current_calls_count
@@ -262,6 +265,7 @@ async function handleRecordingSaved(payload: any) {
 		.eq("call_sid", call_session_id);
 
 	if (error) {
+		// TODO: Handle error case
 	}
 
 	// TODO: Download recording and store in Supabase Storage
@@ -296,10 +300,12 @@ async function handleMachineDetection(payload: any) {
 		.eq("call_sid", call_control_id);
 
 	if (error) {
+		// TODO: Handle error case
 	}
 
 	// If machine detected, route to voicemail immediately
 	if (result === "machine") {
+		// TODO: Handle error case
 	}
 }
 
