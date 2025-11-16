@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Pricebook Data - Async Server Component
  *
@@ -8,7 +9,6 @@
 import { Book, DollarSign, Package, Settings } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function PricebookData() {
 	// Future: Fetch pricebook items and pricing data

@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Parts Data - Async Server Component
  *
@@ -9,7 +10,6 @@
 import { BarChart2, Box, Package2, Search, Settings } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function PartsData() {
 	// Future: Fetch parts inventory

@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Price Analytics Data - Async Server Component
  *
@@ -8,7 +9,6 @@
 import { BarChart3, DollarSign, PieChart, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function PriceAnalyticsData() {
 	return (

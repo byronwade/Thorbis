@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Inventory Data - Async Server Component
  *
@@ -8,7 +9,6 @@
 import { AlertTriangle, BarChart3, Package, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function InventoryData() {
 	// Future: Fetch inventory items

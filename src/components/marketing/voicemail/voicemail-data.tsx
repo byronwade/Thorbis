@@ -1,7 +1,7 @@
+"use cache";
 import { Voicemail } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function VoicemailData() {
 	return (

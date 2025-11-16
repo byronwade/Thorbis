@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Call Logs Data - Async Server Component
  *
@@ -9,7 +10,6 @@
 import { BarChart2, Download, Phone, Search, VoicemailIcon } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function CallLogsData() {
 	// Future: Fetch call log statistics

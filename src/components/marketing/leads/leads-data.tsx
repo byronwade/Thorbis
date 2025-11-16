@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Leads Data - Async Server Component
  *
@@ -9,7 +10,6 @@
 import { Target, TrendingUp, Users, Zap } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function LeadsData() {
 	// Future: Fetch lead statistics

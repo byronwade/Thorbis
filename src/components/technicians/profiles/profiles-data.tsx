@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Technician Profiles Data - Async Server Component
  *
@@ -7,7 +8,6 @@
 import { Award, Camera, FileText, User } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function ProfilesData() {
 	return (

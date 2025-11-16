@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Alerts Data - Async Server Component
  *
@@ -9,7 +10,6 @@
 import { AlertTriangle, Bell, Mail, MessageSquare, TrendingDown } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function AlertsData() {
 	// Future: Fetch low stock alerts

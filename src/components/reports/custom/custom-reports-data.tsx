@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Custom Reports Data - Async Server Component
  *
@@ -7,7 +8,6 @@
 import { Download, Filter, LayoutDashboard, Share2 } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function CustomReportsData() {
 	return (

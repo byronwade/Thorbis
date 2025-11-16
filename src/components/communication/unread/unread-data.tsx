@@ -1,3 +1,4 @@
+"use cache";
 /**
  * Unread Messages Data - Async Server Component
  *
@@ -7,7 +8,6 @@
 import { Bell, CheckCheck, Filter, MessageSquare } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-("use cache");
 
 export async function UnreadMessagesData() {
 	return (
