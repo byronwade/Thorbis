@@ -14,10 +14,10 @@
     "seo:validate": "tsx scripts/testing/validate-structured-data.ts",
     "start": "next start",
     "clean": "rimraf .next node_modules/.cache",
-    "lint": "pnpm dlx ultracite check",
+    "lint": "next lint",
     "lint:eslint": "eslint --ext .js,.jsx,.ts,.tsx --max-warnings 0 .",
     "lint:eslint:watch": "eslint --ext .js,.jsx,.ts,.tsx --max-warnings 0 --watch .",
-    "lint:fix": "pnpm dlx ultracite fix",
+    "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit --pretty",
     "typecheck:watch": "tsc --noEmit --pretty --watch",
     "analyze": "pnpm run analyze:knip && pnpm run analyze:deps && pnpm run analyze:circular",
@@ -171,8 +171,7 @@
     "ts-prune": "^0.10.3",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.4",
-    "ultracite": "6.0.0"
+    "typescript-eslint": "^8.46.4"
   },
   "pnpm": {
     "overrides": {

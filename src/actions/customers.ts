@@ -124,7 +124,7 @@ export async function createCustomer(formData: FormData): Promise<ActionResult<s
 			companyId: teamMember.company_id,
 			customerType,
 			primaryContact,
-			companyName,
+			companyNameValue: companyName,
 			displayName,
 			primaryProperty,
 			customerLat,
@@ -554,6 +554,8 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 		const displayName =
 			data.type === "commercial" && data.companyName ? data.companyName : `${data.firstName} ${data.lastName}`;
 
+		const companyName = data.companyName ? String(data.companyName) : null;
+
 		// Update customer
 		const { error: updateError } = await supabase
 			.from("customers")
@@ -561,7 +563,7 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 				type: data.type,
 				first_name: data.firstName,
 				last_name: data.lastName,
-				company_name: data.companyName,
+				company_name: companyName,
 				display_name: displayName,
 				email: data.email,
 				phone: data.phone,

@@ -131,11 +131,16 @@
       "mcp__supabase__get_logs",
       "Bash(killall:*)",
       "Bash(npx biome:*)",
-      "Bash(/Users/byronwade/Stratos/src/actions/properties.ts)"
+      "Bash(/Users/byronwade/Stratos/src/actions/properties.ts)",
+      "Bash(lsof:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm tsc:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["shadcn"]
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }
