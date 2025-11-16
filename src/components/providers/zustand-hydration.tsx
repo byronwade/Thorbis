@@ -28,6 +28,7 @@ import { useViewStore } from "@/lib/stores/view-store";
 import { useSidebarStateStore } from "@/lib/stores/sidebar-state-store";
 import { useUIStore } from "@/lib/stores/ui-store";
 import { useUserStore } from "@/lib/stores/user-store";
+import { useRoleStore } from "@/lib/stores/role-store";
 
 export function ZustandHydration() {
 	useEffect(() => {
@@ -41,6 +42,7 @@ export function ZustandHydration() {
 		useSidebarStateStore.persist.rehydrate();
 		useUIStore.persist.rehydrate();
 		useUserStore.persist.rehydrate();
+		useRoleStore.persist.rehydrate(); // CRITICAL: Dashboard depends on this
 
 		// Filter stores rehydrate automatically (less critical for hydration)
 		// Add more stores here if needed
