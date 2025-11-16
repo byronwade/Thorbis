@@ -105,7 +105,7 @@ const communicationPreferencesSchema = z.object({
 /**
  * Create a new customer with multiple contacts and properties
  */
-export function createCustomer(
+export async function createCustomer(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -578,7 +578,7 @@ async function insertAdditionalPropertiesIfAny(
 /**
  * Update existing customer
  */
-export function updateCustomer(
+export async function updateCustomer(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -734,7 +734,7 @@ export function updateCustomer(
 /**
  * Delete customer (soft delete/archive)
  */
-export function deleteCustomer(
+export async function deleteCustomer(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -810,7 +810,7 @@ export function deleteCustomer(
 /**
  * Update customer status
  */
-export function updateCustomerStatus(
+export async function updateCustomerStatus(
   customerId: string,
   status: "active" | "inactive" | "archived" | "blocked"
 ): Promise<ActionResult<void>> {
@@ -872,7 +872,7 @@ export function updateCustomerStatus(
 /**
  * Update communication preferences
  */
-export function updateCommunicationPreferences(
+export async function updateCommunicationPreferences(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -1153,7 +1153,7 @@ export function getCustomerByPhone(
 /**
  * Search customers by name, email, phone, or company
  */
-export function searchCustomers(
+export async function searchCustomers(
   searchTerm: string,
   options?: { limit?: number; offset?: number }
 ): Promise<ActionResult<unknown[]>> {
@@ -1210,7 +1210,9 @@ export function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
+export async function getTopCustomers(
+  limit = 10
+): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
