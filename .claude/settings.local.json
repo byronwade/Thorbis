@@ -95,11 +95,14 @@
       "Bash(1)",
       "Bash(pnpm biome check:*)",
       "Bash(npx @biomejs/biome:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(/tmp/fix-async.sh:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["shadcn"]
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }
