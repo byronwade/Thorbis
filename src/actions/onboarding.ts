@@ -124,6 +124,7 @@ async function uploadCompanyLogo(
 			.eq("id", companyId);
 
 		if (updateError) {
+			console.error("Failed to update company logo:", updateError);
 		}
 
 		return publicUrl;
@@ -357,7 +358,9 @@ async function autoConfigureEmailInfrastructure(
 					last_synced_at: new Date().toISOString(),
 				});
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			console.error("Failed to sync Resend domain:", _error);
+		}
 	}
 
 	const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
@@ -396,7 +399,9 @@ async function autoConfigureEmailInfrastructure(
 				last_synced_at: new Date().toISOString(),
 			});
 		}
-	} catch (_error) {}
+	} catch (_error) {
+		console.error("Failed to configure inbound email route:", _error);
+	}
 }
 
 async function updateOnboardingProgressRecord(
