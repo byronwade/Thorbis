@@ -14,7 +14,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { OnboardingHeaderClient } from "./onboarding-header-client";
 
@@ -31,7 +31,9 @@ export function OnboardingHeader() {
 	>([]);
 	const [loading, setLoading] = useState(true);
 
-	const fetchData = async () => {
+	// CRITICAL: useCallback prevents infinite loop
+	// Without it, fetchData is recreated on every render → useEffect runs infinitely
+	const fetchData = useCallback(async () => {
 		try {
 			setLoading(true);
 			// Fetch user profile and companies client-side
@@ -73,9 +75,10 @@ export function OnboardingHeader() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []); // Empty deps - function is stable, only depends on setState which are stable
 
 	useEffect(() => {
+		// Fetch data once on mount
 		fetchData();
 
 		// Listen for custom event to refresh companies list
@@ -83,21 +86,15 @@ export function OnboardingHeader() {
 			fetchData();
 		};
 
-		// Refresh when page becomes visible (user switches back to tab)
-		const handleVisibilityChange = () => {
-			if (!document.hidden) {
-				fetchData();
-			}
-		};
+		// REMOVED: visibilitychange listener - too aggressive, caused continuous API calls
+		// Only listen for explicit refresh events
 
 		window.addEventListener("refresh-companies", handleRefresh);
-		document.addEventListener("visibilitychange", handleVisibilityChange);
 
 		return () => {
 			window.removeEventListener("refresh-companies", handleRefresh);
-			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
-	}, [fetchData]);
+	}, [fetchData]); // fetchData is now stable (useCallback)
 
 	if (loading || !userProfile) {
 		return (

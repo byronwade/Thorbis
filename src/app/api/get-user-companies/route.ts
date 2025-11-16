@@ -37,7 +37,11 @@ export async function GET() {
 			.is("companies.deleted_at", null); // Exclude archived companies
 
 		if (error) {
-			return NextResponse.json({ error: "Failed to fetch companies" }, { status: 500 });
+			console.error("[get-user-companies] Database error:", error);
+			return NextResponse.json(
+				{ error: "Failed to fetch companies", details: error.message },
+				{ status: 500 }
+			);
 		}
 
 		// Map to simplified structure with onboarding status
