@@ -27,7 +27,7 @@ export function MarketingAnalyticsSkeleton() {
       {/* Feature cards skeleton - 2x2 grid */}
       <div className="mx-auto max-w-5xl space-y-8 pt-4">
         <div className="grid gap-6 md:grid-cols-2">
-          {[...Array(4)].map((_, i) => (
+          {[...new Array(4)].map((_, i) => (
             <div className="space-y-3 rounded-lg border bg-card p-6" key={i}>
               <div className="size-12 animate-pulse rounded-lg bg-muted" />
               <div className="h-6 w-40 animate-pulse rounded bg-muted" />

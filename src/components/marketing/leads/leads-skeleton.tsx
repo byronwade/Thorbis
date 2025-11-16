@@ -27,7 +27,7 @@ export function LeadsSkeleton() {
       {/* Feature cards skeleton */}
       <div className="mx-auto max-w-5xl space-y-8 pt-4">
         <div className="grid gap-6 md:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
+          {[...new Array(3)].map((_, i) => (
             <div className="space-y-3 rounded-lg border bg-card p-6" key={i}>
               <div className="size-12 animate-pulse rounded-lg bg-muted" />
               <div className="h-6 w-32 animate-pulse rounded bg-muted" />

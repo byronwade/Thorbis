@@ -49,7 +49,7 @@ export function GridSkeleton({
 
   return (
     <div className={`grid gap-4 ${gridClasses} ${className || ""}`}>
-      {[...Array(count)].map((_, i) => (
+      {[...new Array(count)].map((_, i) => (
         <div className="animate-pulse rounded-lg border bg-card p-6" key={i}>
           {/* Item image/icon */}
           <div className="mb-4 h-32 w-full rounded bg-muted" />
@@ -99,7 +99,7 @@ export function CompactGridSkeleton({
 
   return (
     <div className={`grid gap-3 ${gridClasses} ${className || ""}`}>
-      {[...Array(count)].map((_, i) => (
+      {[...new Array(count)].map((_, i) => (
         <div className="animate-pulse rounded-lg border bg-card p-4" key={i}>
           {/* Item icon */}
           <div className="mb-3 h-12 w-12 rounded bg-muted" />
@@ -131,7 +131,7 @@ export function KanbanGridSkeleton({
 }) {
   return (
     <div className={`grid gap-4 md:grid-cols-${columns} ${className || ""}`}>
-      {[...Array(columns)].map((_, columnIndex) => (
+      {[...new Array(columns)].map((_, columnIndex) => (
         <div className="space-y-4" key={columnIndex}>
           {/* Column header */}
           <div className="flex items-center justify-between rounded-lg border bg-card p-4">
@@ -141,7 +141,7 @@ export function KanbanGridSkeleton({
 
           {/* Column cards */}
           <div className="space-y-3">
-            {[...Array(cardsPerColumn)].map((_, cardIndex) => (
+            {[...new Array(cardsPerColumn)].map((_, cardIndex) => (
               <div
                 className="animate-pulse rounded-lg border bg-card p-4"
                 key={cardIndex}

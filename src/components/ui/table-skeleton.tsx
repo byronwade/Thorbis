@@ -37,7 +37,7 @@ export function TableSkeleton({
 
       {/* Table rows skeleton */}
       <div className="space-y-2">
-        {[...Array(rows)].map((_, i) => (
+        {[...new Array(rows)].map((_, i) => (
           <div
             className="flex items-center gap-4 border-b py-3 last:border-0"
             key={i}

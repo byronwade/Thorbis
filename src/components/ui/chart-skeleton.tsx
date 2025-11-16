@@ -48,7 +48,7 @@ export function ChartSkeleton({
       >
         <div className="flex h-full items-end justify-between gap-2">
           {/* Simulated bar chart bars */}
-          {[...Array(12)].map((_, i) => (
+          {[...new Array(12)].map((_, i) => (
             <div
               className="w-full rounded-t bg-muted"
               key={i}
@@ -63,7 +63,7 @@ export function ChartSkeleton({
 
       {/* Chart footer */}
       <div className="flex items-center justify-center gap-2">
-        {[...Array(6)].map((_, i) => (
+        {[...new Array(6)].map((_, i) => (
           <div className="h-3 w-16 animate-pulse rounded bg-muted" key={i} />
         ))}
       </div>
@@ -112,7 +112,7 @@ export function LineChartSkeleton({
 
       {/* Chart footer */}
       <div className="flex items-center justify-between">
-        {[...Array(5)].map((_, i) => (
+        {[...new Array(5)].map((_, i) => (
           <div className="h-3 w-12 animate-pulse rounded bg-muted" key={i} />
         ))}
       </div>
@@ -147,7 +147,7 @@ export function PieChartSkeleton({
 
       {/* Legend */}
       <div className="space-y-2">
-        {[...Array(4)].map((_, i) => (
+        {[...new Array(4)].map((_, i) => (
           <div className="flex items-center gap-3" key={i}>
             <div className="h-4 w-4 animate-pulse rounded-full bg-muted" />
             <div className="h-4 w-32 animate-pulse rounded bg-muted" />

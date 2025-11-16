@@ -27,8 +27,8 @@ export function SmsCampaignsSkeleton() {
       {/* Feature cards skeleton */}
       <div className="mx-auto max-w-5xl space-y-8 pt-4">
         <div className="grid gap-6 md:grid-cols-2">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="space-y-3 rounded-lg border bg-card p-6">
+          {[...new Array(4)].map((_, i) => (
+            <div className="space-y-3 rounded-lg border bg-card p-6" key={i}>
               <div className="size-12 animate-pulse rounded-lg bg-muted" />
               <div className="h-6 w-40 animate-pulse rounded bg-muted" />
               <div className="space-y-2">
@@ -41,8 +41,8 @@ export function SmsCampaignsSkeleton() {
 
         {/* Stats preview skeleton */}
         <div className="grid gap-4 md:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-lg border bg-card p-6 text-center">
+          {[...new Array(3)].map((_, i) => (
+            <div className="rounded-lg border bg-card p-6 text-center" key={i}>
               <div className="mx-auto mb-2 h-9 w-16 animate-pulse rounded bg-muted" />
               <div className="mx-auto h-4 w-24 animate-pulse rounded bg-muted" />
             </div>
