@@ -64,8 +64,10 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 
 				reset: () => set(initialState),
 			}),
-			{ name: "schedule-view-store" }
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+			{
+				name: "schedule-view-store",
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+			}
 		),
 		{ name: "ScheduleViewStore" }
 	)
