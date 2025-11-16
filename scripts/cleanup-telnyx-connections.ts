@@ -11,6 +11,12 @@
  *   npx tsx scripts/cleanup-telnyx-connections.ts --delete-all
  */
 
+import { config } from "dotenv";
+import { resolve } from "path";
+
+// Load .env.local
+config({ path: resolve(process.cwd(), ".env.local") });
+
 const TELNYX_API_KEY = process.env.TELNYX_API_KEY || process.env.TELNYX_API_SECRET;
 const TELNYX_API_URL = "https://api.telnyx.com/v2";
 
