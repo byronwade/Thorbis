@@ -8,7 +8,9 @@
  * Performance: 10-40x faster than traditional SSR
  */
 
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { getJob } from "@/actions/jobs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 
@@ -33,6 +35,19 @@ export async function generateMetadata({
 	};
 }
 
+async function JobData({ jobId }: { jobId: string }) {
+	const result = await getJob(jobId);
+
+	if (!result.success || !result.data) {
+		return notFound();
+	}
+
+	const jobData = { job: result.data };
+	const metrics = {}; // TODO: Calculate metrics
+
+	return <JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />;
+}
+
 export default async function JobDetailsPage({
 	params,
 }: {
@@ -42,7 +57,7 @@ export default async function JobDetailsPage({
 
 	return (
 		<Suspense fallback={<JobDetailsSkeleton />}>
-			<JobPageContent jobId={jobId} />
+			<JobData jobId={jobId} />
 		</Suspense>
 	);
 }
