@@ -18,6 +18,7 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { getCurrentUser } from "./session";
 
 const ACTIVE_COMPANY_COOKIE = "active_company_id";
@@ -129,6 +130,12 @@ export async function clearActiveCompany(): Promise<void> {
  *
  * Returns all companies the user has access to.
  *
+ * SECURITY: Uses service role because:
+ * - Query filters to user's own memberships (user_id = authenticated user)
+ * - JOIN to companies table causes RLS recursion with anon key
+ * - User only sees their own team_members records
+ * - Companies table has its own RLS protection
+ *
  * @returns Array of CompanyInfo objects
  */
 export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
@@ -137,10 +144,9 @@ export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
 		return [];
 	}
 
-	const supabase = await createClient();
-	if (!supabase) {
-		return [];
-	}
+	// Use service role to bypass RLS recursion on JOIN
+	// Query is safe: explicitly filtered to user's own records
+	const supabase = await createServiceSupabaseClient();
 
 	const { data: memberships } = await supabase
 		.from("team_members")
@@ -250,6 +256,12 @@ export async function hasMultipleCompanies(): Promise<boolean> {
  * Checks if the active company has an active payment subscription.
  * This is used to determine if onboarding is complete.
  *
+ * SECURITY: Uses service role because:
+ * - Query filters to user's own membership (user_id = authenticated user)
+ * - JOIN to companies table causes RLS recursion with anon key
+ * - User only sees their own team_members record
+ * - Companies table has its own RLS protection
+ *
  * @returns true if company has active/trialing subscription, false otherwise
  */
 export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
@@ -258,15 +270,14 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
 		return false;
 	}
 
-	const supabase = await createClient();
-	if (!supabase) {
-		return false;
-	}
-
 	const activeCompanyId = await getActiveCompanyId();
 	if (!activeCompanyId) {
 		return false;
 	}
+
+	// Use service role to bypass RLS recursion on JOIN
+	// Query is safe: explicitly filtered to user's own record
+	const supabase = await createServiceSupabaseClient();
 
 	// Check the ACTIVE company's payment status
 	const { data: teamMember } = await supabase

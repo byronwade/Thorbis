@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 export async function GET() {
 	try {
@@ -10,10 +10,10 @@ export async function GET() {
 			return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 		}
 
-		const supabase = await createClient();
-		if (!supabase) {
-			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
-		}
+		// Use service role to bypass RLS recursion on JOIN
+		// Query is safe: explicitly filtered to user's own records (user_id = authenticated user)
+		// JOIN to companies table causes RLS recursion errors with anon key
+		const supabase = await createServiceSupabaseClient();
 
 		// Fetch user's companies via team_members join
 		// Exclude archived companies (deleted_at IS NULL)

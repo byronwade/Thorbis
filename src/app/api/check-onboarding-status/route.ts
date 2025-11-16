@@ -2,23 +2,23 @@ import { NextResponse } from "next/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getCurrentUser } from "@/lib/auth/session";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 /**
  * Check onboarding status for the ACTIVE company
  * Returns company ID and payment status for the currently active company
  * This is company-specific, not user-specific
+ *
+ * SECURITY: Uses service role because:
+ * - Query filters to user's own membership (user_id = authenticated user)
+ * - JOIN to companies table causes RLS recursion with anon key
+ * - User only sees their own team_members record
  */
 export async function GET() {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
 			return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-		}
-
-		const supabase = await createClient();
-		if (!supabase) {
-			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
 		}
 
 		// Get the active company ID (from cookie or first available)
@@ -32,6 +32,10 @@ export async function GET() {
 				needsOnboarding: true,
 			});
 		}
+
+		// Use service role to bypass RLS recursion on JOIN
+		// Query is safe: explicitly filtered to user's own record
+		const supabase = await createServiceSupabaseClient();
 
 		// Check the ACTIVE company's payment status
 		const { data: teamMember } = await supabase

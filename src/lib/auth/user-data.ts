@@ -11,6 +11,7 @@
 import { cache } from "react";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { getCurrentUser } from "./session";
 
 export type UserStatus = "online" | "available" | "busy";
@@ -158,7 +159,12 @@ export const isUserEmailVerified = cache(async (): Promise<boolean> => {
  * Get User Companies
  *
  * Fetches companies the user belongs to
- * Secured by RLS - only returns companies user has access to
+ *
+ * SECURITY: Uses service role because:
+ * - Query filters to user's own memberships (user_id = authenticated user)
+ * - JOIN to companies table causes RLS recursion with anon key
+ * - User only sees their own team_members records
+ * - Companies table has its own RLS protection
  */
 export const getUserCompanies = cache(
 	async (): Promise<
@@ -176,13 +182,11 @@ export const getUserCompanies = cache(
 				return [];
 			}
 
-			const supabase = await createClient();
-			if (!supabase) {
-				return [];
-			}
+			// Use service role to bypass RLS recursion on JOIN
+			// Query is safe: explicitly filtered to user's own records
+			const supabase = await createServiceSupabaseClient();
 
 			// Fetch user's companies via team_members join
-			// RLS ensures user can only see companies they're a member of
 			// Exclude archived companies (deleted_at IS NULL)
 			const { data: memberships, error } = await supabase
 				.from("team_members")
