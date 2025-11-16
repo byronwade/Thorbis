@@ -1,4 +1,4 @@
-export function UintegrationsSkeleton() {
+export function IntegrationsSkeleton() {
 	return (
 		<div className="flex h-full flex-col gap-4 p-4">
 			<div className="flex items-center justify-between">

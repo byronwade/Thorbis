@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
-export async function UintegrationsData() {
+export async function IntegrationsData() {
 	const supabase = await createClient();
 	if (!supabase) {
 		return notFound();

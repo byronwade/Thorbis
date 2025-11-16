@@ -6,13 +6,13 @@
  */
 
 import { Suspense } from "react";
-import { UscheduleData } from "@/components/settings/schedule/schedule-data";
-import { UscheduleSkeleton } from "@/components/settings/schedule/schedule-skeleton";
+import { ScheduleData } from "@/components/settings/schedule/schedule-data";
+import { ScheduleSkeleton } from "@/components/settings/schedule/schedule-skeleton";
 
 export default function UschedulePage() {
 	return (
-		<Suspense fallback={<UscheduleSkeleton />}>
-			<UscheduleData />
+		<Suspense fallback={<ScheduleSkeleton />}>
+			<ScheduleData />
 		</Suspense>
 	);
 }

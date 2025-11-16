@@ -6,13 +6,13 @@
  */
 
 import { Suspense } from "react";
-import { UpreferencesData } from "@/components/settings/preferences/preferences-data";
-import { UpreferencesSkeleton } from "@/components/settings/preferences/preferences-skeleton";
+import { PreferencesData } from "@/components/settings/preferences/preferences-data";
+import { PreferencesSkeleton } from "@/components/settings/preferences/preferences-skeleton";
 
 export default function UpreferencesPage() {
 	return (
-		<Suspense fallback={<UpreferencesSkeleton />}>
-			<UpreferencesData />
+		<Suspense fallback={<PreferencesSkeleton />}>
+			<PreferencesData />
 		</Suspense>
 	);
 }

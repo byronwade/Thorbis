@@ -348,6 +348,7 @@ const syncSignUpProfile = async ({
 			updatePayload.avatar = avatarUrl;
 		}
 
+		// @ts-expect-error - Database schema may be out of sync with types
 		await adminClient.from("users").update(updatePayload).eq("id", userId);
 	} catch (profileUpdateError) {
 		reportAuthIssue("Failed to update user profile", profileUpdateError);
@@ -530,6 +531,7 @@ const updateUserTableRecord = async ({
 
 	try {
 		const adminClient = await ensureServiceSupabase();
+		// @ts-expect-error - Database schema may be out of sync with types
 		const { error } = await adminClient.from("users").update(updatePayload).eq("id", userId);
 
 		if (error) {

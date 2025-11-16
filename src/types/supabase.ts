@@ -1,8 +1,3 @@
-Progress: resolved 1, reused 0, downloaded 0, added 0
- WARN  1 deprecated subdependencies found: node-domexception@1.0.0
-Packages: +25
-+++++++++++++++++++++++++
-Progress: resolved 25, reused 25, downloaded 0, added 25, done
 export type Json =
   | string
   | number

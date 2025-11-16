@@ -6,13 +6,13 @@
  */
 
 import { Suspense } from "react";
-import { UintegrationsData } from "@/components/settings/integrations/integrations-data";
-import { UintegrationsSkeleton } from "@/components/settings/integrations/integrations-skeleton";
+import { IntegrationsData } from "@/components/settings/integrations/integrations-data";
+import { IntegrationsSkeleton } from "@/components/settings/integrations/integrations-skeleton";
 
 export default function UintegrationsPage() {
 	return (
-		<Suspense fallback={<UintegrationsSkeleton />}>
-			<UintegrationsData />
+		<Suspense fallback={<IntegrationsSkeleton />}>
+			<IntegrationsData />
 		</Suspense>
 	);
 }
